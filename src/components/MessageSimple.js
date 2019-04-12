@@ -13,7 +13,7 @@ export const MessageSimple = ({ message, isMyMessage }) => {
       {hasAttachment ? message.attachments.map((attachment, index) => (
         <Attachment key={`${message.id}-${index}`} attachment={attachment} />
       )) : false}
-      <MessageText message={message} isMyMessage />
+      <MessageText message={message} isMyMessage={isMyMessage} />
     </View>
   );
 
@@ -64,7 +64,7 @@ const capitalize = (s) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
-const MessageText = ({ message, isMyMessage = false }) => {
+const MessageText = ({ message, isMyMessage }) => {
   if (!message.text) return false;
 
   return (
@@ -72,11 +72,11 @@ const MessageText = ({ message, isMyMessage = false }) => {
       style={{
         ...styles.MessageText.container,
         ...styles.MessageText[
-          (isMyMessage ? 'my' : 'other') +
+          (isMyMessage(message) ? 'my' : 'other') +
             'Message' +
             capitalize(message.groupPosition[0])
         ],
-        backgroundColor: isMyMessage ? '#EBEBEB' : 'white',
+        backgroundColor: isMyMessage(message) ? '#EBEBEB' : 'white',
       }}
     >
       <Text style={{ flex: 1 }}>{message.text}</Text>
