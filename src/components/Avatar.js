@@ -19,6 +19,7 @@ export class Avatar extends React.PureComponent {
     shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
     /** size in pixels */
     size: PropTypes.number,
+    style: PropTypes.object,
   };
 
   static defaultProps = {
@@ -38,7 +39,7 @@ export class Avatar extends React.PureComponent {
     const { size, name, shape, image, style } = this.props;
     const initials = this.getInitials(name);
     return (
-      <View>
+      <View style={{ display: 'flex', alignItems: 'center' }}>
         {image ? (
           <Image
             style={{
@@ -52,7 +53,19 @@ export class Avatar extends React.PureComponent {
             resizeMethod="resize"
           />
         ) : (
-          <Text>{initials}</Text>
+          <View
+            style={{
+              ...style,
+              backgroundColor: '#EBEBEB',
+              borderRadius: size / 2,
+              width: size,
+              height: size,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text>{initials}</Text>
+          </View>
         )}
       </View>
     );

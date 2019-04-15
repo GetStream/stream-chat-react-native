@@ -7,10 +7,15 @@ import { styles } from '../styles.js';
 
 import { Message } from './Message';
 import { MessageSimple } from './MessageSimple';
+import { MessageNotification } from './MessageNotification';
 
 class MessageList extends PureComponent {
   constructor(props) {
     super(props);
+
+    this.state = {
+      newMessagesNotification: false,
+    };
   }
 
   static propTypes = {
@@ -19,6 +24,49 @@ class MessageList extends PureComponent {
     /** Turn off grouping of messages by user */
     noGroupByUser: PropTypes.bool,
   };
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // handle new messages being sent/received
+    const currentLastMessage = this.props.messages[
+      this.props.messages.length - 1
+    ];
+    const previousLastMessage =
+      prevProps.messages[prevProps.messages.length - 1];
+    if (!previousLastMessage || !currentLastMessage) {
+      return;
+    }
+
+    const hasNewMessage = currentLastMessage.id !== previousLastMessage.id;
+    const userScrolledUp = this.state.yOffset > 0;
+    const isOwner = currentLastMessage.user.id === this.props.client.userID;
+
+    let scrollToBottom = false;
+
+    // always scroll down when it's your own message that you added...
+    if (hasNewMessage && isOwner) {
+      scrollToBottom = true;
+    } else if (hasNewMessage && !userScrolledUp) {
+      scrollToBottom = true;
+    }
+
+    // Check the scroll position... if you're scrolled up show a little notification
+    if (
+      !scrollToBottom &&
+      hasNewMessage &&
+      !this.state.newMessagesNotification
+    ) {
+      this.setState({ newMessagesNotification: true });
+    }
+
+    if (scrollToBottom) {
+      this.refs.flatlist.scrollToIndex({ index: 0 });
+    }
+
+    // remove the scroll notification if we already scrolled down...
+    if (scrollToBottom && this.state.newMessagesNotification) {
+      this.setState({ newMessagesNotification: false });
+    }
+  }
 
   insertDates = (messages) => {
     const newMessages = [];
@@ -124,12 +172,27 @@ class MessageList extends PureComponent {
     return newMessages;
   };
 
+  goToNewMessages = () => {
+    this.setState({
+      newMessagesNotification: false,
+    });
+    this.refs.flatlist.scrollToIndex({ index: 0 });
+  };
+
   renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
       return <DateSeparator message={message} />;
     }
 
     return <Message message={message} Message={MessageSimple} />;
+  };
+
+  handleScroll = (event) => {
+    let yOffset = event.nativeEvent.contentOffset.y;
+    let contentHeight = event.nativeEvent.contentSize.height;
+    let value = yOffset / contentHeight;
+
+    this.setState({ yOffset });
   };
 
   render() {
@@ -139,15 +202,41 @@ class MessageList extends PureComponent {
     );
 
     return (
-      <FlatList
-        style={{ flex: 1, flexGrow: 1 }}
-        data={messagesWithGroupPositions}
-        inverted
-        keyExtractor={(item, index) =>
-          item.id || item.created_at || item.date.toISOString()
-        }
-        renderItem={this.renderItem}
-      />
+      <React.Fragment>
+        <FlatList
+          ref="flatlist"
+          style={{ flex: 1, flexGrow: 1 }}
+          data={messagesWithGroupPositions}
+          onScroll={this.handleScroll}
+          onEndReached={this.props.loadMore}
+          inverted
+          keyExtractor={(item, index) =>
+            item.id || item.created_at || item.date.toISOString()
+          }
+          renderItem={this.renderItem}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 2,
+            autoscrollToTopThreshold: 10,
+          }}
+        />
+        {this.state.newMessagesNotification && (
+          <MessageNotification
+            showNotification={this.state.newMessagesNotification}
+            onClick={this.goToNewMessages}
+          >
+            <View
+              style={{
+                borderRadius: 10,
+                backgroundColor: 'black',
+                color: 'white',
+                padding: 10,
+              }}
+            >
+              <Text style={{ color: 'white' }}>New Messages ↓</Text>
+            </View>
+          </MessageNotification>
+        )}
+      </React.Fragment>
     );
   }
 }
