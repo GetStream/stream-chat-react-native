@@ -37,6 +37,8 @@ export class Attachment extends React.Component {
       type = 'audio';
     } else if (a.type === 'video') {
       type = 'media';
+    } else if (a.type === 'product') {
+      type = 'product';
     } else {
       type = 'card';
       extra = 'no-image';
@@ -55,7 +57,7 @@ export class Attachment extends React.Component {
       );
     }
 
-    if (a.type === 'giphy') {
+    if (a.type === 'giphy' || type === 'card') {
       return <Card {...a} />;
     }
 

@@ -7,13 +7,6 @@ import { Avatar } from './Avatar';
 import PropTypes from 'prop-types';
 
 export class MessageSimple extends React.PureComponent {
-  isMessageBeforeSeparator = (message) => {
-    return (
-      message.groupPosition.indexOf('bottom') > -1 ||
-      message.groupPosition.indexOf('single') > -1
-    );
-  };
-
   messageContentContainer = () => {
     const { message, isMyMessage, style } = this.props;
     const hasAttachment = Boolean(
@@ -94,12 +87,18 @@ export class MessageSimple extends React.PureComponent {
     );
     const styles = buildStylesheet('MessageSimple', style);
     const pos = isMyMessage(message) ? 'right' : 'left';
+    const bottomMargin =
+      message.groupPosition[0] === 'single' ||
+      message.groupPosition[0] === 'bottom'
+        ? 'bottom'
+        : null;
+
     return (
       <View
         style={{
           ...styles.container,
           ...styles[pos],
-          marginBottom: this.isMessageBeforeSeparator(message) ? 20 : 0,
+          ...styles[bottomMargin],
         }}
       >
         {isMyMessage(message) ? (
@@ -142,7 +141,7 @@ class MessageText extends React.PureComponent {
           ...styles[groupStyles],
         }}
       >
-        <Text style={styles.text}>{message.text}</Text>
+        <Text style={styles.text}>{message.text.trim()}</Text>
       </View>
     );
   }

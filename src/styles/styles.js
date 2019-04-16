@@ -45,8 +45,10 @@ export const styles = {
     right: {
       justifyContent: 'flex-end',
     },
+    bottom: {
+      marginBottom: 20,
+    },
   }),
-
   MessageSimpleAvatar: StyleSheet.create({
     left: {
       marginRight: 8,
