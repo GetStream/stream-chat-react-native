@@ -5,6 +5,11 @@ import { Channel } from './src/components/Channel';
 import { StreamChat } from 'stream-chat';
 import { MessageList } from './src/components/MessageList';
 import { MessageInput } from './src/components/MessageInput';
+import { ChannelList } from './src/components/ChannelList';
+import { ChannelPreviewMessenger } from './src/components/ChannelPreviewMessenger';
+
+import { createAppContainer, createStackNavigator } from 'react-navigation';
+
 import { YellowBox } from 'react-native';
 
 YellowBox.ignoreWarnings(['Remote debugger']);
@@ -21,13 +26,47 @@ chatClient.setUser(
   },
   userToken,
 );
-const channel = chatClient.channel('messaging', 'godevs', {
-  // add as many custom fields as you'd like
-  name: 'Talk about Go',
+
+const filters = { type: 'messaging' };
+const sort = { last_message_at: -1 };
+const channels = chatClient.queryChannels(filters, sort, {
+  subscribe: true,
 });
 
-export default class App extends React.Component {
+class ChannelListScreen extends React.Component {
   render() {
+    return (
+      <SafeAreaView>
+        <Chat client={chatClient}>
+          <View style={{ display: 'flex', height: '100%', padding: 10 }}>
+            <ChannelList
+              channels={channels}
+              Preview={ChannelPreviewMessenger}
+              onSelect={(channel) => {
+                this.props.navigation.navigate(
+                  'Channel',
+                  {
+                    channel
+                  }
+                );
+              }}
+            />
+          </View>
+        </Chat>
+      </SafeAreaView>
+    );
+  }
+}
+
+class ChannelScreen extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
+  render() {
+    const { navigation } = this.props;
+    const channel = navigation.getParam('channel');
+
     return (
       <SafeAreaView>
         <Chat client={chatClient}>
@@ -51,3 +90,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+const RootStack = createStackNavigator(
+  {
+    ChannelList: {
+      screen: ChannelListScreen,
+    },
+    Channel: {
+      screen: ChannelScreen,
+    },
+  },
+  {
+    initialRouteName: 'ChannelList',
+  }
+);
+
+const AppContainer = createAppContainer(RootStack);
+
+export default class App extends React.Component {
+  render() {
+    return <AppContainer />;
+  }
+}
