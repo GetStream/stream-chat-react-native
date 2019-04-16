@@ -13,8 +13,6 @@ import { withChannelContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
 import { buildStylesheet } from '../styles/styles';
 
-import { sendButton } from '../styles/styles';
-
 class MessageInput extends PureComponent {
   constructor(props) {
     super(props);
@@ -46,6 +44,7 @@ class MessageInput extends PureComponent {
     }
   };
 
+  // https://stackoverflow.com/a/29234240/7625485
   constructTypingString = (dict) => {
     const arr2 = Object.keys(dict);
     const arr3 = [];
@@ -74,7 +73,7 @@ class MessageInput extends PureComponent {
   };
 
   render() {
-    const styles = buildStylesheet('MessageInput', this.props.styles);
+    const styles = buildStylesheet('MessageInput', this.props.style);
 
     return (
       <React.Fragment>
@@ -83,20 +82,23 @@ class MessageInput extends PureComponent {
             style={styles.inputBox}
             placeholder="Write your message"
             onChangeText={this.handleChange}
+            multiline={true}
+            numberOfLines={3}
             value={this.state.text}
           />
           <TouchableOpacity
+            style={styles.sendButton}
             title="Pick an image from camera roll"
             onPress={this.sendMessage}
           >
-            <Image source={sendButton} />
+            <Image source={require('../images/icons/send.png')} />
           </TouchableOpacity>
         </View>
-        <Text style={{ textAlign: 'right', height: 20 }}>
+        {/* <Text style={{ textAlign: 'right', height: 20 }}>
           {this.props.channel.state.typing
             ? this.constructTypingString(this.props.channel.state.typing)
             : ''}
-        </Text>
+        </Text> */}
       </React.Fragment>
     );
   }

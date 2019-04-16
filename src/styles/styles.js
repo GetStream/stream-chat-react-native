@@ -33,7 +33,6 @@ export const styles = {
       fontWeight: '600',
     },
   }),
-
   MessageSimple: StyleSheet.create({
     container: {
       display: 'flex',
@@ -56,7 +55,6 @@ export const styles = {
       marginLeft: 8,
     },
   }),
-
   MessageSimpleContent: StyleSheet.create({
     container: {
       display: 'flex',
@@ -77,7 +75,6 @@ export const styles = {
       color: COLOR_TEXT_GREY,
     },
   }),
-
   MessageSimpleText: StyleSheet.create({
     container: {
       borderBottomLeftRadius: BORDER_RADIUS,
@@ -131,24 +128,28 @@ export const styles = {
       borderTopLeftRadius: BORDER_RADIUS_S,
     },
   }),
-
-  // TODO: Look into weird resizing if focussed
   MessageInput: StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
       padding: 10,
-      margin: 5,
-      opacity: 100,
+      minHeight: 56,
+      margin: 10,
       borderRadius: 10,
-      borderColor: '#cecece',
+      backgroundColor: 'rgba(0,0,0,0.05)',
       borderWidth: 1,
+      borderColor: 'red',
     },
     inputBox: {
+      maxHeight: 60,
       flex: 1,
+      borderWidth: 1,
+      borderColor: 'green',
     },
-    sendButton: {},
+    sendButton: {
+      marginLeft: 8,
+    },
   }),
 
   Card: StyleSheet.create({
@@ -160,6 +161,7 @@ export const styles = {
       padding: 10,
     },
   }),
+
   MessageNotification: StyleSheet.create({
     container: {
       display: 'flex',
@@ -178,10 +180,6 @@ export const styles = {
       textAlign: 'right',
     },
   }),
-};
-
-const styleVariables = {
-  messageBorderRadius: 16,
 };
 
 const depthOf = function(object) {
