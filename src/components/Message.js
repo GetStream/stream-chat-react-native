@@ -1,9 +1,8 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { styles } from '../styles.js';
+import { styles } from '../styles/styles.js';
 import { Attachment } from './Attachment';
 import { MessageSimple } from './MessageSimple';
-import { Avatar } from './Avatar';
 import PropTypes from 'prop-types';
 import deepequal from 'deep-equal';
 import { withChannelContext } from '../context';

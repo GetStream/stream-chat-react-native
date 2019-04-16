@@ -1,8 +1,50 @@
-// @flow
 import { StyleSheet } from 'react-native';
-import _ from 'lodash';
+import { defaultsDeep } from 'lodash-es';
+
+// set variables
+export const COLOR_PRIMARY = 'magenta';
+export const COLOR_SECONDARY = '#111';
+export const BORDER_RADIUS = 16;
+
+export const COLOR_TEXT_LIGHT = 'white';
+
+export const BASE_FONT_SIZE = 16;
+
+export const sendButton = require('../images/icons/send.png');
 
 export const styles = {
+  Avatar: StyleSheet.create({
+    image: {
+      width: 50,
+      height: 50,
+    },
+    fallback: {
+      backgroundColor: COLOR_PRIMARY,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    fallbackText: {
+      color: COLOR_TEXT_LIGHT,
+      textTransform: 'uppercase',
+      fontSize: BASE_FONT_SIZE - 2,
+      fontWeight: '600',
+    },
+  }),
+
+  MessageSimple: StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+    },
+    left: {
+      justifyContent: 'flex-start',
+    },
+    right: {
+      justifyContent: 'flex-end',
+    },
+  }),
+
   messageInput: StyleSheet.create({
     container: {
       display: 'flex',
@@ -39,51 +81,67 @@ export const styles = {
   MessageText: StyleSheet.create({
     container: {
       flex: 1,
+      borderBottomLeftRadius: BORDER_RADIUS,
+      borderBottomRightRadius: BORDER_RADIUS,
+      borderTopLeftRadius: BORDER_RADIUS,
+      borderTopRightRadius: BORDER_RADIUS,
+      margin: 1,
+      padding: 5,
+    },
+    text: {
+      flex: 1,
+      fontSize: 15,
+      lineHeight: 20,
+    },
+    left: {
+      marginLeft: 8,
       borderWidth: 0.5,
       borderColor: '#cecece',
-      borderBottomLeftRadius: 16,
-      borderBottomRightRadius: 16,
-      borderTopLeftRadius: 16,
-      borderTopRightRadius: 16,
-      padding: 10,
-      margin: 2,
     },
-    myMessageSingle: {
+    right: {
+      marginRight: 8,
+      backgroundColor: '#ebebeb',
+    },
+    rightSingle: {
       borderBottomRightRadius: 0,
     },
-    myMessageTop: {
+    rightTop: {
       borderBottomRightRadius: 0,
     },
-    myMessageMiddle: {
+    rightMiddle: {
       borderBottomRightRadius: 0,
       borderTopRightRadius: 0,
     },
-    myMessageBottom: {
+    rightBottom: {
       borderBottomRightRadius: 0,
       borderTopRightRadius: 0,
     },
-    otherMessageSingle: {
+    leftSingle: {
       borderBottomLeftRadius: 0,
     },
-    otherMessageTop: {
+    leftTop: {
       borderBottomLeftRadius: 0,
     },
-    otherMessageMiddle: {
+    leftMiddle: {
       borderBottomLeftRadius: 0,
       borderTopLeftRadius: 0,
     },
-    otherMessageBottom: {
+    leftBottom: {
       borderBottomLeftRadius: 0,
       borderTopLeftRadius: 0,
     },
   }),
-  Avatar: StyleSheet.create({
-    image: {
-      width: 50,
-      height: 50,
-      borderRadius: 30,
+
+  MessageNotification: StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      zIndex: 10,
+      marginBottom: 0,
     },
   }),
+
   DateSeparator: StyleSheet.create({
     container: {
       margin: 5,
@@ -112,15 +170,19 @@ const depthOf = function(object) {
   return level;
 };
 
-export function getStyle(styleName: string): any {
+export function getStyle(styleName) {
   return styles[styleName] || {};
 }
 
-export function updateStyle(styleName: string, styleOverwrites: any): any {
+export function updateStyle(styleName, styleOverwrites) {
   styles[styleName] = buildStylesheet(styleName, styleOverwrites);
 }
 
-export function buildStylesheet(styleName: string, styleOverwrites: any): any {
+/** function buildStylesheet
+ * @param styleName: string
+ * @param styleOverwrites: any
+ */
+export function buildStylesheet(styleName, styleOverwrites) {
   const baseStyle = getStyle(styleName);
   if (!styleOverwrites || Object.keys(styleOverwrites).length === 0) {
     return baseStyle;
@@ -140,5 +202,5 @@ export function buildStylesheet(styleName: string, styleOverwrites: any): any {
     .filter((v) => v !== falseObj)
     .reduce((accumulated, v) => Object.assign(accumulated, v), {});
 
-  return StyleSheet.create(_.defaultsDeep(topLevelOverwrites, base));
+  return StyleSheet.create(defaultsDeep(topLevelOverwrites, base));
 }

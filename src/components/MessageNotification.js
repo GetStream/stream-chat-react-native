@@ -2,12 +2,16 @@ import React, { PureComponent } from 'react';
 import { View, Button, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
+import {buildStyleheet,styles} from '../styles/styles'
+
 export class MessageNotification extends PureComponent {
   static propTypes = {
     /** If we should show the notification or not */
     showNotification: PropTypes.bool,
     /** Onclick handler */
     onClick: PropTypes.func.isRequired,
+    /** Style overrides */
+    style: PropTypes.object,
   };
 
   static defaultProps = {
@@ -15,19 +19,14 @@ export class MessageNotification extends PureComponent {
   };
 
   render() {
+    const styles = buildStyleheet('MessageNotification', this.props.style);
     if (!this.props.showNotification) {
       return null;
     } else {
       return (
         <TouchableOpacity
           onPress={this.props.onClick}
-          style={{
-            zIndex: 10,
-            marginBottom: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
+          style={styles.container}
           onClick={this.props.onClick}
         >
           {this.props.children}

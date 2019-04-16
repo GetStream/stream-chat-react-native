@@ -3,7 +3,7 @@ import { View, Text, FlatList, Image } from 'react-native';
 import PropTypes from 'prop-types';
 import { withChannelContext } from '../context';
 import Moment from 'moment';
-import { styles } from '../styles.js';
+import { styles } from '../styles/styles.js';
 
 import { Message } from './Message';
 import { MessageSimple } from './MessageSimple';

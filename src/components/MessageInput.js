@@ -11,7 +11,9 @@ import {
 import PropTypes from 'prop-types';
 import { withChannelContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
-import { buildStylesheet } from '../styles';
+import { buildStylesheet } from '../styles/styles';
+
+import { sendButton } from '../styles/styles';
 
 class MessageInput extends PureComponent {
   constructor(props) {
@@ -44,7 +46,6 @@ class MessageInput extends PureComponent {
     }
   };
 
-  // https://stackoverflow.com/a/29234240/7625485
   constructTypingString = (dict) => {
     const arr2 = Object.keys(dict);
     const arr3 = [];
@@ -88,7 +89,7 @@ class MessageInput extends PureComponent {
             title="Pick an image from camera roll"
             onPress={this.sendMessage}
           >
-            <Image source={require('../images/icons/send.png')} />
+            <Image source={sendButton} />
           </TouchableOpacity>
         </View>
         <Text style={{ textAlign: 'right', height: 20 }}>

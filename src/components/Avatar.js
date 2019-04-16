@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, Text } from 'react-native';
 import PropTypes from 'prop-types';
-import { styles } from '../styles.js';
+import { buildStylesheet, styles } from '../styles/styles.js';
 
 /**
  * Avatar - A round avatar image with fallback to username's first letter
@@ -19,6 +19,7 @@ export class Avatar extends React.PureComponent {
     shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
     /** size in pixels */
     size: PropTypes.number,
+    /** Style overrides */
     style: PropTypes.object,
   };
 
@@ -27,44 +28,56 @@ export class Avatar extends React.PureComponent {
     shape: 'circle',
   };
 
+  state = {
+    imageError: false,
+  }
+
+  setError = () => {
+    this.setState({
+      imageError: true,
+    })
+  }
+
   getInitials = (name) =>
     name
       ? name
           .split(' ')
-          .slice(0, 1)
+          .slice(0, 2)
           .map((name) => name.charAt(0))
       : null;
 
   render() {
     const { size, name, shape, image, style } = this.props;
+    const styles = buildStylesheet('Avatar', style);
     const initials = this.getInitials(name);
     return (
       <View style={{ display: 'flex', alignItems: 'center' }}>
-        {image ? (
+        {image && !this.state.imageError ? (
           <Image
             style={{
-              ...style,
-              ...styles.Avatar.image,
+              ...styles.image,
+              borderRadius: size / 2,
               width: size,
               height: size,
             }}
             source={{ uri: image }}
             accessibilityLabel="initials"
             resizeMethod="resize"
+            onError={this.setError}
           />
         ) : (
           <View
             style={{
-              ...style,
-              backgroundColor: '#EBEBEB',
+              ...styles.fallback,
+
               borderRadius: size / 2,
               width: size,
               height: size,
-              justifyContent: 'center',
-              alignItems: 'center',
             }}
           >
-            <Text>{initials}</Text>
+            <Text style={
+              styles.fallbackText
+            }>{initials}</Text>
           </View>
         )}
       </View>
