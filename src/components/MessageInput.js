@@ -74,7 +74,7 @@ class MessageInput extends PureComponent {
   };
 
   render() {
-    const styles = buildStylesheet('messageInput', this.props.styles);
+    const styles = buildStylesheet('MessageInput', this.props.styles);
 
     return (
       <React.Fragment>

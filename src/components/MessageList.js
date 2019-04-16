@@ -205,7 +205,7 @@ class MessageList extends PureComponent {
       <React.Fragment>
         <FlatList
           ref="flatlist"
-          style={{ flex: 1, flexGrow: 1 }}
+          style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
           data={messagesWithGroupPositions}
           onScroll={this.handleScroll}
           onEndReached={this.props.loadMore}

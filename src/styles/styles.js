@@ -5,8 +5,11 @@ import { defaultsDeep } from 'lodash-es';
 export const COLOR_PRIMARY = 'magenta';
 export const COLOR_SECONDARY = '#111';
 export const BORDER_RADIUS = 16;
+export const BORDER_RADIUS_S = 2;
 
 export const COLOR_TEXT_LIGHT = 'white';
+export const COLOR_TEXT_DARK = 'rgba(0,0,0,1)';
+export const COLOR_TEXT_GREY = 'rgba(0,0,0,0.5)';
 
 export const BASE_FONT_SIZE = 16;
 
@@ -45,7 +48,92 @@ export const styles = {
     },
   }),
 
-  messageInput: StyleSheet.create({
+  MessageSimpleAvatar: StyleSheet.create({
+    left: {
+      marginRight: 8,
+    },
+    right: {
+      marginLeft: 8,
+    },
+  }),
+
+  MessageSimpleContent: StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      maxWidth: 250,
+    },
+    left: {
+      justifyContent: 'flex-start',
+    },
+    right: {
+      justifyContent: 'flex-end',
+    },
+    metaContainer: {
+      marginTop: 2,
+    },
+    metaText: {
+      fontSize: 11,
+      color: COLOR_TEXT_GREY,
+    },
+  }),
+
+  MessageSimpleText: StyleSheet.create({
+    container: {
+      borderBottomLeftRadius: BORDER_RADIUS,
+      borderBottomRightRadius: BORDER_RADIUS,
+      borderTopLeftRadius: BORDER_RADIUS,
+      borderTopRightRadius: BORDER_RADIUS,
+      marginTop: 2,
+      padding: 5,
+      paddingLeft: 8,
+      paddingRight: 8,
+    },
+    text: {
+      fontSize: 15,
+      lineHeight: 20,
+    },
+    left: {
+      alignSelf: 'flex-start',
+      borderWidth: 0.5,
+      borderColor: 'rgba(0,0,0,0.08)',
+    },
+    right: {
+      alignSelf: 'flex-end',
+      backgroundColor: '#ebebeb',
+    },
+    rightSingle: {
+      borderBottomRightRadius: BORDER_RADIUS_S,
+    },
+    rightTop: {
+      borderBottomRightRadius: BORDER_RADIUS_S,
+    },
+    rightMiddle: {
+      borderBottomRightRadius: BORDER_RADIUS_S,
+      borderTopRightRadius: BORDER_RADIUS_S,
+    },
+    rightBottom: {
+      borderBottomRightRadius: BORDER_RADIUS_S,
+      borderTopRightRadius: BORDER_RADIUS_S,
+    },
+    leftSingle: {
+      borderBottomLeftRadius: BORDER_RADIUS_S,
+    },
+    leftTop: {
+      borderBottomLeftRadius: BORDER_RADIUS_S,
+    },
+    leftMiddle: {
+      borderBottomLeftRadius: BORDER_RADIUS_S,
+      borderTopLeftRadius: BORDER_RADIUS_S,
+    },
+    leftBottom: {
+      borderBottomLeftRadius: BORDER_RADIUS_S,
+      borderTopLeftRadius: BORDER_RADIUS_S,
+    },
+  }),
+
+  // TODO: Look into weird resizing if focussed
+  MessageInput: StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'row',
@@ -62,6 +150,7 @@ export const styles = {
     },
     sendButton: {},
   }),
+
   Card: StyleSheet.create({
     footer: {
       display: 'flex',
@@ -71,67 +160,6 @@ export const styles = {
       padding: 10,
     },
   }),
-  Message: StyleSheet.create({
-    container: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'flex-end',
-    },
-  }),
-  MessageText: StyleSheet.create({
-    container: {
-      flex: 1,
-      borderBottomLeftRadius: BORDER_RADIUS,
-      borderBottomRightRadius: BORDER_RADIUS,
-      borderTopLeftRadius: BORDER_RADIUS,
-      borderTopRightRadius: BORDER_RADIUS,
-      margin: 1,
-      padding: 5,
-    },
-    text: {
-      flex: 1,
-      fontSize: 15,
-      lineHeight: 20,
-    },
-    left: {
-      marginLeft: 8,
-      borderWidth: 0.5,
-      borderColor: '#cecece',
-    },
-    right: {
-      marginRight: 8,
-      backgroundColor: '#ebebeb',
-    },
-    rightSingle: {
-      borderBottomRightRadius: 0,
-    },
-    rightTop: {
-      borderBottomRightRadius: 0,
-    },
-    rightMiddle: {
-      borderBottomRightRadius: 0,
-      borderTopRightRadius: 0,
-    },
-    rightBottom: {
-      borderBottomRightRadius: 0,
-      borderTopRightRadius: 0,
-    },
-    leftSingle: {
-      borderBottomLeftRadius: 0,
-    },
-    leftTop: {
-      borderBottomLeftRadius: 0,
-    },
-    leftMiddle: {
-      borderBottomLeftRadius: 0,
-      borderTopLeftRadius: 0,
-    },
-    leftBottom: {
-      borderBottomLeftRadius: 0,
-      borderTopLeftRadius: 0,
-    },
-  }),
-
   MessageNotification: StyleSheet.create({
     container: {
       display: 'flex',

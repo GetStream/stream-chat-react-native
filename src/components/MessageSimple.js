@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
+import moment from 'moment';
 import { styles, buildStylesheet } from '../styles/styles.js';
 import { Attachment } from './Attachment';
 import { Avatar } from './Avatar';
@@ -18,8 +19,24 @@ export class MessageSimple extends React.PureComponent {
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
     );
+
+    const pos = isMyMessage(message) ? 'right' : 'left';
+
+    const styles = buildStylesheet('MessageSimpleContent', style);
+
+    const showTime =
+      message.groupPosition[0] === 'single' ||
+      message.groupPosition[0] === 'bottom'
+        ? true
+        : false;
+
     return (
-      <View style={{ display: 'flex', flexDirection: 'column', maxWidth: 250 }}>
+      <View
+        style={{
+          ...styles.container,
+          ...styles[pos],
+        }}
+      >
         {hasAttachment
           ? message.attachments.map((attachment, index) => (
               <Attachment
@@ -29,19 +46,34 @@ export class MessageSimple extends React.PureComponent {
             ))
           : false}
         <MessageText message={message} isMyMessage={isMyMessage} />
+        {showTime ? (
+          <View style={styles.metaContainer}>
+            <Text style={{ ...styles.metaText, textAlign: pos }}>
+              {moment(message.created_at).format('h:mmA')}
+            </Text>
+          </View>
+        ) : null}
       </View>
     );
   };
 
   messageAvatarContainer = () => {
-    const { message } = this.props;
+    const { message, isMyMessage, style } = this.props;
+
+    const pos = isMyMessage(message) ? 'right' : 'left';
+    const styles = buildStylesheet('MessageSimpleAvatar', style);
+
     const showAvatar =
       message.groupPosition[0] === 'single' ||
       message.groupPosition[0] === 'bottom'
         ? true
         : false;
     return (
-      <View style={{}}>
+      <View
+        style={{
+          ...styles[pos],
+        }}
+      >
         {showAvatar ? (
           <Avatar
             image={message.user.image}
@@ -101,7 +133,7 @@ class MessageText extends React.PureComponent {
       this.capitalize(message.groupPosition[0]);
 
     if (!message.text) return false;
-    const styles = buildStylesheet('MessageText', style);
+    const styles = buildStylesheet('MessageSimpleText', style);
     return (
       <View
         style={{

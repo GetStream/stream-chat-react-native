@@ -16,7 +16,8 @@ chatClient.setUser(
   {
     id: 'billowing-firefly-8',
     name: 'Billowing firefly',
-    image: 'https://cdn.pixabay.com/photo/2012/04/13/21/07/user-33638__340.png',
+    image:
+      'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
   },
   userToken,
 );
@@ -31,7 +32,7 @@ export default class App extends React.Component {
       <SafeAreaView>
         <Chat client={chatClient}>
           <Channel client={chatClient} channel={channel}>
-            <View style={{ display: 'flex', height: '100%', padding: 10 }}>
+            <View style={{ display: 'flex', height: '100%' }}>
               <MessageList />
               <MessageInput />
             </View>
