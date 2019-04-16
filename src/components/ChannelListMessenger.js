@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { ChannelPreview } from './ChannelPreview';
-import { ChannelPreviewLastMessage } from './ChannelPreviewLastMessage';
+import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { withChatContext } from '../context';
 import { FlatList } from 'react-native-gesture-handler';
 
@@ -21,7 +21,7 @@ class ChannelListMessenger extends PureComponent {
       }),
       PropTypes.object,
     ]).isRequired,
-    /** The Preview to use, defaults to ChannelPreviewLastMessage */
+    /** The Preview to use, defaults to ChannelPreviewMessenger */
     Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 
     /** The loading indicator to use */
@@ -29,7 +29,7 @@ class ChannelListMessenger extends PureComponent {
   };
 
   static defaultProps = {
-    Preview: ChannelPreviewLastMessage,
+    Preview: ChannelPreviewMessenger,
     LoadingIndicator: <Text>Loading Channels</Text>,
   };
 

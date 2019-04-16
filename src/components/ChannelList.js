@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { ChannelPreviewLastMessage } from './ChannelPreviewLastMessage';
+import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { LoadingIndicator } from './LoadingIndicator';
 import { withChatContext } from '../context';
 import { ChannelListMessenger } from './ChannelListMessenger';
@@ -21,16 +21,17 @@ class ChannelList extends PureComponent {
       }),
       PropTypes.object,
     ]).isRequired,
-    /** The Preview to use, defaults to ChannelPreviewLastMessage */
+    /** The Preview to use, defaults to ChannelPreviewMessenger */
     Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 
     /** The loading indicator to use */
     LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    onSelect: PropTypes.func
   };
 
   static defaultProps = {
-    Preview: ChannelPreviewLastMessage,
+    Preview: ChannelPreviewMessenger,
     LoadingIndicator,
     List: ChannelListMessenger,
   };
@@ -86,8 +87,7 @@ class ChannelList extends PureComponent {
       closeMenu: this.closeMenu,
     };
     const List = this.props.List;
-    const props = {...this.props};
-    props.setActiveChannel = props.onSelect;
+    const props = {...this.props, setActiveChannel: this.props.onSelect};
 
     return (
       <React.Fragment>
