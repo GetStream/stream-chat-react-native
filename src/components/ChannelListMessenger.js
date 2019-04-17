@@ -6,7 +6,6 @@ import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { withChatContext } from '../context';
 import { FlatList } from 'react-native-gesture-handler';
 
-
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open
  * @example ./examples/ChannelList.md
@@ -38,8 +37,8 @@ class ChannelListMessenger extends PureComponent {
     return <Loader isLoading={true} />;
   };
 
-  renderChannels = () =>
-    <FlatList 
+  renderChannels = () => (
+    <FlatList
       data={this.props.channels}
       renderItem={({ item: channel }) => {
         return (
@@ -54,6 +53,7 @@ class ChannelListMessenger extends PureComponent {
       }}
       keyExtractor={(item, index) => item.cid}
     />
+  );
 
   render() {
     if (this.props.error) {
@@ -61,9 +61,7 @@ class ChannelListMessenger extends PureComponent {
     } else if (this.props.loading) {
       return <Text>Loading Channels</Text>;
     } else {
-      return (
-        this.renderChannels()
-      );
+      return this.renderChannels();
     }
   }
 }

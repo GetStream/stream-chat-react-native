@@ -184,7 +184,13 @@ class MessageList extends PureComponent {
       return <DateSeparator message={message} />;
     }
 
-    return <Message message={message} Message={MessageSimple} />;
+    return (
+      <Message
+        onThreadSelect={this.props.onThreadSelect}
+        message={message}
+        Message={MessageSimple}
+      />
+    );
   };
 
   handleScroll = (event) => {
@@ -215,7 +221,7 @@ class MessageList extends PureComponent {
           }
           renderItem={this.renderItem}
           maintainVisibleContentPosition={{
-            minIndexForVisible: 2,
+            minIndexForVisible: 1,
             autoscrollToTopThreshold: 10,
           }}
         />
