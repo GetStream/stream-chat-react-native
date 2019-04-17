@@ -1,11 +1,12 @@
-import React from 'react';
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import React, { PureComponent } from 'react';
+import { StyleSheet, View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 import { Chat } from './src/components/Chat';
 import { Channel } from './src/components/Channel';
 import { StreamChat } from 'stream-chat';
 import { MessageList } from './src/components/MessageList';
 import { MessageInput } from './src/components/MessageInput';
 import { ChannelList } from './src/components/ChannelList';
+import { Thread } from './src/components/Thread';
 import { ChannelPreviewMessenger } from './src/components/ChannelPreviewMessenger';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -33,7 +34,7 @@ const channels = chatClient.queryChannels(filters, sort, {
   subscribe: true,
 });
 
-class ChannelListScreen extends React.Component {
+class ChannelListScreen extends PureComponent {
   render() {
     return (
       <SafeAreaView>
@@ -58,11 +59,7 @@ class ChannelListScreen extends React.Component {
   }
 }
 
-class ChannelScreen extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
+class ChannelScreen extends PureComponent {
   render() {
     const { navigation } = this.props;
     const channel = navigation.getParam('channel');
@@ -72,8 +69,59 @@ class ChannelScreen extends React.Component {
         <Chat client={chatClient}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
-              <MessageList />
+              <MessageList onThreadSelect={(thread) => {
+                this.props.navigation.navigate(
+                  'Thread',
+                  {
+                    thread,
+                    channel
+                  }
+                );
+              }} />
               <MessageInput />
+            </View>
+          </Channel>
+        </Chat>
+      </SafeAreaView>
+    );
+  }
+}
+
+class ThreadScreen extends PureComponent {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: <Text>Thread</Text>,
+      headerLeft: null,
+      headerRight: (
+        <TouchableOpacity
+          onPress={() => {navigation.goBack()}}
+          style={{
+            backgroundColor: '#ebebeb',
+            width: 30,
+            height: 30,
+            marginRight: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Text>X</Text>
+        </TouchableOpacity>
+      ),
+    };
+  };
+
+  render () {
+    const { navigation } = this.props;
+    const thread = navigation.getParam('thread');
+    const channel = navigation.getParam('channel');
+
+    return (
+      <SafeAreaView>
+        <Chat client={chatClient}>
+          <Channel client={chatClient} channel={channel} thread={thread}>
+            <View style={{ display: 'flex', height: '100%' }}>
+              <Thread thread={thread}></Thread>
             </View>
           </Channel>
         </Chat>
@@ -99,6 +147,9 @@ const RootStack = createStackNavigator(
     Channel: {
       screen: ChannelScreen,
     },
+    Thread: {
+      screen: ThreadScreen
+    }
   },
   {
     initialRouteName: 'ChannelList',
