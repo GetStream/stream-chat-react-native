@@ -91,32 +91,40 @@ class ThreadInner extends React.PureComponent {
 
     const read = {};
     return (
-        <React.Fragment>
-          <Message
-            message={this.props.thread}
-            initialMessage
-            threadList
-            Message={this.props.Message}
-            style={{ container: { paddingLeft: 10, paddingRight: 10, paddingTop: 10 } }}
-            {...this.props}
-          />
-          <View style={{ padding: 20, backgroundColor: '#F4F9FF', margin: 10, borderRadius: 4, display: 'flex', alignItems: 'center' }}>
-            <Text>Start of a new thread</Text>
-          </View>
-          <MessageList
-            messages={this.props.threadMessages}
-            read={read}
-            threadList
-            loadMore={this.props.loadMoreThread}
-            hasMore={this.props.threadHasMore}
-            loadingMore={this.props.threadLoadingMore}
-            Message={this.props.Message}
-          />
-          <MessageInput
-            parent={this.props.thread}
-            focus={this.props.autoFocus}
-          />
-        </React.Fragment>
+      <React.Fragment>
+        <Message
+          message={this.props.thread}
+          initialMessage
+          threadList
+          Message={this.props.Message}
+          style={{
+            container: { paddingLeft: 10, paddingRight: 10, paddingTop: 10 },
+          }}
+          {...this.props}
+        />
+        <View
+          style={{
+            padding: 20,
+            backgroundColor: '#F4F9FF',
+            margin: 10,
+            borderRadius: 4,
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Text>Start of a new thread</Text>
+        </View>
+        <MessageList
+          messages={this.props.threadMessages}
+          read={read}
+          threadList
+          loadMore={this.props.loadMoreThread}
+          hasMore={this.props.threadHasMore}
+          loadingMore={this.props.threadLoadingMore}
+          Message={this.props.Message}
+        />
+        <MessageInput parent={this.props.thread} focus={this.props.autoFocus} />
+      </React.Fragment>
     );
   }
 }

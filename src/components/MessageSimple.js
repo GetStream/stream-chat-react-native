@@ -16,7 +16,7 @@ export class MessageSimple extends React.PureComponent {
 
   openThread = () => {
     this.props.onThreadSelect(this.props.message);
-  }
+  };
 
   messageContentContainer = () => {
     const { message, isMyMessage, style } = this.props;
@@ -52,7 +52,9 @@ export class MessageSimple extends React.PureComponent {
         <MessageText message={message} isMyMessage={isMyMessage} />
         {!this.props.threadList && message.reply_count !== 0 && (
           <TouchableOpacity onPress={this.openThread} style={{ padding: 5 }}>
-            <Text style={{ color: '#006CFF' }}>{message.reply_count} Replies</Text>
+            <Text style={{ color: '#006CFF' }}>
+              {message.reply_count} Replies
+            </Text>
           </TouchableOpacity>
         )}
         {showTime ? (

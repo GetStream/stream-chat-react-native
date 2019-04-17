@@ -31,7 +31,7 @@ class MessageInput extends PureComponent {
     try {
       this.props.sendMessage({
         text: this.state.text,
-        parent: this.props.parent
+        parent: this.props.parent,
       });
       this.setState({ text: '' });
     } catch (err) {

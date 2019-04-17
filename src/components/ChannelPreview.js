@@ -61,12 +61,11 @@ export class ChannelPreview extends PureComponent {
   getLatestMessage = () => {
     const { channel } = this.props;
 
-    const message =
-      channel.state.messages[channel.state.messages.length - 1];
+    const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
       text: '',
-      created_at: ''
+      created_at: '',
     };
 
     if (!message) {
@@ -88,13 +87,13 @@ export class ChannelPreview extends PureComponent {
       latestMessage.text = 'Empty message...';
     }
 
-    if (Moment(message.created_at).isSame(new Date(), "day"))
+    if (Moment(message.created_at).isSame(new Date(), 'day'))
       latestMessage.created_at = Moment(message.created_at).format('HH:MM A');
     else {
       latestMessage.created_at = Moment(message.created_at).format('DD/MM/YY');
     }
 
-    return latestMessage
+    return latestMessage;
   };
 
   render() {

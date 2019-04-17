@@ -1,5 +1,11 @@
 import React, { PureComponent } from 'react';
-import { StyleSheet, View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import { Chat } from './src/components/Chat';
 import { Channel } from './src/components/Channel';
 import { StreamChat } from 'stream-chat';
@@ -44,12 +50,9 @@ class ChannelListScreen extends PureComponent {
               channels={channels}
               Preview={ChannelPreviewMessenger}
               onSelect={(channel) => {
-                this.props.navigation.navigate(
-                  'Channel',
-                  {
-                    channel
-                  }
-                );
+                this.props.navigation.navigate('Channel', {
+                  channel,
+                });
               }}
             />
           </View>
@@ -69,15 +72,14 @@ class ChannelScreen extends PureComponent {
         <Chat client={chatClient}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
-              <MessageList onThreadSelect={(thread) => {
-                this.props.navigation.navigate(
-                  'Thread',
-                  {
+              <MessageList
+                onThreadSelect={(thread) => {
+                  this.props.navigation.navigate('Thread', {
                     thread,
-                    channel
-                  }
-                );
-              }} />
+                    channel,
+                  });
+                }}
+              />
               <MessageInput />
             </View>
           </Channel>
@@ -94,7 +96,9 @@ class ThreadScreen extends PureComponent {
       headerLeft: null,
       headerRight: (
         <TouchableOpacity
-          onPress={() => {navigation.goBack()}}
+          onPress={() => {
+            navigation.goBack();
+          }}
           style={{
             backgroundColor: '#ebebeb',
             width: 30,
@@ -102,7 +106,7 @@ class ThreadScreen extends PureComponent {
             marginRight: 20,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
           }}
         >
           <Text>X</Text>
@@ -111,7 +115,7 @@ class ThreadScreen extends PureComponent {
     };
   };
 
-  render () {
+  render() {
     const { navigation } = this.props;
     const thread = navigation.getParam('thread');
     const channel = navigation.getParam('channel');
@@ -121,7 +125,7 @@ class ThreadScreen extends PureComponent {
         <Chat client={chatClient}>
           <Channel client={chatClient} channel={channel} thread={thread}>
             <View style={{ display: 'flex', height: '100%' }}>
-              <Thread thread={thread}></Thread>
+              <Thread thread={thread} />
             </View>
           </Channel>
         </Chat>
@@ -148,12 +152,12 @@ const RootStack = createStackNavigator(
       screen: ChannelScreen,
     },
     Thread: {
-      screen: ThreadScreen
-    }
+      screen: ThreadScreen,
+    },
   },
   {
     initialRouteName: 'ChannelList',
-  }
+  },
 );
 
 const AppContainer = createAppContainer(RootStack);

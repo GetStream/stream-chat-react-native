@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { View, Button, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import {buildStylesheet} from '../styles/styles'
+import { buildStylesheet } from '../styles/styles';
 
 export class MessageNotification extends PureComponent {
   static propTypes = {
