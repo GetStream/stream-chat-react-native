@@ -51,7 +51,7 @@ export class Avatar extends React.PureComponent {
     const styles = buildStylesheet('Avatar', style);
     const initials = this.getInitials(name);
     return (
-      <View style={{ display: 'flex', alignItems: 'center' }}>
+      <View style={{ display: 'flex', alignItems: 'center', ...styles.container }}>
         {image && !this.state.imageError ? (
           <Image
             style={{
@@ -69,7 +69,6 @@ export class Avatar extends React.PureComponent {
           <View
             style={{
               ...styles.fallback,
-
               borderRadius: size / 2,
               width: size,
               height: size,

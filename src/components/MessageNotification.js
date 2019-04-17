@@ -2,7 +2,11 @@ import React, { PureComponent } from 'react';
 import { View, Button, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
+<<<<<<< HEAD
 import { buildStylesheet, styles } from '../styles/styles';
+=======
+import {buildStylesheet} from '../styles/styles'
+>>>>>>> master
 
 export class MessageNotification extends PureComponent {
   static propTypes = {
