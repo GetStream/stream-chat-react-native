@@ -4,6 +4,8 @@ import moment from 'moment';
 import { styles, buildStylesheet } from '../styles/styles.js';
 import { Attachment } from './Attachment';
 import { Avatar } from './Avatar';
+
+import { renderText } from '../utils';
 import PropTypes from 'prop-types';
 
 export class MessageSimple extends React.PureComponent {
@@ -141,7 +143,7 @@ class MessageText extends React.PureComponent {
           ...styles[groupStyles],
         }}
       >
-        <Text style={styles.text}>{message.text.trim()}</Text>
+        <Text style={styles.text}>{renderText(message.text)}</Text>
       </View>
     );
   }

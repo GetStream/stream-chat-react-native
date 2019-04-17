@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 import { defaultsDeep } from 'lodash-es';
 
 // set variables
-export const COLOR_PRIMARY = 'magenta';
+export const COLOR_PRIMARY = '#006cff';
 export const COLOR_SECONDARY = '#111';
 export const BORDER_RADIUS = 16;
 export const BORDER_RADIUS_S = 2;
@@ -152,6 +152,12 @@ export const styles = {
     },
     pictureButton: {
       marginRight: 8,
+    },
+  }),
+  HyperLink: StyleSheet.create({
+    title: {
+      color: COLOR_PRIMARY,
+      fontWeight: 'bold',
     },
   }),
 

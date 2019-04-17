@@ -1,33 +1,35 @@
 import anchorme from 'anchorme';
+import React, { Component } from 'react';
 import { truncate } from 'lodash-es';
+import { HyperLink } from './components/HyperLink';
 
 export const renderText = (text) => {
-  // take the @ mentions and turn them into markdown?
-  // translate links
   if (!text) {
     return;
   }
 
-  const urls = anchorme(text, {
-    list: true,
-  });
-  for (const urlInfo of urls) {
-    const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
-      length: 20,
-      omission: '...',
-    });
-    const mkdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
-    text = message.replace(urlInfo.raw, mkdown);
-  }
+  const tokens = text.split(' ');
+  const rendered = [];
 
-  return (
-    <ReactMarkdown
-      allowedTypes={allowed}
-      source={message}
-      linkTarget="_blank"
-      plugins={[]}
-      escapeHtml={true}
-      skipHtml={false}
-    />
-  );
+  for (let i = 0; i < tokens.length; i++) {
+    // console.log();
+    if (anchorme.validate.url(tokens[i])) {
+      const urlInfo = anchorme(tokens[i], { list: true })[0];
+      const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
+        length: 20,
+        omission: '...',
+      });
+      rendered.push(
+        <HyperLink
+          url={urlInfo.protocol + urlInfo.encoded}
+          title={displayLink}
+          key={`link-${i}-${urlInfo.encoded}`}
+        />,
+        ' ',
+      );
+    } else {
+      rendered.push(tokens[i] + ' ');
+    }
+  }
+  return rendered;
 };

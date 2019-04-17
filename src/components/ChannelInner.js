@@ -430,7 +430,7 @@ export class ChannelInner extends PureComponent {
           <KeyboardAvoidingView
             behavior="padding"
             enabled
-            keyboardVerticalOffset="20"
+            keyboardVerticalOffset="60"
           >
             {this.renderComponent()}
           </KeyboardAvoidingView>
