@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import { styles, buildStylesheet } from '../styles/styles.js';
 import { Attachment } from './Attachment';
@@ -9,6 +9,10 @@ import { renderText } from '../utils';
 import PropTypes from 'prop-types';
 
 export class MessageSimple extends React.PureComponent {
+  openThread = () => {
+    this.props.onThreadSelect(this.props.message);
+  };
+
   messageContentContainer = () => {
     const { message, isMyMessage, style } = this.props;
     const hasAttachment = Boolean(
@@ -41,6 +45,13 @@ export class MessageSimple extends React.PureComponent {
             ))
           : false}
         <MessageText message={message} isMyMessage={isMyMessage} />
+        {!this.props.threadList && message.reply_count !== 0 && (
+          <TouchableOpacity onPress={this.openThread} style={{ padding: 5 }}>
+            <Text style={{ color: '#006CFF' }}>
+              {message.reply_count} Replies
+            </Text>
+          </TouchableOpacity>
+        )}
         {showTime ? (
           <View style={styles.metaContainer}>
             <Text style={{ ...styles.metaText, textAlign: pos }}>

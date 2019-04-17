@@ -30,13 +30,13 @@ export class Avatar extends React.PureComponent {
 
   state = {
     imageError: false,
-  }
+  };
 
   setError = () => {
     this.setState({
       imageError: true,
-    })
-  }
+    });
+  };
 
   getInitials = (name) =>
     name
@@ -51,7 +51,9 @@ export class Avatar extends React.PureComponent {
     const styles = buildStylesheet('Avatar', style);
     const initials = this.getInitials(name);
     return (
-      <View style={{ display: 'flex', alignItems: 'center', ...styles.container }}>
+      <View
+        style={{ display: 'flex', alignItems: 'center', ...styles.container }}
+      >
         {image && !this.state.imageError ? (
           <Image
             style={{
@@ -74,9 +76,7 @@ export class Avatar extends React.PureComponent {
               height: size,
             }}
           >
-            <Text style={
-              styles.fallbackText
-            }>{initials}</Text>
+            <Text style={styles.fallbackText}>{initials}</Text>
           </View>
         )}
       </View>

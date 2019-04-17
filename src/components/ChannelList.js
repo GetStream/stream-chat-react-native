@@ -27,7 +27,7 @@ class ChannelList extends PureComponent {
     /** The loading indicator to use */
     LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    onSelect: PropTypes.func
+    onSelect: PropTypes.func,
   };
 
   static defaultProps = {
@@ -47,7 +47,7 @@ class ChannelList extends PureComponent {
     const promise = thing && typeof thing.then === 'function';
     return promise;
   };
-  
+
   async componentDidMount() {
     try {
       let channelQueryResponse = this.props.channels;
@@ -87,11 +87,11 @@ class ChannelList extends PureComponent {
       closeMenu: this.closeMenu,
     };
     const List = this.props.List;
-    const props = {...this.props, setActiveChannel: this.props.onSelect};
+    const props = { ...this.props, setActiveChannel: this.props.onSelect };
 
     return (
       <React.Fragment>
-          <List {...props} {...this.state} {...context} />
+        <List {...props} {...this.state} {...context} />
       </React.Fragment>
     );
   }
