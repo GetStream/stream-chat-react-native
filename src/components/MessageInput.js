@@ -78,6 +78,12 @@ class MessageInput extends PureComponent {
     return (
       <React.Fragment>
         <View style={styles.container}>
+          <TouchableOpacity
+            style={styles.pictureButton}
+            title="Pick an image from camera roll"
+          >
+            <Image source={require('../images/icons/picture.png')} />
+          </TouchableOpacity>
           <TextInput
             style={styles.inputBox}
             placeholder="Write your message"

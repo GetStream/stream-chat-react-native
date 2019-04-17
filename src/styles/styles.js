@@ -135,22 +135,23 @@ export const styles = {
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 10,
+      paddingLeft: 10,
+      paddingRight: 10,
       minHeight: 56,
       margin: 10,
       borderRadius: 10,
       backgroundColor: 'rgba(0,0,0,0.05)',
-      borderWidth: 1,
-      borderColor: 'red',
     },
     inputBox: {
       maxHeight: 60,
+      marginTop: -5,
       flex: 1,
-      borderWidth: 1,
-      borderColor: 'green',
     },
     sendButton: {
       marginLeft: 8,
+    },
+    pictureButton: {
+      marginRight: 8,
     },
   }),
 
