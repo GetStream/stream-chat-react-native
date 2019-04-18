@@ -193,6 +193,11 @@ export class ChannelInner extends PureComponent {
     });
   };
 
+  setEditingState = (message) => {
+    this.setState({ 
+      editing: message
+     });
+  }
   updateMessage = (updatedMessage, extraState) => {
     const channel = this.props.channel;
 
@@ -210,6 +215,11 @@ export class ChannelInner extends PureComponent {
     this.setState({ messages: channel.state.messages, ...extraState });
   };
 
+  clearEditingState = () => {
+    this.setState({
+      editing: false
+    });
+  }
   removeMessage = (message) => {
     const channel = this.props.channel;
     channel.state.removeMessage(message);
@@ -399,9 +409,9 @@ export class ChannelInner extends PureComponent {
     sendMessage: this.sendMessage,
     retrySendMessage: this.retrySendMessage,
     resetNotification: this.resetNotification,
-
-    loadMore: this.loadMore,
     listenToScroll: this.listenToScroll,
+    setEditingState: this.setEditingState,
+    clearEditingState: this.clearEditingState,
 
     // thread related
     openThread: this.openThread,
@@ -430,7 +440,7 @@ export class ChannelInner extends PureComponent {
           <KeyboardAvoidingView
             behavior="padding"
             enabled
-            keyboardVerticalOffset="60"
+            keyboardVerticalOffset="80"
           >
             {this.renderComponent()}
           </KeyboardAvoidingView>

@@ -15,6 +15,7 @@ class MessageList extends PureComponent {
 
     this.state = {
       newMessagesNotification: false,
+      activeMessageId: false
     };
   }
 
@@ -189,6 +190,10 @@ class MessageList extends PureComponent {
         onThreadSelect={this.props.onThreadSelect}
         message={message}
         Message={MessageSimple}
+        onMessageTouch={this.onMessageTouch}
+        activeMessageId={this.state.activeMessageId}
+        setEditingState={this.props.setEditingState}
+        editing={this.props.editing}
       />
     );
   };
@@ -200,6 +205,10 @@ class MessageList extends PureComponent {
 
     this.setState({ yOffset });
   };
+
+  onMessageTouch = (id) => {
+    this.setState({ activeMessageId: id });
+  }
 
   render() {
     const messagesWithDates = this.insertDates(this.props.messages);

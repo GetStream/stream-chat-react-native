@@ -34,6 +34,11 @@ chatClient.setUser(
   userToken,
 );
 
+const channel = chatClient.channel('messaging', 'godevs', {
+  // add as many custom fields as you'd like
+  name: 'Talk about Go',
+});
+
 const filters = { type: 'messaging' };
 const sort = { last_message_at: -1 };
 const channels = chatClient.queryChannels(filters, sort, {
@@ -68,23 +73,23 @@ class ChannelScreen extends PureComponent {
     const channel = navigation.getParam('channel');
 
     return (
-      <SafeAreaView>
-        <Chat client={chatClient}>
-          <Channel client={chatClient} channel={channel}>
-            <View style={{ display: 'flex', height: '100%' }}>
-              <MessageList
-                onThreadSelect={(thread) => {
-                  this.props.navigation.navigate('Thread', {
-                    thread,
-                    channel,
-                  });
-                }}
-              />
-              <MessageInput />
-            </View>
-          </Channel>
-        </Chat>
-      </SafeAreaView>
+        <SafeAreaView>
+          <Chat client={chatClient}>
+            <Channel client={chatClient} channel={channel}>
+              <View style={{ display: 'flex', height: '100%' }}>
+                <MessageList
+                  onThreadSelect={(thread) => {
+                    this.props.navigation.navigate('Thread', {
+                      thread,
+                      channel,
+                    });
+                  }}
+                />
+                <MessageInput />
+              </View>
+            </Channel>
+          </Chat>
+        </SafeAreaView>
     );
   }
 }
@@ -156,7 +161,7 @@ const RootStack = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'ChannelList',
+    initialRouteName: 'ChannelList'
   },
 );
 

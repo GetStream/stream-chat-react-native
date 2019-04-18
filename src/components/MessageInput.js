@@ -17,11 +17,30 @@ class MessageInput extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
+      text: this.props.editing ? this.props.editing.text : '',
     };
   }
 
   static propTypes = {};
+
+  componentDidMount() {
+    if (this.props.editing) this.inputBox.focus();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.editing) this.inputBox.focus();
+    if (this.props.editing && prevProps.editing && this.props.editing.id === prevProps.editing.id) {
+      return;
+    }
+
+    if (this.props.editing && !prevProps.editing) {
+      this.setState({ text: this.props.editing.text });
+    }
+
+    if (this.props.editing && prevProps.editing && this.props.editing.id !== prevProps.editing.id) {
+      this.setState({ text: this.props.editing.text });
+    }
+  }
 
   sendMessage = async () => {
     if (!this.state.text) return;
@@ -36,6 +55,20 @@ class MessageInput extends PureComponent {
       console.log('Fialed');
     }
   };
+
+  updateMessage = async () => {
+    try {
+      await this.props.client.updateMessage({
+        ...this.props.editing,
+        text: this.state.text
+      });
+
+      this.setState({ text: '' });
+      this.props.clearEditingState();
+    } catch (err) {
+      console.log('Update Failed');
+    }
+  }
 
   handleChange = (text) => {
     this.setState({ text });
@@ -88,17 +121,19 @@ class MessageInput extends PureComponent {
             <Image source={require('../images/icons/picture.png')} />
           </TouchableOpacity>
           <TextInput
+            ref={o => this.inputBox = o}
             style={styles.inputBox}
             placeholder="Write your message"
             onChangeText={this.handleChange}
             multiline={true}
             numberOfLines={3}
             value={this.state.text}
+            multiline
           />
           <TouchableOpacity
             style={styles.sendButton}
             title="Pick an image from camera roll"
-            onPress={this.sendMessage}
+            onPress={this.props.editing ? this.updateMessage : this.sendMessage}
           >
             <Image source={require('../images/icons/send.png')} />
           </TouchableOpacity>

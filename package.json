@@ -30,7 +30,7 @@
     "react-art": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-native": "0.57.1",
-    "react-native-svg-uri": "^",
+    "react-native-actionsheet": "^2.4.2",
     "react-native-web": "^0.11.2",
     "react-navigation": "^3.8.1",
     "react-styleguidist": "^9.0.7",

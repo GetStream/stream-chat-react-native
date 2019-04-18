@@ -27,7 +27,7 @@ class Message extends React.Component {
     /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
     groupStyles: PropTypes.array,
     /** Editing, if the message is currently being edited */
-    editing: PropTypes.bool,
+    editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     /** The message rendering component, the Message component delegates its rendering logic to this component */
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     /** Allows you to overwrite the attachment component */
@@ -93,9 +93,9 @@ class Message extends React.Component {
   isMyMessage = (message) => this.props.client.user.id === message.user.id;
   isAdmin = () => this.props.client.user.role === 'admin';
 
-  canEditMessage = (message) => this.isMyMessage(message) || this.isAdmin();
+  canEditMessage = () => this.isMyMessage(this.props.message) || this.isAdmin();
 
-  canDeleteMessage = (message) => this.isMyMessage(message) || this.isAdmin();
+  canDeleteMessage = () => this.isMyMessage(this.props.message) || this.isAdmin();
 
   handleFlag = async (event) => {
     event.preventDefault();
@@ -115,8 +115,7 @@ class Message extends React.Component {
     this.props.setEditingState(this.props.message);
   };
 
-  handleDelete = async (event) => {
-    event.preventDefault();
+  handleDelete = async () => {
     const message = this.props.message;
     const data = await this.props.client.deleteMessage(message.id);
     this.props.updateMessage(data.message);
