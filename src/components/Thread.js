@@ -92,28 +92,28 @@ class ThreadInner extends React.PureComponent {
     const read = {};
     const headerComponent = (
       <React.Fragment>
-        <View
-          style={{
-            padding: 20,
-            backgroundColor: '#F4F9FF',
-            margin: 10,
-            borderRadius: 4,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Text>Start of a new thread</Text>
-        </View>
-        <Message
-          message={this.props.thread}
-          initialMessage
-          threadList
-          Message={this.props.Message}
-          style={{
-            container: { paddingLeft: 10, paddingRight: 10, paddingTop: 10 },
-          }}
-          {...this.props}
-        />
+      <Message
+        message={this.props.thread}
+        initialMessage
+        threadList
+        Message={this.props.Message}
+        style={{
+          container: { paddingLeft: 10, paddingRight: 10, paddingTop: 10 },
+        }}
+        {...this.props}
+      />
+      <View
+        style={{
+          padding: 20,
+          backgroundColor: '#F4F9FF',
+          margin: 10,
+          borderRadius: 4,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <Text>Start of a new thread</Text>
+      </View>
       </React.Fragment>
     );
 

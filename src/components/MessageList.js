@@ -102,7 +102,7 @@ class MessageList extends PureComponent {
     return newMessages;
   };
 
-  getMessageGroupPositions = (m) => {
+  addGroupPositions = (m) => {
     const l = m.length;
     const newMessages = [];
     const messages = [...m];
@@ -212,9 +212,7 @@ class MessageList extends PureComponent {
 
   render() {
     const messagesWithDates = this.insertDates(this.props.messages);
-    const messagesWithGroupPositions = this.getMessageGroupPositions(
-      messagesWithDates,
-    );
+    const messagesWithGroupPositions = this.addGroupPositions(messagesWithDates);
 
     return (
       <React.Fragment>
@@ -223,6 +221,7 @@ class MessageList extends PureComponent {
           style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
           data={messagesWithGroupPositions}
           onScroll={this.handleScroll}
+          ListFooterComponent={this.props.headerComponent}
           onEndReached={this.props.loadMore}
           inverted
           keyExtractor={(item, index) =>
