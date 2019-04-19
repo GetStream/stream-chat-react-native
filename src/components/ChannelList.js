@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { LoadingIndicator } from './LoadingIndicator';

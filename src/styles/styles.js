@@ -61,6 +61,7 @@ export const styles = {
     container: {
       display: 'flex',
       flexDirection: 'column',
+      alignItems: 'flex-start',
       maxWidth: 250,
     },
     left: {
@@ -91,6 +92,9 @@ export const styles = {
     text: {
       fontSize: 15,
       lineHeight: 20,
+    },
+    deletedText: {
+      color: '#A4A4A4',
     },
     left: {
       alignSelf: 'flex-start',
