@@ -1,7 +1,8 @@
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList, Image } from 'react-native';
-import PropTypes from 'prop-types';
+import { View, Text, FlatList } from 'react-native';
 import { withChannelContext } from '../context';
+
+import PropTypes from 'prop-types';
 import Moment from 'moment';
 import { styles } from '../styles/styles.js';
 
@@ -15,7 +16,7 @@ class MessageList extends PureComponent {
 
     this.state = {
       newMessagesNotification: false,
-      activeMessageId: false
+      activeMessageId: false,
     };
   }
 
@@ -60,13 +61,15 @@ class MessageList extends PureComponent {
     }
 
     if (scrollToBottom) {
-      this.refs.flatlist.scrollToIndex({ index: 0 });
+      this.flatList.scrollToIndex({ index: 0 });
     }
 
     // remove the scroll notification if we already scrolled down...
     if (scrollToBottom && this.state.newMessagesNotification) {
       this.setState({ newMessagesNotification: false });
     }
+
+    this.getLastReceived(this.props.messages);
   }
 
   insertDates = (messages) => {
@@ -84,15 +87,18 @@ class MessageList extends PureComponent {
         prevMessageDate = messages[i + 1].created_at.getDay();
       }
 
-      if (i === messages.length - 1) {
-        newMessages.push(message, {
-          type: 'message.date',
-          date: message.created_at,
-        });
+      if (i === 0) {
+        newMessages.push(
+          {
+            type: 'message.date',
+            date: message.created_at,
+          },
+          message,
+        );
       } else if (messageDate !== prevMessageDate) {
         newMessages.push(message, {
           type: 'message.date',
-          date: message.created_at,
+          date: messages[i + 1].created_at,
         });
       } else {
         newMessages.push(message);
@@ -102,7 +108,7 @@ class MessageList extends PureComponent {
     return newMessages;
   };
 
-  addGroupPositions = (m) => {
+  assignGroupPositions = (m) => {
     const l = m.length;
     const newMessages = [];
     const messages = [...m];
@@ -177,7 +183,23 @@ class MessageList extends PureComponent {
     this.setState({
       newMessagesNotification: false,
     });
-    this.refs.flatlist.scrollToIndex({ index: 0 });
+    this.flatList.scrollToIndex({ index: 0 });
+  };
+
+  getLastReceived = (messages) => {
+    const l = messages.length;
+    let lastReceivedId = null;
+    for (let i = l; i > 0; i--) {
+      if (
+        messages[i] !== undefined &&
+        messages[i].status !== undefined &&
+        messages[i].status === 'received'
+      ) {
+        lastReceivedId = messages[i].id;
+        break;
+      }
+    }
+    this.setState({ lastReceivedId: lastReceivedId });
   };
 
   renderItem = ({ item: message }) => {
@@ -190,10 +212,16 @@ class MessageList extends PureComponent {
         onThreadSelect={this.props.onThreadSelect}
         message={message}
         Message={MessageSimple}
+        lastReceivedId={
+          this.state.lastReceivedId === message.id
+            ? this.state.lastReceivedId
+            : null
+        }
         onMessageTouch={this.onMessageTouch}
         activeMessageId={this.state.activeMessageId}
         setEditingState={this.props.setEditingState}
         editing={this.props.editing}
+        threadList={this.props.threadList}
       />
     );
   };
@@ -208,16 +236,18 @@ class MessageList extends PureComponent {
 
   onMessageTouch = (id) => {
     this.setState({ activeMessageId: id });
-  }
+  };
 
   render() {
     const messagesWithDates = this.insertDates(this.props.messages);
-    const messagesWithGroupPositions = this.addGroupPositions(messagesWithDates);
+    const messagesWithGroupPositions = this.assignGroupPositions(
+      messagesWithDates,
+    );
 
     return (
       <React.Fragment>
         <FlatList
-          ref="flatlist"
+          ref={(fl) => (this.flatList = fl)}
           style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
           data={messagesWithGroupPositions}
           onScroll={this.handleScroll}
