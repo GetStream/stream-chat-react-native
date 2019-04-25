@@ -97,6 +97,14 @@ export class ChannelInner extends PureComponent {
 
   componentWillUnmount() {
     this.props.channel.off(this.handleEvent);
+    this.props.client.off('connection.recovered', this.handleEvent);
+
+    this._loadMoreFinishedDebounced.cancel();
+    this._loadMoreThreadFinishedDebounced.cancel();
+    this._markReadThrottled.cancel();
+    this._setStateThrottled.cancel();
+    this._unmounted = true;
+
     // if (this.visibilityListener) {
     //   Visibility.unbind(this.visibilityListener);
     // }
@@ -194,10 +202,10 @@ export class ChannelInner extends PureComponent {
   };
 
   setEditingState = (message) => {
-    this.setState({ 
-      editing: message
-     });
-  }
+    this.setState({
+      editing: message,
+    });
+  };
   updateMessage = (updatedMessage, extraState) => {
     const channel = this.props.channel;
 
@@ -217,9 +225,9 @@ export class ChannelInner extends PureComponent {
 
   clearEditingState = () => {
     this.setState({
-      editing: false
+      editing: false,
     });
-  }
+  };
   removeMessage = (message) => {
     const channel = this.props.channel;
     channel.state.removeMessage(message);

@@ -29,7 +29,11 @@ class MessageInput extends PureComponent {
 
   componentDidUpdate(prevProps) {
     if (this.props.editing) this.inputBox.focus();
-    if (this.props.editing && prevProps.editing && this.props.editing.id === prevProps.editing.id) {
+    if (
+      this.props.editing &&
+      prevProps.editing &&
+      this.props.editing.id === prevProps.editing.id
+    ) {
       return;
     }
 
@@ -37,7 +41,11 @@ class MessageInput extends PureComponent {
       this.setState({ text: this.props.editing.text });
     }
 
-    if (this.props.editing && prevProps.editing && this.props.editing.id !== prevProps.editing.id) {
+    if (
+      this.props.editing &&
+      prevProps.editing &&
+      this.props.editing.id !== prevProps.editing.id
+    ) {
       this.setState({ text: this.props.editing.text });
     }
   }
@@ -57,18 +65,19 @@ class MessageInput extends PureComponent {
   };
 
   updateMessage = async () => {
+    // const {reaction_counts, ...messageWithoutRactionCount} = this.props.editing;
     try {
       await this.props.client.updateMessage({
         ...this.props.editing,
-        text: this.state.text
+        text: this.state.text,
       });
 
       this.setState({ text: '' });
       this.props.clearEditingState();
     } catch (err) {
-      console.log('Update Failed');
+      console.log(err);
     }
-  }
+  };
 
   handleChange = (text) => {
     this.setState({ text });
@@ -121,7 +130,7 @@ class MessageInput extends PureComponent {
             <Image source={require('../images/icons/picture.png')} />
           </TouchableOpacity>
           <TextInput
-            ref={o => this.inputBox = o}
+            ref={(o) => (this.inputBox = o)}
             style={styles.inputBox}
             placeholder="Write your message"
             onChangeText={this.handleChange}
@@ -135,7 +144,11 @@ class MessageInput extends PureComponent {
             title="Pick an image from camera roll"
             onPress={this.props.editing ? this.updateMessage : this.sendMessage}
           >
-            <Image source={require('../images/icons/send.png')} />
+            {this.props.editing ? (
+              <Image source={require('../images/icons/icon_edit.png')} />
+            ) : (
+              <Image source={require('../images/icons/icon_new_message.png')} />
+            )}
           </TouchableOpacity>
         </View>
         {/* <Text style={{ textAlign: 'right', height: 20 }}>

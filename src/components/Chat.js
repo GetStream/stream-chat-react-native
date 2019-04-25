@@ -75,7 +75,7 @@ export class Chat extends PureComponent {
   render() {
     return (
       <ChatContext.Provider value={this.getContext()}>
-          {this.props.children}
+        {this.props.children}
       </ChatContext.Provider>
     );
   }

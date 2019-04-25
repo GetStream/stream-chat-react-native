@@ -33,3 +33,31 @@ export const renderText = (text) => {
   }
   return rendered;
 };
+
+export const emojiData = [
+  {
+    id: 'haha',
+    icon: '😀',
+  },
+  {
+    id: 'love',
+    icon: '😍',
+  },
+  {
+    id: 'sad',
+    icon: '😥',
+  },
+  {
+    id: 'wow',
+    icon: '😳',
+  },
+  {
+    id: 'like',
+    icon: '👍',
+  },
+];
+
+export const capitalize = (s) => {
+  if (typeof s !== 'string') return '';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};

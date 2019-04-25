@@ -95,7 +95,8 @@ class Message extends React.Component {
 
   canEditMessage = () => this.isMyMessage(this.props.message) || this.isAdmin();
 
-  canDeleteMessage = () => this.isMyMessage(this.props.message) || this.isAdmin();
+  canDeleteMessage = () =>
+    this.isMyMessage(this.props.message) || this.isAdmin();
 
   handleFlag = async (event) => {
     event.preventDefault();
@@ -129,7 +130,6 @@ class Message extends React.Component {
     let userExistingReaction = null;
 
     const currentUser = this.props.client.userID;
-
     for (const reaction of this.props.message.own_reactions) {
       // own user should only ever contain the current user id
       // just in case we check to prevent bugs with message updates from breaking reactions
