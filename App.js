@@ -46,6 +46,12 @@ const channels = chatClient.queryChannels(filters, sort, {
 });
 
 class ChannelListScreen extends PureComponent {
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: <Text style={{ fontWeight: 'bold' }}>Channel List</Text>,
+    };
+  };
+
   render() {
     return (
       <SafeAreaView>
@@ -68,28 +74,37 @@ class ChannelListScreen extends PureComponent {
 }
 
 class ChannelScreen extends PureComponent {
+  static navigationOptions = ({ navigation }) => {
+    const channel = navigation.getParam('channel');
+    return {
+      headerTitle: (
+        <Text style={{ fontWeight: 'bold' }}>{channel.data.name}</Text>
+      ),
+    };
+  };
+
   render() {
     const { navigation } = this.props;
     const channel = navigation.getParam('channel');
 
     return (
-        <SafeAreaView>
-          <Chat client={chatClient}>
-            <Channel client={chatClient} channel={channel}>
-              <View style={{ display: 'flex', height: '100%' }}>
-                <MessageList
-                  onThreadSelect={(thread) => {
-                    this.props.navigation.navigate('Thread', {
-                      thread,
-                      channel,
-                    });
-                  }}
-                />
-                <MessageInput />
-              </View>
-            </Channel>
-          </Chat>
-        </SafeAreaView>
+      <SafeAreaView>
+        <Chat client={chatClient}>
+          <Channel client={chatClient} channel={channel}>
+            <View style={{ display: 'flex', height: '100%' }}>
+              <MessageList
+                onThreadSelect={(thread) => {
+                  this.props.navigation.navigate('Thread', {
+                    thread,
+                    channel: channel.id,
+                  });
+                }}
+              />
+              <MessageInput />
+            </View>
+          </Channel>
+        </Chat>
+      </SafeAreaView>
     );
   }
 }
@@ -97,7 +112,7 @@ class ChannelScreen extends PureComponent {
 class ThreadScreen extends PureComponent {
   static navigationOptions = ({ navigation }) => {
     return {
-      headerTitle: <Text>Thread</Text>,
+      headerTitle: <Text style={{ fontWeight: 'bold' }}>Thread</Text>,
       headerLeft: null,
       headerRight: (
         <TouchableOpacity
@@ -112,6 +127,7 @@ class ThreadScreen extends PureComponent {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            borderRadius: 20,
           }}
         >
           <Text>X</Text>
@@ -123,13 +139,27 @@ class ThreadScreen extends PureComponent {
   render() {
     const { navigation } = this.props;
     const thread = navigation.getParam('thread');
-    const channel = navigation.getParam('channel');
+    const channel = chatClient.channel(
+      'messaging',
+      navigation.getParam('channel'),
+    );
 
     return (
       <SafeAreaView>
         <Chat client={chatClient}>
-          <Channel client={chatClient} channel={channel} thread={thread}>
-            <View style={{ display: 'flex', height: '100%' }}>
+          <Channel
+            client={chatClient}
+            channel={channel}
+            thread={thread}
+            dummyProp="DUMMY PROP"
+          >
+            <View
+              style={{
+                display: 'flex',
+                height: '100%',
+                justifyContent: 'flex-start',
+              }}
+            >
               <Thread thread={thread} />
             </View>
           </Channel>
@@ -161,7 +191,7 @@ const RootStack = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'ChannelList'
+    initialRouteName: 'ChannelList',
   },
 );
 

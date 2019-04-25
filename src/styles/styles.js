@@ -61,14 +61,25 @@ export const styles = {
     container: {
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'flex-start',
       maxWidth: 250,
     },
     left: {
+      alignItems: 'flex-start',
       justifyContent: 'flex-start',
     },
     right: {
+      alignItems: 'flex-end',
       justifyContent: 'flex-end',
+    },
+    failed: {
+      padding: 5,
+      borderRadius: 10,
+      backgroundColor: '#EDD8DD',
+    },
+    error: {
+      padding: 5,
+      borderRadius: 10,
+      backgroundColor: '#EDD8DD',
     },
     metaContainer: {
       marginTop: 2,
@@ -104,6 +115,12 @@ export const styles = {
     right: {
       alignSelf: 'flex-end',
       backgroundColor: '#ebebeb',
+    },
+    failed: {
+      backgroundColor: 'transparent',
+    },
+    error: {
+      backgroundColor: 'transparent',
     },
     rightSingle: {
       borderBottomRightRadius: BORDER_RADIUS_S,
