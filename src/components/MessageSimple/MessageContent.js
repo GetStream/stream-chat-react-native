@@ -8,6 +8,7 @@ import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { MessageText } from './MessageText';
 import { MessageReplies } from './MessageReplies';
+import Immutable from 'seamless-immutable';
 
 export class MessageContent extends React.PureComponent {
   constructor(props) {
@@ -81,6 +82,7 @@ export class MessageContent extends React.PureComponent {
       Message,
       handleReaction,
       threadList,
+      retrySendMessage,
     } = this.props;
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
@@ -119,17 +121,22 @@ export class MessageContent extends React.PureComponent {
         </View>
       );
 
+    const contentProps = {
+      style: {
+        ...styles.container,
+        ...styles[pos],
+        ...(styles[message.status] ? styles[message.status] : {}),
+      },
+      onLongPress: this.showActionSheet,
+      activeOpacity: 0.7,
+      disabled: readOnly,
+    };
+
+    if (message.status === 'failed')
+      contentProps.onPress = retrySendMessage.bind(this, Immutable(message));
+
     return (
-      <TouchableOpacity
-        style={{
-          ...styles.container,
-          ...styles[pos],
-          ...(styles[message.status] ? styles[message.status] : {}),
-        }}
-        onLongPress={this.showActionSheet}
-        activeOpacity={0.7}
-        disabled={readOnly}
-      >
+      <TouchableOpacity {...contentProps}>
         {message.status === 'failed' ? (
           <Text>Message failed - try again</Text>
         ) : null}

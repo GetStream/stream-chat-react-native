@@ -7,8 +7,6 @@ import { ChannelContext } from '../context';
 import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
-// import Visibility from 'visibilityjs';
-import { logChatPromiseExecution } from 'stream-chat';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 
@@ -55,10 +53,6 @@ export class ChannelInner extends PureComponent {
       },
     );
 
-    this._markReadThrottled = throttle(this.markRead, 500, {
-      leading: true,
-      trailing: true,
-    });
     this._setStateThrottled = throttle(this.setState, 500, {
       leading: true,
       trailing: true,
@@ -101,7 +95,6 @@ export class ChannelInner extends PureComponent {
 
     this._loadMoreFinishedDebounced.cancel();
     this._loadMoreThreadFinishedDebounced.cancel();
-    this._markReadThrottled.cancel();
     this._setStateThrottled.cancel();
     this._unmounted = true;
 
@@ -132,18 +125,7 @@ export class ChannelInner extends PureComponent {
     this.props.client.on('connection.recovered', this.handleEvent);
     const channel = this.props.channel;
     channel.on(this.handleEvent);
-    this.boundMarkRead = this.markRead.bind(this, channel);
-    // this.visibilityListener = Visibility.change((e, state) => {
-    //   if (state === 'visible') {
-    //     this.boundMarkRead();
-    //   }
-    // });
   }
-
-  // renderLoading = () => {
-  //   const Loader = this.props.LoadingIndicator;
-  //   return <Loader isLoading={true} />;
-  // };
 
   openThread = (message, e) => {
     if (e && e.preventDefault) {
@@ -338,21 +320,6 @@ export class ChannelInner extends PureComponent {
       this.setState(threadState);
     }
 
-    if (e.type === 'message.new') {
-      let mainChannelUpdated = true;
-      if (e.message.parent_id && !e.message.show_in_channel) {
-        mainChannelUpdated = false;
-      }
-
-      if (mainChannelUpdated) {
-        // if (Visibility.state() === 'visible') {
-        //   this._markReadThrottled(channel);
-        // } else {
-        //   const unread = channel.countUnread(this.lastRead);
-        //   // document.title = `(${unread}) ${this.originalTitle}`;
-        // }
-      }
-    }
     this._setStateThrottled({
       messages: channel.state.messages,
       watchers: channel.state.watchers,
@@ -360,19 +327,6 @@ export class ChannelInner extends PureComponent {
       typing: channel.state.typing,
       watcher_count: channel.state.watcher_count,
     });
-  };
-
-  markRead = (channel) => {
-    if (!channel.getConfig().read_events) {
-      return;
-    }
-    this.lastRead = new Date();
-
-    logChatPromiseExecution(channel.markRead(), 'mark read');
-
-    // if (this.originalTitle) {
-    //   document.title = this.originalTitle;
-    // }
   };
 
   loadMore = async () => {

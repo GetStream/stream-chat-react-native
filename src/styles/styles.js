@@ -2,18 +2,36 @@ import { StyleSheet } from 'react-native';
 import { defaultsDeep } from 'lodash-es';
 
 // set variables
-export const COLOR_PRIMARY = '#006cff';
-export const COLOR_SECONDARY = '#111';
-export const BORDER_RADIUS = 16;
-export const BORDER_RADIUS_S = 2;
-
-export const COLOR_TEXT_LIGHT = 'white';
-export const COLOR_TEXT_DARK = 'rgba(0,0,0,1)';
-export const COLOR_TEXT_GREY = 'rgba(0,0,0,0.5)';
 
 export const BASE_FONT_SIZE = 16;
 
 export const sendButton = require('../images/icons/send.png');
+
+const Sizes = {
+  borderRadius: 16,
+  borderRadiusS: 2,
+}
+
+const Colors = {
+  primary: '#006cff',
+  secondary: '#111',
+  danger: '#EDD8DD',
+  light: '#EBEBEB',
+  textLight: 'white',
+  textDark: 'rgba(0,0,0,1)',
+  textGrey: 'rgba(0,0,0,0.5)',
+}
+
+const Layouts = {
+  flexRow: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  flexColumn: {
+    display: 'flex',
+    flexDirection: 'column'
+  }
+}
 
 export const styles = {
   Avatar: StyleSheet.create({
@@ -22,12 +40,12 @@ export const styles = {
       height: 50,
     },
     fallback: {
-      backgroundColor: COLOR_PRIMARY,
+      backgroundColor: Colors.primary,
       justifyContent: 'center',
       alignItems: 'center',
     },
     fallbackText: {
-      color: COLOR_TEXT_LIGHT,
+      color: Colors.textLight,
       textTransform: 'uppercase',
       fontSize: BASE_FONT_SIZE - 2,
       fontWeight: '600',
@@ -35,8 +53,7 @@ export const styles = {
   }),
   MessageSimple: StyleSheet.create({
     container: {
-      display: 'flex',
-      flexDirection: 'row',
+      ...Layouts.flexRow,
       alignItems: 'flex-end',
     },
     left: {
@@ -59,8 +76,7 @@ export const styles = {
   }),
   MessageSimpleContent: StyleSheet.create({
     container: {
-      display: 'flex',
-      flexDirection: 'column',
+      ...Layouts.flexColumn,
       maxWidth: 250,
     },
     left: {
@@ -74,27 +90,27 @@ export const styles = {
     failed: {
       padding: 5,
       borderRadius: 10,
-      backgroundColor: '#EDD8DD',
+      backgroundColor: Colors.danger,
     },
     error: {
       padding: 5,
       borderRadius: 10,
-      backgroundColor: '#EDD8DD',
+      backgroundColor: Colors.danger,
     },
     metaContainer: {
       marginTop: 2,
     },
     metaText: {
       fontSize: 11,
-      color: COLOR_TEXT_GREY,
+      color: Colors.textGrey,
     },
   }),
   MessageSimpleText: StyleSheet.create({
     container: {
-      borderBottomLeftRadius: BORDER_RADIUS,
-      borderBottomRightRadius: BORDER_RADIUS,
-      borderTopLeftRadius: BORDER_RADIUS,
-      borderTopRightRadius: BORDER_RADIUS,
+      borderBottomLeftRadius: Sizes.borderRadius,
+      borderBottomRightRadius: Sizes.borderRadius,
+      borderTopLeftRadius: Sizes.borderRadius,
+      borderTopRightRadius: Sizes.borderRadius,
       marginTop: 2,
       padding: 5,
       paddingLeft: 8,
@@ -114,7 +130,7 @@ export const styles = {
     },
     right: {
       alignSelf: 'flex-end',
-      backgroundColor: '#ebebeb',
+      backgroundColor: Colors.light,
     },
     failed: {
       backgroundColor: 'transparent',
@@ -123,38 +139,37 @@ export const styles = {
       backgroundColor: 'transparent',
     },
     rightSingle: {
-      borderBottomRightRadius: BORDER_RADIUS_S,
+      borderBottomRightRadius: Sizes.borderRadiusS,
     },
     rightTop: {
-      borderBottomRightRadius: BORDER_RADIUS_S,
+      borderBottomRightRadius: Sizes.borderRadiusS,
     },
     rightMiddle: {
-      borderBottomRightRadius: BORDER_RADIUS_S,
-      borderTopRightRadius: BORDER_RADIUS_S,
+      borderBottomRightRadius: Sizes.borderRadiusS,
+      borderTopRightRadius: Sizes.borderRadiusS,
     },
     rightBottom: {
-      borderBottomRightRadius: BORDER_RADIUS_S,
-      borderTopRightRadius: BORDER_RADIUS_S,
+      borderBottomRightRadius: Sizes.borderRadiusS,
+      borderTopRightRadius: Sizes.borderRadiusS,
     },
     leftSingle: {
-      borderBottomLeftRadius: BORDER_RADIUS_S,
+      borderBottomLeftRadius: Sizes.borderRadiusS,
     },
     leftTop: {
-      borderBottomLeftRadius: BORDER_RADIUS_S,
+      borderBottomLeftRadius: Sizes.borderRadiusS,
     },
     leftMiddle: {
-      borderBottomLeftRadius: BORDER_RADIUS_S,
-      borderTopLeftRadius: BORDER_RADIUS_S,
+      borderBottomLeftRadius: Sizes.borderRadiusS,
+      borderTopLeftRadius: Sizes.borderRadiusS,
     },
     leftBottom: {
-      borderBottomLeftRadius: BORDER_RADIUS_S,
-      borderTopLeftRadius: BORDER_RADIUS_S,
+      borderBottomLeftRadius: Sizes.borderRadiusS,
+      borderTopLeftRadius: Sizes.borderRadiusS,
     },
   }),
   MessageInput: StyleSheet.create({
     container: {
-      display: 'flex',
-      flexDirection: 'row',
+      ...Layouts.flexRow,
       alignItems: 'center',
       paddingLeft: 10,
       paddingRight: 10,
@@ -177,25 +192,23 @@ export const styles = {
   }),
   HyperLink: StyleSheet.create({
     title: {
-      color: COLOR_PRIMARY,
+      color: Colors.primary,
       fontWeight: 'bold',
     },
   }),
 
   Card: StyleSheet.create({
     footer: {
-      display: 'flex',
-      flexDirection: 'row',
+      ...Layouts.flexRow,
       justifyContent: 'space-between',
-      backgroundColor: '#EBEBEB',
+      backgroundColor: Colors.light,
       padding: 10,
     },
   }),
 
   MessageNotification: StyleSheet.create({
     container: {
-      display: 'flex',
-      flexDirection: 'column',
+      ...Layouts.flexColumn,
       alignItems: 'center',
       zIndex: 10,
       marginBottom: 0,
@@ -211,6 +224,7 @@ export const styles = {
     },
   }),
 };
+
 
 const depthOf = function(object) {
   let level = 1;

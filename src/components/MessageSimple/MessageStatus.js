@@ -14,7 +14,7 @@ export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
       >
         <Image
           source={require('../../images/loading.gif')}
-          style={{ height: 20, width: 20 }}
+          style={{ height: 10, width: 10 }}
         />
       </View>
     );
@@ -28,17 +28,13 @@ export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          paddingLeft: 5,
-          paddingRight: 5,
+          paddingLeft: 2,
         }}
       >
-        <Image
-          source={require('../../images/icons/delivered_unseen.png')}
-          style={{ height: 20, width: 20 }}
-        />
+        <Image source={require('../../images/icons/delivered_unseen.png')} />
       </View>
     );
   } else {
-    return <View style={{ height: 20, width: 30 }} />;
+    return <View style={{ height: 10, width: 20 }} />;
   }
 };

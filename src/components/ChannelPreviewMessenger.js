@@ -20,21 +20,17 @@ export class ChannelPreviewMessenger extends PureComponent {
           flexDirection: 'row',
           borderBottomColor: '#EBEBEB',
           borderBottomWidth: 1,
+          padding: 10,
         }}
         onPress={this.onSelectChannel}
       >
-        <Avatar
-          image={channel.data.image}
-          size={40}
-          style={{ container: { padding: 10 } }}
-        />
+        <Avatar image={channel.data.image} size={40} />
         <View
           style={{
             display: 'flex',
             flexDirection: 'column',
-            paddingTop: 10,
-            paddingBottom: 10,
             flex: 1,
+            paddingLeft: 10,
           }}
         >
           <View
@@ -44,10 +40,21 @@ export class ChannelPreviewMessenger extends PureComponent {
               justifyContent: 'space-between',
             }}
           >
-            <Text style={{ fontWeight: 'bold', fontSize: 14 }}>
+            <Text
+              style={{ fontWeight: 'bold', fontSize: 14, flex: 9 }}
+              ellipsizeMode="tail"
+              numberOfLines={1}
+            >
               {channel.data.name}
             </Text>
-            <Text style={{ color: '#767676', fontSize: 11 }}>
+            <Text
+              style={{
+                color: '#767676',
+                fontSize: 11,
+                flex: 3,
+                textAlign: 'right',
+              }}
+            >
               {this.props.latestMessage.created_at}
             </Text>
           </View>
