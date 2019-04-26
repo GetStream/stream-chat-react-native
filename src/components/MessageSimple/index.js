@@ -16,7 +16,6 @@ export class MessageSimple extends React.PureComponent {
       message.groupPosition[0] === 'bottom'
         ? 'bottom'
         : null;
-
     return (
       <View
         style={{

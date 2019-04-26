@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Image } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faFileWord,
@@ -562,36 +563,27 @@ const defaultStyles = {
   },
 };
 const mimeTypeToIconMap = {
-  'application/pdf': faFilePdf,
-};
-
-const mimeTypeToFallBackStyle = {
-  'application/pdf': defaultStyles.pdf,
+  'application/pdf': require('../images/PDF.png'),
 };
 
 for (const type of wordMimeTypes) {
-  mimeTypeToIconMap[type] = faFileWord;
-  mimeTypeToFallBackStyle[type] = { type: 'document' };
+  mimeTypeToIconMap[type] = require('../images/DOC.png');
 }
 
 for (const type of excelMimeTypes) {
-  mimeTypeToIconMap[type] = faFileExcel;
-  mimeTypeToFallBackStyle[type] = { type: 'spreadsheet' };
+  mimeTypeToIconMap[type] = require('../images/XLS.png');
 }
 
 for (const type of powerpointMimeTypes) {
-  mimeTypeToIconMap[type] = faFilePowerpoint;
-  mimeTypeToFallBackStyle[type] = { type: 'presentation' };
+  mimeTypeToIconMap[type] = require('../images/PPT.png');
 }
 
 for (const type of archiveFileTypes) {
-  mimeTypeToIconMap[type] = faFileArchive;
-  mimeTypeToFallBackStyle[type] = { type: 'compressed' };
+  mimeTypeToIconMap[type] = require('../images/TAR.png');
 }
 
 for (const type of codeFileTypes) {
-  mimeTypeToIconMap[type] = faFileCode;
-  mimeTypeToFallBackStyle[type] = { type: 'code' };
+  mimeTypeToIconMap[type] = require('../images/DOC.png');
 }
 
 function mimeTypeToIcon(mimeType) {
@@ -603,20 +595,8 @@ function mimeTypeToIcon(mimeType) {
   if (icon) {
     return icon;
   }
-  if (mimeType.startsWith('audio/')) {
-    return faFileAudio;
-  }
-  if (mimeType.startsWith('video/')) {
-    return faFileVideo;
-  }
-  if (mimeType.startsWith('image/')) {
-    return faFileImage;
-  }
-  if (mimeType.startsWith('text/')) {
-    return faFileAlt;
-  }
 
-  return faFile;
+  return require('../images/DOC.png');
 }
 
 function mimeTypeToStyle(mimeType) {
@@ -679,7 +659,6 @@ function fileExtension(filename) {
 export default class FileIcon extends React.Component {
   render() {
     const { size, big, filename, mimeType } = this.props;
-
-    return <FontAwesomeIcon icon={mimeTypeToIcon(mimeType)} size={size} />;
+    return <Image source={mimeTypeToIcon(mimeType)} />;
   }
 }

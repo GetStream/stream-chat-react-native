@@ -10,9 +10,9 @@ export const sendButton = require('../images/icons/send.png');
 const Sizes = {
   borderRadius: 16,
   borderRadiusS: 2,
-}
+};
 
-const Colors = {
+export const Colors = {
   primary: '#006cff',
   secondary: '#111',
   danger: '#EDD8DD',
@@ -20,18 +20,18 @@ const Colors = {
   textLight: 'white',
   textDark: 'rgba(0,0,0,1)',
   textGrey: 'rgba(0,0,0,0.5)',
-}
+};
 
 const Layouts = {
   flexRow: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   flexColumn: {
     display: 'flex',
-    flexDirection: 'column'
-  }
-}
+    flexDirection: 'column',
+  },
+};
 
 export const styles = {
   Avatar: StyleSheet.create({
@@ -217,14 +217,22 @@ export const styles = {
 
   DateSeparator: StyleSheet.create({
     container: {
-      margin: 5,
-      marginRight: 40,
-      fontSize: 10,
-      textAlign: 'right',
+      ...Layouts.flexRow,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    dividingLines: {
+      flex: 1,
+      borderColor: Colors.light,
+      borderWidth: 1,
+      height: 0,
+    },
+    date: {
+      flex: 1,
+      textAlign: 'center',
     },
   }),
 };
-
 
 const depthOf = function(object) {
   let level = 1;
