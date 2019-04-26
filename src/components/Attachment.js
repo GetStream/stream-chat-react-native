@@ -119,9 +119,32 @@ export class Attachment extends React.Component {
         >
           <Image
             resizeMode="stretch"
-            style={{ height: 200, width: 250, borderRadius: 16 }}
+            style={{
+              height: 200,
+              width: 250,
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+            }}
             source={{ uri: a.image_url }}
           />
+          <View
+            style={{
+              borderBottomLeftRadius: 16,
+              borderBottomRightRadius: 16,
+              backgroundColor: '#EBEBEB',
+              padding: 10,
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: 'bold',
+              }}
+            >
+              {a.title}
+            </Text>
+          </View>
         </TouchableOpacity>
       );
     }
