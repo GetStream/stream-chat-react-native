@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Text, View, TouchableOpacity, Linking } from 'react-native';
 import PropTypes from 'prop-types';
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { Card } from './Card';
@@ -14,6 +14,16 @@ export class Attachment extends React.Component {
   constructor(props) {
     super(props);
   }
+
+  _goToURL = (url) => {
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log("Don't know how to open URI: " + url);
+      }
+    });
+  };
 
   render() {
     const { attachment: a } = this.props;
@@ -63,25 +73,56 @@ export class Attachment extends React.Component {
 
     if (a.type === 'file') {
       return (
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: '#EBEBEB',
-            padding: 10,
+        <TouchableOpacity
+          onPress={() => {
+            this._goToURL(a.asset_url);
           }}
         >
-          <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
           <View
-            style={{ display: 'flex', flexDirection: 'column', padding: 10 }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#EBEBEB',
+              padding: 10,
+              borderRadius: 16,
+            }}
           >
-            <Text ellipsizeMode="tail" numberOfLines={2}>
-              {a.title}
-            </Text>
-            <Text>{a.file_size}</Text>
+            <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
+            <View
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                paddingLeft: 10,
+              }}
+            >
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={2}
+                style={{ fontWeight: 'bold' }}
+              >
+                {a.title}
+              </Text>
+              <Text>{a.file_size} KB</Text>
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
+      );
+    }
+
+    if (a.type === 'video' && a.asset_url && a.image_url) {
+      return (
+        <TouchableOpacity
+          onPress={() => {
+            this._goToURL(a.asset_url);
+          }}
+        >
+          <Image
+            resizeMode="stretch"
+            style={{ height: 200, width: 250, borderRadius: 16 }}
+            source={{ uri: a.image_url }}
+          />
+        </TouchableOpacity>
       );
     }
 
