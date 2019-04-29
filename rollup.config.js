@@ -5,7 +5,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import url from 'rollup-plugin-url';
 import copy from 'rollup-plugin-copy-glob';
-import images from 'rollup-plugin-image-files';
+import images from './rollup-react-native-image.js';
 import path from 'path';
 
 import replace from 'rollup-plugin-replace';
@@ -93,7 +93,9 @@ const normalBundle = {
     //  verbose: true,
     //  watch: process.env.ROLLUP_WATCH,
     //}),
-    images(),
+    images({
+      sourceDir: path.join(__dirname, 'src'),
+    }),
     commonjs(),
     json(),
   ],
