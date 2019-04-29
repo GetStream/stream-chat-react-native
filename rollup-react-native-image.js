@@ -37,11 +37,9 @@ export default function reactNativeImage(options = {}) {
         const origDestPath = path.join(origDestDir, origFileName);
         const fullDestDir = path.dirname(origDestPath);
 
-        console.log(fullDestDir)
         if (!existsSync(fullDestDir)) {
           mkdirSync(fullDestDir, { recursive: true });
         }
-        console.log(origDestPath)
         writeFileSync(origDestPath, readFileSync(image));
 
         const extension = path.extname(origDestPath);
