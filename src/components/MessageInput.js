@@ -12,6 +12,9 @@ import PropTypes from 'prop-types';
 import { withChannelContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
 import { buildStylesheet } from '../styles/styles';
+import iconPicture from '../images/icons/picture.png'
+import iconEdit from '../images/icons/icon_edit.png'
+import iconNewMessage from '../images/icons/icon_new_message.png'
 
 class MessageInput extends PureComponent {
   constructor(props) {
@@ -127,7 +130,7 @@ class MessageInput extends PureComponent {
             style={styles.pictureButton}
             title="Pick an image from camera roll"
           >
-            <Image source={require('../images/icons/picture.png')} />
+            <Image source={iconPicture} />
           </TouchableOpacity>
           <TextInput
             ref={(o) => (this.inputBox = o)}
@@ -145,9 +148,9 @@ class MessageInput extends PureComponent {
             onPress={this.props.editing ? this.updateMessage : this.sendMessage}
           >
             {this.props.editing ? (
-              <Image source={require('../images/icons/icon_edit.png')} />
+              <Image source={iconEdit} />
             ) : (
-              <Image source={require('../images/icons/icon_new_message.png')} />
+              <Image source={iconNewMessage} />
             )}
           </TouchableOpacity>
         </View>

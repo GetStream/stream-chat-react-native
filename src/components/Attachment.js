@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Text, View, TouchableOpacity, Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
+import giphyLogo from '../assets/Poweredby_100px-White_VertText.png';
 import { Card } from './Card';
 import FileIcon from './FileIcon';
 

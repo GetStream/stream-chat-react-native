@@ -15,6 +15,12 @@ import {
   faFile,
 } from '@fortawesome/free-solid-svg-icons';
 
+import iconPDF from '../images/PDF.png'
+import iconDOC from '../images/DOC.png'
+import iconPPT from '../images/PPT.png'
+import iconXLS from '../images/XLS.png'
+import iconTAR from '../images/TAR.png'
+
 // export type Props = {|
 //   filename: ?string,
 //   mimeType: ?string,
@@ -563,27 +569,27 @@ const defaultStyles = {
   },
 };
 const mimeTypeToIconMap = {
-  'application/pdf': require('../images/PDF.png'),
+  'application/pdf': iconPDF,
 };
 
 for (const type of wordMimeTypes) {
-  mimeTypeToIconMap[type] = require('../images/DOC.png');
+  mimeTypeToIconMap[type] = iconDOC;
 }
 
 for (const type of excelMimeTypes) {
-  mimeTypeToIconMap[type] = require('../images/XLS.png');
+  mimeTypeToIconMap[type] = iconXLS;
 }
 
 for (const type of powerpointMimeTypes) {
-  mimeTypeToIconMap[type] = require('../images/PPT.png');
+  mimeTypeToIconMap[type] = iconPPT;
 }
 
 for (const type of archiveFileTypes) {
-  mimeTypeToIconMap[type] = require('../images/TAR.png');
+  mimeTypeToIconMap[type] = iconTAR;
 }
 
 for (const type of codeFileTypes) {
-  mimeTypeToIconMap[type] = require('../images/DOC.png');
+  mimeTypeToIconMap[type] = iconDOC;
 }
 
 function mimeTypeToIcon(mimeType) {
@@ -596,7 +602,7 @@ function mimeTypeToIcon(mimeType) {
     return icon;
   }
 
-  return require('../images/DOC.png');
+  return iconDOC;
 }
 
 function mimeTypeToStyle(mimeType) {

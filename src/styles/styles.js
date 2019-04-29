@@ -5,7 +5,6 @@ import { defaultsDeep } from 'lodash-es';
 
 export const BASE_FONT_SIZE = 16;
 
-export const sendButton = require('../images/icons/send.png');
 
 const Sizes = {
   borderRadius: 16,

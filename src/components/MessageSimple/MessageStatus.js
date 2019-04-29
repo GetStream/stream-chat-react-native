@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Image } from 'react-native';
 
+import loadingGif from '../../images/loading.gif';
+import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
+
 export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
   if (message.status === 'sending') {
     return (
@@ -13,7 +16,7 @@ export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
         }}
       >
         <Image
-          source={require('../../images/loading.gif')}
+          source={loadingGif}
           style={{ height: 10, width: 10 }}
         />
       </View>
@@ -31,7 +34,7 @@ export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
           paddingLeft: 2,
         }}
       >
-        <Image source={require('../../images/icons/delivered_unseen.png')} />
+        <Image source={iconDeliveredUnseen} />
       </View>
     );
   } else {

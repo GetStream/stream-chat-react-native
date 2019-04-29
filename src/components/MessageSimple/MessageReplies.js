@@ -1,6 +1,9 @@
 import React from 'react';
 import { Text, TouchableOpacity, Image } from 'react-native';
 
+import iconPath from '../../images/icons/icon_path.png';
+
+
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
   if (isThreadList || !Boolean(message.reply_count)) return null;
 
@@ -10,7 +13,7 @@ export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
       style={{ padding: 5, flexDirection: 'row' }}
     >
       {pos === 'left' ? (
-        <Image source={require('../../images/icons/icon_path.png')} />
+        <Image source={iconPath} />
       ) : null}
       <Text style={{ color: '#006CFF' }}>
         {message.reply_count} {message.reply_count === 1 ? 'Reply' : 'Replies'}
@@ -20,7 +23,7 @@ export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
           style={{
             transform: [{ rotateY: '180deg' }],
           }}
-          source={require('../../images/icons/icon_path.png')}
+          source={iconPath}
         />
       ) : null}
     </TouchableOpacity>

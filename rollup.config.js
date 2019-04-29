@@ -5,6 +5,8 @@ import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import url from 'rollup-plugin-url';
 import copy from 'rollup-plugin-copy-glob';
+import images from 'rollup-plugin-image-files';
+import path from 'path';
 
 import replace from 'rollup-plugin-replace';
 
@@ -78,11 +80,20 @@ const normalBundle = {
       runtimeHelpers: true,
       exclude: 'node_modules/**',
     }),
-    copy([{ files: 'src/assets/*', dest: 'dist/assets' }], {
-      verbose: true,
-      watch: process.env.ROLLUP_WATCH,
-    }),
-    url(),
+    //copy([
+    //  {
+    //    files: 'src/assets/*',
+    //    dest: 'dist/assets',
+    //  },
+    //  {
+    //    files: 'src/images/*',
+    //    dest: 'dist/images',
+    //  }
+    //], {
+    //  verbose: true,
+    //  watch: process.env.ROLLUP_WATCH,
+    //}),
+    images(),
     commonjs(),
     json(),
   ],
