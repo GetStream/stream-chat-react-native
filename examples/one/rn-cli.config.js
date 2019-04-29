@@ -2,22 +2,32 @@
 
 const fs = require('fs');
 const path = require('path');
-const blacklist = require('metro/src/blacklist');
-const repoDir = path.dirname(__dirname);
+const blacklist = require('metro-config/src/defaults/blacklist');
+const repoDir = path.dirname(path.dirname(__dirname));
+
+console.log(repoDir);
+
+const actualBlacklist = blacklist([
+  // new RegExp(repoDir + '/examples/one/'),
+  //   new RegExp(repoDir + '/native-example/(.*)'),
+  //   new RegExp(repoDir + '/native-package/(.*)'),
+  //   new RegExp(repoDir + '/expo-package/node_modules/(.*)'),
+  new RegExp(repoDir + '/node_modules/(.*)'),
+]);
 
 module.exports = {
-  getBlacklistRE() {
-    return blacklist([
-    //   new RegExp(repoDir + '/example/'),
-    //   new RegExp(repoDir + '/native-example/(.*)'),
-    //   new RegExp(repoDir + '/native-package/(.*)'),
-    //   new RegExp(repoDir + '/expo-package/node_modules/(.*)'),
-      new RegExp(repoDir + '/node_modules/(.*)'),
-    ]);
+  resolver: {
+    blacklistRE: actualBlacklist,
   },
-  extraNodeModules: getNodeModulesForDirectory(path.resolve('.')),
+  // extraNodeModules: getNodeModulesForDirectory(path.resolve('.')),
+    // extraNodeModules: {
+    //   '@babel/runtime': path.resolve(__dirname, 'node_modules/@babel/runtime'),
+    //   '@babel/runtime/helpers/extends': path.resolve(
+    //     __dirname,
+    //     'node_modules/@babel/runtime/helpers/extends.js',
+    //   ),
+    // },
 };
-
 function getNodeModulesForDirectory(rootPath) {
   const nodeModulePath = path.join(rootPath, 'node_modules');
   const folders = fs.readdirSync(nodeModulePath);
