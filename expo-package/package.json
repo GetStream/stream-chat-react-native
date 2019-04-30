@@ -45,9 +45,9 @@
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
-    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0 && stylelint '**/*.{css,scss}'",
-    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0 && stylelint --fix '**/*.{css,scss}'",
-    "preversion": "yarn && yarn lint",
+    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0",
+    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0'",
+    "preversion": "yarn",
     "prepare": "yarn run build",
     "prepack": " cp ../README.md .",
     "postpack": "rm README.md"
