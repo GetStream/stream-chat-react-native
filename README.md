@@ -1,5 +1,21 @@
 # Stream React Native Chat
 
+> The official React Native and Expo client for Stream Chat, a service for
+building chat applications.
+
+[![NPM](https://img.shields.io/npm/v/react-file-utils.svg)](https://www.npmjs.com/package/react-file-utils)
+[![Build Status](https://travis-ci.org/GetStream/react-file-utils.svg?branch=master)](https://travis-ci.org/GetStream/react-file-utils)
+
+You can sign up for a Stream account at https://getstream.io/chat/get_started/.
+
+## Keep in mind
+
+1. Navigation between different component is something we expect consumers to
+   implement. You can checkout the example given in this repository
+2. This library is still under development, so breaking changes are to be
+   expected in next couple of weeks. So we won't really recommend integrating it
+   right now.
+
 Library currently exposes following components:
 
 1. Chat
@@ -9,11 +25,6 @@ Library currently exposes following components:
 5. ChannelList
 6. Thread
 7. ChannelPreviewMessenger
-
-## Keep in mind
-
-1. Navigation between different component is something we expect consumers to implement. You can checkout the example given in this repository
-2. This library is still under development, so plenty of code-cleanup and performance related fixes will be on the way in next couple of weeks. So we won't really recommend integrating it right now.
 
 ## How to run example
 
