@@ -1,0 +1,109 @@
+A message can contain multiple attachments.
+There are many types of attachments. By default the components support
+
+- image
+- video
+- audio
+- file
+
+Here's an example of an image
+
+```js
+const Immutable = require('seamless-immutable');
+
+const a = Immutable({
+  thumb_url: 'https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif',
+  type: 'image',
+});
+
+function actionHandler(action) {
+  console.log(action);
+}
+
+<Attachment attachment={a} actionHandler={actionHandler} />;
+```
+
+Or a video element:
+
+```js
+const Immutable = require('seamless-immutable');
+
+const a = Immutable({
+  asset_url: 'https://www.youtube.com/embed/7LiyXFYaEAY',
+  author_name: 'YouTube',
+  image_url: 'https://i.ytimg.com/vi/7LiyXFYaEAY/maxresdefault.jpg',
+  og_scrape_url: 'https://www.youtube.com/watch?v=7LiyXFYaEAY',
+  text: 'Game of Thrones final season premieres April 14th ...',
+  type: 'video',
+});
+
+function actionHandler(action) {
+  console.log(action);
+}
+
+<Attachment attachment={a} actionHandler={actionHandler} />;
+```
+
+Image with more meta information:
+
+```js
+const Immutable = require('seamless-immutable');
+
+const a = Immutable({
+  image_url:
+    'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
+  og_scrape_url: 'https://unsplash.com/photos/lxuB4abGzXc',
+  text: 'Download this photo in Addu City...',
+  thumb_url:
+    'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
+  title: 'Cosmic Home photo by Ibrahim Shabil (@shabilphotos) on Unsplash',
+  title_link: 'https://unsplash.com/photos/lxuB4abGzXc',
+  type: 'image',
+});
+
+function actionHandler(action) {
+  console.log(action);
+}
+
+<Attachment attachment={a} actionHandler={actionHandler} />;
+```
+
+Attachment with actions:
+
+```js
+const Immutable = require('seamless-immutable');
+
+const a = Immutable({
+  actions: [
+    {
+      name: 'image_action',
+      style: 'primary',
+      text: 'Send',
+      type: 'button',
+      value: 'send',
+    },
+    {
+      name: 'image_action',
+      style: 'default',
+      text: 'Shuffle',
+      type: 'button',
+      value: 'shuffle',
+    },
+    {
+      name: 'image_action',
+      style: 'default',
+      text: 'Cancel',
+      type: 'button',
+      value: 'cancel',
+    },
+  ],
+  thumb_url: 'https://media0.giphy.com/media/3o7btXkbsV26U95Uly/giphy.gif',
+  type: 'image',
+});
+
+function actionHandler(action) {
+  console.log(action);
+}
+
+<Attachment attachment={a} actionHandler={actionHandler} />;
+```

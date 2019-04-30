@@ -1,0 +1,85 @@
+{
+  "name": "stream-chat-react-native-core",
+  "version": "0.0.2",
+  "author": {
+    "company": "Stream.io Inc"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "start": "rm -rf dist && rollup -c -w",
+    "build": "rm -rf dist && rollup -c",
+    "docs": "styleguidist build",
+    "docs-server": "styleguidist server",
+    "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
+    "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
+    "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
+    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
+    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0",
+    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0",
+    "prepare": "yarn run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py"
+    }
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.1.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.17",
+    "@fortawesome/free-solid-svg-icons": "^5.8.1",
+    "@fortawesome/react-native-fontawesome": "^0.1.0",
+    "anchorme": "^1.1.2",
+    "deep-equal": "^1.0.1",
+    "file-loader": "^3.0.1",
+    "lodash-es": "^4.17.11",
+    "metro-react-native-babel-preset": "^0.53.1",
+    "moment": "2.23.0",
+    "react-art": "^16.8.6",
+    "react-native": "0.57.1",
+    "react-native-web": "^0.11.2",
+    "react-navigation": "^3.8.1",
+    "seamless-immutable": "^7.1.4",
+    "stream-chat": "^0.12.1",
+    "uuid": "^3.3.2"
+  },
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/polyfill": "^7.4.4",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-react": "^7.0.0",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "babel-plugin-react-native-web": "^0.11.2",
+    "babel-preset-expo": "^5.0.0",
+    "eslint": "^5.16.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-jest": "^22.5.1",
+    "eslint-plugin-markdown": "^1.0.0",
+    "eslint-plugin-react": "^7.12.4",
+    "husky": "^2.1.0",
+    "prettier": "^1.16.4",
+    "react": "^16.5.0",
+    "react-dom": "^16.8.6",
+    "react-styleguidist": "^8.0.6",
+    "rollup": "^0.68.2",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-commonjs": "^9.1.8",
+    "rollup-plugin-json": "^3.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.0",
+    "rollup-plugin-replace": "^2.1.0",
+    "webpack": "4.19.1"
+  }
+}

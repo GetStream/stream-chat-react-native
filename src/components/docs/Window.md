@@ -1,0 +1,1 @@
+The Window component is a UI component which makes switching between Channel and Thread possible. If you want the Thread to be displayed side by side with the Channel that's also possible with the Window. It's a very minimal component that might fit some usecases, if not it's an easy to modify and rewrite component.
