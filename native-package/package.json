@@ -1,5 +1,5 @@
 {
-  "name": "stream-chat-expo",
+  "name": "stream-chat-react-native",
   "version": "0.0.1",
   "author": {
     "company": "Stream.io Inc"
@@ -54,8 +54,5 @@
   },
   "dependencies": {
     "stream-chat-react-native-core": "v0.0.1"
-  },
-  "peerDependencies": {
-    "expo": "^32.0.0"
   }
 }

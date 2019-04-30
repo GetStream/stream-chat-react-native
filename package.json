@@ -22,9 +22,7 @@
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0 && stylelint '**/*.{css,scss}'",
     "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0 && stylelint --fix '**/*.{css,scss}'",
-    "prepare": "yarn run build",
-    "version": "git add yarn.lock examples/*/yarn.lock",
-    "postversion": "git push && git push --tags && npm publish"
+    "prepare": "yarn run build"
   },
   "dependencies": {
     "@babel/runtime": "^7.1.2",
