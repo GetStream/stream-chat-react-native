@@ -1,6 +1,6 @@
-# Stream React Native Chat
+# React Native Chat Components
 
-> The official React Native and Expo client for Stream Chat, a service for
+> The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
 
 [![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
