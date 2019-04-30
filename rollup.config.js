@@ -3,8 +3,6 @@ import babel from 'rollup-plugin-babel';
 import external from 'rollup-plugin-peer-deps-external';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
-import url from 'rollup-plugin-url';
-import copy from 'rollup-plugin-copy-glob';
 import images from './rollup-react-native-image.js';
 import path from 'path';
 
@@ -80,19 +78,6 @@ const normalBundle = {
       runtimeHelpers: true,
       exclude: 'node_modules/**',
     }),
-    //copy([
-    //  {
-    //    files: 'src/assets/*',
-    //    dest: 'dist/assets',
-    //  },
-    //  {
-    //    files: 'src/images/*',
-    //    dest: 'dist/images',
-    //  }
-    //], {
-    //  verbose: true,
-    //  watch: process.env.ROLLUP_WATCH,
-    //}),
     images({
       sourceDir: path.join(__dirname, 'src'),
     }),

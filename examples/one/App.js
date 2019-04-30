@@ -7,7 +7,7 @@ import {
   Text,
 } from 'react-native';
 import { StreamChat } from 'stream-chat';
-import { Chat, Channel, MessageList, MessageInput, ChannelList, Thread, ChannelPreviewMessenger } from 'stream-chat-react-native';
+import { Chat, Channel, MessageList, MessageInput, ChannelList, Thread, ChannelPreviewMessenger } from 'stream-chat-expo';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 

@@ -1,4 +1,4 @@
-node_modules/**/*
+node_modules/
 .expo/*
 npm-debug.*
 *.jks
@@ -8,7 +8,7 @@ npm-debug.*
 report.*.json
 yarn-error.log
 .DS_Store
-/dist/
+dist/
 .env*
 
 .tern-port
