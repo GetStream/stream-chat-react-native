@@ -3,8 +3,8 @@
 > The official React Native and Expo client for Stream Chat, a service for
 building chat applications.
 
-[![NPM](https://img.shields.io/npm/v/react-file-utils.svg)](https://www.npmjs.com/package/react-file-utils)
-[![Build Status](https://travis-ci.org/GetStream/react-file-utils.svg?branch=master)](https://travis-ci.org/GetStream/react-file-utils)
+[![NPM](https://img.shields.io/npm/v/stream-chat-react-native.svg)](https://www.npmjs.com/package/stream-chat-react-native)
+[![Build Status](https://travis-ci.org/GetStream/stream-chat-react-native.svg?branch=master)](https://travis-ci.org/GetStream/stream-chat-react-native)
 
 You can sign up for a Stream account at https://getstream.io/chat/get_started/.
 
