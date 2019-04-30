@@ -23,7 +23,7 @@
     "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0 && stylelint '**/*.{css,scss}'",
     "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0 && stylelint --fix '**/*.{css,scss}'",
     "prepare": "yarn run build",
-    "version": "yarn docs && git add docs && git add yarn.lock examples/*/yarn.lock",
+    "version": "git add yarn.lock examples/*/yarn.lock",
     "postversion": "git push && git push --tags && npm publish"
   },
   "dependencies": {
