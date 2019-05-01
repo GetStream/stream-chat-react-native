@@ -2,7 +2,7 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = examples
-EXAMPLES = one
+EXAMPLES = one two
 EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXAMPLES))
 EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXAMPLES_APPS))
 

@@ -55,27 +55,21 @@ export class Chat extends PureComponent {
       isOnline: true,
     };
 
-    NetInfo.getConnectionInfo().then((connectionInfo) => {
-      console.log(
-        'Initial, type: ' +
-          connectionInfo.type +
-          ', effectiveType: ' +
-          connectionInfo.effectiveType,
-      );
-      this.setState({ isOnline: connectionInfo.type !== 'none' });
+    this.setConnectionListener();
+  }
+
+  setConnectionListener = () => {
+    NetInfo.isConnected.fetch().then((isConnected) => {
+      this.setState({ isOnline: isConnected });
     });
 
     NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
-  }
+  };
 
-  handleConnectionChange = (connectionInfo) => {
-    console.log('CONNECTION CHANGED');
-
-    this.setState({ isOnline: connectionInfo.type !== 'none' });
-    // NetInfo.removeEventListener(
-    //   'connectionChange',
-    //   handleFirstConnectivityChange
-    // );
+  handleConnectionChange = () => {
+    NetInfo.isConnected.fetch().then((isConnected) => {
+      this.setState({ isOnline: isConnected });
+    });
   };
 
   setActiveChannel = (channel, e) => {

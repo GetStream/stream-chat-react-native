@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Image } from 'react-native';
-import { faFile } from '@fortawesome/free-solid-svg-icons';
 
 import iconPDF from '../images/PDF.png';
 import iconDOC from '../images/DOC.png';
@@ -191,7 +190,7 @@ for (const type of codeFileTypes) {
 
 function mimeTypeToIcon(mimeType) {
   if (mimeType == null) {
-    return faFile;
+    return iconDOC;
   }
 
   const icon = mimeTypeToIconMap[mimeType];

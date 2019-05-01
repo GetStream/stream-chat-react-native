@@ -1,15 +1,9 @@
-// @flow
-// import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import NetInfo from '@react-native-community/netinfo';
 // import { ImagePicker, Permissions } from 'expo';
-// registerNativeHandlers({
-//   pickImage: async () => {
-//     await Permissions.askAsync(Permissions.CAMERA_ROLL);
-//
-//     return await ImagePicker.launchImageLibraryAsync({
-//       allowsEditing: false,
-//       aspect: [4, 3],
-//     });
-//   },
-// });
+
+registerNativeHandlers({
+  NetInfo,
+});
 
 export * from 'stream-chat-react-native-core';
