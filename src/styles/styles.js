@@ -220,9 +220,11 @@ export const styles = {
       alignItems: 'center',
       zIndex: 10,
       marginBottom: 0,
+      padding: 5,
     },
     warning: {
-      backgroundColor: 'yellow',
+      color: 'red',
+      backgroundColor: '#FAE6E8',
     },
   }),
   DateSeparator: StyleSheet.create({

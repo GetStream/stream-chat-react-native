@@ -18,6 +18,7 @@ const MessageList = withChannelContext(
       this.state = {
         newMessagesNotification: false,
         activeMessageId: false,
+        online: props.online,
       };
     }
 
@@ -285,8 +286,10 @@ const MessageList = withChannelContext(
               </View>
             </MessageNotification>
           )}
-          <Notification type="warnming" active={!this.state.online}>
-            <Text>Connection lost</Text>
+          <Notification type="warning" active={!this.state.online}>
+            <Text style={styles.Notification.warning}>
+              Connection failure, reconnecting now ...
+            </Text>
           </Notification>
         </React.Fragment>
       );
@@ -314,7 +317,7 @@ const DateSeparator = ({ message, formatDate, date }) => (
 );
 
 const Notification = ({ children, active, type }) => {
-  if (active)
+  if (active) {
     return (
       <View
         style={{
@@ -325,6 +328,7 @@ const Notification = ({ children, active, type }) => {
         {children}
       </View>
     );
+  }
 
   return null;
 };

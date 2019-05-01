@@ -33,7 +33,10 @@ const normalBundle = {
       sourcemap: true,
     },
   ],
-  external: ['stream-chat-react-native-core'],
+  external: [
+    'stream-chat-react-native-core',
+    '@react-native-community/netinfo',
+  ],
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),

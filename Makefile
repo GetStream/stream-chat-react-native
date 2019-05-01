@@ -2,7 +2,7 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = examples
-EXAMPLES = one
+EXAMPLES = one two
 EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXAMPLES))
 EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXAMPLES_APPS))
 
@@ -34,6 +34,7 @@ dist/built: $(LIB_SOURCES) node_modules/installed_dependencies
 
 clean:
 	rm -rf $(addsuffix /node_modules,$(EXAMPLES_APPS))
-	rm -rf build
+	rm -rf $(addsuffix /node_modules,$(WRAPPER_PACKAGES))
+	rm -rf $(addsuffix /dist,$(WRAPPER_PACKAGES))
+	rm -rf dist
 	rm -rf node_modules
-
