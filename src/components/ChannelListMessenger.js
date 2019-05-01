@@ -1,10 +1,9 @@
 import React, { PureComponent } from 'react';
-import { Text } from 'react-native';
+import { Text, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
 import { ChannelPreview } from './ChannelPreview';
 import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { withChatContext } from '../context';
-import { FlatList } from 'react-native-gesture-handler';
 
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open

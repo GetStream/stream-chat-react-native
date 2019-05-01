@@ -48,8 +48,6 @@ const normalBundle = {
     'stream-chat',
     'prop-types',
     'react-native',
-    'react-native-gesture-handler',
-    'react-native-actionsheet',
     'uuid/v4',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
