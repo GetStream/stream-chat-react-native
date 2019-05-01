@@ -8,7 +8,7 @@ const repoDir = path.dirname(path.dirname(__dirname));
 console.log(repoDir);
 
 const actualBlacklist = blacklist([
-  // new RegExp(repoDir + '/examples/one/'),
+  new RegExp(repoDir + '/examples/two/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
   new RegExp(repoDir + '/native-package/.*'),
   new RegExp(repoDir + '/expo-package/node_modules/.*'),
