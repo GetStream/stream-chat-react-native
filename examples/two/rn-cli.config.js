@@ -1,1 +1,0 @@
-metro.config.js

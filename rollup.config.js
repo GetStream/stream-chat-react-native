@@ -51,8 +51,6 @@ const normalBundle = {
     'react-native-gesture-handler',
     'react-native-actionsheet',
     'uuid/v4',
-    '@fortawesome/react-native-fontawesome',
-    '@fortawesome/free-solid-svg-icons',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/objectWithoutProperties',

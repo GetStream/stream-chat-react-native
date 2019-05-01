@@ -1,73 +1,174 @@
-// /**
-//  * Metro configuration for React Native
-//  * https://github.com/facebook/react-native
-//  *
-//  * @format
-//  */
-// /* eslint-env node */
+/* eslint-env node */
+function resolvePath(...parts) {
+  const thisPath = PATH.resolve.apply(PATH, parts);
+  if (!FS.existsSync(thisPath)) return;
 
-// const fs = require('fs');
-// const path = require('path');
-// const blacklist = require('metro-config/src/defaults/blacklist');
-// const repoDir = path.dirname(path.dirname(__dirname));
+  return FS.realpathSync(thisPath);
+}
 
-// console.log('VISHAL VISHAL');
-// console.log(repoDir);
-// const actualBlacklist = blacklist([
-//   // new RegExp(repoDir + '/examples/one/node_modules/.*'),
-//   //   new RegExp(repoDir + '/native-example/(.*)'),
-//   // new RegExp(repoDir + '/expo-package/.*'),
-//   // new RegExp(repoDir + '/native-package/node_modules/.*'),
-//   // new RegExp(repoDir + '/node_modules/.*'),
-// ]);
+function isExternalModule(modulePath) {
+  return modulePath.substring(0, __dirname.length) !== __dirname;
+}
 
-// module.exports = {
-//   // transformer: {
-//   //   getTransformOptions: async () => ({
-//   //     transform: {
-//   //       experimentalImportSupport: true,
-//   //       inlineRequires: true,
-//   //     },
-//   //   }),
-//   // },
-//   // projectRoot: __dirname,
-//   resolver: {
-//     // blacklistRE: actualBlacklist,
-//     extraNodeModules: getNodeModulesForDirectory(path.resolve('.')),
-//   },
-// };
+function listDirectories(rootPath, cb) {
+  FS.readdirSync(rootPath).forEach((fileName) => {
+    if (fileName.charAt(0) === '.') return;
 
-// // console.log('unfindable module', module.exports.resolver.extraNodeModules['stream-chat-react-native']);
-// function getNodeModulesForDirectory(rootPath) {
-//   const nodeModulePath = path.join(rootPath, 'node_modules');
-//   const folders = fs.readdirSync(nodeModulePath);
-//   return folders.reduce((modules, folderName) => {
-//     const folderPath = path.join(nodeModulePath, folderName);
-//     if (folderName.startsWith('@')) {
-//       const scopedModuleFolders = fs.readdirSync(folderPath);
-//       const scopedModules = scopedModuleFolders.reduce(
-//         (scopedModules, scopedFolderName) => {
-//           scopedModules[
-//             `${folderName}/${scopedFolderName}`
-//           ] = maybeResolveSymlink(path.join(folderPath, scopedFolderName));
-//           return scopedModules;
-//         },
-//         {},
-//       );
-//       return Object.assign({}, modules, scopedModules);
-//     }
-//     modules[folderName] = maybeResolveSymlink(folderPath);
-//     return modules;
-//   }, {});
-// }
+    let fullFileName = PATH.join(rootPath, fileName),
+      stats = FS.lstatSync(fullFileName),
+      symbolic = false;
 
-// function maybeResolveSymlink(maybeSymlinkPath) {
-//   if (fs.lstatSync(maybeSymlinkPath).isSymbolicLink()) {
-//     const resolved = path.resolve(
-//       path.dirname(maybeSymlinkPath),
-//       fs.readlinkSync(maybeSymlinkPath),
-//     );
-//     return resolved;
-//   }
-//   return maybeSymlinkPath;
-// }
+    if (stats.isSymbolicLink()) {
+      fullFileName = resolvePath(fullFileName);
+      if (!fullFileName) return;
+
+      stats = FS.lstatSync(fullFileName);
+
+      symbolic = true;
+    }
+
+    if (!stats.isDirectory()) return;
+
+    const external = isExternalModule(fullFileName);
+    cb({ rootPath, symbolic, external, fullFileName, fileName });
+  });
+}
+
+function buildFullModuleMap(
+  moduleRoot,
+  mainModuleMap,
+  externalModuleMap,
+  _alreadyVisited,
+  _prefix,
+) {
+  if (!moduleRoot) return;
+
+  const alreadyVisited = _alreadyVisited || {},
+    prefix = _prefix;
+
+  if (alreadyVisited && alreadyVisited.hasOwnProperty(moduleRoot)) return;
+
+  alreadyVisited[moduleRoot] = true;
+
+  listDirectories(
+    moduleRoot,
+    ({ fileName, fullFileName, symbolic, external }) => {
+      if (symbolic)
+        return buildFullModuleMap(
+          resolvePath(fullFileName, 'node_modules'),
+          mainModuleMap,
+          externalModuleMap,
+          alreadyVisited,
+        );
+
+      const moduleMap = external ? externalModuleMap : mainModuleMap,
+        moduleName = prefix ? PATH.join(prefix, fileName) : fileName;
+
+      if (fileName.charAt(0) !== '@') moduleMap[moduleName] = fullFileName;
+      else
+        return buildFullModuleMap(
+          fullFileName,
+          mainModuleMap,
+          externalModuleMap,
+          alreadyVisited,
+          fileName,
+        );
+    },
+  );
+}
+
+function buildModuleResolutionMap() {
+  const moduleMap = {},
+    externalModuleMap = {};
+
+  buildFullModuleMap(baseModulePath, moduleMap, externalModuleMap);
+
+  // Root project modules take precedence over external modules
+  return Object.assign({}, externalModuleMap, moduleMap);
+}
+
+function findAlernateRoots(
+  moduleRoot = baseModulePath,
+  alternateRoots = [],
+  _alreadyVisited,
+) {
+  const alreadyVisited = _alreadyVisited || {};
+  if (alreadyVisited && alreadyVisited.hasOwnProperty(moduleRoot)) return;
+
+  alreadyVisited[moduleRoot] = true;
+
+  listDirectories(moduleRoot, ({ fullFileName, fileName, external }) => {
+    if (fileName.charAt(0) !== '@') {
+      if (external) alternateRoots.push(fullFileName);
+    } else {
+      findAlernateRoots(fullFileName, alternateRoots, alreadyVisited);
+    }
+  });
+
+  return alternateRoots;
+}
+
+function getPolyfillHelper() {
+  let getPolyfills;
+
+  // Get default react-native polyfills
+  try {
+    getPolyfills = require('react-native/rn-get-polyfills');
+  } catch (e) {
+    getPolyfills = () => [];
+  }
+
+  // See if project has custom polyfills, if so, include the PATH to them
+  try {
+    const customPolyfills = require.resolve('./polyfills.js');
+    getPolyfills = (function(originalGetPolyfills) {
+      return () => originalGetPolyfills().concat(customPolyfills);
+    })(getPolyfills);
+  } catch (e) {
+    //ignore
+  }
+
+  return getPolyfills;
+}
+
+const PATH = require('path');
+const FS = require('fs'),
+  blacklist = require('metro-config/src/defaults/blacklist');
+
+const repoDir = PATH.dirname(PATH.dirname(__dirname));
+
+const moduleBlacklist = [
+    new RegExp(repoDir + '/examples/one/.*'),
+    new RegExp(repoDir + '/expo-package/.*'),
+    new RegExp(repoDir + '/native-package/node_modules/.*'),
+    new RegExp(repoDir + '/node_modules/.*'),
+    /public.*/,
+    /node_modules[^/]+\/.*/,
+    /[^-]build\..*/,
+    /.*\.bak\/.*/,
+    /app\/pages\/browser\/.*/,
+  ],
+  baseModulePath = resolvePath(__dirname, 'node_modules'),
+  // watch alternate roots (outside of project root)
+  alternateRoots = findAlernateRoots(),
+  // build full module map for proper
+  // resolution of modules in external roots
+  extraNodeModules = buildModuleResolutionMap();
+
+if (alternateRoots && alternateRoots.length)
+  console.log('Found alternate project roots: ', alternateRoots);
+
+module.exports = {
+  resolver: {
+    blacklistRE: blacklist(moduleBlacklist),
+    extraNodeModules,
+    useWatchman: false,
+  },
+  watchFolders: [PATH.resolve(__dirname)].concat(alternateRoots),
+  // transformer: {
+  //   babelTransformerPath: require.resolve('./compiler/transformer'),
+  // },
+  serializer: {
+    getPolyfills: getPolyfillHelper(),
+  },
+};
