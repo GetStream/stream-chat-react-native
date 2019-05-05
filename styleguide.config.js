@@ -55,6 +55,7 @@ module.exports = {
       name: 'Message Input',
       components: [
         'src/components/MessageInput.js',
+        'src/components/ImageUploadPreview.js',
         'src/components/MessageInputSmall.js',
         'src/components/MessageInputLarge.js',
         'src/components/MessageInputFlat.js',

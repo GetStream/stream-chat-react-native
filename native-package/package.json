@@ -52,6 +52,9 @@
   },
   "dependencies": {
     "@react-native-community/netinfo": "^2.0.7",
+    "react-native-document-picker": "^2.3.0",
+    "react-native-image-crop-picker": "^0.24.0",
+    "react-native-image-picker": "^0.28.1",
     "stream-chat-react-native-core": "v0.0.5"
   }
 }

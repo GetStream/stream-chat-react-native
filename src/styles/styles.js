@@ -167,14 +167,17 @@ export const styles = {
   }),
   MessageInput: StyleSheet.create({
     container: {
-      ...Layouts.flexRow,
-      alignItems: 'center',
-      paddingLeft: 10,
-      paddingRight: 10,
-      minHeight: 56,
-      margin: 10,
+      ...Layouts.flexColumn,
       borderRadius: 10,
       backgroundColor: 'rgba(0,0,0,0.05)',
+    },
+    inputBoxContainer: {
+      ...Layouts.flexRow,
+      paddingLeft: 10,
+      paddingRight: 10,
+      minHeight: 46,
+      margin: 10,
+      alignItems: 'center',
     },
     inputBox: {
       maxHeight: 60,

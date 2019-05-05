@@ -49,6 +49,8 @@ const normalBundle = {
     'prop-types',
     'react-native',
     'uuid/v4',
+    'mime-types',
+    'path',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/objectWithoutProperties',

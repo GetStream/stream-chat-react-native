@@ -61,3 +61,15 @@ export const capitalize = (s) => {
   if (typeof s !== 'string') return '';
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
+
+export const FileState = Object.freeze({
+  NO_FILE: 'no_file',
+  UPLOADING: 'uploading',
+  UPLOADED: 'uploaded',
+  UPLOAD_FAILED: 'upload_failed',
+});
+
+export const ProgressIndicatorTypes = Object.freeze({
+  IN_PROGRESS: 'in_progress',
+  RETRY: 'retry',
+});

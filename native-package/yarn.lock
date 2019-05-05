@@ -6890,6 +6890,21 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-native-document-picker@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-2.3.0.tgz#5a09735b5c905d85064260e34b053f8d37285634"
+  integrity sha512-bHMyAOzFl+II0ZdfzobKsZKvTErmXfmQGalpxpGbeN8+/uhfhUcdp4WuIMecZhFyX6rbj3h3XXLdA12hVlGgmw==
+
+react-native-image-crop-picker@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.24.0.tgz#df101548f72951bf66e560887af73b11f328bdd0"
+  integrity sha512-AES/iOkcF72IMVSR8BP3mLvjh9OjhxyjL7YGgxJGRbc79/ThawcJAuNUb32IYddKjtfK6LbtY/ZNzI4TN9Cu7g==
+
+react-native-image-picker@^0.28.1:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-0.28.1.tgz#1127460522e0c9741fc62f3d040271d298fb6a6e"
+  integrity sha512-CW2dm+cjsdW2fjBW2WD/cSufNG0x0UpljwGHrjSzyB0TckoW+tjYv44UWtckCWxr1JtCg+QrYDO/MzlRyFcjwQ==
+
 react-native-web@^0.11.2:
   version "0.11.2"
   resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.2.tgz#f3550589347be1f402f0641fefca687ca64a1750"
@@ -7947,10 +7962,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.4.tgz#18ddbf2631e70b75a1887e03ebe79df80a68b45c"
-  integrity sha512-4XHr4BoR9rbndDamj+YauN+tZjnmgMlV9gq3smSPQYaaJLPWuCiiDqz3aYvvv89okH8gB66+1h8DjgzVaM9IiA==
+stream-chat-react-native-core@v0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.5.tgz#6dfbc16b27091a2e366c15f2d69ccb13cd2210c7"
+  integrity sha512-2Nyl5mEC1JptrZXOSXEKPGjjEbKZwEDYQfgN8sMYsx94xowxkaCB4roFIy/aYDmDSaSl5RmGLPjQtJ0RXzelBw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"
