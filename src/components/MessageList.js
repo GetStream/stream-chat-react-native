@@ -7,7 +7,6 @@ import Moment from 'moment';
 import { styles } from '../styles/styles.js';
 
 import { Message } from './Message';
-import { MessageSimple } from './MessageSimple';
 import { MessageNotification } from './MessageNotification';
 
 const MessageList = withChannelContext(
@@ -27,6 +26,9 @@ const MessageList = withChannelContext(
       messages: PropTypes.array.isRequired,
       /** Turn off grouping of messages by user */
       noGroupByUser: PropTypes.bool,
+      online: PropTypes.bool,
+      /** The message rendering component, the Message component delegates its rendering logic to this component */
+      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     componentDidUpdate(prevProps) {
@@ -217,7 +219,7 @@ const MessageList = withChannelContext(
         <Message
           onThreadSelect={this.props.onThreadSelect}
           message={message}
-          Message={MessageSimple}
+          Message={this.props.Message}
           lastReceivedId={
             this.state.lastReceivedId === message.id
               ? this.state.lastReceivedId

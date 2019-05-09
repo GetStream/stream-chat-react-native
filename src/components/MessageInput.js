@@ -15,7 +15,7 @@ import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 
 import ActionSheet from '../vendor/react-native-actionsheet/lib';
-import iconMedia from '../images/icons/icon_attach-media.png';
+// import iconMedia from '../images/icons/icon_attach-media.png';
 import iconGallery from '../images/icons/gallery.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
 
@@ -44,6 +44,13 @@ const MessageInput = withSuggestionsContext(
         /** Override file upload request */
         doFileUploadRequest: PropTypes.func,
         maxNumberOfFiles: PropTypes.number,
+        hasImagePicker: PropTypes.bool,
+        hasFilePicker: PropTypes.bool,
+      };
+
+      static defaultProps = {
+        hasImagePicker: true,
+        hasFilePicker: true,
       };
 
       getMessageDetailsForState = (message) => {
@@ -516,24 +523,25 @@ const MessageInput = withSuggestionsContext(
 
       render() {
         const styles = buildStylesheet('MessageInput', this.props.style);
+        const { hasImagePicker, hasFilePicker } = this.props;
 
         return (
           <React.Fragment>
-            {this.state.fileUploads && (
-              <FileUploadPreview
-                removeFile={this._removeFile}
-                retryUpload={this._uploadFile}
-                fileUploads={this.state.fileOrder.map(
-                  (id) => this.state.fileUploads[id],
-                )}
-              />
-            )}
             <View
               style={{
                 ...styles.container,
                 paddingTop: this.state.imageUploads.length > 0 ? 20 : 0,
               }}
             >
+              {this.state.fileUploads && (
+                <FileUploadPreview
+                  removeFile={this._removeFile}
+                  retryUpload={this._uploadFile}
+                  fileUploads={this.state.fileOrder.map(
+                    (id) => this.state.fileUploads[id],
+                  )}
+                />
+              )}
               {this.state.imageUploads && (
                 <ImageUploadPreview
                   removeImage={this._removeImage}
@@ -550,7 +558,11 @@ const MessageInput = withSuggestionsContext(
                 <TouchableOpacity
                   style={styles.attachButton}
                   onPress={() => {
-                    this.attachActionSheet.show();
+                    if (hasImagePicker && hasFilePicker)
+                      this.attachActionSheet.show();
+                    else if (hasImagePicker && !hasFilePicker)
+                      this._pickImage();
+                    else if (!hasImagePicker && hasFilePicker) this._pickFile();
                   }}
                 >
                   <Image source={iconGallery} style={styles.attachButtonIcon} />
@@ -562,7 +574,7 @@ const MessageInput = withSuggestionsContext(
                 <ActionSheet
                   ref={(o) => (this.attachActionSheet = o)}
                   title={'Add a file'}
-                  options={['Select a photo and video', 'Upload a file']}
+                  options={['Select a photo', 'Upload a file']}
                   cancelButtonIndex={2}
                   destructiveButtonIndex={2}
                   onPress={(index) => {
