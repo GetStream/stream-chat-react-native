@@ -34,6 +34,7 @@ const normalBundle = {
     },
   ],
   external: [
+    'react-native',
     'stream-chat-react-native-core',
     '@react-native-community/netinfo',
     'react-native-document-picker',

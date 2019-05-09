@@ -14,7 +14,7 @@ import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 
-import { ActionSheetCustom as ActionSheet } from '../vendor/react-native-actionsheet/lib';
+import ActionSheet from '../vendor/react-native-actionsheet/lib';
 import iconMedia from '../images/icons/icon_attach-media.png';
 import iconGallery from '../images/icons/gallery.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
@@ -555,22 +555,14 @@ const MessageInput = withSuggestionsContext(
                 >
                   <Image source={iconGallery} style={styles.attachButtonIcon} />
                 </TouchableOpacity>
+                {/**
+                  TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+                  work well with async onPress operations. So find a solution.
+                */}
                 <ActionSheet
                   ref={(o) => (this.attachActionSheet = o)}
                   title={'Add a file'}
-                  options={[
-                    /* eslint-disable */
-                    <View style={{ flexDirection: 'row' }}>
-                      <Image source={iconGallery} style={styles.iconGallery} />
-                      <Text>Select a photo and video</Text>
-                    </View>,
-                    <View style={{ flexDirection: 'row' }}>
-                      <Image source={iconMedia} style={styles.iconMedia} />
-                      <Text>Upload a file</Text>
-                    </View>,
-                    /* eslint-enable */
-                    'Cancel',
-                  ]}
+                  options={['Select a photo and video', 'Upload a file']}
                   cancelButtonIndex={2}
                   destructiveButtonIndex={2}
                   onPress={(index) => {
