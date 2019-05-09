@@ -230,15 +230,13 @@ const MessageList = withChannelContext(
           setEditingState={this.props.setEditingState}
           editing={this.props.editing}
           threadList={this.props.threadList}
+          messageActions={this.props.messageActions}
         />
       );
     };
 
     handleScroll = (event) => {
       const yOffset = event.nativeEvent.contentOffset.y;
-      // const contentHeight = event.nativeEvent.contentSize.height;
-      // const value = yOffset / contentHeight;
-
       this.setState({ yOffset });
     };
 

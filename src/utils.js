@@ -126,3 +126,10 @@ export const SuggestionsMentionItem = ({ name, icon }) => (
     <Text style={{ padding: 10 }}>{name}</Text>
   </View>
 );
+
+export const MESSAGE_ACTIONS = {
+  edit: 'edit',
+  delete: 'delete',
+  reactions: 'reactions',
+  reply: 'reply',
+};

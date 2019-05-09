@@ -4,6 +4,7 @@ import { MessageSimple } from './MessageSimple';
 import PropTypes from 'prop-types';
 import deepequal from 'deep-equal';
 import { withChannelContext } from '../context';
+import { MESSAGE_ACTIONS } from '../utils';
 
 const Message = withChannelContext(
   class Message extends React.Component {
@@ -31,10 +32,12 @@ const Message = withChannelContext(
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** Allows you to overwrite the attachment component */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
     };
 
     static defaultProps = {
       Message: MessageSimple,
+      messageActions: Object.keys(MESSAGE_ACTIONS),
       readBy: [],
       groupStyles: [],
       Attachment,

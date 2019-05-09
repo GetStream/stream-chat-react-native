@@ -8,6 +8,7 @@ import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from '../../vendor/react-native-actionsheet/lib';
 import { MessageText } from './MessageText';
 import { MessageReplies } from './MessageReplies';
+import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 
 export class MessageContent extends React.PureComponent {
@@ -56,16 +57,16 @@ export class MessageContent extends React.PureComponent {
 
   onActionPress = (action) => {
     switch (action) {
-      case 'edit':
+      case MESSAGE_ACTIONS.edit:
         this.handleEdit();
         break;
-      case 'delete':
+      case MESSAGE_ACTIONS.delete:
         this.handleDelete();
         break;
-      case 'reply':
+      case MESSAGE_ACTIONS.reply:
         this.openThread();
         break;
-      case 'addReaction':
+      case MESSAGE_ACTIONS.reactions:
         this.openReactionSelector();
         break;
       default:
@@ -83,6 +84,7 @@ export class MessageContent extends React.PureComponent {
       handleReaction,
       threadList,
       retrySendMessage,
+      messageActions,
     } = this.props;
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
@@ -98,19 +100,41 @@ export class MessageContent extends React.PureComponent {
         ? true
         : false;
 
-    const options = [
-      { id: 'cancel', title: 'Cancel' },
-      { id: 'addReaction', title: 'Add Reaction' },
-    ];
+    const options = [{ id: 'cancel', title: 'Cancel' }];
 
-    if (!threadList) {
-      options.splice(1, 0, { id: 'reply', title: 'Reply' });
+    if (
+      messageActions &&
+      messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
+    ) {
+      options.splice(1, 0, {
+        id: MESSAGE_ACTIONS.reactions,
+        title: 'Add Reaction',
+      });
     }
-    if (Message.canEditMessage())
-      options.splice(1, 0, { id: 'edit', title: 'Edit Message' });
 
-    if (Message.canDeleteMessage())
-      options.splice(1, 0, { id: 'delete', title: 'Delete Message' });
+    if (
+      messageActions &&
+      messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
+      !threadList
+    ) {
+      options.splice(1, 0, { id: MESSAGE_ACTIONS.reply, title: 'Reply' });
+    }
+    if (
+      messageActions &&
+      messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
+      Message.canEditMessage()
+    )
+      options.splice(1, 0, { id: MESSAGE_ACTIONS.edit, title: 'Edit Message' });
+
+    if (
+      messageActions &&
+      messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
+      Message.canDeleteMessage()
+    )
+      options.splice(1, 0, {
+        id: MESSAGE_ACTIONS.delete,
+        title: 'Delete Message',
+      });
 
     if (message.deleted_at)
       return (
@@ -127,7 +151,7 @@ export class MessageContent extends React.PureComponent {
         ...styles[pos],
         ...(styles[message.status] ? styles[message.status] : {}),
       },
-      onLongPress: this.showActionSheet,
+      onLongPress: options.length > 1 ? this.showActionSheet : null,
       activeOpacity: 0.7,
       disabled: readOnly,
     };
