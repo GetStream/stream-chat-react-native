@@ -28,10 +28,9 @@ registerNativeHandlers({
     }),
   pickDocument: () =>
     new Promise((resolve, reject) => {
-      console.log(DocumentPicker);
       DocumentPicker.show(
         { filetype: [DocumentPickerUtil.allFiles()] },
-        (response) => {
+        (error, response) => {
           if (response.error) {
             reject(Error(response.error));
           }
@@ -44,6 +43,7 @@ registerNativeHandlers({
           resolve({
             cancelled: response.didCancel,
             uri,
+            name: response.fileName,
           });
         },
       );

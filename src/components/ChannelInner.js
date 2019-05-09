@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { View, Text, KeyboardAvoidingView } from 'react-native';
 import { ChannelContext } from '../context';
-
+import { SuggestionsProvider } from './SuggestionsProvider';
 // import { LoadingIndicator } from './LoadingIndicator';
 
 import uuidv4 from 'uuid/v4';
@@ -35,6 +35,7 @@ export class ChannelInner extends PureComponent {
       threadMessages: [],
       threadLoadingMore: false,
       threadHasMore: true,
+      kavEnabled: true,
     };
 
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -57,6 +58,8 @@ export class ChannelInner extends PureComponent {
       leading: true,
       trailing: true,
     });
+    this.rootView = false;
+    this.messageInputBox = false;
   }
 
   static propTypes = {
@@ -227,7 +230,7 @@ export class ChannelInner extends PureComponent {
     this.setState({ messages: c.state.messages });
   }
 
-  createMessagePreview = (text, attachments, parent) => {
+  createMessagePreview = (text, attachments, parent, mentioned_users) => {
     // create a preview of the message
     const clientSideID = `${this.props.client.userID}-` + uuidv4();
     const message = {
@@ -244,6 +247,7 @@ export class ChannelInner extends PureComponent {
       },
       created_at: new Date(),
       attachments,
+      mentioned_users,
       reactions: [],
     };
 
@@ -254,12 +258,13 @@ export class ChannelInner extends PureComponent {
   };
 
   _sendMessage = async (message) => {
-    const { text, attachments, id, parent_id } = message;
+    const { text, attachments, id, parent_id, mentioned_users } = message;
     const messageData = {
       text,
       attachments,
       id,
       parent_id,
+      mentioned_users,
     };
 
     try {
@@ -270,18 +275,24 @@ export class ChannelInner extends PureComponent {
         this.updateMessage(messageResponse.message);
       }
     } catch (error) {
+      console.log(error);
       // set the message to failed..
       message.status = 'failed';
       this.updateMessage(message);
     }
   };
 
-  sendMessage = async ({ text, attachments = [], parent }) => {
+  sendMessage = async ({ text, attachments = [], parent, mentioned_users }) => {
     // remove error messages upon submit
     this.props.channel.state.filterErrorMessages();
 
     // create a local preview message to show in the UI
-    const messagePreview = this.createMessagePreview(text, attachments, parent);
+    const messagePreview = this.createMessagePreview(
+      text,
+      attachments,
+      parent,
+      mentioned_users,
+    );
 
     // first we add the message to the UI
     this.updateMessage(messagePreview, {
@@ -384,6 +395,9 @@ export class ChannelInner extends PureComponent {
     openThread: this.openThread,
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
+    openSuggestions: this.openSuggestions,
+    closeSuggestions: this.closeSuggestions,
+    updateSuggestions: this.updateSuggestions,
   });
 
   renderComponent = () => this.props.children;
@@ -406,10 +420,16 @@ export class ChannelInner extends PureComponent {
         <ChannelContext.Provider value={this.getContext()}>
           <KeyboardAvoidingView
             behavior="padding"
-            enabled
+            enabled={this.state.kavEnabled}
             keyboardVerticalOffset="80"
           >
-            {this.renderComponent()}
+            <SuggestionsProvider
+              handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
+                this.setState({ kavEnabled: trueOrFalse });
+              }}
+            >
+              {this.renderComponent()}
+            </SuggestionsProvider>
           </KeyboardAvoidingView>
         </ChannelContext.Provider>
       );

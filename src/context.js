@@ -44,3 +44,25 @@ export function withChannelContext(OriginalComponent) {
 
   return ContextAwareComponent;
 }
+
+export const SuggestionsContext = React.createContext({});
+
+export function withSuggestionsContext(OriginalComponent) {
+  const ContextAwareComponent = function ContextComponent(props) {
+    return (
+      <SuggestionsContext.Consumer>
+        {(suggestionsContext) => (
+          <OriginalComponent {...suggestionsContext} {...props} />
+        )}
+      </SuggestionsContext.Consumer>
+    );
+  };
+  ContextAwareComponent.displayName =
+    OriginalComponent.displayName || OriginalComponent.name || 'Component';
+  ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
+    'Base',
+    '',
+  );
+
+  return ContextAwareComponent;
+}

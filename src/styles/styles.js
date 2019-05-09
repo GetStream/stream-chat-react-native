@@ -190,6 +190,23 @@ export const styles = {
     pictureButton: {
       marginRight: 8,
     },
+    attachButton: {
+      marginRight: 8,
+    },
+    attachButtonIcon: {
+      height: 15,
+      width: 15,
+    },
+    iconGallery: {
+      width: 20,
+      height: 20,
+      marginRight: 10,
+    },
+    iconMedia: {
+      width: 20,
+      height: 20,
+      marginRight: 10,
+    },
   }),
   HyperLink: StyleSheet.create({
     title: {

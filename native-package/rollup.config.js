@@ -36,6 +36,8 @@ const normalBundle = {
   external: [
     'stream-chat-react-native-core',
     '@react-native-community/netinfo',
+    'react-native-document-picker',
+    'react-native-image-picker',
   ],
   plugins: [
     replace({

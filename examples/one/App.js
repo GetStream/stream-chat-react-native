@@ -33,7 +33,7 @@ chatClient.setUser(
 const filters = { type: 'messaging' };
 const sort = { last_message_at: -1 };
 const channels = chatClient.queryChannels(filters, sort, {
-  subscribe: true,
+  watch: true,
 });
 
 class ChannelListScreen extends PureComponent {

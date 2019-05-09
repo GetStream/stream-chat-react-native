@@ -48,6 +48,7 @@ const normalBundle = {
     'stream-chat',
     'prop-types',
     'react-native',
+    'react-native-simple-markdown',
     'uuid/v4',
     'mime-types',
     'path',

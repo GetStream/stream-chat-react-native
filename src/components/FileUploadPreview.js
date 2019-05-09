@@ -36,7 +36,7 @@ export class FileUploadPreview extends React.PureComponent {
       <WithProgressIndicator
         active={item.state !== FileState.UPLOADED}
         type={type}
-        action={this.props.handleRetry.bind(this, item.id)}
+        action={this.props.retryUpload.bind(this, item.id)}
       >
         <View
           style={{

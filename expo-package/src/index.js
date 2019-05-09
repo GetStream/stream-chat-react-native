@@ -11,6 +11,8 @@ registerNativeHandlers({
     return await ImagePicker.launchImageLibraryAsync({
       allowsEditing: false,
       aspect: [4, 3],
+      //TODO: Decide what to do about it
+      quality: 0.2,
     });
   },
   pickDocument: async () => await DocumentPicker.getDocumentAsync(),

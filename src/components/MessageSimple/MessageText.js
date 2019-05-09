@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { buildStylesheet } from '../../styles/styles.js';
 import { renderText, capitalize } from '../../utils';
 
@@ -23,7 +23,7 @@ export const MessageText = ({ message, isMyMessage, style }) => {
           ...styles[message.status],
         }}
       >
-        <Text style={styles.text}>{renderText(message.text)}</Text>
+        {renderText(message)}
       </View>
     </React.Fragment>
   );

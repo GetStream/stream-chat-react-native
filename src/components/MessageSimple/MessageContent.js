@@ -149,7 +149,11 @@ export class MessageContent extends React.PureComponent {
           />
         )}
         {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-        <View ref={(o) => (this.messageContainer = o)} collapsable={false}>
+        <View
+          ref={(o) => (this.messageContainer = o)}
+          collapsable={false}
+          style={{ alignItems: 'flex-end' }}
+        >
           {hasAttachment
             ? message.attachments.map((attachment, index) => (
                 <Attachment
