@@ -36,6 +36,7 @@ expo init StreamChatExpoExample
 cd StreamChatExpoExample
 yarn add stream-chat-expo
 ```
+
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
@@ -44,7 +45,7 @@ OR you can swap this file for your `App.js` in root folder with additional follo
 yarn add react-navigation
 ```
 
-and finally 
+and finally
 
 ```bash
 yarn start
@@ -74,7 +75,8 @@ yarn add react-native-gesture-handler
 react-native link react-native-gesture-handler
 ```
 
-and finally 
+and finally
+
 ```bash
 react-native run-ios
 ```
@@ -82,8 +84,6 @@ react-native run-ios
 **NOTE** If you are planning to use file picker functionality, make sure you enable iCloud capability in your app
 
 ![Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
-
-
 
 ## How to run example
 
