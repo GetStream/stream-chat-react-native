@@ -52,19 +52,23 @@ const markdownStyles = {
 export const emojiData = [
   {
     id: 'haha',
-    icon: '😀',
+    icon: '😂',
   },
   {
     id: 'love',
-    icon: '😍',
+    icon: '❤️️',
   },
   {
     id: 'sad',
-    icon: '😥',
+    icon: '😔',
   },
   {
     id: 'wow',
-    icon: '😳',
+    icon: '😮',
+  },
+  {
+    id: 'angry',
+    icon: '😠',
   },
   {
     id: 'like',

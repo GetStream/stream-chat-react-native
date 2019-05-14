@@ -25,6 +25,7 @@ const ChannelListMessenger = withChatContext(
 
       /** The loading indicator to use */
       LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      loadNextPage: PropTypes.func,
     };
 
     static defaultProps = {
@@ -40,6 +41,7 @@ const ChannelListMessenger = withChatContext(
     renderChannels = () => (
       <FlatList
         data={this.props.channels}
+        onEndReached={this.props.loadNextPage}
         renderItem={({ item: channel }) => (
           <ChannelPreview
             {...this.props}
@@ -49,14 +51,14 @@ const ChannelListMessenger = withChatContext(
             Preview={this.props.Preview}
           />
         )}
-        keyExtractor={(item) => item.cid}
+        keyExtractor={(item, index) => item.cid + index}
       />
     );
 
     render() {
       if (this.props.error) {
         return <Text>Error loading channels</Text>;
-      } else if (this.props.loading) {
+      } else if (this.props.loadingChannels) {
         return <Text>Loading Channels</Text>;
       } else {
         return this.renderChannels();

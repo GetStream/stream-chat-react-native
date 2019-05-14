@@ -39,6 +39,7 @@ const normalBundle = {
     '@react-native-community/netinfo',
     'react-native-document-picker',
     'react-native-image-picker',
+    'es6-symbol',
   ],
   plugins: [
     replace({

@@ -19,7 +19,6 @@ YellowBox.ignoreWarnings(['Remote debugger']);
 const chatClient = new StreamChat('qk4nn7rpcn75');
 const userToken =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
-
 chatClient.setUser(
   {
     id: 'billowing-firefly-8',
@@ -31,10 +30,17 @@ chatClient.setUser(
 );
 
 const filters = { type: 'messaging' };
-const sort = { last_message_at: -1 };
-const channels = chatClient.queryChannels(filters, sort, {
+const sort = {
+  last_message_at: -1,
+  cid: 1,
+};
+const options = {
+  member: true,
   watch: true,
-});
+};
+// const channels = chatClient.queryChannels(filters, sort, {
+//   watch: true,
+// });
 
 class ChannelListScreen extends PureComponent {
   static navigationOptions = () => ({
@@ -47,8 +53,10 @@ class ChannelListScreen extends PureComponent {
         <Chat client={chatClient}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
-              channels={channels}
               Preview={ChannelPreviewMessenger}
+              filters={filters}
+              sort={sort}
+              options={options}
               onSelect={(channel) => {
                 this.props.navigation.navigate('Channel', {
                   channel,

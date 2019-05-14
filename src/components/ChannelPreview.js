@@ -70,6 +70,7 @@ export class ChannelPreview extends PureComponent {
 
     if (!message) {
       latestMessage.text = 'Nothing yet...';
+      return latestMessage;
     }
     if (message.deleted_at) {
       latestMessage.text = 'Message deleted';

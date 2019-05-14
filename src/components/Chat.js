@@ -48,14 +48,20 @@ export class Chat extends PureComponent {
     this.state = {
       // currently active channel
       channel: {},
-      // list of channels
-      channels: [],
-      // create new Channel state
-      channelStart: false, // false
       isOnline: true,
     };
 
     this.setConnectionListener();
+    this._unmounted = false;
+  }
+
+  componentWillUnmount() {
+    this._unmounted = true;
+    this.props.client.off(this.handleEvent);
+    NetInfo.removeEventListener(
+      'connectionChange',
+      this.handleConnectionChange,
+    );
   }
 
   setConnectionListener = () => {
@@ -76,7 +82,7 @@ export class Chat extends PureComponent {
     if (e !== undefined && e.preventDefault) {
       e.preventDefault();
     }
-
+    if (this._unmounted) return;
     this.setState(() => ({
       channel,
     }));
@@ -84,7 +90,6 @@ export class Chat extends PureComponent {
 
   getContext = () => ({
     client: this.props.client,
-    channels: this.state.channels,
     channel: this.state.channel,
     setActiveChannel: this.setActiveChannel,
     theme: this.props.theme,

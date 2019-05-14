@@ -22,7 +22,7 @@ export const MessageAvatar = ({ message, isMyMessage, style }) => {
       {showAvatar ? (
         <Avatar image={message.user.image} size={32} name={message.user.name} />
       ) : (
-        <View style={{ width: 32, height: 32 }} />
+        <View style={{ width: 32, height: 28 }} />
       )}
     </View>
   );
