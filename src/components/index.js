@@ -1,3 +1,4 @@
+export { Avatar } from './Avatar';
 export { Chat } from './Chat';
 export { Channel } from './Channel';
 export { MessageList } from './MessageList';
