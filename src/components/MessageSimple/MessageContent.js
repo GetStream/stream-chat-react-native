@@ -1,7 +1,10 @@
 import React from 'react';
 import { Dimensions, View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
-import { buildStylesheet } from '../../styles/styles.js';
+import {
+  buildStylesheet,
+  REACTION_PICKER_HEIGHT,
+} from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
@@ -45,7 +48,7 @@ export class MessageContent extends React.PureComponent {
     this.messageContainer.measureInWindow((x, y, width) => {
       this.setState({
         reactionPickerVisible: true,
-        rpTop: y - 60,
+        rpTop: y - REACTION_PICKER_HEIGHT,
         rpLeft: pos === 'left' ? x : null,
         rpRight:
           pos === 'right'
@@ -85,6 +88,7 @@ export class MessageContent extends React.PureComponent {
       threadList,
       retrySendMessage,
       messageActions,
+      style,
     } = this.props;
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
@@ -92,7 +96,7 @@ export class MessageContent extends React.PureComponent {
 
     const pos = isMyMessage(message) ? 'right' : 'left';
 
-    const styles = buildStylesheet('MessageSimpleContent', {});
+    const styles = buildStylesheet('MessageSimpleContent', style);
 
     const showTime =
       message.groupPosition[0] === 'single' ||
@@ -225,6 +229,8 @@ export class MessageContent extends React.PureComponent {
         <ReactionPicker
           reactionPickerVisible={this.state.reactionPickerVisible}
           handleReaction={handleReaction}
+          latestReactions={message.latest_reactions}
+          reactionCounts={message.reaction_counts}
           handleDismiss={() => {
             this.setState({ reactionPickerVisible: false });
           }}

@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, Text, KeyboardAvoidingView } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { ChannelContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 // import { LoadingIndicator } from './LoadingIndicator';
@@ -419,7 +419,7 @@ export class ChannelInner extends PureComponent {
       core = (
         <ChannelContext.Provider value={this.getContext()}>
           <KeyboardAvoidingView
-            behavior="padding"
+            behavior={Platform.select({ ios: 'padding', android: null })}
             enabled={this.state.kavEnabled}
             keyboardVerticalOffset="80"
           >

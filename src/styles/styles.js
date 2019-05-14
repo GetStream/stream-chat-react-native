@@ -5,6 +5,10 @@ import { defaultsDeep } from 'lodash-es';
 
 export const BASE_FONT_SIZE = 16;
 
+// Set fixed component sizes
+
+export const REACTION_PICKER_HEIGHT = 70;
+
 const Sizes = {
   borderRadius: 16,
   borderRadiusS: 2,
@@ -262,6 +266,27 @@ export const styles = {
     date: {
       flex: 1,
       textAlign: 'center',
+    },
+  }),
+  ReactionPicker: StyleSheet.create({
+    container: {
+      display: 'flex',
+      flexDirection: 'row',
+      backgroundColor: 'black',
+      paddingLeft: 20,
+      height: REACTION_PICKER_HEIGHT,
+      paddingRight: 20,
+      borderRadius: 30,
+    },
+    reactionColumn: {
+      flexDirection: 'column',
+      alignItems: 'center',
+      marginTop: -5,
+    },
+    reactionCount: {
+      color: 'white',
+      fontSize: 10,
+      fontWeight: 'bold',
     },
   }),
 };
