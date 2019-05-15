@@ -521,6 +521,12 @@ const MessageInput = withSuggestionsContext(
 
       setInputBoxRef = (o) => (this.inputBox = o);
 
+      getCommands = () => {
+        const config = this.props.channel.getConfig();
+        const allCommands = config.commands;
+        return allCommands;
+      };
+
       render() {
         const styles = buildStylesheet('MessageInput', this.props.style);
         const { hasImagePicker, hasFilePicker } = this.props;
@@ -596,8 +602,13 @@ const MessageInput = withSuggestionsContext(
                   value={this.state.text}
                   onChange={this.onChange}
                   getUsers={this.getUsers}
+                  getCommands={this.getCommands}
                   setInputBoxRef={this.setInputBoxRef}
-                  triggerSettings={ACITriggerSettings(this.onSelectItem)}
+                  triggerSettings={ACITriggerSettings({
+                    users: this.getUsers(),
+                    commands: this.getCommands(),
+                    onMentionSelectItem: this.onSelectItem,
+                  })}
                 />
                 <TouchableOpacity
                   style={styles.sendButton}

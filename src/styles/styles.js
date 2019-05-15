@@ -229,7 +229,35 @@ export const styles = {
       borderBottomRightRadius: 16,
     },
   }),
-
+  AttachmentActions: StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      padding: 5,
+    },
+    button: {
+      borderRadius: 20,
+      paddingTop: 5,
+      paddingBottom: 5,
+      paddingLeft: 10,
+      paddingRight: 10,
+      alignItems: 'center',
+    },
+    primaryButton: {
+      backgroundColor: '#006CFF',
+    },
+    primaryButtonText: {
+      color: 'white',
+    },
+    defaultButton: {
+      backgroundColor: 'white',
+      borderColor: Colors.light,
+      borderWidth: 1,
+    },
+    defaultButtonText: {
+      color: 'black',
+    },
+  }),
   MessageNotification: StyleSheet.create({
     container: {
       ...Layouts.flexColumn,

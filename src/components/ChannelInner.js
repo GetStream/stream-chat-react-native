@@ -406,7 +406,11 @@ export class ChannelInner extends PureComponent {
     let core;
 
     if (this.state.error) {
-      core = <View>Error: {this.state.error.message}</View>;
+      core = (
+        <View>
+          <Text>Error: {this.state.error.message}</Text>
+        </View>
+      );
     } else if (this.state.loading) {
       core = (
         <View>
@@ -414,7 +418,11 @@ export class ChannelInner extends PureComponent {
         </View>
       );
     } else if (!this.props.channel || !this.props.channel.watch) {
-      core = <View>Channel Missing</View>;
+      core = (
+        <View>
+          <Text>Channel Missing</Text>
+        </View>
+      );
     } else {
       core = (
         <ChannelContext.Provider value={this.getContext()}>
