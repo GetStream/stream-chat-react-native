@@ -7528,7 +7528,7 @@ react-native-gesture-handler@~1.0.14:
     invariant "^2.2.2"
     prop-types "^15.5.10"
 
-"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
+react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
   version "0.22.1"
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
@@ -8692,10 +8692,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.9.tgz#08600242d1ff2be94bbb9b4a68ad8bf91f37de52"
-  integrity sha512-hCKMtsUA/Wfy7hoyLXosL6AtJoLvURyrwqKEAhDpMxDBYrR4UCMsrSSXC6wVsHR6Y1XPrwNpiHxfpf+yB16z7g==
+stream-chat-react-native-core@v0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.10.tgz#93cd542543bbb06daf14530d0122cd753fbf4804"
+  integrity sha512-TkC0giaFBoUgtNIE8j4E/a0VkLCXPh8BrvIPNGXN+6i8+oMCSRvAa7nwFI2GDtai1T3D1q2okRiysaaPQhehEg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"
