@@ -56,7 +56,7 @@ export class Card extends React.Component {
     return (
       <TouchableOpacity
         onPress={() => {
-          this._goToURL(og_scrape_url);
+          this._goToURL(og_scrape_url || image_url || thumb_url);
         }}
       >
         <Image
