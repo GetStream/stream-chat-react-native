@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import Moment from 'moment';
-// import { ChannelPreviewCountOnly } from './ChannelPreviewCountOnly';
 
 export class ChannelPreview extends PureComponent {
   constructor(props) {
@@ -18,7 +17,6 @@ export class ChannelPreview extends PureComponent {
   static propTypes = {
     channel: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
-    activeChannel: PropTypes.object.isRequired,
     setActiveChannel: PropTypes.func.isRequired,
     Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
@@ -30,37 +28,33 @@ export class ChannelPreview extends PureComponent {
   componentDidMount() {
     // listen to change...
     const channel = this.props.channel;
-    channel.on('message.new', this.handleEvent);
+    this.setState({ unread: channel.countUnread() });
+    channel.on('message.new', this.handleNewMessageEvent);
+    channel.on('message.read', this.handleReadEvent);
   }
 
   componentWillUnmount() {
     const channel = this.props.channel;
-    channel.off('message.new', this.handleEvent);
+    channel.off('message.new', this.handleNewMessageEvent);
+    channel.off('message.read', this.handleReadEvent);
   }
 
-  handleEvent = (event) => {
-    const channel = this.props.channel;
-    const isActive = this.props.activeChannel.cid === channel.cid;
-    if (!isActive) {
-      const unread = channel.countUnread(this.state.lastRead);
-      this.setState({ lastMessage: event.message, unread });
-    } else {
-      this.setState({ lastMessage: event.message, unread: 0 });
+  handleReadEvent = (event) => {
+    if (event.user.id === this.props.client.userID) {
+      this.setState({ unread: this.props.channel.countUnread() });
     }
   };
 
-  componentDidUpdate(prevProps) {
-    if (this.props.activeChannel.cid !== prevProps.activeChannel.cid) {
-      const isActive = this.props.activeChannel.cid === this.props.channel.cid;
-      if (isActive) {
-        this.setState({ unread: 0, lastRead: new Date() });
-      }
-    }
-  }
+  handleNewMessageEvent = (event) => {
+    const channel = this.props.channel;
+    this.setState({
+      lastMessage: event.message,
+      unread: channel.countUnread(),
+    });
+  };
 
   getLatestMessage = () => {
     const { channel } = this.props;
-
     const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
@@ -102,12 +96,6 @@ export class ChannelPreview extends PureComponent {
 
     const { Preview } = this.props;
 
-    return (
-      <Preview
-        {...props}
-        latestMessage={this.getLatestMessage()}
-        active={this.props.activeChannel.cid === this.props.channel.cid}
-      />
-    );
+    return <Preview {...props} latestMessage={this.getLatestMessage()} />;
   }
 }

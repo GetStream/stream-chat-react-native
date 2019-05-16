@@ -45,7 +45,6 @@ const ChannelListMessenger = withChatContext(
         renderItem={({ item: channel }) => (
           <ChannelPreview
             {...this.props}
-            activeChannel={channel}
             key={channel.cid}
             channel={channel}
             Preview={this.props.Preview}
