@@ -24,7 +24,8 @@ export class MessageContent extends React.PureComponent {
   }
 
   openThread = () => {
-    this.props.onThreadSelect(this.props.message);
+    if (this.props.onThreadSelect)
+      this.props.onThreadSelect(this.props.message);
   };
 
   onMessageTouch = () => {
