@@ -187,6 +187,7 @@ export class MessageContent extends React.PureComponent {
                 <Attachment
                   key={`${message.id}-${index}`}
                   attachment={attachment}
+                  actionHandler={this.props.handleAction}
                 />
               ))
             : false}

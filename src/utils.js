@@ -1,7 +1,9 @@
 import anchorme from 'anchorme';
 import React from 'react';
 import { truncate } from 'lodash-es';
-import { Text, View, Avatar } from 'react-native';
+import { MentionsItem } from './components/MentionsItem';
+import { CommandsItem } from './components/CommandsItem';
+
 import Markdown from 'react-native-simple-markdown';
 
 export const renderText = (message) => {
@@ -94,9 +96,13 @@ export const ProgressIndicatorTypes = Object.freeze({
 });
 
 // ACI = AutoCompleteInput
-export const ACITriggerSettings = (onMentionSelectItem) => ({
+export const ACITriggerSettings = ({
+  users,
+  onMentionSelectItem,
+  commands,
+}) => ({
   '@': {
-    dataProvider: (q, users) => {
+    dataProvider: (q) => {
       const matchingUsers = users.filter((user) => {
         if (!q) return true;
         if (
@@ -112,7 +118,8 @@ export const ACITriggerSettings = (onMentionSelectItem) => ({
       });
       return matchingUsers.slice(0, 10);
     },
-    component: SuggestionsMentionItem,
+    component: MentionsItem,
+    title: 'Searching for people',
     output: (entity) => ({
       key: entity.id,
       text: `@${entity.name || entity.id}`,
@@ -122,14 +129,45 @@ export const ACITriggerSettings = (onMentionSelectItem) => ({
       onMentionSelectItem(item);
     },
   },
-});
+  '/': {
+    dataProvider: (q, text) => {
+      if (text.indexOf('/') !== 0) {
+        return [];
+      }
 
-export const SuggestionsMentionItem = ({ name, icon }) => (
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-    <Avatar image={icon} />
-    <Text style={{ padding: 10 }}>{name}</Text>
-  </View>
-);
+      const selectedCommands = commands.filter((c) => c.name.indexOf(q) !== -1);
+
+      // sort alphabetically unless the you're matching the first char
+      selectedCommands.sort((a, b) => {
+        let nameA = a.name.toLowerCase();
+        let nameB = b.name.toLowerCase();
+        if (nameA.indexOf(q) === 0) {
+          nameA = `0${nameA}`;
+        }
+        if (nameB.indexOf(q) === 0) {
+          nameB = `0${nameB}`;
+        }
+        if (nameA < nameB) {
+          return -1;
+        }
+        if (nameA > nameB) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      return selectedCommands.slice(0, 10);
+    },
+    title: 'Commands',
+    component: CommandsItem,
+    output: (entity) => ({
+      key: entity.id,
+      text: `/${entity.name}`,
+      caretPosition: 'next',
+    }),
+  },
+});
 
 export const MESSAGE_ACTIONS = {
   edit: 'edit',

@@ -43,7 +43,10 @@ export class AutoCompleteInput extends React.PureComponent {
 
   startTracking = () => {
     this.isTrackingStarted = true;
-    this.props.openSuggestions();
+    const { component, title } = this.props.triggerSettings[
+      this.state.currentTrigger
+    ];
+    this.props.openSuggestions(title, component);
     // console.log('start TRACKING');
   };
 
@@ -55,12 +58,13 @@ export class AutoCompleteInput extends React.PureComponent {
 
   updateSuggestions(q) {
     const triggers = this.props.triggerSettings;
-    const currentTrigger = '@';
-    // console.log('from update suggestions: ' + currentTrigger);
     this.props.updateSuggestions({
-      data: triggers[currentTrigger].dataProvider(q, this.props.getUsers()),
+      data: triggers[this.state.currentTrigger].dataProvider(
+        q,
+        this.state.text,
+      ),
       onSelect: this.onSelectSuggestion,
-      output: triggers[currentTrigger].output,
+      output: triggers[this.state.currentTrigger].output,
     });
   }
 
@@ -123,7 +127,8 @@ export class AutoCompleteInput extends React.PureComponent {
 
     this.syncCaretPosition(newCaretPosition);
 
-    triggers[currentTrigger].callback(item);
+    if (triggers[currentTrigger].callback)
+      triggers[currentTrigger].callback(item);
   };
 
   syncCaretPosition = async (position = 0) => {

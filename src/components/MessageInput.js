@@ -14,7 +14,7 @@ import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 
-import ActionSheet from '../vendor/react-native-actionsheet/lib';
+import { ActionSheetCustom as ActionSheet } from '../vendor/react-native-actionsheet/lib';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 import iconGallery from '../images/icons/gallery.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
@@ -520,6 +520,12 @@ const MessageInput = withSuggestionsContext(
 
       setInputBoxRef = (o) => (this.inputBox = o);
 
+      getCommands = () => {
+        const config = this.props.channel.getConfig();
+        const allCommands = config.commands;
+        return allCommands;
+      };
+
       render() {
         const styles = buildStylesheet('MessageInput', this.props.style);
         const { hasImagePicker, hasFilePicker } = this.props;
@@ -573,7 +579,7 @@ const MessageInput = withSuggestionsContext(
                 <ActionSheet
                   ref={(o) => (this.attachActionSheet = o)}
                   title={'Add a file'}
-                  options={['Select a photo', 'Upload a file']}
+                  options={['Select a photo', 'Upload a file', 'Cancel']}
                   cancelButtonIndex={2}
                   destructiveButtonIndex={2}
                   onPress={(index) => {
@@ -595,8 +601,13 @@ const MessageInput = withSuggestionsContext(
                   value={this.state.text}
                   onChange={this.onChange}
                   getUsers={this.getUsers}
+                  getCommands={this.getCommands}
                   setInputBoxRef={this.setInputBoxRef}
-                  triggerSettings={ACITriggerSettings(this.onSelectItem)}
+                  triggerSettings={ACITriggerSettings({
+                    users: this.getUsers(),
+                    commands: this.getCommands(),
+                    onMentionSelectItem: this.onSelectItem,
+                  })}
                 />
                 <TouchableOpacity
                   style={styles.sendButton}

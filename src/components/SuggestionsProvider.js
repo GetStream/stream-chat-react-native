@@ -5,10 +5,8 @@ import {
   FlatList,
   TouchableOpacity,
   findNodeHandle,
-  TouchableHighlight,
 } from 'react-native';
 
-import { Avatar } from './Avatar';
 import { SuggestionsContext } from '../context';
 
 export class SuggestionsProvider extends React.PureComponent {
@@ -22,21 +20,25 @@ export class SuggestionsProvider extends React.PureComponent {
       suggestions: [],
       suggestionsWidth: 0,
       suggestionsBackdropHeight: 0,
-      SuggestionsViewItem: null,
+      suggestionsTitle: '',
+      component: null,
     };
   }
 
-  openSuggestions = async () => {
+  openSuggestions = async (title, component) => {
     const [inputBoxPosition, chatBoxPosition] = await Promise.all([
       this.getInputBoxPosition(),
       this.getChatBoxPosition(),
     ]);
+
     this.setState({
       suggestionsBottomMargin: chatBoxPosition.height - inputBoxPosition.y,
       suggestionsLeftMargin: inputBoxPosition.x,
       suggestionsWidth: inputBoxPosition.width,
       suggestionsViewActive: true,
       suggestionsBackdropHeight: inputBoxPosition.y,
+      suggestionsTitle: title,
+      component,
     });
   };
 
@@ -49,6 +51,8 @@ export class SuggestionsProvider extends React.PureComponent {
   closeSuggestions = () => {
     this.setState({
       suggestionsViewActive: false,
+      suggestionsTitle: '',
+      component: null,
     });
   };
 
@@ -91,7 +95,7 @@ export class SuggestionsProvider extends React.PureComponent {
       <SuggestionsContext.Provider value={this.getContext()}>
         {/** TODO: Support dynamic item view for different type of suggestions */}
         <SuggestionsView
-          ItemView={MentionsItem}
+          component={this.state.component}
           suggestions={this.state.suggestions}
           active={this.state.suggestionsViewActive}
           marginBottom={this.state.suggestionsBottomMargin}
@@ -99,6 +103,7 @@ export class SuggestionsProvider extends React.PureComponent {
           width={this.state.suggestionsWidth}
           backdropHeight={this.state.suggestionsBackdropHeight}
           handleDismiss={this.closeSuggestions}
+          suggestionsTitle={this.state.suggestionsTitle}
         />
         <View ref={this.setRootView} collapsable={false}>
           {this.props.children}
@@ -114,19 +119,40 @@ class SuggestionsView extends React.PureComponent {
   }
 
   renderHeader = () => <SuggestionsHeader />;
+  renderItem = ({ item }) => {
+    const {
+      suggestions: { onSelect },
+      component: Component,
+    } = this.props;
+
+    return (
+      <TouchableOpacity
+        style={{
+          height: SUGGESTIONS_ITEM_HEIGHT,
+          justifyContent: 'center',
+        }}
+        onPress={() => {
+          onSelect(item);
+        }}
+      >
+        <Component item={item} />
+      </TouchableOpacity>
+    );
+  };
 
   render() {
     const {
       active,
       marginLeft,
       width,
-      suggestions: { data, onSelect },
-      ItemView,
+      suggestions: { data },
       backdropHeight,
       handleDismiss,
+      suggestionsTitle,
     } = this.props;
-    if (!active) return null;
 
+    if (!active) return null;
+    if (!data || data.length === 0) return null;
     return (
       <TouchableOpacity
         style={{
@@ -152,24 +178,11 @@ class SuggestionsView extends React.PureComponent {
           }}
         >
           <FlatList
-            ListHeaderComponent={SuggestionsHeader}
+            ListHeaderComponent={<SuggestionsHeader title={suggestionsTitle} />}
             ItemSeparatorComponent={SuggestionsSeparator}
             data={data}
             keyboardShouldPersistTaps="always"
-            renderItem={({ item }) => (
-              <TouchableHighlight
-                underlayColor="blue"
-                style={{
-                  height: SUGGESTIONS_ITEM_HEIGHT,
-                  justifyContent: 'center',
-                }}
-                onPress={() => {
-                  onSelect(item);
-                }}
-              >
-                <ItemView name={item.name} icon={item.image} />
-              </TouchableHighlight>
-            )}
+            renderItem={this.renderItem}
             keyExtractor={(item, index) => item.name + index}
           />
         </View>
@@ -178,23 +191,14 @@ class SuggestionsView extends React.PureComponent {
   }
 }
 
-const SuggestionsHeader = () => (
-  <Text style={{ padding: 10, height: SUGGESTIONS_ITEM_HEIGHT }}>
-    Searching for people
+const SuggestionsHeader = ({ title }) => (
+  <Text
+    style={{ padding: 10, height: SUGGESTIONS_ITEM_HEIGHT, fontWeight: 'bold' }}
+  >
+    {title}
   </Text>
 );
 
 const SuggestionsSeparator = () => <View style={{ height: 0 }} />;
 
-class MentionsItem extends React.PureComponent {
-  render() {
-    const { name, icon } = this.props;
-    return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Avatar image={icon} />
-        <Text style={{ padding: 10 }}>{name}</Text>
-      </View>
-    );
-  }
-}
 const SUGGESTIONS_ITEM_HEIGHT = 50;

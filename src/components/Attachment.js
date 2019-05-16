@@ -3,7 +3,7 @@ import { Image, Text, View, TouchableOpacity, Linking } from 'react-native';
 import PropTypes from 'prop-types';
 import { Card } from './Card';
 import FileIcon from './FileIcon';
-
+import { AttachmentActions } from './AttachmentActions';
 export class Attachment extends React.Component {
   static propTypes = {
     /** The attachment to render */
@@ -31,9 +31,7 @@ export class Attachment extends React.Component {
     }
 
     let type;
-    if (a.actions && a.actions.length > 0) {
-      // extra = 'actions';
-    }
+
     if (a.type === 'giphy' || a.type === 'imgur') {
       type = 'card';
     } else if (a.type === 'image' && (a.title_link || a.og_scrape_url)) {
@@ -67,7 +65,20 @@ export class Attachment extends React.Component {
     }
 
     if (a.type === 'giphy' || type === 'card') {
-      return <Card {...a} />;
+      if (a.actions && a.actions.length) {
+        return (
+          <View>
+            <Card {...a} />
+            <AttachmentActions
+              key={'key-actions-' + a.id}
+              {...a}
+              actionHandler={this.props.actionHandler}
+            />
+          </View>
+        );
+      } else {
+        return <Card {...a} />;
+      }
     }
 
     if (a.type === 'file') {
