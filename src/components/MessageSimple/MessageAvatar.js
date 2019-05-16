@@ -20,7 +20,10 @@ export const MessageAvatar = ({ message, isMyMessage, style }) => {
       }}
     >
       {showAvatar ? (
-        <Avatar image={message.user.image} size={32} name={message.user.name} />
+        <Avatar
+          image={message.user.image}
+          name={message.user.name || message.user.id}
+        />
       ) : (
         <View style={{ width: 32, height: 28 }} />
       )}

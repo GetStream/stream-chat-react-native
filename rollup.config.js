@@ -52,6 +52,7 @@ const normalBundle = {
     'uuid/v4',
     'mime-types',
     'path',
+    'styled-components',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/objectWithoutProperties',
@@ -67,6 +68,7 @@ const normalBundle = {
     '@babel/runtime/helpers/classCallCheck',
     '@babel/runtime/helpers/slicedToArray',
     '@babel/runtime/helpers/typeof',
+    '@babel/runtime/helpers/taggedTemplateLiteral',
   ],
   plugins: [
     replace({

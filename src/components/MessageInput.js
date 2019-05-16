@@ -94,7 +94,6 @@ const MessageInput = withSuggestionsContext(
 
           if (message.mentioned_users) {
             mentioned_users = [...message.mentioned_users];
-            console.log(mentioned_users);
           }
         }
         return {

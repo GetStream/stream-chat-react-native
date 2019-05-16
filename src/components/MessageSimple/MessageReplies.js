@@ -1,28 +1,40 @@
 import React from 'react';
 import { Text, TouchableOpacity, Image } from 'react-native';
 
+import styled from 'styled-components';
+
 import iconPath from '../../images/icons/icon_path.png';
+
+const Container = styled.TouchableOpacity`
+  padding: 5px;
+  flex-direction: row;
+`
+
+const MessageRepliesText = styled.Text`
+  color: ${(props) => props.theme.colors.primary};
+`
+
+const MessageRepliesImage = styled.Image`
+  transform: ${(props) => props.pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'}
+`
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
   if (isThreadList || !message.reply_count) return null;
 
   return (
-    <TouchableOpacity
+    <Container
       onPress={openThread}
-      style={{ padding: 5, flexDirection: 'row' }}
-    >
-      {pos === 'left' ? <Image source={iconPath} /> : null}
-      <Text style={{ color: '#006CFF' }}>
+      >
+      {pos === 'left' ? <MessageRepliesImage source={iconPath} /> : null}
+      <MessageRepliesText>
         {message.reply_count} {message.reply_count === 1 ? 'Reply' : 'Replies'}
-      </Text>
+      </MessageRepliesText>
       {pos === 'right' ? (
-        <Image
-          style={{
-            transform: [{ rotateY: '180deg' }],
-          }}
+        <MessageRepliesImage
+
           source={iconPath}
         />
       ) : null}
-    </TouchableOpacity>
+    </Container>
   );
 };

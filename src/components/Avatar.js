@@ -1,10 +1,39 @@
 import React from 'react';
-import { View, Image, Text } from 'react-native';
 import PropTypes from 'prop-types';
-import { buildStylesheet } from '../styles/styles.js';
+
+import styled from 'styled-components';
+
+const AvatarContainer = styled.View`
+  display: flex;
+  align-items: center;
+`;
+
+const AvatarImage = styled.Image`
+  width: ${(props) => props.size || props.theme.avatarImage.size};
+  height: ${(props) => props.size || props.theme.avatarImage.size};
+  border-radius: ${(props) =>
+    props.size / 2 || props.theme.avatarImage.size / 2};
+`;
+
+const AvatarFallback = styled.View`
+  border-radius: ${(props) =>
+    props.size / 2 || props.theme.avatarImage.size / 2};
+  width: ${(props) => props.size || props.theme.avatarImage.size};
+  height: ${(props) => props.size || props.theme.avatarImage.size};
+  background-color: ${(props) => props.theme.colors.primary};
+  justify-content: ${(props) => props.theme.avatarFallback.justifyContent};
+  align-items: ${(props) => props.theme.avatarFallback.alignItems};
+`;
+
+const AvatarText = styled.Text`
+  color: ${(props) => props.theme.avatarText.color};
+  text-transform: ${(props) => props.theme.avatarText.textTransform};
+  font-size: ${(props) => props.theme.avatarText.fontSize};
+  font-weight: ${(props) => props.theme.avatarText.fontWeight};
+`;
 
 /**
- * Avatar - A round avatar image with fallback to username's first letter
+ * Avatar - A round avatar image with fallback to user's initials
  *
  * @example ./docs/Avatar.md
  * @extends PureComponent
@@ -24,7 +53,6 @@ export class Avatar extends React.PureComponent {
   };
 
   static defaultProps = {
-    size: 32,
     shape: 'circle',
   };
 
@@ -47,39 +75,24 @@ export class Avatar extends React.PureComponent {
       : null;
 
   render() {
-    const { size, name, image, style } = this.props;
-    const styles = buildStylesheet('Avatar', style);
+    const { size, name, image } = this.props;
     const initials = this.getInitials(name);
     return (
-      <View
-        style={{ display: 'flex', alignItems: 'center', ...styles.container }}
-      >
+      <AvatarContainer>
         {image && !this.state.imageError ? (
-          <Image
-            style={{
-              ...styles.image,
-              borderRadius: size / 2,
-              width: size,
-              height: size,
-            }}
+          <AvatarImage
+            size={size}
             source={{ uri: image }}
             accessibilityLabel="initials"
             resizeMethod="resize"
             onError={this.setError}
           />
         ) : (
-          <View
-            style={{
-              ...styles.fallback,
-              borderRadius: size / 2,
-              width: size,
-              height: size,
-            }}
-          >
-            <Text style={styles.fallbackText}>{initials}</Text>
-          </View>
+          <AvatarFallback size={size}>
+            <AvatarText>{initials}</AvatarText>
+          </AvatarFallback>
         )}
-      </View>
+      </AvatarContainer>
     );
   }
 }
