@@ -14,7 +14,7 @@ import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 
-import ActionSheet from '../vendor/react-native-actionsheet/lib';
+import { ActionSheetCustom as ActionSheet } from '../vendor/react-native-actionsheet/lib';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 import iconGallery from '../images/icons/gallery.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
@@ -580,7 +580,7 @@ const MessageInput = withSuggestionsContext(
                 <ActionSheet
                   ref={(o) => (this.attachActionSheet = o)}
                   title={'Add a file'}
-                  options={['Select a photo', 'Upload a file']}
+                  options={['Select a photo', 'Upload a file', 'Cancel']}
                   cancelButtonIndex={2}
                   destructiveButtonIndex={2}
                   onPress={(index) => {
