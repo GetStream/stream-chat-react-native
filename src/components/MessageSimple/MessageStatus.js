@@ -20,6 +20,7 @@ export const MessageStatus = ({ message, lastReceivedId, threadList }) => {
     );
   } else if (
     message.status === 'received' &&
+    message.type !== 'ephemeral' &&
     message.id === lastReceivedId &&
     !threadList
   ) {
