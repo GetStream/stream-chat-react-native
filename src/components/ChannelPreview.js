@@ -83,7 +83,7 @@ export class ChannelPreview extends PureComponent {
     }
 
     if (Moment(message.created_at).isSame(new Date(), 'day'))
-      latestMessage.created_at = Moment(message.created_at).format('HH:MM A');
+      latestMessage.created_at = Moment(message.created_at).format('HH:mm A');
     else {
       latestMessage.created_at = Moment(message.created_at).format('DD/MM/YY');
     }
@@ -93,9 +93,7 @@ export class ChannelPreview extends PureComponent {
 
   render() {
     const props = { ...this.state, ...this.props };
-
     const { Preview } = this.props;
-
     return <Preview {...props} latestMessage={this.getLatestMessage()} />;
   }
 }
