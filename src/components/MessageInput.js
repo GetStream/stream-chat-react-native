@@ -205,6 +205,9 @@ const MessageInput = withSuggestionsContext(
           });
         }
 
+        // Disallow sending message if its empty.
+        if (!this.state.text && attachments.length === 0) return;
+
         if (this.props.editing) {
           const { id } = this.props.editing;
           const updatedMessage = { id };
