@@ -11,6 +11,7 @@ import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from '../../vendor/react-native-actionsheet/lib';
 import { MessageText } from './MessageText';
 import { MessageReplies } from './MessageReplies';
+import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 
@@ -23,7 +24,8 @@ export class MessageContent extends React.PureComponent {
   }
 
   openThread = () => {
-    this.props.onThreadSelect(this.props.message);
+    if (this.props.onThreadSelect)
+      this.props.onThreadSelect(this.props.message);
   };
 
   onMessageTouch = () => {
@@ -105,6 +107,9 @@ export class MessageContent extends React.PureComponent {
         : false;
 
     const options = [{ id: 'cancel', title: 'Cancel' }];
+    const images =
+      hasAttachment &&
+      message.attachments.filter((item) => item.type === 'image');
 
     if (
       messageActions &&
@@ -182,15 +187,16 @@ export class MessageContent extends React.PureComponent {
           collapsable={false}
           style={{ alignItems: 'flex-end' }}
         >
-          {hasAttachment
-            ? message.attachments.map((attachment, index) => (
-                <Attachment
-                  key={`${message.id}-${index}`}
-                  attachment={attachment}
-                  actionHandler={this.props.handleAction}
-                />
-              ))
-            : false}
+          {hasAttachment &&
+            images.length <= 1 &&
+            message.attachments.map((attachment, index) => (
+              <Attachment
+                key={`${message.id}-${index}`}
+                attachment={attachment}
+                actionHandler={this.props.handleAction}
+              />
+            ))}
+          {images.length > 1 && <Gallery images={images} />}
           <MessageText
             message={message}
             isMyMessage={isMyMessage}

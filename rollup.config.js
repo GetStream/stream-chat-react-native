@@ -49,6 +49,7 @@ const normalBundle = {
     'prop-types',
     'react-native',
     'react-native-simple-markdown',
+    'react-native-image-zoom-viewer',
     'uuid/v4',
     'mime-types',
     'path',

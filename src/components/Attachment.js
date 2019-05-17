@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Card } from './Card';
 import FileIcon from './FileIcon';
 import { AttachmentActions } from './AttachmentActions';
+import { Gallery } from './Gallery';
 export class Attachment extends React.Component {
   static propTypes = {
     /** The attachment to render */
@@ -52,16 +53,7 @@ export class Attachment extends React.Component {
     }
 
     if (type === 'image') {
-      return (
-        <Image
-          source={{ uri: a.image_url || a.thumb_url }}
-          resizeMethod="resize"
-          style={{
-            height: 200,
-            width: 200,
-          }}
-        />
-      );
+      return <Gallery images={[a]} />;
     }
 
     if (a.type === 'giphy' || type === 'card') {
