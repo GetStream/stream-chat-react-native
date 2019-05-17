@@ -6,3 +6,4 @@ export { MessageInput } from './MessageInput';
 export { ChannelList } from './ChannelList';
 export { Thread } from './Thread';
 export { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
+export { IconBadge } from './IconBadge';

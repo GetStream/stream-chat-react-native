@@ -317,6 +317,30 @@ export const styles = {
       fontWeight: 'bold',
     },
   }),
+  iconBadge: StyleSheet.create({
+    icon: {
+      paddingTop: 5,
+      alignSelf: 'center',
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    text: {
+      fontSize: 10,
+      color: '#fff',
+    },
+    iconInner: {
+      backgroundColor: 'green',
+      justifyContent: 'center',
+      alignItems: 'center',
+      alignSelf: 'flex-start',
+      minWidth: 15,
+      height: 15,
+      paddingLeft: 3,
+      paddingRight: 3,
+      borderRadius: 20,
+    },
+  }),
 };
 
 const depthOf = function(object) {
