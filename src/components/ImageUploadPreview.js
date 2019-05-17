@@ -44,7 +44,7 @@ export class ImageUploadPreview extends React.PureComponent {
             action={this.props.retryUpload.bind(this, item.id)}
           >
             <Image
-              source={{ uri: item.file.uri }}
+              source={{ uri: item.url }}
               style={{ height: 100, width: 100, borderRadius: 10 }}
             />
           </WithProgressIndicator>
