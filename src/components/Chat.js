@@ -49,14 +49,29 @@ export class Chat extends PureComponent {
       // currently active channel
       channel: {},
       isOnline: true,
+      connectionRecovering: false,
     };
 
     this.setConnectionListener();
+
+    this.props.client.on('connection.changed', (event) => {
+      this.setState({
+        isOnline: event.online,
+        connectionRecovering: !event.online,
+      });
+    });
+
+    this.props.client.on('connection.recovered', () => {
+      this.setState({ connectionRecovering: false });
+    });
+
     this._unmounted = false;
   }
 
   componentWillUnmount() {
     this._unmounted = true;
+    this.props.client.off('connection.recovered');
+    this.props.client.off('connection.changed');
     this.props.client.off(this.handleEvent);
     NetInfo.removeEventListener(
       'connectionChange',
@@ -64,9 +79,19 @@ export class Chat extends PureComponent {
     );
   }
 
+  notifyChatClient = (isConnected) => {
+    if (this.wsConnection != null) {
+      if (isConnected) {
+        this.wsConnection.onlineStatusChanged({ type: 'online' });
+      } else {
+        this.wsConnection.onlineStatusChanged({ type: 'offline' });
+      }
+    }
+  };
+
   setConnectionListener = () => {
     NetInfo.isConnected.fetch().then((isConnected) => {
-      this.setState({ isOnline: isConnected });
+      this.notifyChatClient(isConnected);
     });
 
     NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
@@ -74,7 +99,7 @@ export class Chat extends PureComponent {
 
   handleConnectionChange = () => {
     NetInfo.isConnected.fetch().then((isConnected) => {
-      this.setState({ isOnline: isConnected });
+      this.notifyChatClient(isConnected);
     });
   };
 
@@ -94,6 +119,7 @@ export class Chat extends PureComponent {
     setActiveChannel: this.setActiveChannel,
     theme: this.props.theme,
     isOnline: this.state.isOnline,
+    connectionRecovering: this.state.connectionRecovering,
   });
 
   render() {
