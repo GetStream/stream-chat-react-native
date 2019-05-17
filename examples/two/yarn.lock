@@ -856,10 +856,10 @@
     query-string "^6.4.2"
     react-is "^16.8.6"
 
-"@react-navigation/native@~3.4.0":
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.4.2.tgz#ed1efe79627a9d50258088d793d6d5eca8b5c382"
-  integrity sha512-oDUZ9y10nM4td3nGmcMCkq2pYRCSOMPxLOPs55lWdT9CwY8PB/3sFuQrSW50/t0krO9KvAjclYfOLywuOB1Vtg==
+"@react-navigation/native@~3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-3.5.0.tgz#f5d16e0845ac26d1147d1caa481f18a00740e7ae"
+  integrity sha512-TmGOis++ejEXG3sqNJhCSKqB0/qLu3FQgDtO959qpqif36R/diR8SQwJqeSdofoEiK3CepdhFlTCeHdS1/+MsQ==
   dependencies:
     hoist-non-react-statics "^3.0.1"
     react-native-safe-area-view "^0.14.1"
@@ -4464,9 +4464,9 @@ mute-stream@0.0.7:
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
 nan@^2.12.1:
-  version "2.13.2"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.13.2.tgz#f51dc7ae66ba7d5d55e1e6d4d8092e802c9aefe7"
-  integrity sha512-TghvYc72wlMGMVMluVo9WRJc0mB8KxxF/gZ4YYFy7V2ZQX9l7rgbPg7vjS9mt6U5HXODVFVI2bOduCzwOMv/lw==
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
+  integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
 
 nanomatch@^1.2.9:
   version "1.2.13"
@@ -5342,19 +5342,19 @@ react-native@0.59.5:
     xmldoc "^0.4.0"
     yargs "^9.0.0"
 
-react-navigation-drawer@1.2.1:
+react-navigation-drawer@~1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-navigation-drawer/-/react-navigation-drawer-1.2.1.tgz#7bd5efeee7d2f611d3ebb0933e0c8e8eb7cafe52"
   integrity sha512-T2kaBjY2c4/3I6noWFnaf/c18ntNH5DsST38i+pdc2NPxn5Yi5lkK+ZZTeKuHSFD4a7G0jWY9OGf1iRkHWLMAQ==
   dependencies:
     react-native-tab-view "^1.2.0"
 
-react-navigation-stack@1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.3.0.tgz#34bbddb068c094c9ab843e36059b9fd92b728250"
-  integrity sha512-ouyD1GkRksJSGuvAuqrJnlJnZ5g2g/+/WB/MTa8BzjSBvyOgruD5TrmEkpViCOMr1R17C8D4Htln90H4D+NV3Q==
+react-navigation-stack@~1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/react-navigation-stack/-/react-navigation-stack-1.4.0.tgz#69cdb029ea4ee5877d7e933b3117dc90bc841eb2"
+  integrity sha512-zEe9wCA0Ot8agarYb//0nSWYW1GM+1R0tY/nydUV0EizeJ27At0EklYVWvYEuYU6C48va6cu8OPL7QD/CcJACw==
 
-react-navigation-tabs@1.1.3:
+react-navigation-tabs@~1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/react-navigation-tabs/-/react-navigation-tabs-1.1.3.tgz#72dded7764cffc6b1de029cd1f0468da3976ed30"
   integrity sha512-MP3QIiIPA1YNqAsL0x55tU+KoTXHrBucicR6eA5aC1wgkk9Hh++DzS34pXrC6u5LZ59MWu7FWjrSFS1aDxqHyg==
@@ -5365,15 +5365,15 @@ react-navigation-tabs@1.1.3:
     react-native-tab-view "^1.4.0"
 
 react-navigation@^3.8.1:
-  version "3.9.2"
-  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.9.2.tgz#200742455345bfb78567c8b83befdc248796c959"
-  integrity sha512-SuzVXnZJJQGa4ZWSA7bQ6eOj9fP1kMsNlikGgxZenKNfIZEw1PLxBdQuhyrUs9WdZHZ8xHF3iw7eE4Yq6m8ZpA==
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-3.10.1.tgz#c1514bd222ac8b02487f94375ad25f323d85bf61"
+  integrity sha512-a9fpUM10CywgVonkOq1tB/R3lS2Qu/QVvaeiGQINkc7NN7GilBVsIBLvkavKpd7giblasmgnMw7uTLMWT54cnw==
   dependencies:
     "@react-navigation/core" "~3.4.1"
-    "@react-navigation/native" "~3.4.0"
-    react-navigation-drawer "1.2.1"
-    react-navigation-stack "1.3.0"
-    react-navigation-tabs "1.1.3"
+    "@react-navigation/native" "~3.5.0"
+    react-navigation-drawer "~1.2.1"
+    react-navigation-stack "~1.4.0"
+    react-navigation-tabs "~1.1.3"
 
 react-proxy@^1.1.7:
   version "1.1.8"
@@ -6075,14 +6075,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-"stream-chat-react-native-core@link:../..":
-  version "0.0.0"
-  uid ""
-
-stream-chat-react-native-core@v0.0.11:
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.11.tgz#e9c29c5cd538263a725b3f0aa8f655b72a2cf348"
-  integrity sha512-IJTPJe6Nha6YVvWEWzj/uov/Ke97HugSyFR1E0R2GliiDnJ8b/ETqO1ffQAjF7zwlBlDlnwemCVXopHaql4omQ==
+stream-chat-react-native-core@0.0.12:
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.12.tgz#395f3113d7a32819288f2bf3c61d584263d544fe"
+  integrity sha512-Sjk9nrQOABIkHzQJIb/bWRYf4W1hRE1XcBzyYxPeNMZKiY5qnDovh5Joc1TQ+LFPmtOdh8VUE6Vn+VL7WXbN6g==
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"
@@ -6094,11 +6090,16 @@ stream-chat-react-native-core@v0.0.11:
     moment "2.23.0"
     path "^0.12.7"
     react-art "^16.8.6"
+    react-native-image-zoom-viewer "^2.2.25"
     react-native-simple-markdown "^1.1.0"
     react-native-web "^0.11.2"
     seamless-immutable "^7.1.4"
     stream-chat "^0.13.1"
     uuid "^3.3.2"
+
+"stream-chat-react-native-core@link:../..":
+  version "0.0.0"
+  uid ""
 
 "stream-chat-react-native@link:../../native-package":
   version "0.0.0"
@@ -6389,9 +6390,9 @@ uglify-es@^3.1.9:
     source-map "~0.6.1"
 
 uglify-js@^3.1.4:
-  version "3.5.12"
-  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.12.tgz#6b759cabc08c3e91fe82323d6387019f0c5864cd"
-  integrity sha512-KeQesOpPiZNgVwJj8Ge3P4JYbQHUdZzpx6Fahy6eKAYRSV4zhVmLXoC+JtOeYxcHCHTve8RG1ZGdTvpeOUM26Q==
+  version "3.5.13"
+  resolved "https://registry.yarnpkg.com/uglify-js/-/uglify-js-3.5.13.tgz#d2d8857b598d77f8764ae3bfcf90bb1df134d2bd"
+  integrity sha512-Lho+IJlquX6sdJgyKSJx/M9y4XbDd3ekPjD8S6HYmT5yVSwDtlSuca2w5hV4g2dIsp0Y/4orbfWxKexodmFv7w==
   dependencies:
     commander "~2.20.0"
     source-map "~0.6.1"

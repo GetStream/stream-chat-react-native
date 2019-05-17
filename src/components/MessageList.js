@@ -244,7 +244,18 @@ const MessageList = withChannelContext(
       this.setState({ activeMessageId: id });
     };
 
+    renderEmptyState = () => {
+      const Indicator = this.props.EmptyStateIndicator;
+      return <Indicator listType="message" />;
+    };
+
     render() {
+      // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
+      // https://github.com/facebook/react-native/issues/21196
+      if (this.props.messages && this.props.messages.length === 0) {
+        return <View style={{ flex: 1 }}>{this.renderEmptyState()}</View>;
+      }
+
       const messagesWithDates = this.insertDates(this.props.messages);
       const messagesWithGroupPositions = this.assignGroupPositions(
         messagesWithDates,

@@ -2,13 +2,16 @@ import React, { PureComponent } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { ChannelContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
-// import { LoadingIndicator } from './LoadingIndicator';
 
 import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+
+import { LoadingIndicator } from './LoadingIndicator';
+import { LoadingErrorIndicator } from './LoadingErrorIndicator';
+import { EmptyStateIndicator } from './EmptyStateIndicator';
 
 /**
  * This component is not really exposed externally, and is only supposed to be used with
@@ -71,6 +74,19 @@ export class ChannelInner extends PureComponent {
     client: PropTypes.object.isRequired,
     /** The loading indicator to use */
     LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    /** The indicator to use when there is error  */
+    LoadingErrorIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func,
+    ]),
+    /** The indicator to use when message list is empty */
+    EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  };
+
+  static defaultProps = {
+    LoadingIndicator,
+    LoadingErrorIndicator,
+    EmptyStateIndicator,
   };
 
   componentDidUpdate(prevProps) {
@@ -390,6 +406,7 @@ export class ChannelInner extends PureComponent {
     listenToScroll: this.listenToScroll,
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
+    EmptyStateIndicator: this.props.EmptyStateIndicator,
 
     // thread related
     openThread: this.openThread,
@@ -402,21 +419,23 @@ export class ChannelInner extends PureComponent {
 
   renderComponent = () => this.props.children;
 
+  renderLoading = () => {
+    const Indicator = this.props.LoadingIndicator;
+    return <Indicator listType="message" />;
+  };
+
+  renderLoadingError = () => {
+    const Indicator = this.props.LoadingErrorIndicator;
+    return <Indicator listType="message" />;
+  };
+
   render() {
     let core;
 
     if (this.state.error) {
-      core = (
-        <View>
-          <Text>Error: {this.state.error.message}</Text>
-        </View>
-      );
+      core = this.renderLoadingError();
     } else if (this.state.loading) {
-      core = (
-        <View>
-          <Text>Loading</Text>
-        </View>
-      );
+      core = this.renderLoading();
     } else if (!this.props.channel || !this.props.channel.watch) {
       core = (
         <View>
