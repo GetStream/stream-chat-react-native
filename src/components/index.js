@@ -3,6 +3,7 @@ export { Chat } from './Chat';
 export { Channel } from './Channel';
 export { MessageList } from './MessageList';
 export { MessageInput } from './MessageInput';
+export * from './MessageSimple';
 export { ChannelList } from './ChannelList';
 export { Thread } from './Thread';
 export { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
