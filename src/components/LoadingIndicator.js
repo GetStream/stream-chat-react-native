@@ -1,19 +1,25 @@
 import React from 'react';
 import { Text } from 'react-native';
+import PropTypes from 'prop-types';
 
-export const LoadingIndicator = ({ listType }) => {
-  let Loader;
-  switch (listType) {
-    case 'channel':
-      Loader = <Text>Loading channel list ...</Text>;
-      break;
-    case 'message':
-      Loader = <Text>Loading messages ...</Text>;
-      break;
-    default:
-      Loader = <Text>Loading ...</Text>;
-      break;
+export class LoadingIndicator extends React.PureComponent {
+  static propTypes = {
+    listType: PropTypes.oneOf(['channel', 'message', 'default']),
+  };
+
+  static defaultProps = {
+    listType: 'default',
+  };
+
+  render() {
+    switch (this.props.listType) {
+      case 'channel':
+        return <Text>Loading channel list ...</Text>;
+      case 'message':
+        return <Text>Loading messages ...</Text>;
+      case 'default':
+      default:
+        return <Text>Loading ...</Text>;
+    }
   }
-
-  return Loader;
-};
+}

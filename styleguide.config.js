@@ -2,6 +2,13 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const notBabeledDeps = [
+  'react-native-image-zoom-viewer',
+  'react-native-image-pan-zoom',
+  'react-native-simple-markdown',
+  'react-native-actionsheet',
+];
+
 module.exports = {
   title: 'Stream Chat React Native - Docs',
   require: ['@babel/polyfill'],
@@ -106,7 +113,12 @@ module.exports = {
         {
           test: /\.js$/,
           loader: 'babel-loader',
-          exclude: [/node_modules/],
+          include: [
+            path.join(__dirname, 'src'),
+            ...notBabeledDeps.map((dep) =>
+              path.join(__dirname, 'node_modules', dep),
+            ),
+          ],
           options: {
             plugins: [
               '@babel/plugin-transform-runtime',

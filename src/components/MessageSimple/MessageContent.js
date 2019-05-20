@@ -8,7 +8,7 @@ import {
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
-import { ActionSheetCustom as ActionSheet } from '../../vendor/react-native-actionsheet/lib';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { MessageText } from './MessageText';
 import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';

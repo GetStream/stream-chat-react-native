@@ -14,7 +14,7 @@ import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 
-import { ActionSheetCustom as ActionSheet } from '../vendor/react-native-actionsheet/lib';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 import iconGallery from '../images/icons/gallery.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
