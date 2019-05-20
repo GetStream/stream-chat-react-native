@@ -5,9 +5,11 @@ import { renderText, capitalize } from '../../utils';
 
 export const MessageText = ({ message, isMyMessage, style }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
+
+  const hasAttachment = message.attachments.length > 0 ? true : false;
   const groupStyles =
     (isMyMessage(message) ? 'right' : 'left') +
-    capitalize(message.groupPosition[0]);
+    capitalize(hasAttachment ? 'bottom' : message.groupPosition[0]);
 
   if (!message.text) return false;
 
@@ -19,6 +21,7 @@ export const MessageText = ({ message, isMyMessage, style }) => {
         style={{
           ...styles.container,
           ...styles[pos],
+
           ...styles[groupStyles],
           ...styles[message.status],
         }}

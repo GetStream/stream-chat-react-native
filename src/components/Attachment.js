@@ -1,10 +1,47 @@
 import React from 'react';
-import { Image, Text, View, TouchableOpacity, Linking } from 'react-native';
+import { View, TouchableOpacity, Linking } from 'react-native';
+
+import styled from 'styled-components';
+
 import PropTypes from 'prop-types';
 import { Card } from './Card';
 import FileIcon from './FileIcon';
 import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
+
+const FileContainer = styled.View`
+  display: ${(props) => props.theme.attachment.file.container.display};
+  flex-direction: ${(props) =>
+    props.theme.attachment.file.container.flexDirection};
+  align-items: ${(props) => props.theme.attachment.file.container.alignItems};
+  background-color: ${(props) =>
+    props.theme.attachment.file.container.backgroundColor};
+  padding: ${(props) => props.theme.attachment.file.container.padding}px;
+  border-radius: ${(props) =>
+    props.theme.attachment.file.container.borderRadius};
+  border-bottom-left-radius: ${(props) =>
+    props.position === 'right'
+      ? props.theme.attachment.file.container.borderRadius
+      : 2};
+  border-bottom-right-radius: ${(props) =>
+    props.position === 'left'
+      ? props.theme.attachment.file.container.borderRadius
+      : 2};
+`;
+
+const FileDetails = styled.View`
+  display: ${(props) => props.theme.attachment.file.details.display};
+  flex-direction: ${(props) =>
+    props.theme.attachment.file.details.flexDirection};
+  padding-left: ${(props) => props.theme.attachment.file.details.paddingLeft}px;
+`;
+
+const FileTitle = styled.Text`
+  font-weight: ${(props) => props.theme.attachment.file.title.fontWeight};
+`;
+
+const FileSize = styled.Text``;
+
 export class Attachment extends React.Component {
   static propTypes = {
     /** The attachment to render */
@@ -53,14 +90,13 @@ export class Attachment extends React.Component {
     }
 
     if (type === 'image') {
-      return <Gallery images={[a]} />;
+      return <Gallery position={this.props.position} images={[a]} />;
     }
-
     if (a.type === 'giphy' || type === 'card') {
       if (a.actions && a.actions.length) {
         return (
           <View>
-            <Card {...a} />
+            <Card {...a} position={this.props.position} />
             <AttachmentActions
               key={'key-actions-' + a.id}
               {...a}
@@ -69,7 +105,7 @@ export class Attachment extends React.Component {
           </View>
         );
       } else {
-        return <Card {...a} />;
+        return <Card position={this.props.position} {...a} />;
       }
     }
 
@@ -80,74 +116,23 @@ export class Attachment extends React.Component {
             this._goToURL(a.asset_url);
           }}
         >
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: '#EBEBEB',
-              padding: 10,
-              borderRadius: 16,
-            }}
-          >
+          <FileContainer position={this.props.position}>
             <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
-            <View
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                paddingLeft: 10,
-              }}
-            >
-              <Text
-                ellipsizeMode="tail"
-                numberOfLines={2}
-                style={{ fontWeight: 'bold' }}
-              >
+            <FileDetails>
+              <FileTitle ellipsizeMode="tail" numberOfLines={2}>
                 {a.title}
-              </Text>
-              <Text>{a.file_size} KB</Text>
-            </View>
-          </View>
+              </FileTitle>
+              <FileSize>{a.file_size} KB</FileSize>
+            </FileDetails>
+          </FileContainer>
         </TouchableOpacity>
       );
     }
 
     if (a.type === 'video' && a.asset_url && a.image_url) {
       return (
-        <TouchableOpacity
-          onPress={() => {
-            this._goToURL(a.asset_url);
-          }}
-        >
-          <Image
-            resizeMode="stretch"
-            style={{
-              height: 200,
-              width: 250,
-              borderTopLeftRadius: 16,
-              borderTopRightRadius: 16,
-              borderBottomLeftRadius: 0,
-              borderBottomRightRadius: 0,
-            }}
-            source={{ uri: a.image_url }}
-          />
-          <View
-            style={{
-              borderBottomLeftRadius: 16,
-              borderBottomRightRadius: 16,
-              backgroundColor: '#EBEBEB',
-              padding: 10,
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: 'bold',
-              }}
-            >
-              {a.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        // TODO: Put in video component
+        <Card position={this.props.position} {...a} />
       );
     }
 

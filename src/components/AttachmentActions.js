@@ -1,8 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { View, TouchableOpacity, Text } from 'react-native';
-import { buildStylesheet } from '../styles/styles';
+import styled from 'styled-components';
+
+const Container = styled.View`
+  flex-direction: ${(props) =>
+    props.theme.attachment.actions.container.flexDirection};
+  justify-content: ${(props) =>
+    props.theme.attachment.actions.container.justifyContent};
+  padding: ${(props) => props.theme.attachment.actions.container.padding}px;
+`;
+
+const Button = styled.TouchableOpacity`
+  background-color: ${(props) =>
+    props.style === 'primary'
+      ? props.style.theme.attachment.actions.primaryBackgroundColor
+      : props.style.theme.attachment.actions.defaultBackgroundColor};
+  bordercolor: ${(props) =>
+    props.style === 'primary'
+      ? props.style.theme.attachment.actions.primaryBorderColor
+      : props.style.theme.attachment.actions.defaultBordercolor};
+  border-width: ${(props) => props.theme.attachment.actions.button};
+  border-radius: ${(props) => props.theme.attachment.actions.button};
+  padding-top: ${(props) => props.theme.attachment.actions.button}px;
+  padding-bottom: ${(props) => props.theme.attachment.actions.button}px;
+  padding-left: ${(props) => props.theme.attachment.actions.button}px;
+  padding-right: ${(props) => props.theme.attachment.actions.button}px;
+`;
+
+const ButtonText = styled.Text`
+  color: ${(props) =>
+    props.style === 'primary'
+      ? props.theme.attachment.actions.buttonText.primaryColor
+      : props.theme.attachment.actions.buttonText.defaultColor};
+`;
 
 /**
  * AttachmentActions - The actions you can take on an attachment
@@ -23,23 +54,20 @@ export class AttachmentActions extends React.PureComponent {
   };
 
   render() {
-    const { id, actions, actionHandler, style } = this.props;
-    const styles = buildStylesheet('AttachmentActions', style);
+    const { id, actions, actionHandler } = this.props;
 
     return (
-      <View style={styles.container}>
+      <Container>
         {actions.map((action) => (
-          <TouchableOpacity
+          <Button
             key={`${id}-${action.value}`}
-            style={{ ...styles.button, ...styles[action.style + 'Button'] }}
+            style={action.style}
             onPress={actionHandler.bind(this, action.name, action.value)}
           >
-            <Text style={styles[action.style + 'ButtonText']}>
-              {action.text}
-            </Text>
-          </TouchableOpacity>
+            <ButtonText style={action.style}>{action.text}</ButtonText>
+          </Button>
         ))}
-      </View>
+      </Container>
     );
   }
 }

@@ -27,14 +27,14 @@ export class MessageSimple extends React.PureComponent {
       >
         {isMyMessage(message) ? (
           <React.Fragment>
-            <MessageContent {...this.props} />
+            <MessageContent {...this.props} position={pos} />
             <MessageAvatar {...this.props} />
             <MessageStatus {...this.props} />
           </React.Fragment>
         ) : (
           <React.Fragment>
             <MessageAvatar {...this.props} />
-            <MessageContent {...this.props} />
+            <MessageContent {...this.props} position={pos} />
           </React.Fragment>
         )}
       </View>

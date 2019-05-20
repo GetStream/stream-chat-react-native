@@ -194,6 +194,7 @@ export class MessageContent extends React.PureComponent {
                 key={`${message.id}-${index}`}
                 attachment={attachment}
                 actionHandler={this.props.handleAction}
+                position={this.props.position}
               />
             ))}
           {images.length > 1 && <Gallery images={images} />}
