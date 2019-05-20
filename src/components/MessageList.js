@@ -3,11 +3,11 @@ import { View, Text, FlatList } from 'react-native';
 import { withChannelContext } from '../context';
 
 import PropTypes from 'prop-types';
-import Moment from 'moment';
 import { styles } from '../styles/styles.js';
 
 import { Message } from './Message';
 import { MessageNotification } from './MessageNotification';
+import { DateSeparator } from './DateSeparator';
 
 const MessageList = withChannelContext(
   class MessageList extends PureComponent {
@@ -29,6 +29,11 @@ const MessageList = withChannelContext(
       online: PropTypes.bool,
       /** The message rendering component, the Message component delegates its rendering logic to this component */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    };
+
+    static defaultProps = {
+      dateSeparator: DateSeparator,
     };
 
     componentDidUpdate(prevProps) {
@@ -212,6 +217,7 @@ const MessageList = withChannelContext(
 
     renderItem = ({ item: message }) => {
       if (message.type === 'message.date') {
+        const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
       }
 
@@ -306,25 +312,6 @@ const MessageList = withChannelContext(
       );
     }
   },
-);
-
-const DateSeparator = ({ message, formatDate, date }) => (
-  <View style={styles.DateSeparator.container} collapsable={false}>
-    <View style={styles.DateSeparator.dividingLines} />
-    <Text style={styles.DateSeparator.date}>
-      {formatDate
-        ? formatDate(date)
-        : Moment(message.date.toISOString()).calendar(null, {
-            lastDay: '[Yesterday]',
-            sameDay: '[Today]',
-            nextDay: '[Tomorrow]',
-            lastWeek: '[Last] dddd',
-            nextWeek: 'dddd',
-            sameElse: 'L',
-          })}
-    </Text>
-    <View style={styles.DateSeparator.dividingLines} />
-  </View>
 );
 
 const Notification = ({ children, active, type }) => {
