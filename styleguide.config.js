@@ -98,6 +98,9 @@ module.exports = {
       },
       extensions: ['.web.js', '.js'],
     },
+    devServer: {
+      clientLogLevel: 'warn',
+    },
     module: {
       rules: [
         {
