@@ -50,6 +50,7 @@ const normalBundle = {
     'react-native',
     'react-native-simple-markdown',
     'react-native-image-zoom-viewer',
+    'react-native-actionsheet',
     'uuid/v4',
     'mime-types',
     'path',

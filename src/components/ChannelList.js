@@ -1,10 +1,14 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
-import { LoadingIndicator } from './LoadingIndicator';
 import { withChatContext } from '../context';
 import { ChannelListMessenger } from './ChannelListMessenger';
 import Immutable from 'seamless-immutable';
+
+import { LoadingIndicator } from './LoadingIndicator';
+import { LoadingErrorIndicator } from './LoadingErrorIndicator';
+import { EmptyStateIndicator } from './EmptyStateIndicator';
+
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open
  * @extends PureComponent
@@ -23,6 +27,17 @@ const ChannelList = withChatContext(
 
       /** The loading indicator to use */
       LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** The indicator to use when there is error in fetching channels */
+      LoadingErrorIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+      /** The indicator to use when channel list is empty */
+      EmptyStateIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+
       List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       onSelect: PropTypes.func,
 
@@ -41,8 +56,10 @@ const ChannelList = withChatContext(
 
     static defaultProps = {
       Preview: ChannelPreviewMessenger,
-      LoadingIndicator,
       List: ChannelListMessenger,
+      LoadingIndicator,
+      LoadingErrorIndicator,
+      EmptyStateIndicator,
       hasNextPage: true,
       filters: {},
       options: {},

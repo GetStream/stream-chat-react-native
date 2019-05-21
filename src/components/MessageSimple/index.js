@@ -41,3 +41,8 @@ export class MessageSimple extends React.PureComponent {
     );
   }
 }
+
+export { MessageStatus } from './MessageStatus';
+export { MessageContent } from './MessageContent';
+export { MessageAvatar } from './MessageAvatar';
+export { MessageText } from './MessageText';

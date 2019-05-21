@@ -3,7 +3,6 @@ import { View, Text, FlatList } from 'react-native';
 import { withChannelContext } from '../context';
 
 import PropTypes from 'prop-types';
-
 import { styles } from '../styles/styles.js';
 
 import { Message } from './Message';
@@ -30,6 +29,11 @@ const MessageList = withChannelContext(
       online: PropTypes.bool,
       /** The message rendering component, the Message component delegates its rendering logic to this component */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    };
+
+    static defaultProps = {
+      dateSeparator: DateSeparator,
     };
 
     componentDidUpdate(prevProps) {
@@ -213,6 +217,7 @@ const MessageList = withChannelContext(
 
     renderItem = ({ item: message }) => {
       if (message.type === 'message.date') {
+        const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
       }
 
@@ -245,7 +250,18 @@ const MessageList = withChannelContext(
       this.setState({ activeMessageId: id });
     };
 
+    renderEmptyState = () => {
+      const Indicator = this.props.EmptyStateIndicator;
+      return <Indicator listType="message" />;
+    };
+
     render() {
+      // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
+      // https://github.com/facebook/react-native/issues/21196
+      if (this.props.messages && this.props.messages.length === 0) {
+        return <View style={{ flex: 1 }}>{this.renderEmptyState()}</View>;
+      }
+
       const messagesWithDates = this.insertDates(this.props.messages);
       const messagesWithGroupPositions = this.assignGroupPositions(
         messagesWithDates,

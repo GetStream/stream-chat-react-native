@@ -3,7 +3,11 @@ import { View } from 'react-native';
 import { buildStylesheet } from '../../styles/styles.js';
 import { renderText, capitalize } from '../../utils';
 
-export const MessageText = ({ message, isMyMessage, style }) => {
+export const MessageText = ({
+  message,
+  isMyMessage = () => false,
+  style = null,
+}) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
