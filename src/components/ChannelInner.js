@@ -357,6 +357,12 @@ export class ChannelInner extends PureComponent {
       threadState['thread'] = channel.state.messageToImmutable(e.message);
     }
 
+    if (Object.keys(threadState).length > 0) {
+      // TODO: in theory we should do 1 setState call not 2,
+      // However the setStateThrottled doesn't support this
+      this.setState(threadState);
+    }
+
     this._setStateThrottled({
       messages: channel.state.messages,
       watchers: channel.state.watchers,

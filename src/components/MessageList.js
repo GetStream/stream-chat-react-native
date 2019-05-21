@@ -197,7 +197,7 @@ const MessageList = withChannelContext(
         newMessagesNotification: false,
       });
       this.flatList.scrollToIndex({ index: 0 });
-      this.props.markRead();
+      if (!this.props.threadList) this.props.markRead();
     };
 
     getLastReceived = (messages) => {
@@ -246,7 +246,8 @@ const MessageList = withChannelContext(
       const yOffset = event.nativeEvent.contentOffset.y;
       const removeNewMessageNotification = yOffset <= 0;
 
-      if (removeNewMessageNotification) this.props.markRead();
+      if (!this.props.threadList && removeNewMessageNotification)
+        this.props.markRead();
 
       this.setState((prevState) => ({
         yOffset,
