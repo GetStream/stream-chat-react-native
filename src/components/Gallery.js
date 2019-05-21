@@ -1,16 +1,10 @@
 import React from 'react';
-import {
-  Modal,
-  Image,
-  TouchableOpacity,
-  SafeAreaView,
-  View,
-} from 'react-native';
+import { Modal, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
-import closeRound from '../images/icons/close-round.png';
+import { CloseButton } from './CloseButton';
 
 const Single = styled.TouchableOpacity`
   display: ${(props) => props.theme.gallery.single.display};
@@ -125,49 +119,33 @@ export class Gallery extends React.PureComponent {
   }
 }
 
+const HeaderContainer = styled.View`
+  display: ${(props) => props.theme.gallery.header.container.display};
+  flex-direction: ${(props) =>
+    props.theme.gallery.header.container.flexDirection};
+  justify-content: ${(props) =>
+    props.theme.gallery.header.container.justifyContent};
+  position: ${(props) => props.theme.gallery.header.container.position};
+  width: ${(props) => props.theme.gallery.header.container.width};
+  z-index: ${(props) => props.theme.gallery.header.container.zIndex};
+`;
+
+const HeaderButton = styled.TouchableOpacity`
+  width: ${(props) => props.theme.gallery.header.button.width};
+  height: ${(props) => props.theme.gallery.header.button.height};
+  margin-right: ${(props) => props.theme.gallery.header.button.marginRight};
+  margin-top: ${(props) => props.theme.gallery.header.button.marginTop};
+  display: ${(props) => props.theme.gallery.header.button.display};
+  align-items: ${(props) => props.theme.gallery.header.button.alignItems};
+  justify-content: ${(props) =>
+    props.theme.gallery.header.button.justifyContent};
+  border-radius: ${(props) => props.theme.gallery.header.button.borderRadius};
+`;
+
 const GalleryHeader = ({ handleDismiss }) => (
-  <View
-    style={{
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'flex-end',
-      position: 'absolute',
-      width: '100%',
-      zIndex: 1000,
-    }}
-  >
-    <TouchableOpacity
-      onPress={handleDismiss}
-      style={{
-        width: 30,
-        height: 30,
-        marginRight: 20,
-        marginTop: 20,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 20,
-      }}
-    >
-      <X />
-    </TouchableOpacity>
-  </View>
+  <HeaderContainer>
+    <HeaderButton onPress={handleDismiss}>
+      <CloseButton />
+    </HeaderButton>
+  </HeaderContainer>
 );
-
-const X = () => {
-  const Container = styled.View`
-    width: 30px;
-    height: 30px;
-    border-radius: 3px;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-  `;
-
-  return (
-    <Container>
-      <Image source={closeRound} />
-    </Container>
-  );
-};

@@ -127,6 +127,26 @@ const defaultTheme = {
       maxWidth: 250,
       borderRadius: 16,
     },
+    header: {
+      container: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        position: 'absolute',
+        width: '100%',
+        zIndex: 1000,
+      },
+      button: {
+        width: 30,
+        height: 30,
+        marginRight: 20,
+        marginTop: 20,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+      },
+    },
   },
 
   messageInput: {

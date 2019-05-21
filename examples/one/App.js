@@ -9,6 +9,7 @@ import {
   ChannelList,
   Thread,
   ChannelPreviewMessenger,
+  CloseButton,
 } from 'stream-chat-expo';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -153,7 +154,7 @@ class ThreadScreen extends PureComponent {
           borderRadius: 20,
         }}
       >
-        <Text>X</Text>
+        <CloseButton />
       </TouchableOpacity>
     ),
   });

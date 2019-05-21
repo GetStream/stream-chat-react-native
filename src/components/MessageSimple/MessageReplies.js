@@ -7,7 +7,7 @@ const Container = styled.TouchableOpacity`
   padding: ${(props) => props.theme.messageReplies.container.padding}px;
   flex-direction: ${(props) =>
     props.theme.messageReplies.container.flexDirection};
-  alignitems: ${(props) => props.theme.messageReplies.container.alignItems};
+  align-items: ${(props) => props.theme.messageReplies.container.alignItems};
 `;
 
 const MessageRepliesText = styled.Text`
