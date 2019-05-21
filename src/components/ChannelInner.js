@@ -13,6 +13,8 @@ import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
 
+import { logChatPromiseExecution } from 'stream-chat';
+
 /**
  * This component is not really exposed externally, and is only supposed to be used with
  * 'Channel' component (which is actually exposed to customers).
@@ -61,6 +63,12 @@ export class ChannelInner extends PureComponent {
       leading: true,
       trailing: true,
     });
+
+    this._markReadThrottled = throttle(this.markRead, 500, {
+      leading: true,
+      trailing: true,
+    });
+
     this.rootView = false;
     this.messageInputBox = false;
   }
@@ -121,10 +129,6 @@ export class ChannelInner extends PureComponent {
     this._loadMoreThreadFinishedDebounced.cancel();
     this._setStateThrottled.cancel();
     this._unmounted = true;
-
-    // if (this.visibilityListener) {
-    //   Visibility.unbind(this.visibilityListener);
-    // }
   }
 
   copyChannelState() {
@@ -140,8 +144,15 @@ export class ChannelInner extends PureComponent {
       typing: {},
     });
 
-    channel.markRead();
+    this.markRead(channel);
   }
+
+  markRead = (channel) => {
+    if (!channel.getConfig().read_events) {
+      return;
+    }
+    logChatPromiseExecution(channel.markRead(), 'mark read');
+  };
 
   listenToChanges() {
     // The more complex sync logic is done in chat.js
@@ -344,6 +355,20 @@ export class ChannelInner extends PureComponent {
       e.message.id === this.state.thread.id
     ) {
       threadState['thread'] = channel.state.messageToImmutable(e.message);
+    }
+
+    if (e.type === 'message.new') {
+      let mainChannelUpdated = true;
+      if (e.message.parent_id && !e.message.show_in_channel) {
+        mainChannelUpdated = false;
+      }
+
+      if (
+        mainChannelUpdated &&
+        e.message.user.id !== this.props.client.userID
+      ) {
+        this._markReadThrottled(channel);
+      }
     }
 
     if (Object.keys(threadState).length > 0) {
