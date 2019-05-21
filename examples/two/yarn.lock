@@ -5276,9 +5276,9 @@ react-native-tab-view@^1.2.0, react-native-tab-view@^1.4.1:
     prop-types "^15.6.1"
 
 react-native-web@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.2.tgz#f3550589347be1f402f0641fefca687ca64a1750"
-  integrity sha512-EVUrBftCZBfUCOrwKJPh+hiGmDieBPL+5m+57BFg0UIH6uSmgvXK9r/xy6rQXLRMTgk3krDd94nRo3/31p69+A==
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.3.tgz#5d8f68d88256260c0514be4db35033ce02e31fb8"
+  integrity sha512-pGgz2nvqaMJTcc97BpwIwavntgi9VvYYd18XBI0Ze3TGncts2DJCECrSqgQtjj4li+SIHyY0KFXmm+yp+T8sbw==
   dependencies:
     array-find-index "^1.0.2"
     create-react-class "^15.6.2"

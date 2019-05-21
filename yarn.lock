@@ -1394,9 +1394,9 @@ babel-plugin-module-resolver@^3.1.1:
     resolve "^1.4.0"
 
 babel-plugin-react-native-web@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.11.2.tgz#a1b9ab25fcd48936823d4ec537c749c007ceaf15"
-  integrity sha512-nZwvX8/HA3w6zkpDs1If9aIkHTyvuClAmLtSPJTmy7lXixX9z7/Siap/yjIaCp0Hz5gC5ALFXLBQv8oSdEqtQA==
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-native-web/-/babel-plugin-react-native-web-0.11.3.tgz#32d604377daace1d417e1156bd6f4850e1307095"
+  integrity sha512-5cxcpt3KNWYaGaKncvT/mV75Rq5hvT67csIMek/R56mI9a94LfH+Hls7j4aySOgjCrvEP9TaeERVLoDLtigcyw==
 
 babel-plugin-react-native-web@^0.9.6:
   version "0.9.13"
@@ -5930,9 +5930,9 @@ react-native-simple-markdown@^1.1.0:
     simple-markdown "git://github.com/CharlesMangwa/simple-markdown.git"
 
 react-native-web@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.2.tgz#f3550589347be1f402f0641fefca687ca64a1750"
-  integrity sha512-EVUrBftCZBfUCOrwKJPh+hiGmDieBPL+5m+57BFg0UIH6uSmgvXK9r/xy6rQXLRMTgk3krDd94nRo3/31p69+A==
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.3.tgz#5d8f68d88256260c0514be4db35033ce02e31fb8"
+  integrity sha512-pGgz2nvqaMJTcc97BpwIwavntgi9VvYYd18XBI0Ze3TGncts2DJCECrSqgQtjj4li+SIHyY0KFXmm+yp+T8sbw==
   dependencies:
     array-find-index "^1.0.2"
     create-react-class "^15.6.2"

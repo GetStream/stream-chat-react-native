@@ -1912,12 +1912,12 @@ apollo-link@1.2.1:
     zen-observable-ts "^0.8.6"
 
 apollo-utilities@^1.0.0, apollo-utilities@^1.0.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/apollo-utilities/-/apollo-utilities-1.2.1.tgz#1c3a1ebf5607d7c8efe7636daaf58e7463b41b3c"
-  integrity sha512-Zv8Udp9XTSFiN8oyXOjf6PMHepD4yxxReLsl6dPUy5Ths7jti3nmlBzZUOxuTWRwZn0MoclqL7RQ5UEJN8MAxg==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/apollo-utilities/-/apollo-utilities-1.3.0.tgz#9803724c07ac94ca11dc26397edb58735d2b0211"
+  integrity sha512-wQjV+FdWcTWmWUFlChG5rS0vHKy5OsXC6XlV9STRstQq6VbXANwHy6DHnTEQAfLXWAbNcPgBu+nBUpR3dFhwrA==
   dependencies:
     fast-json-stable-stringify "^2.0.0"
-    ts-invariant "^0.2.1"
+    ts-invariant "^0.4.0"
     tslib "^1.9.3"
 
 aproba@^1.0.3, aproba@^1.1.1:
@@ -10245,9 +10245,9 @@ react-native-view-shot@2.5.0:
   integrity sha512-xFJA+N7wh8Ik/17I4QB24e0a0L3atg1ScVehvtYR5UBTgHdzTFA0ZylvXp9gkZt7V+AT5Pni0H3NQItpqSKFoQ==
 
 react-native-web@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.2.tgz#f3550589347be1f402f0641fefca687ca64a1750"
-  integrity sha512-EVUrBftCZBfUCOrwKJPh+hiGmDieBPL+5m+57BFg0UIH6uSmgvXK9r/xy6rQXLRMTgk3krDd94nRo3/31p69+A==
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/react-native-web/-/react-native-web-0.11.3.tgz#5d8f68d88256260c0514be4db35033ce02e31fb8"
+  integrity sha512-pGgz2nvqaMJTcc97BpwIwavntgi9VvYYd18XBI0Ze3TGncts2DJCECrSqgQtjj4li+SIHyY0KFXmm+yp+T8sbw==
   dependencies:
     array-find-index "^1.0.2"
     create-react-class "^15.6.2"
@@ -12035,10 +12035,10 @@ tryer@^1.0.0:
   resolved "https://registry.yarnpkg.com/tryer/-/tryer-1.0.1.tgz#f2c85406800b9b0f74c9f7465b81eaad241252f8"
   integrity sha512-c3zayb8/kWWpycWYg87P71E1S1ZL6b6IJxfb5fvsUgsf0S2MVGaDhDXXjDMpdCpfWXqptc+4mXwmiy1ypXqRAA==
 
-ts-invariant@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.2.1.tgz#3d587f9d6e3bded97bf9ec17951dd9814d5a9d3f"
-  integrity sha512-Z/JSxzVmhTo50I+LKagEISFJW3pvPCqsMWLamCTX8Kr3N5aMrnGOqcflbe5hLUzwjvgPfnLzQtHZv0yWQ+FIHg==
+ts-invariant@^0.4.0:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/ts-invariant/-/ts-invariant-0.4.2.tgz#8685131b8083e67c66d602540e78763408be9113"
+  integrity sha512-PTAAn8lJPEdRBJJEs4ig6MVZWfO12yrFzV7YaPslmyhG7+4MA279y4BXT3f72gXeVl0mC1aAWq2rMX4eKTWU/Q==
   dependencies:
     tslib "^1.9.3"
 
