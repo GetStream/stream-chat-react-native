@@ -1730,14 +1730,14 @@ core-js@^1.0.0:
   integrity sha1-ZSKUwUZR2yj6k70tX/KYOk8IxjY=
 
 core-js@^2.2.2, core-js@^2.4.1:
-  version "2.6.6"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.6.tgz#00eb6d6bf815471cc16d8563edd7d38786dec50b"
-  integrity sha512-Mt/LaAym54NXnrjEMdo918cT2h70tqb/Yl7T3uPHQHRm5SxVoqlKmerUy4mL11k8saSBDWQ7ULIHxmeFyT3pfg==
+  version "2.6.7"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.7.tgz#c2b19af9b50ec49c356ee087d6155632a889e968"
+  integrity sha512-ydmsQxDVH7lDpYoirXft8S83ddKKfdsrsmWhtyj7xafXVLbLhKOyfD7kAi2ueFfeP7m9rNavjW59O3hLLzzC5A==
 
 core-js@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.1.0.tgz#7118f0dad99054204b6821c1f82e67b42cc21628"
-  integrity sha512-EyF8cMvUWRDWRLmC3+i50D1DqK4aFZWb/6PDPP2QfX2r0zXkgR2V9wt7jX7TRM0Qdj/3f6+JQkqfCaGkSj92iQ==
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.1.1.tgz#502ba6e7c15300de20a372b390f9fc9039db76f2"
+  integrity sha512-OddJJmAMN6czmPEtp1ScHFWq4RXzH1iWJFGL8CZ6UcopeBzCMjo4Slv0UoLW2hhny1/wsDowm6xCmBCWQ1azkA==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"
@@ -6079,10 +6079,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@v0.0.13:
-  version "0.0.13"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.13.tgz#cde53f2990ac93da669fd487ea11d77ba14cc4fa"
-  integrity sha512-REpxYzpUPhZhuG3C+RYbd1AY6VSGvG35+EVz8L9GRP+Q1FVcNDqemwnUEXaoACWmuavU2VQh7HSOjhsVarLiMg==
+stream-chat-react-native-core@v0.0.14:
+  version "0.0.14"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.14.tgz#af19e661e05ea8b178b16ce6bc8461ba9d0a9a1f"
+  integrity sha512-PiToFjpqrf1hBDrsHSS8wsc36az4SPYU9BrO1x85AXQMton2f/yC+K0V6pD/lClNTMxj6dffFYAqqOIN1Li8Pg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"
@@ -6094,6 +6094,7 @@ stream-chat-react-native-core@v0.0.13:
     moment "2.23.0"
     path "^0.12.7"
     react-art "^16.8.6"
+    react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     react-native-simple-markdown "^1.1.0"
     react-native-web "^0.11.2"

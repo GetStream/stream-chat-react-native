@@ -4,6 +4,7 @@ import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { withChatContext } from '../context';
 import { ChannelListMessenger } from './ChannelListMessenger';
 import Immutable from 'seamless-immutable';
+import debounce from 'lodash/debounce';
 
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
@@ -78,6 +79,11 @@ const ChannelList = withChatContext(
       };
 
       this.menuButton = React.createRef();
+
+      this._queryChannelsDebounced = debounce(this.queryChannels, 1000, {
+        leading: true,
+        trailing: true,
+      });
     }
 
     isPromise = (thing) => {
@@ -86,7 +92,7 @@ const ChannelList = withChatContext(
     };
 
     async componentDidMount() {
-      await this.queryChannels();
+      await this._queryChannelsDebounced();
       this.listenToChanges();
     }
 
@@ -168,6 +174,7 @@ const ChannelList = withChatContext(
         // move channel to starting position
         this.setState((prevState) => ({
           channels: [...channel, ...prevState.channels],
+          offset: prevState.offset + 1,
         }));
       }
 
@@ -182,6 +189,7 @@ const ChannelList = withChatContext(
           const channel = await this.getChannel(e.channel.cid);
           this.setState((prevState) => ({
             channels: [...channel, ...prevState.channels],
+            offset: prevState.offset + 1,
           }));
         }
       }
@@ -247,7 +255,7 @@ const ChannelList = withChatContext(
     };
 
     loadNextPage = () => {
-      this.queryChannels();
+      this._queryChannelsDebounced();
     };
 
     render() {
