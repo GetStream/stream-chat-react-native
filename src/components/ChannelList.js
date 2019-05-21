@@ -73,6 +73,7 @@ const ChannelList = withChatContext(
         error: false,
         loading: true,
         channels: Immutable([]),
+        channelIds: Immutable([]),
         loadingChannels: true,
         refreshing: false,
         offset: 0,
@@ -84,6 +85,7 @@ const ChannelList = withChatContext(
         leading: true,
         trailing: true,
       });
+      this.queryActive = false;
     }
 
     isPromise = (thing) => {
@@ -99,6 +101,7 @@ const ChannelList = withChatContext(
     componentWillUnmount() {
       this._unmounted = true;
       this.props.client.off(this.handleEvent);
+      this._queryChannelsDebounced.cancel();
     }
 
     static getDerivedStateFromError() {
@@ -119,7 +122,15 @@ const ChannelList = withChatContext(
     };
 
     queryChannels = async () => {
-      if (this._unmounted) return;
+      // Don't query again if query is already active.
+      if (this.queryActive) return;
+
+      this.queryActive = true;
+
+      if (this._unmounted) {
+        this.queryActive = false;
+        return;
+      }
       const { options, filters, sort } = this.props;
       const { offset } = this.state;
 
@@ -139,10 +150,20 @@ const ChannelList = withChatContext(
           }
         }
         if (this._unmounted) return;
-        this.setState((prevState) => {
+        await this.setState((prevState) => {
+          // Remove duplicate channels in worse case we get repeted channel from backend.
+          channelQueryResponse = channelQueryResponse.filter(
+            (c) => this.state.channelIds.indexOf(c.id) === -1,
+          );
           const channels = [...prevState.channels, ...channelQueryResponse];
+          const channelIds = [
+            ...prevState.channelIds,
+            ...channelQueryResponse.map((c) => c.id),
+          ];
+
           return {
             channels, // not unique somehow needs more checking
+            channelIds,
             loadingChannels: false,
             offset: channels.length,
             hasNextPage:
@@ -155,6 +176,7 @@ const ChannelList = withChatContext(
         if (this._unmounted) return;
         this.setState({ error: true, refreshing: false });
       }
+      this.queryActive = false;
     };
 
     listenToChanges() {
@@ -174,6 +196,7 @@ const ChannelList = withChatContext(
         // move channel to starting position
         this.setState((prevState) => ({
           channels: [...channel, ...prevState.channels],
+          channelIds: [...channel.id, ...prevState.channelIds],
           offset: prevState.offset + 1,
         }));
       }
@@ -189,6 +212,7 @@ const ChannelList = withChatContext(
           const channel = await this.getChannel(e.channel.cid);
           this.setState((prevState) => ({
             channels: [...channel, ...prevState.channels],
+            channelIds: [...channel.id, ...prevState.channelIds],
             offset: prevState.offset + 1,
           }));
         }
@@ -206,8 +230,12 @@ const ChannelList = withChatContext(
             const channels = prevState.channels.filter(
               (channel) => channel.cid !== e.channel.cid,
             );
+            const channelIds = prevState.channelIds.filter(
+              (cid) => cid !== e.channel.cid,
+            );
             return {
               channels,
+              channelIds,
             };
           });
         }
