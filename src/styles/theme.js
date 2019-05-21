@@ -122,10 +122,34 @@ const defaultTheme = {
   },
 
   gallery: {
+    width: 240,
+    size: 120,
+    halfSize: 80,
+    doubleSize: 240,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+
     single: {
       display: 'flex',
-      maxWidth: 250,
+      maxWidth: 240,
       borderRadius: 16,
+    },
+    imageContainer: {
+      display: 'flex',
+    },
+    doubleContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      overflow: 'hidden',
+      width: 240,
+      height: 120,
+      borderRadius: 16,
+    },
+    galleryContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      borderRadius: 16,
+      overflow: 'hidden',
     },
     header: {
       container: {

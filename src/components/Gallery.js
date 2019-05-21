@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -18,6 +18,44 @@ const Single = styled.TouchableOpacity`
   border-bottom-right-radius: ${(props) =>
     props.position === 'left' ? props.theme.gallery.single.borderRadius : 2};
   overflow: hidden;
+`;
+
+const GalleryContainer = styled.View`
+  display: ${(props) => props.theme.gallery.galleryContainer.display};
+  flex-direction: ${(props) => props.theme.gallery.flexDirection};
+  flex-wrap: ${(props) => props.theme.gallery.flexWrap};
+  width: ${(props) => props.theme.gallery.width};
+
+  height: ${(props) =>
+    props.length >= 4
+      ? props.theme.gallery.doubleSize
+      : props.length === 3
+      ? props.theme.gallery.halfSize
+      : props.theme.gallery.size};
+
+  overflow: ${(props) => props.theme.gallery.galleryContainer.overflow};
+  border-radius: ${(props) =>
+    props.theme.gallery.galleryContainer.borderRadius};
+  border-bottom-right-radius: ${(props) =>
+    props.position === 'left'
+      ? props.theme.gallery.galleryContainer.borderRadius
+      : 2};
+  border-bottom-left-radius: ${(props) =>
+    props.position === 'right'
+      ? props.theme.gallery.galleryContainer.borderRadius
+      : 2};
+`;
+
+const ImageContainer = styled.TouchableOpacity`
+  display: ${(props) => props.theme.gallery.imageContainer.display};
+  height: ${(props) =>
+    props.length !== 3
+      ? props.theme.gallery.size
+      : props.theme.gallery.halfSize};
+  width: ${(props) =>
+    props.length !== 3
+      ? props.theme.gallery.size
+      : props.theme.gallery.halfSize};
 `;
 
 export class Gallery extends React.PureComponent {
@@ -85,17 +123,68 @@ export class Gallery extends React.PureComponent {
 
     return (
       <React.Fragment>
-        {images.map((image, i) => (
-          <TouchableOpacity
-            key={`gallery-image-${i}`}
-            activeOpacity={0.8}
-            onPress={() => {
-              this.setState({ viewerModalOpen: true });
-            }}
-          >
-            <Image source={{ uri: image.url }} />
-          </TouchableOpacity>
-        ))}
+        <GalleryContainer length={images.length} position={this.props.position}>
+          {images.slice(0, 4).map((image, i) => (
+            <ImageContainer
+              key={`gallery-item-${i}`}
+              length={images.length}
+              activeOpacity={0.8}
+              onPress={() => {
+                console.log('open');
+                this.setState({ viewerModalOpen: true });
+              }}
+            >
+              {i === 3 && images.length > 4 ? (
+                <View
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: 100 + '%',
+                      height: 100 + '%',
+                    }}
+                    resizeMode="cover"
+                    source={{ uri: images[3].url }}
+                  />
+                  <View
+                    style={{
+                      position: 'absolute',
+                      height: '100%',
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0,0,0,0.69)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: 22,
+                      }}
+                    >
+                      {' '}
+                      + {images.length - 3} more
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <Image
+                  style={{
+                    width: 100 + '%',
+                    height: 100 + '%',
+                  }}
+                  resizeMode="cover"
+                  source={{ uri: image.url }}
+                />
+              )}
+            </ImageContainer>
+          ))}
+        </GalleryContainer>
         <Modal visible={this.state.viewerModalOpen} transparent={true}>
           <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
             <ImageViewer

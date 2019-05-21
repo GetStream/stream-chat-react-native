@@ -197,7 +197,9 @@ export class MessageContent extends React.PureComponent {
                 position={this.props.position}
               />
             ))}
-          {images.length > 1 && <Gallery images={images} />}
+          {images.length > 1 && (
+            <Gallery position={this.props.position} images={images} />
+          )}
           <MessageText
             message={message}
             isMyMessage={isMyMessage}
