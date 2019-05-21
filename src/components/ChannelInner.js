@@ -144,14 +144,14 @@ export class ChannelInner extends PureComponent {
       typing: {},
     });
 
-    this.markRead(channel);
+    this.markRead();
   }
 
-  markRead = (channel) => {
-    if (!channel.getConfig().read_events) {
+  markRead = () => {
+    if (!this.props.channel.getConfig().read_events) {
       return;
     }
-    logChatPromiseExecution(channel.markRead(), 'mark read');
+    logChatPromiseExecution(this.props.channel.markRead(), 'mark read');
   };
 
   listenToChanges() {
@@ -357,26 +357,6 @@ export class ChannelInner extends PureComponent {
       threadState['thread'] = channel.state.messageToImmutable(e.message);
     }
 
-    if (e.type === 'message.new') {
-      let mainChannelUpdated = true;
-      if (e.message.parent_id && !e.message.show_in_channel) {
-        mainChannelUpdated = false;
-      }
-
-      if (
-        mainChannelUpdated &&
-        e.message.user.id !== this.props.client.userID
-      ) {
-        this._markReadThrottled(channel);
-      }
-    }
-
-    if (Object.keys(threadState).length > 0) {
-      // TODO: in theory we should do 1 setState call not 2,
-      // However the setStateThrottled doesn't support this
-      this.setState(threadState);
-    }
-
     this._setStateThrottled({
       messages: channel.state.messages,
       watchers: channel.state.watchers,
@@ -432,6 +412,7 @@ export class ChannelInner extends PureComponent {
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
+    markRead: this._markReadThrottled,
 
     // thread related
     openThread: this.openThread,
