@@ -262,8 +262,11 @@ export const styles = {
     container: {
       ...Layouts.flexColumn,
       alignItems: 'center',
-      zIndex: 10,
-      marginBottom: 0,
+      justifyContent: 'center',
+      position: 'absolute',
+      zIndex: 100,
+      bottom: 0,
+      backgroundColor: 'transparent',
     },
   }),
   Notification: StyleSheet.create({

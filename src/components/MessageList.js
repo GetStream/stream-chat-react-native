@@ -197,6 +197,7 @@ const MessageList = withChannelContext(
         newMessagesNotification: false,
       });
       this.flatList.scrollToIndex({ index: 0 });
+      if (!this.props.threadList) this.props.markRead();
     };
 
     getLastReceived = (messages) => {
@@ -243,7 +244,17 @@ const MessageList = withChannelContext(
 
     handleScroll = (event) => {
       const yOffset = event.nativeEvent.contentOffset.y;
-      this.setState({ yOffset });
+      const removeNewMessageNotification = yOffset <= 0;
+
+      if (!this.props.threadList && removeNewMessageNotification)
+        this.props.markRead();
+
+      this.setState((prevState) => ({
+        yOffset,
+        newMessagesNotification: removeNewMessageNotification
+          ? false
+          : prevState.newMessagesNotification,
+      }));
     };
 
     onMessageTouch = (id) => {
@@ -268,10 +279,15 @@ const MessageList = withChannelContext(
       );
 
       return (
-        <React.Fragment>
+        <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
           <FlatList
             ref={(fl) => (this.flatList = fl)}
-            style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
+            style={{
+              flex: 1,
+              paddingLeft: 10,
+              paddingRight: 10,
+              width: '100%',
+            }}
             data={messagesWithGroupPositions}
             onScroll={this.handleScroll}
             ListFooterComponent={this.props.headerComponent}
@@ -286,29 +302,27 @@ const MessageList = withChannelContext(
               autoscrollToTopThreshold: 10,
             }}
           />
-          {this.state.newMessagesNotification && (
-            <MessageNotification
-              showNotification={this.state.newMessagesNotification}
-              onClick={this.goToNewMessages}
+          <MessageNotification
+            showNotification={this.state.newMessagesNotification}
+            onClick={this.goToNewMessages}
+          >
+            <View
+              style={{
+                borderRadius: 10,
+                backgroundColor: 'black',
+                color: 'white',
+                padding: 10,
+              }}
             >
-              <View
-                style={{
-                  borderRadius: 10,
-                  backgroundColor: 'black',
-                  color: 'white',
-                  padding: 10,
-                }}
-              >
-                <Text style={{ color: 'white' }}>New Messages ↓</Text>
-              </View>
-            </MessageNotification>
-          )}
+              <Text style={{ color: 'white' }}>New Messages ↓</Text>
+            </View>
+          </MessageNotification>
           <Notification type="warning" active={!this.state.online}>
             <Text style={styles.Notification.warning}>
               Connection failure, reconnecting now ...
             </Text>
           </Notification>
-        </React.Fragment>
+        </View>
       );
     }
   },
