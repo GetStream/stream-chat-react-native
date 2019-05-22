@@ -1,8 +1,12 @@
 import React, { PureComponent } from 'react';
-import { Text, Linking } from 'react-native';
+import { Linking } from 'react-native';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import { buildStylesheet } from '../styles/styles';
+const Title = styled.Text`
+  color: ${(props) => props.theme.hyperLink.title.color};
+  font-weight: ${(props) => props.theme.hyperLink.title.fontWeight};
+`;
 
 export class HyperLink extends PureComponent {
   constructor() {
@@ -16,15 +20,9 @@ export class HyperLink extends PureComponent {
   };
 
   render() {
-    const { title, style } = this.props;
+    const { title } = this.props;
 
-    const styles = buildStylesheet('HyperLink', style);
-
-    return (
-      <Text style={styles.title} onPress={this._goToURL}>
-        {title}
-      </Text>
-    );
+    return <Title onPress={this._goToURL}>{title}</Title>;
   }
 
   _goToURL = () => {

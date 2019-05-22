@@ -1,7 +1,63 @@
 import React, { PureComponent } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
 import { Avatar } from './Avatar';
 import truncate from 'lodash/truncate';
+import styled from 'styled-components';
+
+const Container = styled.TouchableOpacity`
+  display: ${(props) => props.theme.channelPreview.messenger.container.display};
+  flex-direction: ${(props) =>
+    props.theme.channelPreview.messenger.container.flexDirection};
+  border-bottom-color: ${(props) =>
+    props.theme.channelPreview.messenger.container.borderBottomColor};
+  border-bottom-width: ${(props) =>
+    props.theme.channelPreview.messenger.container.borderBottomWidth};
+  padding: ${(props) =>
+    props.theme.channelPreview.messenger.container.padding}px;
+`;
+
+const Details = styled.View`
+  display: ${(props) => props.theme.channelPreview.messenger.details.display};
+  flex-direction: ${(props) =>
+    props.theme.channelPreview.messenger.details.flexDirection};
+  flex: ${(props) => props.theme.channelPreview.messenger.details.flex};
+  padding-left: ${(props) =>
+    props.theme.channelPreview.messenger.details.paddingLeft}px;
+`;
+
+const DetailsTop = styled.View`
+  display: ${(props) =>
+    props.theme.channelPreview.messenger.detailsTop.display};
+  flex-direction: ${(props) =>
+    props.theme.channelPreview.messenger.detailsTop.flexDirection};
+  justify-content: ${(props) =>
+    props.theme.channelPreview.messenger.detailsTop.justifyContent};
+`;
+
+const Title = styled.Text`
+  font-weight: ${(props) =>
+    props.theme.channelPreview.messenger.title.fontWeight};
+  font-size: ${(props) => props.theme.channelPreview.messenger.title.fontSize};
+  flex: ${(props) => props.theme.channelPreview.messenger.title.flex};
+`;
+
+const Date = styled.Text`
+  color: ${(props) => props.theme.channelPreview.messenger.date.color};
+  font-size: ${(props) => props.theme.channelPreview.messenger.date.fontSize};
+  text-align: ${(props) => props.theme.channelPreview.messenger.date.textAlign};
+`;
+
+const Message = styled.Text`
+  color: ${(props) =>
+    props.unread
+      ? props.theme.channelPreview.messenger.message.unreadColor
+      : props.theme.channelPreview.messenger.message.color};
+  font-size: ${(props) =>
+    props.theme.channelPreview.messenger.message.fontSize};
+  font-weight: ${(props) =>
+    props.unread
+      ? props.theme.channelPreview.messenger.message.unreadFontWeight
+      : props.theme.channelPreview.messenger.message.fontWeight};
+`;
 
 export class ChannelPreviewMessenger extends PureComponent {
   channelPreviewButton = React.createRef();
@@ -13,51 +69,17 @@ export class ChannelPreviewMessenger extends PureComponent {
   render() {
     const { channel } = this.props;
     return (
-      <TouchableOpacity
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          borderBottomColor: '#EBEBEB',
-          borderBottomWidth: 1,
-          padding: 10,
-        }}
-        onPress={this.onSelectChannel}
-      >
+      <Container onPress={this.onSelectChannel}>
         <Avatar image={channel.data.image} size={40} />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            flex: 1,
-            paddingLeft: 10,
-          }}
-        >
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text
-              style={{ fontWeight: 'bold', fontSize: 14, flex: 9 }}
-              ellipsizeMode="tail"
-              numberOfLines={1}
-            >
+        <Details>
+          <DetailsTop>
+            <Title ellipsizeMode="tail" numberOfLines={1}>
               {channel.data.name}
-            </Text>
-            <Text
-              style={{
-                color: '#767676',
-                fontSize: 11,
-                flex: 3,
-                textAlign: 'right',
-              }}
-            >
-              {this.props.latestMessage.created_at}
-            </Text>
-          </View>
-          <Text
+            </Title>
+            <Date>{this.props.latestMessage.created_at}</Date>
+          </DetailsTop>
+          <Message
+            unread={this.props.unread > 0}
             style={{
               color: this.props.unread > 0 ? 'black' : '#767676',
               fontSize: 13,
@@ -67,9 +89,9 @@ export class ChannelPreviewMessenger extends PureComponent {
             {!channel.state.messages[0]
               ? 'Nothing yet...'
               : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), 14)}
-          </Text>
-        </View>
-      </TouchableOpacity>
+          </Message>
+        </Details>
+      </Container>
     );
   }
 }

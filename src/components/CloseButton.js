@@ -5,13 +5,15 @@ import closeRound from '../images/icons/close-round.png';
 
 export const CloseButton = () => {
   const Container = styled.View`
-    width: 30px;
-    height: 30px;
-    border-radius: 3px;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: ${(props) => props.theme.closeButton.container.width};
+    height: ${(props) => props.theme.closeButton.container.height};
+    border-radius: ${(props) => props.theme.closeButton.container.borderRadius};
+    align-items: ${(props) => props.theme.closeButton.container.alignItems};
+    justify-content: ${(props) =>
+      props.theme.closeButton.container.justifyContent};
+    background-color: ${(props) =>
+      props.theme.closeButton.container.backgroundColor};
+    border: ${(props) => props.theme.closeButton.container.border};
   `;
 
   return (

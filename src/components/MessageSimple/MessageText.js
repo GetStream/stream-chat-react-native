@@ -1,13 +1,50 @@
 import React from 'react';
-import { View } from 'react-native';
-import { buildStylesheet } from '../../styles/styles.js';
+import styled from 'styled-components';
+
 import { renderText, capitalize } from '../../utils';
 
-export const MessageText = ({
-  message,
-  isMyMessage = () => false,
-  style = null,
-}) => {
+const TextContainer = styled.View`
+  border-bottom-left-radius: ${(props) =>
+    props.groupStyle.indexOf('left') !== -1
+      ? props.theme.messageText.borderRadiusS
+      : props.theme.messageText.borderBottomLeftRadius};
+  border-bottom-right-radius: ${(props) =>
+    props.groupStyle.indexOf('right') !== -1
+      ? props.theme.messageText.borderRadiusS
+      : props.theme.messageText.borderBottomRightRadius};
+  border-top-left-radius: ${(props) =>
+    props.groupStyle === 'leftBottom' || props.groupStyle === 'leftMiddle'
+      ? props.theme.messageText.borderRadiusS
+      : props.theme.messageText.borderTopLeftRadius};
+  border-top-right-radius: ${(props) =>
+    props.groupStyle === 'rightBottom' || props.groupStyle === 'rightMiddle'
+      ? props.theme.messageText.borderRadiusS
+      : props.theme.messageText.borderTopRightRadius};
+  margin-top: ${(props) => props.theme.messageText.marginTop};
+  padding: ${(props) => props.theme.messageText.padding}px;
+  padding-left: ${(props) => props.theme.messageText.paddingLeft};
+  padding-right: ${(props) => props.theme.messageText.paddingRight};
+  align-self: ${(props) =>
+    props.position === 'left'
+      ? props.theme.messageText.left.alignSelf
+      : props.theme.messageText.right.alignSelf};
+  border-width: ${(props) =>
+    props.position === 'left'
+      ? props.theme.messageText.left.borderWidth
+      : props.theme.messageText.right.borderWidth};
+  border-color: ${(props) =>
+    props.position === 'left'
+      ? props.theme.messageText.left.borderColor
+      : props.theme.messageText.right.borderColor};
+  background-color: ${(props) =>
+    props.position === 'left' ||
+    props.status === 'error' ||
+    props.status === 'failed'
+      ? props.theme.messageText.transparent
+      : props.theme.messageText.filled};
+`;
+
+export const MessageText = ({ message, isMyMessage = () => false }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
@@ -17,21 +54,15 @@ export const MessageText = ({
 
   if (!message.text) return false;
 
-  const styles = buildStylesheet('MessageSimpleText', style);
-
   return (
     <React.Fragment>
-      <View
-        style={{
-          ...styles.container,
-          ...styles[pos],
-
-          ...styles[groupStyles],
-          ...styles[message.status],
-        }}
+      <TextContainer
+        position={pos}
+        groupStyle={groupStyles}
+        status={message.status}
       >
         {renderText(message)}
-      </View>
+      </TextContainer>
     </React.Fragment>
   );
 };

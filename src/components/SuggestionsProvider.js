@@ -183,7 +183,7 @@ class SuggestionsView extends React.PureComponent {
             data={data}
             keyboardShouldPersistTaps="always"
             renderItem={this.renderItem}
-            keyExtractor={(item, index) => item.name + index}
+            keyExtractor={(item, index) => (item.name || item.id) + index}
           />
         </View>
       </TouchableOpacity>
