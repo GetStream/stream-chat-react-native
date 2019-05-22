@@ -8,7 +8,7 @@ import { MessageAvatar } from './MessageAvatar';
 
 export class MessageSimple extends React.PureComponent {
   render() {
-    const { message, isMyMessage, style, editing } = this.props;
+    const { message, isMyMessage, style } = this.props;
     const styles = buildStylesheet('MessageSimple', style);
     const pos = isMyMessage(message) ? 'right' : 'left';
     const bottomMargin =
@@ -22,7 +22,6 @@ export class MessageSimple extends React.PureComponent {
           ...styles.container,
           ...styles[pos],
           ...styles[bottomMargin],
-          backgroundColor: editing.id === message.id ? 'pink' : 'white',
         }}
       >
         {isMyMessage(message) ? (

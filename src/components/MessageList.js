@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
 
 import PropTypes from 'prop-types';
@@ -16,7 +16,6 @@ const MessageList = withChannelContext(
 
       this.state = {
         newMessagesNotification: false,
-        activeMessageId: false,
         online: props.online,
       };
     }
@@ -30,10 +29,12 @@ const MessageList = withChannelContext(
       /** The message rendering component, the Message component delegates its rendering logic to this component */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      disableWhileEditing: PropTypes.bool,
     };
 
     static defaultProps = {
       dateSeparator: DateSeparator,
+      disableWhileEditing: true,
     };
 
     componentDidUpdate(prevProps) {
@@ -233,7 +234,6 @@ const MessageList = withChannelContext(
               : null
           }
           onMessageTouch={this.onMessageTouch}
-          activeMessageId={this.state.activeMessageId}
           setEditingState={this.props.setEditingState}
           editing={this.props.editing}
           threadList={this.props.threadList}
@@ -257,10 +257,6 @@ const MessageList = withChannelContext(
       }));
     };
 
-    onMessageTouch = (id) => {
-      this.setState({ activeMessageId: id });
-    };
-
     renderEmptyState = () => {
       const Indicator = this.props.EmptyStateIndicator;
       return <Indicator listType="message" />;
@@ -279,50 +275,68 @@ const MessageList = withChannelContext(
       );
 
       return (
-        <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
-          <FlatList
-            ref={(fl) => (this.flatList = fl)}
-            style={{
-              flex: 1,
-              paddingLeft: 10,
-              paddingRight: 10,
-              width: '100%',
-            }}
-            data={messagesWithGroupPositions}
-            onScroll={this.handleScroll}
-            ListFooterComponent={this.props.headerComponent}
-            onEndReached={this.props.loadMore}
-            inverted
-            keyExtractor={(item) =>
-              item.id || item.created_at || item.date.toISOString()
-            }
-            renderItem={this.renderItem}
-            maintainVisibleContentPosition={{
-              minIndexForVisible: 1,
-              autoscrollToTopThreshold: 10,
-            }}
-          />
-          <MessageNotification
-            showNotification={this.state.newMessagesNotification}
-            onClick={this.goToNewMessages}
-          >
-            <View
+        <React.Fragment>
+          {// Mask for edit state
+          this.props.editing && this.props.disableWhileEditing && (
+            <TouchableOpacity
               style={{
-                borderRadius: 10,
+                position: 'absolute',
                 backgroundColor: 'black',
-                color: 'white',
-                padding: 10,
+                opacity: 0.4,
+                height: '100%',
+                width: '100%',
+                zIndex: 100,
               }}
+              collapsable={false}
+              onPress={this.props.clearEditingState}
+            />
+          )}
+          <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
+            <FlatList
+              ref={(fl) => (this.flatList = fl)}
+              style={{
+                flex: 1,
+                paddingLeft: 10,
+                paddingRight: 10,
+                width: '100%',
+              }}
+              data={messagesWithGroupPositions}
+              onScroll={this.handleScroll}
+              ListFooterComponent={this.props.headerComponent}
+              keyboardShouldPersistTaps="always"
+              onEndReached={this.props.loadMore}
+              inverted
+              keyExtractor={(item) =>
+                item.id || item.created_at || item.date.toISOString()
+              }
+              renderItem={this.renderItem}
+              maintainVisibleContentPosition={{
+                minIndexForVisible: 1,
+                autoscrollToTopThreshold: 10,
+              }}
+            />
+            <MessageNotification
+              showNotification={this.state.newMessagesNotification}
+              onClick={this.goToNewMessages}
             >
-              <Text style={{ color: 'white' }}>New Messages ↓</Text>
-            </View>
-          </MessageNotification>
-          <Notification type="warning" active={!this.state.online}>
-            <Text style={styles.Notification.warning}>
-              Connection failure, reconnecting now ...
-            </Text>
-          </Notification>
-        </View>
+              <View
+                style={{
+                  borderRadius: 10,
+                  backgroundColor: 'black',
+                  color: 'white',
+                  padding: 10,
+                }}
+              >
+                <Text style={{ color: 'white' }}>New Messages ↓</Text>
+              </View>
+            </MessageNotification>
+            <Notification type="warning" active={!this.state.online}>
+              <Text style={styles.Notification.warning}>
+                Connection failure, reconnecting now ...
+              </Text>
+            </Notification>
+          </View>
+        </React.Fragment>
       );
     }
   },

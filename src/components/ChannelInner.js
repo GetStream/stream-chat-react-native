@@ -1,5 +1,12 @@
 import React, { PureComponent } from 'react';
-import { View, Text, Keyboard, Dimensions, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  Keyboard,
+  Dimensions,
+  Animated,
+  Platform,
+} from 'react-native';
 import { ChannelContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 
@@ -73,14 +80,27 @@ export class ChannelInner extends PureComponent {
     this.initialHeight = undefined;
     this.messageInputBox = false;
 
-    this.keyboardDidShowListener = Keyboard.addListener(
-      'keyboardDidShow',
-      this.keyboardDidShow,
-    );
+    if (Platform.OS === 'ios') {
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardWillShow',
+        this.keyboardDidShow,
+      );
+    } else {
+      // Android doesn't support keyboardWillShow event.
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        this.keyboardDidShow,
+      );
+    }
+
+    // We dismiss the keyboard manually (along with keyboardWillHide function) when message is touched.
+    // Following listener is just for a case when keyboard gets dismissed due to something besides message touch.
     this.keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       this.keyboardDidHide,
     );
+
+    this._keyboardOpen = false;
   }
 
   static propTypes = {
@@ -123,7 +143,7 @@ export class ChannelInner extends PureComponent {
         errored = true;
       }
     }
-    // this.originalTitle = document.title;
+
     this.lastRead = new Date();
     if (!errored) {
       this.copyChannelState();
@@ -144,6 +164,7 @@ export class ChannelInner extends PureComponent {
     this.keyboardDidHideListener.remove();
   }
 
+  // TODO: Better to extract following functions to different HOC.
   keyboardDidShow = (e) => {
     const keyboardHeight = e.endCoordinates.height;
 
@@ -154,6 +175,7 @@ export class ChannelInner extends PureComponent {
         duration: 500,
       }).start();
     });
+    this._keyboardOpen = true;
   };
 
   keyboardDidHide = () => {
@@ -161,7 +183,21 @@ export class ChannelInner extends PureComponent {
       toValue: this.initialHeight,
       duration: 500,
     }).start();
+    this._keyboardOpen = false;
   };
+
+  keyboardWillDismiss = (callback) => {
+    if (!this._keyboardOpen) {
+      callback();
+      return;
+    }
+
+    Animated.timing(this.state.channelHeight, {
+      toValue: this.initialHeight,
+      duration: 500,
+    }).start(callback);
+  };
+
   copyChannelState() {
     const channel = this.props.channel;
 
@@ -449,6 +485,7 @@ export class ChannelInner extends PureComponent {
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
+    keyboardWillDismiss: this.keyboardWillDismiss,
     markRead: this._markReadThrottled,
 
     // thread related

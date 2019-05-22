@@ -54,6 +54,7 @@ export class ReactionPicker extends React.PureComponent {
         visible={reactionPickerVisible}
         transparent
         animationType="fade"
+        onShow={() => {}}
         onRequestClose={handleDismiss}
       >
         {reactionPickerVisible && (
