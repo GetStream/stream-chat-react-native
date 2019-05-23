@@ -7521,7 +7521,7 @@ react-native-image-zoom-viewer@^2.2.25:
   dependencies:
     react-native-image-pan-zoom "^2.1.9"
 
-"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
+react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
   version "0.22.1"
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
@@ -8647,10 +8647,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.0.16:
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.16.tgz#9fc4297db54ed9750322cc29e6be3a262bc41846"
-  integrity sha512-UZEyaATLWW9ijUBqm+LiZzZs/AcwzseujGbjSuyCyVYHa1B9JYJ5JLRVPVDAfpO+E8v9uvk2ARhdU45njaJQ9A==
+stream-chat-react-native-core@v0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.17.tgz#3163b0b7718fb613fc2870cfa34e7b4373371796"
+  integrity sha512-eQaR+i6ZfyBm1CZ0X+af2IagcUfsPQVp+dmerneVDbWJBSjHsFVz28HwDjhtz2oKvs0S9XCt4kqLx5oYlQnPuw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"
