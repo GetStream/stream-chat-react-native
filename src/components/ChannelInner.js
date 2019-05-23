@@ -186,16 +186,35 @@ export class ChannelInner extends PureComponent {
     this._keyboardOpen = false;
   };
 
-  keyboardWillDismiss = (callback) => {
-    if (!this._keyboardOpen) {
-      if (callback && callback instanceof Function) callback();
-      return;
-    }
+  keyboardWillDismiss = () =>
+    new Promise((resolve) => {
+      if (!this._keyboardOpen) {
+        resolve();
+        return;
+      }
 
-    Animated.timing(this.state.channelHeight, {
-      toValue: this.initialHeight,
-      duration: 500,
-    }).start(callback);
+      Animated.timing(this.state.channelHeight, {
+        toValue: this.initialHeight,
+        duration: 500,
+      }).start((response) => {
+        if (response && !response.finished) {
+          // If by some chance animation didn't go smooth or had some issue,
+          // then simply defer promise resolution until after 500 ms.
+          // This is the time we perform animation for adjusting animation of Channel component height
+          // during keyboard dismissal.
+          setTimeout(() => {
+            resolve();
+          }, 500);
+          return;
+        }
+
+        resolve();
+      });
+    });
+
+  dismissKeyboard = async () => {
+    Keyboard.dismiss();
+    await this.keyboardWillDismiss();
   };
 
   copyChannelState() {
@@ -485,7 +504,7 @@ export class ChannelInner extends PureComponent {
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
-    keyboardWillDismiss: this.keyboardWillDismiss,
+    dismissKeyboard: this.dismissKeyboard,
     markRead: this._markReadThrottled,
 
     // thread related

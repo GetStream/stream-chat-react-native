@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Dimensions,
-  View,
-  Text,
-  TouchableOpacity,
-  Keyboard,
-} from 'react-native';
+import { Dimensions, View, Text, TouchableOpacity } from 'react-native';
 import moment from 'moment';
 import {
   buildStylesheet,
@@ -66,27 +60,13 @@ export class MessageContent extends React.PureComponent {
     });
   };
 
-  openReactionSelector = () => {
+  openReactionSelector = async () => {
     // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
     // So we need to postpone the calculation for reaction picker position
     // until after keyboard is closed completely. To achieve this, we close
     // the keyboard forcefully and then calculate position of picker in callback.
-    this.props.keyboardWillDismiss((response) => {
-      if (response && !response.finished) {
-        // If by some chance animation didn't go smooth or had some issue,
-        // then simply calculate picker position and open it after 500 ms.
-        // This is the time we perform animation for adjusting animation of Channel component height
-        // during keyboard dismissal.
-        setTimeout(() => {
-          this._setReactionPickerPosition();
-        }, 500);
-        return;
-      }
-
-      this._setReactionPickerPosition();
-    });
-
-    Keyboard.dismiss();
+    await this.props.dismissKeyboard();
+    this._setReactionPickerPosition();
   };
 
   onActionPress = (action) => {
