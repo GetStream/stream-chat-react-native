@@ -3,35 +3,38 @@ import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { getTheme } from '../styles/theme';
 
 import { Message } from './Message';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
 
 const ListContainer = styled.FlatList`
-  flex: ${(props) => props.theme.messageList.listContainer.flex};
-  padding-left: ${(props) => props.theme.messageList.listContainer.paddingLeft};
+  flex: ${(props) => getTheme(props).messageList.listContainer.flex};
+  padding-left: ${(props) =>
+    getTheme(props).messageList.listContainer.paddingLeft};
   padding-right: ${(props) =>
-    props.theme.messageList.listContainer.paddingRight};
+    getTheme(props).messageList.listContainer.paddingRight};
 `;
 
 const NewMessageNotification = styled.View`
   border-radius: ${(props) =>
-    props.theme.messageList.newMessageNotification.borderRadius};
+    getTheme(props).messageList.newMessageNotification.borderRadius};
   background-color: ${(props) =>
-    props.theme.messageList.newMessageNotification.backgroundColor};
-  color: ${(props) => props.theme.messageList.newMessageNotification.color};
+    getTheme(props).messageList.newMessageNotification.backgroundColor};
+  color: ${(props) => getTheme(props).messageList.newMessageNotification.color};
   padding: ${(props) =>
-    props.theme.messageList.newMessageNotification.padding}px;
+    getTheme(props).messageList.newMessageNotification.padding}px;
 `;
 const NewMessageNotificationText = styled.Text`
-  color: ${(props) => props.theme.messageList.newMessageNotificationText.color};
+  color: ${(props) =>
+    getTheme(props).messageList.newMessageNotificationText.color};
 `;
 
 const NotificationText = styled.Text`
-  color: ${(props) => props.theme.messageList.notification.warning.color};
+  color: ${(props) => getTheme(props).messageList.notification.warning.color};
   background-color: ${(props) =>
-    props.theme.messageList.notification.warning.backgroundColor};
+    getTheme(props).messageList.notification.warning.backgroundColor};
 `;
 
 const MessageList = withChannelContext(
@@ -357,20 +360,20 @@ const MessageList = withChannelContext(
 );
 
 const NotificationContainer = styled.View`
-  display: ${(props) => props.theme.notification.display};
-  flex-direction: ${(props) => props.theme.notification.flexDirection};
-  align-items: ${(props) => props.theme.notification.alignItems};
-  z-index: ${(props) => props.theme.notification.zIndex};
-  margin-bottom: ${(props) => props.theme.notification.marginBottom};
-  padding: ${(props) => props.theme.notification.padding}px;
+  display: ${(props) => getTheme(props).notification.display};
+  flex-direction: ${(props) => getTheme(props).notification.flexDirection};
+  align-items: ${(props) => getTheme(props).notification.alignItems};
+  z-index: ${(props) => getTheme(props).notification.zIndex};
+  margin-bottom: ${(props) => getTheme(props).notification.marginBottom};
+  padding: ${(props) => getTheme(props).notification.padding}px;
   color: ${(props) =>
-    props.type && props.theme.notification[props.type].color
-      ? props.theme.notification[props.type].color
-      : props.theme.notification.color};
+    props.type && getTheme(props).notification[props.type].color
+      ? getTheme(props).notification[props.type].color
+      : getTheme(props).notification.color};
   background-color: ${(props) =>
-    props.type && props.theme.notification[props.type].backgroundColor
-      ? props.theme.notification[props.type].backgroundColor
-      : props.theme.notification.backgroundColor};
+    props.type && getTheme(props).notification[props.type].backgroundColor
+      ? getTheme(props).notification[props.type].backgroundColor
+      : getTheme(props).notification.backgroundColor};
 `;
 
 const Notification = ({ children, active, type }) => {

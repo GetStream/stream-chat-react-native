@@ -2,46 +2,47 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { renderText, capitalize } from '../../utils';
+import { getTheme } from '../styles/theme';
 
 const TextContainer = styled.View`
   border-bottom-left-radius: ${(props) =>
     props.groupStyle.indexOf('left') !== -1
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderBottomLeftRadius};
+      ? getTheme(props).messageText.borderRadiusS
+      : getTheme(props).messageText.borderBottomLeftRadius};
   border-bottom-right-radius: ${(props) =>
     props.groupStyle.indexOf('right') !== -1
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderBottomRightRadius};
+      ? getTheme(props).messageText.borderRadiusS
+      : getTheme(props).messageText.borderBottomRightRadius};
   border-top-left-radius: ${(props) =>
     props.groupStyle === 'leftBottom' || props.groupStyle === 'leftMiddle'
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderTopLeftRadius};
+      ? getTheme(props).messageText.borderRadiusS
+      : getTheme(props).messageText.borderTopLeftRadius};
   border-top-right-radius: ${(props) =>
     props.groupStyle === 'rightBottom' || props.groupStyle === 'rightMiddle'
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderTopRightRadius};
-  margin-top: ${(props) => props.theme.messageText.marginTop};
-  padding: ${(props) => props.theme.messageText.padding}px;
-  padding-left: ${(props) => props.theme.messageText.paddingLeft};
-  padding-right: ${(props) => props.theme.messageText.paddingRight};
+      ? getTheme(props).messageText.borderRadiusS
+      : getTheme(props).messageText.borderTopRightRadius};
+  margin-top: ${(props) => getTheme(props).messageText.marginTop};
+  padding: ${(props) => getTheme(props).messageText.padding}px;
+  padding-left: ${(props) => getTheme(props).messageText.paddingLeft};
+  padding-right: ${(props) => getTheme(props).messageText.paddingRight};
   align-self: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageText.left.alignSelf
-      : props.theme.messageText.right.alignSelf};
+      ? getTheme(props).messageText.left.alignSelf
+      : getTheme(props).messageText.right.alignSelf};
   border-width: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageText.left.borderWidth
-      : props.theme.messageText.right.borderWidth};
+      ? getTheme(props).messageText.left.borderWidth
+      : getTheme(props).messageText.right.borderWidth};
   border-color: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageText.left.borderColor
-      : props.theme.messageText.right.borderColor};
+      ? getTheme(props).messageText.left.borderColor
+      : getTheme(props).messageText.right.borderColor};
   background-color: ${(props) =>
     props.position === 'left' ||
     props.status === 'error' ||
     props.status === 'failed'
-      ? props.theme.messageText.transparent
-      : props.theme.messageText.filled};
+      ? getTheme(props).messageText.transparent
+      : getTheme(props).messageText.filled};
 `;
 
 export const MessageText = ({ message, isMyMessage = () => false }) => {

@@ -2,10 +2,11 @@ import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
 import styled from 'styled-components';
 import { emojiData } from '../utils';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.View`
   opacity: ${(props) =>
-    props.visible ? props.theme.reactionList.container.opacity : 0};
+    props.visible ? getTheme(props).reactionList.container.opacity : 0};
   display: ${({ theme }) => theme.reactionList.container.display};
   flex-direction: ${({ theme }) => theme.reactionList.container.flexDirection};
   align-items: ${({ theme }) => theme.reactionList.container.alignItems};
@@ -16,12 +17,12 @@ const Container = styled.View`
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => props.theme.reactionList.reactionCount.color};
+  color: ${(props) => getTheme(props).reactionList.reactionCount.color};
   padding-left: ${(props) =>
-    props.theme.reactionList.reactionCount.paddingLeft}px;
+    getTheme(props).reactionList.reactionCount.paddingLeft}px;
   padding-right: ${(props) =>
-    props.theme.reactionList.reactionCount.paddingRight}px;
-  font-size: ${(props) => props.theme.reactionList.reactionCount.fontSize};
+    getTheme(props).reactionList.reactionCount.paddingRight}px;
+  font-size: ${(props) => getTheme(props).reactionList.reactionCount.fontSize};
 `;
 
 export class ReactionList extends React.PureComponent {

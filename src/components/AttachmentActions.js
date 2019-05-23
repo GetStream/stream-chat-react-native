@@ -2,13 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.View`
   flex-direction: ${(props) =>
-    props.theme.attachment.actions.container.flexDirection};
+    getTheme(props).attachment.actions.container.flexDirection};
   justify-content: ${(props) =>
-    props.theme.attachment.actions.container.justifyContent};
-  padding: ${(props) => props.theme.attachment.actions.container.padding}px;
+    getTheme(props).attachment.actions.container.justifyContent};
+  padding: ${(props) => getTheme(props).attachment.actions.container.padding}px;
 `;
 
 const Button = styled.TouchableOpacity`
@@ -20,19 +21,19 @@ const Button = styled.TouchableOpacity`
     props.style === 'primary'
       ? props.style.theme.attachment.actions.primaryBorderColor
       : props.style.theme.attachment.actions.defaultBordercolor};
-  border-width: ${(props) => props.theme.attachment.actions.button};
-  border-radius: ${(props) => props.theme.attachment.actions.button};
-  padding-top: ${(props) => props.theme.attachment.actions.button}px;
-  padding-bottom: ${(props) => props.theme.attachment.actions.button}px;
-  padding-left: ${(props) => props.theme.attachment.actions.button}px;
-  padding-right: ${(props) => props.theme.attachment.actions.button}px;
+  border-width: ${(props) => getTheme(props).attachment.actions.button};
+  border-radius: ${(props) => getTheme(props).attachment.actions.button};
+  padding-top: ${(props) => getTheme(props).attachment.actions.button}px;
+  padding-bottom: ${(props) => getTheme(props).attachment.actions.button}px;
+  padding-left: ${(props) => getTheme(props).attachment.actions.button}px;
+  padding-right: ${(props) => getTheme(props).attachment.actions.button}px;
 `;
 
 const ButtonText = styled.Text`
   color: ${(props) =>
     props.style === 'primary'
-      ? props.theme.attachment.actions.buttonText.primaryColor
-      : props.theme.attachment.actions.buttonText.defaultColor};
+      ? getTheme(props).attachment.actions.buttonText.primaryColor
+      : getTheme(props).attachment.actions.buttonText.defaultColor};
 `;
 
 /**

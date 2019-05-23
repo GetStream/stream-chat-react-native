@@ -1,23 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import Moment from 'moment';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.View`
-  display: ${(props) => props.theme.dateSeparator.container.display};
+  display: ${(props) => getTheme(props).dateSeparator.container.display};
   flex-direction: ${(props) =>
-    props.theme.dateSeparator.container.flexDirection};
+    getTheme(props).dateSeparator.container.flexDirection};
   justify-content: ${(props) =>
-    props.theme.dateSeparator.container.justifyContent};
-  align-items: ${(props) => props.theme.dateSeparator.container.alignItems};
-  margin-top: ${(props) => props.theme.dateSeparator.container.marginTop};
-  margin-bottom: ${(props) => props.theme.dateSeparator.container.marginBottom};
+    getTheme(props).dateSeparator.container.justifyContent};
+  align-items: ${(props) => getTheme(props).dateSeparator.container.alignItems};
+  margin-top: ${(props) => getTheme(props).dateSeparator.container.marginTop};
+  margin-bottom: ${(props) =>
+    getTheme(props).dateSeparator.container.marginBottom};
 `;
 
 const Line = styled.View`
-  flex: ${(props) => props.theme.dateSeparator.line.flex};
-  height: ${(props) => props.theme.dateSeparator.line.height};
+  flex: ${(props) => getTheme(props).dateSeparator.line.flex};
+  height: ${(props) => getTheme(props).dateSeparator.line.height};
   background-color: ${(props) =>
-    props.theme.dateSeparator.line.backgroundColor};
+    getTheme(props).dateSeparator.line.backgroundColor};
 `;
 
 const DateText = styled.Text`

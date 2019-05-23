@@ -1,21 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { getTheme } from '../styles/theme';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: ${(props) => props.theme.messageReplies.container.padding}px;
+  padding: ${(props) => getTheme(props).messageReplies.container.padding}px;
   flex-direction: ${(props) =>
-    props.theme.messageReplies.container.flexDirection};
-  align-items: ${(props) => props.theme.messageReplies.container.alignItems};
+    getTheme(props).messageReplies.container.flexDirection};
+  align-items: ${(props) =>
+    getTheme(props).messageReplies.container.alignItems};
 `;
 
 const MessageRepliesText = styled.Text`
-  color: ${(props) => props.theme.colors.primary};
+  color: ${(props) => getTheme(props).colors.primary};
   font-weight:  ${(props) =>
-    props.theme.messageReplies.messageRepliesText.fontWeight}
+    getTheme(props).messageReplies.messageRepliesText.fontWeight}
   font-size:  ${(props) =>
-    props.theme.messageReplies.messageRepliesText.fontSize}
+    getTheme(props).messageReplies.messageRepliesText.fontSize}
 `;
 
 const MessageRepliesImage = styled.Image`

@@ -1,19 +1,20 @@
 import React from 'react';
 import { Avatar } from './Avatar';
+import { getTheme } from '../styles/theme';
 
 import styled from 'styled-components';
 
 const Container = styled.View`
   flex-direction: ${(props) =>
-    props.theme.mentionsItem.container.flexDirection};
-  align-items: ${(props) => props.theme.mentionsItem.container.alignItems};
+    getTheme(props).mentionsItem.container.flexDirection};
+  align-items: ${(props) => getTheme(props).mentionsItem.container.alignItems};
   padding: 10px;
 `;
 
 const Name = styled.Text`
-  padding: ${(props) => props.theme.mentionsItem.name.padding}px;
-  color: ${(props) => props.theme.mentionsItem.name.color};
-  font-weight: ${(props) => props.theme.mentionsItem.name.fontWeight};
+  padding: ${(props) => getTheme(props).mentionsItem.name.padding}px;
+  color: ${(props) => getTheme(props).mentionsItem.name.color};
+  font-weight: ${(props) => getTheme(props).mentionsItem.name.fontWeight};
 `;
 
 export class MentionsItem extends React.Component {

@@ -12,60 +12,66 @@ import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.TouchableOpacity`
-  display: ${(props) => props.theme.messageContent.container.display};
+  display: ${(props) => getTheme(props).messageContent.container.display};
   flex-direction: ${(props) =>
-    props.theme.messageContent.container.flexDirection};
-  max-width: ${(props) => props.theme.messageContent.container.maxWidth};
+    getTheme(props).messageContent.container.flexDirection};
+  max-width: ${(props) => getTheme(props).messageContent.container.maxWidth};
   align-items: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageContent.container.leftAlignItems
-      : props.theme.messageContent.container.rightAlignItems};
+      ? getTheme(props).messageContent.container.leftAlignItems
+      : getTheme(props).messageContent.container.rightAlignItems};
   justify-content: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageContent.container.leftJustifyContent
-      : props.theme.messageContent.container.rightJustifyContent};
+      ? getTheme(props).messageContent.container.leftJustifyContent
+      : getTheme(props).messageContent.container.rightJustifyContent};
 `;
 
 const ContainerInner = styled.View`
   align-items: ${(props) =>
-    props.theme.messageContent.containerInner.alignItems};
+    getTheme(props).messageContent.containerInner.alignItems};
 `;
 
 const MetaContainer = styled.View`
-  margin-top: ${(props) => props.theme.messageContent.metaContainer.marginTop};
+  margin-top: ${(props) =>
+    getTheme(props).messageContent.metaContainer.marginTop};
 `;
 
 const MetaText = styled.Text`
-  font-size: ${(props) => props.theme.messageContent.metaText.fontSize};
-  color: ${(props) => props.theme.messageContent.metaText.color};
+  font-size: ${(props) => getTheme(props).messageContent.metaText.fontSize};
+  color: ${(props) => getTheme(props).messageContent.metaText.color};
   text-align: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageContent.metaText.leftTextAlign
-      : props.theme.messageContent.metaText.rightTextAlign};
+      ? getTheme(props).messageContent.metaText.leftTextAlign
+      : getTheme(props).messageContent.metaText.rightTextAlign};
 `;
 
 const DeletedContainer = styled.View`
-  display: ${(props) => props.theme.messageContent.deletedContainer.display};
+  display: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.display};
   flex-direction: ${(props) =>
-    props.theme.messageContent.deletedContainer.flexDirection};
-  max-width: ${(props) => props.theme.messageContent.deletedContainer.maxWidth};
-  padding: ${(props) => props.theme.messageContent.deletedContainer.padding}px;
+    getTheme(props).messageContent.deletedContainer.flexDirection};
+  max-width: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.maxWidth};
+  padding: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.padding}px;
   align-items: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageContent.deletedContainer.leftAlignItems
-      : props.theme.messageContent.deletedContainer.rightAlignItems};
+      ? getTheme(props).messageContent.deletedContainer.leftAlignItems
+      : getTheme(props).messageContent.deletedContainer.rightAlignItems};
   justify-content: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageContent.deletedContainer.leftJustifyContent
-      : props.theme.messageContent.deletedContainer.rightJustifyContent};
+      ? getTheme(props).messageContent.deletedContainer.leftJustifyContent
+      : getTheme(props).messageContent.deletedContainer.rightJustifyContent};
 `;
 
 const DeletedText = styled.Text`
-  font-size: ${(props) => props.theme.messageContent.deletedText.fontSize};
-  line-height: ${(props) => props.theme.messageContent.deletedText.lineHeight};
-  color: ${(props) => props.theme.messageContent.deletedText.color};
+  font-size: ${(props) => getTheme(props).messageContent.deletedText.fontSize};
+  line-height: ${(props) =>
+    getTheme(props).messageContent.deletedText.lineHeight};
+  color: ${(props) => getTheme(props).messageContent.deletedText.color};
 `;
 
 const FailedText = styled.Text``;

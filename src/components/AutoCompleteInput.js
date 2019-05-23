@@ -1,11 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { getTheme } from '../styles/theme';
 
 const InputBox = styled.TextInput`
-  max-height: ${(props) => props.theme.messageInput.inputBox.maxHeight};
-  margin: ${(props) => props.theme.messageInput.inputBox.marginTop}px;
-  flex: ${(props) => props.theme.messageInput.inputBox.flex};
+  max-height: ${(props) => getTheme(props).messageInput.inputBox.maxHeight};
+  margin: ${(props) => getTheme(props).messageInput.inputBox.marginTop}px;
+  flex: ${(props) => getTheme(props).messageInput.inputBox.flex};
 `;
 
 export class AutoCompleteInput extends React.PureComponent {

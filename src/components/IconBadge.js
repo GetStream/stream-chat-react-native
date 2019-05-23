@@ -1,33 +1,36 @@
 import * as React from 'react';
 import { buildStylesheet } from '../styles/styles';
+import { getTheme } from '../styles/theme';
 
 import styled from 'styled-components';
 
 const Container = styled.View``;
 
 const Icon = styled.View`
-  padding-top: ${(props) => props.theme.iconBadge.icon.paddingTop};
-  align-self: ${(props) => props.theme.iconBadge.icon.alignSelf};
-  border-radius: ${(props) => props.theme.iconBadge.icon.borderRadius};
-  align-items: ${(props) => props.theme.iconBadge.icon.alignItems};
-  justify-content: ${(props) => props.theme.iconBadge.icon.justifyContent};
+  padding-top: ${(props) => getTheme(props).iconBadge.icon.paddingTop};
+  align-self: ${(props) => getTheme(props).iconBadge.icon.alignSelf};
+  border-radius: ${(props) => getTheme(props).iconBadge.icon.borderRadius};
+  align-items: ${(props) => getTheme(props).iconBadge.icon.alignItems};
+  justify-content: ${(props) => getTheme(props).iconBadge.icon.justifyContent};
 `;
 
 const IconInner = styled.View`
-  background-color: ${(props) => props.theme.iconBadge.iconInner.paddingTop};
-  justify-content: ${(props) => props.theme.iconBadge.iconInner.justifyContent};
-  align-items: ${(props) => props.theme.iconBadge.iconInner.alignItems};
-  align-self: ${(props) => props.theme.iconBadge.iconInner.alignSelf};
-  min-width: ${(props) => props.theme.iconBadge.iconInner.minWidth};
-  height: ${(props) => props.theme.iconBadge.iconInner.height};
-  padding-left: ${(props) => props.theme.iconBadge.iconInner.paddingLeft};
-  padding-right: ${(props) => props.theme.iconBadge.iconInner.paddingRight};
-  border-radius: ${(props) => props.theme.iconBadge.iconInner.borderRadius};
+  background-color: ${(props) =>
+    getTheme(props).iconBadge.iconInner.paddingTop};
+  justify-content: ${(props) =>
+    getTheme(props).iconBadge.iconInner.justifyContent};
+  align-items: ${(props) => getTheme(props).iconBadge.iconInner.alignItems};
+  align-self: ${(props) => getTheme(props).iconBadge.iconInner.alignSelf};
+  min-width: ${(props) => getTheme(props).iconBadge.iconInner.minWidth};
+  height: ${(props) => getTheme(props).iconBadge.iconInner.height};
+  padding-left: ${(props) => getTheme(props).iconBadge.iconInner.paddingLeft};
+  padding-right: ${(props) => getTheme(props).iconBadge.iconInner.paddingRight};
+  border-radius: ${(props) => getTheme(props).iconBadge.iconInner.borderRadius};
 `;
 
 const UnreadCount = styled.Text`
-  font-size: ${(props) => props.theme.iconBadge.unreadCount.fontSize};
-  color: ${(props) => props.theme.iconBadge.unreadCount.color};
+  font-size: ${(props) => getTheme(props).iconBadge.unreadCount.fontSize};
+  color: ${(props) => getTheme(props).iconBadge.unreadCount.color};
 `;
 
 export class IconBadge extends React.Component {

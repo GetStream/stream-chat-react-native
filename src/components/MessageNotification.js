@@ -2,16 +2,17 @@ import React, { PureComponent } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.TouchableOpacity`
-  display: ${(props) => props.theme.messageNotification.container.display};
+  display: ${(props) => getTheme(props).messageNotification.container.display};
   flex-direction: ${(props) =>
-    props.theme.messageNotification.container.flexDirection};
+    getTheme(props).messageNotification.container.flexDirection};
   align-items: ${(props) =>
-    props.theme.messageNotification.container.alignItems};
-  z-index: ${(props) => props.theme.messageNotification.container.zIndex};
+    getTheme(props).messageNotification.container.alignItems};
+  z-index: ${(props) => getTheme(props).messageNotification.container.zIndex};
   margin-bottom: ${(props) =>
-    props.theme.messageNotification.container.marginBottom};
+    getTheme(props).messageNotification.container.marginBottom};
 `;
 
 export class MessageNotification extends PureComponent {

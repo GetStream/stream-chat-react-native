@@ -12,6 +12,7 @@ import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
@@ -35,49 +36,53 @@ function S4() {
 }
 
 const Container = styled.View`
-  display: ${(props) => props.theme.messageInput.container.display};
+  display: ${(props) => getTheme(props).messageInput.container.display};
   flex-direction: ${(props) =>
-    props.theme.messageInput.container.flexDirection};
-  border-radius: ${(props) => props.theme.messageInput.container.borderRadius};
+    getTheme(props).messageInput.container.flexDirection};
+  border-radius: ${(props) =>
+    getTheme(props).messageInput.container.borderRadius};
   background-color: ${(props) =>
-    props.theme.messageInput.container.backgroundColor};
+    getTheme(props).messageInput.container.backgroundColor};
   padding-top: ${(props) =>
-    props.padding ? props.theme.messageInput.container.conditionalPadding : 0};
+    props.padding
+      ? getTheme(props).messageInput.container.conditionalPadding
+      : 0};
   margin-left: 10px;
   margin-right: 10px;
 `;
 
 const InputBoxContainer = styled.View`
-  display: ${(props) => props.theme.messageInput.inputBoxContainer.display};
+  display: ${(props) => getTheme(props).messageInput.inputBoxContainer.display};
   flex-direction: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.flexDirection};
+    getTheme(props).messageInput.inputBoxContainer.flexDirection};
   padding-left: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.paddingLeft};
+    getTheme(props).messageInput.inputBoxContainer.paddingLeft};
   padding-right: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.paddingRight};
+    getTheme(props).messageInput.inputBoxContainer.paddingRight};
   min-height: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.minHeight};
-  margin: ${(props) => props.theme.messageInput.inputBoxContainer.margin}px;
+    getTheme(props).messageInput.inputBoxContainer.minHeight};
+  margin: ${(props) => getTheme(props).messageInput.inputBoxContainer.margin}px;
   align-items: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.alignItems};
+    getTheme(props).messageInput.inputBoxContainer.alignItems};
 `;
 
 const AttachButton = styled.TouchableOpacity`
-  margin-right: ${(props) => props.theme.messageInput.attachButton.marginRight};
+  margin-right: ${(props) =>
+    getTheme(props).messageInput.attachButton.marginRight};
 `;
 
 const AttachButtonIcon = styled.Image`
-  width: ${(props) => props.theme.messageInput.attachButtonIcon.width};
-  height: ${(props) => props.theme.messageInput.attachButtonIcon.height};
+  width: ${(props) => getTheme(props).messageInput.attachButtonIcon.width};
+  height: ${(props) => getTheme(props).messageInput.attachButtonIcon.height};
 `;
 
 const SendButton = styled.TouchableOpacity`
-  margin-left: ${(props) => props.theme.messageInput.sendButton.marginLeft};
+  margin-left: ${(props) => getTheme(props).messageInput.sendButton.marginLeft};
 `;
 
 const Typing = styled.Text`
-  text-align: ${(props) => props.theme.messageInput.typing.textAlign};
-  height: ${(props) => props.theme.messageInput.typing.height};
+  text-align: ${(props) => getTheme(props).messageInput.typing.textAlign};
+  height: ${(props) => getTheme(props).messageInput.typing.height};
 `;
 
 const MessageInput = withSuggestionsContext(

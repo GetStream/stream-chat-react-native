@@ -675,4 +675,11 @@ const buildTheme = (t) => {
   return theme;
 };
 
-export { buildTheme };
+const getTheme = (props) => {
+  if (props.theme && Object.keys(props.theme).length > 0) {
+    return props.theme;
+  }
+  return defaultTheme;
+};
+
+export { buildTheme, getTheme };

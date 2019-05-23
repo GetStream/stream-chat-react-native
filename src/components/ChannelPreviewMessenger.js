@@ -2,61 +2,67 @@ import React, { PureComponent } from 'react';
 import { Avatar } from './Avatar';
 import truncate from 'lodash/truncate';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 const Container = styled.TouchableOpacity`
-  display: ${(props) => props.theme.channelPreview.messenger.container.display};
+  display: ${(props) =>
+    getTheme(props).channelPreview.messenger.container.display};
   flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.container.flexDirection};
+    getTheme(props).channelPreview.messenger.container.flexDirection};
   border-bottom-color: ${(props) =>
-    props.theme.channelPreview.messenger.container.borderBottomColor};
+    getTheme(props).channelPreview.messenger.container.borderBottomColor};
   border-bottom-width: ${(props) =>
-    props.theme.channelPreview.messenger.container.borderBottomWidth};
+    getTheme(props).channelPreview.messenger.container.borderBottomWidth};
   padding: ${(props) =>
-    props.theme.channelPreview.messenger.container.padding}px;
+    getTheme(props).channelPreview.messenger.container.padding}px;
 `;
 
 const Details = styled.View`
-  display: ${(props) => props.theme.channelPreview.messenger.details.display};
+  display: ${(props) =>
+    getTheme(props).channelPreview.messenger.details.display};
   flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.details.flexDirection};
-  flex: ${(props) => props.theme.channelPreview.messenger.details.flex};
+    getTheme(props).channelPreview.messenger.details.flexDirection};
+  flex: ${(props) => getTheme(props).channelPreview.messenger.details.flex};
   padding-left: ${(props) =>
-    props.theme.channelPreview.messenger.details.paddingLeft}px;
+    getTheme(props).channelPreview.messenger.details.paddingLeft}px;
 `;
 
 const DetailsTop = styled.View`
   display: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.display};
+    getTheme(props).channelPreview.messenger.detailsTop.display};
   flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.flexDirection};
+    getTheme(props).channelPreview.messenger.detailsTop.flexDirection};
   justify-content: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.justifyContent};
+    getTheme(props).channelPreview.messenger.detailsTop.justifyContent};
 `;
 
 const Title = styled.Text`
   font-weight: ${(props) =>
-    props.theme.channelPreview.messenger.title.fontWeight};
-  font-size: ${(props) => props.theme.channelPreview.messenger.title.fontSize};
-  flex: ${(props) => props.theme.channelPreview.messenger.title.flex};
+    getTheme(props).channelPreview.messenger.title.fontWeight};
+  font-size: ${(props) =>
+    getTheme(props).channelPreview.messenger.title.fontSize};
+  flex: ${(props) => getTheme(props).channelPreview.messenger.title.flex};
 `;
 
 const Date = styled.Text`
-  color: ${(props) => props.theme.channelPreview.messenger.date.color};
-  font-size: ${(props) => props.theme.channelPreview.messenger.date.fontSize};
-  text-align: ${(props) => props.theme.channelPreview.messenger.date.textAlign};
+  color: ${(props) => getTheme(props).channelPreview.messenger.date.color};
+  font-size: ${(props) =>
+    getTheme(props).channelPreview.messenger.date.fontSize};
+  text-align: ${(props) =>
+    getTheme(props).channelPreview.messenger.date.textAlign};
 `;
 
 const Message = styled.Text`
   color: ${(props) =>
     props.unread
-      ? props.theme.channelPreview.messenger.message.unreadColor
-      : props.theme.channelPreview.messenger.message.color};
+      ? getTheme(props).channelPreview.messenger.message.unreadColor
+      : getTheme(props).channelPreview.messenger.message.color};
   font-size: ${(props) =>
-    props.theme.channelPreview.messenger.message.fontSize};
+    getTheme(props).channelPreview.messenger.message.fontSize};
   font-weight: ${(props) =>
     props.unread
-      ? props.theme.channelPreview.messenger.message.unreadFontWeight
-      : props.theme.channelPreview.messenger.message.fontWeight};
+      ? getTheme(props).channelPreview.messenger.message.unreadFontWeight
+      : getTheme(props).channelPreview.messenger.message.fontWeight};
 `;
 
 export class ChannelPreviewMessenger extends PureComponent {

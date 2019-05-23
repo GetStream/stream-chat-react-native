@@ -2,49 +2,53 @@ import React from 'react';
 import { View, Modal } from 'react-native';
 
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 import { emojiData } from '../utils';
 import { Avatar } from './Avatar';
 
 const Container = styled.TouchableOpacity`
-  flex: ${(props) => props.theme.reactionPicker.container.flex};
+  flex: ${(props) => getTheme(props).reactionPicker.container.flex};
   align-items: ${(props) =>
     props.left
-      ? props.theme.reactionPicker.container.leftAlign
-      : props.theme.reactionPicker.container.rightAlign};
+      ? getTheme(props).reactionPicker.container.leftAlign
+      : getTheme(props).reactionPicker.container.rightAlign};
 `;
 
 const ContainerView = styled.View`
-  display: ${(props) => props.theme.reactionPicker.containerView.display};
+  display: ${(props) => getTheme(props).reactionPicker.containerView.display};
   flex-direction: ${(props) =>
-    props.theme.reactionPicker.containerView.flexDirection};
+    getTheme(props).reactionPicker.containerView.flexDirection};
   background-color: ${(props) =>
-    props.theme.reactionPicker.containerView.backgroundColor};
+    getTheme(props).reactionPicker.containerView.backgroundColor};
   padding-left: ${(props) =>
-    props.theme.reactionPicker.containerView.paddingLeft};
-  height: ${(props) => props.theme.reactionPicker.containerView.height};
+    getTheme(props).reactionPicker.containerView.paddingLeft};
+  height: ${(props) => getTheme(props).reactionPicker.containerView.height};
   padding-right: ${(props) =>
-    props.theme.reactionPicker.containerView.paddingRight};
+    getTheme(props).reactionPicker.containerView.paddingRight};
   border-radius: ${(props) =>
-    props.theme.reactionPicker.containerView.borderRadius};
+    getTheme(props).reactionPicker.containerView.borderRadius};
 `;
 
 const Column = styled.View`
-  flex-direction: ${(props) => props.theme.reactionPicker.column.flexDirection};
-  align-items: ${(props) => props.theme.reactionPicker.column.alignItems};
-  margin-top: ${(props) => props.theme.reactionPicker.column.marginTop};
+  flex-direction: ${(props) =>
+    getTheme(props).reactionPicker.column.flexDirection};
+  align-items: ${(props) => getTheme(props).reactionPicker.column.alignItems};
+  margin-top: ${(props) => getTheme(props).reactionPicker.column.marginTop};
 `;
 
 const Emoji = styled.Text`
-  font-size: ${(props) => props.theme.reactionPicker.emoji.fontSize};
-  margin-bottom: ${(props) => props.theme.reactionPicker.emoji.marginBottom};
-  margin-top: ${(props) => props.theme.reactionPicker.emoji.marginTop};
+  font-size: ${(props) => getTheme(props).reactionPicker.emoji.fontSize};
+  margin-bottom: ${(props) =>
+    getTheme(props).reactionPicker.emoji.marginBottom};
+  margin-top: ${(props) => getTheme(props).reactionPicker.emoji.marginTop};
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => props.theme.reactionPicker.reactionCount.color};
-  font-size: ${(props) => props.theme.reactionPicker.reactionCount.fontSize};
+  color: ${(props) => getTheme(props).reactionPicker.reactionCount.color};
+  font-size: ${(props) =>
+    getTheme(props).reactionPicker.reactionCount.fontSize};
   font-weight: ${(props) =>
-    props.theme.reactionPicker.reactionCount.fontWeight};
+    getTheme(props).reactionPicker.reactionCount.fontWeight};
 `;
 
 export class ReactionPicker extends React.PureComponent {

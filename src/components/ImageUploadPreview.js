@@ -4,52 +4,55 @@ import { WithProgressIndicator } from './WithProgressIndicator';
 import PropTypes from 'prop-types';
 import { FileState, ProgressIndicatorTypes } from '../utils';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 import closeRound from '../images/icons/close-round.png';
 
 const Container = styled.View`
-  height: ${(props) => props.theme.imageUploadPreview.container.height};
-  display: ${(props) => props.theme.imageUploadPreview.container.display};
-  padding: ${(props) => props.theme.imageUploadPreview.container.padding}px;
+  height: ${(props) => getTheme(props).imageUploadPreview.container.height};
+  display: ${(props) => getTheme(props).imageUploadPreview.container.display};
+  padding: ${(props) => getTheme(props).imageUploadPreview.container.padding}px;
 `;
 
 const ItemContainer = styled.View`
-  display: ${(props) => props.theme.imageUploadPreview.itemContainer.display};
-  height: ${(props) => props.theme.imageUploadPreview.itemContainer.height};
+  display: ${(props) =>
+    getTheme(props).imageUploadPreview.itemContainer.display};
+  height: ${(props) => getTheme(props).imageUploadPreview.itemContainer.height};
   flex-direction: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.flexDirection};
+    getTheme(props).imageUploadPreview.itemContainer.flexDirection};
   align-items: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.alignItems};
+    getTheme(props).imageUploadPreview.itemContainer.alignItems};
   margin-left: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.marginLeft};
+    getTheme(props).imageUploadPreview.itemContainer.marginLeft};
 `;
 
 const Dismiss = styled.TouchableOpacity`
-  position: ${(props) => props.theme.imageUploadPreview.dismiss.position};
-  top: ${(props) => props.theme.imageUploadPreview.dismiss.top};
-  right: ${(props) => props.theme.imageUploadPreview.dismiss.right};
+  position: ${(props) => getTheme(props).imageUploadPreview.dismiss.position};
+  top: ${(props) => getTheme(props).imageUploadPreview.dismiss.top};
+  right: ${(props) => getTheme(props).imageUploadPreview.dismiss.right};
   background-color: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.backgroundColor};
-  width: ${(props) => props.theme.imageUploadPreview.dismiss.width};
-  height: ${(props) => props.theme.imageUploadPreview.dismiss.height};
-  display: ${(props) => props.theme.imageUploadPreview.dismiss.display};
-  align-items: ${(props) => props.theme.imageUploadPreview.dismiss.alignItems};
+    getTheme(props).imageUploadPreview.dismiss.backgroundColor};
+  width: ${(props) => getTheme(props).imageUploadPreview.dismiss.width};
+  height: ${(props) => getTheme(props).imageUploadPreview.dismiss.height};
+  display: ${(props) => getTheme(props).imageUploadPreview.dismiss.display};
+  align-items: ${(props) =>
+    getTheme(props).imageUploadPreview.dismiss.alignItems};
   justify-content: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.justifyContent};
+    getTheme(props).imageUploadPreview.dismiss.justifyContent};
   border-radius: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.borderRadius};
+    getTheme(props).imageUploadPreview.dismiss.borderRadius};
 `;
 
 const Upload = styled.Image`
-  width: ${(props) => props.theme.imageUploadPreview.upload.width};
-  height: ${(props) => props.theme.imageUploadPreview.upload.height};
+  width: ${(props) => getTheme(props).imageUploadPreview.upload.width};
+  height: ${(props) => getTheme(props).imageUploadPreview.upload.height};
   border-radius: ${(props) =>
-    props.theme.imageUploadPreview.upload.borderRadius};
+    getTheme(props).imageUploadPreview.upload.borderRadius};
 `;
 
 const DismissImage = styled.Image`
-  width: ${(props) => props.theme.imageUploadPreview.dismissImage.width};
-  height: ${(props) => props.theme.imageUploadPreview.dismissImage.height};
+  width: ${(props) => getTheme(props).imageUploadPreview.dismissImage.width};
+  height: ${(props) => getTheme(props).imageUploadPreview.dismissImage.height};
 `;
 
 /**

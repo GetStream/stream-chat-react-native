@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { getTheme } from '../styles/theme';
 
 import styled from 'styled-components';
 
@@ -9,27 +10,27 @@ const AvatarContainer = styled.View`
 `;
 
 const AvatarImage = styled.Image`
-  width: ${(props) => props.size || props.theme.avatarImage.size};
-  height: ${(props) => props.size || props.theme.avatarImage.size};
+  width: ${(props) => props.size || getTheme(props).avatarImage.size};
+  height: ${(props) => props.size || getTheme(props).avatarImage.size};
   border-radius: ${(props) =>
-    props.size / 2 || props.theme.avatarImage.size / 2};
+    props.size / 2 || getTheme(props).avatarImage.size / 2};
 `;
 
 const AvatarFallback = styled.View`
   border-radius: ${(props) =>
-    props.size / 2 || props.theme.avatarImage.size / 2};
-  width: ${(props) => props.size || props.theme.avatarImage.size};
-  height: ${(props) => props.size || props.theme.avatarImage.size};
-  background-color: ${(props) => props.theme.colors.primary};
-  justify-content: ${(props) => props.theme.avatarFallback.justifyContent};
-  align-items: ${(props) => props.theme.avatarFallback.alignItems};
+    props.size / 2 || getTheme(props).avatarImage.size / 2};
+  width: ${(props) => props.size || getTheme(props).avatarImage.size};
+  height: ${(props) => props.size || getTheme(props).avatarImage.size};
+  background-color: ${(props) => getTheme(props).colors.primary};
+  justify-content: ${(props) => getTheme(props).avatarFallback.justifyContent};
+  align-items: ${(props) => getTheme(props).avatarFallback.alignItems};
 `;
 
 const AvatarText = styled.Text`
-  color: ${(props) => props.theme.avatarText.color};
-  text-transform: ${(props) => props.theme.avatarText.textTransform};
-  font-size: ${(props) => props.theme.avatarText.fontSize};
-  font-weight: ${(props) => props.theme.avatarText.fontWeight};
+  color: ${(props) => getTheme(props).avatarText.color};
+  text-transform: ${(props) => getTheme(props).avatarText.textTransform};
+  font-size: ${(props) => getTheme(props).avatarText.fontSize};
+  font-weight: ${(props) => getTheme(props).avatarText.fontWeight};
 `;
 
 /**

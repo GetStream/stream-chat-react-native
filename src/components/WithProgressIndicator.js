@@ -3,33 +3,39 @@ import { View, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import iconReload from '../images/reload1.png';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 import { ProgressIndicatorTypes } from '../utils';
 
 const Overlay = styled.View`
-  position: ${(props) => props.theme.withProgressIndicator.overlay.position};
-  width: ${(props) => props.theme.withProgressIndicator.overlay.width};
-  height: ${(props) => props.theme.withProgressIndicator.overlay.height};
-  display: ${(props) => props.theme.withProgressIndicator.overlay.display};
+  position: ${(props) =>
+    getTheme(props).withProgressIndicator.overlay.position};
+  width: ${(props) => getTheme(props).withProgressIndicator.overlay.width};
+  height: ${(props) => getTheme(props).withProgressIndicator.overlay.height};
+  display: ${(props) => getTheme(props).withProgressIndicator.overlay.display};
   align-items: ${(props) =>
-    props.theme.withProgressIndicator.overlay.alignItems};
+    getTheme(props).withProgressIndicator.overlay.alignItems};
   justify-content: ${(props) =>
-    props.theme.withProgressIndicator.overlay.justifyContent};
+    getTheme(props).withProgressIndicator.overlay.justifyContent};
   background-color: ${(props) =>
-    props.theme.withProgressIndicator.overlay.backgroundColor || 'transparent'};
-  opacity: ${(props) => props.theme.withProgressIndicator.overlay.opacity || 0};
+    getTheme(props).withProgressIndicator.overlay.backgroundColor ||
+    'transparent'};
+  opacity: ${(props) =>
+    getTheme(props).withProgressIndicator.overlay.opacity || 0};
 `;
 
 const Container = styled.View`
-  position: ${(props) => props.theme.withProgressIndicator.container.position};
-  width: ${(props) => props.theme.withProgressIndicator.container.width};
-  height: ${(props) => props.theme.withProgressIndicator.container.height};
-  display: ${(props) => props.theme.withProgressIndicator.container.display};
+  position: ${(props) =>
+    getTheme(props).withProgressIndicator.container.position};
+  width: ${(props) => getTheme(props).withProgressIndicator.container.width};
+  height: ${(props) => getTheme(props).withProgressIndicator.container.height};
+  display: ${(props) =>
+    getTheme(props).withProgressIndicator.container.display};
   align-items: ${(props) =>
-    props.theme.withProgressIndicator.container.alignItems};
+    getTheme(props).withProgressIndicator.container.alignItems};
   justify-content: ${(props) =>
-    props.theme.withProgressIndicator.container.justifyContent};
+    getTheme(props).withProgressIndicator.container.justifyContent};
   background-color: ${(props) =>
-    props.theme.withProgressIndicator.container.backgroundColor};
+    getTheme(props).withProgressIndicator.container.backgroundColor};
 `;
 
 export class WithProgressIndicator extends React.PureComponent {

@@ -5,16 +5,18 @@ import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 import { Message } from './Message';
 
 const NewThread = styled.View`
-  padding: ${(props) => props.theme.thread.newThread.padding}px;
-  background-color: ${(props) => props.theme.thread.newThread.backgroundColor};
-  margin: ${(props) => props.theme.thread.newThread.margin}px;
-  border-radius: ${(props) => props.theme.thread.newThread.borderRadius};
-  display: ${(props) => props.theme.thread.newThread.display};
-  align-items: ${(props) => props.theme.thread.newThread.alignItems};
+  padding: ${(props) => getTheme(props).thread.newThread.padding}px;
+  background-color: ${(props) =>
+    getTheme(props).thread.newThread.backgroundColor};
+  margin: ${(props) => getTheme(props).thread.newThread.margin}px;
+  border-radius: ${(props) => getTheme(props).thread.newThread.borderRadius};
+  display: ${(props) => getTheme(props).thread.newThread.display};
+  align-items: ${(props) => getTheme(props).thread.newThread.alignItems};
 `;
 const NewThreadText = styled.Text``;
 

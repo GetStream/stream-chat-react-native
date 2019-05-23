@@ -1,21 +1,22 @@
 import React from 'react';
 import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 import { MessageStatus } from './MessageStatus';
 import { MessageContent } from './MessageContent';
 import { MessageAvatar } from './MessageAvatar';
 
 const Container = styled.View`
-  display: ${(props) => props.theme.messageSimple.container.display};
+  display: ${(props) => getTheme(props).messageSimple.container.display};
   flex-direction: ${(props) =>
-    props.theme.messageSimple.container.flexDirection};
-  align-items: ${(props) => props.theme.messageSimple.container.alignItems};
+    getTheme(props).messageSimple.container.flexDirection};
+  align-items: ${(props) => getTheme(props).messageSimple.container.alignItems};
   justify-content: ${(props) =>
     props.position === 'left'
-      ? props.theme.messageSimple.container.left.justifyContent
-      : props.theme.messageSimple.container.right.justifyContent};
+      ? getTheme(props).messageSimple.container.left.justifyContent
+      : getTheme(props).messageSimple.container.right.justifyContent};
   margin-bottom: ${(props) =>
-    props.bottom ? props.theme.messageSimple.container.marginBottom : 0};
+    props.bottom ? getTheme(props).messageSimple.container.marginBottom : 0};
 `;
 
 export class MessageSimple extends React.PureComponent {
