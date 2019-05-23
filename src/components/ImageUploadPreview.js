@@ -74,6 +74,8 @@ export class ImageUploadPreview extends React.PureComponent {
   _renderItem = ({ item }) => {
     let type;
 
+    const { retryUpload } = this.props;
+
     if (item.state === FileState.UPLOADING)
       type = ProgressIndicatorTypes.IN_PROGRESS;
 
@@ -85,7 +87,7 @@ export class ImageUploadPreview extends React.PureComponent {
           <WithProgressIndicator
             active={item.state !== FileState.UPLOADED}
             type={type}
-            action={this.props.retryUpload.bind(this, item.id)}
+            action={retryUpload && retryUpload.bind(this, item.id)}
           >
             <Upload
               resizeMode="cover"
