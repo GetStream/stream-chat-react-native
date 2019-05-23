@@ -1,6 +1,10 @@
 {
   "presets": ["@babel/env", "@babel/react"],
-  "plugins": ["@babel/proposal-class-properties", "@babel/transform-runtime"],
+  "plugins": [
+    "@babel/proposal-class-properties",
+    "@babel/transform-runtime",
+    "babel-plugin-styled-components"
+  ],
   "env": {
     "production": {
       "presets": [
