@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Avatar } from '../Avatar';
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 
 const Container = styled.View`
   margin-right: ${(props) =>

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`

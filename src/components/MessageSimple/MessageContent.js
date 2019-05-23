@@ -12,7 +12,7 @@ import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   display: ${(props) => getTheme(props).messageContent.container.display};

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import loadingGif from '../../images/loading.gif';
 import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 
 const Spacer = styled.View`
   height: ${(props) => getTheme(props).messageStatus.spacer.height};

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 
 import { MessageStatus } from './MessageStatus';
 import { MessageContent } from './MessageContent';

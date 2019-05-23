@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { renderText, capitalize } from '../../utils';
-import { getTheme } from '../styles/theme';
+import { getTheme } from '../../styles/theme';
 
 const TextContainer = styled.View`
   border-bottom-left-radius: ${(props) =>
