@@ -1,5 +1,3 @@
-MessageTeam handles the rendering of a message and depends on the Message component for all the logic.
-
 ```js
 const data = require('./data');
 
@@ -14,7 +12,6 @@ const readBy = [
 ];
 <Message
   message={data.message}
-  Message={MessageTeam}
   readBy={readBy}
   groupStyles={['bottom']}
   editing={false}
