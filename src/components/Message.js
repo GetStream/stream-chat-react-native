@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Keyboard } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { Attachment } from './Attachment';
 import { MessageSimple } from './MessageSimple';
 import PropTypes from 'prop-types';
@@ -202,8 +202,7 @@ const Message = withChannelContext(
     };
 
     onMessageTouch = () => {
-      this.props.keyboardWillDismiss();
-      Keyboard.dismiss();
+      this.props.dismissKeyboard();
     };
 
     render() {

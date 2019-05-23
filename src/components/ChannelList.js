@@ -53,6 +53,8 @@ const ChannelList = withChatContext(
       options: PropTypes.object,
       /** Object containing sort parameters */
       sort: PropTypes.object,
+      /** For flatlist  */
+      loadMoreThreshold: PropTypes.number,
     };
 
     static defaultProps = {
@@ -65,6 +67,8 @@ const ChannelList = withChatContext(
       filters: {},
       options: {},
       sort: {},
+      // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+      loadMoreThreshold: 2,
     };
 
     constructor(props) {

@@ -58,11 +58,15 @@ const MessageList = withChannelContext(
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       disableWhileEditing: PropTypes.bool,
+      /** For flatlist  */
+      loadMoreThreshold: PropTypes.number,
     };
 
     static defaultProps = {
       dateSeparator: DateSeparator,
       disableWhileEditing: true,
+      // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+      loadMoreThreshold: 2,
     };
 
     componentDidUpdate(prevProps) {
@@ -319,40 +323,42 @@ const MessageList = withChannelContext(
               onPress={this.props.clearEditingState}
             />
           )}
-          <ListContainer
-            ref={(fl) => (this.flatList = fl)}
-            data={messagesWithGroupPositions}
-            onScroll={this.handleScroll}
-            ListFooterComponent={this.props.headerComponent}
-            onEndReached={this.props.loadMore}
-            inverted
-            keyboardShouldPersistTaps="always"
-            keyExtractor={(item) =>
-              item.id || item.created_at || item.date.toISOString()
-            }
-            renderItem={this.renderItem}
-            maintainVisibleContentPosition={{
-              minIndexForVisible: 1,
-              autoscrollToTopThreshold: 10,
-            }}
-          />
-          {this.state.newMessagesNotification && (
-            <MessageNotification
-              showNotification={this.state.newMessagesNotification}
-              onClick={this.goToNewMessages}
-            >
-              <NewMessageNotification>
-                <NewMessageNotificationText>
-                  New Messages ↓
-                </NewMessageNotificationText>
-              </NewMessageNotification>
-            </MessageNotification>
-          )}
-          <Notification type="warning" active={!this.state.online}>
-            <NotificationText>
-              Connection failure, reconnecting now ...
-            </NotificationText>
-          </Notification>
+          <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
+            <ListContainer
+              ref={(fl) => (this.flatList = fl)}
+              data={messagesWithGroupPositions}
+              onScroll={this.handleScroll}
+              ListFooterComponent={this.props.headerComponent}
+              onEndReached={this.props.loadMore}
+              inverted
+              keyboardShouldPersistTaps="always"
+              keyExtractor={(item) =>
+                item.id || item.created_at || item.date.toISOString()
+              }
+              renderItem={this.renderItem}
+              maintainVisibleContentPosition={{
+                minIndexForVisible: 1,
+                autoscrollToTopThreshold: 10,
+              }}
+            />
+            {this.state.newMessagesNotification && (
+              <MessageNotification
+                showNotification={this.state.newMessagesNotification}
+                onClick={this.goToNewMessages}
+              >
+                <NewMessageNotification>
+                  <NewMessageNotificationText>
+                    New Messages ↓
+                  </NewMessageNotificationText>
+                </NewMessageNotification>
+              </MessageNotification>
+            )}
+            <Notification type="warning" active={!this.state.online}>
+              <NotificationText>
+                Connection failure, reconnecting now ...
+              </NotificationText>
+            </Notification>
+          </View>
         </React.Fragment>
       );
     }

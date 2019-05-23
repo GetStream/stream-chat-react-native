@@ -41,6 +41,8 @@ const ChannelListMessenger = withChatContext(
       ]),
 
       loadNextPage: PropTypes.func,
+      /** For flatlist  */
+      loadMoreThreshold: PropTypes.number,
     };
 
     static defaultProps = {
@@ -48,6 +50,8 @@ const ChannelListMessenger = withChatContext(
       LoadingIndicator,
       LoadingErrorIndicator,
       EmptyStateIndicator,
+      // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+      loadMoreThreshold: 2,
     };
 
     renderLoading = () => {
@@ -69,6 +73,7 @@ const ChannelListMessenger = withChatContext(
       <FlatList
         data={this.props.channels}
         onEndReached={this.props.loadNextPage}
+        onEndReachedThreshold={this.props.loadMoreThreshold}
         ListEmptyComponent={this.renderEmptyState}
         renderItem={({ item: channel }) => (
           <ChannelPreview
