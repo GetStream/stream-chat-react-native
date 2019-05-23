@@ -1,18 +1,32 @@
 import React from 'react';
-import { View, Text } from 'react-native';
 import { Avatar } from './Avatar';
+import { getTheme } from '../styles/theme';
+
+import styled from 'styled-components';
+
+const Container = styled.View`
+  flex-direction: ${(props) =>
+    getTheme(props).mentionsItem.container.flexDirection};
+  align-items: ${(props) => getTheme(props).mentionsItem.container.alignItems};
+  padding: 10px;
+`;
+
+const Name = styled.Text`
+  padding: ${(props) => getTheme(props).mentionsItem.name.padding}px;
+  color: ${(props) => getTheme(props).mentionsItem.name.color};
+  font-weight: ${(props) => getTheme(props).mentionsItem.name.fontWeight};
+`;
 
 export class MentionsItem extends React.Component {
   render() {
     const {
-      item: { name, icon },
+      item: { name, icon, id },
     } = this.props;
-
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Container>
         <Avatar image={icon} />
-        <Text style={{ padding: 10 }}>{name}</Text>
-      </View>
+        <Name>{name || id}</Name>
+      </Container>
     );
   }
 }

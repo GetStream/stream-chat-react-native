@@ -102,6 +102,8 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
+        'styled-components':
+          'styled-components/native/dist/styled-components.native.cjs.js',
       },
       extensions: ['.web.js', '.js'],
     },

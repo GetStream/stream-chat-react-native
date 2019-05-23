@@ -1,5 +1,22 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
+import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
+
+const Container = styled.View`
+  flex-direction: ${(props) =>
+    getTheme(props).commandsItem.container.flexDirection};
+  padding: ${(props) => getTheme(props).commandsItem.container.padding}px;
+`;
+
+const Top = styled.View`
+  flex-direction: ${(props) => getTheme(props).commandsItem.top.flexDirection};
+  align-items: ${(props) => getTheme(props).commandsItem.top.alignItems};
+`;
+
+const Title = styled.Text`
+  font-weight: ${(props) => getTheme(props).commandsItem.title.fontWeight};
+`;
 
 export class CommandsItem extends React.Component {
   render() {
@@ -8,13 +25,13 @@ export class CommandsItem extends React.Component {
     } = this.props;
 
     return (
-      <View style={{ flexDirection: 'column', padding: 10 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontWeight: 'bold' }}>/{name} </Text>
+      <Container>
+        <Top>
+          <Title>/{name} </Title>
           <Text>{args}</Text>
-        </View>
+        </Top>
         <Text>{description}</Text>
-      </View>
+      </Container>
     );
   }
 }

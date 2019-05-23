@@ -1,8 +1,19 @@
 import React, { PureComponent } from 'react';
-import { TouchableOpacity, Animated } from 'react-native';
+import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
-import { buildStylesheet } from '../styles/styles';
+const Container = styled.TouchableOpacity`
+  display: ${(props) => getTheme(props).messageNotification.container.display};
+  flex-direction: ${(props) =>
+    getTheme(props).messageNotification.container.flexDirection};
+  align-items: ${(props) =>
+    getTheme(props).messageNotification.container.alignItems};
+  z-index: ${(props) => getTheme(props).messageNotification.container.zIndex};
+  margin-bottom: ${(props) =>
+    getTheme(props).messageNotification.container.marginBottom};
+`;
 
 export class MessageNotification extends PureComponent {
   constructor(props) {
@@ -41,19 +52,21 @@ export class MessageNotification extends PureComponent {
   }
 
   render() {
-    const styles = buildStylesheet('MessageNotification', this.props.style);
-    return (
-      <Animated.View
-        style={{ ...styles.container, opacity: this.state.notificationOpacity }}
-      >
-        <TouchableOpacity
-          onPress={this.props.onClick}
-          onClick={this.props.onClick}
-          style={{ backgroundColor: 'transparent' }}
+    if (!this.props.showNotification) {
+      return null;
+    } else {
+      return (
+        <Animated.View
+        // style={{
+        //   ...styles.container,
+        //   opacity: this.state.notificationOpacity,
+        // }}
         >
-          {this.props.children}
-        </TouchableOpacity>
-      </Animated.View>
-    );
+          <Container onPress={this.props.onClick} onClick={this.props.onClick}>
+            {this.props.children}
+          </Container>
+        </Animated.View>
+      );
+    }
   }
 }

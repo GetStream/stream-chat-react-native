@@ -9,22 +9,50 @@ import {
   ChannelList,
   Thread,
   ChannelPreviewMessenger,
+  CloseButton,
+  buildTheme,
 } from 'stream-chat-expo';
+
+import { ThemeProvider } from 'styled-components';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 
 import { YellowBox } from 'react-native';
 
 YellowBox.ignoreWarnings(['Remote debugger']);
-const chatClient = new StreamChat('qk4nn7rpcn75');
+
+const server = {
+  API_KEY: 'qk4nn7rpcn75',
+  TOKEN:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGhpZXJyeSJ9.EJ6poZ2UbnJJvbCi6ZiImeEPeIoXVEBSdZN_-2YC3t0',
+  USER: 'thierry',
+  SERVER_ENDPOINT: 'http://localhost:3030',
+};
+
+const apiKey = server.API_KEY || 'qk4nn7rpcn75';
 const userToken =
+  server.TOKEN ||
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
+const user = server.USER || 'billowing-firefly-8';
+
+const chatClient = new StreamChat(apiKey);
+
+const theme = {
+  avatarImage: {
+    size: 32,
+  },
+  colors: {
+    primary: 'blue',
+  },
+};
+
+if (server.SERVER_ENDPOINT) {
+  chatClient.setBaseURL(server.SERVER_ENDPOINT);
+}
+
 chatClient.setUser(
   {
-    id: 'billowing-firefly-8',
-    name: 'Billowing firefly',
-    image:
-      'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
+    id: user,
   },
   userToken,
 );
@@ -50,7 +78,7 @@ class ChannelListScreen extends PureComponent {
   render() {
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat theme={theme} client={chatClient}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
               Preview={ChannelPreviewMessenger}
@@ -86,7 +114,7 @@ class ChannelScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat theme={theme} client={chatClient}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
@@ -111,23 +139,25 @@ class ThreadScreen extends PureComponent {
     headerTitle: <Text style={{ fontWeight: 'bold' }}>Thread</Text>,
     headerLeft: null,
     headerRight: (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={{
-          backgroundColor: '#ebebeb',
-          width: 30,
-          height: 30,
-          marginRight: 20,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderRadius: 20,
-        }}
-      >
-        <Text>X</Text>
-      </TouchableOpacity>
+      <ThemeProvider theme={buildTheme(theme)}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={{
+            backgroundColor: '#ebebeb',
+            width: 30,
+            height: 30,
+            marginRight: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 20,
+          }}
+        >
+          <CloseButton />
+        </TouchableOpacity>
+      </ThemeProvider>
     ),
   });
 
@@ -141,7 +171,7 @@ class ThreadScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat theme={theme} client={chatClient}>
           <Channel
             client={chatClient}
             channel={channel}

@@ -1,13 +1,41 @@
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
-
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { styles } from '../styles/styles.js';
+import { getTheme } from '../styles/theme';
 
 import { Message } from './Message';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
+
+const ListContainer = styled.FlatList`
+  flex: ${(props) => getTheme(props).messageList.listContainer.flex};
+  padding-left: ${(props) =>
+    getTheme(props).messageList.listContainer.paddingLeft};
+  padding-right: ${(props) =>
+    getTheme(props).messageList.listContainer.paddingRight};
+`;
+
+const NewMessageNotification = styled.View`
+  border-radius: ${(props) =>
+    getTheme(props).messageList.newMessageNotification.borderRadius};
+  background-color: ${(props) =>
+    getTheme(props).messageList.newMessageNotification.backgroundColor};
+  color: ${(props) => getTheme(props).messageList.newMessageNotification.color};
+  padding: ${(props) =>
+    getTheme(props).messageList.newMessageNotification.padding}px;
+`;
+const NewMessageNotificationText = styled.Text`
+  color: ${(props) =>
+    getTheme(props).messageList.newMessageNotificationText.color};
+`;
+
+const NotificationText = styled.Text`
+  color: ${(props) => getTheme(props).messageList.notification.warning.color};
+  background-color: ${(props) =>
+    getTheme(props).messageList.notification.warning.backgroundColor};
+`;
 
 const MessageList = withChannelContext(
   class MessageList extends PureComponent {
@@ -296,21 +324,14 @@ const MessageList = withChannelContext(
             />
           )}
           <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
-            <FlatList
+            <ListContainer
               ref={(fl) => (this.flatList = fl)}
-              style={{
-                flex: 1,
-                paddingLeft: 10,
-                paddingRight: 10,
-                width: '100%',
-              }}
               data={messagesWithGroupPositions}
               onScroll={this.handleScroll}
               ListFooterComponent={this.props.headerComponent}
-              keyboardShouldPersistTaps="always"
               onEndReached={this.props.loadMore}
-              onEndReachedThreshold={this.props.loadMoreThreshold}
               inverted
+              keyboardShouldPersistTaps="always"
               keyExtractor={(item) =>
                 item.id || item.created_at || item.date.toISOString()
               }
@@ -320,25 +341,22 @@ const MessageList = withChannelContext(
                 autoscrollToTopThreshold: 10,
               }}
             />
-            <MessageNotification
-              showNotification={this.state.newMessagesNotification}
-              onClick={this.goToNewMessages}
-            >
-              <View
-                style={{
-                  borderRadius: 10,
-                  backgroundColor: 'black',
-                  color: 'white',
-                  padding: 10,
-                }}
+            {this.state.newMessagesNotification && (
+              <MessageNotification
+                showNotification={this.state.newMessagesNotification}
+                onClick={this.goToNewMessages}
               >
-                <Text style={{ color: 'white' }}>New Messages ↓</Text>
-              </View>
-            </MessageNotification>
+                <NewMessageNotification>
+                  <NewMessageNotificationText>
+                    New Messages ↓
+                  </NewMessageNotificationText>
+                </NewMessageNotification>
+              </MessageNotification>
+            )}
             <Notification type="warning" active={!this.state.online}>
-              <Text style={styles.Notification.warning}>
+              <NotificationText>
                 Connection failure, reconnecting now ...
-              </Text>
+              </NotificationText>
             </Notification>
           </View>
         </React.Fragment>
@@ -347,17 +365,27 @@ const MessageList = withChannelContext(
   },
 );
 
+const NotificationContainer = styled.View`
+  display: ${(props) => getTheme(props).notification.display};
+  flex-direction: ${(props) => getTheme(props).notification.flexDirection};
+  align-items: ${(props) => getTheme(props).notification.alignItems};
+  z-index: ${(props) => getTheme(props).notification.zIndex};
+  margin-bottom: ${(props) => getTheme(props).notification.marginBottom};
+  padding: ${(props) => getTheme(props).notification.padding}px;
+  color: ${(props) =>
+    props.type && getTheme(props).notification[props.type].color
+      ? getTheme(props).notification[props.type].color
+      : getTheme(props).notification.color};
+  background-color: ${(props) =>
+    props.type && getTheme(props).notification[props.type].backgroundColor
+      ? getTheme(props).notification[props.type].backgroundColor
+      : getTheme(props).notification.backgroundColor};
+`;
+
 const Notification = ({ children, active, type }) => {
   if (active) {
     return (
-      <View
-        style={{
-          ...styles.Notification.container,
-          ...styles.Notification[type],
-        }}
-      >
-        {children}
-      </View>
+      <NotificationContainer type={type}>{children}</NotificationContainer>
     );
   }
 

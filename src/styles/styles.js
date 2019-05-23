@@ -221,7 +221,8 @@ export const styles = {
 
   Card: StyleSheet.create({
     footer: {
-      ...Layouts.flexRow,
+      display: 'flex',
+      flexDirection: 'row',
       justifyContent: 'space-between',
       backgroundColor: Colors.light,
       padding: 10,
@@ -243,6 +244,7 @@ export const styles = {
       paddingRight: 10,
       alignItems: 'center',
     },
+
     primaryButton: {
       backgroundColor: '#006CFF',
     },

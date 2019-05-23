@@ -1,8 +1,47 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Text } from 'react-native';
 
-import { View, TouchableOpacity, Text } from 'react-native';
-import { buildStylesheet } from '../styles/styles';
+import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
+
+const Container = styled.View`
+  flex-direction: ${(props) =>
+    getTheme(props).attachment.actions.container.flexDirection};
+  justify-content: ${(props) =>
+    getTheme(props).attachment.actions.container.justifyContent};
+  padding: ${(props) => getTheme(props).attachment.actions.container.padding}px;
+`;
+
+const Button = styled.TouchableOpacity`
+  background-color: ${(props) =>
+    props.styleName === 'primary'
+      ? getTheme(props).attachment.actions.button.primaryBackgroundColor
+      : getTheme(props).attachment.actions.button.defaultBackgroundColor};
+  border-color: ${(props) =>
+    props.styleName === 'primary'
+      ? getTheme(props).attachment.actions.button.primaryBorderColor
+      : getTheme(props).attachment.actions.button.defaultBordercolor};
+  border-width: ${(props) =>
+    getTheme(props).attachment.actions.button.borderWidth};
+  border-radius: ${(props) =>
+    getTheme(props).attachment.actions.button.borderRadius};
+  padding-top: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingTop}px;
+  padding-bottom: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingBottom}px;
+  padding-left: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingLeft}px;
+  padding-right: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingRight}px;
+`;
+
+const ButtonText = styled(({ styleName, ...rest }) => <Text {...rest} />)`
+  color: ${(props) =>
+    props.styleName === 'primary'
+      ? getTheme(props).attachment.actions.buttonText.primaryColor
+      : getTheme(props).attachment.actions.buttonText.defaultColor};
+`;
 
 /**
  * AttachmentActions - The actions you can take on an attachment
@@ -23,23 +62,20 @@ export class AttachmentActions extends React.PureComponent {
   };
 
   render() {
-    const { id, actions, actionHandler, style } = this.props;
-    const styles = buildStylesheet('AttachmentActions', style);
+    const { id, actions, actionHandler } = this.props;
 
     return (
-      <View style={styles.container}>
+      <Container>
         {actions.map((action) => (
-          <TouchableOpacity
+          <Button
             key={`${id}-${action.value}`}
-            style={{ ...styles.button, ...styles[action.style + 'Button'] }}
+            styleName={action.style}
             onPress={actionHandler.bind(this, action.name, action.value)}
           >
-            <Text style={styles[action.style + 'ButtonText']}>
-              {action.text}
-            </Text>
-          </TouchableOpacity>
+            <ButtonText styleName={action.style}>{action.text}</ButtonText>
+          </Button>
         ))}
-      </View>
+      </Container>
     );
   }
 }

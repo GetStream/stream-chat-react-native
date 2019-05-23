@@ -1,10 +1,8 @@
 import React from 'react';
-import { Dimensions, View, Text, TouchableOpacity } from 'react-native';
+import { Dimensions, Text } from 'react-native';
 import moment from 'moment';
-import {
-  buildStylesheet,
-  REACTION_PICKER_HEIGHT,
-} from '../../styles/styles.js';
+import styled from 'styled-components';
+import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
@@ -14,6 +12,69 @@ import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
+import { getTheme } from '../../styles/theme';
+
+const Container = styled.TouchableOpacity`
+  display: ${(props) => getTheme(props).messageContent.container.display};
+  flex-direction: ${(props) =>
+    getTheme(props).messageContent.container.flexDirection};
+  max-width: ${(props) => getTheme(props).messageContent.container.maxWidth};
+  align-items: ${(props) =>
+    props.position === 'left'
+      ? getTheme(props).messageContent.container.leftAlignItems
+      : getTheme(props).messageContent.container.rightAlignItems};
+  justify-content: ${(props) =>
+    props.position === 'left'
+      ? getTheme(props).messageContent.container.leftJustifyContent
+      : getTheme(props).messageContent.container.rightJustifyContent};
+`;
+
+const ContainerInner = styled.View`
+  align-items: ${(props) =>
+    getTheme(props).messageContent.containerInner.alignItems};
+`;
+
+const MetaContainer = styled.View`
+  margin-top: ${(props) =>
+    getTheme(props).messageContent.metaContainer.marginTop};
+`;
+
+const MetaText = styled.Text`
+  font-size: ${(props) => getTheme(props).messageContent.metaText.fontSize};
+  color: ${(props) => getTheme(props).messageContent.metaText.color};
+  text-align: ${(props) =>
+    props.position === 'left'
+      ? getTheme(props).messageContent.metaText.leftTextAlign
+      : getTheme(props).messageContent.metaText.rightTextAlign};
+`;
+
+const DeletedContainer = styled.View`
+  display: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.display};
+  flex-direction: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.flexDirection};
+  max-width: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.maxWidth};
+  padding: ${(props) =>
+    getTheme(props).messageContent.deletedContainer.padding}px;
+  align-items: ${(props) =>
+    props.position === 'left'
+      ? getTheme(props).messageContent.deletedContainer.leftAlignItems
+      : getTheme(props).messageContent.deletedContainer.rightAlignItems};
+  justify-content: ${(props) =>
+    props.position === 'left'
+      ? getTheme(props).messageContent.deletedContainer.leftJustifyContent
+      : getTheme(props).messageContent.deletedContainer.rightJustifyContent};
+`;
+
+const DeletedText = styled.Text`
+  font-size: ${(props) => getTheme(props).messageContent.deletedText.fontSize};
+  line-height: ${(props) =>
+    getTheme(props).messageContent.deletedText.lineHeight};
+  color: ${(props) => getTheme(props).messageContent.deletedText.color};
+`;
+
+const FailedText = styled.Text``;
 
 export class MessageContent extends React.PureComponent {
   constructor(props) {
@@ -98,15 +159,12 @@ export class MessageContent extends React.PureComponent {
       threadList,
       retrySendMessage,
       messageActions,
-      style,
     } = this.props;
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
     );
 
     const pos = isMyMessage(message) ? 'right' : 'left';
-
-    const styles = buildStylesheet('MessageSimpleContent', style);
 
     const showTime =
       message.groupPosition[0] === 'single' ||
@@ -155,19 +213,14 @@ export class MessageContent extends React.PureComponent {
 
     if (message.deleted_at)
       return (
-        <View style={{ ...styles.container, ...styles[pos], padding: 5 }}>
-          <Text style={{ ...styles.deletedText, ...styles.text }}>
-            This message was deleted ...
-          </Text>
-        </View>
+        <DeletedContainer position={pos}>
+          <DeletedText>This message was deleted ...</DeletedText>
+        </DeletedContainer>
       );
 
     const contentProps = {
-      style: {
-        ...styles.container,
-        ...styles[pos],
-        ...(styles[message.status] ? styles[message.status] : {}),
-      },
+      position: pos,
+      status: message.status,
       onLongPress: options.length > 1 ? this.showActionSheet : null,
       activeOpacity: 0.7,
       disabled: readOnly,
@@ -177,9 +230,9 @@ export class MessageContent extends React.PureComponent {
       contentProps.onPress = retrySendMessage.bind(this, Immutable(message));
 
     return (
-      <TouchableOpacity {...contentProps}>
+      <Container {...contentProps}>
         {message.status === 'failed' ? (
-          <Text>Message failed - try again</Text>
+          <FailedText>Message failed - try again</FailedText>
         ) : null}
         {message.latest_reactions && message.latest_reactions.length > 0 && (
           <ReactionList
@@ -190,10 +243,9 @@ export class MessageContent extends React.PureComponent {
           />
         )}
         {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-        <View
+        <ContainerInner
           ref={(o) => (this.messageContainer = o)}
           collapsable={false}
-          style={{ alignItems: 'flex-end' }}
         >
           {hasAttachment &&
             images.length <= 1 &&
@@ -202,9 +254,12 @@ export class MessageContent extends React.PureComponent {
                 key={`${message.id}-${index}`}
                 attachment={attachment}
                 actionHandler={this.props.handleAction}
+                position={this.props.position}
               />
             ))}
-          {images.length > 1 && <Gallery images={images} />}
+          {images.length > 1 && (
+            <Gallery position={this.props.position} images={images} />
+          )}
           <MessageText
             message={message}
             isMyMessage={isMyMessage}
@@ -214,7 +269,7 @@ export class MessageContent extends React.PureComponent {
             openThread={this.openThread}
             handleReaction={handleReaction}
           />
-        </View>
+        </ContainerInner>
         <MessageReplies
           message={message}
           isThreadList={!!threadList}
@@ -223,11 +278,11 @@ export class MessageContent extends React.PureComponent {
         />
 
         {showTime ? (
-          <View style={styles.metaContainer}>
-            <Text style={{ ...styles.metaText, textAlign: pos }}>
+          <MetaContainer>
+            <MetaText position={pos}>
               {moment(message.created_at).format('h:mmA')}
-            </Text>
-          </View>
+            </MetaText>
+          </MetaContainer>
         ) : null}
 
         <ActionSheet
@@ -252,7 +307,7 @@ export class MessageContent extends React.PureComponent {
           rpRight={this.state.rpRight}
           rpTop={this.state.rpTop}
         />
-      </TouchableOpacity>
+      </Container>
     );
   }
 }

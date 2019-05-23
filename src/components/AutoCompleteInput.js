@@ -1,7 +1,13 @@
 import React from 'react';
-import { TextInput } from 'react-native';
-import { buildStylesheet } from '../styles/styles';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import { getTheme } from '../styles/theme';
+
+const InputBox = styled.TextInput`
+  max-height: ${(props) => getTheme(props).messageInput.inputBox.maxHeight};
+  margin: ${(props) => getTheme(props).messageInput.inputBox.marginTop}px;
+  flex: ${(props) => getTheme(props).messageInput.inputBox.flex};
+`;
 
 export class AutoCompleteInput extends React.PureComponent {
   static propTypes = {
@@ -231,12 +237,9 @@ export class AutoCompleteInput extends React.PureComponent {
   };
 
   render() {
-    const styles = buildStylesheet('MessageInput', this.props.style);
-    // console.log('RENDERING THE COMPONENT: ' + this.state.text);
     return (
-      <TextInput
+      <InputBox
         ref={this.props.setInputBoxRef}
-        style={styles.inputBox}
         placeholder="Write your message"
         onChangeText={(text) => {
           this.handleChange(text);

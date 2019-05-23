@@ -3,6 +3,9 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../context';
 import { NetInfo } from '../native';
 
+import { ThemeProvider } from 'styled-components';
+import { buildTheme } from '../styles/theme';
+
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
  * This Chat component provides the ChatContext to all other components.
@@ -20,26 +23,16 @@ import { NetInfo } from '../native';
  * @extends PureComponent
  */
 
-const colors = ['light', 'dark'];
-const baseUseCases = ['messaging', 'team', 'commerce', 'gaming', 'livestream'];
-const themes = [];
-
-for (const color of colors) {
-  for (const useCase of baseUseCases) {
-    themes.push(`${useCase} ${color}`);
-  }
-}
-
 export class Chat extends PureComponent {
   static propTypes = {
     /** The StreamChat client object */
     client: PropTypes.object.isRequired,
     /** The theme 'messaging', 'team', 'commerce', 'gaming', 'livestream' plus either 'light' or 'dark' */
-    theme: PropTypes.oneOf(themes),
+    theme: PropTypes.object,
   };
 
   static defaultProps = {
-    theme: 'messaging light',
+    theme: {},
   };
 
   constructor(props) {
@@ -117,7 +110,6 @@ export class Chat extends PureComponent {
     client: this.props.client,
     channel: this.state.channel,
     setActiveChannel: this.setActiveChannel,
-    theme: this.props.theme,
     isOnline: this.state.isOnline,
     connectionRecovering: this.state.connectionRecovering,
   });
@@ -125,7 +117,9 @@ export class Chat extends PureComponent {
   render() {
     return (
       <ChatContext.Provider value={this.getContext()}>
-        {this.props.children}
+        <ThemeProvider theme={buildTheme(this.props.theme)}>
+          {this.props.children}
+        </ThemeProvider>
       </ChatContext.Provider>
     );
   }

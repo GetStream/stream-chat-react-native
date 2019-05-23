@@ -1,6 +1,29 @@
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
+import styled from 'styled-components';
 import { emojiData } from '../utils';
+import { getTheme } from '../styles/theme';
+
+const Container = styled.View`
+  opacity: ${(props) =>
+    props.visible ? getTheme(props).reactionList.container.opacity : 0};
+  display: ${({ theme }) => theme.reactionList.container.display};
+  flex-direction: ${({ theme }) => theme.reactionList.container.flexDirection};
+  align-items: ${({ theme }) => theme.reactionList.container.alignItems};
+  background-color: ${({ theme }) =>
+    theme.reactionList.container.backgroundColor};
+  padding: ${({ theme }) => theme.reactionList.container.padding}px;
+  border-radius: ${({ theme }) => theme.reactionList.container.borderRadius};
+`;
+
+const ReactionCount = styled.Text`
+  color: ${(props) => getTheme(props).reactionList.reactionCount.color};
+  padding-left: ${(props) =>
+    getTheme(props).reactionList.reactionCount.paddingLeft}px;
+  padding-right: ${(props) =>
+    getTheme(props).reactionList.reactionCount.paddingRight}px;
+  font-size: ${(props) => getTheme(props).reactionList.reactionCount.fontSize};
+`;
 
 export class ReactionList extends React.PureComponent {
   constructor(props) {
@@ -53,27 +76,12 @@ export class ReactionList extends React.PureComponent {
     } = this.props;
     return (
       <TouchableOpacity onPress={openReactionSelector} activeOpacity={1}>
-        <View
-          style={{
-            opacity: visible ? 1 : 0,
-            display: 'flex',
-            flexDirection: 'row',
-            padding: 5,
-            backgroundColor: 'black',
-            borderRadius: 10,
-          }}
-        >
+        <Container visible={visible}>
           {this._renderReactions(latestReactions)}
-          <Text
-            style={{
-              color: 'white',
-              paddingLeft: 5,
-              paddingRight: 5,
-            }}
-          >
+          <ReactionCount>
             {this._getReactionCount(reactionCounts)}
-          </Text>
-        </View>
+          </ReactionCount>
+        </Container>
       </TouchableOpacity>
     );
   }

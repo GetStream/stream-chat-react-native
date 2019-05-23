@@ -1,8 +1,7 @@
 import React, { PureComponent } from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Image, View, Text } from 'react-native';
 import { withChannelContext, withSuggestionsContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
-import { buildStylesheet } from '../styles/styles';
 import { ImageUploadPreview } from './ImageUploadPreview';
 import { FileUploadPreview } from './FileUploadPreview';
 import { IconSquare } from './IconSquare';
@@ -12,6 +11,8 @@ import Immutable from 'seamless-immutable';
 import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
+import styled from 'styled-components';
+import { getTheme } from '../styles/theme';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
@@ -33,6 +34,56 @@ function generateRandomId() {
 function S4() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 }
+
+const Container = styled.View`
+  display: ${(props) => getTheme(props).messageInput.container.display};
+  flex-direction: ${(props) =>
+    getTheme(props).messageInput.container.flexDirection};
+  border-radius: ${(props) =>
+    getTheme(props).messageInput.container.borderRadius};
+  background-color: ${(props) =>
+    getTheme(props).messageInput.container.backgroundColor};
+  padding-top: ${(props) =>
+    props.padding
+      ? getTheme(props).messageInput.container.conditionalPadding
+      : 0};
+  margin-left: 10px;
+  margin-right: 10px;
+`;
+
+const InputBoxContainer = styled.View`
+  display: ${(props) => getTheme(props).messageInput.inputBoxContainer.display};
+  flex-direction: ${(props) =>
+    getTheme(props).messageInput.inputBoxContainer.flexDirection};
+  padding-left: ${(props) =>
+    getTheme(props).messageInput.inputBoxContainer.paddingLeft};
+  padding-right: ${(props) =>
+    getTheme(props).messageInput.inputBoxContainer.paddingRight};
+  min-height: ${(props) =>
+    getTheme(props).messageInput.inputBoxContainer.minHeight};
+  margin: ${(props) => getTheme(props).messageInput.inputBoxContainer.margin}px;
+  align-items: ${(props) =>
+    getTheme(props).messageInput.inputBoxContainer.alignItems};
+`;
+
+const AttachButton = styled.TouchableOpacity`
+  margin-right: ${(props) =>
+    getTheme(props).messageInput.attachButton.marginRight};
+`;
+
+const AttachButtonIcon = styled.Image`
+  width: ${(props) => getTheme(props).messageInput.attachButtonIcon.width};
+  height: ${(props) => getTheme(props).messageInput.attachButtonIcon.height};
+`;
+
+const SendButton = styled.TouchableOpacity`
+  margin-left: ${(props) => getTheme(props).messageInput.sendButton.marginLeft};
+`;
+
+const Typing = styled.Text`
+  text-align: ${(props) => getTheme(props).messageInput.typing.textAlign};
+  height: ${(props) => getTheme(props).messageInput.typing.height};
+`;
 
 const MessageInput = withSuggestionsContext(
   withChannelContext(
@@ -99,7 +150,6 @@ const MessageInput = withSuggestionsContext(
 
           if (message.mentioned_users) {
             mentioned_users = [...message.mentioned_users];
-            console.log(mentioned_users);
           }
         }
         return {
@@ -539,7 +589,6 @@ const MessageInput = withSuggestionsContext(
         this.attachActionSheet.hide();
       };
       render() {
-        const styles = buildStylesheet('MessageInput', this.props.style);
         const { hasImagePicker, hasFilePicker } = this.props;
 
         let editingBoxStyles = {};
@@ -576,12 +625,8 @@ const MessageInput = withSuggestionsContext(
                   />
                 </View>
               )}
-              <View
-                style={{
-                  ...styles.container,
-                  paddingTop: this.state.imageUploads.length > 0 ? 20 : 0,
-                }}
-              >
+
+              <Container padding={this.state.imageUploads.length > 0}>
                 {this.state.fileUploads && (
                   <FileUploadPreview
                     removeFile={this._removeFile}
@@ -600,12 +645,8 @@ const MessageInput = withSuggestionsContext(
                     )}
                   />
                 )}
-                <View
-                  style={styles.inputBoxContainer}
-                  ref={this.props.setInputBoxContainerRef}
-                >
-                  <TouchableOpacity
-                    style={styles.attachButton}
+                <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
+                  <AttachButton
                     onPress={() => {
                       if (hasImagePicker && hasFilePicker)
                         this.attachActionSheet.show();
@@ -615,11 +656,13 @@ const MessageInput = withSuggestionsContext(
                         this._pickFile();
                     }}
                   >
-                    <Image
-                      source={iconAddAttachment}
-                      style={styles.attachButtonIcon}
-                    />
-                  </TouchableOpacity>
+                    <AttachButtonIcon source={iconAddAttachment} />
+                  </AttachButton>
+                  {/**
+                    TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+                    work well with async onPress operations. So find a solution.
+                  */}
+
                   <ActionSheet
                     ref={(o) => (this.attachActionSheet = o)}
                     title={
@@ -682,8 +725,7 @@ const MessageInput = withSuggestionsContext(
                       onMentionSelectItem: this.onSelectItem,
                     })}
                   />
-                  <TouchableOpacity
-                    style={styles.sendButton}
+                  <SendButton
                     title="Pick an image from camera roll"
                     onPress={this.sendMessage}
                   >
@@ -692,15 +734,16 @@ const MessageInput = withSuggestionsContext(
                     ) : (
                       <Image source={iconNewMessage} />
                     )}
-                  </TouchableOpacity>
-                </View>
-              </View>
-              <Text style={{ textAlign: 'right', height: 20 }}>
-                {this.props.channel.state.typing
-                  ? this.constructTypingString(this.props.channel.state.typing)
-                  : ''}
-              </Text>
+                  </SendButton>
+                </InputBoxContainer>
+              </Container>
             </View>
+
+            <Typing>
+              {this.props.channel.state.typing
+                ? this.constructTypingString(this.props.channel.state.typing)
+                : ''}
+            </Typing>
           </React.Fragment>
         );
       }
