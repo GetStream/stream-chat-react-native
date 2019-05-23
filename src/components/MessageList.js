@@ -30,11 +30,14 @@ const MessageList = withChannelContext(
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       disableWhileEditing: PropTypes.bool,
+      loadMoreThreshold: PropTypes.number,
     };
 
     static defaultProps = {
       dateSeparator: DateSeparator,
       disableWhileEditing: true,
+      // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+      loadMoreThreshold: 2,
     };
 
     componentDidUpdate(prevProps) {
@@ -305,6 +308,7 @@ const MessageList = withChannelContext(
               ListFooterComponent={this.props.headerComponent}
               keyboardShouldPersistTaps="always"
               onEndReached={this.props.loadMore}
+              onEndReachedThreshold={this.props.loadMoreThreshold}
               inverted
               keyExtractor={(item) =>
                 item.id || item.created_at || item.date.toISOString()

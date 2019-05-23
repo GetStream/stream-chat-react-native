@@ -188,7 +188,7 @@ export class ChannelInner extends PureComponent {
 
   keyboardWillDismiss = (callback) => {
     if (!this._keyboardOpen) {
-      callback();
+      if (callback && callback instanceof Function) callback();
       return;
     }
 
