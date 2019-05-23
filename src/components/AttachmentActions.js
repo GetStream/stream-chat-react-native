@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Text } from 'react-native';
 
 import styled from 'styled-components';
 import { getTheme } from '../styles/theme';
@@ -14,24 +15,30 @@ const Container = styled.View`
 
 const Button = styled.TouchableOpacity`
   background-color: ${(props) =>
-    props.style === 'primary'
-      ? props.style.theme.attachment.actions.primaryBackgroundColor
-      : props.style.theme.attachment.actions.defaultBackgroundColor};
-  bordercolor: ${(props) =>
-    props.style === 'primary'
-      ? props.style.theme.attachment.actions.primaryBorderColor
-      : props.style.theme.attachment.actions.defaultBordercolor};
-  border-width: ${(props) => getTheme(props).attachment.actions.button};
-  border-radius: ${(props) => getTheme(props).attachment.actions.button};
-  padding-top: ${(props) => getTheme(props).attachment.actions.button}px;
-  padding-bottom: ${(props) => getTheme(props).attachment.actions.button}px;
-  padding-left: ${(props) => getTheme(props).attachment.actions.button}px;
-  padding-right: ${(props) => getTheme(props).attachment.actions.button}px;
+    props.styleName === 'primary'
+      ? getTheme(props).attachment.actions.button.primaryBackgroundColor
+      : getTheme(props).attachment.actions.button.defaultBackgroundColor};
+  border-color: ${(props) =>
+    props.styleName === 'primary'
+      ? getTheme(props).attachment.actions.button.primaryBorderColor
+      : getTheme(props).attachment.actions.button.defaultBordercolor};
+  border-width: ${(props) =>
+    getTheme(props).attachment.actions.button.borderWidth};
+  border-radius: ${(props) =>
+    getTheme(props).attachment.actions.button.borderRadius};
+  padding-top: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingTop}px;
+  padding-bottom: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingBottom}px;
+  padding-left: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingLeft}px;
+  padding-right: ${(props) =>
+    getTheme(props).attachment.actions.button.paddingRight}px;
 `;
 
-const ButtonText = styled.Text`
+const ButtonText = styled(({ styleName, ...rest }) => <Text {...rest} />)`
   color: ${(props) =>
-    props.style === 'primary'
+    props.styleName === 'primary'
       ? getTheme(props).attachment.actions.buttonText.primaryColor
       : getTheme(props).attachment.actions.buttonText.defaultColor};
 `;
@@ -62,10 +69,10 @@ export class AttachmentActions extends React.PureComponent {
         {actions.map((action) => (
           <Button
             key={`${id}-${action.value}`}
-            style={action.style}
+            styleName={action.style}
             onPress={actionHandler.bind(this, action.name, action.value)}
           >
-            <ButtonText style={action.style}>{action.text}</ButtonText>
+            <ButtonText styleName={action.style}>{action.text}</ButtonText>
           </Button>
         ))}
       </Container>
