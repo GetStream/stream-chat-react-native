@@ -22,7 +22,9 @@ const defaultTheme = {
     ...Colors,
   },
   avatarImage: {
-    size: 32,
+    height: null,
+    width: null,
+    borderRadius: null,
   },
   attachment: {
     file: {

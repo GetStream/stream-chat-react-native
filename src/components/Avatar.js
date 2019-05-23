@@ -10,17 +10,17 @@ const AvatarContainer = styled.View`
 `;
 
 const AvatarImage = styled.Image`
-  width: ${(props) => props.size || getTheme(props).avatarImage.size};
-  height: ${(props) => props.size || getTheme(props).avatarImage.size};
   border-radius: ${(props) =>
-    props.size / 2 || getTheme(props).avatarImage.size / 2};
+    getTheme(props).avatarImage.borderRadius || props.size / 2};
+  width: ${(props) => getTheme(props).avatarImage.width || props.size};
+  height: ${(props) => getTheme(props).avatarImage.height || props.size};
 `;
 
 const AvatarFallback = styled.View`
   border-radius: ${(props) =>
-    props.size / 2 || getTheme(props).avatarImage.size / 2};
-  width: ${(props) => props.size || getTheme(props).avatarImage.size};
-  height: ${(props) => props.size || getTheme(props).avatarImage.size};
+    getTheme(props).avatarImage.borderRadius || props.size / 2};
+  width: ${(props) => getTheme(props).avatarImage.width || props.size};
+  height: ${(props) => getTheme(props).avatarImage.height || props.size};
   background-color: ${(props) => getTheme(props).colors.primary};
   justify-content: ${(props) => getTheme(props).avatarFallback.justifyContent};
   align-items: ${(props) => getTheme(props).avatarFallback.alignItems};
@@ -55,6 +55,7 @@ export class Avatar extends React.PureComponent {
 
   static defaultProps = {
     shape: 'circle',
+    size: 32,
   };
 
   state = {
