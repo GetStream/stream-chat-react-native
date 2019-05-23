@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
-import { Image } from 'react-native';
+import { Image, View, Text } from 'react-native';
 import { withChannelContext, withSuggestionsContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
-import iconEdit from '../images/icons/icon_edit.png';
-import iconNewMessage from '../images/icons/icon_new_message.png';
 import { ImageUploadPreview } from './ImageUploadPreview';
 import { FileUploadPreview } from './FileUploadPreview';
+import { IconSquare } from './IconSquare';
 import { pickImage, pickDocument } from '../native';
 import { lookup } from 'mime-types';
 import Immutable from 'seamless-immutable';
@@ -16,7 +15,13 @@ import styled from 'styled-components';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
-import iconGallery from '../images/icons/gallery.png';
+
+import iconEdit from '../images/icons/icon_edit.png';
+import iconNewMessage from '../images/icons/icon_new_message.png';
+import iconAddAttachment from '../images/icons/plus-outline.png';
+import iconGallery from '../images/icons/icon_attach-media.png';
+import iconFolder from '../images/icons/icon_folder.png';
+import iconClose from '../images/icons/icon_close.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
 
 // https://stackoverflow.com/a/6860916/2570866
@@ -575,91 +580,160 @@ const MessageInput = withSuggestionsContext(
         return allCommands;
       };
 
+      closeAttachActionSheet = () => {
+        this.attachActionSheet.hide();
+      };
       render() {
         const { hasImagePicker, hasFilePicker } = this.props;
 
+        let editingBoxStyles = {};
+        if (this.props.editing) {
+          editingBoxStyles = {
+            paddingLeft: 0,
+            paddingRight: 0,
+            shadowColor: 'gray',
+            shadowOpacity: 0.5,
+            shadowOffset: { width: 1, height: -3 },
+            zIndex: 100,
+            backgroundColor: 'white',
+          };
+        }
+
         return (
           <React.Fragment>
-            <Container padding={this.state.imageUploads.length > 0}>
-              {this.state.fileUploads && (
-                <FileUploadPreview
-                  removeFile={this._removeFile}
-                  retryUpload={this._uploadFile}
-                  fileUploads={this.state.fileOrder.map(
-                    (id) => this.state.fileUploads[id],
-                  )}
-                />
-              )}
-              {this.state.imageUploads && (
-                <ImageUploadPreview
-                  removeImage={this._removeImage}
-                  retryUpload={this._uploadImage}
-                  imageUploads={this.state.imageOrder.map(
-                    (id) => this.state.imageUploads[id],
-                  )}
-                />
-              )}
-              <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
-                <AttachButton
-                  onPress={() => {
-                    if (hasImagePicker && hasFilePicker)
-                      this.attachActionSheet.show();
-                    else if (hasImagePicker && !hasFilePicker)
-                      this._pickImage();
-                    else if (!hasImagePicker && hasFilePicker) this._pickFile();
+            <View style={editingBoxStyles}>
+              {this.props.editing && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 10,
                   }}
                 >
-                  <AttachButtonIcon source={iconGallery} />
-                </AttachButton>
-                {/**
-                  TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-                  work well with async onPress operations. So find a solution.
-                */}
-                <ActionSheet
-                  ref={(o) => (this.attachActionSheet = o)}
-                  title={'Add a file'}
-                  options={['Select a photo', 'Upload a file', 'Cancel']}
-                  cancelButtonIndex={2}
-                  destructiveButtonIndex={2}
-                  onPress={(index) => {
-                    switch (index) {
-                      case 0:
+                  <Text style={{ fontWeight: 'bold' }}>Editing Message</Text>
+                  <IconSquare
+                    onPress={() => {
+                      this.props.clearEditingState();
+                    }}
+                    icon={iconClose}
+                  />
+                </View>
+              )}
+
+              <Container padding={this.state.imageUploads.length > 0}>
+                {this.state.fileUploads && (
+                  <FileUploadPreview
+                    removeFile={this._removeFile}
+                    retryUpload={this._uploadFile}
+                    fileUploads={this.state.fileOrder.map(
+                      (id) => this.state.fileUploads[id],
+                    )}
+                  />
+                )}
+                {this.state.imageUploads && (
+                  <ImageUploadPreview
+                    removeImage={this._removeImage}
+                    retryUpload={this._uploadImage}
+                    imageUploads={this.state.imageOrder.map(
+                      (id) => this.state.imageUploads[id],
+                    )}
+                  />
+                )}
+                <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
+                  <AttachButton
+                    onPress={() => {
+                      if (hasImagePicker && hasFilePicker)
+                        this.attachActionSheet.show();
+                      else if (hasImagePicker && !hasFilePicker)
                         this._pickImage();
-                        break;
-                      case 1:
+                      else if (!hasImagePicker && hasFilePicker)
                         this._pickFile();
-                        break;
-                      default:
+                    }}
+                  >
+                    <AttachButtonIcon source={iconAddAttachment} />
+                  </AttachButton>
+                  {/**
+                    TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+                    work well with async onPress operations. So find a solution.
+                  */}
+
+                  <ActionSheet
+                    ref={(o) => (this.attachActionSheet = o)}
+                    title={
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          width: '100%',
+                          paddingLeft: 20,
+                          paddingRight: 20,
+                        }}
+                      >
+                        <Text style={{ fontWeight: 'bold' }}>Add a file</Text>
+                        <IconSquare
+                          icon={iconClose}
+                          onPress={this.closeAttachActionSheet}
+                        />
+                      </View>
                     }
-                  }}
-                />
-                <AutoCompleteInput
-                  openSuggestions={this.props.openSuggestions}
-                  closeSuggestions={this.props.closeSuggestions}
-                  updateSuggestions={this.props.updateSuggestions}
-                  value={this.state.text}
-                  onChange={this.onChange}
-                  getUsers={this.getUsers}
-                  getCommands={this.getCommands}
-                  setInputBoxRef={this.setInputBoxRef}
-                  triggerSettings={ACITriggerSettings({
-                    users: this.getUsers(),
-                    commands: this.getCommands(),
-                    onMentionSelectItem: this.onSelectItem,
-                  })}
-                />
-                <SendButton
-                  title="Pick an image from camera roll"
-                  onPress={this.sendMessage}
-                >
-                  {this.props.editing ? (
-                    <Image source={iconEdit} />
-                  ) : (
-                    <Image source={iconNewMessage} />
-                  )}
-                </SendButton>
-              </InputBoxContainer>
-            </Container>
+                    options={[
+                      /* eslint-disable */
+                      <AttachmentActionSheetItem
+                        icon={iconGallery}
+                        text="Upload a photo"
+                      />,
+                      <AttachmentActionSheetItem
+                        icon={iconFolder}
+                        text="Upload a file"
+                      />,
+                      /* eslint-enable */
+                    ]}
+                    onPress={(index) => {
+                      // https://github.com/beefe/react-native-actionsheet/issues/36
+                      setTimeout(() => {
+                        switch (index) {
+                          case 0:
+                            this._pickImage();
+                            break;
+                          case 1:
+                            this._pickFile();
+                            break;
+                          default:
+                        }
+                      }, 1);
+                    }}
+                  />
+                  <AutoCompleteInput
+                    openSuggestions={this.props.openSuggestions}
+                    closeSuggestions={this.props.closeSuggestions}
+                    updateSuggestions={this.props.updateSuggestions}
+                    value={this.state.text}
+                    onChange={this.onChange}
+                    getUsers={this.getUsers}
+                    getCommands={this.getCommands}
+                    setInputBoxRef={this.setInputBoxRef}
+                    triggerSettings={ACITriggerSettings({
+                      users: this.getUsers(),
+                      commands: this.getCommands(),
+                      onMentionSelectItem: this.onSelectItem,
+                    })}
+                  />
+                  <SendButton
+                    title="Pick an image from camera roll"
+                    onPress={this.sendMessage}
+                  >
+                    {this.props.editing ? (
+                      <Image source={iconEdit} />
+                    ) : (
+                      <Image source={iconNewMessage} />
+                    )}
+                  </SendButton>
+                </InputBoxContainer>
+              </Container>
+            </View>
+
             <Typing>
               {this.props.channel.state.typing
                 ? this.constructTypingString(this.props.channel.state.typing)
@@ -673,3 +747,18 @@ const MessageInput = withSuggestionsContext(
 );
 
 export { MessageInput };
+
+const AttachmentActionSheetItem = ({ icon, text }) => (
+  <View
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      width: '100%',
+      paddingLeft: 20,
+    }}
+  >
+    <IconSquare icon={icon} />
+    <Text style={{ marginLeft: 15 }}>{text}</Text>
+  </View>
+);

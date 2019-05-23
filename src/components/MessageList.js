@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
@@ -41,7 +41,6 @@ const MessageList = withChannelContext(
 
       this.state = {
         newMessagesNotification: false,
-        activeMessageId: false,
         online: props.online,
       };
     }
@@ -55,10 +54,12 @@ const MessageList = withChannelContext(
       /** The message rendering component, the Message component delegates its rendering logic to this component */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      disableWhileEditing: PropTypes.bool,
     };
 
     static defaultProps = {
       dateSeparator: DateSeparator,
+      disableWhileEditing: true,
     };
 
     componentDidUpdate(prevProps) {
@@ -222,6 +223,7 @@ const MessageList = withChannelContext(
         newMessagesNotification: false,
       });
       this.flatList.scrollToIndex({ index: 0 });
+      if (!this.props.threadList) this.props.markRead();
     };
 
     getLastReceived = (messages) => {
@@ -257,7 +259,6 @@ const MessageList = withChannelContext(
               : null
           }
           onMessageTouch={this.onMessageTouch}
-          activeMessageId={this.state.activeMessageId}
           setEditingState={this.props.setEditingState}
           editing={this.props.editing}
           threadList={this.props.threadList}
@@ -268,11 +269,17 @@ const MessageList = withChannelContext(
 
     handleScroll = (event) => {
       const yOffset = event.nativeEvent.contentOffset.y;
-      this.setState({ yOffset });
-    };
+      const removeNewMessageNotification = yOffset <= 0;
 
-    onMessageTouch = (id) => {
-      this.setState({ activeMessageId: id });
+      if (!this.props.threadList && removeNewMessageNotification)
+        this.props.markRead();
+
+      this.setState((prevState) => ({
+        yOffset,
+        newMessagesNotification: removeNewMessageNotification
+          ? false
+          : prevState.newMessagesNotification,
+      }));
     };
 
     renderEmptyState = () => {
@@ -294,6 +301,21 @@ const MessageList = withChannelContext(
 
       return (
         <React.Fragment>
+          {// Mask for edit state
+          this.props.editing && this.props.disableWhileEditing && (
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                backgroundColor: 'black',
+                opacity: 0.4,
+                height: '100%',
+                width: '100%',
+                zIndex: 100,
+              }}
+              collapsable={false}
+              onPress={this.props.clearEditingState}
+            />
+          )}
           <ListContainer
             ref={(fl) => (this.flatList = fl)}
             data={messagesWithGroupPositions}
@@ -301,6 +323,7 @@ const MessageList = withChannelContext(
             ListFooterComponent={this.props.headerComponent}
             onEndReached={this.props.loadMore}
             inverted
+            keyboardShouldPersistTaps="always"
             keyExtractor={(item) =>
               item.id || item.created_at || item.date.toISOString()
             }

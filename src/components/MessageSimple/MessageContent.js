@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Text } from 'react-native';
+import { Dimensions, Text, Keyboard } from 'react-native';
 import moment from 'moment';
 import styled from 'styled-components';
 import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
@@ -100,19 +100,26 @@ export class MessageContent extends React.PureComponent {
   };
 
   openReactionSelector = () => {
-    const { isMyMessage, message } = this.props;
-    const pos = isMyMessage(message) ? 'right' : 'left';
-    this.messageContainer.measureInWindow((x, y, width) => {
-      this.setState({
-        reactionPickerVisible: true,
-        rpTop: y - REACTION_PICKER_HEIGHT,
-        rpLeft: pos === 'left' ? x : null,
-        rpRight:
-          pos === 'right'
-            ? Math.round(Dimensions.get('window').width) - (x + width)
-            : null,
+    // Keyboard closes automatically whenever modal is opened.
+    // So we need to postpone the calculation for reaction picker position
+    // until after keyboard is closed completely. To achieve this, we close
+    // the keyboard forcefully and then calculate position of picker in callback.
+    this.props.keyboardWillDismiss(() => {
+      const { isMyMessage, message } = this.props;
+      const pos = isMyMessage(message) ? 'right' : 'left';
+      this.messageContainer.measureInWindow((x, y, width) => {
+        this.setState({
+          reactionPickerVisible: true,
+          rpTop: y - REACTION_PICKER_HEIGHT,
+          rpLeft: pos === 'left' ? x : null,
+          rpRight:
+            pos === 'right'
+              ? Math.round(Dimensions.get('window').width) - (x + width)
+              : null,
+        });
       });
     });
+    Keyboard.dismiss();
   };
 
   onActionPress = (action) => {
@@ -139,7 +146,6 @@ export class MessageContent extends React.PureComponent {
       message,
       isMyMessage,
       readOnly,
-      activeMessageId,
       Message,
       handleReaction,
       threadList,
@@ -251,7 +257,6 @@ export class MessageContent extends React.PureComponent {
             isMyMessage={isMyMessage}
             disabled={message.status === 'failed'}
             onMessageTouch={this.onMessageTouch}
-            activeMessageId={activeMessageId}
             Message={Message}
             openThread={this.openThread}
             handleReaction={handleReaction}

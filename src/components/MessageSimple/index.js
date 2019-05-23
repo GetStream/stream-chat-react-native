@@ -20,7 +20,7 @@ const Container = styled.View`
 
 export class MessageSimple extends React.PureComponent {
   render() {
-    const { message, isMyMessage, editing } = this.props;
+    const { message, isMyMessage } = this.props;
     const pos = isMyMessage(message) ? 'right' : 'left';
     const bottomMargin =
       message.groupPosition[0] === 'single' ||
@@ -28,13 +28,7 @@ export class MessageSimple extends React.PureComponent {
         ? true
         : false;
     return (
-      <Container
-        position={pos}
-        bottom={bottomMargin}
-        style={{
-          backgroundColor: editing.id === message.id ? 'pink' : 'white',
-        }}
-      >
+      <Container position={pos} bottom={bottomMargin}>
         {isMyMessage(message) ? (
           <React.Fragment>
             <MessageContent {...this.props} position={pos} />

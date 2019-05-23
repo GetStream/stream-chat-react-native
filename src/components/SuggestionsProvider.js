@@ -148,7 +148,11 @@ export class SuggestionsProvider extends React.PureComponent {
           handleDismiss={this.closeSuggestions}
           suggestionsTitle={this.state.suggestionsTitle}
         />
-        <View ref={this.setRootView} collapsable={false}>
+        <View
+          ref={this.setRootView}
+          collapsable={false}
+          style={{ height: '100%' }}
+        >
           {this.props.children}
         </View>
       </SuggestionsContext.Provider>

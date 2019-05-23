@@ -1,4 +1,5 @@
 import React from 'react';
+import { TouchableOpacity, Keyboard } from 'react-native';
 import { Attachment } from './Attachment';
 import { MessageSimple } from './MessageSimple';
 import PropTypes from 'prop-types';
@@ -200,6 +201,11 @@ const Message = withChannelContext(
       await this.props.retrySendMessage(message);
     };
 
+    onMessageTouch = () => {
+      this.props.keyboardWillDismiss();
+      Keyboard.dismiss();
+    };
+
     render() {
       const message = this.props.message;
 
@@ -208,21 +214,23 @@ const Message = withChannelContext(
 
       const Component = this.props.Message;
       return (
-        <Component
-          {...this.props}
-          actionsEnabled={actionsEnabled}
-          Message={this}
-          handleReaction={this.handleReaction}
-          handleFlag={this.handleFlag}
-          handleMute={this.handleMute}
-          handleAction={this.handleAction}
-          handleReply={this.handleReply}
-          handleRetry={this.handleRetry}
-          isMyMessage={this.isMyMessage}
-          openThread={
-            this.props.openThread && this.props.openThread.bind(this, message)
-          }
-        />
+        <TouchableOpacity onPress={this.onMessageTouch} activeOpacity={1}>
+          <Component
+            {...this.props}
+            actionsEnabled={actionsEnabled}
+            Message={this}
+            handleReaction={this.handleReaction}
+            handleFlag={this.handleFlag}
+            handleMute={this.handleMute}
+            handleAction={this.handleAction}
+            handleReply={this.handleReply}
+            handleRetry={this.handleRetry}
+            isMyMessage={this.isMyMessage}
+            openThread={
+              this.props.openThread && this.props.openThread.bind(this, message)
+            }
+          />
+        </TouchableOpacity>
       );
     }
   },

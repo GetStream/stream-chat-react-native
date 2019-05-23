@@ -1,5 +1,12 @@
 import React, { PureComponent } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  Keyboard,
+  Dimensions,
+  Animated,
+  Platform,
+} from 'react-native';
 import { ChannelContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 
@@ -12,6 +19,8 @@ import throttle from 'lodash/throttle';
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
+
+import { logChatPromiseExecution } from 'stream-chat';
 
 /**
  * This component is not really exposed externally, and is only supposed to be used with
@@ -61,8 +70,37 @@ export class ChannelInner extends PureComponent {
       leading: true,
       trailing: true,
     });
-    this.rootView = false;
+
+    this._markReadThrottled = throttle(this.markRead, 500, {
+      leading: true,
+      trailing: true,
+    });
+
+    this.rootChannelView = false;
+    this.initialHeight = undefined;
     this.messageInputBox = false;
+
+    if (Platform.OS === 'ios') {
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardWillShow',
+        this.keyboardDidShow,
+      );
+    } else {
+      // Android doesn't support keyboardWillShow event.
+      this.keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        this.keyboardDidShow,
+      );
+    }
+
+    // We dismiss the keyboard manually (along with keyboardWillHide function) when message is touched.
+    // Following listener is just for a case when keyboard gets dismissed due to something besides message touch.
+    this.keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      this.keyboardDidHide,
+    );
+
+    this._keyboardOpen = false;
   }
 
   static propTypes = {
@@ -105,7 +143,7 @@ export class ChannelInner extends PureComponent {
         errored = true;
       }
     }
-    // this.originalTitle = document.title;
+
     this.lastRead = new Date();
     if (!errored) {
       this.copyChannelState();
@@ -122,10 +160,43 @@ export class ChannelInner extends PureComponent {
     this._setStateThrottled.cancel();
     this._unmounted = true;
 
-    // if (this.visibilityListener) {
-    //   Visibility.unbind(this.visibilityListener);
-    // }
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
+
+  // TODO: Better to extract following functions to different HOC.
+  keyboardDidShow = (e) => {
+    const keyboardHeight = e.endCoordinates.height;
+
+    this.rootChannelView.measureInWindow((x, y) => {
+      const { height: windowHeight } = Dimensions.get('window');
+      Animated.timing(this.state.channelHeight, {
+        toValue: windowHeight - y - keyboardHeight,
+        duration: 500,
+      }).start();
+    });
+    this._keyboardOpen = true;
+  };
+
+  keyboardDidHide = () => {
+    Animated.timing(this.state.channelHeight, {
+      toValue: this.initialHeight,
+      duration: 500,
+    }).start();
+    this._keyboardOpen = false;
+  };
+
+  keyboardWillDismiss = (callback) => {
+    if (!this._keyboardOpen) {
+      callback();
+      return;
+    }
+
+    Animated.timing(this.state.channelHeight, {
+      toValue: this.initialHeight,
+      duration: 500,
+    }).start(callback);
+  };
 
   copyChannelState() {
     const channel = this.props.channel;
@@ -140,8 +211,15 @@ export class ChannelInner extends PureComponent {
       typing: {},
     });
 
-    channel.markRead();
+    this.markRead();
   }
+
+  markRead = () => {
+    if (!this.props.channel.getConfig().read_events) {
+      return;
+    }
+    logChatPromiseExecution(this.props.channel.markRead(), 'mark read');
+  };
 
   listenToChanges() {
     // The more complex sync logic is done in chat.js
@@ -407,6 +485,8 @@ export class ChannelInner extends PureComponent {
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
+    keyboardWillDismiss: this.keyboardWillDismiss,
+    markRead: this._markReadThrottled,
 
     // thread related
     openThread: this.openThread,
@@ -429,6 +509,23 @@ export class ChannelInner extends PureComponent {
     return <Indicator listType="message" />;
   };
 
+  setRootChannelView = (o) => {
+    this.rootChannelView = o;
+    // this.rootChannelView.measureInWindow((x, y, height, width) => { this.initialHeight = height; });
+  };
+
+  onLayout = ({
+    nativeEvent: {
+      layout: { height },
+    },
+  }) => {
+    // Not to set initial height again.
+    if (!this.initialHeight) {
+      this.initialHeight = height;
+      this.setState({ channelHeight: new Animated.Value(this.initialHeight) });
+    }
+  };
+
   render() {
     let core;
 
@@ -444,12 +541,12 @@ export class ChannelInner extends PureComponent {
       );
     } else {
       core = (
-        <ChannelContext.Provider value={this.getContext()}>
-          <KeyboardAvoidingView
-            behavior={Platform.select({ ios: 'padding', android: null })}
-            enabled={this.state.kavEnabled}
-            keyboardVerticalOffset="80"
-          >
+        <Animated.View
+          style={{ display: 'flex', height: this.state.channelHeight }}
+          onLayout={this.onLayout}
+        >
+          <View ref={this.setRootChannelView} collapsable={false} />
+          <ChannelContext.Provider value={this.getContext()}>
             <SuggestionsProvider
               handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
                 this.setState({ kavEnabled: trueOrFalse });
@@ -457,8 +554,8 @@ export class ChannelInner extends PureComponent {
             >
               {this.renderComponent()}
             </SuggestionsProvider>
-          </KeyboardAvoidingView>
-        </ChannelContext.Provider>
+          </ChannelContext.Provider>
+        </Animated.View>
       );
     }
 

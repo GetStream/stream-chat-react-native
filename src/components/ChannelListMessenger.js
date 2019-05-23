@@ -78,7 +78,7 @@ const ChannelListMessenger = withChatContext(
             Preview={this.props.Preview}
           />
         )}
-        keyExtractor={(item, index) => item.cid + index}
+        keyExtractor={(item) => item.cid}
       />
     );
 
