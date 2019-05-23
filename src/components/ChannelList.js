@@ -53,6 +53,7 @@ const ChannelList = withChatContext(
       options: PropTypes.object,
       /** Object containing sort parameters */
       sort: PropTypes.object,
+      /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
     };
 

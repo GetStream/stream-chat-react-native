@@ -50,26 +50,42 @@ export class MessageContent extends React.PureComponent {
     this.props.Message.handleEdit();
   };
 
+  _setReactionPickerPosition = () => {
+    const { isMyMessage, message } = this.props;
+    const pos = isMyMessage(message) ? 'right' : 'left';
+    this.messageContainer.measureInWindow((x, y, width) => {
+      this.setState({
+        reactionPickerVisible: true,
+        rpTop: y - REACTION_PICKER_HEIGHT,
+        rpLeft: pos === 'left' ? x : null,
+        rpRight:
+          pos === 'right'
+            ? Math.round(Dimensions.get('window').width) - (x + width)
+            : null,
+      });
+    });
+  };
+
   openReactionSelector = () => {
-    // Keyboard closes automatically whenever modal is opened.
+    // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
     // So we need to postpone the calculation for reaction picker position
     // until after keyboard is closed completely. To achieve this, we close
     // the keyboard forcefully and then calculate position of picker in callback.
-    this.props.keyboardWillDismiss(() => {
-      const { isMyMessage, message } = this.props;
-      const pos = isMyMessage(message) ? 'right' : 'left';
-      this.messageContainer.measureInWindow((x, y, width) => {
-        this.setState({
-          reactionPickerVisible: true,
-          rpTop: y - REACTION_PICKER_HEIGHT,
-          rpLeft: pos === 'left' ? x : null,
-          rpRight:
-            pos === 'right'
-              ? Math.round(Dimensions.get('window').width) - (x + width)
-              : null,
-        });
-      });
+    this.props.keyboardWillDismiss((response) => {
+      if (response && !response.finished) {
+        // If by some chance animation didn't go smooth or had some issue,
+        // then simply calculate picker position and open it after 500 ms.
+        // This is the time we perform animation for adjusting animation of Channel component height
+        // during keyboard dismissal.
+        setTimeout(() => {
+          this._setReactionPickerPosition();
+        }, 500);
+        return;
+      }
+
+      this._setReactionPickerPosition();
     });
+
     Keyboard.dismiss();
   };
 

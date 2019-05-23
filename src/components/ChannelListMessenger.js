@@ -41,6 +41,7 @@ const ChannelListMessenger = withChatContext(
       ]),
 
       loadNextPage: PropTypes.func,
+      /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
     };
 

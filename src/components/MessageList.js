@@ -30,6 +30,7 @@ const MessageList = withChannelContext(
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       disableWhileEditing: PropTypes.bool,
+      /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
     };
 
