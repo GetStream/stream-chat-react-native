@@ -1,8 +1,57 @@
 import React from 'react';
-import { View, Image, Text, FlatList, TouchableOpacity } from 'react-native';
+import { FlatList } from 'react-native';
 import { WithProgressIndicator } from './WithProgressIndicator';
 import PropTypes from 'prop-types';
 import { FileState, ProgressIndicatorTypes } from '../utils';
+import styled from 'styled-components';
+
+import closeRound from '../images/icons/close-round.png';
+
+const Container = styled.View`
+  height: ${(props) => props.theme.imageUploadPreview.container.height};
+  display: ${(props) => props.theme.imageUploadPreview.container.display};
+  padding: ${(props) => props.theme.imageUploadPreview.container.padding}px;
+`;
+
+const ItemContainer = styled.View`
+  display: ${(props) => props.theme.imageUploadPreview.itemContainer.display};
+  height: ${(props) => props.theme.imageUploadPreview.itemContainer.height};
+  flex-direction: ${(props) =>
+    props.theme.imageUploadPreview.itemContainer.flexDirection};
+  align-items: ${(props) =>
+    props.theme.imageUploadPreview.itemContainer.alignItems};
+  margin-left: ${(props) =>
+    props.theme.imageUploadPreview.itemContainer.marginLeft};
+`;
+
+const Dismiss = styled.TouchableOpacity`
+  position: ${(props) => props.theme.imageUploadPreview.dismiss.position};
+  top: ${(props) => props.theme.imageUploadPreview.dismiss.top};
+  right: ${(props) => props.theme.imageUploadPreview.dismiss.right};
+  background-color: ${(props) =>
+    props.theme.imageUploadPreview.dismiss.backgroundColor};
+  width: ${(props) => props.theme.imageUploadPreview.dismiss.width};
+  height: ${(props) => props.theme.imageUploadPreview.dismiss.height};
+  display: ${(props) => props.theme.imageUploadPreview.dismiss.display};
+  align-items: ${(props) => props.theme.imageUploadPreview.dismiss.alignItems};
+  justify-content: ${(props) =>
+    props.theme.imageUploadPreview.dismiss.justifyContent};
+  border-radius: ${(props) =>
+    props.theme.imageUploadPreview.dismiss.borderRadius};
+`;
+
+const Upload = styled.Image`
+  width: ${(props) => props.theme.imageUploadPreview.upload.width};
+  height: ${(props) => props.theme.imageUploadPreview.upload.height};
+  border-radius: ${(props) =>
+    props.theme.imageUploadPreview.upload.borderRadius};
+`;
+
+const DismissImage = styled.Image`
+  width: ${(props) => props.theme.imageUploadPreview.dismissImage.width};
+  height: ${(props) => props.theme.imageUploadPreview.dismissImage.height};
+`;
+
 /**
  * ImageUploadPreview
  *
@@ -27,45 +76,27 @@ export class ImageUploadPreview extends React.PureComponent {
 
     if (item.state === FileState.UPLOAD_FAILED)
       type = ProgressIndicatorTypes.RETRY;
-
     return (
       <React.Fragment>
-        <View
-          style={{
-            padding: 5,
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-          }}
-        >
+        <ItemContainer>
           <WithProgressIndicator
             active={item.state !== FileState.UPLOADED}
             type={type}
             action={this.props.retryUpload.bind(this, item.id)}
           >
-            <Image
-              source={{ uri: item.url }}
-              style={{ height: 100, width: 100, borderRadius: 10 }}
+            <Upload
+              resizeMode="cover"
+              source={{ uri: item.url || item.file.uri }}
             />
           </WithProgressIndicator>
-          <TouchableOpacity
-            style={{
-              backgroundColor: '#ebebeb',
-              width: 25,
-              height: 25,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 20,
-              marginLeft: -25,
-            }}
+          <Dismiss
             onPress={() => {
               this.props.removeImage(item.id);
             }}
           >
-            <Text>X</Text>
-          </TouchableOpacity>
-        </View>
+            <DismissImage source={closeRound} />
+          </Dismiss>
+        </ItemContainer>
       </React.Fragment>
     );
   };
@@ -75,7 +106,7 @@ export class ImageUploadPreview extends React.PureComponent {
       return null;
 
     return (
-      <View style={{ height: 100, display: 'flex' }}>
+      <Container>
         <FlatList
           horizontal
           style={{ flex: 1 }}
@@ -83,7 +114,7 @@ export class ImageUploadPreview extends React.PureComponent {
           keyExtractor={(item) => item.id}
           renderItem={this._renderItem}
         />
-      </View>
+      </Container>
     );
   }
 }

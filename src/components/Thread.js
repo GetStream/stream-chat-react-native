@@ -1,13 +1,22 @@
 import React from 'react';
 
-import { Text, View } from 'react-native';
-
 import { withChannelContext } from '../context';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
 import { Message } from './Message';
+
+const NewThread = styled.View`
+  padding: ${(props) => props.theme.thread.newThread.padding}px;
+  background-color: ${(props) => props.theme.thread.newThread.backgroundColor};
+  margin: ${(props) => props.theme.thread.newThread.margin}px;
+  border-radius: ${(props) => props.theme.thread.newThread.borderRadius};
+  display: ${(props) => props.theme.thread.newThread.display};
+  align-items: ${(props) => props.theme.thread.newThread.alignItems};
+`;
+const NewThreadText = styled.Text``;
 
 /**
  * Thread - The Thread renders a parent message with a list of replies. Use the stnadard message list of the main channel's messages.
@@ -100,23 +109,11 @@ class ThreadInner extends React.PureComponent {
           threadList
           readOnly
           Message={this.props.Message}
-          style={{
-            container: { paddingLeft: 10, paddingRight: 10, paddingTop: 10 },
-          }}
           {...this.props}
         />
-        <View
-          style={{
-            padding: 20,
-            backgroundColor: '#F4F9FF',
-            margin: 10,
-            borderRadius: 4,
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <Text>Start of a new thread</Text>
-        </View>
+        <NewThread>
+          <NewThreadText>Start of a new thread</NewThreadText>
+        </NewThread>
       </React.Fragment>
     );
 

@@ -42,7 +42,7 @@ const theme = {
     size: 32,
   },
   colors: {
-    primary: 'green',
+    primary: 'blue',
   },
 };
 

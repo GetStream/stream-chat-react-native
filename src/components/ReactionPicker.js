@@ -1,8 +1,51 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Modal } from 'react-native';
+import { View, Modal } from 'react-native';
+
+import styled from 'styled-components';
 import { emojiData } from '../utils';
 import { Avatar } from './Avatar';
-import { buildStylesheet } from '../styles/styles.js';
+
+const Container = styled.TouchableOpacity`
+  flex: ${(props) => props.theme.reactionPicker.container.flex};
+  align-items: ${(props) =>
+    props.left
+      ? props.theme.reactionPicker.container.leftAlign
+      : props.theme.reactionPicker.container.rightAlign};
+`;
+
+const ContainerView = styled.View`
+  display: ${(props) => props.theme.reactionPicker.containerView.display};
+  flex-direction: ${(props) =>
+    props.theme.reactionPicker.containerView.flexDirection};
+  background-color: ${(props) =>
+    props.theme.reactionPicker.containerView.backgroundColor};
+  padding-left: ${(props) =>
+    props.theme.reactionPicker.containerView.paddingLeft};
+  height: ${(props) => props.theme.reactionPicker.containerView.height};
+  padding-right: ${(props) =>
+    props.theme.reactionPicker.containerView.paddingRight};
+  border-radius: ${(props) =>
+    props.theme.reactionPicker.containerView.borderRadius};
+`;
+
+const Column = styled.View`
+  flex-direction: ${(props) => props.theme.reactionPicker.column.flexDirection};
+  align-items: ${(props) => props.theme.reactionPicker.column.alignItems};
+  margin-top: ${(props) => props.theme.reactionPicker.column.marginTop};
+`;
+
+const Emoji = styled.Text`
+  font-size: ${(props) => props.theme.reactionPicker.emoji.fontSize};
+  margin-bottom: ${(props) => props.theme.reactionPicker.emoji.marginBottom};
+  margin-top: ${(props) => props.theme.reactionPicker.emoji.marginTop};
+`;
+
+const ReactionCount = styled.Text`
+  color: ${(props) => props.theme.reactionPicker.reactionCount.color};
+  font-size: ${(props) => props.theme.reactionPicker.reactionCount.fontSize};
+  font-weight: ${(props) =>
+    props.theme.reactionPicker.reactionCount.fontWeight};
+`;
 
 export class ReactionPicker extends React.PureComponent {
   constructor(props) {
@@ -34,7 +77,6 @@ export class ReactionPicker extends React.PureComponent {
       rpLeft,
       rpTop,
       rpRight,
-      style,
     } = this.props;
 
     if (!reactionPickerVisible) return null;
@@ -47,8 +89,6 @@ export class ReactionPicker extends React.PureComponent {
 
     if (rpRight) position.marginRight = rpRight;
 
-    const styles = buildStylesheet('ReactionPicker', style);
-
     return (
       <Modal
         visible={reactionPickerVisible}
@@ -57,17 +97,9 @@ export class ReactionPicker extends React.PureComponent {
         onRequestClose={handleDismiss}
       >
         {reactionPickerVisible && (
-          <TouchableOpacity
-            onPress={handleDismiss}
-            style={{
-              flex: 1,
-              alignItems: rpLeft ? 'flex-start' : 'flex-end',
-            }}
-            activeOpacity={1}
-          >
-            <View
+          <Container onPress={handleDismiss} left={!!rpLeft} activeOpacity={1}>
+            <ContainerView
               style={{
-                ...styles.container,
                 ...position,
               }}
             >
@@ -75,12 +107,12 @@ export class ReactionPicker extends React.PureComponent {
                 const latestUser = this.getLatestUser(latestReactions, id);
                 const count = reactionCounts && reactionCounts[id];
                 return (
-                  <View key={id} style={styles.reactionColumn}>
+                  <Column key={id}>
                     {latestUser !== 'NotFound' ? (
                       <Avatar
                         image={latestUser.image}
                         alt={latestUser.id}
-                        size={20}
+                        size={18}
                         style={{
                           image: {
                             borderColor: 'white',
@@ -90,24 +122,21 @@ export class ReactionPicker extends React.PureComponent {
                         name={latestUser.id}
                       />
                     ) : (
-                      <View style={{ height: 20, width: 20 }} />
+                      <View style={{ height: 18, width: 18 }} />
                     )}
-                    <Text
-                      style={{ fontSize: 30 }}
+                    <Emoji
                       onPress={() => {
                         handleReaction(id);
                       }}
                     >
                       {icon}
-                    </Text>
-                    <Text style={styles.reactionCount}>
-                      {count > 0 ? count : ''}
-                    </Text>
-                  </View>
+                    </Emoji>
+                    <ReactionCount>{count > 0 ? count : ''}</ReactionCount>
+                  </Column>
                 );
               })}
-            </View>
-          </TouchableOpacity>
+            </ContainerView>
+          </Container>
         )}
       </Modal>
     );

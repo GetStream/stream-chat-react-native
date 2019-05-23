@@ -1,13 +1,38 @@
 import React, { PureComponent } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View } from 'react-native';
 import { withChannelContext } from '../context';
-
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { styles } from '../styles/styles.js';
 
 import { Message } from './Message';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
+
+const ListContainer = styled.FlatList`
+  flex: ${(props) => props.theme.messageList.listContainer.flex};
+  padding-left: ${(props) => props.theme.messageList.listContainer.paddingLeft};
+  padding-right: ${(props) =>
+    props.theme.messageList.listContainer.paddingRight};
+`;
+
+const NewMessageNotification = styled.View`
+  border-radius: ${(props) =>
+    props.theme.messageList.newMessageNotification.borderRadius};
+  background-color: ${(props) =>
+    props.theme.messageList.newMessageNotification.backgroundColor};
+  color: ${(props) => props.theme.messageList.newMessageNotification.color};
+  padding: ${(props) =>
+    props.theme.messageList.newMessageNotification.padding}px;
+`;
+const NewMessageNotificationText = styled.Text`
+  color: ${(props) => props.theme.messageList.newMessageNotificationText.color};
+`;
+
+const NotificationText = styled.Text`
+  color: ${(props) => props.theme.messageList.notification.warning.color};
+  background-color: ${(props) =>
+    props.theme.messageList.notification.warning.backgroundColor};
+`;
 
 const MessageList = withChannelContext(
   class MessageList extends PureComponent {
@@ -269,9 +294,8 @@ const MessageList = withChannelContext(
 
       return (
         <React.Fragment>
-          <FlatList
+          <ListContainer
             ref={(fl) => (this.flatList = fl)}
-            style={{ flex: 1, paddingLeft: 10, paddingRight: 10 }}
             data={messagesWithGroupPositions}
             onScroll={this.handleScroll}
             ListFooterComponent={this.props.headerComponent}
@@ -291,22 +315,17 @@ const MessageList = withChannelContext(
               showNotification={this.state.newMessagesNotification}
               onClick={this.goToNewMessages}
             >
-              <View
-                style={{
-                  borderRadius: 10,
-                  backgroundColor: 'black',
-                  color: 'white',
-                  padding: 10,
-                }}
-              >
-                <Text style={{ color: 'white' }}>New Messages ↓</Text>
-              </View>
+              <NewMessageNotification>
+                <NewMessageNotificationText>
+                  New Messages ↓
+                </NewMessageNotificationText>
+              </NewMessageNotification>
             </MessageNotification>
           )}
           <Notification type="warning" active={!this.state.online}>
-            <Text style={styles.Notification.warning}>
+            <NotificationText>
               Connection failure, reconnecting now ...
-            </Text>
+            </NotificationText>
           </Notification>
         </React.Fragment>
       );
@@ -314,17 +333,27 @@ const MessageList = withChannelContext(
   },
 );
 
+const NotificationContainer = styled.View`
+  display: ${(props) => props.theme.notification.display};
+  flex-direction: ${(props) => props.theme.notification.flexDirection};
+  align-items: ${(props) => props.theme.notification.alignItems};
+  z-index: ${(props) => props.theme.notification.zIndex};
+  margin-bottom: ${(props) => props.theme.notification.marginBottom};
+  padding: ${(props) => props.theme.notification.padding}px;
+  color: ${(props) =>
+    props.type && props.theme.notification[props.type].color
+      ? props.theme.notification[props.type].color
+      : props.theme.notification.color};
+  background-color: ${(props) =>
+    props.type && props.theme.notification[props.type].backgroundColor
+      ? props.theme.notification[props.type].backgroundColor
+      : props.theme.notification.backgroundColor};
+`;
+
 const Notification = ({ children, active, type }) => {
   if (active) {
     return (
-      <View
-        style={{
-          ...styles.Notification.container,
-          ...styles.Notification[type],
-        }}
-      >
-        {children}
-      </View>
+      <NotificationContainer type={type}>{children}</NotificationContainer>
     );
   }
 

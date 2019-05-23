@@ -1,8 +1,17 @@
 import React, { PureComponent } from 'react';
-import { TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
 
-import { buildStylesheet } from '../styles/styles';
+const Container = styled.TouchableOpacity`
+  display: ${(props) => props.theme.messageNotification.container.display};
+  flex-direction: ${(props) =>
+    props.theme.messageNotification.container.flexDirection};
+  align-items: ${(props) =>
+    props.theme.messageNotification.container.alignItems};
+  z-index: ${(props) => props.theme.messageNotification.container.zIndex};
+  margin-bottom: ${(props) =>
+    props.theme.messageNotification.container.marginBottom};
+`;
 
 export class MessageNotification extends PureComponent {
   static propTypes = {
@@ -19,18 +28,13 @@ export class MessageNotification extends PureComponent {
   };
 
   render() {
-    const styles = buildStylesheet('MessageNotification', this.props.style);
     if (!this.props.showNotification) {
       return null;
     } else {
       return (
-        <TouchableOpacity
-          onPress={this.props.onClick}
-          style={styles.container}
-          onClick={this.props.onClick}
-        >
+        <Container onPress={this.props.onClick} onClick={this.props.onClick}>
           {this.props.children}
-        </TouchableOpacity>
+        </Container>
       );
     }
   }
