@@ -1,24 +1,21 @@
 ```js
 const imageUploads = [
   {
-    id: 1,
+    id: '1',
     file: {
-      uri:
-        'https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg',
+      uri: 'https://picsum.photos/200/300?random=1',
     },
   },
   {
-    id: 2,
+    id: '2',
     file: {
-      uri:
-        'https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg',
+      uri: 'https://picsum.photos/200/300?random=2',
     },
   },
   {
-    id: 3,
+    id: '3',
     file: {
-      uri:
-        'https://4.img-dpreview.com/files/p/E~TS590x0~articles/3925134721/0266554465.jpeg',
+      uri: 'https://picsum.photos/200/300?random=3',
     },
   },
 ];
