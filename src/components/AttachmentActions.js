@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Text } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
@@ -14,13 +14,15 @@ const Container = styled.View`
   ${({ theme }) => theme.attachment.actions.container.extra}
 `;
 
-const Button = styled.TouchableOpacity`
+const Button = styled(({ buttonStyle, ...rest }) => (
+  <TouchableOpacity {...rest} />
+))`
   background-color: ${(props) =>
-    console.log(props.theme) || props.styleName === 'primary'
+    props.buttonStyle === 'primary'
       ? props.theme.attachment.actions.button.primaryBackgroundColor
       : props.theme.attachment.actions.button.defaultBackgroundColor};
   border-color: ${(props) =>
-    props.styleName === 'primary'
+    props.buttonStyle === 'primary'
       ? props.theme.attachment.actions.button.primaryBorderColor
       : props.theme.attachment.actions.button.defaultBordercolor};
   border-width: ${(props) => props.theme.attachment.actions.button.borderWidth};
@@ -36,9 +38,9 @@ const Button = styled.TouchableOpacity`
   ${({ theme }) => theme.attachment.actions.button.extra}
 `;
 
-const ButtonText = styled(({ styleName, ...rest }) => <Text {...rest} />)`
+const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
   color: ${(props) =>
-    props.styleName === 'primary'
+    props.buttonStyle === 'primary'
       ? props.theme.attachment.actions.buttonText.primaryColor
       : props.theme.attachment.actions.buttonText.defaultColor};
   ${({ theme }) => theme.attachment.actions.buttonText.extra}
@@ -73,11 +75,11 @@ export const AttachmentActions = themed(
           {actions.map((action) => (
             <Button
               key={`${id}-${action.value}`}
-              styleName={action.style}
+              buttonStyle={action.style}
               onPress={actionHandler.bind(this, action.name, action.value)}
               theme={theme}
             >
-              <ButtonText theme={theme} styleName={action.style}>
+              <ButtonText theme={theme} buttonStyle={action.style}>
                 {action.text}
               </ButtonText>
             </Button>

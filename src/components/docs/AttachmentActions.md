@@ -49,7 +49,8 @@ const actions = [
         button: { defaultBackgroundColor: 'green' },
         buttonText: {
           extra: css`
-            font-size: 40px;
+            font-size: ${(props) =>
+              props.buttonStyle === 'primary' ? 60 : 30}px;
           `,
         },
       },
