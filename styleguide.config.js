@@ -16,6 +16,9 @@ module.exports = {
   assetsDir: 'src/assets',
   sortProps: (props) => props,
   serverPort: 6068,
+  compilerConfig: {
+    transforms: { dangerousTaggedTemplateString: true },
+  },
   resolver(ast, recast) {
     return require('react-docgen').resolver.findAllExportedComponentDefinitions(
       ast,
@@ -103,8 +106,8 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
-        'styled-components':
-          'styled-components/native/dist/styled-components.native.cjs.js',
+        '@stream-io/styled-components':
+          '@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
       },
       extensions: ['.web.js', '.js'],
     },

@@ -1,4 +1,8 @@
-const merge = require('deepmerge');
+import React from 'react';
+import { ThemeConsumer } from '@stream-io/styled-components';
+import merge from 'lodash/merge';
+import lodashSet from 'lodash/set';
+import lodashGet from 'lodash/get';
 
 export const BASE_FONT_SIZE = 16;
 
@@ -673,7 +677,7 @@ const defaultTheme = {
 };
 
 const buildTheme = (t) => {
-  const theme = merge(defaultTheme, t);
+  const theme = merge({}, defaultTheme, t);
   return theme;
 };
 
@@ -684,4 +688,46 @@ const getTheme = (props) => {
   return defaultTheme;
 };
 
-export { buildTheme, getTheme, defaultTheme };
+const themed = (WrappedComponent) => {
+  if (!WrappedComponent.themePath) {
+    throw Error('Only use themed on components that have a static themePath');
+  }
+  const ThemedComponent = ({ style, ...props }) => (
+    <ThemeConsumer>
+      {(themeProviderTheme = defaultTheme) => {
+        const modifiedTheme = style
+          ? merge(
+              {},
+              themeProviderTheme,
+              lodashSet({}, WrappedComponent.themePath, style),
+            )
+          : themeProviderTheme;
+        return <WrappedComponent {...props} theme={modifiedTheme} />;
+      }}
+    </ThemeConsumer>
+  );
+  ThemedComponent.themePath = WrappedComponent.themePath;
+  ThemedComponent.displayName = `Themed${getDisplayName(WrappedComponent)}`;
+  return ThemedComponent;
+};
+
+// Copied from here:
+// https://reactjs.org/docs/higher-order-components.html#convention-wrap-the-display-name-for-easy-debugging
+function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
+
+const formatDefaultTheme = (component) => {
+  const path = component.themePath;
+
+  return (
+    <div style={{ whiteSpace: 'pre-wrap' }}>
+      {`The path for this component in the full theme is "${path}" with the following styles:\n${JSON.stringify(
+        lodashGet(defaultTheme, path),
+        null,
+        2,
+      )}`}
+    </div>
+  );
+};
+export { themed, buildTheme, getTheme, defaultTheme, formatDefaultTheme };

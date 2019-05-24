@@ -3,44 +3,45 @@ import PropTypes from 'prop-types';
 import { Text } from 'react-native';
 
 import styled from '@stream-io/styled-components';
-import { getTheme } from '../styles/theme';
+import { themed } from '../styles/theme';
 
 const Container = styled.View`
   flex-direction: ${(props) =>
-    getTheme(props).attachment.actions.container.flexDirection};
+    props.theme.attachment.actions.container.flexDirection};
   justify-content: ${(props) =>
-    getTheme(props).attachment.actions.container.justifyContent};
-  padding: ${(props) => getTheme(props).attachment.actions.container.padding}px;
+    props.theme.attachment.actions.container.justifyContent};
+  padding: ${(props) => props.theme.attachment.actions.container.padding}px;
+  ${({ theme }) => theme.attachment.actions.container.extra}
 `;
 
 const Button = styled.TouchableOpacity`
   background-color: ${(props) =>
-    props.styleName === 'primary'
-      ? getTheme(props).attachment.actions.button.primaryBackgroundColor
-      : getTheme(props).attachment.actions.button.defaultBackgroundColor};
+    console.log(props.theme) || props.styleName === 'primary'
+      ? props.theme.attachment.actions.button.primaryBackgroundColor
+      : props.theme.attachment.actions.button.defaultBackgroundColor};
   border-color: ${(props) =>
     props.styleName === 'primary'
-      ? getTheme(props).attachment.actions.button.primaryBorderColor
-      : getTheme(props).attachment.actions.button.defaultBordercolor};
-  border-width: ${(props) =>
-    getTheme(props).attachment.actions.button.borderWidth};
+      ? props.theme.attachment.actions.button.primaryBorderColor
+      : props.theme.attachment.actions.button.defaultBordercolor};
+  border-width: ${(props) => props.theme.attachment.actions.button.borderWidth};
   border-radius: ${(props) =>
-    getTheme(props).attachment.actions.button.borderRadius};
-  padding-top: ${(props) =>
-    getTheme(props).attachment.actions.button.paddingTop}px;
+    props.theme.attachment.actions.button.borderRadius};
+  padding-top: ${(props) => props.theme.attachment.actions.button.paddingTop}px;
   padding-bottom: ${(props) =>
-    getTheme(props).attachment.actions.button.paddingBottom}px;
+    props.theme.attachment.actions.button.paddingBottom}px;
   padding-left: ${(props) =>
-    getTheme(props).attachment.actions.button.paddingLeft}px;
+    props.theme.attachment.actions.button.paddingLeft}px;
   padding-right: ${(props) =>
-    getTheme(props).attachment.actions.button.paddingRight}px;
+    props.theme.attachment.actions.button.paddingRight}px;
+  ${({ theme }) => theme.attachment.actions.button.extra}
 `;
 
 const ButtonText = styled(({ styleName, ...rest }) => <Text {...rest} />)`
   color: ${(props) =>
     props.styleName === 'primary'
-      ? getTheme(props).attachment.actions.buttonText.primaryColor
-      : getTheme(props).attachment.actions.buttonText.defaultColor};
+      ? props.theme.attachment.actions.buttonText.primaryColor
+      : props.theme.attachment.actions.buttonText.defaultColor};
+  ${({ theme }) => theme.attachment.actions.buttonText.extra}
 `;
 
 /**
@@ -49,33 +50,40 @@ const ButtonText = styled(({ styleName, ...rest }) => <Text {...rest} />)`
  * @example ./docs/AttachmentActions.md
  * @extends PureComponent
  */
-export class AttachmentActions extends React.PureComponent {
-  static propTypes = {
-    // /** The id of the form input */
-    // id: PropTypes.string.isRequired,
-    /** The text for the form input */
-    text: PropTypes.string,
-    /** A list of actions */
-    actions: PropTypes.array.isRequired,
-    /** The handler to execute after selecting an action */
-    actionHandler: PropTypes.func.isRequired,
-  };
+export const AttachmentActions = themed(
+  class AttachmentActions extends React.PureComponent {
+    static themePath = 'attachment.actions';
+    static propTypes = {
+      // /** The id of the form input */
+      // id: PropTypes.string.isRequired,
+      /** The text for the form input */
+      text: PropTypes.string,
+      /** A list of actions */
+      actions: PropTypes.array.isRequired,
+      /** The handler to execute after selecting an action */
+      actionHandler: PropTypes.func.isRequired,
+      /** Override for the styling of the component */
+      style: PropTypes.object,
+    };
 
-  render() {
-    const { id, actions, actionHandler } = this.props;
-
-    return (
-      <Container>
-        {actions.map((action) => (
-          <Button
-            key={`${id}-${action.value}`}
-            styleName={action.style}
-            onPress={actionHandler.bind(this, action.name, action.value)}
-          >
-            <ButtonText styleName={action.style}>{action.text}</ButtonText>
-          </Button>
-        ))}
-      </Container>
-    );
-  }
-}
+    render() {
+      const { id, actions, actionHandler, theme } = this.props;
+      return (
+        <Container theme={theme}>
+          {actions.map((action) => (
+            <Button
+              key={`${id}-${action.value}`}
+              styleName={action.style}
+              onPress={actionHandler.bind(this, action.name, action.value)}
+              theme={theme}
+            >
+              <ButtonText theme={theme} styleName={action.style}>
+                {action.text}
+              </ButtonText>
+            </Button>
+          ))}
+        </Container>
+      );
+    }
+  },
+);

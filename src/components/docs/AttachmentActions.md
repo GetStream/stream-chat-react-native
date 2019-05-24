@@ -1,5 +1,12 @@
 AttachmentActions renders the attachment action
 
+Style info
+
+```js
+const { formatDefaultTheme } = require('../../styles/theme');
+formatDefaultTheme(AttachmentActions);
+```
+
 ```js
 function actionHandler(action) {
   console.log(action);
@@ -21,6 +28,9 @@ const actions = [
 ```
 
 ```js
+const { css, ThemeProvider } = require('@stream-io/styled-components');
+const { buildTheme } = require('../..');
+
 function actionHandler(action) {
   console.log(action);
 }
@@ -32,11 +42,26 @@ const actions = [
   { name: 'Orange', value: 'orange', style: 'danger', text: 'Orange' },
 ];
 
-<AttachmentActions
-  id={1}
-  text={'Pick a color'}
-  actions={actions}
-  actionHandler={actionHandler}
-  style={{ button: { primaryBackgroundColor: 'black' } }}
-/>;
+<ThemeProvider
+  theme={buildTheme({
+    attachment: {
+      actions: {
+        button: { defaultBackgroundColor: 'green' },
+        buttonText: {
+          extra: css`
+            font-size: 40px;
+          `,
+        },
+      },
+    },
+  })}
+>
+  <AttachmentActions
+    id={1}
+    text={'Pick a color'}
+    actions={actions}
+    actionHandler={actionHandler}
+    style={{ button: { primaryBackgroundColor: 'black' } }}
+  />
+</ThemeProvider>;
 ```
