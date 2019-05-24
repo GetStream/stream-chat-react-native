@@ -14,11 +14,11 @@ const Container = styled.TouchableOpacity`
     getTheme(props).card.container.borderTopRightRadius};
   overflow: ${(props) => getTheme(props).card.container.overflow};
   border-bottom-left-radius: ${(props) =>
-    props.position === 'right'
+    props.alignment === 'right'
       ? getTheme(props).card.container.borderBottomLeftRadius
       : 2};
   border-bottom-right-radius: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).card.container.borderBottomRightRadius
       : 2};
   background-color: ${(props) =>
@@ -86,14 +86,14 @@ export class Card extends React.Component {
       title_link,
       og_scrape_url,
       type,
-      position,
+      alignment,
     } = this.props;
     return (
       <Container
         onPress={() => {
           this._goToURL(og_scrape_url || image_url || thumb_url);
         }}
-        position={position}
+        alignment={alignment}
       >
         <Cover source={{ uri: image_url || thumb_url }} resizMode="cover" />
         <Footer style={styles.Card.footer}>

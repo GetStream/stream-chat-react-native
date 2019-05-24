@@ -22,11 +22,11 @@ const FileContainer = styled.View`
   border-radius: ${(props) =>
     getTheme(props).attachment.file.container.borderRadius};
   border-bottom-left-radius: ${(props) =>
-    props.position === 'right'
+    props.alignment === 'right'
       ? getTheme(props).attachment.file.container.borderRadius
       : 2};
   border-bottom-right-radius: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).attachment.file.container.borderRadius
       : 2};
 `;
@@ -93,13 +93,13 @@ export class Attachment extends React.Component {
     }
 
     if (type === 'image') {
-      return <Gallery position={this.props.position} images={[a]} />;
+      return <Gallery alignment={this.props.alignment} images={[a]} />;
     }
     if (a.type === 'giphy' || type === 'card') {
       if (a.actions && a.actions.length) {
         return (
           <View>
-            <Card {...a} position={this.props.position} />
+            <Card {...a} alignment={this.props.alignment} />
             <AttachmentActions
               key={'key-actions-' + a.id}
               {...a}
@@ -108,7 +108,7 @@ export class Attachment extends React.Component {
           </View>
         );
       } else {
-        return <Card position={this.props.position} {...a} />;
+        return <Card alignment={this.props.alignment} {...a} />;
       }
     }
 
@@ -119,7 +119,7 @@ export class Attachment extends React.Component {
             this._goToURL(a.asset_url);
           }}
         >
-          <FileContainer position={this.props.position}>
+          <FileContainer alignment={this.props.alignment}>
             <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
             <FileDetails>
               <FileTitle ellipsizeMode="tail" numberOfLines={2}>
@@ -135,7 +135,7 @@ export class Attachment extends React.Component {
     if (a.type === 'video' && a.asset_url && a.image_url) {
       return (
         // TODO: Put in video component
-        <Card position={this.props.position} {...a} />
+        <Card alignment={this.props.alignment} {...a} />
       );
     }
 

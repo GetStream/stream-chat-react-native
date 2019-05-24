@@ -57,10 +57,11 @@ export class MessageNotification extends PureComponent {
     } else {
       return (
         <Animated.View
-        // style={{
-        //   ...styles.container,
-        //   opacity: this.state.notificationOpacity,
-        // }}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            opacity: this.state.notificationOpacity,
+          }}
         >
           <Container onPress={this.props.onClick} onClick={this.props.onClick}>
             {this.props.children}
