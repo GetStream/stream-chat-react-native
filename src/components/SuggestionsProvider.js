@@ -3,7 +3,7 @@ import { View, FlatList, findNodeHandle } from 'react-native';
 
 import { SuggestionsContext } from '../context';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 const Wrapper = styled.TouchableOpacity`

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import loadingGif from '../../images/loading.gif';
 import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
 import { getTheme } from '../../styles/theme';

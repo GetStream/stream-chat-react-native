@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Linking } from 'react-native';
 import { getTheme } from '../styles/theme';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 import PropTypes from 'prop-types';
 import { Card } from './Card';

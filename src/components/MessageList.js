@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { getTheme } from '../styles/theme';
 

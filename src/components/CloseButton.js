@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { Image } from 'react-native';
 import closeRound from '../images/icons/close-round.png';
 import { getTheme } from '../styles/theme';

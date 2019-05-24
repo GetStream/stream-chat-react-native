@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 const Container = styled.View`

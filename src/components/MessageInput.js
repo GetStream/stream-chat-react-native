@@ -11,7 +11,7 @@ import Immutable from 'seamless-immutable';
 import { FileState, ACITriggerSettings } from '../utils';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';

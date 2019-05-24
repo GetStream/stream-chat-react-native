@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, Text } from 'react-native';
 import moment from 'moment';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';

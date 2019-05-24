@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Modal } from 'react-native';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 import { emojiData } from '../utils';
 import { Avatar } from './Avatar';

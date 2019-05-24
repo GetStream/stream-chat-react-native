@@ -2,7 +2,7 @@ import React from 'react';
 import { Avatar } from './Avatar';
 import { getTheme } from '../styles/theme';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 const Container = styled.View`
   flex-direction: ${(props) =>

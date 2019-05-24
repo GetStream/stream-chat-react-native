@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Avatar } from './Avatar';
 import truncate from 'lodash/truncate';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 const Container = styled.TouchableOpacity`

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 const Title = styled.Text`

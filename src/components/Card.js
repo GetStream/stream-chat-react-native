@@ -5,7 +5,7 @@ import giphyLogo from '../assets/Poweredby_100px-White_VertText.png';
 import { styles } from '../styles/styles.js';
 import { getTheme } from '../styles/theme';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
   border-top-left-radius: ${(props) =>

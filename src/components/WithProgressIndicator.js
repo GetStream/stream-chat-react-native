@@ -2,7 +2,7 @@ import React from 'react';
 import { View, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
 import iconReload from '../images/reload1.png';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 import { ProgressIndicatorTypes } from '../utils';
 

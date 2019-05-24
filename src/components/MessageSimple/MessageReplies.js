@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 import { getTheme } from '../../styles/theme';
 import iconPath from '../../images/icons/icon_path.png';

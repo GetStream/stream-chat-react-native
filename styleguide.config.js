@@ -15,6 +15,7 @@ module.exports = {
   styleguideDir: 'docs',
   assetsDir: 'src/assets',
   sortProps: (props) => props,
+  serverPort: 6068,
   resolver(ast, recast) {
     return require('react-docgen').resolver.findAllExportedComponentDefinitions(
       ast,

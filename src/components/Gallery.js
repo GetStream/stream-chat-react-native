@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 import { CloseButton } from './CloseButton';

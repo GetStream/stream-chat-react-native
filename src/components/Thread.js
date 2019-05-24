@@ -4,7 +4,7 @@ import { withChannelContext } from '../context';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 import { Message } from './Message';

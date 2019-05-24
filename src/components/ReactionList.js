@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
 import { getTheme } from '../styles/theme';
 

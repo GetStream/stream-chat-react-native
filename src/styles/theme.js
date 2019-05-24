@@ -684,4 +684,4 @@ const getTheme = (props) => {
   return defaultTheme;
 };
 
-export { buildTheme, getTheme };
+export { buildTheme, getTheme, defaultTheme };

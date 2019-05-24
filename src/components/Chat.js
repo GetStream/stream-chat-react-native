@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../context';
 import { NetInfo } from '../native';
 
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from '@stream-io/styled-components';
 import { buildTheme } from '../styles/theme';
 
 /**

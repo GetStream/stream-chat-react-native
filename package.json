@@ -44,10 +44,9 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "react-native-simple-markdown": "^1.1.0",
-    "react-native-web": "^0.11.2",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^0.13.1",
-    "styled-components": "^4.2.0",
+    "@stream-io/styled-components": "^4.2.1",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {
@@ -76,6 +75,7 @@
     "prettier": "^1.16.4",
     "react": "^16.5.0",
     "react-dom": "^16.8.6",
+    "react-native-web": "^0.11.4",
     "react-styleguidist": "^8.0.6",
     "rollup": "^0.68.2",
     "rollup-plugin-babel": "^4.0.3",

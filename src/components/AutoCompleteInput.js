@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { getTheme } from '../styles/theme';
 

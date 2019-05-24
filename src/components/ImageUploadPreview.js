@@ -3,7 +3,7 @@ import { FlatList } from 'react-native';
 import { WithProgressIndicator } from './WithProgressIndicator';
 import PropTypes from 'prop-types';
 import { FileState, ProgressIndicatorTypes } from '../utils';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { getTheme } from '../styles/theme';
 
 import closeRound from '../images/icons/close-round.png';

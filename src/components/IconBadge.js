@@ -2,7 +2,7 @@ import * as React from 'react';
 import { buildStylesheet } from '../styles/styles';
 import { getTheme } from '../styles/theme';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 const Container = styled.View``;
 

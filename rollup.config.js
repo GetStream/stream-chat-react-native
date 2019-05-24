@@ -54,7 +54,7 @@ const normalBundle = {
     'uuid/v4',
     'mime-types',
     'path',
-    'styled-components',
+    '@stream-io/styled-components',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
     '@babel/runtime/helpers/objectWithoutProperties',
