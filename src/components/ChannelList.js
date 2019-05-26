@@ -9,6 +9,9 @@ import debounce from 'lodash/debounce';
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
+import uniqBy from 'lodash/uniqBy';
+import uniqWith from 'lodash/uniqWith';
+import isEqual from 'lodash/isEqual';
 
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open
@@ -196,11 +199,12 @@ const ChannelList = withChatContext(
       if (e.type === 'notification.message_new') {
         // if new message, put move channel up
         // get channel if not in state currently
-        const channel = await this.getChannel(e.cid);
+        const channel = await this.getChannel(e.channel.type, e.channel.id);
+        this.moveChannelUp(e.cid);
         // move channel to starting position
         this.setState((prevState) => ({
-          channels: [...channel, ...prevState.channels],
-          channelIds: [...channel.id, ...prevState.channelIds],
+          channels: uniqBy([channel, ...prevState.channels], 'cid'),
+          channelIds: uniqWith([channel.id, ...prevState.channelIds], isEqual),
           offset: prevState.offset + 1,
         }));
       }
@@ -213,10 +217,13 @@ const ChannelList = withChatContext(
         ) {
           this.props.onAddedToChannel(e);
         } else {
-          const channel = await this.getChannel(e.channel.cid);
+          const channel = await this.getChannel(e.channel.type, e.channel.id);
           this.setState((prevState) => ({
-            channels: [...channel, ...prevState.channels],
-            channelIds: [...channel.id, ...prevState.channelIds],
+            channels: uniqBy([channel, ...prevState.channels], 'cid'),
+            channelIds: uniqWith(
+              [channel.id, ...prevState.channelIds],
+              isEqual,
+            ),
             offset: prevState.offset + 1,
           }));
         }
@@ -248,18 +255,10 @@ const ChannelList = withChatContext(
       return null;
     };
 
-    getChannel = async (cid) => {
-      const channelPromise = this.props.client.queryChannels({ cid });
-
-      try {
-        let channelQueryResponse = channelPromise;
-        if (isPromise(channelQueryResponse)) {
-          channelQueryResponse = await channelPromise;
-        }
-        return channelQueryResponse;
-      } catch (e) {
-        console.warn(e);
-      }
+    getChannel = async (type, id) => {
+      const channel = this.props.client.channel(type, id);
+      await channel.watch();
+      return channel;
     };
 
     moveChannelUp = (cid) => {
