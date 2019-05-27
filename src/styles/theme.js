@@ -57,6 +57,7 @@ const defaultTheme = {
       title: {
         fontWeight: 700,
       },
+      size: {},
     },
     actions: {
       container: {
