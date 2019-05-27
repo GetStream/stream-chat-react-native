@@ -333,8 +333,8 @@ const MessageList = withChannelContext(
               keyExtractor={(item) =>
                 item.id || item.created_at || item.date.toISOString()
               }
-              renderItem={(item) =>
-                this.renderItem(item, messageGroupStyles[item.id])
+              renderItem={({ item: message }) =>
+                this.renderItem(message, messageGroupStyles[message.id])
               }
               maintainVisibleContentPosition={{
                 minIndexForVisible: 1,

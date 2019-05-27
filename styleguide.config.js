@@ -10,7 +10,13 @@ const notBabeledDeps = [
 
 module.exports = {
   title: 'Stream Chat React Native - Docs',
-  require: ['@babel/polyfill'],
+  require: [
+    '@babel/polyfill',
+    path.join(
+      __dirname,
+      'src/styleguideComponents/register-react-native-web.js',
+    ),
+  ],
   styleguideDir: 'docs',
   assetsDir: 'src/assets',
   sortProps: (props) => props,

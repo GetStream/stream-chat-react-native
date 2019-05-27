@@ -1,2 +1,9 @@
 import React from 'react';
-export const ActionSheetCustom = () => <React.Fragment />;
+export class ActionSheetCustom extends React.PureComponent {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return <React.Fragment />;
+  }
+}

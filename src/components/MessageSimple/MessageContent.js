@@ -267,6 +267,7 @@ export const MessageContent = themed(
             )}
             <MessageText
               message={message}
+              groupStyles={groupStyles}
               isMyMessage={isMyMessage}
               disabled={message.status === 'failed'}
               onMessageTouch={this.onMessageTouch}
