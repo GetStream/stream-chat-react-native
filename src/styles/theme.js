@@ -730,4 +730,4 @@ const formatDefaultTheme = (component) => {
     </div>
   );
 };
-export { themed, buildTheme, getTheme, defaultTheme, formatDefaultTheme };
+export { themed, buildTheme, getTheme, formatDefaultTheme };

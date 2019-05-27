@@ -3,11 +3,6 @@ AttachmentActions renders the attachment action
 Style info
 
 ```js
-const { formatDefaultTheme } = require('../../styles/theme');
-formatDefaultTheme(AttachmentActions);
-```
-
-```js
 function actionHandler(action) {
   console.log(action);
 }
@@ -47,12 +42,6 @@ const actions = [
     attachment: {
       actions: {
         button: { defaultBackgroundColor: 'green' },
-        buttonText: {
-          extra: css`
-            font-size: ${(props) =>
-              props.buttonStyle === 'primary' ? 60 : 30}px;
-          `,
-        },
       },
     },
   })}
@@ -62,7 +51,15 @@ const actions = [
     text={'Pick a color'}
     actions={actions}
     actionHandler={actionHandler}
-    style={{ button: { primaryBackgroundColor: 'black' } }}
+    style={{
+      button: { primaryBackgroundColor: 'black' },
+      buttonText: {
+        extra: css`
+          font-size: ${(props) =>
+            props.buttonStyle === 'primary' ? 60 : 30}px;
+        `,
+      },
+    }}
   />
 </ThemeProvider>;
 ```
