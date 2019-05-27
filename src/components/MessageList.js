@@ -13,6 +13,7 @@ const ListContainer = styled.FlatList`
   width: 100%;
   padding-left: ${({ theme }) => theme.messageList.listContainer.paddingLeft};
   padding-right: ${({ theme }) => theme.messageList.listContainer.paddingRight};
+  ${({ theme }) => theme.messageList.listContainer.extra}
 `;
 
 const NewMessageNotification = styled.View`
@@ -22,15 +23,18 @@ const NewMessageNotification = styled.View`
     theme.messageList.newMessageNotification.backgroundColor};
   color: ${({ theme }) => theme.messageList.newMessageNotification.color};
   padding: ${({ theme }) => theme.messageList.newMessageNotification.padding}px;
+  ${({ theme }) => theme.messageList.newMessageNotification.extra}
 `;
 const NewMessageNotificationText = styled.Text`
   color: ${({ theme }) => theme.messageList.newMessageNotificationText.color};
+  ${({ theme }) => theme.messageList.newMessageNotificationText.extra}
 `;
 
 const NotificationText = styled.Text`
   color: ${({ theme }) => theme.messageList.notification.warning.color};
   background-color: ${({ theme }) =>
     theme.messageList.notification.warning.backgroundColor};
+  ${({ theme }) => theme.messageList.notification.warning.extra}
 `;
 
 const MessageList = withChannelContext(
@@ -380,6 +384,7 @@ const NotificationContainer = styled.View`
     type && theme.notification[type].backgroundColor
       ? theme.notification[type].backgroundColor
       : theme.notification.backgroundColor};
+  ${({ theme }) => theme.notification.extra}
 `;
 
 const Notification = ({ children, active, type }) => {

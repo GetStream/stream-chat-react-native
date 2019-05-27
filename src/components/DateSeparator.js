@@ -10,12 +10,14 @@ const Container = styled.View`
   align-items: ${({ theme }) => theme.dateSeparator.container.alignItems};
   margin-top: ${({ theme }) => theme.dateSeparator.container.marginTop};
   margin-bottom: ${({ theme }) => theme.dateSeparator.container.marginBottom};
+  ${({ theme }) => theme.dateSeparator.container.extra}
 `;
 
 const Line = styled.View`
   flex: ${({ theme }) => theme.dateSeparator.line.flex};
   height: ${({ theme }) => theme.dateSeparator.line.height};
   background-color: ${({ theme }) => theme.dateSeparator.line.backgroundColor};
+  ${({ theme }) => theme.dateSeparator.line.extra}
 `;
 
 const DateText = styled.Text`
@@ -25,6 +27,7 @@ const DateText = styled.Text`
   text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
   font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
   opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  ${({ theme }) => theme.dateSeparator.dateText.extra}
 `;
 
 const Strong = styled.Text`
@@ -32,6 +35,7 @@ const Strong = styled.Text`
   font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
   text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
   opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  ${({ theme }) => theme.dateSeparator.date.extra}
 `;
 
 const DateSeparator = ({ message, formatDate }) => (

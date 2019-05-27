@@ -13,6 +13,7 @@ const Container = styled.View`
     theme.reactionList.container.backgroundColor};
   padding: ${({ theme }) => theme.reactionList.container.padding}px;
   border-radius: ${({ theme }) => theme.reactionList.container.borderRadius};
+  ${({ theme }) => theme.reactionList.container.extra}
 `;
 
 const ReactionCount = styled.Text`
@@ -22,6 +23,7 @@ const ReactionCount = styled.Text`
   padding-right: ${({ theme }) =>
     theme.reactionList.reactionCount.paddingRight}px;
   font-size: ${({ theme }) => theme.reactionList.reactionCount.fontSize};
+  ${({ theme }) => theme.reactionList.reactionCount.extra}
 `;
 
 export class ReactionList extends React.PureComponent {

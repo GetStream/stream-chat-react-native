@@ -8,6 +8,7 @@ const Container = styled.TouchableOpacity`
   flex-direction: ${({ theme }) =>
     theme.messageReplies.container.flexDirection};
   align-items: ${({ theme }) => theme.messageReplies.container.alignItems};
+  ${({ theme }) => theme.messageReplies.container.extra}
 `;
 
 const MessageRepliesText = styled.Text`
@@ -15,11 +16,13 @@ const MessageRepliesText = styled.Text`
   font-weight:  ${({ theme }) =>
     theme.messageReplies.messageRepliesText.fontWeight}
   font-size:  ${({ theme }) => theme.messageReplies.messageRepliesText.fontSize}
+  ${({ theme }) => theme.messageReplies.messageRepliesText.extra}
 `;
 
 const MessageRepliesImage = styled.Image`
   transform: ${({ pos }) =>
     pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+  ${({ theme }) => theme.messageReplies.image.extra}
 `;
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {

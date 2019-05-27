@@ -196,6 +196,7 @@ const defaultTheme = {
       fontSize: 10,
       opacity: 0.8,
     },
+    dateText: {},
   },
 
   gallery: {

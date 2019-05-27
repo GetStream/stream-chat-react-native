@@ -6,6 +6,7 @@ import styled from '@stream-io/styled-components';
 const Title = styled.Text`
   color: ${({ theme }) => theme.hyperLink.title.color};
   font-weight: ${({ theme }) => theme.hyperLink.title.fontWeight};
+  ${({ theme }) => theme.hyperLink.title.extra}
 `;
 
 export class HyperLink extends PureComponent {

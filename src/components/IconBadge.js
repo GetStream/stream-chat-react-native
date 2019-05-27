@@ -11,6 +11,7 @@ const Icon = styled.View`
   border-radius: ${({ theme }) => theme.iconBadge.icon.borderRadius};
   align-items: ${({ theme }) => theme.iconBadge.icon.alignItems};
   justify-content: ${({ theme }) => theme.iconBadge.icon.justifyContent};
+  ${({ theme }) => theme.iconBadge.icon.extra}
 `;
 
 const IconInner = styled.View`
@@ -23,11 +24,13 @@ const IconInner = styled.View`
   padding-left: ${({ theme }) => theme.iconBadge.iconInner.paddingLeft};
   padding-right: ${({ theme }) => theme.iconBadge.iconInner.paddingRight};
   border-radius: ${({ theme }) => theme.iconBadge.iconInner.borderRadius};
+  ${({ theme }) => theme.iconBadge.iconInner.extra}
 `;
 
 const UnreadCount = styled.Text`
   font-size: ${({ theme }) => theme.iconBadge.unreadCount.fontSize};
   color: ${({ theme }) => theme.iconBadge.unreadCount.color};
+  ${({ theme }) => theme.iconBadge.unreadCount.extra}
 `;
 
 export class IconBadge extends React.Component {

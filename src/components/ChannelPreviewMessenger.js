@@ -12,6 +12,7 @@ const Container = styled.TouchableOpacity`
   border-bottom-width: ${({ theme }) =>
     theme.channelPreview.messenger.container.borderBottomWidth};
   padding: ${({ theme }) => theme.channelPreview.messenger.container.padding}px;
+  ${({ theme }) => theme.channelPreview.container.extra}
 `;
 
 const Details = styled.View`
@@ -21,6 +22,7 @@ const Details = styled.View`
   flex: ${({ theme }) => theme.channelPreview.messenger.details.flex};
   padding-left: ${({ theme }) =>
     theme.channelPreview.messenger.details.paddingLeft}px;
+  ${({ theme }) => theme.channelPreview.messenger.details.extra}
 `;
 
 const DetailsTop = styled.View`
@@ -29,6 +31,7 @@ const DetailsTop = styled.View`
     theme.channelPreview.messenger.detailsTop.flexDirection};
   justify-content: ${({ theme }) =>
     theme.channelPreview.messenger.detailsTop.justifyContent};
+  ${({ theme }) => theme.channelPreview.messenger.detailsTop.extra}
 `;
 
 const Title = styled.Text`
@@ -36,12 +39,14 @@ const Title = styled.Text`
     theme.channelPreview.messenger.title.fontWeight};
   font-size: ${({ theme }) => theme.channelPreview.messenger.title.fontSize};
   flex: ${({ theme }) => theme.channelPreview.messenger.title.flex};
+  ${({ theme }) => theme.channelPreview.messenger.title.extra}
 `;
 
 const Date = styled.Text`
   color: ${({ theme }) => theme.channelPreview.messenger.date.color};
   font-size: ${({ theme }) => theme.channelPreview.messenger.date.fontSize};
   text-align: ${({ theme }) => theme.channelPreview.messenger.date.textAlign};
+  ${({ theme }) => theme.channelPreview.messenger.date.extra}
 `;
 
 const Message = styled.Text`
@@ -54,6 +59,7 @@ const Message = styled.Text`
     unread
       ? theme.channelPreview.messenger.message.unreadFontWeight
       : theme.channelPreview.messenger.message.fontWeight};
+  ${({ theme }) => theme.channelPreview.messenger.message.extra}
 `;
 
 export class ChannelPreviewMessenger extends PureComponent {

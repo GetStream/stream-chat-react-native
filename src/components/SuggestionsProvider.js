@@ -10,6 +10,7 @@ const Wrapper = styled.TouchableOpacity`
   z-index: ${({ theme }) => theme.suggestionsProvider.wrapper.zIndex};
   height: ${({ height }) => height};
   width: ${({ theme }) => theme.suggestionsProvider.wrapper.width};
+  ${({ theme }) => theme.suggestionsProvider.wrapper.extra}
 `;
 
 const Container = styled.View`
@@ -35,21 +36,25 @@ const Container = styled.View`
       length * theme.suggestionsProvider.container.itemHeight,
       theme.suggestionsProvider.container.maxHeight,
     )};
+  ${({ theme }) => theme.suggestionsProvider.container.extra}
 `;
 
 const Title = styled.Text`
   padding: ${({ theme }) => theme.suggestionsHeader.title.padding}px;
   font-weight: ${({ theme }) => theme.suggestionsHeader.title.fontWeight};
   height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
+  ${({ theme }) => theme.suggestionsProvider.title.extra}
 `;
 
 const Separator = styled.View`
   height: ${({ theme }) => theme.suggestionsSeparator.separator.height};
+  ${({ theme }) => theme.suggestionsSeparator.separator.extra}
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
   justify-content: ${({ theme }) => theme.suggestionsItem.justifyContent};
   height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
+  ${({ theme }) => theme.suggestionsItem.extra}
 `;
 
 export class SuggestionsProvider extends React.PureComponent {

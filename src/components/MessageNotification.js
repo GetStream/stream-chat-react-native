@@ -11,6 +11,7 @@ const Container = styled.TouchableOpacity`
   z-index: ${({ theme }) => theme.messageNotification.container.zIndex};
   margin-bottom: ${({ theme }) =>
     theme.messageNotification.container.marginBottom};
+  ${({ theme }) => theme.messageNotification.container.extra}
 `;
 
 export class MessageNotification extends PureComponent {

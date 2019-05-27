@@ -7,11 +7,13 @@ const Container = styled.View`
     alignment === 'left' ? theme.messageAvatar.container.margin : 0};
   margin-left: ${({ theme, alignment }) =>
     alignment === 'right' ? theme.messageAvatar.container.margin : 0};
+  ${({ theme }) => theme.messageAvatar.container.extra}
 `;
 
 const Spacer = styled.View`
   width: ${({ theme }) => theme.messageAvatar.spacer.width};
   height: ${({ theme }) => theme.messageAvatar.spacer.height};
+  ${({ theme }) => theme.messageAvatar.spacer.extra}
 `;
 
 export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
