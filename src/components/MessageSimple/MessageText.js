@@ -26,19 +26,19 @@ const TextContainer = styled.View`
   padding-left: ${(props) => getTheme(props).messageText.paddingLeft};
   padding-right: ${(props) => getTheme(props).messageText.paddingRight};
   align-self: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageText.left.alignSelf
       : getTheme(props).messageText.right.alignSelf};
   border-width: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageText.left.borderWidth
       : getTheme(props).messageText.right.borderWidth};
   border-color: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageText.left.borderColor
       : getTheme(props).messageText.right.borderColor};
   background-color: ${(props) =>
-    props.position === 'left' ||
+    props.alignment === 'left' ||
     props.status === 'error' ||
     props.status === 'failed'
       ? getTheme(props).messageText.transparent
@@ -58,7 +58,7 @@ export const MessageText = ({ message, isMyMessage = () => false }) => {
   return (
     <React.Fragment>
       <TextContainer
-        position={pos}
+        alignment={pos}
         groupStyle={groupStyles}
         status={message.status}
       >

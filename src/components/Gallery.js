@@ -16,11 +16,11 @@ const Single = styled.TouchableOpacity`
   border-top-right-radius: ${(props) =>
     getTheme(props).gallery.single.borderRadius};
   border-bottom-left-radius: ${(props) =>
-    props.position === 'right'
+    props.alignment === 'right'
       ? getTheme(props).gallery.single.borderRadius
       : 2};
   border-bottom-right-radius: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).gallery.single.borderRadius
       : 2};
   overflow: hidden;
@@ -43,11 +43,11 @@ const GalleryContainer = styled.View`
   border-radius: ${(props) =>
     getTheme(props).gallery.galleryContainer.borderRadius};
   border-bottom-right-radius: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).gallery.galleryContainer.borderRadius
       : 2};
   border-bottom-left-radius: ${(props) =>
-    props.position === 'right'
+    props.alignment === 'right'
       ? getTheme(props).gallery.galleryContainer.borderRadius
       : 2};
 `;
@@ -94,7 +94,7 @@ export class Gallery extends React.PureComponent {
             onPress={() => {
               this.setState({ viewerModalOpen: true });
             }}
-            position={this.props.position}
+            alignment={this.props.alignment}
           >
             <Image
               style={{
@@ -129,7 +129,10 @@ export class Gallery extends React.PureComponent {
 
     return (
       <React.Fragment>
-        <GalleryContainer length={images.length} position={this.props.position}>
+        <GalleryContainer
+          length={images.length}
+          alignment={this.props.alignment}
+        >
           {images.slice(0, 4).map((image, i) => (
             <ImageContainer
               key={`gallery-item-${i}`}

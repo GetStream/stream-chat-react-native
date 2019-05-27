@@ -75,6 +75,8 @@ const ChannelListMessenger = withChatContext(
         onEndReached={this.props.loadNextPage}
         onEndReachedThreshold={this.props.loadMoreThreshold}
         ListEmptyComponent={this.renderEmptyState}
+        // Force flatlist to update when connection recoveres.
+        extraData={this.props.connectionRecoveredCount}
         renderItem={({ item: channel }) => (
           <ChannelPreview
             {...this.props}

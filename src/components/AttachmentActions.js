@@ -24,7 +24,7 @@ const Button = styled(({ buttonStyle, ...rest }) => (
   border-color: ${(props) =>
     props.buttonStyle === 'primary'
       ? props.theme.attachment.actions.button.primaryBorderColor
-      : props.theme.attachment.actions.button.defaultBordercolor};
+      : props.theme.attachment.actions.button.defaultBorderColor};
   border-width: ${(props) => props.theme.attachment.actions.button.borderWidth};
   border-radius: ${(props) =>
     props.theme.attachment.actions.button.borderRadius};

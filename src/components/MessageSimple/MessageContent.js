@@ -20,11 +20,11 @@ const Container = styled.TouchableOpacity`
     getTheme(props).messageContent.container.flexDirection};
   max-width: ${(props) => getTheme(props).messageContent.container.maxWidth};
   align-items: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageContent.container.leftAlignItems
       : getTheme(props).messageContent.container.rightAlignItems};
   justify-content: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageContent.container.leftJustifyContent
       : getTheme(props).messageContent.container.rightJustifyContent};
 `;
@@ -43,7 +43,7 @@ const MetaText = styled.Text`
   font-size: ${(props) => getTheme(props).messageContent.metaText.fontSize};
   color: ${(props) => getTheme(props).messageContent.metaText.color};
   text-align: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageContent.metaText.leftTextAlign
       : getTheme(props).messageContent.metaText.rightTextAlign};
 `;
@@ -58,11 +58,11 @@ const DeletedContainer = styled.View`
   padding: ${(props) =>
     getTheme(props).messageContent.deletedContainer.padding}px;
   align-items: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageContent.deletedContainer.leftAlignItems
       : getTheme(props).messageContent.deletedContainer.rightAlignItems};
   justify-content: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageContent.deletedContainer.leftJustifyContent
       : getTheme(props).messageContent.deletedContainer.rightJustifyContent};
 `;
@@ -213,13 +213,13 @@ export class MessageContent extends React.PureComponent {
 
     if (message.deleted_at)
       return (
-        <DeletedContainer position={pos}>
+        <DeletedContainer alignment={pos}>
           <DeletedText>This message was deleted ...</DeletedText>
         </DeletedContainer>
       );
 
     const contentProps = {
-      position: pos,
+      alignment: pos,
       status: message.status,
       onLongPress: options.length > 1 ? this.showActionSheet : null,
       activeOpacity: 0.7,
@@ -254,11 +254,11 @@ export class MessageContent extends React.PureComponent {
                 key={`${message.id}-${index}`}
                 attachment={attachment}
                 actionHandler={this.props.handleAction}
-                position={this.props.position}
+                alignment={this.props.alignment}
               />
             ))}
           {images.length > 1 && (
-            <Gallery position={this.props.position} images={images} />
+            <Gallery alignment={this.props.alignment} images={images} />
           )}
           <MessageText
             message={message}
@@ -279,7 +279,7 @@ export class MessageContent extends React.PureComponent {
 
         {showTime ? (
           <MetaContainer>
-            <MetaText position={pos}>
+            <MetaText alignment={pos}>
               {moment(message.created_at).format('h:mmA')}
             </MetaText>
           </MetaContainer>

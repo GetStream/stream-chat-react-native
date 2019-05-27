@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native-core",
-  "version": "0.0.18",
+  "version": "0.0.21",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.2",
+    "@stream-io/styled-components": "^4.2.1",
     "anchorme": "^1.1.2",
     "deep-equal": "^1.0.1",
     "deepmerge": "^3.2.0",
@@ -45,8 +46,7 @@
     "react-native-image-zoom-viewer": "^2.2.25",
     "react-native-simple-markdown": "^1.1.0",
     "seamless-immutable": "^7.1.4",
-    "stream-chat": "^0.13.1",
-    "@stream-io/styled-components": "^4.2.1",
+    "stream-chat": "^0.13.3",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {

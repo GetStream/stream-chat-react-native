@@ -5,11 +5,11 @@ import { getTheme } from '../../styles/theme';
 
 const Container = styled.View`
   margin-right: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageAvatar.container.margin
       : 0};
   margin-left: ${(props) =>
-    props.position === 'right'
+    props.alignment === 'right'
       ? getTheme(props).messageAvatar.container.margin
       : 0};
 `;
@@ -29,14 +29,14 @@ export const MessageAvatar = ({ message, isMyMessage }) => {
       : false;
 
   return (
-    <Container position={pos}>
+    <Container alignment={pos}>
       {showAvatar ? (
         <Avatar
           image={message.user.image}
           name={message.user.name || message.user.id}
         />
       ) : (
-        <Spacer position={pos} />
+        <Spacer />
       )}
     </Container>
   );
