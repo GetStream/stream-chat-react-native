@@ -2,18 +2,42 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import TabButton from 'react-styleguidist/lib/rsg-components/TabButton';
+import { formatDefaultTheme } from '../styles/theme';
+
+const StylesButton = (props) => {
+  const component = props.module[props.visibleName];
+  return component && component.themePath ? (
+    <TabButton {...props}>Styles</TabButton>
+  ) : null;
+};
+
+const StylesTab = (props) => {
+  const component = props.module[props.visibleName];
+  return component && component.themePath
+    ? formatDefaultTheme(component)
+    : null;
+};
 
 export default function Slot(
   { name, active, onlyActive, className, props = {} },
   { slots },
 ) {
-  const fills = slots[name];
+  let fills = slots[name];
   if (!fills) {
     throw new Error(
       `Slot "${name}" not found, available slots: ${Object.keys(slots).join(
         ', ',
       )}`,
     );
+  }
+
+  if (name === 'docsTabButtons') {
+    fills = [...fills, { id: 'rsg-styles', render: StylesButton }];
+  }
+
+  if (name === 'docsTabs') {
+    fills = [...fills, { id: 'rsg-styles', render: StylesTab }];
   }
 
   const rendered = fills.map((Fill, index) => {
