@@ -105,7 +105,11 @@ export class Gallery extends React.PureComponent {
               source={{ uri: images[0].url }}
             />
           </Single>
-          <Modal visible={this.state.viewerModalOpen} transparent={true}>
+          <Modal
+            visible={this.state.viewerModalOpen}
+            transparent={true}
+            onRequestClose={() => {}}
+          >
             <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
               <ImageViewer
                 imageUrls={images}
