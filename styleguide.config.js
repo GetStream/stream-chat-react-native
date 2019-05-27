@@ -30,6 +30,7 @@ module.exports = {
       __dirname,
       'src/styleguideComponents/PathlineRenderer.js',
     ),
+    Slot: path.join(__dirname, 'src/styleguideComponents/Slot.js'),
   },
 
   sections: [
