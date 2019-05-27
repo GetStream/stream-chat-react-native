@@ -20,10 +20,8 @@ export const CloseButton = themed(
   class CloseButton extends React.PureComponent {
     static themePath = 'closeButton';
     render() {
-      const { theme } = this.props;
-
       return (
-        <Container theme={theme}>
+        <Container>
           <Image source={closeRound} />
         </Container>
       );

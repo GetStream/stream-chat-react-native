@@ -71,7 +71,7 @@ export const Attachment = themed(
     };
 
     render() {
-      const { theme, attachment: a } = this.props;
+      const { attachment: a } = this.props;
       if (!a) {
         return null;
       }
@@ -124,13 +124,13 @@ export const Attachment = themed(
               this._goToURL(a.asset_url);
             }}
           >
-            <FileContainer theme={theme} alignment={this.props.alignment}>
+            <FileContainer alignment={this.props.alignment}>
               <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
               <FileDetails>
-                <FileTitle theme={theme} ellipsizeMode="tail" numberOfLines={2}>
+                <FileTitle ellipsizeMode="tail" numberOfLines={2}>
                   {a.title}
                 </FileTitle>
-                <FileSize theme={theme}>{a.file_size} KB</FileSize>
+                <FileSize>{a.file_size} KB</FileSize>
               </FileDetails>
             </FileContainer>
           </TouchableOpacity>

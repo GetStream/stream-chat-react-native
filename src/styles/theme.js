@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeConsumer } from '@stream-io/styled-components';
+import { ThemeProvider, ThemeConsumer } from '@stream-io/styled-components';
 import merge from 'lodash/merge';
 import lodashSet from 'lodash/set';
 import lodashGet from 'lodash/get';
@@ -26,6 +26,7 @@ const defaultTheme = {
     ...Colors,
   },
   avatar: {
+    container: {},
     image: {},
     text: {
       color: Colors.textLight,
@@ -684,7 +685,11 @@ const themed = (WrappedComponent) => {
   }
   const ThemedComponent = ({ style, ...props }) => (
     <ThemeConsumer>
-      {(themeProviderTheme = defaultTheme) => {
+      {(themeProviderTheme) => {
+        if (!style && themeProviderTheme) {
+          return <WrappedComponent {...props} />;
+        }
+        themeProviderTheme = themeProviderTheme || defaultTheme;
         const modifiedTheme = style
           ? merge(
               {},
@@ -692,7 +697,11 @@ const themed = (WrappedComponent) => {
               lodashSet({}, WrappedComponent.themePath, style),
             )
           : themeProviderTheme;
-        return <WrappedComponent {...props} theme={modifiedTheme} />;
+        return (
+          <ThemeProvider theme={modifiedTheme}>
+            <WrappedComponent {...props} />
+          </ThemeProvider>
+        );
       }}
     </ThemeConsumer>
   );

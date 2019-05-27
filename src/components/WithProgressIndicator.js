@@ -51,7 +51,7 @@ export const WithProgressIndicator = themed(
     };
 
     render() {
-      const { theme, active, children, type } = this.props;
+      const { active, children, type } = this.props;
       if (!active) {
         return <View>{children}</View>;
       }
@@ -59,8 +59,8 @@ export const WithProgressIndicator = themed(
       return (
         <TouchableOpacity onPress={this.props.action}>
           {children}
-          <Overlay theme={theme} />
-          <Container theme={theme}>
+          <Overlay />
+          <Container>
             {type === ProgressIndicatorTypes.IN_PROGRESS && (
               <View
                 style={{

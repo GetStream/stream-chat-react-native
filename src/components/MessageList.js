@@ -150,9 +150,10 @@ const MessageList = withChannelContext(
       return newMessages;
     };
 
-    assignGroupPositions = (m) => {
+    getGroupStyles = (m) => {
       const l = m.length;
-      const newMessages = [];
+      const messageGroupStyles = {};
+
       const messages = [...m];
 
       for (let i = 0; i < l; i++) {
@@ -161,7 +162,6 @@ const MessageList = withChannelContext(
         const nextMessage = messages[i + 1];
         const groupStyles = [];
         if (message.type === 'message.date') {
-          newMessages.unshift({ ...message, groupPosition: [] });
           continue;
         }
         const userId = message.user.id;
@@ -215,10 +215,10 @@ const MessageList = withChannelContext(
           groupStyles.push('single');
         }
 
-        newMessages.unshift({ ...message, groupPosition: groupStyles });
+        messageGroupStyles[message.id] = groupStyles;
       }
 
-      return newMessages;
+      return messageGroupStyles;
     };
 
     goToNewMessages = () => {
@@ -245,7 +245,7 @@ const MessageList = withChannelContext(
       this.setState({ lastReceivedId });
     };
 
-    renderItem = ({ item: message }) => {
+    renderItem = (message, groupStyles) => {
       if (message.type === 'message.date') {
         const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
@@ -255,6 +255,7 @@ const MessageList = withChannelContext(
         <Message
           onThreadSelect={this.props.onThreadSelect}
           message={message}
+          groupStyles={groupStyles}
           Message={this.props.Message}
           lastReceivedId={
             this.state.lastReceivedId === message.id
@@ -298,9 +299,7 @@ const MessageList = withChannelContext(
       }
 
       const messagesWithDates = this.insertDates(this.props.messages);
-      const messagesWithGroupPositions = this.assignGroupPositions(
-        messagesWithDates,
-      );
+      const messageGroupStyles = this.getGroupStyles(messagesWithDates);
 
       return (
         <React.Fragment>
@@ -325,7 +324,7 @@ const MessageList = withChannelContext(
           >
             <ListContainer
               ref={(fl) => (this.flatList = fl)}
-              data={messagesWithGroupPositions}
+              data={messagesWithDates}
               onScroll={this.handleScroll}
               ListFooterComponent={this.props.headerComponent}
               onEndReached={this.props.loadMore}
@@ -334,7 +333,9 @@ const MessageList = withChannelContext(
               keyExtractor={(item) =>
                 item.id || item.created_at || item.date.toISOString()
               }
-              renderItem={this.renderItem}
+              renderItem={(item) =>
+                this.renderItem(item, messageGroupStyles[item.id])
+              }
               maintainVisibleContentPosition={{
                 minIndexForVisible: 1,
                 autoscrollToTopThreshold: 10,

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
+import { themed } from '../../styles/theme';
 
 import { MessageStatus } from './MessageStatus';
 import { MessageContent } from './MessageContent';
@@ -15,36 +16,39 @@ const Container = styled.View`
       : theme.messageSimple.container.right.justifyContent};
   margin-bottom: ${({ theme, marginBottom }) =>
     marginBottom ? theme.messageSimple.container.marginBottom : 0};
+  ${({ theme }) => theme.messageSimple.container.extra}
 `;
 
-export class MessageSimple extends React.PureComponent {
-  render() {
-    const { message, isMyMessage } = this.props;
-    const pos = isMyMessage(message) ? 'right' : 'left';
-    const marginBottom =
-      message.groupPosition[0] === 'single' ||
-      message.groupPosition[0] === 'bottom'
-        ? true
-        : false;
+export const MessageSimple = themed(
+  class MessageSimple extends React.PureComponent {
+    static themePath = 'messageSimple';
+    render() {
+      const { message, isMyMessage, groupStyles } = this.props;
+      const pos = isMyMessage(message) ? 'right' : 'left';
+      const marginBottom =
+        groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
+          ? true
+          : false;
 
-    return (
-      <Container alignment={pos} marginBottom={marginBottom}>
-        {isMyMessage(message) ? (
-          <React.Fragment>
-            <MessageContent {...this.props} alignment={pos} />
-            <MessageAvatar {...this.props} />
-            <MessageStatus {...this.props} />
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <MessageAvatar {...this.props} />
-            <MessageContent {...this.props} alignment={pos} />
-          </React.Fragment>
-        )}
-      </Container>
-    );
-  }
-}
+      return (
+        <Container alignment={pos} marginBottom={marginBottom}>
+          {isMyMessage(message) ? (
+            <React.Fragment>
+              <MessageContent {...this.props} alignment={pos} />
+              <MessageAvatar {...this.props} />
+              <MessageStatus {...this.props} />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <MessageAvatar {...this.props} />
+              <MessageContent {...this.props} alignment={pos} />
+            </React.Fragment>
+          )}
+        </Container>
+      );
+    }
+  },
+);
 
 export { MessageStatus } from './MessageStatus';
 export { MessageContent } from './MessageContent';

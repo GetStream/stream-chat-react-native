@@ -10,7 +10,7 @@ export const renderText = (message) => {
   // take the @ mentions and turn them into markdown?
   // translate links
   let { text } = message;
-  const { mentioned_users } = message;
+  const { mentioned_users = [] } = message;
 
   if (!text) {
     return;

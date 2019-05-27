@@ -86,22 +86,16 @@ export const Card = themed(
         og_scrape_url,
         type,
         alignment,
-        theme,
       } = this.props;
       return (
         <Container
-          theme={theme}
           onPress={() => {
             this._goToURL(og_scrape_url || image_url || thumb_url);
           }}
           alignment={alignment}
         >
-          <Cover
-            theme={theme}
-            source={{ uri: image_url || thumb_url }}
-            resizMode="cover"
-          />
-          <Footer theme={theme}>
+          <Cover source={{ uri: image_url || thumb_url }} resizMode="cover" />
+          <Footer>
             <View
               style={{
                 display: 'flex',

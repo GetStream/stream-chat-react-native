@@ -7,6 +7,7 @@ import { themed } from '../styles/theme';
 const AvatarContainer = styled.View`
   display: flex;
   align-items: center;
+  ${({ theme }) => theme.avatar.container.extra}
 `;
 
 const AvatarImage = styled.Image`
@@ -80,7 +81,7 @@ export const Avatar = themed(
         : null;
 
     render() {
-      const { size, name, image, theme } = this.props;
+      const { size, name, image } = this.props;
       const initials = this.getInitials(name);
       return (
         <AvatarContainer>
@@ -91,11 +92,10 @@ export const Avatar = themed(
               accessibilityLabel="initials"
               resizeMethod="resize"
               onError={this.setError}
-              theme={theme}
             />
           ) : (
-            <AvatarFallback theme={theme} size={size}>
-              <AvatarText theme={theme}>{initials}</AvatarText>
+            <AvatarFallback size={size}>
+              <AvatarText>{initials}</AvatarText>
             </AvatarFallback>
           )}
         </AvatarContainer>

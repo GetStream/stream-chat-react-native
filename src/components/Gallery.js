@@ -73,7 +73,6 @@ export const Gallery = themed(
     }
 
     render() {
-      const { theme } = this.props;
       const images = [...this.props.images].map((i) => ({
         url: i.image_url || i.thumb_url,
       }));
@@ -82,7 +81,6 @@ export const Gallery = themed(
         return (
           <React.Fragment>
             <Single
-              theme={theme}
               onPress={() => {
                 this.setState({ viewerModalOpen: true });
               }}
@@ -107,7 +105,6 @@ export const Gallery = themed(
                   enableSwipeDown
                   renderHeader={() => (
                     <GalleryHeader
-                      theme={theme}
                       handleDismiss={() => {
                         this.setState({ viewerModalOpen: false });
                       }}
@@ -123,13 +120,11 @@ export const Gallery = themed(
       return (
         <React.Fragment>
           <GalleryContainer
-            theme={theme}
             length={images.length}
             alignment={this.props.alignment}
           >
             {images.slice(0, 4).map((image, i) => (
               <ImageContainer
-                theme={theme}
                 key={`gallery-item-${i}`}
                 length={images.length}
                 activeOpacity={0.8}
@@ -241,10 +236,10 @@ const HeaderButton = styled.TouchableOpacity`
   ${({ theme }) => theme.gallery.header.button.extra}
 `;
 
-const GalleryHeader = ({ handleDismiss, theme }) => (
-  <HeaderContainer theme={theme}>
-    <HeaderButton theme={theme} onPress={handleDismiss}>
-      <CloseButton theme={theme} />
+const GalleryHeader = ({ handleDismiss }) => (
+  <HeaderContainer>
+    <HeaderButton onPress={handleDismiss}>
+      <CloseButton />
     </HeaderButton>
   </HeaderContainer>
 );

@@ -6,7 +6,6 @@ const notBabeledDeps = [
   'react-native-image-zoom-viewer',
   'react-native-image-pan-zoom',
   'react-native-simple-markdown',
-  'react-native-actionsheet',
 ];
 
 module.exports = {
@@ -17,7 +16,10 @@ module.exports = {
   sortProps: (props) => props,
   serverPort: 6068,
   compilerConfig: {
-    transforms: { dangerousTaggedTemplateString: true },
+    transforms: {
+      dangerousTaggedTemplateString: true,
+    },
+    objectAssign: 'Object.assign',
   },
   resolver(ast, recast) {
     return require('react-docgen').resolver.findAllExportedComponentDefinitions(
@@ -109,6 +111,11 @@ module.exports = {
         'react-native-gesture-handler': 'react-native-web',
         '@stream-io/styled-components':
           '@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
+        // Looks ugly in docs, better to just not show it for now
+        'react-native-actionsheet': path.join(
+          __dirname,
+          'src/styleguideComponents/ReactNativeActionSheet.js',
+        ),
       },
       extensions: ['.web.js', '.js'],
     },

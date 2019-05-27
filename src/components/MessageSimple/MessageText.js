@@ -42,13 +42,17 @@ const TextContainer = styled.View`
       : theme.messageText.filled};
 `;
 
-export const MessageText = ({ message, isMyMessage = () => false }) => {
+export const MessageText = ({
+  message,
+  groupStyles,
+  isMyMessage = () => false,
+}) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
-  const groupStyles =
+  const groupStyle =
     (isMyMessage(message) ? 'right' : 'left') +
-    capitalize(hasAttachment ? 'bottom' : message.groupPosition[0]);
+    capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
 
   if (!message.text) return false;
 
@@ -56,7 +60,7 @@ export const MessageText = ({ message, isMyMessage = () => false }) => {
     <React.Fragment>
       <TextContainer
         alignment={pos}
-        groupStyle={groupStyles}
+        groupStyle={groupStyle}
         status={message.status}
       >
         {renderText(message)}

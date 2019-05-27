@@ -90,7 +90,7 @@ export const ImageUploadPreview = themed(
     _renderItem = ({ item }) => {
       let type;
 
-      const { retryUpload, theme } = this.props;
+      const { retryUpload } = this.props;
 
       if (item.state === FileState.UPLOADING)
         type = ProgressIndicatorTypes.IN_PROGRESS;
@@ -99,25 +99,23 @@ export const ImageUploadPreview = themed(
         type = ProgressIndicatorTypes.RETRY;
       return (
         <React.Fragment>
-          <ItemContainer theme={theme}>
+          <ItemContainer>
             <WithProgressIndicator
               active={item.state !== FileState.UPLOADED}
               type={type}
               action={retryUpload && retryUpload.bind(this, item.id)}
             >
               <Upload
-                theme={theme}
                 resizeMode="cover"
                 source={{ uri: item.url || item.file.uri }}
               />
             </WithProgressIndicator>
             <Dismiss
-              theme={theme}
               onPress={() => {
                 this.props.removeImage(item.id);
               }}
             >
-              <DismissImage theme={theme} source={closeRound} />
+              <DismissImage source={closeRound} />
             </Dismiss>
           </ItemContainer>
         </React.Fragment>

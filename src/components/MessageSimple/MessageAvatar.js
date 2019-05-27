@@ -14,14 +14,11 @@ const Spacer = styled.View`
   height: ${({ theme }) => theme.messageAvatar.spacer.height};
 `;
 
-export const MessageAvatar = ({ message, isMyMessage }) => {
+export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const showAvatar =
-    message.groupPosition[0] === 'single' ||
-    message.groupPosition[0] === 'bottom'
-      ? true
-      : false;
+    groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
 
   return (
     <Container alignment={pos}>
