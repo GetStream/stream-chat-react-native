@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
 const Title = styled.Text`
-  color: ${(props) => props.theme.hyperLink.title.color};
-  font-weight: ${(props) => props.theme.hyperLink.title.fontWeight};
+  color: ${({ theme }) => theme.hyperLink.title.color};
+  font-weight: ${({ theme }) => theme.hyperLink.title.fontWeight};
 `;
 
 export class HyperLink extends PureComponent {

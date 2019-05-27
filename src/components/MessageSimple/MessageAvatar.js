@@ -3,19 +3,15 @@ import styled from '@stream-io/styled-components';
 import { Avatar } from '../Avatar';
 
 const Container = styled.View`
-  margin-right: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageAvatar.container.margin
-      : 0};
-  margin-left: ${(props) =>
-    props.alignment === 'right'
-      ? props.theme.messageAvatar.container.margin
-      : 0};
+  margin-right: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.messageAvatar.container.margin : 0};
+  margin-left: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.messageAvatar.container.margin : 0};
 `;
 
 const Spacer = styled.View`
-  width: ${(props) => props.theme.messageAvatar.spacer.width};
-  height: ${(props) => props.theme.messageAvatar.spacer.height};
+  width: ${({ theme }) => theme.messageAvatar.spacer.width};
+  height: ${({ theme }) => theme.messageAvatar.spacer.height};
 `;
 
 export const MessageAvatar = ({ message, isMyMessage }) => {

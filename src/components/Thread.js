@@ -9,12 +9,12 @@ import styled from '@stream-io/styled-components';
 import { Message } from './Message';
 
 const NewThread = styled.View`
-  padding: ${(props) => props.theme.thread.newThread.padding}px;
-  background-color: ${(props) => props.theme.thread.newThread.backgroundColor};
-  margin: ${(props) => props.theme.thread.newThread.margin}px;
-  border-radius: ${(props) => props.theme.thread.newThread.borderRadius};
-  display: ${(props) => props.theme.thread.newThread.display};
-  align-items: ${(props) => props.theme.thread.newThread.alignItems};
+  padding: ${({ theme }) => theme.thread.newThread.padding}px;
+  background-color: ${({ theme }) => theme.thread.newThread.backgroundColor};
+  margin: ${({ theme }) => theme.thread.newThread.margin}px;
+  border-radius: ${({ theme }) => theme.thread.newThread.borderRadius};
+  display: ${({ theme }) => theme.thread.newThread.display};
+  align-items: ${({ theme }) => theme.thread.newThread.alignItems};
 `;
 const NewThreadText = styled.Text``;
 

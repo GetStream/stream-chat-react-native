@@ -14,58 +14,57 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 
 const Container = styled.TouchableOpacity`
-  display: ${(props) => props.theme.messageContent.container.display};
-  flex-direction: ${(props) =>
-    props.theme.messageContent.container.flexDirection};
-  max-width: ${(props) => props.theme.messageContent.container.maxWidth};
-  align-items: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageContent.container.leftAlignItems
-      : props.theme.messageContent.container.rightAlignItems};
-  justify-content: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageContent.container.leftJustifyContent
-      : props.theme.messageContent.container.rightJustifyContent};
+  display: ${({ theme }) => theme.messageContent.container.display};
+  flex-direction: ${({ theme }) =>
+    theme.messageContent.container.flexDirection};
+  max-width: ${({ theme }) => theme.messageContent.container.maxWidth};
+  align-items: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageContent.container.leftAlignItems
+      : theme.messageContent.container.rightAlignItems};
+  justify-content: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageContent.container.leftJustifyContent
+      : theme.messageContent.container.rightJustifyContent};
 `;
 
 const ContainerInner = styled.View`
-  align-items: ${(props) =>
-    props.theme.messageContent.containerInner.alignItems};
+  align-items: ${({ theme }) => theme.messageContent.containerInner.alignItems};
 `;
 
 const MetaContainer = styled.View`
-  margin-top: ${(props) => props.theme.messageContent.metaContainer.marginTop};
+  margin-top: ${({ theme }) => theme.messageContent.metaContainer.marginTop};
 `;
 
 const MetaText = styled.Text`
-  font-size: ${(props) => props.theme.messageContent.metaText.fontSize};
-  color: ${(props) => props.theme.messageContent.metaText.color};
-  text-align: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageContent.metaText.leftTextAlign
-      : props.theme.messageContent.metaText.rightTextAlign};
+  font-size: ${({ theme }) => theme.messageContent.metaText.fontSize};
+  color: ${({ theme }) => theme.messageContent.metaText.color};
+  text-align: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageContent.metaText.leftTextAlign
+      : theme.messageContent.metaText.rightTextAlign};
 `;
 
 const DeletedContainer = styled.View`
-  display: ${(props) => props.theme.messageContent.deletedContainer.display};
-  flex-direction: ${(props) =>
-    props.theme.messageContent.deletedContainer.flexDirection};
-  max-width: ${(props) => props.theme.messageContent.deletedContainer.maxWidth};
-  padding: ${(props) => props.theme.messageContent.deletedContainer.padding}px;
-  align-items: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageContent.deletedContainer.leftAlignItems
-      : props.theme.messageContent.deletedContainer.rightAlignItems};
-  justify-content: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageContent.deletedContainer.leftJustifyContent
-      : props.theme.messageContent.deletedContainer.rightJustifyContent};
+  display: ${({ theme }) => theme.messageContent.deletedContainer.display};
+  flex-direction: ${({ theme }) =>
+    theme.messageContent.deletedContainer.flexDirection};
+  max-width: ${({ theme }) => theme.messageContent.deletedContainer.maxWidth};
+  padding: ${({ theme }) => theme.messageContent.deletedContainer.padding}px;
+  align-items: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageContent.deletedContainer.leftAlignItems
+      : theme.messageContent.deletedContainer.rightAlignItems};
+  justify-content: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageContent.deletedContainer.leftJustifyContent
+      : theme.messageContent.deletedContainer.rightJustifyContent};
 `;
 
 const DeletedText = styled.Text`
-  font-size: ${(props) => props.theme.messageContent.deletedText.fontSize};
-  line-height: ${(props) => props.theme.messageContent.deletedText.lineHeight};
-  color: ${(props) => props.theme.messageContent.deletedText.color};
+  font-size: ${({ theme }) => theme.messageContent.deletedText.fontSize};
+  line-height: ${({ theme }) => theme.messageContent.deletedText.lineHeight};
+  color: ${({ theme }) => theme.messageContent.deletedText.color};
 `;
 
 const FailedText = styled.Text``;

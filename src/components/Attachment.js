@@ -10,34 +10,28 @@ import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
 const FileContainer = styled.View`
-  display: ${(props) => props.theme.attachment.file.container.display};
-  flex-direction: ${(props) =>
-    props.theme.attachment.file.container.flexDirection};
-  align-items: ${(props) => props.theme.attachment.file.container.alignItems};
-  background-color: ${(props) =>
-    props.theme.attachment.file.container.backgroundColor};
-  padding: ${(props) => props.theme.attachment.file.container.padding}px;
-  border-radius: ${(props) =>
-    props.theme.attachment.file.container.borderRadius};
-  border-bottom-left-radius: ${(props) =>
-    props.alignment === 'right'
-      ? props.theme.attachment.file.container.borderRadius
-      : 2};
-  border-bottom-right-radius: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.attachment.file.container.borderRadius
-      : 2};
+  display: ${({ theme }) => theme.attachment.file.container.display};
+  flex-direction: ${({ theme }) =>
+    theme.attachment.file.container.flexDirection};
+  align-items: ${({ theme }) => theme.attachment.file.container.alignItems};
+  background-color: ${({ theme }) =>
+    theme.attachment.file.container.backgroundColor};
+  padding: ${({ theme }) => theme.attachment.file.container.padding}px;
+  border-radius: ${({ theme }) => theme.attachment.file.container.borderRadius};
+  border-bottom-left-radius: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.attachment.file.container.borderRadius : 2};
+  border-bottom-right-radius: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.attachment.file.container.borderRadius : 2};
 `;
 
 const FileDetails = styled.View`
-  display: ${(props) => props.theme.attachment.file.details.display};
-  flex-direction: ${(props) =>
-    props.theme.attachment.file.details.flexDirection};
-  padding-left: ${(props) => props.theme.attachment.file.details.paddingLeft}px;
+  display: ${({ theme }) => theme.attachment.file.details.display};
+  flex-direction: ${({ theme }) => theme.attachment.file.details.flexDirection};
+  padding-left: ${({ theme }) => theme.attachment.file.details.paddingLeft}px;
 `;
 
 const FileTitle = styled.Text`
-  font-weight: ${(props) => props.theme.attachment.file.title.fontWeight};
+  font-weight: ${({ theme }) => theme.attachment.file.title.fontWeight};
 `;
 
 const FileSize = styled.Text``;

@@ -4,8 +4,8 @@ import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
 
 const Container = styled.View`
-  opacity: ${(props) =>
-    props.visible ? props.theme.reactionList.container.opacity : 0};
+  opacity: ${({ theme, visible }) =>
+    visible ? theme.reactionList.container.opacity : 0};
   display: ${({ theme }) => theme.reactionList.container.display};
   flex-direction: ${({ theme }) => theme.reactionList.container.flexDirection};
   align-items: ${({ theme }) => theme.reactionList.container.alignItems};
@@ -16,12 +16,12 @@ const Container = styled.View`
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => props.theme.reactionList.reactionCount.color};
-  padding-left: ${(props) =>
-    props.theme.reactionList.reactionCount.paddingLeft}px;
-  padding-right: ${(props) =>
-    props.theme.reactionList.reactionCount.paddingRight}px;
-  font-size: ${(props) => props.theme.reactionList.reactionCount.fontSize};
+  color: ${({ theme }) => theme.reactionList.reactionCount.color};
+  padding-left: ${({ theme }) =>
+    theme.reactionList.reactionCount.paddingLeft}px;
+  padding-right: ${({ theme }) =>
+    theme.reactionList.reactionCount.paddingRight}px;
+  font-size: ${({ theme }) => theme.reactionList.reactionCount.fontSize};
 `;
 
 export class ReactionList extends React.PureComponent {

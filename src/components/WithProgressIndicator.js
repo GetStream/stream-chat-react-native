@@ -6,30 +6,29 @@ import styled from '@stream-io/styled-components';
 import { ProgressIndicatorTypes } from '../utils';
 
 const Overlay = styled.View`
-  position: ${(props) => props.theme.withProgressIndicator.overlay.position};
-  width: ${(props) => props.theme.withProgressIndicator.overlay.width};
-  height: ${(props) => props.theme.withProgressIndicator.overlay.height};
-  display: ${(props) => props.theme.withProgressIndicator.overlay.display};
-  align-items: ${(props) =>
-    props.theme.withProgressIndicator.overlay.alignItems};
-  justify-content: ${(props) =>
-    props.theme.withProgressIndicator.overlay.justifyContent};
-  background-color: ${(props) =>
-    props.theme.withProgressIndicator.overlay.backgroundColor || 'transparent'};
-  opacity: ${(props) => props.theme.withProgressIndicator.overlay.opacity || 0};
+  position: ${({ theme }) => theme.withProgressIndicator.overlay.position};
+  width: ${({ theme }) => theme.withProgressIndicator.overlay.width};
+  height: ${({ theme }) => theme.withProgressIndicator.overlay.height};
+  display: ${({ theme }) => theme.withProgressIndicator.overlay.display};
+  align-items: ${({ theme }) => theme.withProgressIndicator.overlay.alignItems};
+  justify-content: ${({ theme }) =>
+    theme.withProgressIndicator.overlay.justifyContent};
+  background-color: ${({ theme }) =>
+    theme.withProgressIndicator.overlay.backgroundColor || 'transparent'};
+  opacity: ${({ theme }) => theme.withProgressIndicator.overlay.opacity || 0};
 `;
 
 const Container = styled.View`
-  position: ${(props) => props.theme.withProgressIndicator.container.position};
-  width: ${(props) => props.theme.withProgressIndicator.container.width};
-  height: ${(props) => props.theme.withProgressIndicator.container.height};
-  display: ${(props) => props.theme.withProgressIndicator.container.display};
-  align-items: ${(props) =>
-    props.theme.withProgressIndicator.container.alignItems};
-  justify-content: ${(props) =>
-    props.theme.withProgressIndicator.container.justifyContent};
-  background-color: ${(props) =>
-    props.theme.withProgressIndicator.container.backgroundColor};
+  position: ${({ theme }) => theme.withProgressIndicator.container.position};
+  width: ${({ theme }) => theme.withProgressIndicator.container.width};
+  height: ${({ theme }) => theme.withProgressIndicator.container.height};
+  display: ${({ theme }) => theme.withProgressIndicator.container.display};
+  align-items: ${({ theme }) =>
+    theme.withProgressIndicator.container.alignItems};
+  justify-content: ${({ theme }) =>
+    theme.withProgressIndicator.container.justifyContent};
+  background-color: ${({ theme }) =>
+    theme.withProgressIndicator.container.backgroundColor};
 `;
 
 export class WithProgressIndicator extends React.PureComponent {

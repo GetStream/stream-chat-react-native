@@ -6,50 +6,50 @@ import { SuggestionsContext } from '../context';
 import styled from '@stream-io/styled-components';
 
 const Wrapper = styled.TouchableOpacity`
-  position: ${(props) => props.theme.suggestionsProvider.wrapper.position};
-  z-index: ${(props) => props.theme.suggestionsProvider.wrapper.zIndex};
-  height: ${(props) => props.height};
-  width: ${(props) => props.theme.suggestionsProvider.wrapper.width};
+  position: ${({ theme }) => theme.suggestionsProvider.wrapper.position};
+  z-index: ${({ theme }) => theme.suggestionsProvider.wrapper.zIndex};
+  height: ${({ height }) => height};
+  width: ${({ theme }) => theme.suggestionsProvider.wrapper.width};
 `;
 
 const Container = styled.View`
-  position: ${(props) => props.theme.suggestionsProvider.container.position};
-  bottom: ${(props) => props.theme.suggestionsProvider.container.bottom};
-  background-color: ${(props) =>
-    props.theme.suggestionsProvider.container.backgroundColor};
-  z-index: ${(props) => props.theme.suggestionsProvider.container.zIndex};
-  border-top-left-radius: ${(props) =>
-    props.theme.suggestionsProvider.container.borderTopLeftRadius};
-  border-top-right-radius: ${(props) =>
-    props.theme.suggestionsProvider.container.borderTopRightRadius};
-  width: ${(props) => props.width};
-  margin-left: ${(props) => props.marginLeft};
-  shadow-color: ${(props) =>
-    props.theme.suggestionsProvider.container.shadowColor};
-  shadow-opacity: ${(props) =>
-    props.theme.suggestionsProvider.container.shadowOpacity}
-  shadow-offset: ${(props) =>
-    props.theme.suggestionsProvider.container.shadowOffset}
-  height: ${(props) =>
+  position: ${({ theme }) => theme.suggestionsProvider.container.position};
+  bottom: ${({ theme }) => theme.suggestionsProvider.container.bottom};
+  background-color: ${({ theme }) =>
+    theme.suggestionsProvider.container.backgroundColor};
+  z-index: ${({ theme }) => theme.suggestionsProvider.container.zIndex};
+  border-top-left-radius: ${({ theme }) =>
+    theme.suggestionsProvider.container.borderTopLeftRadius};
+  border-top-right-radius: ${({ theme }) =>
+    theme.suggestionsProvider.container.borderTopRightRadius};
+  width: ${({ width }) => width};
+  margin-left: ${({ marginLeft }) => marginLeft};
+  shadow-color: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowColor};
+  shadow-opacity: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowOpacity}
+  shadow-offset: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowOffset}
+  height: ${({ theme, length }) =>
     Math.min(
-      props.length * props.theme.suggestionsProvider.container.itemHeight,
-      props.theme.suggestionsProvider.container.maxHeight,
+      length * theme.suggestionsProvider.container.itemHeight,
+      theme.suggestionsProvider.container.maxHeight,
     )};
 `;
 
 const Title = styled.Text`
-  padding: ${(props) => props.theme.suggestionsHeader.title.padding}px;
-  font-weight: ${(props) => props.theme.suggestionsHeader.title.fontWeight};
-  height: ${(props) => props.theme.suggestionsProvider.container.itemHeight};
+  padding: ${({ theme }) => theme.suggestionsHeader.title.padding}px;
+  font-weight: ${({ theme }) => theme.suggestionsHeader.title.fontWeight};
+  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
 `;
 
 const Separator = styled.View`
-  height: ${(props) => props.theme.suggestionsSeparator.separator.height};
+  height: ${({ theme }) => theme.suggestionsSeparator.separator.height};
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
-  justify-content: ${(props) => props.theme.suggestionsItem.justifyContent};
-  height: ${(props) => props.theme.suggestionsProvider.container.itemHeight};
+  justify-content: ${({ theme }) => theme.suggestionsItem.justifyContent};
+  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
 `;
 
 export class SuggestionsProvider extends React.PureComponent {

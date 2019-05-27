@@ -7,33 +7,29 @@ import { styles } from '../styles/styles.js';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
-  border-top-left-radius: ${(props) =>
-    props.theme.card.container.borderTopLeftRadius};
-  border-top-right-radius: ${(props) =>
-    props.theme.card.container.borderTopRightRadius};
-  overflow: ${(props) => props.theme.card.container.overflow};
-  border-bottom-left-radius: ${(props) =>
-    props.alignment === 'right'
-      ? props.theme.card.container.borderBottomLeftRadius
-      : 2};
-  border-bottom-right-radius: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.card.container.borderBottomRightRadius
-      : 2};
-  background-color: ${(props) => props.theme.card.container.backgroundColor};
-  width: ${(props) => props.theme.card.container.width};
+  border-top-left-radius: ${({ theme }) =>
+    theme.card.container.borderTopLeftRadius};
+  border-top-right-radius: ${({ theme }) =>
+    theme.card.container.borderTopRightRadius};
+  overflow: ${({ theme }) => theme.card.container.overflow};
+  border-bottom-left-radius: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.card.container.borderBottomLeftRadius : 2};
+  border-bottom-right-radius: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.card.container.borderBottomRightRadius : 2};
+  background-color: ${({ theme }) => theme.card.container.backgroundColor};
+  width: ${({ theme }) => theme.card.container.width};
 `;
 
 const Footer = styled.View`
-  display: ${(props) => props.theme.card.footer.display};
-  flex-direction: ${(props) => props.theme.card.footer.flexDirection};
-  justify-content: ${(props) => props.theme.card.footer.justifyContent};
-  padding: ${(props) => props.theme.card.footer.padding}px;
+  display: ${({ theme }) => theme.card.footer.display};
+  flex-direction: ${({ theme }) => theme.card.footer.flexDirection};
+  justify-content: ${({ theme }) => theme.card.footer.justifyContent};
+  padding: ${({ theme }) => theme.card.footer.padding}px;
 `;
 
 const Cover = styled.Image`
-  display: ${(props) => props.theme.card.cover.display};
-  height: ${(props) => props.theme.card.cover.height};
+  display: ${({ theme }) => theme.card.cover.display};
+  height: ${({ theme }) => theme.card.cover.height};
 `;
 
 export class Card extends React.Component {

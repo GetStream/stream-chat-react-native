@@ -9,30 +9,28 @@ import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
 
 const ListContainer = styled.FlatList`
-  flex: ${(props) => props.theme.messageList.listContainer.flex};
+  flex: ${({ theme }) => theme.messageList.listContainer.flex};
   width: 100%;
-  padding-left: ${(props) => props.theme.messageList.listContainer.paddingLeft};
-  padding-right: ${(props) =>
-    props.theme.messageList.listContainer.paddingRight};
+  padding-left: ${({ theme }) => theme.messageList.listContainer.paddingLeft};
+  padding-right: ${({ theme }) => theme.messageList.listContainer.paddingRight};
 `;
 
 const NewMessageNotification = styled.View`
-  border-radius: ${(props) =>
-    props.theme.messageList.newMessageNotification.borderRadius};
-  background-color: ${(props) =>
-    props.theme.messageList.newMessageNotification.backgroundColor};
-  color: ${(props) => props.theme.messageList.newMessageNotification.color};
-  padding: ${(props) =>
-    props.theme.messageList.newMessageNotification.padding}px;
+  border-radius: ${({ theme }) =>
+    theme.messageList.newMessageNotification.borderRadius};
+  background-color: ${({ theme }) =>
+    theme.messageList.newMessageNotification.backgroundColor};
+  color: ${({ theme }) => theme.messageList.newMessageNotification.color};
+  padding: ${({ theme }) => theme.messageList.newMessageNotification.padding}px;
 `;
 const NewMessageNotificationText = styled.Text`
-  color: ${(props) => props.theme.messageList.newMessageNotificationText.color};
+  color: ${({ theme }) => theme.messageList.newMessageNotificationText.color};
 `;
 
 const NotificationText = styled.Text`
-  color: ${(props) => props.theme.messageList.notification.warning.color};
-  background-color: ${(props) =>
-    props.theme.messageList.notification.warning.backgroundColor};
+  color: ${({ theme }) => theme.messageList.notification.warning.color};
+  background-color: ${({ theme }) =>
+    theme.messageList.notification.warning.backgroundColor};
 `;
 
 const MessageList = withChannelContext(
@@ -367,20 +365,20 @@ const MessageList = withChannelContext(
 );
 
 const NotificationContainer = styled.View`
-  display: ${(props) => props.theme.notification.display};
-  flex-direction: ${(props) => props.theme.notification.flexDirection};
-  align-items: ${(props) => props.theme.notification.alignItems};
-  z-index: ${(props) => props.theme.notification.zIndex};
-  margin-bottom: ${(props) => props.theme.notification.marginBottom};
-  padding: ${(props) => props.theme.notification.padding}px;
-  color: ${(props) =>
-    props.type && props.theme.notification[props.type].color
-      ? props.theme.notification[props.type].color
-      : props.theme.notification.color};
-  background-color: ${(props) =>
-    props.type && props.theme.notification[props.type].backgroundColor
-      ? props.theme.notification[props.type].backgroundColor
-      : props.theme.notification.backgroundColor};
+  display: ${({ theme }) => theme.notification.display};
+  flex-direction: ${({ theme }) => theme.notification.flexDirection};
+  align-items: ${({ theme }) => theme.notification.alignItems};
+  z-index: ${({ theme }) => theme.notification.zIndex};
+  margin-bottom: ${({ theme }) => theme.notification.marginBottom};
+  padding: ${({ theme }) => theme.notification.padding}px;
+  color: ${({ theme, type }) =>
+    type && theme.notification[type].color
+      ? theme.notification[type].color
+      : theme.notification.color};
+  background-color: ${({ theme, type }) =>
+    type && theme.notification[type].backgroundColor
+      ? theme.notification[type].backgroundColor
+      : theme.notification.backgroundColor};
 `;
 
 const Notification = ({ children, active, type }) => {

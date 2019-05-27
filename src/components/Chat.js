@@ -117,7 +117,7 @@ export class Chat extends PureComponent {
   render() {
     return (
       <ChatContext.Provider value={this.getContext()}>
-        <ThemeProvider theme={buildTheme(this.props.theme)}>
+        <ThemeProvider theme={buildTheme(this.theme)}>
           {this.props.children}
         </ThemeProvider>
       </ChatContext.Provider>

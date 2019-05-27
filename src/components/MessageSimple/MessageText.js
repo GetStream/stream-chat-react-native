@@ -4,44 +4,42 @@ import styled from '@stream-io/styled-components';
 import { renderText, capitalize } from '../../utils';
 
 const TextContainer = styled.View`
-  border-bottom-left-radius: ${(props) =>
-    props.groupStyle.indexOf('left') !== -1
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderBottomLeftRadius};
-  border-bottom-right-radius: ${(props) =>
-    props.groupStyle.indexOf('right') !== -1
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderBottomRightRadius};
-  border-top-left-radius: ${(props) =>
-    props.groupStyle === 'leftBottom' || props.groupStyle === 'leftMiddle'
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderTopLeftRadius};
-  border-top-right-radius: ${(props) =>
-    props.groupStyle === 'rightBottom' || props.groupStyle === 'rightMiddle'
-      ? props.theme.messageText.borderRadiusS
-      : props.theme.messageText.borderTopRightRadius};
-  margin-top: ${(props) => props.theme.messageText.marginTop};
-  padding: ${(props) => props.theme.messageText.padding}px;
-  padding-left: ${(props) => props.theme.messageText.paddingLeft};
-  padding-right: ${(props) => props.theme.messageText.paddingRight};
-  align-self: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageText.left.alignSelf
-      : props.theme.messageText.right.alignSelf};
-  border-width: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageText.left.borderWidth
-      : props.theme.messageText.right.borderWidth};
-  border-color: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageText.left.borderColor
-      : props.theme.messageText.right.borderColor};
-  background-color: ${(props) =>
-    props.alignment === 'left' ||
-    props.status === 'error' ||
-    props.status === 'failed'
-      ? props.theme.messageText.transparent
-      : props.theme.messageText.filled};
+  border-bottom-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('left') !== -1
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderBottomLeftRadius};
+  border-bottom-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('right') !== -1
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderBottomRightRadius};
+  border-top-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderTopLeftRadius};
+  border-top-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderTopRightRadius};
+  margin-top: ${({ theme }) => theme.messageText.marginTop};
+  padding: ${({ theme }) => theme.messageText.padding}px;
+  padding-left: ${({ theme }) => theme.messageText.paddingLeft};
+  padding-right: ${({ theme }) => theme.messageText.paddingRight};
+  align-self: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.alignSelf
+      : theme.messageText.right.alignSelf};
+  border-width: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.borderWidth
+      : theme.messageText.right.borderWidth};
+  border-color: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.borderColor
+      : theme.messageText.right.borderColor};
+  background-color: ${({ theme, alignment, status }) =>
+    alignment === 'left' || status === 'error' || status === 'failed'
+      ? theme.messageText.transparent
+      : theme.messageText.filled};
 `;
 
 export const MessageText = ({ message, isMyMessage = () => false }) => {

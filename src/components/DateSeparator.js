@@ -3,21 +3,19 @@ import styled from '@stream-io/styled-components';
 import Moment from 'moment';
 
 const Container = styled.View`
-  display: ${(props) => props.theme.dateSeparator.container.display};
-  flex-direction: ${(props) =>
-    props.theme.dateSeparator.container.flexDirection};
-  justify-content: ${(props) =>
-    props.theme.dateSeparator.container.justifyContent};
-  align-items: ${(props) => props.theme.dateSeparator.container.alignItems};
-  margin-top: ${(props) => props.theme.dateSeparator.container.marginTop};
-  margin-bottom: ${(props) => props.theme.dateSeparator.container.marginBottom};
+  display: ${({ theme }) => theme.dateSeparator.container.display};
+  flex-direction: ${({ theme }) => theme.dateSeparator.container.flexDirection};
+  justify-content: ${({ theme }) =>
+    theme.dateSeparator.container.justifyContent};
+  align-items: ${({ theme }) => theme.dateSeparator.container.alignItems};
+  margin-top: ${({ theme }) => theme.dateSeparator.container.marginTop};
+  margin-bottom: ${({ theme }) => theme.dateSeparator.container.marginBottom};
 `;
 
 const Line = styled.View`
-  flex: ${(props) => props.theme.dateSeparator.line.flex};
-  height: ${(props) => props.theme.dateSeparator.line.height};
-  background-color: ${(props) =>
-    props.theme.dateSeparator.line.backgroundColor};
+  flex: ${({ theme }) => theme.dateSeparator.line.flex};
+  height: ${({ theme }) => theme.dateSeparator.line.height};
+  background-color: ${({ theme }) => theme.dateSeparator.line.backgroundColor};
 `;
 
 const DateText = styled.Text`

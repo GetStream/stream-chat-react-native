@@ -4,59 +4,56 @@ import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
-  display: ${(props) => props.theme.channelPreview.messenger.container.display};
-  flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.container.flexDirection};
-  border-bottom-color: ${(props) =>
-    props.theme.channelPreview.messenger.container.borderBottomColor};
-  border-bottom-width: ${(props) =>
-    props.theme.channelPreview.messenger.container.borderBottomWidth};
-  padding: ${(props) =>
-    props.theme.channelPreview.messenger.container.padding}px;
+  display: ${({ theme }) => theme.channelPreview.messenger.container.display};
+  flex-direction: ${({ theme }) =>
+    theme.channelPreview.messenger.container.flexDirection};
+  border-bottom-color: ${({ theme }) =>
+    theme.channelPreview.messenger.container.borderBottomColor};
+  border-bottom-width: ${({ theme }) =>
+    theme.channelPreview.messenger.container.borderBottomWidth};
+  padding: ${({ theme }) => theme.channelPreview.messenger.container.padding}px;
 `;
 
 const Details = styled.View`
-  display: ${(props) => props.theme.channelPreview.messenger.details.display};
-  flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.details.flexDirection};
-  flex: ${(props) => props.theme.channelPreview.messenger.details.flex};
-  padding-left: ${(props) =>
-    props.theme.channelPreview.messenger.details.paddingLeft}px;
+  display: ${({ theme }) => theme.channelPreview.messenger.details.display};
+  flex-direction: ${({ theme }) =>
+    theme.channelPreview.messenger.details.flexDirection};
+  flex: ${({ theme }) => theme.channelPreview.messenger.details.flex};
+  padding-left: ${({ theme }) =>
+    theme.channelPreview.messenger.details.paddingLeft}px;
 `;
 
 const DetailsTop = styled.View`
-  display: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.display};
-  flex-direction: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.flexDirection};
-  justify-content: ${(props) =>
-    props.theme.channelPreview.messenger.detailsTop.justifyContent};
+  display: ${({ theme }) => theme.channelPreview.messenger.detailsTop.display};
+  flex-direction: ${({ theme }) =>
+    theme.channelPreview.messenger.detailsTop.flexDirection};
+  justify-content: ${({ theme }) =>
+    theme.channelPreview.messenger.detailsTop.justifyContent};
 `;
 
 const Title = styled.Text`
-  font-weight: ${(props) =>
-    props.theme.channelPreview.messenger.title.fontWeight};
-  font-size: ${(props) => props.theme.channelPreview.messenger.title.fontSize};
-  flex: ${(props) => props.theme.channelPreview.messenger.title.flex};
+  font-weight: ${({ theme }) =>
+    theme.channelPreview.messenger.title.fontWeight};
+  font-size: ${({ theme }) => theme.channelPreview.messenger.title.fontSize};
+  flex: ${({ theme }) => theme.channelPreview.messenger.title.flex};
 `;
 
 const Date = styled.Text`
-  color: ${(props) => props.theme.channelPreview.messenger.date.color};
-  font-size: ${(props) => props.theme.channelPreview.messenger.date.fontSize};
-  text-align: ${(props) => props.theme.channelPreview.messenger.date.textAlign};
+  color: ${({ theme }) => theme.channelPreview.messenger.date.color};
+  font-size: ${({ theme }) => theme.channelPreview.messenger.date.fontSize};
+  text-align: ${({ theme }) => theme.channelPreview.messenger.date.textAlign};
 `;
 
 const Message = styled.Text`
-  color: ${(props) =>
-    props.unread
-      ? props.theme.channelPreview.messenger.message.unreadColor
-      : props.theme.channelPreview.messenger.message.color};
-  font-size: ${(props) =>
-    props.theme.channelPreview.messenger.message.fontSize};
-  font-weight: ${(props) =>
-    props.unread
-      ? props.theme.channelPreview.messenger.message.unreadFontWeight
-      : props.theme.channelPreview.messenger.message.fontWeight};
+  color: ${({ theme, unread }) =>
+    unread
+      ? theme.channelPreview.messenger.message.unreadColor
+      : theme.channelPreview.messenger.message.color};
+  font-size: ${({ theme }) => theme.channelPreview.messenger.message.fontSize};
+  font-weight: ${({ theme, unread }) =>
+    unread
+      ? theme.channelPreview.messenger.message.unreadFontWeight
+      : theme.channelPreview.messenger.message.fontWeight};
 `;
 
 export class ChannelPreviewMessenger extends PureComponent {

@@ -3,9 +3,9 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
 const InputBox = styled.TextInput`
-  max-height: ${(props) => props.theme.messageInput.inputBox.maxHeight};
-  margin: ${(props) => props.theme.messageInput.inputBox.marginTop}px;
-  flex: ${(props) => props.theme.messageInput.inputBox.flex};
+  max-height: ${({ theme }) => theme.messageInput.inputBox.maxHeight};
+  margin: ${({ theme }) => theme.messageInput.inputBox.marginTop}px;
+  flex: ${({ theme }) => theme.messageInput.inputBox.flex};
 `;
 
 export class AutoCompleteInput extends React.PureComponent {

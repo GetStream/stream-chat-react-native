@@ -9,27 +9,27 @@ const AvatarContainer = styled.View`
 `;
 
 const AvatarImage = styled.Image`
-  border-radius: ${(props) =>
-    props.theme.avatarImage.borderRadius || props.size / 2};
-  width: ${(props) => props.theme.avatarImage.width || props.size};
-  height: ${(props) => props.theme.avatarImage.height || props.size};
+  border-radius: ${({ theme, size }) =>
+    theme.avatarImage.borderRadius || size / 2};
+  width: ${({ theme, size }) => theme.avatarImage.width || size};
+  height: ${({ theme, size }) => theme.avatarImage.height || size};
 `;
 
 const AvatarFallback = styled.View`
-  border-radius: ${(props) =>
-    props.theme.avatarImage.borderRadius || props.size / 2};
-  width: ${(props) => props.theme.avatarImage.width || props.size};
-  height: ${(props) => props.theme.avatarImage.height || props.size};
-  background-color: ${(props) => props.theme.colors.primary};
-  justify-content: ${(props) => props.theme.avatarFallback.justifyContent};
-  align-items: ${(props) => props.theme.avatarFallback.alignItems};
+  border-radius: ${({ theme, size }) =>
+    theme.avatarImage.borderRadius || size / 2};
+  width: ${({ theme, size }) => theme.avatarImage.width || size};
+  height: ${({ theme, size }) => theme.avatarImage.height || size};
+  background-color: ${({ theme }) => theme.colors.primary};
+  justify-content: ${({ theme }) => theme.avatarFallback.justifyContent};
+  align-items: ${({ theme }) => theme.avatarFallback.alignItems};
 `;
 
 const AvatarText = styled.Text`
-  color: ${(props) => props.theme.avatarText.color};
-  text-transform: ${(props) => props.theme.avatarText.textTransform};
-  font-size: ${(props) => props.theme.avatarText.fontSize};
-  font-weight: ${(props) => props.theme.avatarText.fontWeight};
+  color: ${({ theme }) => theme.avatarText.color};
+  text-transform: ${({ theme }) => theme.avatarText.textTransform};
+  font-size: ${({ theme }) => theme.avatarText.fontSize};
+  font-weight: ${({ theme }) => theme.avatarText.fontWeight};
 `;
 
 /**

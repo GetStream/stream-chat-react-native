@@ -6,45 +6,44 @@ import { emojiData } from '../utils';
 import { Avatar } from './Avatar';
 
 const Container = styled.TouchableOpacity`
-  flex: ${(props) => props.theme.reactionPicker.container.flex};
-  align-items: ${(props) =>
-    props.left
-      ? props.theme.reactionPicker.container.leftAlign
-      : props.theme.reactionPicker.container.rightAlign};
+  flex: ${({ theme }) => theme.reactionPicker.container.flex};
+  align-items: ${({ theme, left }) =>
+    left
+      ? theme.reactionPicker.container.leftAlign
+      : theme.reactionPicker.container.rightAlign};
 `;
 
 const ContainerView = styled.View`
-  display: ${(props) => props.theme.reactionPicker.containerView.display};
-  flex-direction: ${(props) =>
-    props.theme.reactionPicker.containerView.flexDirection};
-  background-color: ${(props) =>
-    props.theme.reactionPicker.containerView.backgroundColor};
-  padding-left: ${(props) =>
-    props.theme.reactionPicker.containerView.paddingLeft};
-  height: ${(props) => props.theme.reactionPicker.containerView.height};
-  padding-right: ${(props) =>
-    props.theme.reactionPicker.containerView.paddingRight};
-  border-radius: ${(props) =>
-    props.theme.reactionPicker.containerView.borderRadius};
+  display: ${({ theme }) => theme.reactionPicker.containerView.display};
+  flex-direction: ${({ theme }) =>
+    theme.reactionPicker.containerView.flexDirection};
+  background-color: ${({ theme }) =>
+    theme.reactionPicker.containerView.backgroundColor};
+  padding-left: ${({ theme }) =>
+    theme.reactionPicker.containerView.paddingLeft};
+  height: ${({ theme }) => theme.reactionPicker.containerView.height};
+  padding-right: ${({ theme }) =>
+    theme.reactionPicker.containerView.paddingRight};
+  border-radius: ${({ theme }) =>
+    theme.reactionPicker.containerView.borderRadius};
 `;
 
 const Column = styled.View`
-  flex-direction: ${(props) => props.theme.reactionPicker.column.flexDirection};
-  align-items: ${(props) => props.theme.reactionPicker.column.alignItems};
-  margin-top: ${(props) => props.theme.reactionPicker.column.marginTop};
+  flex-direction: ${({ theme }) => theme.reactionPicker.column.flexDirection};
+  align-items: ${({ theme }) => theme.reactionPicker.column.alignItems};
+  margin-top: ${({ theme }) => theme.reactionPicker.column.marginTop};
 `;
 
 const Emoji = styled.Text`
-  font-size: ${(props) => props.theme.reactionPicker.emoji.fontSize};
-  margin-bottom: ${(props) => props.theme.reactionPicker.emoji.marginBottom};
-  margin-top: ${(props) => props.theme.reactionPicker.emoji.marginTop};
+  font-size: ${({ theme }) => theme.reactionPicker.emoji.fontSize};
+  margin-bottom: ${({ theme }) => theme.reactionPicker.emoji.marginBottom};
+  margin-top: ${({ theme }) => theme.reactionPicker.emoji.marginTop};
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => props.theme.reactionPicker.reactionCount.color};
-  font-size: ${(props) => props.theme.reactionPicker.reactionCount.fontSize};
-  font-weight: ${(props) =>
-    props.theme.reactionPicker.reactionCount.fontWeight};
+  color: ${({ theme }) => theme.reactionPicker.reactionCount.color};
+  font-size: ${({ theme }) => theme.reactionPicker.reactionCount.fontSize};
+  font-weight: ${({ theme }) => theme.reactionPicker.reactionCount.fontWeight};
 `;
 
 export class ReactionPicker extends React.PureComponent {

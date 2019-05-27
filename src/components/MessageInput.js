@@ -35,49 +35,47 @@ function S4() {
 }
 
 const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
-  display: ${(props) => props.theme.messageInput.container.display};
-  flex-direction: ${(props) =>
-    props.theme.messageInput.container.flexDirection};
-  border-radius: ${(props) => props.theme.messageInput.container.borderRadius};
-  background-color: ${(props) =>
-    props.theme.messageInput.container.backgroundColor};
-  padding-top: ${(props) =>
-    props.padding ? props.theme.messageInput.container.conditionalPadding : 0};
+  display: ${({ theme }) => theme.messageInput.container.display};
+  flex-direction: ${({ theme }) => theme.messageInput.container.flexDirection};
+  border-radius: ${({ theme }) => theme.messageInput.container.borderRadius};
+  background-color: ${({ theme }) =>
+    theme.messageInput.container.backgroundColor};
+  padding-top: ${({ theme, padding }) =>
+    padding ? theme.messageInput.container.conditionalPadding : 0};
   margin-left: 10px;
   margin-right: 10px;
 `;
 
 const InputBoxContainer = styled.View`
-  display: ${(props) => props.theme.messageInput.inputBoxContainer.display};
-  flex-direction: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.flexDirection};
-  padding-left: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.paddingLeft};
-  padding-right: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.paddingRight};
-  min-height: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.minHeight};
-  margin: ${(props) => props.theme.messageInput.inputBoxContainer.margin}px;
-  align-items: ${(props) =>
-    props.theme.messageInput.inputBoxContainer.alignItems};
+  display: ${({ theme }) => theme.messageInput.inputBoxContainer.display};
+  flex-direction: ${({ theme }) =>
+    theme.messageInput.inputBoxContainer.flexDirection};
+  padding-left: ${({ theme }) =>
+    theme.messageInput.inputBoxContainer.paddingLeft};
+  padding-right: ${({ theme }) =>
+    theme.messageInput.inputBoxContainer.paddingRight};
+  min-height: ${({ theme }) => theme.messageInput.inputBoxContainer.minHeight};
+  margin: ${({ theme }) => theme.messageInput.inputBoxContainer.margin}px;
+  align-items: ${({ theme }) =>
+    theme.messageInput.inputBoxContainer.alignItems};
 `;
 
 const AttachButton = styled.TouchableOpacity`
-  margin-right: ${(props) => props.theme.messageInput.attachButton.marginRight};
+  margin-right: ${({ theme }) => theme.messageInput.attachButton.marginRight};
 `;
 
 const AttachButtonIcon = styled.Image`
-  width: ${(props) => props.theme.messageInput.attachButtonIcon.width};
-  height: ${(props) => props.theme.messageInput.attachButtonIcon.height};
+  width: ${({ theme }) => theme.messageInput.attachButtonIcon.width};
+  height: ${({ theme }) => theme.messageInput.attachButtonIcon.height};
 `;
 
 const SendButton = styled.TouchableOpacity`
-  margin-left: ${(props) => props.theme.messageInput.sendButton.marginLeft};
+  margin-left: ${({ theme }) => theme.messageInput.sendButton.marginLeft};
 `;
 
 const Typing = styled.Text`
-  text-align: ${(props) => props.theme.messageInput.typing.textAlign};
-  height: ${(props) => props.theme.messageInput.typing.height};
+  text-align: ${({ theme }) => theme.messageInput.typing.textAlign};
+  height: ${({ theme }) => theme.messageInput.typing.height};
 `;
 
 const MessageInput = withSuggestionsContext(

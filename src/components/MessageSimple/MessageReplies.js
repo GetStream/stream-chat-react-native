@@ -4,23 +4,22 @@ import styled from '@stream-io/styled-components';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: ${(props) => props.theme.messageReplies.container.padding}px;
-  flex-direction: ${(props) =>
-    props.theme.messageReplies.container.flexDirection};
-  align-items: ${(props) => props.theme.messageReplies.container.alignItems};
+  padding: ${({ theme }) => theme.messageReplies.container.padding}px;
+  flex-direction: ${({ theme }) =>
+    theme.messageReplies.container.flexDirection};
+  align-items: ${({ theme }) => theme.messageReplies.container.alignItems};
 `;
 
 const MessageRepliesText = styled.Text`
-  color: ${(props) => props.theme.colors.primary};
-  font-weight:  ${(props) =>
-    props.theme.messageReplies.messageRepliesText.fontWeight}
-  font-size:  ${(props) =>
-    props.theme.messageReplies.messageRepliesText.fontSize}
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight:  ${({ theme }) =>
+    theme.messageReplies.messageRepliesText.fontWeight}
+  font-size:  ${({ theme }) => theme.messageReplies.messageRepliesText.fontSize}
 `;
 
 const MessageRepliesImage = styled.Image`
-  transform: ${(props) =>
-    props.pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+  transform: ${({ pos }) =>
+    pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
 `;
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {

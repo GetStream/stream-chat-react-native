@@ -6,16 +6,15 @@ import { MessageContent } from './MessageContent';
 import { MessageAvatar } from './MessageAvatar';
 
 const Container = styled.View`
-  display: ${(props) => props.theme.messageSimple.container.display};
-  flex-direction: ${(props) =>
-    props.theme.messageSimple.container.flexDirection};
-  align-items: ${(props) => props.theme.messageSimple.container.alignItems};
-  justify-content: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.messageSimple.container.left.justifyContent
-      : props.theme.messageSimple.container.right.justifyContent};
-  margin-bottom: ${(props) =>
-    props.marginBottom ? props.theme.messageSimple.container.marginBottom : 0};
+  display: ${({ theme }) => theme.messageSimple.container.display};
+  flex-direction: ${({ theme }) => theme.messageSimple.container.flexDirection};
+  align-items: ${({ theme }) => theme.messageSimple.container.alignItems};
+  justify-content: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageSimple.container.left.justifyContent
+      : theme.messageSimple.container.right.justifyContent};
+  margin-bottom: ${({ theme, marginBottom }) =>
+    marginBottom ? theme.messageSimple.container.marginBottom : 0};
 `;
 
 export class MessageSimple extends React.PureComponent {

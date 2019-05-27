@@ -8,48 +8,47 @@ import styled from '@stream-io/styled-components';
 import closeRound from '../images/icons/close-round.png';
 
 const Container = styled.View`
-  height: ${(props) => props.theme.imageUploadPreview.container.height};
-  display: ${(props) => props.theme.imageUploadPreview.container.display};
-  padding: ${(props) => props.theme.imageUploadPreview.container.padding}px;
+  height: ${({ theme }) => theme.imageUploadPreview.container.height};
+  display: ${({ theme }) => theme.imageUploadPreview.container.display};
+  padding: ${({ theme }) => theme.imageUploadPreview.container.padding}px;
 `;
 
 const ItemContainer = styled.View`
-  display: ${(props) => props.theme.imageUploadPreview.itemContainer.display};
-  height: ${(props) => props.theme.imageUploadPreview.itemContainer.height};
-  flex-direction: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.flexDirection};
-  align-items: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.alignItems};
-  margin-left: ${(props) =>
-    props.theme.imageUploadPreview.itemContainer.marginLeft};
+  display: ${({ theme }) => theme.imageUploadPreview.itemContainer.display};
+  height: ${({ theme }) => theme.imageUploadPreview.itemContainer.height};
+  flex-direction: ${({ theme }) =>
+    theme.imageUploadPreview.itemContainer.flexDirection};
+  align-items: ${({ theme }) =>
+    theme.imageUploadPreview.itemContainer.alignItems};
+  margin-left: ${({ theme }) =>
+    theme.imageUploadPreview.itemContainer.marginLeft};
 `;
 
 const Dismiss = styled.TouchableOpacity`
-  position: ${(props) => props.theme.imageUploadPreview.dismiss.position};
-  top: ${(props) => props.theme.imageUploadPreview.dismiss.top};
-  right: ${(props) => props.theme.imageUploadPreview.dismiss.right};
-  background-color: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.backgroundColor};
-  width: ${(props) => props.theme.imageUploadPreview.dismiss.width};
-  height: ${(props) => props.theme.imageUploadPreview.dismiss.height};
-  display: ${(props) => props.theme.imageUploadPreview.dismiss.display};
-  align-items: ${(props) => props.theme.imageUploadPreview.dismiss.alignItems};
-  justify-content: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.justifyContent};
-  border-radius: ${(props) =>
-    props.theme.imageUploadPreview.dismiss.borderRadius};
+  position: ${({ theme }) => theme.imageUploadPreview.dismiss.position};
+  top: ${({ theme }) => theme.imageUploadPreview.dismiss.top};
+  right: ${({ theme }) => theme.imageUploadPreview.dismiss.right};
+  background-color: ${({ theme }) =>
+    theme.imageUploadPreview.dismiss.backgroundColor};
+  width: ${({ theme }) => theme.imageUploadPreview.dismiss.width};
+  height: ${({ theme }) => theme.imageUploadPreview.dismiss.height};
+  display: ${({ theme }) => theme.imageUploadPreview.dismiss.display};
+  align-items: ${({ theme }) => theme.imageUploadPreview.dismiss.alignItems};
+  justify-content: ${({ theme }) =>
+    theme.imageUploadPreview.dismiss.justifyContent};
+  border-radius: ${({ theme }) =>
+    theme.imageUploadPreview.dismiss.borderRadius};
 `;
 
 const Upload = styled.Image`
-  width: ${(props) => props.theme.imageUploadPreview.upload.width};
-  height: ${(props) => props.theme.imageUploadPreview.upload.height};
-  border-radius: ${(props) =>
-    props.theme.imageUploadPreview.upload.borderRadius};
+  width: ${({ theme }) => theme.imageUploadPreview.upload.width};
+  height: ${({ theme }) => theme.imageUploadPreview.upload.height};
+  border-radius: ${({ theme }) => theme.imageUploadPreview.upload.borderRadius};
 `;
 
 const DismissImage = styled.Image`
-  width: ${(props) => props.theme.imageUploadPreview.dismissImage.width};
-  height: ${(props) => props.theme.imageUploadPreview.dismissImage.height};
+  width: ${({ theme }) => theme.imageUploadPreview.dismissImage.width};
+  height: ${({ theme }) => theme.imageUploadPreview.dismissImage.height};
 `;
 
 /**

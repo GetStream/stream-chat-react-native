@@ -7,55 +7,45 @@ import styled from '@stream-io/styled-components';
 import { CloseButton } from './CloseButton';
 
 const Single = styled.TouchableOpacity`
-  display: ${(props) => props.theme.gallery.single.display};
+  display: ${({ theme }) => theme.gallery.single.display};
   height: 200px;
-  width: ${(props) => props.theme.gallery.single.maxWidth};
-  border-top-left-radius: ${(props) => props.theme.gallery.single.borderRadius};
-  border-top-right-radius: ${(props) =>
-    props.theme.gallery.single.borderRadius};
-  border-bottom-left-radius: ${(props) =>
-    props.alignment === 'right' ? props.theme.gallery.single.borderRadius : 2};
-  border-bottom-right-radius: ${(props) =>
-    props.alignment === 'left' ? props.theme.gallery.single.borderRadius : 2};
+  width: ${({ theme }) => theme.gallery.single.maxWidth};
+  border-top-left-radius: ${({ theme }) => theme.gallery.single.borderRadius};
+  border-top-right-radius: ${({ theme }) => theme.gallery.single.borderRadius};
+  border-bottom-left-radius: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.gallery.single.borderRadius : 2};
+  border-bottom-right-radius: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.gallery.single.borderRadius : 2};
   overflow: hidden;
 `;
 
 const GalleryContainer = styled.View`
-  display: ${(props) => props.theme.gallery.galleryContainer.display};
-  flex-direction: ${(props) => props.theme.gallery.flexDirection};
-  flex-wrap: ${(props) => props.theme.gallery.flexWrap};
-  width: ${(props) => props.theme.gallery.width};
+  display: ${({ theme }) => theme.gallery.galleryContainer.display};
+  flex-direction: ${({ theme }) => theme.gallery.flexDirection};
+  flex-wrap: ${({ theme }) => theme.gallery.flexWrap};
+  width: ${({ theme }) => theme.gallery.width};
 
-  height: ${(props) =>
-    props.length >= 4
-      ? props.theme.gallery.doubleSize
-      : props.length === 3
-      ? props.theme.gallery.halfSize
-      : props.theme.gallery.size};
+  height: ${({ theme, length }) =>
+    length >= 4
+      ? theme.gallery.doubleSize
+      : length === 3
+      ? theme.gallery.halfSize
+      : theme.gallery.size};
 
-  overflow: ${(props) => props.theme.gallery.galleryContainer.overflow};
-  border-radius: ${(props) =>
-    props.theme.gallery.galleryContainer.borderRadius};
-  border-bottom-right-radius: ${(props) =>
-    props.alignment === 'left'
-      ? props.theme.gallery.galleryContainer.borderRadius
-      : 2};
-  border-bottom-left-radius: ${(props) =>
-    props.alignment === 'right'
-      ? props.theme.gallery.galleryContainer.borderRadius
-      : 2};
+  overflow: ${({ theme }) => theme.gallery.galleryContainer.overflow};
+  border-radius: ${({ theme }) => theme.gallery.galleryContainer.borderRadius};
+  border-bottom-right-radius: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.gallery.galleryContainer.borderRadius : 2};
+  border-bottom-left-radius: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.gallery.galleryContainer.borderRadius : 2};
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  display: ${(props) => props.theme.gallery.imageContainer.display};
-  height: ${(props) =>
-    props.length !== 3
-      ? props.theme.gallery.size
-      : props.theme.gallery.halfSize};
-  width: ${(props) =>
-    props.length !== 3
-      ? props.theme.gallery.size
-      : props.theme.gallery.halfSize};
+  display: ${({ theme }) => theme.gallery.imageContainer.display};
+  height: ${({ theme, length }) =>
+    length !== 3 ? theme.gallery.size : theme.gallery.halfSize};
+  width: ${({ theme, length }) =>
+    length !== 3 ? theme.gallery.size : theme.gallery.halfSize};
 `;
 
 export class Gallery extends React.PureComponent {
@@ -216,26 +206,25 @@ export class Gallery extends React.PureComponent {
 }
 
 const HeaderContainer = styled.View`
-  display: ${(props) => props.theme.gallery.header.container.display};
-  flex-direction: ${(props) =>
-    props.theme.gallery.header.container.flexDirection};
-  justify-content: ${(props) =>
-    props.theme.gallery.header.container.justifyContent};
-  position: ${(props) => props.theme.gallery.header.container.position};
-  width: ${(props) => props.theme.gallery.header.container.width};
-  z-index: ${(props) => props.theme.gallery.header.container.zIndex};
+  display: ${({ theme }) => theme.gallery.header.container.display};
+  flex-direction: ${({ theme }) =>
+    theme.gallery.header.container.flexDirection};
+  justify-content: ${({ theme }) =>
+    theme.gallery.header.container.justifyContent};
+  position: ${({ theme }) => theme.gallery.header.container.position};
+  width: ${({ theme }) => theme.gallery.header.container.width};
+  z-index: ${({ theme }) => theme.gallery.header.container.zIndex};
 `;
 
 const HeaderButton = styled.TouchableOpacity`
-  width: ${(props) => props.theme.gallery.header.button.width};
-  height: ${(props) => props.theme.gallery.header.button.height};
-  margin-right: ${(props) => props.theme.gallery.header.button.marginRight};
-  margin-top: ${(props) => props.theme.gallery.header.button.marginTop};
-  display: ${(props) => props.theme.gallery.header.button.display};
-  align-items: ${(props) => props.theme.gallery.header.button.alignItems};
-  justify-content: ${(props) =>
-    props.theme.gallery.header.button.justifyContent};
-  border-radius: ${(props) => props.theme.gallery.header.button.borderRadius};
+  width: ${({ theme }) => theme.gallery.header.button.width};
+  height: ${({ theme }) => theme.gallery.header.button.height};
+  margin-right: ${({ theme }) => theme.gallery.header.button.marginRight};
+  margin-top: ${({ theme }) => theme.gallery.header.button.marginTop};
+  display: ${({ theme }) => theme.gallery.header.button.display};
+  align-items: ${({ theme }) => theme.gallery.header.button.alignItems};
+  justify-content: ${({ theme }) => theme.gallery.header.button.justifyContent};
+  border-radius: ${({ theme }) => theme.gallery.header.button.borderRadius};
 `;
 
 const GalleryHeader = ({ handleDismiss }) => (

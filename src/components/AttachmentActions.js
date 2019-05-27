@@ -6,43 +6,41 @@ import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
 const Container = styled.View`
-  flex-direction: ${(props) =>
-    props.theme.attachment.actions.container.flexDirection};
-  justify-content: ${(props) =>
-    props.theme.attachment.actions.container.justifyContent};
-  padding: ${(props) => props.theme.attachment.actions.container.padding}px;
+  flex-direction: ${({ theme }) =>
+    theme.attachment.actions.container.flexDirection};
+  justify-content: ${({ theme }) =>
+    theme.attachment.actions.container.justifyContent};
+  padding: ${({ theme }) => theme.attachment.actions.container.padding}px;
   ${({ theme }) => theme.attachment.actions.container.extra}
 `;
 
 const Button = styled(({ buttonStyle, ...rest }) => (
   <TouchableOpacity {...rest} />
 ))`
-  background-color: ${(props) =>
-    props.buttonStyle === 'primary'
-      ? props.theme.attachment.actions.button.primaryBackgroundColor
-      : props.theme.attachment.actions.button.defaultBackgroundColor};
-  border-color: ${(props) =>
-    props.buttonStyle === 'primary'
-      ? props.theme.attachment.actions.button.primaryBorderColor
-      : props.theme.attachment.actions.button.defaultBorderColor};
-  border-width: ${(props) => props.theme.attachment.actions.button.borderWidth};
-  border-radius: ${(props) =>
-    props.theme.attachment.actions.button.borderRadius};
-  padding-top: ${(props) => props.theme.attachment.actions.button.paddingTop}px;
-  padding-bottom: ${(props) =>
-    props.theme.attachment.actions.button.paddingBottom}px;
-  padding-left: ${(props) =>
-    props.theme.attachment.actions.button.paddingLeft}px;
-  padding-right: ${(props) =>
-    props.theme.attachment.actions.button.paddingRight}px;
+  background-color: ${({ theme, buttonStyle }) =>
+    buttonStyle === 'primary'
+      ? theme.attachment.actions.button.primaryBackgroundColor
+      : theme.attachment.actions.button.defaultBackgroundColor};
+  border-color: ${({ theme, buttonStyle }) =>
+    buttonStyle === 'primary'
+      ? theme.attachment.actions.button.primaryBorderColor
+      : theme.attachment.actions.button.defaultBorderColor};
+  border-width: ${({ theme }) => theme.attachment.actions.button.borderWidth};
+  border-radius: ${({ theme }) => theme.attachment.actions.button.borderRadius};
+  padding-top: ${({ theme }) => theme.attachment.actions.button.paddingTop}px;
+  padding-bottom: ${({ theme }) =>
+    theme.attachment.actions.button.paddingBottom}px;
+  padding-left: ${({ theme }) => theme.attachment.actions.button.paddingLeft}px;
+  padding-right: ${({ theme }) =>
+    theme.attachment.actions.button.paddingRight}px;
   ${({ theme }) => theme.attachment.actions.button.extra}
 `;
 
 const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
-  color: ${(props) =>
-    props.buttonStyle === 'primary'
-      ? props.theme.attachment.actions.buttonText.primaryColor
-      : props.theme.attachment.actions.buttonText.defaultColor};
+  color: ${({ theme, buttonStyle }) =>
+    buttonStyle === 'primary'
+      ? theme.attachment.actions.buttonText.primaryColor
+      : theme.attachment.actions.buttonText.defaultColor};
   ${({ theme }) => theme.attachment.actions.buttonText.extra}
 `;
 
