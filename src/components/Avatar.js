@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
+import { themed } from '../styles/theme';
 
 const AvatarContainer = styled.View`
   display: flex;
@@ -9,27 +10,28 @@ const AvatarContainer = styled.View`
 `;
 
 const AvatarImage = styled.Image`
-  border-radius: ${({ theme, size }) =>
-    theme.avatarImage.borderRadius || size / 2};
-  width: ${({ theme, size }) => theme.avatarImage.width || size};
-  height: ${({ theme, size }) => theme.avatarImage.height || size};
+  border-radius: ${({ size }) => size / 2};
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
+  ${({ theme }) => theme.avatar.image.extra}
 `;
 
 const AvatarFallback = styled.View`
-  border-radius: ${({ theme, size }) =>
-    theme.avatarImage.borderRadius || size / 2};
-  width: ${({ theme, size }) => theme.avatarImage.width || size};
-  height: ${({ theme, size }) => theme.avatarImage.height || size};
+  border-radius: ${({ size }) => size / 2};
+  width: ${({ size }) => size};
+  height: ${({ size }) => size};
   background-color: ${({ theme }) => theme.colors.primary};
-  justify-content: ${({ theme }) => theme.avatarFallback.justifyContent};
-  align-items: ${({ theme }) => theme.avatarFallback.alignItems};
+  justify-content: ${({ theme }) => theme.avatar.fallback.justifyContent};
+  align-items: ${({ theme }) => theme.avatar.fallback.alignItems};
+  ${({ theme }) => theme.avatar.fallback.extra}
 `;
 
 const AvatarText = styled.Text`
-  color: ${({ theme }) => theme.avatarText.color};
-  text-transform: ${({ theme }) => theme.avatarText.textTransform};
-  font-size: ${({ theme }) => theme.avatarText.fontSize};
-  font-weight: ${({ theme }) => theme.avatarText.fontWeight};
+  color: ${({ theme }) => theme.avatar.text.color};
+  text-transform: ${({ theme }) => theme.avatar.text.textTransform};
+  font-size: ${({ theme }) => theme.avatar.text.fontSize};
+  font-weight: ${({ theme }) => theme.avatar.text.fontWeight};
+  ${({ theme }) => theme.avatar.text.extra}
 `;
 
 /**
@@ -38,62 +40,66 @@ const AvatarText = styled.Text`
  * @example ./docs/Avatar.md
  * @extends PureComponent
  */
-export class Avatar extends React.PureComponent {
-  static propTypes = {
-    /** image url */
-    image: PropTypes.string,
-    /** name of the picture, used for title tag fallback */
-    name: PropTypes.string,
-    /** shape of the avatar, circle, rounded or square */
-    shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
-    /** size in pixels */
-    size: PropTypes.number,
-    /** Style overrides */
-    style: PropTypes.object,
-  };
+export const Avatar = themed(
+  class Avatar extends React.PureComponent {
+    static themePath = 'avatar';
+    static propTypes = {
+      /** image url */
+      image: PropTypes.string,
+      /** name of the picture, used for title tag fallback */
+      name: PropTypes.string,
+      /** shape of the avatar, circle, rounded or square */
+      shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
+      /** size in pixels */
+      size: PropTypes.number,
+      /** Style overrides */
+      style: PropTypes.object,
+    };
 
-  static defaultProps = {
-    shape: 'circle',
-    size: 32,
-  };
+    static defaultProps = {
+      shape: 'circle',
+      size: 32,
+    };
 
-  state = {
-    imageError: false,
-  };
+    state = {
+      imageError: false,
+    };
 
-  setError = () => {
-    this.setState({
-      imageError: true,
-    });
-  };
+    setError = () => {
+      this.setState({
+        imageError: true,
+      });
+    };
 
-  getInitials = (name) =>
-    name
-      ? name
-          .split(' ')
-          .slice(0, 2)
-          .map((name) => name.charAt(0))
-      : null;
+    getInitials = (name) =>
+      name
+        ? name
+            .split(' ')
+            .slice(0, 2)
+            .map((name) => name.charAt(0))
+        : null;
 
-  render() {
-    const { size, name, image } = this.props;
-    const initials = this.getInitials(name);
-    return (
-      <AvatarContainer>
-        {image && !this.state.imageError ? (
-          <AvatarImage
-            size={size}
-            source={{ uri: image }}
-            accessibilityLabel="initials"
-            resizeMethod="resize"
-            onError={this.setError}
-          />
-        ) : (
-          <AvatarFallback size={size}>
-            <AvatarText>{initials}</AvatarText>
-          </AvatarFallback>
-        )}
-      </AvatarContainer>
-    );
-  }
-}
+    render() {
+      const { size, name, image, theme } = this.props;
+      const initials = this.getInitials(name);
+      return (
+        <AvatarContainer>
+          {image && !this.state.imageError ? (
+            <AvatarImage
+              size={size}
+              source={{ uri: image }}
+              accessibilityLabel="initials"
+              resizeMethod="resize"
+              onError={this.setError}
+              theme={theme}
+            />
+          ) : (
+            <AvatarFallback theme={theme} size={size}>
+              <AvatarText theme={theme}>{initials}</AvatarText>
+            </AvatarFallback>
+          )}
+        </AvatarContainer>
+      );
+    }
+  },
+);

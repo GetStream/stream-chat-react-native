@@ -25,10 +25,19 @@ const defaultTheme = {
   colors: {
     ...Colors,
   },
-  avatarImage: {
-    height: null,
-    width: null,
-    borderRadius: null,
+  avatar: {
+    image: {},
+    text: {
+      color: Colors.textLight,
+      textTransform: 'uppercase',
+      fontSize: BASE_FONT_SIZE - 2,
+      fontWeight: '600',
+    },
+    fallback: {
+      backgroundColor: Colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   },
   attachment: {
     file: {
@@ -74,18 +83,6 @@ const defaultTheme = {
       },
     },
   },
-  avatarFallback: {
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: Colors.textLight,
-    textTransform: 'uppercase',
-    fontSize: BASE_FONT_SIZE - 2,
-    fontWeight: '600',
-  },
-
   card: {
     container: {
       overflow: 'hidden',
