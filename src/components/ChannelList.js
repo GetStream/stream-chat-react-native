@@ -84,6 +84,7 @@ const ChannelList = withChatContext(
         loadingChannels: true,
         refreshing: false,
         offset: 0,
+        connectionRecoveredCount: 0,
       };
 
       this.menuButton = React.createRef();
@@ -195,6 +196,13 @@ const ChannelList = withChatContext(
         this.moveChannelUp(e.cid);
       }
 
+      // make sure to re-render the channel list after connection is recovered
+      if (e.type === 'connection.recovered') {
+        this.setState((prevState) => ({
+          connectionRecoveredCount: prevState.connectionRecoveredCount + 1,
+        }));
+      }
+
       // move channel to start
       if (e.type === 'notification.message_new') {
         // if new message, put move channel up
@@ -294,6 +302,7 @@ const ChannelList = withChatContext(
         clickCreateChannel: this.clickCreateChannel,
         closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
+        connectionRecoveredCount: this.state.connectionRecoveredCount,
       };
       const List = this.props.List;
       const props = { ...this.props, setActiveChannel: this.props.onSelect };
