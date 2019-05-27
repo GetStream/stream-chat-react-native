@@ -3,65 +3,59 @@ import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
-import { getTheme } from '../styles/theme';
 
 import { CloseButton } from './CloseButton';
 
 const Single = styled.TouchableOpacity`
-  display: ${(props) => getTheme(props).gallery.single.display};
+  display: ${(props) => props.theme.gallery.single.display};
   height: 200px;
-  width: ${(props) => getTheme(props).gallery.single.maxWidth};
-  border-top-left-radius: ${(props) =>
-    getTheme(props).gallery.single.borderRadius};
+  width: ${(props) => props.theme.gallery.single.maxWidth};
+  border-top-left-radius: ${(props) => props.theme.gallery.single.borderRadius};
   border-top-right-radius: ${(props) =>
-    getTheme(props).gallery.single.borderRadius};
+    props.theme.gallery.single.borderRadius};
   border-bottom-left-radius: ${(props) =>
-    props.alignment === 'right'
-      ? getTheme(props).gallery.single.borderRadius
-      : 2};
+    props.alignment === 'right' ? props.theme.gallery.single.borderRadius : 2};
   border-bottom-right-radius: ${(props) =>
-    props.alignment === 'left'
-      ? getTheme(props).gallery.single.borderRadius
-      : 2};
+    props.alignment === 'left' ? props.theme.gallery.single.borderRadius : 2};
   overflow: hidden;
 `;
 
 const GalleryContainer = styled.View`
-  display: ${(props) => getTheme(props).gallery.galleryContainer.display};
-  flex-direction: ${(props) => getTheme(props).gallery.flexDirection};
-  flex-wrap: ${(props) => getTheme(props).gallery.flexWrap};
-  width: ${(props) => getTheme(props).gallery.width};
+  display: ${(props) => props.theme.gallery.galleryContainer.display};
+  flex-direction: ${(props) => props.theme.gallery.flexDirection};
+  flex-wrap: ${(props) => props.theme.gallery.flexWrap};
+  width: ${(props) => props.theme.gallery.width};
 
   height: ${(props) =>
     props.length >= 4
-      ? getTheme(props).gallery.doubleSize
+      ? props.theme.gallery.doubleSize
       : props.length === 3
-      ? getTheme(props).gallery.halfSize
-      : getTheme(props).gallery.size};
+      ? props.theme.gallery.halfSize
+      : props.theme.gallery.size};
 
-  overflow: ${(props) => getTheme(props).gallery.galleryContainer.overflow};
+  overflow: ${(props) => props.theme.gallery.galleryContainer.overflow};
   border-radius: ${(props) =>
-    getTheme(props).gallery.galleryContainer.borderRadius};
+    props.theme.gallery.galleryContainer.borderRadius};
   border-bottom-right-radius: ${(props) =>
     props.alignment === 'left'
-      ? getTheme(props).gallery.galleryContainer.borderRadius
+      ? props.theme.gallery.galleryContainer.borderRadius
       : 2};
   border-bottom-left-radius: ${(props) =>
     props.alignment === 'right'
-      ? getTheme(props).gallery.galleryContainer.borderRadius
+      ? props.theme.gallery.galleryContainer.borderRadius
       : 2};
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  display: ${(props) => getTheme(props).gallery.imageContainer.display};
+  display: ${(props) => props.theme.gallery.imageContainer.display};
   height: ${(props) =>
     props.length !== 3
-      ? getTheme(props).gallery.size
-      : getTheme(props).gallery.halfSize};
+      ? props.theme.gallery.size
+      : props.theme.gallery.halfSize};
   width: ${(props) =>
     props.length !== 3
-      ? getTheme(props).gallery.size
-      : getTheme(props).gallery.halfSize};
+      ? props.theme.gallery.size
+      : props.theme.gallery.halfSize};
 `;
 
 export class Gallery extends React.PureComponent {
@@ -222,27 +216,26 @@ export class Gallery extends React.PureComponent {
 }
 
 const HeaderContainer = styled.View`
-  display: ${(props) => getTheme(props).gallery.header.container.display};
+  display: ${(props) => props.theme.gallery.header.container.display};
   flex-direction: ${(props) =>
-    getTheme(props).gallery.header.container.flexDirection};
+    props.theme.gallery.header.container.flexDirection};
   justify-content: ${(props) =>
-    getTheme(props).gallery.header.container.justifyContent};
-  position: ${(props) => getTheme(props).gallery.header.container.position};
-  width: ${(props) => getTheme(props).gallery.header.container.width};
-  z-index: ${(props) => getTheme(props).gallery.header.container.zIndex};
+    props.theme.gallery.header.container.justifyContent};
+  position: ${(props) => props.theme.gallery.header.container.position};
+  width: ${(props) => props.theme.gallery.header.container.width};
+  z-index: ${(props) => props.theme.gallery.header.container.zIndex};
 `;
 
 const HeaderButton = styled.TouchableOpacity`
-  width: ${(props) => getTheme(props).gallery.header.button.width};
-  height: ${(props) => getTheme(props).gallery.header.button.height};
-  margin-right: ${(props) => getTheme(props).gallery.header.button.marginRight};
-  margin-top: ${(props) => getTheme(props).gallery.header.button.marginTop};
-  display: ${(props) => getTheme(props).gallery.header.button.display};
-  align-items: ${(props) => getTheme(props).gallery.header.button.alignItems};
+  width: ${(props) => props.theme.gallery.header.button.width};
+  height: ${(props) => props.theme.gallery.header.button.height};
+  margin-right: ${(props) => props.theme.gallery.header.button.marginRight};
+  margin-top: ${(props) => props.theme.gallery.header.button.marginTop};
+  display: ${(props) => props.theme.gallery.header.button.display};
+  align-items: ${(props) => props.theme.gallery.header.button.alignItems};
   justify-content: ${(props) =>
-    getTheme(props).gallery.header.button.justifyContent};
-  border-radius: ${(props) =>
-    getTheme(props).gallery.header.button.borderRadius};
+    props.theme.gallery.header.button.justifyContent};
+  border-radius: ${(props) => props.theme.gallery.header.button.borderRadius};
 `;
 
 const GalleryHeader = ({ handleDismiss }) => (

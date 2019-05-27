@@ -3,39 +3,37 @@ import { Image, Text, View, Linking } from 'react-native';
 import PropTypes from 'prop-types';
 import giphyLogo from '../assets/Poweredby_100px-White_VertText.png';
 import { styles } from '../styles/styles.js';
-import { getTheme } from '../styles/theme';
 
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
   border-top-left-radius: ${(props) =>
-    getTheme(props).card.container.borderTopLeftRadius};
+    props.theme.card.container.borderTopLeftRadius};
   border-top-right-radius: ${(props) =>
-    getTheme(props).card.container.borderTopRightRadius};
-  overflow: ${(props) => getTheme(props).card.container.overflow};
+    props.theme.card.container.borderTopRightRadius};
+  overflow: ${(props) => props.theme.card.container.overflow};
   border-bottom-left-radius: ${(props) =>
     props.alignment === 'right'
-      ? getTheme(props).card.container.borderBottomLeftRadius
+      ? props.theme.card.container.borderBottomLeftRadius
       : 2};
   border-bottom-right-radius: ${(props) =>
     props.alignment === 'left'
-      ? getTheme(props).card.container.borderBottomRightRadius
+      ? props.theme.card.container.borderBottomRightRadius
       : 2};
-  background-color: ${(props) =>
-    getTheme(props).card.container.backgroundColor};
-  width: ${(props) => getTheme(props).card.container.width};
+  background-color: ${(props) => props.theme.card.container.backgroundColor};
+  width: ${(props) => props.theme.card.container.width};
 `;
 
 const Footer = styled.View`
-  display: ${(props) => getTheme(props).card.footer.display};
-  flex-direction: ${(props) => getTheme(props).card.footer.flexDirection};
-  justify-content: ${(props) => getTheme(props).card.footer.justifyContent};
-  padding: ${(props) => getTheme(props).card.footer.padding}px;
+  display: ${(props) => props.theme.card.footer.display};
+  flex-direction: ${(props) => props.theme.card.footer.flexDirection};
+  justify-content: ${(props) => props.theme.card.footer.justifyContent};
+  padding: ${(props) => props.theme.card.footer.padding}px;
 `;
 
 const Cover = styled.Image`
-  display: ${(props) => getTheme(props).card.cover.display};
-  height: ${(props) => getTheme(props).card.cover.height};
+  display: ${(props) => props.theme.card.cover.display};
+  height: ${(props) => props.theme.card.cover.height};
 `;
 
 export class Card extends React.Component {

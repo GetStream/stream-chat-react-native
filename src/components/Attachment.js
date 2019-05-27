@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, TouchableOpacity, Linking } from 'react-native';
-import { getTheme } from '../styles/theme';
 
 import styled from '@stream-io/styled-components';
 
@@ -11,36 +10,34 @@ import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
 const FileContainer = styled.View`
-  display: ${(props) => getTheme(props).attachment.file.container.display};
+  display: ${(props) => props.theme.attachment.file.container.display};
   flex-direction: ${(props) =>
-    getTheme(props).attachment.file.container.flexDirection};
-  align-items: ${(props) =>
-    getTheme(props).attachment.file.container.alignItems};
+    props.theme.attachment.file.container.flexDirection};
+  align-items: ${(props) => props.theme.attachment.file.container.alignItems};
   background-color: ${(props) =>
-    getTheme(props).attachment.file.container.backgroundColor};
-  padding: ${(props) => getTheme(props).attachment.file.container.padding}px;
+    props.theme.attachment.file.container.backgroundColor};
+  padding: ${(props) => props.theme.attachment.file.container.padding}px;
   border-radius: ${(props) =>
-    getTheme(props).attachment.file.container.borderRadius};
+    props.theme.attachment.file.container.borderRadius};
   border-bottom-left-radius: ${(props) =>
     props.alignment === 'right'
-      ? getTheme(props).attachment.file.container.borderRadius
+      ? props.theme.attachment.file.container.borderRadius
       : 2};
   border-bottom-right-radius: ${(props) =>
     props.alignment === 'left'
-      ? getTheme(props).attachment.file.container.borderRadius
+      ? props.theme.attachment.file.container.borderRadius
       : 2};
 `;
 
 const FileDetails = styled.View`
-  display: ${(props) => getTheme(props).attachment.file.details.display};
+  display: ${(props) => props.theme.attachment.file.details.display};
   flex-direction: ${(props) =>
-    getTheme(props).attachment.file.details.flexDirection};
-  padding-left: ${(props) =>
-    getTheme(props).attachment.file.details.paddingLeft}px;
+    props.theme.attachment.file.details.flexDirection};
+  padding-left: ${(props) => props.theme.attachment.file.details.paddingLeft}px;
 `;
 
 const FileTitle = styled.Text`
-  font-weight: ${(props) => getTheme(props).attachment.file.title.fontWeight};
+  font-weight: ${(props) => props.theme.attachment.file.title.fontWeight};
 `;
 
 const FileSize = styled.Text``;

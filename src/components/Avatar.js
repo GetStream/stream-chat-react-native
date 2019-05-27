@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { getTheme } from '../styles/theme';
 
 import styled from '@stream-io/styled-components';
 
@@ -11,26 +10,26 @@ const AvatarContainer = styled.View`
 
 const AvatarImage = styled.Image`
   border-radius: ${(props) =>
-    getTheme(props).avatarImage.borderRadius || props.size / 2};
-  width: ${(props) => getTheme(props).avatarImage.width || props.size};
-  height: ${(props) => getTheme(props).avatarImage.height || props.size};
+    props.theme.avatarImage.borderRadius || props.size / 2};
+  width: ${(props) => props.theme.avatarImage.width || props.size};
+  height: ${(props) => props.theme.avatarImage.height || props.size};
 `;
 
 const AvatarFallback = styled.View`
   border-radius: ${(props) =>
-    getTheme(props).avatarImage.borderRadius || props.size / 2};
-  width: ${(props) => getTheme(props).avatarImage.width || props.size};
-  height: ${(props) => getTheme(props).avatarImage.height || props.size};
-  background-color: ${(props) => getTheme(props).colors.primary};
-  justify-content: ${(props) => getTheme(props).avatarFallback.justifyContent};
-  align-items: ${(props) => getTheme(props).avatarFallback.alignItems};
+    props.theme.avatarImage.borderRadius || props.size / 2};
+  width: ${(props) => props.theme.avatarImage.width || props.size};
+  height: ${(props) => props.theme.avatarImage.height || props.size};
+  background-color: ${(props) => props.theme.colors.primary};
+  justify-content: ${(props) => props.theme.avatarFallback.justifyContent};
+  align-items: ${(props) => props.theme.avatarFallback.alignItems};
 `;
 
 const AvatarText = styled.Text`
-  color: ${(props) => getTheme(props).avatarText.color};
-  text-transform: ${(props) => getTheme(props).avatarText.textTransform};
-  font-size: ${(props) => getTheme(props).avatarText.fontSize};
-  font-weight: ${(props) => getTheme(props).avatarText.fontWeight};
+  color: ${(props) => props.theme.avatarText.color};
+  text-transform: ${(props) => props.theme.avatarText.textTransform};
+  font-size: ${(props) => props.theme.avatarText.fontSize};
+  font-weight: ${(props) => props.theme.avatarText.fontWeight};
 `;
 
 /**

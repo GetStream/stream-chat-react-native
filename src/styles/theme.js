@@ -681,13 +681,6 @@ const buildTheme = (t) => {
   return theme;
 };
 
-const getTheme = (props) => {
-  if (props.theme && Object.keys(props.theme).length > 0) {
-    return props.theme;
-  }
-  return defaultTheme;
-};
-
 const themed = (WrappedComponent) => {
   if (!WrappedComponent.themePath) {
     throw Error('Only use themed on components that have a static themePath');
@@ -730,4 +723,4 @@ const formatDefaultTheme = (component) => {
     </div>
   );
 };
-export { themed, buildTheme, getTheme, formatDefaultTheme };
+export { themed, buildTheme, formatDefaultTheme };

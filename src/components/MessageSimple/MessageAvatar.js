@@ -1,22 +1,21 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 import { Avatar } from '../Avatar';
-import { getTheme } from '../../styles/theme';
 
 const Container = styled.View`
   margin-right: ${(props) =>
     props.alignment === 'left'
-      ? getTheme(props).messageAvatar.container.margin
+      ? props.theme.messageAvatar.container.margin
       : 0};
   margin-left: ${(props) =>
     props.alignment === 'right'
-      ? getTheme(props).messageAvatar.container.margin
+      ? props.theme.messageAvatar.container.margin
       : 0};
 `;
 
 const Spacer = styled.View`
-  width: ${(props) => getTheme(props).messageAvatar.spacer.width};
-  height: ${(props) => getTheme(props).messageAvatar.spacer.height};
+  width: ${(props) => props.theme.messageAvatar.spacer.width};
+  height: ${(props) => props.theme.messageAvatar.spacer.height};
 `;
 
 export const MessageAvatar = ({ message, isMyMessage }) => {
