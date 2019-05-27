@@ -302,6 +302,7 @@ const ChannelList = withChatContext(
         clickCreateChannel: this.clickCreateChannel,
         closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
+        connectionRecoveredCount: this.state.connectionRecoveredCount,
       };
       const List = this.props.List;
       const props = { ...this.props, setActiveChannel: this.props.onSelect };

@@ -11,6 +11,7 @@ import { DateSeparator } from './DateSeparator';
 
 const ListContainer = styled.FlatList`
   flex: ${(props) => getTheme(props).messageList.listContainer.flex};
+  width: 100%;
   padding-left: ${(props) =>
     getTheme(props).messageList.listContainer.paddingLeft};
   padding-right: ${(props) =>
@@ -323,7 +324,10 @@ const MessageList = withChannelContext(
               onPress={this.props.clearEditingState}
             />
           )}
-          <View collapsable={false} style={{ flex: 1, alignItems: 'center' }}>
+          <View
+            collapsable={false}
+            style={{ flex: 1, alignItems: 'center', width: '100%' }}
+          >
             <ListContainer
               ref={(fl) => (this.flatList = fl)}
               data={messagesWithGroupPositions}

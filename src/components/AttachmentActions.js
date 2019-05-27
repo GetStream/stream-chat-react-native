@@ -21,7 +21,7 @@ const Button = styled.TouchableOpacity`
   border-color: ${(props) =>
     props.styleName === 'primary'
       ? getTheme(props).attachment.actions.button.primaryBorderColor
-      : getTheme(props).attachment.actions.button.defaultBordercolor};
+      : getTheme(props).attachment.actions.button.defaultBorderColor};
   border-width: ${(props) =>
     getTheme(props).attachment.actions.button.borderWidth};
   border-radius: ${(props) =>

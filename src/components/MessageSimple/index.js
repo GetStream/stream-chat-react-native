@@ -12,34 +12,37 @@ const Container = styled.View`
     getTheme(props).messageSimple.container.flexDirection};
   align-items: ${(props) => getTheme(props).messageSimple.container.alignItems};
   justify-content: ${(props) =>
-    props.position === 'left'
+    props.alignment === 'left'
       ? getTheme(props).messageSimple.container.left.justifyContent
       : getTheme(props).messageSimple.container.right.justifyContent};
   margin-bottom: ${(props) =>
-    props.bottom ? getTheme(props).messageSimple.container.marginBottom : 0};
+    props.marginBottom
+      ? getTheme(props).messageSimple.container.marginBottom
+      : 0};
 `;
 
 export class MessageSimple extends React.PureComponent {
   render() {
     const { message, isMyMessage } = this.props;
     const pos = isMyMessage(message) ? 'right' : 'left';
-    const bottomMargin =
+    const marginBottom =
       message.groupPosition[0] === 'single' ||
       message.groupPosition[0] === 'bottom'
         ? true
         : false;
+
     return (
-      <Container position={pos} bottom={bottomMargin}>
+      <Container alignment={pos} marginBottom={marginBottom}>
         {isMyMessage(message) ? (
           <React.Fragment>
-            <MessageContent {...this.props} position={pos} />
+            <MessageContent {...this.props} alignment={pos} />
             <MessageAvatar {...this.props} />
             <MessageStatus {...this.props} />
           </React.Fragment>
         ) : (
           <React.Fragment>
             <MessageAvatar {...this.props} />
-            <MessageContent {...this.props} position={pos} />
+            <MessageContent {...this.props} alignment={pos} />
           </React.Fragment>
         )}
       </Container>
