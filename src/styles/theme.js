@@ -281,42 +281,6 @@ const defaultTheme = {
     },
   },
 
-  imageUploadPreview: {
-    container: {
-      height: 70,
-      display: 'flex',
-      padding: 10,
-    },
-    itemContainer: {
-      display: 'flex',
-      height: 50,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginLeft: 5,
-    },
-    dismiss: {
-      position: 'absolute',
-      top: 5,
-      right: 5,
-      backgroundColor: '#fff',
-      width: 20,
-      height: 20,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 20,
-    },
-    dismissImage: {
-      width: 10,
-      height: 10,
-    },
-    upload: {
-      height: 50,
-      width: 50,
-      borderRadius: 10,
-    },
-  },
-
   mentionsItem: {
     container: {
       flexDirection: 'row',
@@ -511,6 +475,41 @@ const defaultTheme = {
     typing: {
       textAlign: 'right',
       height: 20,
+    },
+    imageUploadPreview: {
+      container: {
+        height: 70,
+        display: 'flex',
+        padding: 10,
+      },
+      itemContainer: {
+        display: 'flex',
+        height: 50,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginLeft: 5,
+      },
+      dismiss: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: '#fff',
+        width: 20,
+        height: 20,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+      },
+      dismissImage: {
+        width: 10,
+        height: 10,
+      },
+      upload: {
+        height: 50,
+        width: 50,
+        borderRadius: 10,
+      },
     },
   },
 
