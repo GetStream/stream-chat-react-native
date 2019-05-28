@@ -16,8 +16,8 @@ import { MESSAGE_ACTIONS } from '../utils';
  */
 const Message = withChannelContext(
   class Message extends React.Component {
-    static themePath = 'messageSimple';
-    static extraThemePaths = ['avatar', 'card'];
+    static themePath = 'message';
+    static extraThemePaths = ['avatar'];
     constructor(props) {
       super(props);
       this.state = {
