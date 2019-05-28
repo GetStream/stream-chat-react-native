@@ -367,11 +367,13 @@ const MessageList = withChannelContext(
                 </NewMessageNotification>
               </MessageNotification>
             )}
-            <ErrorNotification active={!this.state.online}>
-              <ErrorNotificationText>
-                Connection failure, reconnecting now ...
-              </ErrorNotificationText>
-            </ErrorNotification>
+            {!this.state.online && (
+              <ErrorNotification>
+                <ErrorNotificationText>
+                  Connection failure, reconnecting now ...
+                </ErrorNotificationText>
+              </ErrorNotification>
+            )}
           </View>
         </React.Fragment>
       );
