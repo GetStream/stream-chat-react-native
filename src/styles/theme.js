@@ -27,7 +27,67 @@ const defaultTheme = {
     text: {},
     fallback: {},
   },
-  attachment: {
+
+  channelPreview: {
+    container: {},
+    details: {},
+    detailsTop: {},
+    title: {},
+    date: {},
+    message: {
+      color: '#767676',
+      unreadColor: '#000',
+      fontWeight: 'normal',
+      unreadFontWeight: 'bold',
+    },
+  },
+
+  closeButton: {
+    container: {},
+  },
+
+  iconBadge: {
+    container: {},
+    icon: {},
+    iconInner: {},
+    unreadCount: {},
+  },
+
+  message: {
+    container: {},
+    content: {
+      container: {},
+      containerInner: {},
+      metaContainer: {},
+      metaText: {},
+      deletedContainer: {},
+      deletedText: {},
+    },
+    status: {
+      spacer: {},
+      deliveredContainer: {},
+      deliveredCircle: {},
+      checkMark: {},
+      sendingContainer: {},
+      sendingImage: {},
+    },
+    avatarWrapper: {
+      container: {},
+      spacer: {},
+    },
+    replies: {
+      container: {},
+      messageRepliesText: {},
+      image: {},
+    },
+    text: {
+      borderRadiusL: 16,
+      borderRadiusS: 2,
+      leftBorderWidth: 0.5,
+      leftBorderColor: 'rgba(0,0,0,0.08)',
+      rightBorderWidth: 0,
+      rightBorderColor: 'transparent',
+    },
     file: {
       container: {},
       details: {},
@@ -47,117 +107,39 @@ const defaultTheme = {
         defaultColor: 'black',
       },
     },
-  },
-  card: {
-    container: {},
-    cover: {},
-    footer: {},
-  },
-
-  channelPreview: {
-    messenger: {
+    card: {
       container: {},
-      details: {},
-      detailsTop: {},
-      title: {},
-      date: {},
-      message: {
-        color: '#767676',
-        unreadColor: '#000',
-        fontWeight: 'normal',
-        unreadFontWeight: 'bold',
+      cover: {},
+      footer: {},
+    },
+
+    gallery: {
+      width: 240,
+      size: 120,
+      halfSize: 80,
+      doubleSize: 240,
+
+      single: {},
+      imageContainer: {},
+      galleryContainer: {},
+      header: {
+        container: {},
+        button: {},
       },
     },
-  },
-
-  closeButton: {
-    container: {},
-  },
-
-  commandsItem: {
-    container: {},
-    top: {},
-    title: {},
-  },
-
-  dateSeparator: {
-    container: {},
-    line: {},
-    date: {},
-    dateText: {},
-  },
-
-  gallery: {
-    width: 240,
-    size: 120,
-    halfSize: 80,
-    doubleSize: 240,
-
-    single: {},
-    imageContainer: {},
-    galleryContainer: {},
-    header: {
+    reactionList: {
       container: {},
-      button: {},
+      reactionCount: {},
     },
-  },
 
-  hyperLink: {
-    title: {},
-  },
-
-  iconBadge: {
-    container: {},
-    icon: {},
-    iconInner: {},
-    unreadCount: {},
-  },
-
-  mentionsItem: {
-    container: {},
-    name: {},
-  },
-
-  messageSimple: {
-    container: {},
-  },
-
-  messageContent: {
-    container: {},
-    containerInner: {},
-    metaContainer: {},
-    metaText: {},
-    deletedContainer: {},
-    deletedText: {},
-  },
-
-  messageStatus: {
-    spacer: {},
-    deliveredContainer: {},
-    deliveredCircle: {},
-    checkMark: {},
-    sendingContainer: {},
-    sendingImage: {},
-  },
-
-  messageAvatar: {
-    container: {},
-    spacer: {},
-  },
-
-  messageReplies: {
-    container: {},
-    messageRepliesText: {},
-    image: {},
-  },
-
-  messageText: {
-    borderRadiusL: 16,
-    borderRadiusS: 2,
-    leftBorderWidth: 0.5,
-    leftBorderColor: 'rgba(0,0,0,0.08)',
-    rightBorderWidth: 0,
-    rightBorderColor: 'transparent',
+    reactionPicker: {
+      container: {},
+      containerView: {},
+      column: {},
+      emoji: {},
+      reactionCount: {},
+      text: {},
+    },
   },
 
   messageInput: {
@@ -177,55 +159,52 @@ const defaultTheme = {
       dismissImage: {},
       upload: {},
     },
+    uploadProgressIndicator: {
+      overlay: {},
+      container: {},
+    },
+
+    suggestions: {
+      wrapper: {},
+      container: {
+        maxHeight: 250,
+        itemHeight: 50,
+      },
+      header: {
+        title: {},
+      },
+      separator: {},
+      item: {},
+      mention: {
+        container: {},
+        name: {},
+      },
+      command: {
+        container: {},
+        top: {},
+        title: {},
+      },
+    },
   },
 
   messageList: {
     listContainer: {},
-    newMessageNotification: {},
-    newMessageNotificationText: {},
+    messageNotification: {},
+    messageNotificationText: {},
     errorNotification: {},
     errorNotificationText: {},
-  },
-
-  messageNotification: {
-    container: {},
-  },
-
-  reactionList: {
-    container: {},
-    reactionCount: {},
-  },
-
-  reactionPicker: {
-    container: {},
-    containerView: {},
-    column: {},
-    emoji: {},
-    reactionCount: {},
-    text: {},
-  },
-  suggestionsProvider: {
-    wrapper: {},
-    container: {
-      maxHeight: 250,
-      itemHeight: 50,
+    dateSeparator: {
+      container: {},
+      line: {},
+      date: {},
+      dateText: {},
     },
   },
-  suggestionsHeader: {
-    title: {},
-  },
-  suggestionsSeparator: {
-    separator: {},
-  },
-  suggestionsItem: {},
+
   thread: {
     newThread: {
       text: {},
     },
-  },
-  withProgressIndicator: {
-    overlay: {},
-    container: {},
   },
 };
 

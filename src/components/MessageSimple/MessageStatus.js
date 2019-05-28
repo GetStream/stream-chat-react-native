@@ -15,7 +15,7 @@ const DeliveredContainer = styled.View`
   height: 20;
   padding-bottom: 10;
   padding-left: 5;
-  ${({ theme }) => theme.messageStatus.deliveredContainer.extra};
+  ${({ theme }) => theme.message.status.deliveredContainer.extra};
 `;
 
 const DeliveredCircle = styled.View`
@@ -26,13 +26,13 @@ const DeliveredCircle = styled.View`
   align-items: center;
   justify-content: center;
   padding: 6px;
-  ${({ theme }) => theme.messageStatus.deliveredCircle.extra};
+  ${({ theme }) => theme.message.status.deliveredCircle.extra};
 `;
 
 const CheckMark = styled.Image`
   width: 8;
   height: 6;
-  ${({ theme }) => theme.messageStatus.checkMark.extra};
+  ${({ theme }) => theme.message.status.checkMark.extra};
 `;
 
 const SendingContainer = styled.View`
@@ -40,13 +40,13 @@ const SendingContainer = styled.View`
   align-items: center;
   padding-left: 5px;
   padding-right: 5px;
-  ${({ theme }) => theme.messageStatus.sendingContainer.extra};
+  ${({ theme }) => theme.message.status.sendingContainer.extra};
 `;
 
 const SendingImage = styled.View`
   height: 10;
   width: 10;
-  ${({ theme }) => theme.messageStatus.sendingImage.extra};
+  ${({ theme }) => theme.message.status.sendingImage.extra};
 `;
 
 export const MessageStatus = ({ message, lastReceivedId, threadList }) => {

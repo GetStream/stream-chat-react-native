@@ -9,7 +9,16 @@ const Container = styled.TouchableOpacity`
   align-items: center;
   z-index: 10;
   margin-bottom: 0;
-  ${({ theme }) => theme.messageNotification.container.extra}
+  border-radius: 10;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  ${({ theme }) => theme.messageList.messageNotification.extra}
+`;
+
+const MessageNotificationText = styled.Text`
+  color: white;
+  ${({ theme }) => theme.messageList.messageNotificationText.extra}
 `;
 
 export class MessageNotification extends PureComponent {
@@ -61,7 +70,7 @@ export class MessageNotification extends PureComponent {
           }}
         >
           <Container onPress={this.props.onClick} onClick={this.props.onClick}>
-            {this.props.children}
+            <MessageNotificationText>New Messages ↓</MessageNotificationText>
           </Container>
         </Animated.View>
       );

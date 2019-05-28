@@ -16,18 +16,6 @@ const ListContainer = styled.FlatList`
   ${({ theme }) => theme.messageList.listContainer.extra}
 `;
 
-const NewMessageNotification = styled.View`
-  border-radius: 10;
-  background-color: black;
-  color: white;
-  padding: 10px;
-  ${({ theme }) => theme.messageList.newMessageNotification.extra}
-`;
-const NewMessageNotificationText = styled.Text`
-  color: white;
-  ${({ theme }) => theme.messageList.newMessageNotificationText.extra}
-`;
-
 const ErrorNotificationText = styled.Text`
   color: red;
   background-color: #fae6e8;
@@ -359,13 +347,7 @@ const MessageList = withChannelContext(
               <MessageNotification
                 showNotification={this.state.newMessagesNotification}
                 onClick={this.goToNewMessages}
-              >
-                <NewMessageNotification>
-                  <NewMessageNotificationText>
-                    New Messages ↓
-                  </NewMessageNotificationText>
-                </NewMessageNotification>
-              </MessageNotification>
+              />
             )}
             {!this.state.online && (
               <ErrorNotification>

@@ -8,19 +8,19 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   padding: 10px;
-  ${({ theme }) => theme.mentionsItem.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.mention.container.extra}
 `;
 
 const Name = styled.Text`
   padding: 10px;
   color: black;
   font-weight: bold;
-  ${({ theme }) => theme.mentionsItem.name.extra}
+  ${({ theme }) => theme.messageInput.suggestions.mention.name.extra}
 `;
 
 export const MentionsItem = themed(
   class MentionsItem extends React.Component {
-    static themePath = 'mentionsItem';
+    static themePath = 'messageInput.suggestions.mention';
     render() {
       const {
         item: { name, icon, id },

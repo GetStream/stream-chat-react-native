@@ -39,7 +39,7 @@ const actions = [
 
 <ThemeProvider
   theme={buildTheme({
-    attachment: {
+    message: {
       actions: {
         button: { defaultBackgroundColor: 'green' },
       },

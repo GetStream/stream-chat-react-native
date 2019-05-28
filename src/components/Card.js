@@ -16,7 +16,7 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 16 : 2};
   background-color: ${({ theme }) => theme.colors.light};
   width: 250;
-  ${({ theme }) => theme.card.container.extra}
+  ${({ theme }) => theme.message.card.container.extra}
 `;
 
 const Footer = styled.View`
@@ -24,13 +24,13 @@ const Footer = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 10px;
-  ${({ theme }) => theme.card.footer.extra}
+  ${({ theme }) => theme.message.card.footer.extra}
 `;
 
 const Cover = styled.Image`
   display: flex;
   height: 150;
-  ${({ theme }) => theme.card.cover.extra}
+  ${({ theme }) => theme.message.card.cover.extra}
 `;
 
 export const Card = themed(

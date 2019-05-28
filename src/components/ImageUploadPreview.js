@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import { WithProgressIndicator } from './WithProgressIndicator';
+import { UploadProgressIndicator } from './UploadProgressIndicator';
 import PropTypes from 'prop-types';
 import { FileState, ProgressIndicatorTypes } from '../utils';
 import styled from '@stream-io/styled-components';
@@ -82,7 +82,7 @@ export const ImageUploadPreview = themed(
       return (
         <React.Fragment>
           <ItemContainer>
-            <WithProgressIndicator
+            <UploadProgressIndicator
               active={item.state !== FileState.UPLOADED}
               type={type}
               action={retryUpload && retryUpload.bind(this, item.id)}
@@ -91,7 +91,7 @@ export const ImageUploadPreview = themed(
                 resizeMode="cover"
                 source={{ uri: item.url || item.file.uri }}
               />
-            </WithProgressIndicator>
+            </UploadProgressIndicator>
             <Dismiss
               onPress={() => {
                 this.props.removeImage(item.id);

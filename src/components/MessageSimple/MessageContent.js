@@ -21,24 +21,24 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.messageContent.container.extra};
+  ${({ theme }) => theme.message.content.container.extra};
 `;
 
 const ContainerInner = styled.View`
   align-items: flex-end;
-  ${({ theme }) => theme.messageContent.containerInner.extra}
+  ${({ theme }) => theme.message.content.containerInner.extra}
 `;
 
 const MetaContainer = styled.View`
   margin-top: 2;
-  ${({ theme }) => theme.messageContent.metaContainer.extra};
+  ${({ theme }) => theme.message.content.metaContainer.extra};
 `;
 
 const MetaText = styled.Text`
   font-size: 11;
   color: ${({ theme }) => theme.colors.textGrey};
   text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
-  ${({ theme }) => theme.messageContent.metaText.extra};
+  ${({ theme }) => theme.message.content.metaText.extra};
 `;
 
 const DeletedContainer = styled.View`
@@ -50,21 +50,21 @@ const DeletedContainer = styled.View`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.messageContent.deletedContainer.extra};
+  ${({ theme }) => theme.message.content.deletedContainer.extra};
 `;
 
 const DeletedText = styled.Text`
   font-size: 15;
   line-height: 20;
   color: #a4a4a4;
-  ${({ theme }) => theme.messageContent.deletedText.extra};
+  ${({ theme }) => theme.message.content.deletedText.extra};
 `;
 
 const FailedText = styled.Text``;
 
 export const MessageContent = themed(
   class MessageContent extends React.PureComponent {
-    static themePath = 'messageContent';
+    static themePath = 'message.content';
     constructor(props) {
       super(props);
 

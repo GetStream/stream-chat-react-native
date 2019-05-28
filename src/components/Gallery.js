@@ -10,7 +10,7 @@ import { CloseButton } from './CloseButton';
 const Single = styled.TouchableOpacity`
   display: flex;
   height: 200px;
-  width: ${({ theme }) => theme.gallery.width};
+  width: ${({ theme }) => theme.message.gallery.width};
   border-top-left-radius: 16;
   border-top-right-radius: 16;
   border-bottom-left-radius: ${({ alignment }) =>
@@ -18,21 +18,21 @@ const Single = styled.TouchableOpacity`
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2};
   overflow: hidden;
-  ${({ theme }) => theme.gallery.single.extra}
+  ${({ theme }) => theme.message.gallery.single.extra}
 `;
 
 const GalleryContainer = styled.View`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  width: ${({ theme }) => theme.gallery.width};
+  width: ${({ theme }) => theme.message.gallery.width};
 
   height: ${({ theme, length }) =>
     length >= 4
-      ? theme.gallery.doubleSize
+      ? theme.message.gallery.doubleSize
       : length === 3
-      ? theme.gallery.halfSize
-      : theme.gallery.size};
+      ? theme.message.gallery.halfSize
+      : theme.message.gallery.size};
 
   overflow: hidden;
   border-radius: 16;
@@ -40,21 +40,21 @@ const GalleryContainer = styled.View`
     alignment === 'left' ? 16 : 2};
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2};
-  ${({ theme }) => theme.gallery.galleryContainer.extra}
+  ${({ theme }) => theme.message.gallery.galleryContainer.extra}
 `;
 
 const ImageContainer = styled.TouchableOpacity`
   display: flex;
   height: ${({ theme, length }) =>
-    length !== 3 ? theme.gallery.size : theme.gallery.halfSize};
+    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
   width: ${({ theme, length }) =>
-    length !== 3 ? theme.gallery.size : theme.gallery.halfSize};
-  ${({ theme }) => theme.gallery.imageContainer.extra}
+    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
+  ${({ theme }) => theme.message.gallery.imageContainer.extra}
 `;
 
 export const Gallery = themed(
   class Gallery extends React.PureComponent {
-    static themePath = 'gallery';
+    static themePath = 'message.gallery';
     static propTypes = {
       /** The images to render */
       images: PropTypes.arrayOf(
@@ -223,7 +223,7 @@ const HeaderContainer = styled.View`
   position: absolute;
   width: 100%;
   z-index: 1000;
-  ${({ theme }) => theme.gallery.header.container.extra}
+  ${({ theme }) => theme.message.gallery.header.container.extra}
 `;
 
 const HeaderButton = styled.TouchableOpacity`
@@ -235,7 +235,7 @@ const HeaderButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   border-radius: 20;
-  ${({ theme }) => theme.gallery.header.button.extra}
+  ${({ theme }) => theme.message.gallery.header.button.extra}
 `;
 
 const GalleryHeader = ({ handleDismiss }) => (

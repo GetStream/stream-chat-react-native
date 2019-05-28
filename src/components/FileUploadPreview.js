@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
 import FileIcon from './FileIcon';
-import { WithProgressIndicator } from './WithProgressIndicator';
+import { UploadProgressIndicator } from './UploadProgressIndicator';
 import { FileState, ProgressIndicatorTypes } from '../utils';
 /**
  * FileUploadPreview
@@ -33,7 +33,7 @@ export class FileUploadPreview extends React.PureComponent {
       type = ProgressIndicatorTypes.RETRY;
 
     return (
-      <WithProgressIndicator
+      <UploadProgressIndicator
         active={item.state !== FileState.UPLOADED}
         type={type}
         action={this.props.retryUpload.bind(this, item.id)}
@@ -65,7 +65,7 @@ export class FileUploadPreview extends React.PureComponent {
           </View>
           <Text onPress={this.props.removeFile.bind(this, item.id)}>X</Text>
         </View>
-      </WithProgressIndicator>
+      </UploadProgressIndicator>
     );
   };
 

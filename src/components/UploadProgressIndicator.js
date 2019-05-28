@@ -15,7 +15,7 @@ const Overlay = styled.View`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
   opacity: 0;
-  ${({ theme }) => theme.withProgressIndicator.overlay.extra};
+  ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.extra};
 `;
 
 const Container = styled.View`
@@ -26,12 +26,12 @@ const Container = styled.View`
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0);
-  ${({ theme }) => theme.withProgressIndicator.container.extra};
+  ${({ theme }) => theme.messageInput.uploadProgressIndicator.container.extra};
 `;
 
-export const WithProgressIndicator = themed(
-  class WithProgressIndicator extends React.PureComponent {
-    static themePath = 'withProgressIndicator';
+export const UploadProgressIndicator = themed(
+  class UploadProgressIndicator extends React.PureComponent {
+    static themePath = 'messageInput.uploadProgressIndicator';
     constructor(props) {
       super(props);
     }

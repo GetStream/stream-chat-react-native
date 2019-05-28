@@ -13,7 +13,7 @@ const Container = styled.View`
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   margin-bottom: ${({ marginBottom }) => (marginBottom ? 20 : 0)};
-  ${({ theme }) => theme.messageSimple.container.extra}
+  ${({ theme }) => theme.message.container.extra}
 `;
 
 export const MessageSimple = themed(

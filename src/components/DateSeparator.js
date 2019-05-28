@@ -9,14 +9,14 @@ const Container = styled.View`
   align-items: center;
   margin-top: 20;
   margin-bottom: 20;
-  ${({ theme }) => theme.dateSeparator.container.extra}
+  ${({ theme }) => theme.messageList.dateSeparator.container.extra}
 `;
 
 const Line = styled.View`
   flex: 1;
   height: 0.5;
   background-color: ${({ theme }) => theme.colors.light};
-  ${({ theme }) => theme.dateSeparator.line.extra}
+  ${({ theme }) => theme.messageList.dateSeparator.line.extra}
 `;
 
 const DateText = styled.Text`
@@ -26,7 +26,7 @@ const DateText = styled.Text`
   text-transform: uppercase;
   font-size: 10;
   opacity: 0.8;
-  ${({ theme }) => theme.dateSeparator.dateText.extra}
+  ${({ theme }) => theme.messageList.dateSeparator.dateText.extra}
 `;
 
 const Date = styled.Text`
@@ -34,7 +34,7 @@ const Date = styled.Text`
   font-size: 10;
   text-transform: uppercase;
   opacity: 0.8;
-  ${({ theme }) => theme.dateSeparator.date.extra}
+  ${({ theme }) => theme.messageList.dateSeparator.date.extra}
 `;
 
 const DateSeparator = ({ message, formatDate }) => (

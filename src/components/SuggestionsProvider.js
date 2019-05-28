@@ -27,28 +27,28 @@ const Container = styled.View`
   shadow-offset: 0px -3px;
   height: ${({ theme, length }) =>
     Math.min(
-      length * theme.suggestionsProvider.container.itemHeight,
-      theme.suggestionsProvider.container.maxHeight,
+      length * theme.messageInput.suggestions.container.itemHeight,
+      theme.messageInput.suggestions.container.maxHeight,
     )};
-  ${({ theme }) => theme.suggestionsProvider.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.container.extra}
 `;
 
 const Title = styled.Text`
   padding: 10px;
   font-weight: bold;
-  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
-  ${({ theme }) => theme.suggestionsProvider.title.extra}
+  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  ${({ theme }) => theme.messageInput.suggestions.title.extra}
 `;
 
 const Separator = styled.View`
   height: 0;
-  ${({ theme }) => theme.suggestionsSeparator.separator.extra}
+  ${({ theme }) => theme.messageInput.suggestions.separator.extra}
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
   justify-content: center;
-  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
-  ${({ theme }) => theme.suggestionsItem.extra}
+  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  ${({ theme }) => theme.messageInput.suggestions.item.extra}
 `;
 
 export class SuggestionsProvider extends React.PureComponent {

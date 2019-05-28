@@ -7,20 +7,20 @@ const Container = styled.TouchableOpacity`
   padding: 5px;
   flex-direction: row;
   align-items: center;
-  ${({ theme }) => theme.messageReplies.container.extra}
+  ${({ theme }) => theme.message.replies.container.extra}
 `;
 
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
   font-weight: 700;
   font-size: 12;
-  ${({ theme }) => theme.messageReplies.messageRepliesText.extra}
+  ${({ theme }) => theme.message.replies.messageRepliesText.extra}
 `;
 
 const MessageRepliesImage = styled.Image`
   transform: ${({ pos }) =>
     pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
-  ${({ theme }) => theme.messageReplies.image.extra}
+  ${({ theme }) => theme.message.replies.image.extra}
 `;
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {

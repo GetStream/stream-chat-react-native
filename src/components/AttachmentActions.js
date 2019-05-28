@@ -9,7 +9,7 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 5px;
-  ${({ theme }) => theme.attachment.actions.container.extra}
+  ${({ theme }) => theme.message.actions.container.extra}
 `;
 
 const Button = styled(({ buttonStyle, ...rest }) => (
@@ -17,27 +17,27 @@ const Button = styled(({ buttonStyle, ...rest }) => (
 ))`
   background-color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.button.primaryBackgroundColor
-      : theme.attachment.actions.button.defaultBackgroundColor};
+      ? theme.message.actions.button.primaryBackgroundColor
+      : theme.message.actions.button.defaultBackgroundColor};
   border-color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.button.primaryBorderColor
-      : theme.attachment.actions.button.defaultBorderColor};
+      ? theme.message.actions.button.primaryBorderColor
+      : theme.message.actions.button.defaultBorderColor};
   border-width: 1;
   border-radius: 20;
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 10px;
   padding-right: 10px;
-  ${({ theme }) => theme.attachment.actions.button.extra}
+  ${({ theme }) => theme.message.actions.button.extra}
 `;
 
 const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
   color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.buttonText.primaryColor
-      : theme.attachment.actions.buttonText.defaultColor};
-  ${({ theme }) => theme.attachment.actions.buttonText.extra}
+      ? theme.message.actions.buttonText.primaryColor
+      : theme.message.actions.buttonText.defaultColor};
+  ${({ theme }) => theme.message.actions.buttonText.extra}
 `;
 
 /**
@@ -48,7 +48,7 @@ const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
  */
 export const AttachmentActions = themed(
   class AttachmentActions extends React.PureComponent {
-    static themePath = 'attachment.actions';
+    static themePath = 'message.actions';
     static propTypes = {
       // /** The id of the form input */
       // id: PropTypes.string.isRequired,
