@@ -5,6 +5,7 @@ import giphyLogo from '../assets/Poweredby_100px-White_VertText.png';
 import { themed } from '../styles/theme';
 
 import styled from '@stream-io/styled-components';
+import { makeImageCompatibleUrl } from '../utils';
 
 const Container = styled.TouchableOpacity`
   border-top-left-radius: ${({ theme }) =>
@@ -94,7 +95,7 @@ export const Card = themed(
           }}
           alignment={alignment}
         >
-          <Cover source={{ uri: image_url || thumb_url }} resizMode="cover" />
+          <Cover source={{ uri: makeImageCompatibleUrl(image_url || thumb_url) }} resizMode="cover" />
           <Footer>
             <View
               style={{

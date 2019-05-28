@@ -4,6 +4,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
+import { makeImageCompatibleUrl } from '../utils';
 
 import { CloseButton } from './CloseButton';
 
@@ -74,7 +75,7 @@ export const Gallery = themed(
 
     render() {
       const images = [...this.props.images].map((i) => ({
-        url: i.image_url || i.thumb_url,
+        url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
       }));
 
       if (images.length === 1) {

@@ -175,3 +175,10 @@ export const MESSAGE_ACTIONS = {
   reactions: 'reactions',
   reply: 'reply',
 };
+
+export const makeImageCompatibleUrl = (url) => {
+  let newUrl = url;
+  if (url.indexOf('//') === 0) newUrl = 'https:' + url;
+
+  return newUrl;
+};
