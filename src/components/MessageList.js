@@ -40,9 +40,9 @@ const ErrorNotification = styled.View`
   align-items: center;
   z-index: 10;
   margin-bottom: 0;
-  padding: 5px
+  padding: 5px;
   color: red;
-  background-color: #FAE6E8;
+  background-color: #fae6e8;
   ${({ theme }) => theme.messageList.errorNotification.extra}
 `;
 

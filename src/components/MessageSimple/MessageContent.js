@@ -3,7 +3,6 @@ import { Dimensions, Text } from 'react-native';
 import moment from 'moment';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
-import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
@@ -100,7 +99,7 @@ export const MessageContent = themed(
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
           reactionPickerVisible: true,
-          rpTop: y - REACTION_PICKER_HEIGHT,
+          rpTop: y - 70,
           rpLeft: pos === 'left' ? x : null,
           rpRight:
             pos === 'right'

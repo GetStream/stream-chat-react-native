@@ -9,7 +9,6 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   background-color: black;
-    theme.reactionList.container.backgroundColor};
   padding: 5px;
   border-radius: 100;
   ${({ theme }) => theme.reactionList.container.extra}

@@ -20,7 +20,7 @@ const Container = styled.TouchableOpacity`
 `;
 
 const Footer = styled.View`
-  display: flex
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 10px;

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { buildStylesheet } from '../styles/styles';
 
 import styled from '@stream-io/styled-components';
 
@@ -36,17 +35,14 @@ const UnreadCount = styled.Text`
 export class IconBadge extends React.Component {
   render() {
     const { children, showNumber, unread } = this.props;
-    const styles = buildStylesheet('iconBadge', this.props.styles);
 
     return (
       <Container>
         {children}
         {unread > 0 && (
-          <Icon style={styles.icon}>
-            <IconInner style={styles.iconInner}>
-              {showNumber && (
-                <UnreadCount style={styles.text}>{unread}</UnreadCount>
-              )}
+          <Icon>
+            <IconInner>
+              {showNumber && <UnreadCount>{unread}</UnreadCount>}
             </IconInner>
           </Icon>
         )}

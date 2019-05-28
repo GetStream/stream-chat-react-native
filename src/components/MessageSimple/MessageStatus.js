@@ -45,7 +45,7 @@ const SendingContainer = styled.View`
 
 const SendingImage = styled.View`
   height: 10;
-  width: 10};
+  width: 10;
   ${({ theme }) => theme.messageStatus.sendingImage.extra};
 `;
 

@@ -25,7 +25,7 @@ const FileContainer = styled.View`
 `;
 
 const FileDetails = styled.View`
-  display: flex};
+  display: flex;
   flex-direction: column;
   padding-left: 10px;
   ${({ theme }) => theme.attachment.file.details.extra}

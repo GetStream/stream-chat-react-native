@@ -221,7 +221,7 @@ const HeaderContainer = styled.View`
   flex-direction: row;
   justify-content: flex-end;
   position: absolute;
-  width: 100%};
+  width: 100%;
   z-index: 1000;
   ${({ theme }) => theme.gallery.header.container.extra}
 `;
