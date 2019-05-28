@@ -6,31 +6,25 @@ import { SuggestionsContext } from '../context';
 import styled from '@stream-io/styled-components';
 
 const Wrapper = styled.TouchableOpacity`
-  position: ${({ theme }) => theme.suggestionsProvider.wrapper.position};
-  z-index: ${({ theme }) => theme.suggestionsProvider.wrapper.zIndex};
+  position: absolute;
+  z-index: 90;
   height: ${({ height }) => height};
-  width: ${({ theme }) => theme.suggestionsProvider.wrapper.width};
+  width: 100%;
   ${({ theme }) => theme.suggestionsProvider.wrapper.extra}
 `;
 
 const Container = styled.View`
-  position: ${({ theme }) => theme.suggestionsProvider.container.position};
-  bottom: ${({ theme }) => theme.suggestionsProvider.container.bottom};
-  background-color: ${({ theme }) =>
-    theme.suggestionsProvider.container.backgroundColor};
-  z-index: ${({ theme }) => theme.suggestionsProvider.container.zIndex};
-  border-top-left-radius: ${({ theme }) =>
-    theme.suggestionsProvider.container.borderTopLeftRadius};
-  border-top-right-radius: ${({ theme }) =>
-    theme.suggestionsProvider.container.borderTopRightRadius};
+  position: absolute;
+  bottom: 10;
+  background-color: white;
+  z-index: 100;
+  border-top-left-radius: 10;
+  border-top-right-radius: 10;
   width: ${({ width }) => width};
   margin-left: ${({ marginLeft }) => marginLeft};
-  shadow-color: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowColor};
-  shadow-opacity: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowOpacity}
-  shadow-offset: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowOffset}
+  shadow-color: #000;
+  shadow-opacity: 0.05;
+  shadow-offset: 0px -3px;
   height: ${({ theme, length }) =>
     Math.min(
       length * theme.suggestionsProvider.container.itemHeight,
@@ -40,19 +34,19 @@ const Container = styled.View`
 `;
 
 const Title = styled.Text`
-  padding: ${({ theme }) => theme.suggestionsHeader.title.padding}px;
-  font-weight: ${({ theme }) => theme.suggestionsHeader.title.fontWeight};
+  padding: 10px;
+  font-weight: bold;
   height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
   ${({ theme }) => theme.suggestionsProvider.title.extra}
 `;
 
 const Separator = styled.View`
-  height: ${({ theme }) => theme.suggestionsSeparator.separator.height};
+  height: 0;
   ${({ theme }) => theme.suggestionsSeparator.separator.extra}
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
-  justify-content: ${({ theme }) => theme.suggestionsItem.justifyContent};
+  justify-content: center;
   height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
   ${({ theme }) => theme.suggestionsItem.extra}
 `;

@@ -7,30 +7,25 @@ import { ProgressIndicatorTypes } from '../utils';
 import { themed } from '../styles/theme';
 
 const Overlay = styled.View`
-  position: ${({ theme }) => theme.withProgressIndicator.overlay.position};
-  width: ${({ theme }) => theme.withProgressIndicator.overlay.width};
-  height: ${({ theme }) => theme.withProgressIndicator.overlay.height};
-  display: ${({ theme }) => theme.withProgressIndicator.overlay.display};
-  align-items: ${({ theme }) => theme.withProgressIndicator.overlay.alignItems};
-  justify-content: ${({ theme }) =>
-    theme.withProgressIndicator.overlay.justifyContent};
-  background-color: ${({ theme }) =>
-    theme.withProgressIndicator.overlay.backgroundColor || 'transparent'};
-  opacity: ${({ theme }) => theme.withProgressIndicator.overlay.opacity || 0};
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  opacity: 0;
   ${({ theme }) => theme.withProgressIndicator.overlay.extra};
 `;
 
 const Container = styled.View`
-  position: ${({ theme }) => theme.withProgressIndicator.container.position};
-  width: ${({ theme }) => theme.withProgressIndicator.container.width};
-  height: ${({ theme }) => theme.withProgressIndicator.container.height};
-  display: ${({ theme }) => theme.withProgressIndicator.container.display};
-  align-items: ${({ theme }) =>
-    theme.withProgressIndicator.container.alignItems};
-  justify-content: ${({ theme }) =>
-    theme.withProgressIndicator.container.justifyContent};
-  background-color: ${({ theme }) =>
-    theme.withProgressIndicator.container.backgroundColor};
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0);
   ${({ theme }) => theme.withProgressIndicator.container.extra};
 `;
 

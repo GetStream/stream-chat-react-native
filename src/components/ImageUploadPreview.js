@@ -9,63 +9,45 @@ import { themed } from '../styles/theme';
 import closeRound from '../images/icons/close-round.png';
 
 const Container = styled.View`
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.height};
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.display};
-  padding: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.padding}px;
+  height: 70;
+  display: flex;
+  padding: 10px;
   ${({ theme }) => theme.messageInput.imageUploadPreview.container.extra};
 `;
 
 const ItemContainer = styled.View`
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.display};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.height};
-  flex-direction: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.flexDirection};
-  align-items: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.alignItems};
-  margin-left: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.marginLeft};
+  display: flex;
+  height: 50;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-left: 5;
   ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.extra};
 `;
 
 const Dismiss = styled.TouchableOpacity`
-  position: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.position};
-  top: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.top};
-  right: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.right};
-  background-color: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.backgroundColor};
-  width: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.width};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.height};
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.display};
-  align-items: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.alignItems};
-  justify-content: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.justifyContent};
-  border-radius: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.borderRadius};
+  position: absolute;
+  top: 5;
+  right: 5;
+  background-color: #fff;
+  width: 20;
+  height: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20;
   ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.extra};
 `;
 
 const Upload = styled.Image`
-  width: ${({ theme }) => theme.messageInput.imageUploadPreview.upload.width};
-  height: ${({ theme }) => theme.messageInput.imageUploadPreview.upload.height};
-  border-radius: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.upload.borderRadius};
+  width: 50;
+  height: 50;
+  border-radius: 10;
   ${({ theme }) => theme.messageInput.imageUploadPreview.upload.extra};
 `;
 
 const DismissImage = styled.Image`
-  width: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismissImage.width};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismissImage.height};
+  width: 10;
+  height: 10;
   ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.extra};
 `;
 
