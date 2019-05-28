@@ -1,28 +1,28 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
-import { getTheme } from '../../styles/theme';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: ${(props) => getTheme(props).messageReplies.container.padding}px;
-  flex-direction: ${(props) =>
-    getTheme(props).messageReplies.container.flexDirection};
-  align-items: ${(props) =>
-    getTheme(props).messageReplies.container.alignItems};
+  padding: ${({ theme }) => theme.messageReplies.container.padding}px;
+  flex-direction: ${({ theme }) =>
+    theme.messageReplies.container.flexDirection};
+  align-items: ${({ theme }) => theme.messageReplies.container.alignItems};
+  ${({ theme }) => theme.messageReplies.container.extra}
 `;
 
 const MessageRepliesText = styled.Text`
-  color: ${(props) => getTheme(props).colors.primary};
-  font-weight:  ${(props) =>
-    getTheme(props).messageReplies.messageRepliesText.fontWeight}
-  font-size:  ${(props) =>
-    getTheme(props).messageReplies.messageRepliesText.fontSize}
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight:  ${({ theme }) =>
+    theme.messageReplies.messageRepliesText.fontWeight}
+  font-size:  ${({ theme }) => theme.messageReplies.messageRepliesText.fontSize}
+  ${({ theme }) => theme.messageReplies.messageRepliesText.extra}
 `;
 
 const MessageRepliesImage = styled.Image`
-  transform: ${(props) =>
-    props.pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+  transform: ${({ pos }) =>
+    pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+  ${({ theme }) => theme.messageReplies.image.extra}
 `;
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {

@@ -6,15 +6,27 @@ const notBabeledDeps = [
   'react-native-image-zoom-viewer',
   'react-native-image-pan-zoom',
   'react-native-simple-markdown',
-  'react-native-actionsheet',
 ];
 
 module.exports = {
   title: 'Stream Chat React Native - Docs',
-  require: ['@babel/polyfill'],
+  require: [
+    '@babel/polyfill',
+    path.join(
+      __dirname,
+      'src/styleguideComponents/register-react-native-web.js',
+    ),
+  ],
   styleguideDir: 'docs',
   assetsDir: 'src/assets',
   sortProps: (props) => props,
+  serverPort: 6068,
+  compilerConfig: {
+    transforms: {
+      dangerousTaggedTemplateString: true,
+    },
+    objectAssign: 'Object.assign',
+  },
   resolver(ast, recast) {
     return require('react-docgen').resolver.findAllExportedComponentDefinitions(
       ast,
@@ -26,6 +38,7 @@ module.exports = {
       __dirname,
       'src/styleguideComponents/PathlineRenderer.js',
     ),
+    Slot: path.join(__dirname, 'src/styleguideComponents/Slot.js'),
   },
 
   sections: [
@@ -102,8 +115,13 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
-        'styled-components':
-          'styled-components/native/dist/styled-components.native.cjs.js',
+        '@stream-io/styled-components':
+          '@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
+        // Looks ugly in docs, better to just not show it for now
+        'react-native-actionsheet': path.join(
+          __dirname,
+          'src/styleguideComponents/ReactNativeActionSheet.js',
+        ),
       },
       extensions: ['.web.js', '.js'],
     },

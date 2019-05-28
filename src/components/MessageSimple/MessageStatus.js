@@ -1,59 +1,55 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import loadingGif from '../../images/loading.gif';
 import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
-import { getTheme } from '../../styles/theme';
 
 const Spacer = styled.View`
-  height: ${(props) => getTheme(props).messageStatus.spacer.height};
-  width: ${(props) => getTheme(props).messageStatus.spacer.width};
+  height: ${({ theme }) => theme.messageStatus.spacer.height};
+  width: ${({ theme }) => theme.messageStatus.spacer.width};
 `;
 
 const DeliveredContainer = styled.View`
-  display: ${(props) =>
-    getTheme(props).messageStatus.deliveredContainer.display};
-  align-items: ${(props) =>
-    getTheme(props).messageStatus.deliveredContainer.alignItems};
-  width: ${(props) => getTheme(props).messageStatus.deliveredContainer.width};
-  height: ${(props) => getTheme(props).messageStatus.deliveredContainer.height};
-  padding-bottom: ${(props) =>
-    getTheme(props).messageStatus.deliveredContainer.paddingBottom};
-  padding-left: ${(props) =>
-    getTheme(props).messageStatus.deliveredContainer.paddingLeft};
+  display: ${({ theme }) => theme.messageStatus.deliveredContainer.display};
+  align-items: ${({ theme }) =>
+    theme.messageStatus.deliveredContainer.alignItems};
+  width: ${({ theme }) => theme.messageStatus.deliveredContainer.width};
+  height: ${({ theme }) => theme.messageStatus.deliveredContainer.height};
+  padding-bottom: ${({ theme }) =>
+    theme.messageStatus.deliveredContainer.paddingBottom};
+  padding-left: ${({ theme }) =>
+    theme.messageStatus.deliveredContainer.paddingLeft};
 `;
 
 const DeliveredCircle = styled.View`
-  width: ${(props) => getTheme(props).messageStatus.deliveredCircle.width};
-  height: ${(props) => getTheme(props).messageStatus.deliveredCircle.height};
-  border-radius: ${(props) =>
-    getTheme(props).messageStatus.deliveredCircle.borderRadius};
-  background-color: ${(props) => getTheme(props).colors.primary};
-  align-items: ${(props) =>
-    getTheme(props).messageStatus.deliveredCircle.alignItems};
-  justify-content: ${(props) =>
-    getTheme(props).messageStatus.deliveredCircle.justifyContent};
-  padding: ${(props) =>
-    getTheme(props).messageStatus.deliveredCircle.padding}px;
+  width: ${({ theme }) => theme.messageStatus.deliveredCircle.width};
+  height: ${({ theme }) => theme.messageStatus.deliveredCircle.height};
+  border-radius: ${({ theme }) =>
+    theme.messageStatus.deliveredCircle.borderRadius};
+  background-color: ${({ theme }) => theme.colors.primary};
+  align-items: ${({ theme }) => theme.messageStatus.deliveredCircle.alignItems};
+  justify-content: ${({ theme }) =>
+    theme.messageStatus.deliveredCircle.justifyContent};
+  padding: ${({ theme }) => theme.messageStatus.deliveredCircle.padding}px;
 `;
 
 const CheckMark = styled.Image`
-  width: ${(props) => getTheme(props).messageStatus.checkMark.width};
-  height: ${(props) => getTheme(props).messageStatus.checkMark.height};
+  width: ${({ theme }) => theme.messageStatus.checkMark.width};
+  height: ${({ theme }) => theme.messageStatus.checkMark.height};
 `;
 
 const SendingContainer = styled.View`
-  display: ${(props) => getTheme(props).messageStatus.sendingContainer.display};
-  align-items: ${(props) =>
-    getTheme(props).messageStatus.sendingContainer.alignItems};
-  padding-left: ${(props) =>
-    getTheme(props).messageStatus.sendingContainer.paddingLeft};
-  padding-right: ${(props) =>
-    getTheme(props).messageStatus.sendingContainer.paddingRight};
+  display: ${({ theme }) => theme.messageStatus.sendingContainer.display};
+  align-items: ${({ theme }) =>
+    theme.messageStatus.sendingContainer.alignItems};
+  padding-left: ${({ theme }) =>
+    theme.messageStatus.sendingContainer.paddingLeft};
+  padding-right: ${({ theme }) =>
+    theme.messageStatus.sendingContainer.paddingRight};
 `;
 
 const SendingImage = styled.View`
-  height: ${(props) => getTheme(props).messageStatus.sendingImage.height};
-  width: ${(props) => getTheme(props).messageStatus.sendingImage.width};
+  height: ${({ theme }) => theme.messageStatus.sendingImage.height};
+  width: ${({ theme }) => theme.messageStatus.sendingImage.width};
 `;
 
 export const MessageStatus = ({ message, lastReceivedId, threadList }) => {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../context';
 import { NetInfo } from '../native';
 
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from '@stream-io/styled-components';
 import { buildTheme } from '../styles/theme';
 
 /**
@@ -117,7 +117,7 @@ export class Chat extends PureComponent {
   render() {
     return (
       <ChatContext.Provider value={this.getContext()}>
-        <ThemeProvider theme={buildTheme(this.props.theme)}>
+        <ThemeProvider theme={buildTheme(this.theme)}>
           {this.props.children}
         </ThemeProvider>
       </ChatContext.Provider>

@@ -1,12 +1,11 @@
 import React from 'react';
 import { TouchableOpacity, Text } from 'react-native';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
-import { getTheme } from '../styles/theme';
 
 const Container = styled.View`
-  opacity: ${(props) =>
-    props.visible ? getTheme(props).reactionList.container.opacity : 0};
+  opacity: ${({ theme, visible }) =>
+    visible ? theme.reactionList.container.opacity : 0};
   display: ${({ theme }) => theme.reactionList.container.display};
   flex-direction: ${({ theme }) => theme.reactionList.container.flexDirection};
   align-items: ${({ theme }) => theme.reactionList.container.alignItems};
@@ -14,15 +13,17 @@ const Container = styled.View`
     theme.reactionList.container.backgroundColor};
   padding: ${({ theme }) => theme.reactionList.container.padding}px;
   border-radius: ${({ theme }) => theme.reactionList.container.borderRadius};
+  ${({ theme }) => theme.reactionList.container.extra}
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => getTheme(props).reactionList.reactionCount.color};
-  padding-left: ${(props) =>
-    getTheme(props).reactionList.reactionCount.paddingLeft}px;
-  padding-right: ${(props) =>
-    getTheme(props).reactionList.reactionCount.paddingRight}px;
-  font-size: ${(props) => getTheme(props).reactionList.reactionCount.fontSize};
+  color: ${({ theme }) => theme.reactionList.reactionCount.color};
+  padding-left: ${({ theme }) =>
+    theme.reactionList.reactionCount.paddingLeft}px;
+  padding-right: ${({ theme }) =>
+    theme.reactionList.reactionCount.paddingRight}px;
+  font-size: ${({ theme }) => theme.reactionList.reactionCount.fontSize};
+  ${({ theme }) => theme.reactionList.reactionCount.extra}
 `;
 
 export class ReactionList extends React.PureComponent {
