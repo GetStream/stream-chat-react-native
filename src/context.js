@@ -13,6 +13,7 @@ export function withChatContext(OriginalComponent) {
       </ChatContext.Consumer>
     );
   };
+  ContextAwareComponent.themePath = OriginalComponent.themePath;
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
@@ -35,6 +36,7 @@ export function withChannelContext(OriginalComponent) {
       </ChannelContext.Consumer>
     );
   };
+  ContextAwareComponent.themePath = OriginalComponent.themePath;
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(

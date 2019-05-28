@@ -1,25 +1,23 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import Moment from 'moment';
-import { getTheme } from '../styles/theme';
 
 const Container = styled.View`
-  display: ${(props) => getTheme(props).dateSeparator.container.display};
-  flex-direction: ${(props) =>
-    getTheme(props).dateSeparator.container.flexDirection};
-  justify-content: ${(props) =>
-    getTheme(props).dateSeparator.container.justifyContent};
-  align-items: ${(props) => getTheme(props).dateSeparator.container.alignItems};
-  margin-top: ${(props) => getTheme(props).dateSeparator.container.marginTop};
-  margin-bottom: ${(props) =>
-    getTheme(props).dateSeparator.container.marginBottom};
+  display: ${({ theme }) => theme.dateSeparator.container.display};
+  flex-direction: ${({ theme }) => theme.dateSeparator.container.flexDirection};
+  justify-content: ${({ theme }) =>
+    theme.dateSeparator.container.justifyContent};
+  align-items: ${({ theme }) => theme.dateSeparator.container.alignItems};
+  margin-top: ${({ theme }) => theme.dateSeparator.container.marginTop};
+  margin-bottom: ${({ theme }) => theme.dateSeparator.container.marginBottom};
+  ${({ theme }) => theme.dateSeparator.container.extra}
 `;
 
 const Line = styled.View`
-  flex: ${(props) => getTheme(props).dateSeparator.line.flex};
-  height: ${(props) => getTheme(props).dateSeparator.line.height};
-  background-color: ${(props) =>
-    getTheme(props).dateSeparator.line.backgroundColor};
+  flex: ${({ theme }) => theme.dateSeparator.line.flex};
+  height: ${({ theme }) => theme.dateSeparator.line.height};
+  background-color: ${({ theme }) => theme.dateSeparator.line.backgroundColor};
+  ${({ theme }) => theme.dateSeparator.line.extra}
 `;
 
 const DateText = styled.Text`
@@ -29,6 +27,7 @@ const DateText = styled.Text`
   text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
   font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
   opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  ${({ theme }) => theme.dateSeparator.dateText.extra}
 `;
 
 const Strong = styled.Text`
@@ -36,6 +35,7 @@ const Strong = styled.Text`
   font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
   text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
   opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  ${({ theme }) => theme.dateSeparator.date.extra}
 `;
 
 const DateSeparator = ({ message, formatDate }) => (

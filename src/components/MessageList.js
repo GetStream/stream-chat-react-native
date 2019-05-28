@@ -1,41 +1,40 @@
 import React, { PureComponent } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
-import { getTheme } from '../styles/theme';
 
 import { Message } from './Message';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
 
 const ListContainer = styled.FlatList`
-  flex: ${(props) => getTheme(props).messageList.listContainer.flex};
+  flex: ${({ theme }) => theme.messageList.listContainer.flex};
   width: 100%;
-  padding-left: ${(props) =>
-    getTheme(props).messageList.listContainer.paddingLeft};
-  padding-right: ${(props) =>
-    getTheme(props).messageList.listContainer.paddingRight};
+  padding-left: ${({ theme }) => theme.messageList.listContainer.paddingLeft};
+  padding-right: ${({ theme }) => theme.messageList.listContainer.paddingRight};
+  ${({ theme }) => theme.messageList.listContainer.extra}
 `;
 
 const NewMessageNotification = styled.View`
-  border-radius: ${(props) =>
-    getTheme(props).messageList.newMessageNotification.borderRadius};
-  background-color: ${(props) =>
-    getTheme(props).messageList.newMessageNotification.backgroundColor};
-  color: ${(props) => getTheme(props).messageList.newMessageNotification.color};
-  padding: ${(props) =>
-    getTheme(props).messageList.newMessageNotification.padding}px;
+  border-radius: ${({ theme }) =>
+    theme.messageList.newMessageNotification.borderRadius};
+  background-color: ${({ theme }) =>
+    theme.messageList.newMessageNotification.backgroundColor};
+  color: ${({ theme }) => theme.messageList.newMessageNotification.color};
+  padding: ${({ theme }) => theme.messageList.newMessageNotification.padding}px;
+  ${({ theme }) => theme.messageList.newMessageNotification.extra}
 `;
 const NewMessageNotificationText = styled.Text`
-  color: ${(props) =>
-    getTheme(props).messageList.newMessageNotificationText.color};
+  color: ${({ theme }) => theme.messageList.newMessageNotificationText.color};
+  ${({ theme }) => theme.messageList.newMessageNotificationText.extra}
 `;
 
 const NotificationText = styled.Text`
-  color: ${(props) => getTheme(props).messageList.notification.warning.color};
-  background-color: ${(props) =>
-    getTheme(props).messageList.notification.warning.backgroundColor};
+  color: ${({ theme }) => theme.messageList.notification.warning.color};
+  background-color: ${({ theme }) =>
+    theme.messageList.notification.warning.backgroundColor};
+  ${({ theme }) => theme.messageList.notification.warning.extra}
 `;
 
 const MessageList = withChannelContext(
@@ -155,9 +154,10 @@ const MessageList = withChannelContext(
       return newMessages;
     };
 
-    assignGroupPositions = (m) => {
+    getGroupStyles = (m) => {
       const l = m.length;
-      const newMessages = [];
+      const messageGroupStyles = {};
+
       const messages = [...m];
 
       for (let i = 0; i < l; i++) {
@@ -166,7 +166,6 @@ const MessageList = withChannelContext(
         const nextMessage = messages[i + 1];
         const groupStyles = [];
         if (message.type === 'message.date') {
-          newMessages.unshift({ ...message, groupPosition: [] });
           continue;
         }
         const userId = message.user.id;
@@ -220,10 +219,10 @@ const MessageList = withChannelContext(
           groupStyles.push('single');
         }
 
-        newMessages.unshift({ ...message, groupPosition: groupStyles });
+        messageGroupStyles[message.id] = groupStyles;
       }
 
-      return newMessages;
+      return messageGroupStyles;
     };
 
     goToNewMessages = () => {
@@ -250,7 +249,7 @@ const MessageList = withChannelContext(
       this.setState({ lastReceivedId });
     };
 
-    renderItem = ({ item: message }) => {
+    renderItem = (message, groupStyles) => {
       if (message.type === 'message.date') {
         const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
@@ -260,6 +259,7 @@ const MessageList = withChannelContext(
         <Message
           onThreadSelect={this.props.onThreadSelect}
           message={message}
+          groupStyles={groupStyles}
           Message={this.props.Message}
           lastReceivedId={
             this.state.lastReceivedId === message.id
@@ -303,9 +303,8 @@ const MessageList = withChannelContext(
       }
 
       const messagesWithDates = this.insertDates(this.props.messages);
-      const messagesWithGroupPositions = this.assignGroupPositions(
-        messagesWithDates,
-      );
+      const messageGroupStyles = this.getGroupStyles(messagesWithDates);
+      messagesWithDates.reverse();
 
       return (
         <React.Fragment>
@@ -330,7 +329,7 @@ const MessageList = withChannelContext(
           >
             <ListContainer
               ref={(fl) => (this.flatList = fl)}
-              data={messagesWithGroupPositions}
+              data={messagesWithDates}
               onScroll={this.handleScroll}
               ListFooterComponent={this.props.headerComponent}
               onEndReached={this.props.loadMore}
@@ -339,7 +338,9 @@ const MessageList = withChannelContext(
               keyExtractor={(item) =>
                 item.id || item.created_at || item.date.toISOString()
               }
-              renderItem={this.renderItem}
+              renderItem={({ item: message }) =>
+                this.renderItem(message, messageGroupStyles[message.id])
+              }
               maintainVisibleContentPosition={{
                 minIndexForVisible: 1,
                 autoscrollToTopThreshold: 10,
@@ -370,20 +371,21 @@ const MessageList = withChannelContext(
 );
 
 const NotificationContainer = styled.View`
-  display: ${(props) => getTheme(props).notification.display};
-  flex-direction: ${(props) => getTheme(props).notification.flexDirection};
-  align-items: ${(props) => getTheme(props).notification.alignItems};
-  z-index: ${(props) => getTheme(props).notification.zIndex};
-  margin-bottom: ${(props) => getTheme(props).notification.marginBottom};
-  padding: ${(props) => getTheme(props).notification.padding}px;
-  color: ${(props) =>
-    props.type && getTheme(props).notification[props.type].color
-      ? getTheme(props).notification[props.type].color
-      : getTheme(props).notification.color};
-  background-color: ${(props) =>
-    props.type && getTheme(props).notification[props.type].backgroundColor
-      ? getTheme(props).notification[props.type].backgroundColor
-      : getTheme(props).notification.backgroundColor};
+  display: ${({ theme }) => theme.notification.display};
+  flex-direction: ${({ theme }) => theme.notification.flexDirection};
+  align-items: ${({ theme }) => theme.notification.alignItems};
+  z-index: ${({ theme }) => theme.notification.zIndex};
+  margin-bottom: ${({ theme }) => theme.notification.marginBottom};
+  padding: ${({ theme }) => theme.notification.padding}px;
+  color: ${({ theme, type }) =>
+    type && theme.notification[type].color
+      ? theme.notification[type].color
+      : theme.notification.color};
+  background-color: ${({ theme, type }) =>
+    type && theme.notification[type].backgroundColor
+      ? theme.notification[type].backgroundColor
+      : theme.notification.backgroundColor};
+  ${({ theme }) => theme.notification.extra}
 `;
 
 const Notification = ({ children, active, type }) => {

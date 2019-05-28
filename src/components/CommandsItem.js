@@ -1,21 +1,22 @@
 import React from 'react';
 import { Text } from 'react-native';
-import styled from 'styled-components';
-import { getTheme } from '../styles/theme';
+import styled from '@stream-io/styled-components';
 
 const Container = styled.View`
-  flex-direction: ${(props) =>
-    getTheme(props).commandsItem.container.flexDirection};
-  padding: ${(props) => getTheme(props).commandsItem.container.padding}px;
+  flex-direction: ${({ theme }) => theme.commandsItem.container.flexDirection};
+  padding: ${({ theme }) => theme.commandsItem.container.padding}px;
+  ${({ theme }) => theme.commandsItem.container.extra}
 `;
 
 const Top = styled.View`
-  flex-direction: ${(props) => getTheme(props).commandsItem.top.flexDirection};
-  align-items: ${(props) => getTheme(props).commandsItem.top.alignItems};
+  flex-direction: ${({ theme }) => theme.commandsItem.top.flexDirection};
+  align-items: ${({ theme }) => theme.commandsItem.top.alignItems};
+  ${({ theme }) => theme.commandsItem.top.extra}
 `;
 
 const Title = styled.Text`
-  font-weight: ${(props) => getTheme(props).commandsItem.title.fontWeight};
+  font-weight: ${({ theme }) => theme.commandsItem.title.fontWeight};
+  ${({ theme }) => theme.commandsItem.title.extra}
 `;
 
 export class CommandsItem extends React.Component {

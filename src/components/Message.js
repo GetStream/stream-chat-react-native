@@ -7,8 +7,16 @@ import deepequal from 'deep-equal';
 import { withChannelContext } from '../context';
 import { MESSAGE_ACTIONS } from '../utils';
 
+/**
+ * Message - A high level component which implements all the logic required for a message.
+ * The actual rendering of the message is delegated via the "Message" property
+ *
+ * @example ./docs/Message.md
+ * @extends Component
+ */
 const Message = withChannelContext(
   class Message extends React.Component {
+    static themePath = 'messageSimple';
     constructor(props) {
       super(props);
       this.state = {

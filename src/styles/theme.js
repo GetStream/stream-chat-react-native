@@ -1,4 +1,8 @@
-const merge = require('deepmerge');
+import React from 'react';
+import { ThemeProvider, ThemeConsumer } from '@stream-io/styled-components';
+import merge from 'lodash/merge';
+import lodashSet from 'lodash/set';
+import lodashGet from 'lodash/get';
 
 export const BASE_FONT_SIZE = 16;
 
@@ -21,10 +25,20 @@ const defaultTheme = {
   colors: {
     ...Colors,
   },
-  avatarImage: {
-    height: null,
-    width: null,
-    borderRadius: null,
+  avatar: {
+    container: {},
+    image: {},
+    text: {
+      color: Colors.textLight,
+      textTransform: 'uppercase',
+      fontSize: BASE_FONT_SIZE - 2,
+      fontWeight: '600',
+    },
+    fallback: {
+      backgroundColor: Colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   },
   attachment: {
     file: {
@@ -44,6 +58,7 @@ const defaultTheme = {
       title: {
         fontWeight: 700,
       },
+      size: {},
     },
     actions: {
       container: {
@@ -70,18 +85,6 @@ const defaultTheme = {
       },
     },
   },
-  avatarFallback: {
-    backgroundColor: Colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: Colors.textLight,
-    textTransform: 'uppercase',
-    fontSize: BASE_FONT_SIZE - 2,
-    fontWeight: '600',
-  },
-
   card: {
     container: {
       overflow: 'hidden',
@@ -193,6 +196,7 @@ const defaultTheme = {
       fontSize: 10,
       opacity: 0.8,
     },
+    dateText: {},
   },
 
   gallery: {
@@ -277,42 +281,6 @@ const defaultTheme = {
     unreadCount: {
       fontSize: 10,
       color: '#fff',
-    },
-  },
-
-  imageUploadPreview: {
-    container: {
-      height: 70,
-      display: 'flex',
-      padding: 10,
-    },
-    itemContainer: {
-      display: 'flex',
-      height: 50,
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginLeft: 5,
-    },
-    dismiss: {
-      position: 'absolute',
-      top: 5,
-      right: 5,
-      backgroundColor: '#fff',
-      width: 20,
-      height: 20,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderRadius: 20,
-    },
-    dismissImage: {
-      width: 10,
-      height: 10,
-    },
-    upload: {
-      height: 50,
-      width: 50,
-      borderRadius: 10,
     },
   },
 
@@ -446,7 +414,7 @@ const defaultTheme = {
       fontWeight: 700,
       fontSize: 12,
     },
-    messageRepliesImage: {},
+    image: {},
   },
 
   messageText: {
@@ -510,6 +478,41 @@ const defaultTheme = {
     typing: {
       textAlign: 'right',
       height: 20,
+    },
+    imageUploadPreview: {
+      container: {
+        height: 70,
+        display: 'flex',
+        padding: 10,
+      },
+      itemContainer: {
+        display: 'flex',
+        height: 50,
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginLeft: 5,
+      },
+      dismiss: {
+        position: 'absolute',
+        top: 5,
+        right: 5,
+        backgroundColor: '#fff',
+        width: 20,
+        height: 20,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+      },
+      dismissImage: {
+        width: 10,
+        height: 10,
+      },
+      upload: {
+        height: 50,
+        width: 50,
+        borderRadius: 10,
+      },
     },
   },
 
@@ -648,6 +651,7 @@ const defaultTheme = {
       borderRadius: 4,
       display: 'flex',
       alignItems: 'center',
+      text: {},
     },
   },
   withProgressIndicator: {
@@ -673,15 +677,58 @@ const defaultTheme = {
 };
 
 const buildTheme = (t) => {
-  const theme = merge(defaultTheme, t);
+  const theme = merge({}, defaultTheme, t);
   return theme;
 };
 
-const getTheme = (props) => {
-  if (props.theme && Object.keys(props.theme).length > 0) {
-    return props.theme;
+const themed = (WrappedComponent) => {
+  if (!WrappedComponent.themePath) {
+    throw Error('Only use themed on components that have a static themePath');
   }
-  return defaultTheme;
+  const ThemedComponent = ({ style, ...props }) => (
+    <ThemeConsumer>
+      {(themeProviderTheme) => {
+        if (!style && themeProviderTheme) {
+          return <WrappedComponent {...props} />;
+        }
+        themeProviderTheme = themeProviderTheme || defaultTheme;
+        const modifiedTheme = style
+          ? merge(
+              {},
+              themeProviderTheme,
+              lodashSet({}, WrappedComponent.themePath, style),
+            )
+          : themeProviderTheme;
+        return (
+          <ThemeProvider theme={modifiedTheme}>
+            <WrappedComponent {...props} />
+          </ThemeProvider>
+        );
+      }}
+    </ThemeConsumer>
+  );
+  ThemedComponent.themePath = WrappedComponent.themePath;
+  ThemedComponent.displayName = `Themed${getDisplayName(WrappedComponent)}`;
+  return ThemedComponent;
 };
 
-export { buildTheme, getTheme };
+// Copied from here:
+// https://reactjs.org/docs/higher-order-components.html#convention-wrap-the-display-name-for-easy-debugging
+function getDisplayName(WrappedComponent) {
+  return WrappedComponent.displayName || WrappedComponent.name || 'Component';
+}
+
+const formatDefaultTheme = (component) => {
+  const path = component.themePath;
+
+  return (
+    <div style={{ whiteSpace: 'pre-wrap' }}>
+      {`The path for this component in the full theme is "${path}" with the following styles:\n${JSON.stringify(
+        lodashGet(defaultTheme, path),
+        null,
+        2,
+      )}`}
+    </div>
+  );
+};
+export { themed, buildTheme, formatDefaultTheme };

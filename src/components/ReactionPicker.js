@@ -1,54 +1,54 @@
 import React from 'react';
 import { View, Modal } from 'react-native';
 
-import styled from 'styled-components';
-import { getTheme } from '../styles/theme';
+import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
 import { Avatar } from './Avatar';
 
 const Container = styled.TouchableOpacity`
-  flex: ${(props) => getTheme(props).reactionPicker.container.flex};
-  align-items: ${(props) =>
-    props.left
-      ? getTheme(props).reactionPicker.container.leftAlign
-      : getTheme(props).reactionPicker.container.rightAlign};
+  flex: ${({ theme }) => theme.reactionPicker.container.flex};
+  align-items: ${({ theme, left }) =>
+    left
+      ? theme.reactionPicker.container.leftAlign
+      : theme.reactionPicker.container.rightAlign};
+  ${({ theme }) => theme.reactionPicker.container.extra}
 `;
 
 const ContainerView = styled.View`
-  display: ${(props) => getTheme(props).reactionPicker.containerView.display};
-  flex-direction: ${(props) =>
-    getTheme(props).reactionPicker.containerView.flexDirection};
-  background-color: ${(props) =>
-    getTheme(props).reactionPicker.containerView.backgroundColor};
-  padding-left: ${(props) =>
-    getTheme(props).reactionPicker.containerView.paddingLeft};
-  height: ${(props) => getTheme(props).reactionPicker.containerView.height};
-  padding-right: ${(props) =>
-    getTheme(props).reactionPicker.containerView.paddingRight};
-  border-radius: ${(props) =>
-    getTheme(props).reactionPicker.containerView.borderRadius};
+  display: ${({ theme }) => theme.reactionPicker.containerView.display};
+  flex-direction: ${({ theme }) =>
+    theme.reactionPicker.containerView.flexDirection};
+  background-color: ${({ theme }) =>
+    theme.reactionPicker.containerView.backgroundColor};
+  padding-left: ${({ theme }) =>
+    theme.reactionPicker.containerView.paddingLeft};
+  height: ${({ theme }) => theme.reactionPicker.containerView.height};
+  padding-right: ${({ theme }) =>
+    theme.reactionPicker.containerView.paddingRight};
+  border-radius: ${({ theme }) =>
+    theme.reactionPicker.containerView.borderRadius};
+  ${({ theme }) => theme.reactionPicker.containerView.extra}
 `;
 
 const Column = styled.View`
-  flex-direction: ${(props) =>
-    getTheme(props).reactionPicker.column.flexDirection};
-  align-items: ${(props) => getTheme(props).reactionPicker.column.alignItems};
-  margin-top: ${(props) => getTheme(props).reactionPicker.column.marginTop};
+  flex-direction: ${({ theme }) => theme.reactionPicker.column.flexDirection};
+  align-items: ${({ theme }) => theme.reactionPicker.column.alignItems};
+  margin-top: ${({ theme }) => theme.reactionPicker.column.marginTop};
+  ${({ theme }) => theme.reactionPicker.column.extra}
 `;
 
 const Emoji = styled.Text`
-  font-size: ${(props) => getTheme(props).reactionPicker.emoji.fontSize};
-  margin-bottom: ${(props) =>
-    getTheme(props).reactionPicker.emoji.marginBottom};
-  margin-top: ${(props) => getTheme(props).reactionPicker.emoji.marginTop};
+  font-size: ${({ theme }) => theme.reactionPicker.emoji.fontSize};
+  margin-bottom: ${({ theme }) => theme.reactionPicker.emoji.marginBottom};
+  margin-top: ${({ theme }) => theme.reactionPicker.emoji.marginTop};
+  ${({ theme }) => theme.reactionPicker.emoji.extra}
 `;
 
 const ReactionCount = styled.Text`
-  color: ${(props) => getTheme(props).reactionPicker.reactionCount.color};
-  font-size: ${(props) =>
-    getTheme(props).reactionPicker.reactionCount.fontSize};
-  font-weight: ${(props) =>
-    getTheme(props).reactionPicker.reactionCount.fontWeight};
+  color: ${({ theme }) => theme.reactionPicker.reactionCount.color};
+  font-size: ${({ theme }) => theme.reactionPicker.reactionCount.fontSize};
+  font-weight: ${({ theme }) => theme.reactionPicker.reactionCount.fontWeight};
+  ${({ theme }) => theme.reactionPicker.text.extra}
 `;
 
 export class ReactionPicker extends React.PureComponent {

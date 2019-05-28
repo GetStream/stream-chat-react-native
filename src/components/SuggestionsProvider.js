@@ -3,57 +3,58 @@ import { View, FlatList, findNodeHandle } from 'react-native';
 
 import { SuggestionsContext } from '../context';
 
-import styled from 'styled-components';
-import { getTheme } from '../styles/theme';
+import styled from '@stream-io/styled-components';
 
 const Wrapper = styled.TouchableOpacity`
-  position: ${(props) => getTheme(props).suggestionsProvider.wrapper.position};
-  z-index: ${(props) => getTheme(props).suggestionsProvider.wrapper.zIndex};
-  height: ${(props) => props.height};
-  width: ${(props) => getTheme(props).suggestionsProvider.wrapper.width};
+  position: ${({ theme }) => theme.suggestionsProvider.wrapper.position};
+  z-index: ${({ theme }) => theme.suggestionsProvider.wrapper.zIndex};
+  height: ${({ height }) => height};
+  width: ${({ theme }) => theme.suggestionsProvider.wrapper.width};
+  ${({ theme }) => theme.suggestionsProvider.wrapper.extra}
 `;
 
 const Container = styled.View`
-  position: ${(props) =>
-    getTheme(props).suggestionsProvider.container.position};
-  bottom: ${(props) => getTheme(props).suggestionsProvider.container.bottom};
-  background-color: ${(props) =>
-    getTheme(props).suggestionsProvider.container.backgroundColor};
-  z-index: ${(props) => getTheme(props).suggestionsProvider.container.zIndex};
-  border-top-left-radius: ${(props) =>
-    getTheme(props).suggestionsProvider.container.borderTopLeftRadius};
-  border-top-right-radius: ${(props) =>
-    getTheme(props).suggestionsProvider.container.borderTopRightRadius};
-  width: ${(props) => props.width};
-  margin-left: ${(props) => props.marginLeft};
-  shadow-color: ${(props) =>
-    getTheme(props).suggestionsProvider.container.shadowColor};
-  shadow-opacity: ${(props) =>
-    getTheme(props).suggestionsProvider.container.shadowOpacity}
-  shadow-offset: ${(props) =>
-    getTheme(props).suggestionsProvider.container.shadowOffset}
-  height: ${(props) =>
+  position: ${({ theme }) => theme.suggestionsProvider.container.position};
+  bottom: ${({ theme }) => theme.suggestionsProvider.container.bottom};
+  background-color: ${({ theme }) =>
+    theme.suggestionsProvider.container.backgroundColor};
+  z-index: ${({ theme }) => theme.suggestionsProvider.container.zIndex};
+  border-top-left-radius: ${({ theme }) =>
+    theme.suggestionsProvider.container.borderTopLeftRadius};
+  border-top-right-radius: ${({ theme }) =>
+    theme.suggestionsProvider.container.borderTopRightRadius};
+  width: ${({ width }) => width};
+  margin-left: ${({ marginLeft }) => marginLeft};
+  shadow-color: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowColor};
+  shadow-opacity: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowOpacity}
+  shadow-offset: ${({ theme }) =>
+    theme.suggestionsProvider.container.shadowOffset}
+  height: ${({ theme, length }) =>
     Math.min(
-      props.length * getTheme(props).suggestionsProvider.container.itemHeight,
-      getTheme(props).suggestionsProvider.container.maxHeight,
+      length * theme.suggestionsProvider.container.itemHeight,
+      theme.suggestionsProvider.container.maxHeight,
     )};
+  ${({ theme }) => theme.suggestionsProvider.container.extra}
 `;
 
 const Title = styled.Text`
-  padding: ${(props) => getTheme(props).suggestionsHeader.title.padding}px;
-  font-weight: ${(props) => getTheme(props).suggestionsHeader.title.fontWeight};
-  height: ${(props) =>
-    getTheme(props).suggestionsProvider.container.itemHeight};
+  padding: ${({ theme }) => theme.suggestionsHeader.title.padding}px;
+  font-weight: ${({ theme }) => theme.suggestionsHeader.title.fontWeight};
+  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
+  ${({ theme }) => theme.suggestionsProvider.title.extra}
 `;
 
 const Separator = styled.View`
-  height: ${(props) => getTheme(props).suggestionsSeparator.separator.height};
+  height: ${({ theme }) => theme.suggestionsSeparator.separator.height};
+  ${({ theme }) => theme.suggestionsSeparator.separator.extra}
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
-  justify-content: ${(props) => getTheme(props).suggestionsItem.justifyContent};
-  height: ${(props) =>
-    getTheme(props).suggestionsProvider.container.itemHeight};
+  justify-content: ${({ theme }) => theme.suggestionsItem.justifyContent};
+  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
+  ${({ theme }) => theme.suggestionsItem.extra}
 `;
 
 export class SuggestionsProvider extends React.PureComponent {

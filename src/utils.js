@@ -10,7 +10,7 @@ export const renderText = (message) => {
   // take the @ mentions and turn them into markdown?
   // translate links
   let { text } = message;
-  const { mentioned_users } = message;
+  const { mentioned_users = [] } = message;
 
   if (!text) {
     return;
@@ -174,4 +174,11 @@ export const MESSAGE_ACTIONS = {
   delete: 'delete',
   reactions: 'reactions',
   reply: 'reply',
+};
+
+export const makeImageCompatibleUrl = (url) => {
+  let newUrl = url;
+  if (url.indexOf('//') === 0) newUrl = 'https:' + url;
+
+  return newUrl;
 };

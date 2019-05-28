@@ -10,10 +10,7 @@ import {
   Thread,
   ChannelPreviewMessenger,
   CloseButton,
-  buildTheme,
 } from 'stream-chat-expo';
-
-import { ThemeProvider } from 'styled-components';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 
@@ -139,25 +136,23 @@ class ThreadScreen extends PureComponent {
     headerTitle: <Text style={{ fontWeight: 'bold' }}>Thread</Text>,
     headerLeft: null,
     headerRight: (
-      <ThemeProvider theme={buildTheme(theme)}>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.goBack();
-          }}
-          style={{
-            backgroundColor: '#ebebeb',
-            width: 30,
-            height: 30,
-            marginRight: 20,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: 20,
-          }}
-        >
-          <CloseButton />
-        </TouchableOpacity>
-      </ThemeProvider>
+      <TouchableOpacity
+        onPress={() => {
+          navigation.goBack();
+        }}
+        style={{
+          backgroundColor: '#ebebeb',
+          width: 30,
+          height: 30,
+          marginRight: 20,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: 20,
+        }}
+      >
+        <CloseButton />
+      </TouchableOpacity>
     ),
   });
 
