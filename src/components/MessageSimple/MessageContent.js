@@ -13,6 +13,7 @@ import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
+import PropTypes from 'prop-types';
 
 const Container = styled.TouchableOpacity`
   display: ${({ theme }) => theme.messageContent.container.display};
@@ -79,6 +80,19 @@ const FailedText = styled.Text``;
 export const MessageContent = themed(
   class MessageContent extends React.PureComponent {
     static themePath = 'messageContent';
+
+    static propTypes = {
+      /** enabled reactions, this is usually set by the parent component based on channel configs */
+      reactionsEnabled: PropTypes.bool.isRequired,
+      /** enabled replies, this is usually set by the parent component based on channel configs */
+      repliesEnabled: PropTypes.bool.isRequired,
+    };
+
+    static defaultProps = {
+      reactionsEnabled: true,
+      repliesEnabled: true,
+    };
+
     constructor(props) {
       super(props);
 
@@ -162,6 +176,8 @@ export const MessageContent = themed(
         retrySendMessage,
         messageActions,
         groupStyles,
+        reactionsEnabled,
+        repliesEnabled,
       } = this.props;
       const hasAttachment = Boolean(
         message && message.attachments && message.attachments.length,
@@ -181,6 +197,7 @@ export const MessageContent = themed(
 
       if (
         messageActions &&
+        reactionsEnabled &&
         messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
       ) {
         options.splice(1, 0, {
@@ -191,6 +208,7 @@ export const MessageContent = themed(
 
       if (
         messageActions &&
+        repliesEnabled &&
         messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
         !threadList
       ) {
@@ -239,14 +257,16 @@ export const MessageContent = themed(
           {message.status === 'failed' ? (
             <FailedText>Message failed - try again</FailedText>
           ) : null}
-          {message.latest_reactions && message.latest_reactions.length > 0 && (
-            <ReactionList
-              visible={!this.state.reactionPickerVisible}
-              latestReactions={message.latest_reactions}
-              openReactionSelector={this.openReactionSelector}
-              reactionCounts={message.reaction_counts}
-            />
-          )}
+          {reactionsEnabled &&
+            message.latest_reactions &&
+            message.latest_reactions.length > 0 && (
+              <ReactionList
+                visible={!this.state.reactionPickerVisible}
+                latestReactions={message.latest_reactions}
+                openReactionSelector={this.openReactionSelector}
+                reactionCounts={message.reaction_counts}
+              />
+            )}
           {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
           <ContainerInner
             ref={(o) => (this.messageContainer = o)}
@@ -276,12 +296,14 @@ export const MessageContent = themed(
               handleReaction={handleReaction}
             />
           </ContainerInner>
-          <MessageReplies
-            message={message}
-            isThreadList={!!threadList}
-            openThread={this.openThread}
-            pos={pos}
-          />
+          {repliesEnabled ? (
+            <MessageReplies
+              message={message}
+              isThreadList={!!threadList}
+              openThread={this.openThread}
+              pos={pos}
+            />
+          ) : null}
 
           {showTime ? (
             <MetaContainer>
@@ -301,18 +323,21 @@ export const MessageContent = themed(
             destructiveButtonIndex={0}
             onPress={(index) => this.onActionPress(options[index].id)}
           />
-          <ReactionPicker
-            reactionPickerVisible={this.state.reactionPickerVisible}
-            handleReaction={handleReaction}
-            latestReactions={message.latest_reactions}
-            reactionCounts={message.reaction_counts}
-            handleDismiss={() => {
-              this.setState({ reactionPickerVisible: false });
-            }}
-            rpLeft={this.state.rpLeft}
-            rpRight={this.state.rpRight}
-            rpTop={this.state.rpTop}
-          />
+
+          {reactionsEnabled ? (
+            <ReactionPicker
+              reactionPickerVisible={this.state.reactionPickerVisible}
+              handleReaction={handleReaction}
+              latestReactions={message.latest_reactions}
+              reactionCounts={message.reaction_counts}
+              handleDismiss={() => {
+                this.setState({ reactionPickerVisible: false });
+              }}
+              rpLeft={this.state.rpLeft}
+              rpRight={this.state.rpRight}
+              rpTop={this.state.rpTop}
+            />
+          ) : null}
         </Container>
       );
     }

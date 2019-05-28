@@ -224,6 +224,8 @@ const Message = withChannelContext(
         <TouchableOpacity onPress={this.onMessageTouch} activeOpacity={1}>
           <Component
             {...this.props}
+            reactionsEnabled={this.props.channel.getConfig().reactions}
+            repliesEnabled={this.props.channel.getConfig().replies}
             actionsEnabled={actionsEnabled}
             Message={this}
             handleReaction={this.handleReaction}
