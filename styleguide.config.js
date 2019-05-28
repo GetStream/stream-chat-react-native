@@ -110,6 +110,7 @@ module.exports = {
     favicon: 'https://getstream.imgix.net/images/favicons/favicon-96x96.png',
   },
   webpackConfig: {
+    devtool: 'source-map',
     resolve: {
       // auto resolves any react-native import as react-native-web
       alias: {

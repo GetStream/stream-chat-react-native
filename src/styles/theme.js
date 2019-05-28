@@ -234,34 +234,48 @@ const buildTheme = (t) => {
   return theme;
 };
 
-const themed = (WrappedComponent) => {
-  if (!WrappedComponent.themePath) {
+const themed = (OriginalComponent) => {
+  if (!OriginalComponent.themePath) {
     throw Error('Only use themed on components that have a static themePath');
   }
   const ThemedComponent = ({ style, ...props }) => (
     <ThemeConsumer>
       {(themeProviderTheme) => {
         if (!style && themeProviderTheme) {
-          return <WrappedComponent {...props} />;
+          return <OriginalComponent {...props} />;
         }
-        themeProviderTheme = themeProviderTheme || defaultTheme;
-        const modifiedTheme = style
-          ? merge(
-              {},
-              themeProviderTheme,
-              lodashSet({}, WrappedComponent.themePath, style),
-            )
-          : themeProviderTheme;
+        let modifiedTheme = themeProviderTheme || defaultTheme;
+        if (style) {
+          const themeDiff = {};
+          for (const k in style) {
+            if (
+              lodashGet(defaultTheme, OriginalComponent.themePath + '.' + k)
+            ) {
+              lodashSet(
+                themeDiff,
+                OriginalComponent.themePath + '.' + k,
+                style[k],
+              );
+            } else if (lodashGet(defaultTheme, k)) {
+              lodashSet(themeDiff, k, style[k]);
+            } else {
+              throw Error(`Unknown theme key ${k}`);
+            }
+          }
+
+          modifiedTheme = merge({}, modifiedTheme, themeDiff);
+        }
         return (
           <ThemeProvider theme={modifiedTheme}>
-            <WrappedComponent {...props} />
+            <OriginalComponent {...props} />
           </ThemeProvider>
         );
       }}
     </ThemeConsumer>
   );
-  ThemedComponent.themePath = WrappedComponent.themePath;
-  ThemedComponent.displayName = `Themed${getDisplayName(WrappedComponent)}`;
+  ThemedComponent.themePath = OriginalComponent.themePath;
+  ThemedComponent.extraThemePaths = OriginalComponent.extraThemePaths;
+  ThemedComponent.displayName = `Themed${getDisplayName(OriginalComponent)}`;
   return ThemedComponent;
 };
 
@@ -273,11 +287,23 @@ function getDisplayName(WrappedComponent) {
 
 const formatDefaultTheme = (component) => {
   const path = component.themePath;
+  const extraThemePaths = component.extraThemePaths || [];
+  const themes = merge({}, lodashGet(defaultTheme, path));
+  for (let i = 0; i < extraThemePaths.length; i++) {
+    merge(
+      themes,
+      lodashSet(
+        {},
+        extraThemePaths[i],
+        lodashGet(defaultTheme, extraThemePaths[i]),
+      ),
+    );
+  }
 
   return (
     <div style={{ whiteSpace: 'pre-wrap' }}>
       {`The path for this component in the full theme is "${path}" with the following styles:\n${JSON.stringify(
-        lodashGet(defaultTheme, path),
+        themes,
         null,
         2,
       )}`}

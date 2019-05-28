@@ -14,6 +14,7 @@ export function withChatContext(OriginalComponent) {
     );
   };
   ContextAwareComponent.themePath = OriginalComponent.themePath;
+  ContextAwareComponent.extraThemePaths = OriginalComponent.extraThemePaths;
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
@@ -37,6 +38,7 @@ export function withChannelContext(OriginalComponent) {
     );
   };
   ContextAwareComponent.themePath = OriginalComponent.themePath;
+  ContextAwareComponent.extraThemePaths = OriginalComponent.extraThemePaths;
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(

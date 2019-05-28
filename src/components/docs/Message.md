@@ -50,6 +50,7 @@ const readBy = [
   readBy={readBy}
   groupStyles={['bottom']}
   editing={false}
+  style={{ 'avatar.fallback': { extra: 'background-color: red;' } }}
   {...data.channelContext}
 />;
 ```
