@@ -84,7 +84,6 @@ const ChannelList = withChatContext(
         loadingChannels: true,
         refreshing: false,
         offset: 0,
-        connectionRecoveredCount: 0,
       };
 
       this.menuButton = React.createRef();
@@ -129,7 +128,7 @@ const ChannelList = withChatContext(
       this.menuButton.current.checked = false;
     };
 
-    queryChannels = async () => {
+    queryChannels = async (resync = false) => {
       // Don't query again if query is already active.
       if (this.queryActive) return;
 
@@ -140,9 +139,20 @@ const ChannelList = withChatContext(
         return;
       }
       const { options, filters, sort } = this.props;
-      const { offset } = this.state;
+      let offset;
+
+      if (resync) {
+        offset = 0;
+        options.limit = this.state.channels.length;
+        this.setState({
+          offset: 0,
+        });
+      } else {
+        offset = this.state.offset;
+      }
 
       this.setState({ refreshing: true });
+
       const channelPromise = this.props.client.queryChannels(filters, sort, {
         ...options,
         offset,
@@ -158,16 +168,26 @@ const ChannelList = withChatContext(
           }
         }
         if (this._unmounted) return;
+
         await this.setState((prevState) => {
-          // Remove duplicate channels in worse case we get repeted channel from backend.
-          channelQueryResponse = channelQueryResponse.filter(
-            (c) => this.state.channelIds.indexOf(c.id) === -1,
-          );
-          const channels = [...prevState.channels, ...channelQueryResponse];
-          const channelIds = [
-            ...prevState.channelIds,
-            ...channelQueryResponse.map((c) => c.id),
-          ];
+          let channels;
+          let channelIds;
+
+          if (resync) {
+            channels = [...channelQueryResponse];
+            channelIds = [...channelQueryResponse.map((c) => c.id)];
+          } else {
+            // Remove duplicate channels in worse case we get repeted channel from backend.
+            channelQueryResponse = channelQueryResponse.filter(
+              (c) => this.state.channelIds.indexOf(c.id) === -1,
+            );
+
+            channels = [...prevState.channels, ...channelQueryResponse];
+            channelIds = [
+              ...prevState.channelIds,
+              ...channelQueryResponse.map((c) => c.id),
+            ];
+          }
 
           return {
             channels, // not unique somehow needs more checking
@@ -198,9 +218,7 @@ const ChannelList = withChatContext(
 
       // make sure to re-render the channel list after connection is recovered
       if (e.type === 'connection.recovered') {
-        this.setState((prevState) => ({
-          connectionRecoveredCount: prevState.connectionRecoveredCount + 1,
-        }));
+        this.queryChannels(true);
       }
 
       // move channel to start
@@ -302,7 +320,6 @@ const ChannelList = withChatContext(
         clickCreateChannel: this.clickCreateChannel,
         closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
-        connectionRecoveredCount: this.state.connectionRecoveredCount,
       };
       const List = this.props.List;
       const props = { ...this.props, setActiveChannel: this.props.onSelect };
