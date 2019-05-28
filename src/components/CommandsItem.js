@@ -3,19 +3,19 @@ import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.View`
-  flex-direction: ${({ theme }) => theme.commandsItem.container.flexDirection};
-  padding: ${({ theme }) => theme.commandsItem.container.padding}px;
+  flex-direction: column;
+  padding: 10px;
   ${({ theme }) => theme.commandsItem.container.extra}
 `;
 
 const Top = styled.View`
-  flex-direction: ${({ theme }) => theme.commandsItem.top.flexDirection};
-  align-items: ${({ theme }) => theme.commandsItem.top.alignItems};
+  flex-direction: row;
+  align-items: center;
   ${({ theme }) => theme.commandsItem.top.extra}
 `;
 
 const Title = styled.Text`
-  font-weight: ${({ theme }) => theme.commandsItem.title.fontWeight};
+  font-weight: bold;
   ${({ theme }) => theme.commandsItem.title.extra}
 `;
 

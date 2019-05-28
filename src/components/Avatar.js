@@ -22,16 +22,16 @@ const AvatarFallback = styled.View`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
   background-color: ${({ theme }) => theme.colors.primary};
-  justify-content: ${({ theme }) => theme.avatar.fallback.justifyContent};
-  align-items: ${({ theme }) => theme.avatar.fallback.alignItems};
+  justify-content: center;
+  align-items: center;
   ${({ theme }) => theme.avatar.fallback.extra}
 `;
 
 const AvatarText = styled.Text`
-  color: ${({ theme }) => theme.avatar.text.color};
-  text-transform: ${({ theme }) => theme.avatar.text.textTransform};
-  font-size: ${({ theme }) => theme.avatar.text.fontSize};
-  font-weight: ${({ theme }) => theme.avatar.text.fontWeight};
+  color: ${({ theme }) => theme.colors.textLight};
+  text-transform: uppercase;
+  font-size: 14;
+  font-weight: bold;
   ${({ theme }) => theme.avatar.text.extra}
 `;
 
@@ -49,8 +49,6 @@ export const Avatar = themed(
       image: PropTypes.string,
       /** name of the picture, used for title tag fallback */
       name: PropTypes.string,
-      /** shape of the avatar, circle, rounded or square */
-      shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
       /** size in pixels */
       size: PropTypes.number,
       /** Style overrides */
@@ -58,7 +56,6 @@ export const Avatar = themed(
     };
 
     static defaultProps = {
-      shape: 'circle',
       size: 32,
     };
 

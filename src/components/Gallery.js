@@ -8,23 +8,23 @@ import { themed } from '../styles/theme';
 import { CloseButton } from './CloseButton';
 
 const Single = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.gallery.single.display};
+  display: flex;
   height: 200px;
-  width: ${({ theme }) => theme.gallery.single.maxWidth};
-  border-top-left-radius: ${({ theme }) => theme.gallery.single.borderRadius};
-  border-top-right-radius: ${({ theme }) => theme.gallery.single.borderRadius};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.gallery.single.borderRadius : 2};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.gallery.single.borderRadius : 2};
+  width: ${({ theme }) => theme.gallery.width};
+  border-top-left-radius: 16;
+  border-top-right-radius: 16;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
   overflow: hidden;
   ${({ theme }) => theme.gallery.single.extra}
 `;
 
 const GalleryContainer = styled.View`
-  display: ${({ theme }) => theme.gallery.galleryContainer.display};
-  flex-direction: ${({ theme }) => theme.gallery.flexDirection};
-  flex-wrap: ${({ theme }) => theme.gallery.flexWrap};
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   width: ${({ theme }) => theme.gallery.width};
 
   height: ${({ theme, length }) =>
@@ -34,17 +34,17 @@ const GalleryContainer = styled.View`
       ? theme.gallery.halfSize
       : theme.gallery.size};
 
-  overflow: ${({ theme }) => theme.gallery.galleryContainer.overflow};
-  border-radius: ${({ theme }) => theme.gallery.galleryContainer.borderRadius};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.gallery.galleryContainer.borderRadius : 2};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.gallery.galleryContainer.borderRadius : 2};
+  overflow: hidden;
+  border-radius: 16;
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
   ${({ theme }) => theme.gallery.galleryContainer.extra}
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.gallery.imageContainer.display};
+  display: flex;
   height: ${({ theme, length }) =>
     length !== 3 ? theme.gallery.size : theme.gallery.halfSize};
   width: ${({ theme, length }) =>
@@ -217,26 +217,24 @@ export const Gallery = themed(
 );
 
 const HeaderContainer = styled.View`
-  display: ${({ theme }) => theme.gallery.header.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.gallery.header.container.flexDirection};
-  justify-content: ${({ theme }) =>
-    theme.gallery.header.container.justifyContent};
-  position: ${({ theme }) => theme.gallery.header.container.position};
-  width: ${({ theme }) => theme.gallery.header.container.width};
-  z-index: ${({ theme }) => theme.gallery.header.container.zIndex};
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  position: absolute;
+  width: 100%};
+  z-index: 1000;
   ${({ theme }) => theme.gallery.header.container.extra}
 `;
 
 const HeaderButton = styled.TouchableOpacity`
-  width: ${({ theme }) => theme.gallery.header.button.width};
-  height: ${({ theme }) => theme.gallery.header.button.height};
-  margin-right: ${({ theme }) => theme.gallery.header.button.marginRight};
-  margin-top: ${({ theme }) => theme.gallery.header.button.marginTop};
-  display: ${({ theme }) => theme.gallery.header.button.display};
-  align-items: ${({ theme }) => theme.gallery.header.button.alignItems};
-  justify-content: ${({ theme }) => theme.gallery.header.button.justifyContent};
-  border-radius: ${({ theme }) => theme.gallery.header.button.borderRadius};
+  width: 30;
+  height: 30;
+  margin-right: 20;
+  margin-top: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20;
   ${({ theme }) => theme.gallery.header.button.extra}
 `;
 

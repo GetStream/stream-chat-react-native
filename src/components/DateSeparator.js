@@ -3,34 +3,33 @@ import styled from '@stream-io/styled-components';
 import Moment from 'moment';
 
 const Container = styled.View`
-  display: ${({ theme }) => theme.dateSeparator.container.display};
-  flex-direction: ${({ theme }) => theme.dateSeparator.container.flexDirection};
-  justify-content: ${({ theme }) =>
-    theme.dateSeparator.container.justifyContent};
-  align-items: ${({ theme }) => theme.dateSeparator.container.alignItems};
-  margin-top: ${({ theme }) => theme.dateSeparator.container.marginTop};
-  margin-bottom: ${({ theme }) => theme.dateSeparator.container.marginBottom};
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20;
+  margin-bottom: 20;
   ${({ theme }) => theme.dateSeparator.container.extra}
 `;
 
 const Line = styled.View`
-  flex: ${({ theme }) => theme.dateSeparator.line.flex};
-  height: ${({ theme }) => theme.dateSeparator.line.height};
-  background-color: ${({ theme }) => theme.dateSeparator.line.backgroundColor};
+  flex: 1;
+  height: 0.5;
+  background-color: ${({ theme }) => theme.colors.light};
   ${({ theme }) => theme.dateSeparator.line.extra}
 `;
 
 const DateText = styled.Text`
-  margin-left: ${({ theme }) => theme.dateSeparator.date.marginLeft};
-  margin-right: ${({ theme }) => theme.dateSeparator.date.marginRight};
-  text-align: ${({ theme }) => theme.dateSeparator.date.textAlign};
-  text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
-  font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
-  opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  margin-left: 5;
+  margin-right: 5;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 10;
+  opacity: 0.8;
   ${({ theme }) => theme.dateSeparator.dateText.extra}
 `;
 
-const Strong = styled.Text`
+const Date = styled.Text`
   font-weight: 700;
   font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
   text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
@@ -46,7 +45,7 @@ const DateSeparator = ({ message, formatDate }) => (
         formatDate(message.date)
       ) : (
         <React.Fragment>
-          <Strong>{Moment(message.date).format('dddd')}</Strong> at{' '}
+          <Date>{Moment(message.date).format('dddd')}</Date> at{' '}
           {Moment(message.date).format('hh:mm A')}
         </React.Fragment>
       )}

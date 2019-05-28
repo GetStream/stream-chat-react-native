@@ -4,18 +4,16 @@ import styled from '@stream-io/styled-components';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: ${({ theme }) => theme.messageReplies.container.padding}px;
-  flex-direction: ${({ theme }) =>
-    theme.messageReplies.container.flexDirection};
-  align-items: ${({ theme }) => theme.messageReplies.container.alignItems};
+  padding: 5px;
+  flex-direction: row;
+  align-items: center;
   ${({ theme }) => theme.messageReplies.container.extra}
 `;
 
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
-  font-weight:  ${({ theme }) =>
-    theme.messageReplies.messageRepliesText.fontWeight}
-  font-size:  ${({ theme }) => theme.messageReplies.messageRepliesText.fontSize}
+  font-weight: 700;
+  font-size: 12;
   ${({ theme }) => theme.messageReplies.messageRepliesText.extra}
 `;
 

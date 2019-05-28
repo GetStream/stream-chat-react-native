@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
 const Title = styled.Text`
-  color: ${({ theme }) => theme.hyperLink.title.color};
-  font-weight: ${({ theme }) => theme.hyperLink.title.fontWeight};
+  color: ${({ theme }) => theme.colors.primary};
+  font-weight: bold;
   ${({ theme }) => theme.hyperLink.title.extra}
 `;
 

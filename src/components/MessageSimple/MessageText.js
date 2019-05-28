@@ -7,39 +7,37 @@ const TextContainer = styled.View`
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('left') !== -1
       ? theme.messageText.borderRadiusS
-      : theme.messageText.borderBottomLeftRadius};
+      : theme.messageText.borderRadiusL};
   border-bottom-right-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('right') !== -1
       ? theme.messageText.borderRadiusS
-      : theme.messageText.borderBottomRightRadius};
+      : theme.messageText.borderRadiusL};
   border-top-left-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
       ? theme.messageText.borderRadiusS
-      : theme.messageText.borderTopLeftRadius};
+      : theme.messageText.borderRadiusL};
   border-top-right-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.messageText.borderRadiusS
-      : theme.messageText.borderTopRightRadius};
-  margin-top: ${({ theme }) => theme.messageText.marginTop};
-  padding: ${({ theme }) => theme.messageText.padding}px;
-  padding-left: ${({ theme }) => theme.messageText.paddingLeft};
-  padding-right: ${({ theme }) => theme.messageText.paddingRight};
-  align-self: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageText.left.alignSelf
-      : theme.messageText.right.alignSelf};
+      : theme.messageText.borderRadiusL};
+  margin-top: 2;
+  padding: 5px;
+  padding-left: 8;
+  padding-right: 8;
+  align-self: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
     alignment === 'left'
-      ? theme.messageText.left.borderWidth
-      : theme.messageText.right.borderWidth};
+      ? theme.messageText.leftBorderWidth
+      : theme.messageText.rightBorderWidth};
   border-color: ${({ theme, alignment }) =>
     alignment === 'left'
-      ? theme.messageText.left.borderColor
-      : theme.messageText.right.borderColor};
+      ? theme.messageText.leftBorderColor
+      : theme.messageText.rightBorderColor};
   background-color: ${({ theme, alignment, status }) =>
     alignment === 'left' || status === 'error' || status === 'failed'
-      ? theme.messageText.transparent
-      : theme.messageText.filled};
+      ? theme.colors.transparent
+      : theme.colors.light};
   ${({ theme }) => theme.messageText.extra}
 `;
 

@@ -11,30 +11,28 @@ import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
 const FileContainer = styled.View`
-  display: ${({ theme }) => theme.attachment.file.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.attachment.file.container.flexDirection};
-  align-items: ${({ theme }) => theme.attachment.file.container.alignItems};
-  background-color: ${({ theme }) =>
-    theme.attachment.file.container.backgroundColor};
-  padding: ${({ theme }) => theme.attachment.file.container.padding}px;
-  border-radius: ${({ theme }) => theme.attachment.file.container.borderRadius};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.attachment.file.container.borderRadius : 2};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.attachment.file.container.borderRadius : 2};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ebebeb;
+  padding: 10px;
+  border-radius: 16;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
   ${({ theme }) => theme.attachment.file.container.extra}
 `;
 
 const FileDetails = styled.View`
-  display: ${({ theme }) => theme.attachment.file.details.display};
-  flex-direction: ${({ theme }) => theme.attachment.file.details.flexDirection};
-  padding-left: ${({ theme }) => theme.attachment.file.details.paddingLeft}px;
+  display: flex};
+  flex-direction: column;
+  padding-left: 10px;
   ${({ theme }) => theme.attachment.file.details.extra}
 `;
 
 const FileTitle = styled.Text`
-  font-weight: ${({ theme }) => theme.attachment.file.title.fontWeight};
+  font-weight: 700;
   ${({ theme }) => theme.attachment.file.title.extra}
 `;
 

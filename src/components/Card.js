@@ -7,31 +7,29 @@ import { themed } from '../styles/theme';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
-  border-top-left-radius: ${({ theme }) =>
-    theme.card.container.borderTopLeftRadius};
-  border-top-right-radius: ${({ theme }) =>
-    theme.card.container.borderTopRightRadius};
-  overflow: ${({ theme }) => theme.card.container.overflow};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.card.container.borderBottomLeftRadius : 2};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.card.container.borderBottomRightRadius : 2};
-  background-color: ${({ theme }) => theme.card.container.backgroundColor};
-  width: ${({ theme }) => theme.card.container.width};
+  border-top-left-radius: 16;
+  border-top-right-radius: 16;
+  overflow: hidden;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
+  background-color: ${({ theme }) => theme.colors.light};
+  width: 250;
   ${({ theme }) => theme.card.container.extra}
 `;
 
 const Footer = styled.View`
-  display: ${({ theme }) => theme.card.footer.display};
-  flex-direction: ${({ theme }) => theme.card.footer.flexDirection};
-  justify-content: ${({ theme }) => theme.card.footer.justifyContent};
-  padding: ${({ theme }) => theme.card.footer.padding}px;
+  display: flex
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
   ${({ theme }) => theme.card.footer.extra}
 `;
 
 const Cover = styled.Image`
-  display: ${({ theme }) => theme.card.cover.display};
-  height: ${({ theme }) => theme.card.cover.height};
+  display: flex;
+  height: 150;
   ${({ theme }) => theme.card.cover.extra}
 `;
 

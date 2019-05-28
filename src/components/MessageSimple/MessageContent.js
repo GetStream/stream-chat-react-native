@@ -15,10 +15,9 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 
 const Container = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.messageContent.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.container.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.container.maxWidth};
+  display: flex;
+  flex-direction: column;
+  max-width: 250;
   align-items: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.messageContent.container.leftAlignItems
@@ -27,35 +26,34 @@ const Container = styled.TouchableOpacity`
     alignment === 'left'
       ? theme.messageContent.container.leftJustifyContent
       : theme.messageContent.container.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.container.extra}
+  ${({ theme }) => theme.messageContent.container.extra};
 `;
 
 const ContainerInner = styled.View`
-  align-items: ${({ theme }) => theme.messageContent.containerInner.alignItems};
+  align-items: flex-end;
   ${({ theme }) => theme.messageContent.containerInner.extra}
 `;
 
 const MetaContainer = styled.View`
-  margin-top: ${({ theme }) => theme.messageContent.metaContainer.marginTop};
-  ${({ theme }) => theme.messageContent.metaContainer.extra}
+  margin-top: 2;
+  ${({ theme }) => theme.messageContent.metaContainer.extra};
 `;
 
 const MetaText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.metaText.fontSize};
-  color: ${({ theme }) => theme.messageContent.metaText.color};
+  font-size: 11;
+  color: ${({ theme }) => theme.colors.textGrey};
   text-align: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.messageContent.metaText.leftTextAlign
       : theme.messageContent.metaText.rightTextAlign};
-  ${({ theme }) => theme.messageContent.metaText.extra}
+  ${({ theme }) => theme.messageContent.metaText.extra};
 `;
 
 const DeletedContainer = styled.View`
-  display: ${({ theme }) => theme.messageContent.deletedContainer.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.deletedContainer.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.deletedContainer.maxWidth};
-  padding: ${({ theme }) => theme.messageContent.deletedContainer.padding}px;
+  display: flex;
+  flex-direction: column;
+  max-width: 250};
+  padding: 5px;
   align-items: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.messageContent.deletedContainer.leftAlignItems
@@ -64,14 +62,14 @@ const DeletedContainer = styled.View`
     alignment === 'left'
       ? theme.messageContent.deletedContainer.leftJustifyContent
       : theme.messageContent.deletedContainer.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.deletedContainer.extra}
+  ${({ theme }) => theme.messageContent.deletedContainer.extra};
 `;
 
 const DeletedText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.deletedText.fontSize};
-  line-height: ${({ theme }) => theme.messageContent.deletedText.lineHeight};
-  color: ${({ theme }) => theme.messageContent.deletedText.color};
-  ${({ theme }) => theme.messageContent.deletedText.extra}
+  font-size: 15;
+  line-height: 20;
+  color: #a4a4a4;
+  ${({ theme }) => theme.messageContent.deletedText.extra};
 `;
 
 const FailedText = styled.Text``;

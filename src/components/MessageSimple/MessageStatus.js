@@ -4,52 +4,49 @@ import loadingGif from '../../images/loading.gif';
 import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
 
 const Spacer = styled.View`
-  height: ${({ theme }) => theme.messageStatus.spacer.height};
-  width: ${({ theme }) => theme.messageStatus.spacer.width};
+  height: 10;
+  width: 20;
 `;
 
 const DeliveredContainer = styled.View`
-  display: ${({ theme }) => theme.messageStatus.deliveredContainer.display};
-  align-items: ${({ theme }) =>
-    theme.messageStatus.deliveredContainer.alignItems};
-  width: ${({ theme }) => theme.messageStatus.deliveredContainer.width};
-  height: ${({ theme }) => theme.messageStatus.deliveredContainer.height};
-  padding-bottom: ${({ theme }) =>
-    theme.messageStatus.deliveredContainer.paddingBottom};
-  padding-left: ${({ theme }) =>
-    theme.messageStatus.deliveredContainer.paddingLeft};
+  display: flex;
+  align-items: center;
+  width: 20;
+  height: 20;
+  padding-bottom: 10;
+  padding-left: 5;
+  ${({ theme }) => theme.messageStatus.deliveredContainer.extra};
 `;
 
 const DeliveredCircle = styled.View`
-  width: ${({ theme }) => theme.messageStatus.deliveredCircle.width};
-  height: ${({ theme }) => theme.messageStatus.deliveredCircle.height};
-  border-radius: ${({ theme }) =>
-    theme.messageStatus.deliveredCircle.borderRadius};
+  width: 16;
+  height: 16;
+  border-radius: 16;
   background-color: ${({ theme }) => theme.colors.primary};
-  align-items: ${({ theme }) => theme.messageStatus.deliveredCircle.alignItems};
-  justify-content: ${({ theme }) =>
-    theme.messageStatus.deliveredCircle.justifyContent};
-  padding: ${({ theme }) => theme.messageStatus.deliveredCircle.padding}px;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  ${({ theme }) => theme.messageStatus.deliveredCircle.extra};
 `;
 
 const CheckMark = styled.Image`
-  width: ${({ theme }) => theme.messageStatus.checkMark.width};
-  height: ${({ theme }) => theme.messageStatus.checkMark.height};
+  width: 8;
+  height: 6;
+  ${({ theme }) => theme.messageStatus.deletedContainer.extra};
 `;
 
 const SendingContainer = styled.View`
-  display: ${({ theme }) => theme.messageStatus.sendingContainer.display};
-  align-items: ${({ theme }) =>
-    theme.messageStatus.sendingContainer.alignItems};
-  padding-left: ${({ theme }) =>
-    theme.messageStatus.sendingContainer.paddingLeft};
-  padding-right: ${({ theme }) =>
-    theme.messageStatus.sendingContainer.paddingRight};
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  ${({ theme }) => theme.meessageStatus.sendingContainer.extra};
 `;
 
 const SendingImage = styled.View`
-  height: ${({ theme }) => theme.messageStatus.sendingImage.height};
-  width: ${({ theme }) => theme.messageStatus.sendingImage.width};
+  height: 10;
+  width: 10};
+  ${({ theme }) => theme.messageStatus.sendingImage.extra};
 `;
 
 export const MessageStatus = ({ message, lastReceivedId, threadList }) => {

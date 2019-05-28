@@ -4,48 +4,40 @@ import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.channelPreview.messenger.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.channelPreview.messenger.container.flexDirection};
-  border-bottom-color: ${({ theme }) =>
-    theme.channelPreview.messenger.container.borderBottomColor};
-  border-bottom-width: ${({ theme }) =>
-    theme.channelPreview.messenger.container.borderBottomWidth};
-  padding: ${({ theme }) => theme.channelPreview.messenger.container.padding}px;
+  display: flex;
+  flex-direction: row;
+  border-bottom-color: #ebebeb;
+  border-bottom-width: 1;
+  padding: 10px;
   ${({ theme }) => theme.channelPreview.messenger.container.extra}
 `;
 
 const Details = styled.View`
-  display: ${({ theme }) => theme.channelPreview.messenger.details.display};
-  flex-direction: ${({ theme }) =>
-    theme.channelPreview.messenger.details.flexDirection};
-  flex: ${({ theme }) => theme.channelPreview.messenger.details.flex};
-  padding-left: ${({ theme }) =>
-    theme.channelPreview.messenger.details.paddingLeft}px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: 10px;
   ${({ theme }) => theme.channelPreview.messenger.details.extra}
 `;
 
 const DetailsTop = styled.View`
-  display: ${({ theme }) => theme.channelPreview.messenger.detailsTop.display};
-  flex-direction: ${({ theme }) =>
-    theme.channelPreview.messenger.detailsTop.flexDirection};
-  justify-content: ${({ theme }) =>
-    theme.channelPreview.messenger.detailsTop.justifyContent};
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   ${({ theme }) => theme.channelPreview.messenger.detailsTop.extra}
 `;
 
 const Title = styled.Text`
-  font-weight: ${({ theme }) =>
-    theme.channelPreview.messenger.title.fontWeight};
-  font-size: ${({ theme }) => theme.channelPreview.messenger.title.fontSize};
-  flex: ${({ theme }) => theme.channelPreview.messenger.title.flex};
+  font-weight: bold;
+  font-size: 14;
+  flex: 1;
   ${({ theme }) => theme.channelPreview.messenger.title.extra}
 `;
 
 const Date = styled.Text`
-  color: ${({ theme }) => theme.channelPreview.messenger.date.color};
-  font-size: ${({ theme }) => theme.channelPreview.messenger.date.fontSize};
-  text-align: ${({ theme }) => theme.channelPreview.messenger.date.textAlign};
+  color: #767676;
+  font-size: 11;
+  text-align: right;
   ${({ theme }) => theme.channelPreview.messenger.date.extra}
 `;
 
@@ -54,7 +46,7 @@ const Message = styled.Text`
     unread
       ? theme.channelPreview.messenger.message.unreadColor
       : theme.channelPreview.messenger.message.color};
-  font-size: ${({ theme }) => theme.channelPreview.messenger.message.fontSize};
+  font-size: 13;
   font-weight: ${({ theme, unread }) =>
     unread
       ? theme.channelPreview.messenger.message.unreadFontWeight

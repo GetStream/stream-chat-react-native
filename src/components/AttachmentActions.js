@@ -6,11 +6,9 @@ import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
 const Container = styled.View`
-  flex-direction: ${({ theme }) =>
-    theme.attachment.actions.container.flexDirection};
-  justify-content: ${({ theme }) =>
-    theme.attachment.actions.container.justifyContent};
-  padding: ${({ theme }) => theme.attachment.actions.container.padding}px;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px;
   ${({ theme }) => theme.attachment.actions.container.extra}
 `;
 
@@ -25,14 +23,12 @@ const Button = styled(({ buttonStyle, ...rest }) => (
     buttonStyle === 'primary'
       ? theme.attachment.actions.button.primaryBorderColor
       : theme.attachment.actions.button.defaultBorderColor};
-  border-width: ${({ theme }) => theme.attachment.actions.button.borderWidth};
-  border-radius: ${({ theme }) => theme.attachment.actions.button.borderRadius};
-  padding-top: ${({ theme }) => theme.attachment.actions.button.paddingTop}px;
-  padding-bottom: ${({ theme }) =>
-    theme.attachment.actions.button.paddingBottom}px;
-  padding-left: ${({ theme }) => theme.attachment.actions.button.paddingLeft}px;
-  padding-right: ${({ theme }) =>
-    theme.attachment.actions.button.paddingRight}px;
+  border-width: 1;
+  border-radius: 20;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
   ${({ theme }) => theme.attachment.actions.button.extra}
 `;
 
