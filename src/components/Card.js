@@ -95,7 +95,10 @@ export const Card = themed(
           }}
           alignment={alignment}
         >
-          <Cover source={{ uri: makeImageCompatibleUrl(image_url || thumb_url) }} resizMode="cover" />
+          <Cover
+            source={{ uri: makeImageCompatibleUrl(image_url || thumb_url) }}
+            resizMode="cover"
+          />
           <Footer>
             <View
               style={{
