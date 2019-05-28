@@ -54,7 +54,7 @@ const normalBundle = {
     'stream-chat',
     'prop-types',
     'react-native',
-    'react-native-simple-markdown',
+    '@stream-io/react-native-simple-markdown',
     'react-native-image-zoom-viewer',
     'react-native-actionsheet',
     'uuid/v4',

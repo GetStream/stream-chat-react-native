@@ -73,11 +73,11 @@ export class Chat extends PureComponent {
   }
 
   notifyChatClient = (isConnected) => {
-    if (this.wsConnection != null) {
+    if (this.props.client != null && this.props.client.wsConnection != null) {
       if (isConnected) {
-        this.wsConnection.onlineStatusChanged({ type: 'online' });
+        this.props.client.wsConnection.onlineStatusChanged({ type: 'online' });
       } else {
-        this.wsConnection.onlineStatusChanged({ type: 'offline' });
+        this.props.client.wsConnection.onlineStatusChanged({ type: 'offline' });
       }
     }
   };
