@@ -10,10 +10,8 @@ const Container = styled.View`
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageSimple.container.leftJustifyContent
-      : theme.messageSimple.container.rightJustifyContent};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   margin-bottom: ${({ marginBottom }) => (marginBottom ? 20 : 0)};
   ${({ theme }) => theme.messageSimple.container.extra}
 `;

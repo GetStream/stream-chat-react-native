@@ -32,7 +32,7 @@ const DeliveredCircle = styled.View`
 const CheckMark = styled.Image`
   width: 8;
   height: 6;
-  ${({ theme }) => theme.messageStatus.deletedContainer.extra};
+  ${({ theme }) => theme.messageStatus.checkMark.extra};
 `;
 
 const SendingContainer = styled.View`
@@ -40,7 +40,7 @@ const SendingContainer = styled.View`
   align-items: center;
   padding-left: 5px;
   padding-right: 5px;
-  ${({ theme }) => theme.meessageStatus.sendingContainer.extra};
+  ${({ theme }) => theme.messageStatus.sendingContainer.extra};
 `;
 
 const SendingImage = styled.View`

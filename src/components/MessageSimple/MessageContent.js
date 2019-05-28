@@ -18,14 +18,10 @@ const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
   max-width: 250;
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftAlignItems
-      : theme.messageContent.container.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftJustifyContent
-      : theme.messageContent.container.rightJustifyContent};
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.messageContent.container.extra};
 `;
 
@@ -42,10 +38,7 @@ const MetaContainer = styled.View`
 const MetaText = styled.Text`
   font-size: 11;
   color: ${({ theme }) => theme.colors.textGrey};
-  text-align: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.metaText.leftTextAlign
-      : theme.messageContent.metaText.rightTextAlign};
+  text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
   ${({ theme }) => theme.messageContent.metaText.extra};
 `;
 
@@ -54,14 +47,10 @@ const DeletedContainer = styled.View`
   flex-direction: column;
   max-width: 250};
   padding: 5px;
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftAlignItems
-      : theme.messageContent.deletedContainer.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftJustifyContent
-      : theme.messageContent.deletedContainer.rightJustifyContent};
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.messageContent.deletedContainer.extra};
 `;
 

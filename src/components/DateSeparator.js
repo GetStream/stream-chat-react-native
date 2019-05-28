@@ -31,9 +31,9 @@ const DateText = styled.Text`
 
 const Date = styled.Text`
   font-weight: 700;
-  font-size: ${({ theme }) => theme.dateSeparator.date.fontSize};
-  text-transform: ${({ theme }) => theme.dateSeparator.date.textTransform};
-  opacity: ${({ theme }) => theme.dateSeparator.date.opacity};
+  font-size: 10;
+  text-transform: uppercase;
+  opacity: 0.8;
   ${({ theme }) => theme.dateSeparator.date.extra}
 `;
 

@@ -59,11 +59,7 @@ const defaultTheme = {
       container: {},
       details: {},
       detailsTop: {},
-      title: {
-        fontWeight: 'bold',
-        fontSize: 14,
-        flex: 1,
-      },
+      title: {},
       date: {},
       message: {
         color: '#767676',
@@ -96,8 +92,6 @@ const defaultTheme = {
     size: 120,
     halfSize: 80,
     doubleSize: 240,
-    flexWrap: 'wrap',
-    flexDirection: 'row',
 
     single: {},
     imageContainer: {},
@@ -125,37 +119,15 @@ const defaultTheme = {
   },
 
   messageSimple: {
-    container: {
-      leftJustifyContent: 'flex-start',
-      rightJustifyContent: 'flex-end',
-    },
+    container: {},
   },
 
   messageContent: {
-    container: {
-      rightAlignItems: 'flex-end',
-      leftAlignItems: 'flex-start',
-      rightJustifyContent: 'flex-end',
-      leftJustifyContent: 'flex-start',
-      // failedPadding: 5,
-      // failedBorderRadius: 10,
-      // failedBackgroundColor: Colors.danger,
-      // errorPadding: 5,
-      // errorBorderRadius: 10,
-      // errorBackgroundColor: Colors.danger,
-    },
+    container: {},
     containerInner: {},
     metaContainer: {},
-    metaText: {
-      leftTextAlign: 'left',
-      rightTextAlign: 'right',
-    },
-    deletedContainer: {
-      rightAlignItems: 'flex-end',
-      leftAlignItems: 'flex-start',
-      rightJustifyContent: 'flex-end',
-      leftJustifyContent: 'flex-start',
-    },
+    metaText: {},
+    deletedContainer: {},
     deletedText: {},
   },
 
@@ -181,6 +153,7 @@ const defaultTheme = {
 
   messageText: {
     borderRadiusL: 16,
+    borderRadiusS: 2,
     leftBorderWidth: 0.5,
     leftBorderColor: 'rgba(0,0,0,0.08)',
     rightBorderWidth: 0,
@@ -229,6 +202,7 @@ const defaultTheme = {
     column: {},
     emoji: {},
     reactionCount: {},
+    text: {},
   },
   suggestionsProvider: {
     wrapper: {},
