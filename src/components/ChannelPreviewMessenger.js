@@ -12,7 +12,7 @@ const Container = styled.TouchableOpacity`
   border-bottom-width: ${({ theme }) =>
     theme.channelPreview.messenger.container.borderBottomWidth};
   padding: ${({ theme }) => theme.channelPreview.messenger.container.padding}px;
-  ${({ theme }) => theme.channelPreview.container.extra}
+  ${({ theme }) => theme.channelPreview.messenger.container.extra}
 `;
 
 const Details = styled.View`

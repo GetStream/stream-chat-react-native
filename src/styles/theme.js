@@ -414,7 +414,7 @@ const defaultTheme = {
       fontWeight: 700,
       fontSize: 12,
     },
-    messageRepliesImage: {},
+    image: {},
   },
 
   messageText: {
@@ -651,6 +651,7 @@ const defaultTheme = {
       borderRadius: 4,
       display: 'flex',
       alignItems: 'center',
+      text: {},
     },
   },
   withProgressIndicator: {

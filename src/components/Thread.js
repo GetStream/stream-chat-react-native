@@ -16,7 +16,7 @@ const NewThread = styled.View`
   border-radius: ${({ theme }) => theme.thread.newThread.borderRadius};
   display: ${({ theme }) => theme.thread.newThread.display};
   align-items: ${({ theme }) => theme.thread.newThread.alignItems};
-  ${({ theme }) => theme.thread.newThread.overlay.extra};
+  ${({ theme }) => theme.thread.newThread.extra};
 `;
 
 const NewThreadText = styled.Text`

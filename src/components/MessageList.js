@@ -304,6 +304,7 @@ const MessageList = withChannelContext(
 
       const messagesWithDates = this.insertDates(this.props.messages);
       const messageGroupStyles = this.getGroupStyles(messagesWithDates);
+      messagesWithDates.reverse();
 
       return (
         <React.Fragment>
