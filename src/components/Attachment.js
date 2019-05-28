@@ -10,6 +10,8 @@ import FileIcon from './FileIcon';
 import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
+import { withMessageContentContext } from '../context';
+
 const FileContainer = styled.View`
   display: ${({ theme }) => theme.attachment.file.container.display};
   flex-direction: ${({ theme }) =>
@@ -48,103 +50,106 @@ const FileSize = styled.Text`
  * @example ./docs/Attachment.md
  * @extends PureComponent
  */
-export const Attachment = themed(
-  class Attachment extends React.PureComponent {
-    static themePath = 'attachment';
-    static propTypes = {
-      /** The attachment to render */
-      attachment: PropTypes.object.isRequired,
-    };
+export const Attachment = withMessageContentContext(
+  themed(
+    class Attachment extends React.PureComponent {
+      static themePath = 'attachment';
+      static propTypes = {
+        /** The attachment to render */
+        attachment: PropTypes.object.isRequired,
+      };
 
-    constructor(props) {
-      super(props);
-    }
+      constructor(props) {
+        super(props);
+      }
 
-    _goToURL = (url) => {
-      Linking.canOpenURL(url).then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          console.log("Don't know how to open URI: " + url);
+      _goToURL = (url) => {
+        Linking.canOpenURL(url).then((supported) => {
+          if (supported) {
+            Linking.openURL(url);
+          } else {
+            console.log("Don't know how to open URI: " + url);
+          }
+        });
+      };
+
+      render() {
+        const { attachment: a } = this.props;
+        if (!a) {
+          return null;
         }
-      });
-    };
 
-    render() {
-      const { attachment: a } = this.props;
-      if (!a) {
-        return null;
-      }
+        let type;
 
-      let type;
+        if (a.type === 'giphy' || a.type === 'imgur') {
+          type = 'card';
+        } else if (a.type === 'image' && (a.title_link || a.og_scrape_url)) {
+          type = 'card';
+        } else if (a.type === 'image') {
+          type = 'image';
+        } else if (a.type === 'file') {
+          type = 'file';
+        } else if (a.type === 'audio') {
+          type = 'audio';
+        } else if (a.type === 'video') {
+          type = 'media';
+        } else if (a.type === 'product') {
+          type = 'product';
+        } else {
+          type = 'card';
+          // extra = 'no-image';
+        }
 
-      if (a.type === 'giphy' || a.type === 'imgur') {
-        type = 'card';
-      } else if (a.type === 'image' && (a.title_link || a.og_scrape_url)) {
-        type = 'card';
-      } else if (a.type === 'image') {
-        type = 'image';
-      } else if (a.type === 'file') {
-        type = 'file';
-      } else if (a.type === 'audio') {
-        type = 'audio';
-      } else if (a.type === 'video') {
-        type = 'media';
-      } else if (a.type === 'product') {
-        type = 'product';
-      } else {
-        type = 'card';
-        // extra = 'no-image';
-      }
+        if (type === 'image') {
+          return <Gallery alignment={this.props.alignment} images={[a]} />;
+        }
+        if (a.type === 'giphy' || type === 'card') {
+          if (a.actions && a.actions.length) {
+            return (
+              <View>
+                <Card {...a} alignment={this.props.alignment} />
+                <AttachmentActions
+                  key={'key-actions-' + a.id}
+                  {...a}
+                  actionHandler={this.props.actionHandler}
+                />
+              </View>
+            );
+          } else {
+            return <Card alignment={this.props.alignment} {...a} />;
+          }
+        }
 
-      if (type === 'image') {
-        return <Gallery alignment={this.props.alignment} images={[a]} />;
-      }
-      if (a.type === 'giphy' || type === 'card') {
-        if (a.actions && a.actions.length) {
+        if (a.type === 'file') {
           return (
-            <View>
-              <Card {...a} alignment={this.props.alignment} />
-              <AttachmentActions
-                key={'key-actions-' + a.id}
-                {...a}
-                actionHandler={this.props.actionHandler}
-              />
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                this._goToURL(a.asset_url);
+              }}
+              onLongPress={this.props.onLongPress}
+            >
+              <FileContainer alignment={this.props.alignment}>
+                <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
+                <FileDetails>
+                  <FileTitle ellipsizeMode="tail" numberOfLines={2}>
+                    {a.title}
+                  </FileTitle>
+                  <FileSize>{a.file_size} KB</FileSize>
+                </FileDetails>
+              </FileContainer>
+            </TouchableOpacity>
           );
-        } else {
-          return <Card alignment={this.props.alignment} {...a} />;
         }
-      }
 
-      if (a.type === 'file') {
-        return (
-          <TouchableOpacity
-            onPress={() => {
-              this._goToURL(a.asset_url);
-            }}
-          >
-            <FileContainer alignment={this.props.alignment}>
-              <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
-              <FileDetails>
-                <FileTitle ellipsizeMode="tail" numberOfLines={2}>
-                  {a.title}
-                </FileTitle>
-                <FileSize>{a.file_size} KB</FileSize>
-              </FileDetails>
-            </FileContainer>
-          </TouchableOpacity>
-        );
-      }
+        if (a.type === 'video' && a.asset_url && a.image_url) {
+          return (
+            // TODO: Put in video component
+            <Card alignment={this.props.alignment} {...a} />
+          );
+        }
 
-      if (a.type === 'video' && a.asset_url && a.image_url) {
-        return (
-          // TODO: Put in video component
-          <Card alignment={this.props.alignment} {...a} />
-        );
+        return false;
       }
-
-      return false;
-    }
-  },
+    },
+  ),
 );

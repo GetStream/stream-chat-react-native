@@ -3,23 +3,11 @@ import React from 'react';
 export const ChatContext = React.createContext({ client: null });
 
 export function withChatContext(OriginalComponent) {
-  const ContextAwareComponent = function ContextComponent(props) {
-    return (
-      <ChatContext.Consumer>
-        {(context) => {
-          const mergedProps = { ...context, ...props };
-          return <OriginalComponent {...mergedProps} />;
-        }}
-      </ChatContext.Consumer>
-    );
-  };
-  ContextAwareComponent.themePath = OriginalComponent.themePath;
-  ContextAwareComponent.displayName =
-    OriginalComponent.displayName || OriginalComponent.name || 'Component';
-  ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
-    'Base',
-    '',
+  const ContextAwareComponent = getContextAwareComponent(
+    ChatContext,
+    OriginalComponent,
   );
+  ContextAwareComponent.themePath = OriginalComponent.themePath;
 
   return ContextAwareComponent;
 }
@@ -27,22 +15,11 @@ export function withChatContext(OriginalComponent) {
 export const ChannelContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {
-  const ContextAwareComponent = function ContextComponent(props) {
-    return (
-      <ChannelContext.Consumer>
-        {(channelContext) => (
-          <OriginalComponent {...channelContext} {...props} />
-        )}
-      </ChannelContext.Consumer>
-    );
-  };
-  ContextAwareComponent.themePath = OriginalComponent.themePath;
-  ContextAwareComponent.displayName =
-    OriginalComponent.displayName || OriginalComponent.name || 'Component';
-  ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
-    'Base',
-    '',
+  const ContextAwareComponent = getContextAwareComponent(
+    ChannelContext,
+    OriginalComponent,
   );
+  ContextAwareComponent.themePath = OriginalComponent.themePath;
 
   return ContextAwareComponent;
 }
@@ -50,15 +27,26 @@ export function withChannelContext(OriginalComponent) {
 export const SuggestionsContext = React.createContext({});
 
 export function withSuggestionsContext(OriginalComponent) {
-  const ContextAwareComponent = function ContextComponent(props) {
+  return getContextAwareComponent(SuggestionsContext, OriginalComponent);
+}
+
+export const MessageContentContext = React.createContext({});
+
+export function withMessageContentContext(OriginalComponent) {
+  return getContextAwareComponent(MessageContentContext, OriginalComponent);
+}
+
+const getContextAwareComponent = function(context, originalComponent) {
+  const Context = context;
+  const OriginalComponent = originalComponent;
+  const ContextAwareComponent = function(props) {
     return (
-      <SuggestionsContext.Consumer>
-        {(suggestionsContext) => (
-          <OriginalComponent {...suggestionsContext} {...props} />
-        )}
-      </SuggestionsContext.Consumer>
+      <Context.Consumer>
+        {(c) => <OriginalComponent {...c} {...props} />}
+      </Context.Consumer>
     );
   };
+
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(
@@ -67,4 +55,4 @@ export function withSuggestionsContext(OriginalComponent) {
   );
 
   return ContextAwareComponent;
-}
+};
