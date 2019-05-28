@@ -36,52 +36,47 @@ function S4() {
 }
 
 const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
-  display: ${({ theme }) => theme.messageInput.container.display};
-  flex-direction: ${({ theme }) => theme.messageInput.container.flexDirection};
-  border-radius: ${({ theme }) => theme.messageInput.container.borderRadius};
-  background-color: ${({ theme }) =>
-    theme.messageInput.container.backgroundColor};
+  display: flex;
+  flex-direction: column;
+  border-radius: 10;
+  background-color: rgba(0, 0, 0, 0.05);
   padding-top: ${({ theme, padding }) =>
-    padding ? theme.messageInput.container.conditionalPadding : 0};
+    padding ? theme.messageInput.container.conditionalPadding : 0}px;
   margin-left: 10px;
   margin-right: 10px;
   ${({ theme }) => theme.messageInput.container.extra}
 `;
 
 const InputBoxContainer = styled.View`
-  display: ${({ theme }) => theme.messageInput.inputBoxContainer.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageInput.inputBoxContainer.flexDirection};
-  padding-left: ${({ theme }) =>
-    theme.messageInput.inputBoxContainer.paddingLeft};
-  padding-right: ${({ theme }) =>
-    theme.messageInput.inputBoxContainer.paddingRight};
-  min-height: ${({ theme }) => theme.messageInput.inputBoxContainer.minHeight};
-  margin: ${({ theme }) => theme.messageInput.inputBoxContainer.margin}px;
-  align-items: ${({ theme }) =>
-    theme.messageInput.inputBoxContainer.alignItems};
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  padding-right: 10px;
+  min-height: 46;
+  margin: 10px;
+  align-items: center;
   ${({ theme }) => theme.messageInput.inputBoxContainer.extra}
 `;
 
 const AttachButton = styled.TouchableOpacity`
-  margin-right: ${({ theme }) => theme.messageInput.attachButton.marginRight};
+  margin-right: 8;
   ${({ theme }) => theme.messageInput.attachButton.extra}
 `;
 
 const AttachButtonIcon = styled.Image`
-  width: ${({ theme }) => theme.messageInput.attachButtonIcon.width};
-  height: ${({ theme }) => theme.messageInput.attachButtonIcon.height};
+  width: 15;
+  height: 15;
   ${({ theme }) => theme.messageInput.attachButtonIcon.extra}
 `;
 
 const SendButton = styled.TouchableOpacity`
-  margin-left: ${({ theme }) => theme.messageInput.sendButton.marginLeft};
+  margin-left: 8;
   ${({ theme }) => theme.messageInput.sendButton.extra}
 `;
 
 const Typing = styled.Text`
-  text-align: ${({ theme }) => theme.messageInput.typing.textAlign};
-  height: ${({ theme }) => theme.messageInput.typing.height};
+  text-align: right;
+  height: 20;
   ${({ theme }) => theme.messageInput.typing.extra}
 `;
 

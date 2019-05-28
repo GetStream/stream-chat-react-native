@@ -9,32 +9,41 @@ import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
 
 const ListContainer = styled.FlatList`
-  flex: ${({ theme }) => theme.messageList.listContainer.flex};
+  flex: 1;
   width: 100%;
-  padding-left: ${({ theme }) => theme.messageList.listContainer.paddingLeft};
-  padding-right: ${({ theme }) => theme.messageList.listContainer.paddingRight};
+  padding-left: 10px;
+  padding-right: 10px;
   ${({ theme }) => theme.messageList.listContainer.extra}
 `;
 
 const NewMessageNotification = styled.View`
-  border-radius: ${({ theme }) =>
-    theme.messageList.newMessageNotification.borderRadius};
-  background-color: ${({ theme }) =>
-    theme.messageList.newMessageNotification.backgroundColor};
-  color: ${({ theme }) => theme.messageList.newMessageNotification.color};
-  padding: ${({ theme }) => theme.messageList.newMessageNotification.padding}px;
+  border-radius: 10;
+  background-color: black;
+  color: white;
+  padding: 10px;
   ${({ theme }) => theme.messageList.newMessageNotification.extra}
 `;
 const NewMessageNotificationText = styled.Text`
-  color: ${({ theme }) => theme.messageList.newMessageNotificationText.color};
+  color: white;
   ${({ theme }) => theme.messageList.newMessageNotificationText.extra}
 `;
 
-const NotificationText = styled.Text`
-  color: ${({ theme }) => theme.messageList.notification.warning.color};
-  background-color: ${({ theme }) =>
-    theme.messageList.notification.warning.backgroundColor};
-  ${({ theme }) => theme.messageList.notification.warning.extra}
+const ErrorNotificationText = styled.Text`
+  color: red;
+  background-color: #fae6e8;
+  ${({ theme }) => theme.messageList.errorNotificationText.extra}
+`;
+
+const ErrorNotification = styled.View`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  margin-bottom: 0;
+  padding: 5px
+  color: red;
+  background-color: #FAE6E8;
+  ${({ theme }) => theme.messageList.errorNotification.extra}
 `;
 
 const MessageList = withChannelContext(
@@ -358,44 +367,16 @@ const MessageList = withChannelContext(
                 </NewMessageNotification>
               </MessageNotification>
             )}
-            <Notification type="warning" active={!this.state.online}>
-              <NotificationText>
+            <ErrorNotification active={!this.state.online}>
+              <ErrorNotificationText>
                 Connection failure, reconnecting now ...
-              </NotificationText>
-            </Notification>
+              </ErrorNotificationText>
+            </ErrorNotification>
           </View>
         </React.Fragment>
       );
     }
   },
 );
-
-const NotificationContainer = styled.View`
-  display: ${({ theme }) => theme.notification.display};
-  flex-direction: ${({ theme }) => theme.notification.flexDirection};
-  align-items: ${({ theme }) => theme.notification.alignItems};
-  z-index: ${({ theme }) => theme.notification.zIndex};
-  margin-bottom: ${({ theme }) => theme.notification.marginBottom};
-  padding: ${({ theme }) => theme.notification.padding}px;
-  color: ${({ theme, type }) =>
-    type && theme.notification[type].color
-      ? theme.notification[type].color
-      : theme.notification.color};
-  background-color: ${({ theme, type }) =>
-    type && theme.notification[type].backgroundColor
-      ? theme.notification[type].backgroundColor
-      : theme.notification.backgroundColor};
-  ${({ theme }) => theme.notification.extra}
-`;
-
-const Notification = ({ children, active, type }) => {
-  if (active) {
-    return (
-      <NotificationContainer type={type}>{children}</NotificationContainer>
-    );
-  }
-
-  return null;
-};
 
 export { MessageList };

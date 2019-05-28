@@ -4,25 +4,22 @@ import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
 
 const Container = styled.View`
-  opacity: ${({ theme, visible }) =>
-    visible ? theme.reactionList.container.opacity : 0};
-  display: ${({ theme }) => theme.reactionList.container.display};
-  flex-direction: ${({ theme }) => theme.reactionList.container.flexDirection};
-  align-items: ${({ theme }) => theme.reactionList.container.alignItems};
-  background-color: ${({ theme }) =>
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: black;
     theme.reactionList.container.backgroundColor};
-  padding: ${({ theme }) => theme.reactionList.container.padding}px;
-  border-radius: ${({ theme }) => theme.reactionList.container.borderRadius};
+  padding: 5px;
+  border-radius: 100;
   ${({ theme }) => theme.reactionList.container.extra}
 `;
 
 const ReactionCount = styled.Text`
-  color: ${({ theme }) => theme.reactionList.reactionCount.color};
-  padding-left: ${({ theme }) =>
-    theme.reactionList.reactionCount.paddingLeft}px;
-  padding-right: ${({ theme }) =>
-    theme.reactionList.reactionCount.paddingRight}px;
-  font-size: ${({ theme }) => theme.reactionList.reactionCount.fontSize};
+  color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 12;
   ${({ theme }) => theme.reactionList.reactionCount.extra}
 `;
 

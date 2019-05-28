@@ -445,234 +445,69 @@ const defaultTheme = {
 
   messageInput: {
     container: {
-      display: 'flex',
-      flexDirection: 'column',
-      borderRadius: 10,
-      backgroundColor: 'rgba(0,0,0,0.05)',
       conditionalPadding: 20,
     },
-    inputBox: {
-      maxHeight: 60,
-      marginTop: -5,
-      flex: 1,
-    },
-    inputBoxContainer: {
-      display: 'flex',
-      flexDirection: 'row',
-      paddingLeft: 10,
-      paddingRight: 10,
-      minHeight: 46,
-      margin: 10,
-      alignItems: 'center',
-    },
-    attachButton: {
-      marginRight: 8,
-    },
-    attachButtonIcon: {
-      height: 15,
-      width: 15,
-    },
-    sendButton: {
-      marginLeft: 8,
-    },
-    typing: {
-      textAlign: 'right',
-      height: 20,
-    },
+    inputBox: {},
+    inputBoxContainer: {},
+    attachButton: {},
+    attachButtonIcon: {},
+    sendButton: {},
+    typing: {},
     imageUploadPreview: {
-      container: {
-        height: 70,
-        display: 'flex',
-        padding: 10,
-      },
-      itemContainer: {
-        display: 'flex',
-        height: 50,
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginLeft: 5,
-      },
-      dismiss: {
-        position: 'absolute',
-        top: 5,
-        right: 5,
-        backgroundColor: '#fff',
-        width: 20,
-        height: 20,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 20,
-      },
-      dismissImage: {
-        width: 10,
-        height: 10,
-      },
-      upload: {
-        height: 50,
-        width: 50,
-        borderRadius: 10,
-      },
+      container: {},
+      itemContainer: {},
+      dismiss: {},
+      dismissImage: {},
+      upload: {},
     },
   },
 
   messageList: {
-    listContainer: { flex: 1, paddingLeft: 10, paddingRight: 10 },
-    newMessageNotification: {
-      borderRadius: 10,
-      backgroundColor: 'black',
-      color: 'white',
-      padding: 10,
-    },
-    newMessageNotificationText: {
-      color: 'white',
-    },
-    notification: {
-      warning: {
-        color: 'red',
-        backgroundColor: '#FAE6E8',
-      },
-    },
-  },
-
-  notification: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    zIndex: 10,
-    marginBottom: 0,
-    padding: 5,
-    color: 'black',
-    backgroundColor: 'transparent',
-    warning: {
-      color: 'red',
-      backgroundColor: '#FAE6E8',
-    },
+    listContainer: {},
+    newMessageNotification: {},
+    newMessageNotificationText: {},
+    errorNotification: {},
+    errorNotificationText: {},
   },
 
   messageNotification: {
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      zIndex: 10,
-      marginBottom: 0,
-    },
+    container: {},
   },
 
   reactionList: {
-    container: {
-      opacity: 1,
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 5,
-      backgroundColor: 'black',
-      borderRadius: 100,
-    },
-    reactionCount: {
-      color: 'white',
-      paddingLeft: 5,
-      paddingRight: 5,
-      fontSize: 12,
-    },
+    container: {},
+    reactionCount: {},
   },
 
   reactionPicker: {
-    container: {
-      flex: 1,
-      leftAlign: 'flex-start',
-      rightAlign: 'flex-end',
-    },
-    containerView: {
-      display: 'flex',
-      flexDirection: 'row',
-      backgroundColor: 'black',
-      paddingLeft: 20,
-      height: 60,
-      paddingRight: 20,
-      borderRadius: 30,
-    },
-    column: {
-      flexDirection: 'column',
-      alignItems: 'center',
-      marginTop: -5,
-    },
-    emoji: {
-      fontSize: 20,
-      marginBottom: 5,
-      marginTop: 5,
-    },
-    reactionCount: {
-      color: 'white',
-      fontSize: 10,
-      fontWeight: 'bold',
-    },
+    container: {},
+    containerView: {},
+    column: {},
+    emoji: {},
+    reactionCount: {},
   },
   suggestionsProvider: {
-    wrapper: {
-      position: 'absolute',
-      zIndex: 90,
-      width: '100%',
-    },
+    wrapper: {},
     container: {
-      position: 'absolute',
-      bottom: 10,
-      borderTopLeftRadius: 10,
-      borderTopRightRadius: 10,
       maxHeight: 250,
       itemHeight: 50,
-      backgroundColor: 'white',
-      shadowColor: '#000',
-      shadowOpacity: 0.05,
-      shadowOffset: '0px -3px',
-      zIndex: 100,
     },
   },
   suggestionsHeader: {
-    title: {
-      padding: 10,
-      fontWeight: 'bold',
-    },
+    title: {},
   },
   suggestionsSeparator: {
-    separator: {
-      height: 0,
-    },
+    separator: {},
   },
-  suggestionsItem: {
-    justifyContent: 'center',
-  },
+  suggestionsItem: {},
   thread: {
     newThread: {
-      padding: 8,
-      backgroundColor: '#F4F9FF',
-      margin: 10,
-      borderRadius: 4,
-      display: 'flex',
-      alignItems: 'center',
       text: {},
     },
   },
   withProgressIndicator: {
-    overlay: {
-      position: 'absolute',
-      height: '100%',
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(0,0,0,0.3)',
-    },
-    container: {
-      position: 'absolute',
-      height: '100%',
-      width: '100%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'rgba(255,255,255,0)',
-    },
+    overlay: {},
+    container: {},
   },
 };
 
