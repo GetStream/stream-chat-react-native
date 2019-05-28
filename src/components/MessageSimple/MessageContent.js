@@ -21,24 +21,24 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.message.content.container.extra};
+  ${({ theme }) => theme.message.content.container.css};
 `;
 
 const ContainerInner = styled.View`
   align-items: flex-end;
-  ${({ theme }) => theme.message.content.containerInner.extra}
+  ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
 const MetaContainer = styled.View`
   margin-top: 2;
-  ${({ theme }) => theme.message.content.metaContainer.extra};
+  ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
 const MetaText = styled.Text`
   font-size: 11;
   color: ${({ theme }) => theme.colors.textGrey};
   text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
-  ${({ theme }) => theme.message.content.metaText.extra};
+  ${({ theme }) => theme.message.content.metaText.css};
 `;
 
 const DeletedContainer = styled.View`
@@ -50,14 +50,14 @@ const DeletedContainer = styled.View`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.message.content.deletedContainer.extra};
+  ${({ theme }) => theme.message.content.deletedContainer.css};
 `;
 
 const DeletedText = styled.Text`
   font-size: 15;
   line-height: 20;
   color: #a4a4a4;
-  ${({ theme }) => theme.message.content.deletedText.extra};
+  ${({ theme }) => theme.message.content.deletedText.css};
 `;
 
 const FailedText = styled.Text``;

@@ -12,7 +12,7 @@ const Container = styled.View`
   justify-content: center;
   background-color: white;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  ${({ theme }) => theme.closeButton.container.extra}
+  ${({ theme }) => theme.closeButton.container.css}
 `;
 
 export const CloseButton = themed(

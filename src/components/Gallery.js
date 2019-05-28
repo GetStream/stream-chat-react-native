@@ -18,7 +18,7 @@ const Single = styled.TouchableOpacity`
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2};
   overflow: hidden;
-  ${({ theme }) => theme.message.gallery.single.extra}
+  ${({ theme }) => theme.message.gallery.single.css}
 `;
 
 const GalleryContainer = styled.View`
@@ -40,7 +40,7 @@ const GalleryContainer = styled.View`
     alignment === 'left' ? 16 : 2};
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2};
-  ${({ theme }) => theme.message.gallery.galleryContainer.extra}
+  ${({ theme }) => theme.message.gallery.galleryContainer.css}
 `;
 
 const ImageContainer = styled.TouchableOpacity`
@@ -49,7 +49,7 @@ const ImageContainer = styled.TouchableOpacity`
     length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
   width: ${({ theme, length }) =>
     length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
-  ${({ theme }) => theme.message.gallery.imageContainer.extra}
+  ${({ theme }) => theme.message.gallery.imageContainer.css}
 `;
 
 export const Gallery = themed(
@@ -223,7 +223,7 @@ const HeaderContainer = styled.View`
   position: absolute;
   width: 100%;
   z-index: 1000;
-  ${({ theme }) => theme.message.gallery.header.container.extra}
+  ${({ theme }) => theme.message.gallery.header.container.css}
 `;
 
 const HeaderButton = styled.TouchableOpacity`
@@ -235,7 +235,7 @@ const HeaderButton = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   border-radius: 20;
-  ${({ theme }) => theme.message.gallery.header.button.extra}
+  ${({ theme }) => theme.message.gallery.header.button.css}
 `;
 
 const GalleryHeader = ({ handleDismiss }) => (

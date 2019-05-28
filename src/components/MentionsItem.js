@@ -8,14 +8,14 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.mention.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.mention.container.css}
 `;
 
 const Name = styled.Text`
   padding: 10px;
   color: black;
   font-weight: bold;
-  ${({ theme }) => theme.messageInput.suggestions.mention.name.extra}
+  ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
 export const MentionsItem = themed(

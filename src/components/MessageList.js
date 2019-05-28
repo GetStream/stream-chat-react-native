@@ -13,13 +13,13 @@ const ListContainer = styled.FlatList`
   width: 100%;
   padding-left: 10px;
   padding-right: 10px;
-  ${({ theme }) => theme.messageList.listContainer.extra}
+  ${({ theme }) => theme.messageList.listContainer.css}
 `;
 
 const ErrorNotificationText = styled.Text`
   color: red;
   background-color: #fae6e8;
-  ${({ theme }) => theme.messageList.errorNotificationText.extra}
+  ${({ theme }) => theme.messageList.errorNotificationText.css}
 `;
 
 const ErrorNotification = styled.View`
@@ -31,7 +31,7 @@ const ErrorNotification = styled.View`
   padding: 5px;
   color: red;
   background-color: #fae6e8;
-  ${({ theme }) => theme.messageList.errorNotification.extra}
+  ${({ theme }) => theme.messageList.errorNotification.css}
 `;
 
 const MessageList = withChannelContext(

@@ -54,7 +54,7 @@ const actions = [
     style={{
       button: { primaryBackgroundColor: 'black' },
       buttonText: {
-        extra: css`
+        css: css`
           font-size: ${(props) =>
             props.buttonStyle === 'primary' ? 60 : 30}px;
         `,

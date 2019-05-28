@@ -15,7 +15,7 @@ const Overlay = styled.View`
   justify-content: center;
   background-color: rgba(0, 0, 0, 0.3);
   opacity: 0;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.extra};
+  ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
 `;
 
 const Container = styled.View`
@@ -26,7 +26,7 @@ const Container = styled.View`
   align-items: center;
   justify-content: center;
   background-color: rgba(255, 255, 255, 0);
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.container.extra};
+  ${({ theme }) => theme.messageInput.uploadProgressIndicator.container.css};
 `;
 
 export const UploadProgressIndicator = themed(

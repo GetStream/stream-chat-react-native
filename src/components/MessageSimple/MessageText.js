@@ -38,7 +38,7 @@ const TextContainer = styled.View`
     alignment === 'left' || status === 'error' || status === 'failed'
       ? theme.colors.transparent
       : theme.colors.light};
-  ${({ theme }) => theme.message.text.extra}
+  ${({ theme }) => theme.message.text.css}
 `;
 
 export const MessageText = ({

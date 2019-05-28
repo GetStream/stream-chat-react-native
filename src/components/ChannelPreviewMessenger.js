@@ -9,7 +9,7 @@ const Container = styled.TouchableOpacity`
   border-bottom-color: #ebebeb;
   border-bottom-width: 1;
   padding: 10px;
-  ${({ theme }) => theme.channelPreview.container.extra}
+  ${({ theme }) => theme.channelPreview.container.css}
 `;
 
 const Details = styled.View`
@@ -17,28 +17,28 @@ const Details = styled.View`
   flex-direction: column;
   flex: 1;
   padding-left: 10px;
-  ${({ theme }) => theme.channelPreview.details.extra}
+  ${({ theme }) => theme.channelPreview.details.css}
 `;
 
 const DetailsTop = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  ${({ theme }) => theme.channelPreview.detailsTop.extra}
+  ${({ theme }) => theme.channelPreview.detailsTop.css}
 `;
 
 const Title = styled.Text`
   font-weight: bold;
   font-size: 14;
   flex: 1;
-  ${({ theme }) => theme.channelPreview.title.extra}
+  ${({ theme }) => theme.channelPreview.title.css}
 `;
 
 const Date = styled.Text`
   color: #767676;
   font-size: 11;
   text-align: right;
-  ${({ theme }) => theme.channelPreview.date.extra}
+  ${({ theme }) => theme.channelPreview.date.css}
 `;
 
 const Message = styled.Text`
@@ -51,7 +51,7 @@ const Message = styled.Text`
     unread
       ? theme.channelPreview.message.unreadFontWeight
       : theme.channelPreview.message.fontWeight};
-  ${({ theme }) => theme.channelPreview.message.extra}
+  ${({ theme }) => theme.channelPreview.message.css}
 `;
 
 export class ChannelPreviewMessenger extends PureComponent {

@@ -12,7 +12,7 @@ const Container = styled.View`
   height: 70;
   display: flex;
   padding: 10px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.container.extra};
+  ${({ theme }) => theme.messageInput.imageUploadPreview.container.css};
 `;
 
 const ItemContainer = styled.View`
@@ -21,7 +21,7 @@ const ItemContainer = styled.View`
   flex-direction: row;
   align-items: flex-start;
   margin-left: 5;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.extra};
+  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
 `;
 
 const Dismiss = styled.TouchableOpacity`
@@ -35,20 +35,20 @@ const Dismiss = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   border-radius: 20;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.extra};
+  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
 `;
 
 const Upload = styled.Image`
   width: 50;
   height: 50;
   border-radius: 10;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.extra};
+  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
 `;
 
 const DismissImage = styled.Image`
   width: 10;
   height: 10;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.extra};
+  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
 `;
 
 /**

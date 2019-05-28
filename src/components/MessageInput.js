@@ -44,7 +44,7 @@ const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
     padding ? theme.messageInput.container.conditionalPadding : 0}px;
   margin-left: 10px;
   margin-right: 10px;
-  ${({ theme }) => theme.messageInput.container.extra}
+  ${({ theme }) => theme.messageInput.container.css}
 `;
 
 const InputBoxContainer = styled.View`
@@ -55,29 +55,29 @@ const InputBoxContainer = styled.View`
   min-height: 46;
   margin: 10px;
   align-items: center;
-  ${({ theme }) => theme.messageInput.inputBoxContainer.extra}
+  ${({ theme }) => theme.messageInput.inputBoxContainer.css}
 `;
 
 const AttachButton = styled.TouchableOpacity`
   margin-right: 8;
-  ${({ theme }) => theme.messageInput.attachButton.extra}
+  ${({ theme }) => theme.messageInput.attachButton.css}
 `;
 
 const AttachButtonIcon = styled.Image`
   width: 15;
   height: 15;
-  ${({ theme }) => theme.messageInput.attachButtonIcon.extra}
+  ${({ theme }) => theme.messageInput.attachButtonIcon.css}
 `;
 
 const SendButton = styled.TouchableOpacity`
   margin-left: 8;
-  ${({ theme }) => theme.messageInput.sendButton.extra}
+  ${({ theme }) => theme.messageInput.sendButton.css}
 `;
 
 const Typing = styled.Text`
   text-align: right;
   height: 20;
-  ${({ theme }) => theme.messageInput.typing.extra}
+  ${({ theme }) => theme.messageInput.typing.css}
 `;
 
 const MessageInput = withSuggestionsContext(

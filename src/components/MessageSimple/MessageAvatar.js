@@ -5,13 +5,13 @@ import { Avatar } from '../Avatar';
 const Container = styled.View`
   margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)};
   margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)};
-  ${({ theme }) => theme.message.avatarWrapper.container.extra}
+  ${({ theme }) => theme.message.avatarWrapper.container.css}
 `;
 
 const Spacer = styled.View`
   width: 32;
   height: 28;
-  ${({ theme }) => theme.message.avatarWrapper.spacer.extra}
+  ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
 export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {

@@ -5,18 +5,18 @@ import styled from '@stream-io/styled-components';
 const Container = styled.View`
   flex-direction: column;
   padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.command.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.command.container.css}
 `;
 
 const Top = styled.View`
   flex-direction: row;
   align-items: center;
-  ${({ theme }) => theme.messageInput.suggestions.command.top.extra}
+  ${({ theme }) => theme.messageInput.suggestions.command.top.css}
 `;
 
 const Title = styled.Text`
   font-weight: bold;
-  ${({ theme }) => theme.messageInput.suggestions.command.title.extra}
+  ${({ theme }) => theme.messageInput.suggestions.command.title.css}
 `;
 
 export class CommandsItem extends React.Component {

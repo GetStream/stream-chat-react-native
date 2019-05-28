@@ -9,7 +9,7 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 5px;
-  ${({ theme }) => theme.message.actions.container.extra}
+  ${({ theme }) => theme.message.actions.container.css}
 `;
 
 const Button = styled(({ buttonStyle, ...rest }) => (
@@ -29,7 +29,7 @@ const Button = styled(({ buttonStyle, ...rest }) => (
   padding-bottom: 5px;
   padding-left: 10px;
   padding-right: 10px;
-  ${({ theme }) => theme.message.actions.button.extra}
+  ${({ theme }) => theme.message.actions.button.css}
 `;
 
 const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
@@ -37,7 +37,7 @@ const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
     buttonStyle === 'primary'
       ? theme.message.actions.buttonText.primaryColor
       : theme.message.actions.buttonText.defaultColor};
-  ${({ theme }) => theme.message.actions.buttonText.extra}
+  ${({ theme }) => theme.message.actions.buttonText.css}
 `;
 
 /**

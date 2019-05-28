@@ -10,7 +10,7 @@ const Icon = styled.View`
   border-radius: 20;
   align-items: center;
   justify-content: center;
-  ${({ theme }) => theme.iconBadge.icon.extra}
+  ${({ theme }) => theme.iconBadge.icon.css}
 `;
 
 const IconInner = styled.View`
@@ -23,13 +23,13 @@ const IconInner = styled.View`
   padding-left: 3;
   padding-right: 3;
   border-radius: 20;
-  ${({ theme }) => theme.iconBadge.iconInner.extra}
+  ${({ theme }) => theme.iconBadge.iconInner.css}
 `;
 
 const UnreadCount = styled.Text`
   font-size: 10;
   color: #ffffff;
-  ${({ theme }) => theme.iconBadge.unreadCount.extra}
+  ${({ theme }) => theme.iconBadge.unreadCount.css}
 `;
 
 export class IconBadge extends React.Component {

@@ -7,14 +7,14 @@ import { themed } from '../styles/theme';
 const AvatarContainer = styled.View`
   display: flex;
   align-items: center;
-  ${({ theme }) => theme.avatar.container.extra}
+  ${({ theme }) => theme.avatar.container.css}
 `;
 
 const AvatarImage = styled.Image`
   border-radius: ${({ size }) => size / 2};
   width: ${({ size }) => size};
   height: ${({ size }) => size};
-  ${({ theme }) => theme.avatar.image.extra}
+  ${({ theme }) => theme.avatar.image.css}
 `;
 
 const AvatarFallback = styled.View`
@@ -24,7 +24,7 @@ const AvatarFallback = styled.View`
   background-color: ${({ theme }) => theme.colors.primary};
   justify-content: center;
   align-items: center;
-  ${({ theme }) => theme.avatar.fallback.extra}
+  ${({ theme }) => theme.avatar.fallback.css}
 `;
 
 const AvatarText = styled.Text`
@@ -32,7 +32,7 @@ const AvatarText = styled.Text`
   text-transform: uppercase;
   font-size: 14;
   font-weight: bold;
-  ${({ theme }) => theme.avatar.text.extra}
+  ${({ theme }) => theme.avatar.text.css}
 `;
 
 /**

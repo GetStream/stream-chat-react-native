@@ -16,11 +16,11 @@ const NewThread = styled.View`
   border-radius: 4;
   display: flex;
   align-items: center;
-  ${({ theme }) => theme.thread.newThread.extra};
+  ${({ theme }) => theme.thread.newThread.css};
 `;
 
 const NewThreadText = styled.Text`
-  ${({ theme }) => theme.thread.newThread.text.extra};
+  ${({ theme }) => theme.thread.newThread.text.css};
 `;
 
 /**

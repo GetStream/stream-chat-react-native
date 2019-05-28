@@ -13,12 +13,12 @@ const Container = styled.TouchableOpacity`
   background-color: black;
   color: white;
   padding: 10px;
-  ${({ theme }) => theme.messageList.messageNotification.extra}
+  ${({ theme }) => theme.messageList.messageNotification.css}
 `;
 
 const MessageNotificationText = styled.Text`
   color: white;
-  ${({ theme }) => theme.messageList.messageNotificationText.extra}
+  ${({ theme }) => theme.messageList.messageNotificationText.css}
 `;
 
 export class MessageNotification extends PureComponent {

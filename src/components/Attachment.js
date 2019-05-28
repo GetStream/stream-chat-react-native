@@ -21,23 +21,23 @@ const FileContainer = styled.View`
     alignment === 'right' ? 16 : 2};
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2};
-  ${({ theme }) => theme.message.file.container.extra}
+  ${({ theme }) => theme.message.file.container.css}
 `;
 
 const FileDetails = styled.View`
   display: flex;
   flex-direction: column;
   padding-left: 10px;
-  ${({ theme }) => theme.message.file.details.extra}
+  ${({ theme }) => theme.message.file.details.css}
 `;
 
 const FileTitle = styled.Text`
   font-weight: 700;
-  ${({ theme }) => theme.message.file.title.extra}
+  ${({ theme }) => theme.message.file.title.css}
 `;
 
 const FileSize = styled.Text`
-  ${({ theme }) => theme.message.file.size.extra}
+  ${({ theme }) => theme.message.file.size.css}
 `;
 
 /**

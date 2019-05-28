@@ -8,7 +8,7 @@ import { Avatar } from './Avatar';
 const Container = styled.TouchableOpacity`
   flex: 1;
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
-  ${({ theme }) => theme.message.reactionPicker.container.extra}
+  ${({ theme }) => theme.message.reactionPicker.container.css}
 `;
 
 const ContainerView = styled.View`
@@ -19,28 +19,28 @@ const ContainerView = styled.View`
   height: 60;
   padding-right: 20px;
   border-radius: 30;
-  ${({ theme }) => theme.message.reactionPicker.containerView.extra}
+  ${({ theme }) => theme.message.reactionPicker.containerView.css}
 `;
 
 const Column = styled.View`
   flex-direction: column;
   align-items: center;
   margin-top: -5;
-  ${({ theme }) => theme.message.reactionPicker.column.extra}
+  ${({ theme }) => theme.message.reactionPicker.column.css}
 `;
 
 const Emoji = styled.Text`
   font-size: 20;
   margin-bottom: 5;
   margin-top: 5;
-  ${({ theme }) => theme.message.reactionPicker.emoji.extra}
+  ${({ theme }) => theme.message.reactionPicker.emoji.css}
 `;
 
 const ReactionCount = styled.Text`
   color: white;
   font-size: 10;
   font-weight: bold;
-  ${({ theme }) => theme.message.reactionPicker.text.extra}
+  ${({ theme }) => theme.message.reactionPicker.text.css}
 `;
 
 export class ReactionPicker extends React.PureComponent {
