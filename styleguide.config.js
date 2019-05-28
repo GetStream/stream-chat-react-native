@@ -5,7 +5,7 @@ const webpack = require('webpack');
 const notBabeledDeps = [
   'react-native-image-zoom-viewer',
   'react-native-image-pan-zoom',
-  'react-native-simple-markdown',
+  '@stream-io/react-native-simple-markdown',
 ];
 
 module.exports = {
