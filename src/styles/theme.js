@@ -608,6 +608,7 @@ const defaultTheme = {
       fontSize: 10,
       fontWeight: 'bold',
     },
+    text: {},
   },
   suggestionsProvider: {
     wrapper: {
