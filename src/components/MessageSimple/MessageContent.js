@@ -45,7 +45,7 @@ const MetaText = styled.Text`
 const DeletedContainer = styled.View`
   display: flex;
   flex-direction: column;
-  max-width: 250};
+  max-width: 250;
   padding: 5px;
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
