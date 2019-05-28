@@ -1,32 +1,36 @@
 import React from 'react';
 import { Avatar } from './Avatar';
-import { getTheme } from '../styles/theme';
 
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
+import { themed } from '../styles/theme';
 
 const Container = styled.View`
-  flex-direction: ${(props) =>
-    getTheme(props).mentionsItem.container.flexDirection};
-  align-items: ${(props) => getTheme(props).mentionsItem.container.alignItems};
+  flex-direction: ${({ theme }) => theme.mentionsItem.container.flexDirection};
+  align-items: ${({ theme }) => theme.mentionsItem.container.alignItems};
   padding: 10px;
+  ${({ theme }) => theme.mentionsItem.container.extra}
 `;
 
 const Name = styled.Text`
-  padding: ${(props) => getTheme(props).mentionsItem.name.padding}px;
-  color: ${(props) => getTheme(props).mentionsItem.name.color};
-  font-weight: ${(props) => getTheme(props).mentionsItem.name.fontWeight};
+  padding: ${({ theme }) => theme.mentionsItem.name.padding}px;
+  color: ${({ theme }) => theme.mentionsItem.name.color};
+  font-weight: ${({ theme }) => theme.mentionsItem.name.fontWeight};
+  ${({ theme }) => theme.mentionsItem.name.extra}
 `;
 
-export class MentionsItem extends React.Component {
-  render() {
-    const {
-      item: { name, icon, id },
-    } = this.props;
-    return (
-      <Container>
-        <Avatar image={icon} />
-        <Name>{name || id}</Name>
-      </Container>
-    );
-  }
-}
+export const MentionsItem = themed(
+  class MentionsItem extends React.Component {
+    static themePath = 'mentionsItem';
+    render() {
+      const {
+        item: { name, icon, id },
+      } = this.props;
+      return (
+        <Container>
+          <Avatar image={icon} />
+          <Name>{name || id}</Name>
+        </Container>
+      );
+    }
+  },
+);

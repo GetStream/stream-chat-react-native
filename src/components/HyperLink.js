@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
 import { Linking } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
-import { getTheme } from '../styles/theme';
+import styled from '@stream-io/styled-components';
 
 const Title = styled.Text`
-  color: ${(props) => getTheme(props).hyperLink.title.color};
-  font-weight: ${(props) => getTheme(props).hyperLink.title.fontWeight};
+  color: ${({ theme }) => theme.hyperLink.title.color};
+  font-weight: ${({ theme }) => theme.hyperLink.title.fontWeight};
+  ${({ theme }) => theme.hyperLink.title.extra}
 `;
 
 export class HyperLink extends PureComponent {

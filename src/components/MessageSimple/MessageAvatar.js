@@ -1,32 +1,26 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 import { Avatar } from '../Avatar';
-import { getTheme } from '../../styles/theme';
 
 const Container = styled.View`
-  margin-right: ${(props) =>
-    props.alignment === 'left'
-      ? getTheme(props).messageAvatar.container.margin
-      : 0};
-  margin-left: ${(props) =>
-    props.alignment === 'right'
-      ? getTheme(props).messageAvatar.container.margin
-      : 0};
+  margin-right: ${({ theme, alignment }) =>
+    alignment === 'left' ? theme.messageAvatar.container.margin : 0};
+  margin-left: ${({ theme, alignment }) =>
+    alignment === 'right' ? theme.messageAvatar.container.margin : 0};
+  ${({ theme }) => theme.messageAvatar.container.extra}
 `;
 
 const Spacer = styled.View`
-  width: ${(props) => getTheme(props).messageAvatar.spacer.width};
-  height: ${(props) => getTheme(props).messageAvatar.spacer.height};
+  width: ${({ theme }) => theme.messageAvatar.spacer.width};
+  height: ${({ theme }) => theme.messageAvatar.spacer.height};
+  ${({ theme }) => theme.messageAvatar.spacer.extra}
 `;
 
-export const MessageAvatar = ({ message, isMyMessage }) => {
+export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const showAvatar =
-    message.groupPosition[0] === 'single' ||
-    message.groupPosition[0] === 'bottom'
-      ? true
-      : false;
+    groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
 
   return (
     <Container alignment={pos}>

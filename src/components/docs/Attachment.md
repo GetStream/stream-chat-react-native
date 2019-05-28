@@ -33,6 +33,7 @@ const a = Immutable({
   author_name: 'YouTube',
   image_url: 'https://i.ytimg.com/vi/7LiyXFYaEAY/maxresdefault.jpg',
   og_scrape_url: 'https://www.youtube.com/watch?v=7LiyXFYaEAY',
+  title: 'Game of Thrones Season 8 Promo (HD) Final Season',
   text: 'Game of Thrones final season premieres April 14th ...',
   type: 'video',
 });

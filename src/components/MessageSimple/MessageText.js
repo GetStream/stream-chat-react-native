@@ -1,57 +1,59 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from '@stream-io/styled-components';
 
 import { renderText, capitalize } from '../../utils';
-import { getTheme } from '../../styles/theme';
 
 const TextContainer = styled.View`
-  border-bottom-left-radius: ${(props) =>
-    props.groupStyle.indexOf('left') !== -1
-      ? getTheme(props).messageText.borderRadiusS
-      : getTheme(props).messageText.borderBottomLeftRadius};
-  border-bottom-right-radius: ${(props) =>
-    props.groupStyle.indexOf('right') !== -1
-      ? getTheme(props).messageText.borderRadiusS
-      : getTheme(props).messageText.borderBottomRightRadius};
-  border-top-left-radius: ${(props) =>
-    props.groupStyle === 'leftBottom' || props.groupStyle === 'leftMiddle'
-      ? getTheme(props).messageText.borderRadiusS
-      : getTheme(props).messageText.borderTopLeftRadius};
-  border-top-right-radius: ${(props) =>
-    props.groupStyle === 'rightBottom' || props.groupStyle === 'rightMiddle'
-      ? getTheme(props).messageText.borderRadiusS
-      : getTheme(props).messageText.borderTopRightRadius};
-  margin-top: ${(props) => getTheme(props).messageText.marginTop};
-  padding: ${(props) => getTheme(props).messageText.padding}px;
-  padding-left: ${(props) => getTheme(props).messageText.paddingLeft};
-  padding-right: ${(props) => getTheme(props).messageText.paddingRight};
-  align-self: ${(props) =>
-    props.alignment === 'left'
-      ? getTheme(props).messageText.left.alignSelf
-      : getTheme(props).messageText.right.alignSelf};
-  border-width: ${(props) =>
-    props.alignment === 'left'
-      ? getTheme(props).messageText.left.borderWidth
-      : getTheme(props).messageText.right.borderWidth};
-  border-color: ${(props) =>
-    props.alignment === 'left'
-      ? getTheme(props).messageText.left.borderColor
-      : getTheme(props).messageText.right.borderColor};
-  background-color: ${(props) =>
-    props.alignment === 'left' ||
-    props.status === 'error' ||
-    props.status === 'failed'
-      ? getTheme(props).messageText.transparent
-      : getTheme(props).messageText.filled};
+  border-bottom-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('left') !== -1
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderBottomLeftRadius};
+  border-bottom-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('right') !== -1
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderBottomRightRadius};
+  border-top-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderTopLeftRadius};
+  border-top-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
+      ? theme.messageText.borderRadiusS
+      : theme.messageText.borderTopRightRadius};
+  margin-top: ${({ theme }) => theme.messageText.marginTop};
+  padding: ${({ theme }) => theme.messageText.padding}px;
+  padding-left: ${({ theme }) => theme.messageText.paddingLeft};
+  padding-right: ${({ theme }) => theme.messageText.paddingRight};
+  align-self: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.alignSelf
+      : theme.messageText.right.alignSelf};
+  border-width: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.borderWidth
+      : theme.messageText.right.borderWidth};
+  border-color: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.messageText.left.borderColor
+      : theme.messageText.right.borderColor};
+  background-color: ${({ theme, alignment, status }) =>
+    alignment === 'left' || status === 'error' || status === 'failed'
+      ? theme.messageText.transparent
+      : theme.messageText.filled};
+  ${({ theme }) => theme.messageText.extra}
 `;
 
-export const MessageText = ({ message, isMyMessage = () => false }) => {
+export const MessageText = ({
+  message,
+  groupStyles,
+  isMyMessage = () => false,
+}) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
-  const groupStyles =
+  const groupStyle =
     (isMyMessage(message) ? 'right' : 'left') +
-    capitalize(hasAttachment ? 'bottom' : message.groupPosition[0]);
+    capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
 
   if (!message.text) return false;
 
@@ -59,7 +61,7 @@ export const MessageText = ({ message, isMyMessage = () => false }) => {
     <React.Fragment>
       <TextContainer
         alignment={pos}
-        groupStyle={groupStyles}
+        groupStyle={groupStyle}
         status={message.status}
       >
         {renderText(message)}

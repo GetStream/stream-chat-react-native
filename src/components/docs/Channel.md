@@ -28,3 +28,13 @@ And the data exposed by the chat context:
 - channels (the list of channels)
 - setActiveChannel (a function to set the currently active channel)
 - channel (the currently active channel)
+
+```js
+const data = require('./data');
+
+<Chat client={data.client}>
+  <Channel channel={data.channel}>
+    <MessageList />
+  </Channel>
+</Chat>;
+```
