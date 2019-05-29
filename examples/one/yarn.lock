@@ -1300,6 +1300,14 @@
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
+"@stream-io/react-native-simple-markdown@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.1.1.tgz#6d2fb25070bc9367394519acc32fc6edde72a662"
+  dependencies:
+    lodash "^4.15.0"
+    prop-types "^15.6.0"
+    simple-markdown "^0.4.4"
+
 "@stream-io/styled-components@^4.2.1":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@stream-io/styled-components/-/styled-components-4.2.1.tgz#3f2bb6febd985cbbcf352aaf1b96480bcc1c432e"
@@ -8924,7 +8932,7 @@ react-native-image-zoom-viewer@^2.2.25:
   dependencies:
     react-native-image-pan-zoom "^2.1.9"
 
-"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
+react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
   version "0.22.1"
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
@@ -9743,6 +9751,10 @@ simple-get@^3.0.3:
     once "^1.3.1"
     simple-concat "^1.0.0"
 
+simple-markdown@^0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/simple-markdown/-/simple-markdown-0.4.4.tgz#9bd597bdd5c2f5a789e56a4dbf06427d76c3834f"
+
 "simple-markdown@git://github.com/CharlesMangwa/simple-markdown.git":
   version "0.1.1"
   resolved "git://github.com/CharlesMangwa/simple-markdown.git#33d963c760b8196bee01b1a5ba9974bc7f669af1"
@@ -10045,9 +10057,9 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat-react-native-core@v0.0.21:
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.21.tgz#cd85769967cf5104a52e7c5a9cabddafec0ae756"
+stream-chat-react-native-core@v0.0.22:
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.0.22.tgz#03449231e1bf91ad3a13018b7b3eaba1f917015e"
   dependencies:
     "@babel/runtime" "^7.1.2"
     anchorme "^1.1.2"

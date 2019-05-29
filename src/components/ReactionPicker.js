@@ -6,49 +6,41 @@ import { emojiData } from '../utils';
 import { Avatar } from './Avatar';
 
 const Container = styled.TouchableOpacity`
-  flex: ${({ theme }) => theme.reactionPicker.container.flex};
-  align-items: ${({ theme, left }) =>
-    left
-      ? theme.reactionPicker.container.leftAlign
-      : theme.reactionPicker.container.rightAlign};
-  ${({ theme }) => theme.reactionPicker.container.extra}
+  flex: 1;
+  align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
+  ${({ theme }) => theme.message.reactionPicker.container.css}
 `;
 
 const ContainerView = styled.View`
-  display: ${({ theme }) => theme.reactionPicker.containerView.display};
-  flex-direction: ${({ theme }) =>
-    theme.reactionPicker.containerView.flexDirection};
-  background-color: ${({ theme }) =>
-    theme.reactionPicker.containerView.backgroundColor};
-  padding-left: ${({ theme }) =>
-    theme.reactionPicker.containerView.paddingLeft};
-  height: ${({ theme }) => theme.reactionPicker.containerView.height};
-  padding-right: ${({ theme }) =>
-    theme.reactionPicker.containerView.paddingRight};
-  border-radius: ${({ theme }) =>
-    theme.reactionPicker.containerView.borderRadius};
-  ${({ theme }) => theme.reactionPicker.containerView.extra}
+  display: flex;
+  flex-direction: row;
+  background-color: black;
+  padding-left: 20px;
+  height: 60;
+  padding-right: 20px;
+  border-radius: 30;
+  ${({ theme }) => theme.message.reactionPicker.containerView.css}
 `;
 
 const Column = styled.View`
-  flex-direction: ${({ theme }) => theme.reactionPicker.column.flexDirection};
-  align-items: ${({ theme }) => theme.reactionPicker.column.alignItems};
-  margin-top: ${({ theme }) => theme.reactionPicker.column.marginTop};
-  ${({ theme }) => theme.reactionPicker.column.extra}
+  flex-direction: column;
+  align-items: center;
+  margin-top: -5;
+  ${({ theme }) => theme.message.reactionPicker.column.css}
 `;
 
 const Emoji = styled.Text`
-  font-size: ${({ theme }) => theme.reactionPicker.emoji.fontSize};
-  margin-bottom: ${({ theme }) => theme.reactionPicker.emoji.marginBottom};
-  margin-top: ${({ theme }) => theme.reactionPicker.emoji.marginTop};
-  ${({ theme }) => theme.reactionPicker.emoji.extra}
+  font-size: 20;
+  margin-bottom: 5;
+  margin-top: 5;
+  ${({ theme }) => theme.message.reactionPicker.emoji.css}
 `;
 
 const ReactionCount = styled.Text`
-  color: ${({ theme }) => theme.reactionPicker.reactionCount.color};
-  font-size: ${({ theme }) => theme.reactionPicker.reactionCount.fontSize};
-  font-weight: ${({ theme }) => theme.reactionPicker.reactionCount.fontWeight};
-  ${({ theme }) => theme.reactionPicker.text.extra}
+  color: white;
+  font-size: 10;
+  font-weight: bold;
+  ${({ theme }) => theme.message.reactionPicker.text.css}
 `;
 
 export class ReactionPicker extends React.PureComponent {
@@ -102,7 +94,11 @@ export class ReactionPicker extends React.PureComponent {
         onRequestClose={handleDismiss}
       >
         {reactionPickerVisible && (
-          <Container onPress={handleDismiss} left={!!rpLeft} activeOpacity={1}>
+          <Container
+            onPress={handleDismiss}
+            leftAlign={Boolean(rpLeft)}
+            activeOpacity={1}
+          >
             <ContainerView
               style={{
                 ...position,

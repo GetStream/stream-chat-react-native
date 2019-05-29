@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native-core",
-  "version": "0.0.22",
+  "version": "0.1.0",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -20,13 +20,34 @@
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
-    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0",
-    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0",
+    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0 && stylelint '**/*.js'",
+    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0 && stylelint --fix '**/*.js'",
     "prepare": "yarn run build"
   },
   "husky": {
     "hooks": {
       "pre-commit": "dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py"
+    }
+  },
+  "stylelint": {
+    "processors": [
+      "stylelint-processor-styled-components"
+    ],
+    "extends": [
+      "stylelint-config-recommended",
+      "stylelint-config-styled-components"
+    ],
+    "rules": {
+      "property-no-unknown": [
+        true,
+        {
+          "ignoreProperties": [
+            "shadow-color",
+            "shadow-opacity",
+            "shadow-offset"
+          ]
+        }
+      ]
     }
   },
   "dependencies": {
@@ -83,6 +104,10 @@
     "rollup-plugin-json": "^3.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-replace": "^2.1.0",
+    "stylelint": "^10.0.1",
+    "stylelint-config-standard": "^18.3.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.8.0",
     "webpack": "4.19.1"
   }
 }

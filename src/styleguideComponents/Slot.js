@@ -7,14 +7,14 @@ import { formatDefaultTheme } from '../styles/theme';
 
 const StylesButton = (props) => {
   const component = props.module[props.visibleName];
-  return component && component.themePath ? (
+  return component && component.themePath != null ? (
     <TabButton {...props}>Styles</TabButton>
   ) : null;
 };
 
 const StylesTab = (props) => {
   const component = props.module[props.visibleName];
-  return component && component.themePath
+  return component && component.themePath != null
     ? formatDefaultTheme(component)
     : null;
 };

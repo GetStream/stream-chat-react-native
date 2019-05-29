@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../context';
 import { NetInfo } from '../native';
 
-import { ThemeProvider } from '@stream-io/styled-components';
-import { buildTheme } from '../styles/theme';
+import { themed } from '../styles/theme';
 
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
@@ -23,104 +22,103 @@ import { buildTheme } from '../styles/theme';
  * @extends PureComponent
  */
 
-export class Chat extends PureComponent {
-  static propTypes = {
-    /** The StreamChat client object */
-    client: PropTypes.object.isRequired,
-    /** The theme 'messaging', 'team', 'commerce', 'gaming', 'livestream' plus either 'light' or 'dark' */
-    theme: PropTypes.object,
-  };
-
-  static defaultProps = {
-    theme: {},
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      // currently active channel
-      channel: {},
-      isOnline: true,
-      connectionRecovering: false,
+export const Chat = themed(
+  class Chat extends PureComponent {
+    static themePath = '';
+    static propTypes = {
+      /** The StreamChat client object */
+      client: PropTypes.object.isRequired,
     };
 
-    this.setConnectionListener();
+    constructor(props) {
+      super(props);
 
-    this.props.client.on('connection.changed', (event) => {
-      this.setState({
-        isOnline: event.online,
-        connectionRecovering: !event.online,
+      this.state = {
+        // currently active channel
+        channel: {},
+        isOnline: true,
+        connectionRecovering: false,
+      };
+
+      this.setConnectionListener();
+
+      this.props.client.on('connection.changed', (event) => {
+        this.setState({
+          isOnline: event.online,
+          connectionRecovering: !event.online,
+        });
       });
-    });
 
-    this.props.client.on('connection.recovered', () => {
-      this.setState({ connectionRecovering: false });
-    });
+      this.props.client.on('connection.recovered', () => {
+        this.setState({ connectionRecovering: false });
+      });
 
-    this._unmounted = false;
-  }
+      this._unmounted = false;
+    }
 
-  componentWillUnmount() {
-    this._unmounted = true;
-    this.props.client.off('connection.recovered');
-    this.props.client.off('connection.changed');
-    this.props.client.off(this.handleEvent);
-    NetInfo.removeEventListener(
-      'connectionChange',
-      this.handleConnectionChange,
-    );
-  }
+    componentWillUnmount() {
+      this._unmounted = true;
+      this.props.client.off('connection.recovered');
+      this.props.client.off('connection.changed');
+      this.props.client.off(this.handleEvent);
+      NetInfo.removeEventListener(
+        'connectionChange',
+        this.handleConnectionChange,
+      );
+    }
 
-  notifyChatClient = (isConnected) => {
-    if (this.props.client != null && this.props.client.wsConnection != null) {
-      if (isConnected) {
-        this.props.client.wsConnection.onlineStatusChanged({ type: 'online' });
-      } else {
-        this.props.client.wsConnection.onlineStatusChanged({ type: 'offline' });
+    notifyChatClient = (isConnected) => {
+      if (this.props.client != null && this.props.client.wsConnection != null) {
+        if (isConnected) {
+          this.props.client.wsConnection.onlineStatusChanged({
+            type: 'online',
+          });
+        } else {
+          this.props.client.wsConnection.onlineStatusChanged({
+            type: 'offline',
+          });
+        }
       }
-    }
-  };
+    };
 
-  setConnectionListener = () => {
-    NetInfo.isConnected.fetch().then((isConnected) => {
-      this.notifyChatClient(isConnected);
+    setConnectionListener = () => {
+      NetInfo.isConnected.fetch().then((isConnected) => {
+        this.notifyChatClient(isConnected);
+      });
+
+      NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
+    };
+
+    handleConnectionChange = () => {
+      NetInfo.isConnected.fetch().then((isConnected) => {
+        this.notifyChatClient(isConnected);
+      });
+    };
+
+    setActiveChannel = (channel, e) => {
+      if (e !== undefined && e.preventDefault) {
+        e.preventDefault();
+      }
+      if (this._unmounted) return;
+      this.setState(() => ({
+        channel,
+      }));
+    };
+
+    getContext = () => ({
+      client: this.props.client,
+      channel: this.state.channel,
+      setActiveChannel: this.setActiveChannel,
+      isOnline: this.state.isOnline,
+      connectionRecovering: this.state.connectionRecovering,
     });
 
-    NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
-  };
-
-  handleConnectionChange = () => {
-    NetInfo.isConnected.fetch().then((isConnected) => {
-      this.notifyChatClient(isConnected);
-    });
-  };
-
-  setActiveChannel = (channel, e) => {
-    if (e !== undefined && e.preventDefault) {
-      e.preventDefault();
-    }
-    if (this._unmounted) return;
-    this.setState(() => ({
-      channel,
-    }));
-  };
-
-  getContext = () => ({
-    client: this.props.client,
-    channel: this.state.channel,
-    setActiveChannel: this.setActiveChannel,
-    isOnline: this.state.isOnline,
-    connectionRecovering: this.state.connectionRecovering,
-  });
-
-  render() {
-    return (
-      <ChatContext.Provider value={this.getContext()}>
-        <ThemeProvider theme={buildTheme(this.theme)}>
+    render() {
+      return (
+        <ChatContext.Provider value={this.getContext()}>
           {this.props.children}
-        </ThemeProvider>
-      </ChatContext.Provider>
-    );
-  }
-}
+        </ChatContext.Provider>
+      );
+    }
+  },
+);

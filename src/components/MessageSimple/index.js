@@ -8,16 +8,13 @@ import { MessageAvatar } from './MessageAvatar';
 import PropTypes from 'prop-types';
 
 const Container = styled.View`
-  display: ${({ theme }) => theme.messageSimple.container.display};
-  flex-direction: ${({ theme }) => theme.messageSimple.container.flexDirection};
-  align-items: ${({ theme }) => theme.messageSimple.container.alignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageSimple.container.left.justifyContent
-      : theme.messageSimple.container.right.justifyContent};
-  margin-bottom: ${({ theme, marginBottom }) =>
-    marginBottom ? theme.messageSimple.container.marginBottom : 0};
-  ${({ theme }) => theme.messageSimple.container.extra}
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  margin-bottom: ${({ marginBottom }) => (marginBottom ? 20 : 0)};
+  ${({ theme }) => theme.message.container.css}
 `;
 
 export const MessageSimple = themed(

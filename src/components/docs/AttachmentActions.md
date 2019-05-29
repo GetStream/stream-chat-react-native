@@ -23,8 +23,7 @@ const actions = [
 ```
 
 ```js
-const { css, ThemeProvider } = require('@stream-io/styled-components');
-const { buildTheme } = require('../..');
+const { css } = require('@stream-io/styled-components');
 
 function actionHandler(action) {
   console.log(action);
@@ -37,29 +36,18 @@ const actions = [
   { name: 'Orange', value: 'orange', style: 'danger', text: 'Orange' },
 ];
 
-<ThemeProvider
-  theme={buildTheme({
-    attachment: {
-      actions: {
-        button: { defaultBackgroundColor: 'green' },
-      },
+<AttachmentActions
+  id={1}
+  text={'Pick a color'}
+  actions={actions}
+  actionHandler={actionHandler}
+  style={{
+    button: { primaryBackgroundColor: 'black' },
+    buttonText: {
+      css: css`
+        font-size: ${(props) => (props.buttonStyle === 'primary' ? 60 : 30)}px;
+      `,
     },
-  })}
->
-  <AttachmentActions
-    id={1}
-    text={'Pick a color'}
-    actions={actions}
-    actionHandler={actionHandler}
-    style={{
-      button: { primaryBackgroundColor: 'black' },
-      buttonText: {
-        extra: css`
-          font-size: ${(props) =>
-            props.buttonStyle === 'primary' ? 60 : 30}px;
-        `,
-      },
-    }}
-  />
-</ThemeProvider>;
+  }}
+/>;
 ```

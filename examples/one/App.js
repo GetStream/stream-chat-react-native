@@ -75,7 +75,7 @@ class ChannelListScreen extends PureComponent {
   render() {
     return (
       <SafeAreaView>
-        <Chat theme={theme} client={chatClient}>
+        <Chat style={theme} client={chatClient}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
               Preview={ChannelPreviewMessenger}
@@ -111,7 +111,7 @@ class ChannelScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat theme={theme} client={chatClient}>
+        <Chat style={theme} client={chatClient}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
@@ -166,7 +166,7 @@ class ThreadScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat theme={theme} client={chatClient}>
+        <Chat style={theme} client={chatClient}>
           <Channel
             client={chatClient}
             channel={channel}

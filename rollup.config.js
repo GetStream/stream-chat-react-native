@@ -41,6 +41,8 @@ const normalBundle = {
     'lodash/debounce',
     'lodash/get',
     'lodash/isEqual',
+    'lodash/isPlainObject',
+    'lodash/mapValues',
     'lodash/merge',
     'lodash/set',
     'lodash/throttle',

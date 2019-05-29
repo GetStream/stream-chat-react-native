@@ -1,9 +1,9 @@
 import React from 'react';
 import { Dimensions, Text } from 'react-native';
 import moment from 'moment';
+import { MessageContentContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
-import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
@@ -16,70 +16,57 @@ import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 
 const Container = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.messageContent.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.container.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.container.maxWidth};
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftAlignItems
-      : theme.messageContent.container.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftJustifyContent
-      : theme.messageContent.container.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.container.extra}
+  display: flex;
+  flex-direction: column;
+  max-width: 250;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  ${({ theme }) => theme.message.content.container.css};
 `;
 
 const ContainerInner = styled.View`
-  align-items: ${({ theme }) => theme.messageContent.containerInner.alignItems};
-  ${({ theme }) => theme.messageContent.containerInner.extra}
+  align-items: flex-end;
+  ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
 const MetaContainer = styled.View`
-  margin-top: ${({ theme }) => theme.messageContent.metaContainer.marginTop};
-  ${({ theme }) => theme.messageContent.metaContainer.extra}
+  margin-top: 2;
+  ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
 const MetaText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.metaText.fontSize};
-  color: ${({ theme }) => theme.messageContent.metaText.color};
-  text-align: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.metaText.leftTextAlign
-      : theme.messageContent.metaText.rightTextAlign};
-  ${({ theme }) => theme.messageContent.metaText.extra}
+  font-size: 11;
+  color: ${({ theme }) => theme.colors.textGrey};
+  text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
+  ${({ theme }) => theme.message.content.metaText.css};
 `;
 
 const DeletedContainer = styled.View`
-  display: ${({ theme }) => theme.messageContent.deletedContainer.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.deletedContainer.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.deletedContainer.maxWidth};
-  padding: ${({ theme }) => theme.messageContent.deletedContainer.padding}px;
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftAlignItems
-      : theme.messageContent.deletedContainer.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftJustifyContent
-      : theme.messageContent.deletedContainer.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.deletedContainer.extra}
+  display: flex;
+  flex-direction: column;
+  max-width: 250;
+  padding: 5px;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  ${({ theme }) => theme.message.content.deletedContainer.css};
 `;
 
 const DeletedText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.deletedText.fontSize};
-  line-height: ${({ theme }) => theme.messageContent.deletedText.lineHeight};
-  color: ${({ theme }) => theme.messageContent.deletedText.color};
-  ${({ theme }) => theme.messageContent.deletedText.extra}
+  font-size: 15;
+  line-height: 20;
+  color: #a4a4a4;
+  ${({ theme }) => theme.message.content.deletedText.css};
 `;
 
 const FailedText = styled.Text``;
 
 export const MessageContent = themed(
   class MessageContent extends React.PureComponent {
-    static themePath = 'messageContent';
+    static themePath = 'message.content';
 
     static propTypes = {
       /** enabled reactions, this is usually set by the parent component based on channel configs */
@@ -127,7 +114,7 @@ export const MessageContent = themed(
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
           reactionPickerVisible: true,
-          rpTop: y - REACTION_PICKER_HEIGHT,
+          rpTop: y - 70,
           rpLeft: pos === 'left' ? x : null,
           rpRight:
             pos === 'right'
@@ -252,79 +239,84 @@ export const MessageContent = themed(
       if (message.status === 'failed')
         contentProps.onPress = retrySendMessage.bind(this, Immutable(message));
 
+      const context = {
+        onLongPress: options.length > 1 ? this.showActionSheet : null,
+      };
+
       return (
-        <Container {...contentProps}>
-          {message.status === 'failed' ? (
-            <FailedText>Message failed - try again</FailedText>
-          ) : null}
-          {reactionsEnabled &&
-            message.latest_reactions &&
-            message.latest_reactions.length > 0 && (
-              <ReactionList
-                visible={!this.state.reactionPickerVisible}
-                latestReactions={message.latest_reactions}
-                openReactionSelector={this.openReactionSelector}
-                reactionCounts={message.reaction_counts}
-              />
-            )}
-          {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-          <ContainerInner
-            ref={(o) => (this.messageContainer = o)}
-            collapsable={false}
-          >
-            {hasAttachment &&
-              images.length <= 1 &&
-              message.attachments.map((attachment, index) => (
-                <Attachment
-                  key={`${message.id}-${index}`}
-                  attachment={attachment}
-                  actionHandler={this.props.handleAction}
-                  alignment={this.props.alignment}
+        <MessageContentContext.Provider value={context}>
+          <Container {...contentProps}>
+            {message.status === 'failed' ? (
+              <FailedText>Message failed - try again</FailedText>
+            ) : null}
+            {reactionsEnabled &&
+              message.latest_reactions &&
+              message.latest_reactions.length > 0 && (
+                <ReactionList
+                  visible={!this.state.reactionPickerVisible}
+                  latestReactions={message.latest_reactions}
+                  openReactionSelector={this.openReactionSelector}
+                  reactionCounts={message.reaction_counts}
                 />
-              ))}
-            {images.length > 1 && (
-              <Gallery alignment={this.props.alignment} images={images} />
-            )}
-            <MessageText
-              message={message}
-              groupStyles={groupStyles}
-              isMyMessage={isMyMessage}
-              disabled={message.status === 'failed'}
-              onMessageTouch={this.onMessageTouch}
-              Message={Message}
-              openThread={this.openThread}
-              handleReaction={handleReaction}
-            />
-          </ContainerInner>
-          {repliesEnabled ? (
-            <MessageReplies
-              message={message}
-              isThreadList={!!threadList}
-              openThread={this.openThread}
-              pos={pos}
-            />
-          ) : null}
+              )}
+            {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
+            <ContainerInner
+              ref={(o) => (this.messageContainer = o)}
+              collapsable={false}
+            >
+              {hasAttachment &&
+                images.length <= 1 &&
+                message.attachments.map((attachment, index) => (
+                  <Attachment
+                    key={`${message.id}-${index}`}
+                    attachment={attachment}
+                    actionHandler={this.props.handleAction}
+                    alignment={this.props.alignment}
+                  />
+                ))}
+              {images.length > 1 && (
+                <Gallery alignment={this.props.alignment} images={images} />
+              )}
+              <MessageText
+                message={message}
+                groupStyles={groupStyles}
+                isMyMessage={isMyMessage}
+                disabled={message.status === 'failed'}
+                onMessageTouch={this.onMessageTouch}
+                Message={Message}
+                openThread={this.openThread}
+                handleReaction={handleReaction}
+              />
+            </ContainerInner>
+            {repliesEnabled ? (
+              <MessageReplies
+                message={message}
+                isThreadList={!!threadList}
+                openThread={this.openThread}
+                pos={pos}
+              />
+            ) : null}
 
-          {showTime ? (
-            <MetaContainer>
-              <MetaText alignment={pos}>
-                {moment(message.created_at).format('h:mmA')}
-              </MetaText>
-            </MetaContainer>
-          ) : null}
+            {showTime ? (
+              <MetaContainer>
+                <MetaText alignment={pos}>
+                  {moment(message.created_at).format('h:mmA')}
+                </MetaText>
+              </MetaContainer>
+            ) : null}
 
-          <ActionSheet
-            ref={(o) => {
-              this.ActionSheet = o;
-            }}
-            title={<Text>Choose an action</Text>}
-            options={options.map((o) => o.title)}
-            cancelButtonIndex={0}
-            destructiveButtonIndex={0}
-            onPress={(index) => this.onActionPress(options[index].id)}
-          />
-
-          {reactionsEnabled ? (
+            {reactionsEnabled ? (
+              <ActionSheet
+                ref={(o) => {
+                  this.ActionSheet = o;
+                }}
+                title={<Text>Choose an action</Text>}
+                options={options.map((o) => o.title)}
+                cancelButtonIndex={0}
+                destructiveButtonIndex={0}
+                onPress={(index) => this.onActionPress(options[index].id)}
+              />
+            ) : null}
             <ReactionPicker
               reactionPickerVisible={this.state.reactionPickerVisible}
               handleReaction={handleReaction}
@@ -337,8 +329,8 @@ export const MessageContent = themed(
               rpRight={this.state.rpRight}
               rpTop={this.state.rpTop}
             />
-          ) : null}
-        </Container>
+          </Container>
+        </MessageContentContext.Provider>
       );
     }
   },

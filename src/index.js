@@ -9,6 +9,4 @@ export {
   withSuggestionsContext,
 } from './context.js';
 
-export { buildTheme } from './styles/theme';
-
 export { MESSAGE_ACTIONS } from './utils';

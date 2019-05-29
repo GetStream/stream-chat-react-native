@@ -10,17 +10,17 @@ import { themed } from '../styles/theme';
 import { Message } from './Message';
 
 const NewThread = styled.View`
-  padding: ${({ theme }) => theme.thread.newThread.padding}px;
-  background-color: ${({ theme }) => theme.thread.newThread.backgroundColor};
-  margin: ${({ theme }) => theme.thread.newThread.margin}px;
-  border-radius: ${({ theme }) => theme.thread.newThread.borderRadius};
-  display: ${({ theme }) => theme.thread.newThread.display};
-  align-items: ${({ theme }) => theme.thread.newThread.alignItems};
-  ${({ theme }) => theme.thread.newThread.extra};
+  padding: 8px;
+  background-color: #f4f9ff;
+  margin: 10px;
+  border-radius: 4;
+  display: flex;
+  align-items: center;
+  ${({ theme }) => theme.thread.newThread.css};
 `;
 
 const NewThreadText = styled.Text`
-  ${({ theme }) => theme.thread.newThread.text.extra};
+  ${({ theme }) => theme.thread.newThread.text.css};
 `;
 
 /**

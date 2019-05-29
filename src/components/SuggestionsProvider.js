@@ -6,55 +6,49 @@ import { SuggestionsContext } from '../context';
 import styled from '@stream-io/styled-components';
 
 const Wrapper = styled.TouchableOpacity`
-  position: ${({ theme }) => theme.suggestionsProvider.wrapper.position};
-  z-index: ${({ theme }) => theme.suggestionsProvider.wrapper.zIndex};
+  position: absolute;
+  z-index: 90;
   height: ${({ height }) => height};
-  width: ${({ theme }) => theme.suggestionsProvider.wrapper.width};
-  ${({ theme }) => theme.suggestionsProvider.wrapper.extra}
+  width: 100%;
+  ${({ theme }) => theme.messageInput.suggestions.wrapper.css}
 `;
 
 const Container = styled.View`
-  position: ${({ theme }) => theme.suggestionsProvider.container.position};
-  bottom: ${({ theme }) => theme.suggestionsProvider.container.bottom};
-  background-color: ${({ theme }) =>
-    theme.suggestionsProvider.container.backgroundColor};
-  z-index: ${({ theme }) => theme.suggestionsProvider.container.zIndex};
-  border-top-left-radius: ${({ theme }) =>
-    theme.suggestionsProvider.container.borderTopLeftRadius};
-  border-top-right-radius: ${({ theme }) =>
-    theme.suggestionsProvider.container.borderTopRightRadius};
+  position: absolute;
+  bottom: 10;
+  background-color: white;
+  z-index: 100;
+  border-top-left-radius: 10;
+  border-top-right-radius: 10;
   width: ${({ width }) => width};
   margin-left: ${({ marginLeft }) => marginLeft};
-  shadow-color: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowColor};
-  shadow-opacity: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowOpacity}
-  shadow-offset: ${({ theme }) =>
-    theme.suggestionsProvider.container.shadowOffset}
+  shadow-color: #000;
+  shadow-opacity: 0.05;
+  shadow-offset: 0px -3px;
   height: ${({ theme, length }) =>
     Math.min(
-      length * theme.suggestionsProvider.container.itemHeight,
-      theme.suggestionsProvider.container.maxHeight,
+      length * theme.messageInput.suggestions.container.itemHeight,
+      theme.messageInput.suggestions.container.maxHeight,
     )};
-  ${({ theme }) => theme.suggestionsProvider.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.container.css};
 `;
 
 const Title = styled.Text`
-  padding: ${({ theme }) => theme.suggestionsHeader.title.padding}px;
-  font-weight: ${({ theme }) => theme.suggestionsHeader.title.fontWeight};
-  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
-  ${({ theme }) => theme.suggestionsProvider.title.extra}
+  padding: 10px;
+  font-weight: bold;
+  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  ${({ theme }) => theme.messageInput.suggestions.title.css};
 `;
 
 const Separator = styled.View`
-  height: ${({ theme }) => theme.suggestionsSeparator.separator.height};
-  ${({ theme }) => theme.suggestionsSeparator.separator.extra}
+  height: 0;
+  ${({ theme }) => theme.messageInput.suggestions.separator.css};
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
-  justify-content: ${({ theme }) => theme.suggestionsItem.justifyContent};
-  height: ${({ theme }) => theme.suggestionsProvider.container.itemHeight};
-  ${({ theme }) => theme.suggestionsItem.extra}
+  justify-content: center;
+  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  ${({ theme }) => theme.messageInput.suggestions.item.css};
 `;
 
 export class SuggestionsProvider extends React.PureComponent {
