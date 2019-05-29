@@ -35,8 +35,10 @@ const user = server.USER || 'billowing-firefly-8';
 const chatClient = new StreamChat(apiKey);
 
 const theme = {
-  avatarImage: {
-    size: 32,
+  avatar: {
+    image: {
+      size: 32,
+    },
   },
   colors: {
     primary: 'blue',

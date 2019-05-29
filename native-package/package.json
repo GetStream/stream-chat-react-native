@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -56,6 +56,6 @@
     "react-native-document-picker": "^2.3.0",
     "react-native-image-crop-picker": "^0.24.0",
     "react-native-image-picker": "^0.28.1",
-    "stream-chat-react-native-core": "0.1.0"
+    "stream-chat-react-native-core": "0.1.2"
   }
 }
