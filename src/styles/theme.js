@@ -172,9 +172,7 @@ const defaultTheme = {
         maxHeight: 250,
         itemHeight: 50,
       },
-      header: {
-        title: {},
-      },
+      title: {},
       separator: {},
       item: {},
       mention: {
