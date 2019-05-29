@@ -5,6 +5,7 @@ import { themed } from '../../styles/theme';
 import { MessageStatus } from './MessageStatus';
 import { MessageContent } from './MessageContent';
 import { MessageAvatar } from './MessageAvatar';
+import PropTypes from 'prop-types';
 
 const Container = styled.View`
   display: flex;
@@ -18,7 +19,20 @@ const Container = styled.View`
 
 export const MessageSimple = themed(
   class MessageSimple extends React.PureComponent {
+    static propTypes = {
+      /** enabled reactions, this is usually set by the parent component based on channel configs */
+      reactionsEnabled: PropTypes.bool.isRequired,
+      /** enabled replies, this is usually set by the parent component based on channel configs */
+      repliesEnabled: PropTypes.bool.isRequired,
+    };
+
+    static defaultProps = {
+      reactionsEnabled: true,
+      repliesEnabled: true,
+    };
+
     static themePath = 'messageSimple';
+
     render() {
       const { message, isMyMessage, groupStyles } = this.props;
       const pos = isMyMessage(message) ? 'right' : 'left';
