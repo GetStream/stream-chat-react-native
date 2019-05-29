@@ -10,7 +10,7 @@ const Wrapper = styled.TouchableOpacity`
   z-index: 90;
   height: ${({ height }) => height};
   width: 100%;
-  ${({ theme }) => theme.suggestionsProvider.wrapper.css}
+  ${({ theme }) => theme.messageInput.suggestions.wrapper.css}
 `;
 
 const Container = styled.View`
@@ -30,25 +30,25 @@ const Container = styled.View`
       length * theme.messageInput.suggestions.container.itemHeight,
       theme.messageInput.suggestions.container.maxHeight,
     )};
-  ${({ theme }) => theme.messageInput.suggestions.container.css}
+  ${({ theme }) => theme.messageInput.suggestions.container.css};
 `;
 
 const Title = styled.Text`
   padding: 10px;
   font-weight: bold;
   height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
-  ${({ theme }) => theme.messageInput.suggestions.title.css}
+  ${({ theme }) => theme.messageInput.suggestions.title.css};
 `;
 
 const Separator = styled.View`
   height: 0;
-  ${({ theme }) => theme.messageInput.suggestions.separator.css}
+  ${({ theme }) => theme.messageInput.suggestions.separator.css};
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
   justify-content: center;
   height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
-  ${({ theme }) => theme.messageInput.suggestions.item.css}
+  ${({ theme }) => theme.messageInput.suggestions.item.css};
 `;
 
 export class SuggestionsProvider extends React.PureComponent {

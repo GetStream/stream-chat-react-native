@@ -43,7 +43,7 @@ const TextContainer = styled.View`
 
 export const MessageText = ({
   message,
-  groupStyles,
+  groupStyles = ['bottom'],
   isMyMessage = () => false,
 }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
