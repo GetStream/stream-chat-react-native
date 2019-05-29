@@ -6,12 +6,10 @@ import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
 const Container = styled.View`
-  flex-direction: ${({ theme }) =>
-    theme.attachment.actions.container.flexDirection};
-  justify-content: ${({ theme }) =>
-    theme.attachment.actions.container.justifyContent};
-  padding: ${({ theme }) => theme.attachment.actions.container.padding}px;
-  ${({ theme }) => theme.attachment.actions.container.extra}
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px;
+  ${({ theme }) => theme.message.actions.container.css}
 `;
 
 const Button = styled(({ buttonStyle, ...rest }) => (
@@ -19,29 +17,27 @@ const Button = styled(({ buttonStyle, ...rest }) => (
 ))`
   background-color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.button.primaryBackgroundColor
-      : theme.attachment.actions.button.defaultBackgroundColor};
+      ? theme.message.actions.button.primaryBackgroundColor
+      : theme.message.actions.button.defaultBackgroundColor};
   border-color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.button.primaryBorderColor
-      : theme.attachment.actions.button.defaultBorderColor};
-  border-width: ${({ theme }) => theme.attachment.actions.button.borderWidth};
-  border-radius: ${({ theme }) => theme.attachment.actions.button.borderRadius};
-  padding-top: ${({ theme }) => theme.attachment.actions.button.paddingTop}px;
-  padding-bottom: ${({ theme }) =>
-    theme.attachment.actions.button.paddingBottom}px;
-  padding-left: ${({ theme }) => theme.attachment.actions.button.paddingLeft}px;
-  padding-right: ${({ theme }) =>
-    theme.attachment.actions.button.paddingRight}px;
-  ${({ theme }) => theme.attachment.actions.button.extra}
+      ? theme.message.actions.button.primaryBorderColor
+      : theme.message.actions.button.defaultBorderColor};
+  border-width: 1;
+  border-radius: 20;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  ${({ theme }) => theme.message.actions.button.css}
 `;
 
 const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
   color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
-      ? theme.attachment.actions.buttonText.primaryColor
-      : theme.attachment.actions.buttonText.defaultColor};
-  ${({ theme }) => theme.attachment.actions.buttonText.extra}
+      ? theme.message.actions.buttonText.primaryColor
+      : theme.message.actions.buttonText.defaultColor};
+  ${({ theme }) => theme.message.actions.buttonText.css}
 `;
 
 /**
@@ -52,7 +48,7 @@ const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
  */
 export const AttachmentActions = themed(
   class AttachmentActions extends React.PureComponent {
-    static themePath = 'attachment.actions';
+    static themePath = 'message.actions';
     static propTypes = {
       // /** The id of the form input */
       // id: PropTypes.string.isRequired,

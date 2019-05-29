@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import { WithProgressIndicator } from './WithProgressIndicator';
+import { UploadProgressIndicator } from './UploadProgressIndicator';
 import PropTypes from 'prop-types';
 import { FileState, ProgressIndicatorTypes } from '../utils';
 import styled from '@stream-io/styled-components';
@@ -9,64 +9,46 @@ import { themed } from '../styles/theme';
 import closeRound from '../images/icons/close-round.png';
 
 const Container = styled.View`
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.height};
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.display};
-  padding: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.container.padding}px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.container.extra};
+  height: 70;
+  display: flex;
+  padding: 10px;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.container.css};
 `;
 
 const ItemContainer = styled.View`
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.display};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.height};
-  flex-direction: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.flexDirection};
-  align-items: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.alignItems};
-  margin-left: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.itemContainer.marginLeft};
-  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.extra};
+  display: flex;
+  height: 50;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-left: 5;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
 `;
 
 const Dismiss = styled.TouchableOpacity`
-  position: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.position};
-  top: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.top};
-  right: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.right};
-  background-color: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.backgroundColor};
-  width: ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.width};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.height};
-  display: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.display};
-  align-items: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.alignItems};
-  justify-content: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.justifyContent};
-  border-radius: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismiss.borderRadius};
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.extra};
+  position: absolute;
+  top: 5;
+  right: 5;
+  background-color: #fff;
+  width: 20;
+  height: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
 `;
 
 const Upload = styled.Image`
-  width: ${({ theme }) => theme.messageInput.imageUploadPreview.upload.width};
-  height: ${({ theme }) => theme.messageInput.imageUploadPreview.upload.height};
-  border-radius: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.upload.borderRadius};
-  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.extra};
+  width: 50;
+  height: 50;
+  border-radius: 10;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
 `;
 
 const DismissImage = styled.Image`
-  width: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismissImage.width};
-  height: ${({ theme }) =>
-    theme.messageInput.imageUploadPreview.dismissImage.height};
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.extra};
+  width: 10;
+  height: 10;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
 `;
 
 /**
@@ -100,7 +82,7 @@ export const ImageUploadPreview = themed(
       return (
         <React.Fragment>
           <ItemContainer>
-            <WithProgressIndicator
+            <UploadProgressIndicator
               active={item.state !== FileState.UPLOADED}
               type={type}
               action={retryUpload && retryUpload.bind(this, item.id)}
@@ -109,7 +91,7 @@ export const ImageUploadPreview = themed(
                 resizeMode="cover"
                 source={{ uri: item.url || item.file.uri }}
               />
-            </WithProgressIndicator>
+            </UploadProgressIndicator>
             <Dismiss
               onPress={() => {
                 this.props.removeImage(item.id);

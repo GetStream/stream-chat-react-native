@@ -4,7 +4,6 @@ import moment from 'moment';
 import { MessageContentContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
-import { REACTION_PICKER_HEIGHT } from '../../styles/styles.js';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
@@ -16,70 +15,57 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 
 const Container = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.messageContent.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.container.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.container.maxWidth};
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftAlignItems
-      : theme.messageContent.container.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.container.leftJustifyContent
-      : theme.messageContent.container.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.container.extra}
+  display: flex;
+  flex-direction: column;
+  max-width: 250;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  ${({ theme }) => theme.message.content.container.css};
 `;
 
 const ContainerInner = styled.View`
-  align-items: ${({ theme }) => theme.messageContent.containerInner.alignItems};
-  ${({ theme }) => theme.messageContent.containerInner.extra}
+  align-items: flex-end;
+  ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
 const MetaContainer = styled.View`
-  margin-top: ${({ theme }) => theme.messageContent.metaContainer.marginTop};
-  ${({ theme }) => theme.messageContent.metaContainer.extra}
+  margin-top: 2;
+  ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
 const MetaText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.metaText.fontSize};
-  color: ${({ theme }) => theme.messageContent.metaText.color};
-  text-align: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.metaText.leftTextAlign
-      : theme.messageContent.metaText.rightTextAlign};
-  ${({ theme }) => theme.messageContent.metaText.extra}
+  font-size: 11;
+  color: ${({ theme }) => theme.colors.textGrey};
+  text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
+  ${({ theme }) => theme.message.content.metaText.css};
 `;
 
 const DeletedContainer = styled.View`
-  display: ${({ theme }) => theme.messageContent.deletedContainer.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageContent.deletedContainer.flexDirection};
-  max-width: ${({ theme }) => theme.messageContent.deletedContainer.maxWidth};
-  padding: ${({ theme }) => theme.messageContent.deletedContainer.padding}px;
-  align-items: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftAlignItems
-      : theme.messageContent.deletedContainer.rightAlignItems};
-  justify-content: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.messageContent.deletedContainer.leftJustifyContent
-      : theme.messageContent.deletedContainer.rightJustifyContent};
-  ${({ theme }) => theme.messageContent.deletedContainer.extra}
+  display: flex;
+  flex-direction: column;
+  max-width: 250;
+  padding: 5px;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  ${({ theme }) => theme.message.content.deletedContainer.css};
 `;
 
 const DeletedText = styled.Text`
-  font-size: ${({ theme }) => theme.messageContent.deletedText.fontSize};
-  line-height: ${({ theme }) => theme.messageContent.deletedText.lineHeight};
-  color: ${({ theme }) => theme.messageContent.deletedText.color};
-  ${({ theme }) => theme.messageContent.deletedText.extra}
+  font-size: 15;
+  line-height: 20;
+  color: #a4a4a4;
+  ${({ theme }) => theme.message.content.deletedText.css};
 `;
 
 const FailedText = styled.Text``;
 
 export const MessageContent = themed(
   class MessageContent extends React.PureComponent {
-    static themePath = 'messageContent';
+    static themePath = 'message.content';
     constructor(props) {
       super(props);
 
@@ -114,7 +100,7 @@ export const MessageContent = themed(
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
           reactionPickerVisible: true,
-          rpTop: y - REACTION_PICKER_HEIGHT,
+          rpTop: y - 70,
           rpLeft: pos === 'left' ? x : null,
           rpRight:
             pos === 'right'

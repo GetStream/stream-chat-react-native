@@ -5,22 +5,22 @@ import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
 const Container = styled.View`
-  flex-direction: ${({ theme }) => theme.mentionsItem.container.flexDirection};
-  align-items: ${({ theme }) => theme.mentionsItem.container.alignItems};
+  flex-direction: row;
+  align-items: center;
   padding: 10px;
-  ${({ theme }) => theme.mentionsItem.container.extra}
+  ${({ theme }) => theme.messageInput.suggestions.mention.container.css}
 `;
 
 const Name = styled.Text`
-  padding: ${({ theme }) => theme.mentionsItem.name.padding}px;
-  color: ${({ theme }) => theme.mentionsItem.name.color};
-  font-weight: ${({ theme }) => theme.mentionsItem.name.fontWeight};
-  ${({ theme }) => theme.mentionsItem.name.extra}
+  padding: 10px;
+  color: black;
+  font-weight: bold;
+  ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
 export const MentionsItem = themed(
   class MentionsItem extends React.Component {
-    static themePath = 'mentionsItem';
+    static themePath = 'messageInput.suggestions.mention';
     render() {
       const {
         item: { name, icon, id },

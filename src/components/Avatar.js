@@ -7,14 +7,14 @@ import { themed } from '../styles/theme';
 const AvatarContainer = styled.View`
   display: flex;
   align-items: center;
-  ${({ theme }) => theme.avatar.container.extra}
+  ${({ theme }) => theme.avatar.container.css}
 `;
 
 const AvatarImage = styled.Image`
   border-radius: ${({ size }) => size / 2};
   width: ${({ size }) => size};
   height: ${({ size }) => size};
-  ${({ theme }) => theme.avatar.image.extra}
+  ${({ theme }) => theme.avatar.image.css}
 `;
 
 const AvatarFallback = styled.View`
@@ -22,17 +22,17 @@ const AvatarFallback = styled.View`
   width: ${({ size }) => size};
   height: ${({ size }) => size};
   background-color: ${({ theme }) => theme.colors.primary};
-  justify-content: ${({ theme }) => theme.avatar.fallback.justifyContent};
-  align-items: ${({ theme }) => theme.avatar.fallback.alignItems};
-  ${({ theme }) => theme.avatar.fallback.extra}
+  justify-content: center;
+  align-items: center;
+  ${({ theme }) => theme.avatar.fallback.css}
 `;
 
 const AvatarText = styled.Text`
-  color: ${({ theme }) => theme.avatar.text.color};
-  text-transform: ${({ theme }) => theme.avatar.text.textTransform};
-  font-size: ${({ theme }) => theme.avatar.text.fontSize};
-  font-weight: ${({ theme }) => theme.avatar.text.fontWeight};
-  ${({ theme }) => theme.avatar.text.extra}
+  color: ${({ theme }) => theme.colors.textLight};
+  text-transform: uppercase;
+  font-size: 14;
+  font-weight: bold;
+  ${({ theme }) => theme.avatar.text.css}
 `;
 
 /**
@@ -49,8 +49,6 @@ export const Avatar = themed(
       image: PropTypes.string,
       /** name of the picture, used for title tag fallback */
       name: PropTypes.string,
-      /** shape of the avatar, circle, rounded or square */
-      shape: PropTypes.oneOf(['circle', 'rounded', 'square']),
       /** size in pixels */
       size: PropTypes.number,
       /** Style overrides */
@@ -58,7 +56,6 @@ export const Avatar = themed(
     };
 
     static defaultProps = {
-      shape: 'circle',
       size: 32,
     };
 

@@ -5,15 +5,14 @@ import { Image } from 'react-native';
 import closeRound from '../images/icons/close-round.png';
 
 const Container = styled.View`
-  width: ${({ theme }) => theme.closeButton.container.width};
-  height: ${({ theme }) => theme.closeButton.container.height};
-  border-radius: ${({ theme }) => theme.closeButton.container.borderRadius};
-  align-items: ${({ theme }) => theme.closeButton.container.alignItems};
-  justify-content: ${({ theme }) => theme.closeButton.container.justifyContent};
-  background-color: ${({ theme }) =>
-    theme.closeButton.container.backgroundColor};
-  border: ${({ theme }) => theme.closeButton.container.border};
-  ${({ theme }) => theme.closeButton.container.extra}
+  width: 30;
+  height: 30;
+  border-radius: 3;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  ${({ theme }) => theme.closeButton.container.css}
 `;
 
 export const CloseButton = themed(

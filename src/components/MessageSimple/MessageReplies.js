@@ -4,25 +4,23 @@ import styled from '@stream-io/styled-components';
 import iconPath from '../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: ${({ theme }) => theme.messageReplies.container.padding}px;
-  flex-direction: ${({ theme }) =>
-    theme.messageReplies.container.flexDirection};
-  align-items: ${({ theme }) => theme.messageReplies.container.alignItems};
-  ${({ theme }) => theme.messageReplies.container.extra}
+  padding: 5px;
+  flex-direction: row;
+  align-items: center;
+  ${({ theme }) => theme.message.replies.container.css}
 `;
 
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
-  font-weight:  ${({ theme }) =>
-    theme.messageReplies.messageRepliesText.fontWeight}
-  font-size:  ${({ theme }) => theme.messageReplies.messageRepliesText.fontSize}
-  ${({ theme }) => theme.messageReplies.messageRepliesText.extra}
+  font-weight: 700;
+  font-size: 12;
+  ${({ theme }) => theme.message.replies.messageRepliesText.css}
 `;
 
 const MessageRepliesImage = styled.Image`
   transform: ${({ pos }) =>
     pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
-  ${({ theme }) => theme.messageReplies.image.extra}
+  ${({ theme }) => theme.message.replies.image.css}
 `;
 
 export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {

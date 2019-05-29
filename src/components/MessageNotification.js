@@ -4,14 +4,21 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
 const Container = styled.TouchableOpacity`
-  display: ${({ theme }) => theme.messageNotification.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.messageNotification.container.flexDirection};
-  align-items: ${({ theme }) => theme.messageNotification.container.alignItems};
-  z-index: ${({ theme }) => theme.messageNotification.container.zIndex};
-  margin-bottom: ${({ theme }) =>
-    theme.messageNotification.container.marginBottom};
-  ${({ theme }) => theme.messageNotification.container.extra}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 10;
+  margin-bottom: 0;
+  border-radius: 10;
+  background-color: black;
+  color: white;
+  padding: 10px;
+  ${({ theme }) => theme.messageList.messageNotification.css}
+`;
+
+const MessageNotificationText = styled.Text`
+  color: white;
+  ${({ theme }) => theme.messageList.messageNotificationText.css}
 `;
 
 export class MessageNotification extends PureComponent {
@@ -63,7 +70,7 @@ export class MessageNotification extends PureComponent {
           }}
         >
           <Container onPress={this.props.onClick} onClick={this.props.onClick}>
-            {this.props.children}
+            <MessageNotificationText>New Messages ↓</MessageNotificationText>
           </Container>
         </Animated.View>
       );

@@ -13,35 +13,33 @@ import { Gallery } from './Gallery';
 import { withMessageContentContext } from '../context';
 
 const FileContainer = styled.View`
-  display: ${({ theme }) => theme.attachment.file.container.display};
-  flex-direction: ${({ theme }) =>
-    theme.attachment.file.container.flexDirection};
-  align-items: ${({ theme }) => theme.attachment.file.container.alignItems};
-  background-color: ${({ theme }) =>
-    theme.attachment.file.container.backgroundColor};
-  padding: ${({ theme }) => theme.attachment.file.container.padding}px;
-  border-radius: ${({ theme }) => theme.attachment.file.container.borderRadius};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.attachment.file.container.borderRadius : 2};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.attachment.file.container.borderRadius : 2};
-  ${({ theme }) => theme.attachment.file.container.extra}
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: #ebebeb;
+  padding: 10px;
+  border-radius: 16;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
+  ${({ theme }) => theme.message.file.container.css}
 `;
 
 const FileDetails = styled.View`
-  display: ${({ theme }) => theme.attachment.file.details.display};
-  flex-direction: ${({ theme }) => theme.attachment.file.details.flexDirection};
-  padding-left: ${({ theme }) => theme.attachment.file.details.paddingLeft}px;
-  ${({ theme }) => theme.attachment.file.details.extra}
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  ${({ theme }) => theme.message.file.details.css}
 `;
 
 const FileTitle = styled.Text`
-  font-weight: ${({ theme }) => theme.attachment.file.title.fontWeight};
-  ${({ theme }) => theme.attachment.file.title.extra}
+  font-weight: 700;
+  ${({ theme }) => theme.message.file.title.css}
 `;
 
 const FileSize = styled.Text`
-  ${({ theme }) => theme.attachment.file.size.extra}
+  ${({ theme }) => theme.message.file.size.css}
 `;
 
 /**

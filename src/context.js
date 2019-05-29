@@ -7,8 +7,6 @@ export function withChatContext(OriginalComponent) {
     ChatContext,
     OriginalComponent,
   );
-  ContextAwareComponent.themePath = OriginalComponent.themePath;
-
   return ContextAwareComponent;
 }
 
@@ -19,8 +17,6 @@ export function withChannelContext(OriginalComponent) {
     ChannelContext,
     OriginalComponent,
   );
-  ContextAwareComponent.themePath = OriginalComponent.themePath;
-
   return ContextAwareComponent;
 }
 
@@ -47,6 +43,8 @@ const getContextAwareComponent = function(context, originalComponent) {
     );
   };
 
+  ContextAwareComponent.themePath = OriginalComponent.themePath;
+  ContextAwareComponent.extraThemePaths = OriginalComponent.extraThemePaths;
   ContextAwareComponent.displayName =
     OriginalComponent.displayName || OriginalComponent.name || 'Component';
   ContextAwareComponent.displayName = ContextAwareComponent.displayName.replace(

@@ -9,32 +9,30 @@ import styled from '@stream-io/styled-components';
 import { makeImageCompatibleUrl } from '../utils';
 
 const Container = styled.TouchableOpacity`
-  border-top-left-radius: ${({ theme }) =>
-    theme.card.container.borderTopLeftRadius};
-  border-top-right-radius: ${({ theme }) =>
-    theme.card.container.borderTopRightRadius};
-  overflow: ${({ theme }) => theme.card.container.overflow};
-  border-bottom-left-radius: ${({ theme, alignment }) =>
-    alignment === 'right' ? theme.card.container.borderBottomLeftRadius : 2};
-  border-bottom-right-radius: ${({ theme, alignment }) =>
-    alignment === 'left' ? theme.card.container.borderBottomRightRadius : 2};
-  background-color: ${({ theme }) => theme.card.container.backgroundColor};
-  width: ${({ theme }) => theme.card.container.width};
-  ${({ theme }) => theme.card.container.extra}
+  border-top-left-radius: 16;
+  border-top-right-radius: 16;
+  overflow: hidden;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2};
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2};
+  background-color: ${({ theme }) => theme.colors.light};
+  width: 250;
+  ${({ theme }) => theme.message.card.container.css}
 `;
 
 const Footer = styled.View`
-  display: ${({ theme }) => theme.card.footer.display};
-  flex-direction: ${({ theme }) => theme.card.footer.flexDirection};
-  justify-content: ${({ theme }) => theme.card.footer.justifyContent};
-  padding: ${({ theme }) => theme.card.footer.padding}px;
-  ${({ theme }) => theme.card.footer.extra}
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 10px;
+  ${({ theme }) => theme.message.card.footer.css}
 `;
 
 const Cover = styled.Image`
-  display: ${({ theme }) => theme.card.cover.display};
-  height: ${({ theme }) => theme.card.cover.height};
-  ${({ theme }) => theme.card.cover.extra}
+  display: flex;
+  height: 150;
+  ${({ theme }) => theme.message.card.cover.css}
 `;
 
 export const Card = withMessageContentContext(
