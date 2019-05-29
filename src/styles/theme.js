@@ -208,13 +208,8 @@ const defaultTheme = {
   },
 };
 
-const buildTheme = (t) => {
-  const theme = merge({}, defaultTheme, t);
-  return theme;
-};
-
 const themed = (OriginalComponent) => {
-  if (!OriginalComponent.themePath) {
+  if (OriginalComponent.themePath == null) {
     throw Error('Only use themed on components that have a static themePath');
   }
   const ThemedComponent = ({ style, ...props }) => (
@@ -289,16 +284,19 @@ function getDisplayName(WrappedComponent) {
 const formatDefaultTheme = (component) => {
   const path = component.themePath;
   const extraThemePaths = component.extraThemePaths || [];
-  const themes = merge({}, lodashGet(defaultTheme, path));
-  for (let i = 0; i < extraThemePaths.length; i++) {
-    merge(
-      themes,
-      lodashSet(
-        {},
-        extraThemePaths[i],
-        lodashGet(defaultTheme, extraThemePaths[i]),
-      ),
-    );
+  let themes = defaultTheme;
+  if (path !== '') {
+    themes = merge({}, lodashGet(defaultTheme, path));
+    for (let i = 0; i < extraThemePaths.length; i++) {
+      merge(
+        themes,
+        lodashSet(
+          {},
+          extraThemePaths[i],
+          lodashGet(defaultTheme, extraThemePaths[i]),
+        ),
+      );
+    }
   }
 
   return (
@@ -311,4 +309,4 @@ const formatDefaultTheme = (component) => {
     </div>
   );
 };
-export { themed, buildTheme, formatDefaultTheme };
+export { themed, formatDefaultTheme };

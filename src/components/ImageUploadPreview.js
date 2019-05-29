@@ -109,7 +109,7 @@ export const ImageUploadPreview = themed(
         return null;
 
       return (
-        <Container theme={this.props.theme}>
+        <Container>
           <FlatList
             horizontal
             style={{ flex: 1 }}
