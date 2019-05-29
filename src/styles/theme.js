@@ -247,13 +247,12 @@ const themed = (OriginalComponent) => {
             if (
               lodashGet(defaultTheme, OriginalComponent.themePath + '.' + k)
             ) {
-              lodashSet(
+              merge(
                 themeDiff,
-                OriginalComponent.themePath + '.' + k,
-                style[k],
+                lodashSet({}, OriginalComponent.themePath + '.' + k, style[k]),
               );
             } else if (lodashGet(defaultTheme, k)) {
-              lodashSet(themeDiff, k, style[k]);
+              merge(themeDiff, lodashSet({}, k, style[k]));
             } else {
               throw Error(`Unknown theme key ${k}`);
             }
