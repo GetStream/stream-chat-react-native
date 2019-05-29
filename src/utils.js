@@ -4,7 +4,7 @@ import { truncate } from 'lodash-es';
 import { MentionsItem } from './components/MentionsItem';
 import { CommandsItem } from './components/CommandsItem';
 
-import Markdown from 'react-native-simple-markdown';
+import Markdown from '@stream-io/react-native-simple-markdown';
 
 export const renderText = (message) => {
   // take the @ mentions and turn them into markdown?
@@ -174,4 +174,11 @@ export const MESSAGE_ACTIONS = {
   delete: 'delete',
   reactions: 'reactions',
   reply: 'reply',
+};
+
+export const makeImageCompatibleUrl = (url) => {
+  let newUrl = url;
+  if (url.indexOf('//') === 0) newUrl = 'https:' + url;
+
+  return newUrl;
 };

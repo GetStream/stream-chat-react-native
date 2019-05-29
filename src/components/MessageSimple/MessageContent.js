@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dimensions, Text } from 'react-native';
 import moment from 'moment';
+import { MessageContentContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
 import { Attachment } from '../Attachment';
@@ -220,86 +221,93 @@ export const MessageContent = themed(
       if (message.status === 'failed')
         contentProps.onPress = retrySendMessage.bind(this, Immutable(message));
 
+      const context = {
+        onLongPress: options.length > 1 ? this.showActionSheet : null,
+      };
+
       return (
-        <Container {...contentProps}>
-          {message.status === 'failed' ? (
-            <FailedText>Message failed - try again</FailedText>
-          ) : null}
-          {message.latest_reactions && message.latest_reactions.length > 0 && (
-            <ReactionList
-              visible={!this.state.reactionPickerVisible}
-              latestReactions={message.latest_reactions}
-              openReactionSelector={this.openReactionSelector}
-              reactionCounts={message.reaction_counts}
-            />
-          )}
-          {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-          <ContainerInner
-            ref={(o) => (this.messageContainer = o)}
-            collapsable={false}
-          >
-            {hasAttachment &&
-              images.length <= 1 &&
-              message.attachments.map((attachment, index) => (
-                <Attachment
-                  key={`${message.id}-${index}`}
-                  attachment={attachment}
-                  actionHandler={this.props.handleAction}
-                  alignment={this.props.alignment}
+        <MessageContentContext.Provider value={context}>
+          <Container {...contentProps}>
+            {message.status === 'failed' ? (
+              <FailedText>Message failed - try again</FailedText>
+            ) : null}
+            {message.latest_reactions &&
+              message.latest_reactions.length > 0 && (
+                <ReactionList
+                  visible={!this.state.reactionPickerVisible}
+                  latestReactions={message.latest_reactions}
+                  openReactionSelector={this.openReactionSelector}
+                  reactionCounts={message.reaction_counts}
                 />
-              ))}
-            {images.length > 1 && (
-              <Gallery alignment={this.props.alignment} images={images} />
-            )}
-            <MessageText
+              )}
+            {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
+            <ContainerInner
+              ref={(o) => (this.messageContainer = o)}
+              collapsable={false}
+            >
+              {hasAttachment &&
+                images.length <= 1 &&
+                message.attachments.map((attachment, index) => (
+                  <Attachment
+                    key={`${message.id}-${index}`}
+                    attachment={attachment}
+                    actionHandler={this.props.handleAction}
+                    alignment={this.props.alignment}
+                  />
+                ))}
+              {images.length > 1 && (
+                <Gallery alignment={this.props.alignment} images={images} />
+              )}
+              <MessageText
+                message={message}
+                groupStyles={groupStyles}
+                isMyMessage={isMyMessage}
+                disabled={message.status === 'failed'}
+                onMessageTouch={this.onMessageTouch}
+                Message={Message}
+                openThread={this.openThread}
+                handleReaction={handleReaction}
+              />
+            </ContainerInner>
+            <MessageReplies
               message={message}
-              groupStyles={groupStyles}
-              isMyMessage={isMyMessage}
-              disabled={message.status === 'failed'}
-              onMessageTouch={this.onMessageTouch}
-              Message={Message}
+              isThreadList={!!threadList}
               openThread={this.openThread}
-              handleReaction={handleReaction}
+              pos={pos}
             />
-          </ContainerInner>
-          <MessageReplies
-            message={message}
-            isThreadList={!!threadList}
-            openThread={this.openThread}
-            pos={pos}
-          />
 
-          {showTime ? (
-            <MetaContainer>
-              <MetaText alignment={pos}>
-                {moment(message.created_at).format('h:mmA')}
-              </MetaText>
-            </MetaContainer>
-          ) : null}
+            {showTime ? (
+              <MetaContainer>
+                <MetaText alignment={pos}>
+                  {moment(message.created_at).format('h:mmA')}
+                </MetaText>
+              </MetaContainer>
+            ) : null}
 
-          <ActionSheet
-            ref={(o) => {
-              this.ActionSheet = o;
-            }}
-            title={<Text>Choose an action</Text>}
-            options={options.map((o) => o.title)}
-            cancelButtonIndex={0}
-            destructiveButtonIndex={0}
-            onPress={(index) => this.onActionPress(options[index].id)}
-          />
-          <ReactionPicker
-            reactionPickerVisible={this.state.reactionPickerVisible}
-            handleReaction={handleReaction}
-            latestReactions={message.latest_reactions}
-            reactionCounts={message.reaction_counts}
-            handleDismiss={() => {
-              this.setState({ reactionPickerVisible: false });
-            }}
-            rpLeft={this.state.rpLeft}
-            rpRight={this.state.rpRight}
-            rpTop={this.state.rpTop}
-          />
-        </Container>
+            <ActionSheet
+              ref={(o) => {
+                this.ActionSheet = o;
+              }}
+              title={<Text>Choose an action</Text>}
+              options={options.map((o) => o.title)}
+              cancelButtonIndex={0}
+              destructiveButtonIndex={0}
+              onPress={(index) => this.onActionPress(options[index].id)}
+            />
+            <ReactionPicker
+              reactionPickerVisible={this.state.reactionPickerVisible}
+              handleReaction={handleReaction}
+              latestReactions={message.latest_reactions}
+              reactionCounts={message.reaction_counts}
+              handleDismiss={() => {
+                this.setState({ reactionPickerVisible: false });
+              }}
+              rpLeft={this.state.rpLeft}
+              rpRight={this.state.rpRight}
+              rpTop={this.state.rpTop}
+            />
+          </Container>
+        </MessageContentContext.Provider>
       );
     }
   },
