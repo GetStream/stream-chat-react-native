@@ -283,28 +283,34 @@ function getDisplayName(WrappedComponent) {
 const formatDefaultTheme = (component) => {
   const path = component.themePath;
   const extraThemePaths = component.extraThemePaths || [];
-  let themes = defaultTheme;
+  let mainTheme = defaultTheme;
+  let mainThemeText = '';
   if (path !== '') {
-    themes = merge({}, lodashGet(defaultTheme, path));
-    for (let i = 0; i < extraThemePaths.length; i++) {
-      merge(
-        themes,
-        lodashSet(
-          {},
-          extraThemePaths[i],
-          lodashGet(defaultTheme, extraThemePaths[i]),
-        ),
-      );
-    }
+    mainTheme = merge({}, lodashGet(defaultTheme, path));
+    mainThemeText = `The path for this component in the full theme is "${path}" with the following styles:\n`;
   }
+
+  const extraThemes = {};
+  for (let i = 0; i < extraThemePaths.length; i++) {
+    lodashSet(
+      extraThemes,
+      extraThemePaths[i],
+      lodashGet(defaultTheme, extraThemePaths[i]),
+    );
+  }
+
+  const extraThemeText =
+    extraThemePaths.length === 0
+      ? ''
+      : `\n\nSome other items from the full theme that might be useful to set on this component:\n${JSON.stringify(
+          extraThemes,
+          null,
+          2,
+        )}`;
 
   return (
     <div style={{ whiteSpace: 'pre-wrap' }}>
-      {`The path for this component in the full theme is "${path}" with the following styles:\n${JSON.stringify(
-        themes,
-        null,
-        2,
-      )}`}
+      {`${mainThemeText}${JSON.stringify(mainTheme, null, 2)}${extraThemeText}`}
     </div>
   );
 };
