@@ -306,28 +306,28 @@ export const MessageContent = themed(
             ) : null}
 
             {reactionsEnabled ? (
-              <ActionSheet
-                ref={(o) => {
-                  this.ActionSheet = o;
+              <ReactionPicker
+                reactionPickerVisible={this.state.reactionPickerVisible}
+                handleReaction={handleReaction}
+                latestReactions={message.latest_reactions}
+                reactionCounts={message.reaction_counts}
+                handleDismiss={() => {
+                  this.setState({ reactionPickerVisible: false });
                 }}
-                title={<Text>Choose an action</Text>}
-                options={options.map((o) => o.title)}
-                cancelButtonIndex={0}
-                destructiveButtonIndex={0}
-                onPress={(index) => this.onActionPress(options[index].id)}
+                rpLeft={this.state.rpLeft}
+                rpRight={this.state.rpRight}
+                rpTop={this.state.rpTop}
               />
             ) : null}
-            <ReactionPicker
-              reactionPickerVisible={this.state.reactionPickerVisible}
-              handleReaction={handleReaction}
-              latestReactions={message.latest_reactions}
-              reactionCounts={message.reaction_counts}
-              handleDismiss={() => {
-                this.setState({ reactionPickerVisible: false });
+            <ActionSheet
+              ref={(o) => {
+                this.ActionSheet = o;
               }}
-              rpLeft={this.state.rpLeft}
-              rpRight={this.state.rpRight}
-              rpTop={this.state.rpTop}
+              title={<Text>Choose an action</Text>}
+              options={options.map((o) => o.title)}
+              cancelButtonIndex={0}
+              destructiveButtonIndex={0}
+              onPress={(index) => this.onActionPress(options[index].id)}
             />
           </Container>
         </MessageContentContext.Provider>
