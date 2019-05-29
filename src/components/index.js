@@ -9,4 +9,3 @@ export { Thread } from './Thread';
 export { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 export { CloseButton } from './CloseButton';
 export { IconBadge } from './IconBadge';
-export { buildTheme } from '../styles/theme';
