@@ -3,6 +3,8 @@ import { ThemeProvider, ThemeConsumer } from '@stream-io/styled-components';
 import merge from 'lodash/merge';
 import lodashSet from 'lodash/set';
 import lodashGet from 'lodash/get';
+import mapValues from 'lodash/mapValues';
+import isPlainObject from 'lodash/isPlainObject';
 
 export const BASE_FONT_SIZE = 16;
 
@@ -226,6 +228,28 @@ const themed = (OriginalComponent) => {
         let modifiedTheme = themeProviderTheme || defaultTheme;
         if (style) {
           const themeDiff = {};
+          const path = [];
+
+          // replaces
+          // { 'avatar.fallback': 'background-color: red;' }
+          // with
+          // { 'avatar.fallback': { css: 'background-color: red;' } }
+          const replaceCssShorthand = (v) => {
+            if (isPlainObject(v)) {
+              const m = mapValues(v, (v, k) => {
+                path.push(k);
+                return replaceCssShorthand(v);
+              });
+              path.pop();
+              return m;
+            }
+            if (isPlainObject(lodashGet(defaultTheme, path.join('.')))) {
+              return { css: v };
+            }
+            return v;
+          };
+
+          style = replaceCssShorthand(style);
           for (const k in style) {
             if (
               lodashGet(defaultTheme, OriginalComponent.themePath + '.' + k)
