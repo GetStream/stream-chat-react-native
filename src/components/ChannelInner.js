@@ -508,6 +508,7 @@ export class ChannelInner extends PureComponent {
     dismissKeyboard: this.dismissKeyboard,
     markRead: this._markReadThrottled,
 
+    loadMore: this.loadMore,
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,
