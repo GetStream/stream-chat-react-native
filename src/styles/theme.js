@@ -19,7 +19,7 @@ export const Colors = {
   transparent: 'transparent',
 };
 
-const defaultTheme = {
+export const defaultTheme = {
   colors: {
     ...Colors,
   },
@@ -208,7 +208,7 @@ const defaultTheme = {
   },
 };
 
-const themed = (OriginalComponent) => {
+export const themed = (OriginalComponent) => {
   if (OriginalComponent.themePath == null) {
     throw Error('Only use themed on components that have a static themePath');
   }
@@ -247,13 +247,12 @@ const themed = (OriginalComponent) => {
             if (
               lodashGet(defaultTheme, OriginalComponent.themePath + '.' + k)
             ) {
-              lodashSet(
+              merge(
                 themeDiff,
-                OriginalComponent.themePath + '.' + k,
-                style[k],
+                lodashSet({}, OriginalComponent.themePath + '.' + k, style[k]),
               );
             } else if (lodashGet(defaultTheme, k)) {
-              lodashSet(themeDiff, k, style[k]);
+              merge(themeDiff, lodashSet({}, k, style[k]));
             } else {
               throw Error(`Unknown theme key ${k}`);
             }
@@ -281,32 +280,14 @@ function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
-const formatDefaultTheme = (component) => {
-  const path = component.themePath;
-  const extraThemePaths = component.extraThemePaths || [];
-  let themes = defaultTheme;
-  if (path !== '') {
-    themes = merge({}, lodashGet(defaultTheme, path));
-    for (let i = 0; i < extraThemePaths.length; i++) {
-      merge(
-        themes,
-        lodashSet(
-          {},
-          extraThemePaths[i],
-          lodashGet(defaultTheme, extraThemePaths[i]),
-        ),
-      );
-    }
-  }
+export const originalCSS = {};
 
-  return (
-    <div style={{ whiteSpace: 'pre-wrap' }}>
-      {`The path for this component in the full theme is "${path}" with the following styles:\n${JSON.stringify(
-        themes,
-        null,
-        2,
-      )}`}
-    </div>
-  );
-};
-export { themed, formatDefaultTheme };
+export function setOriginalCSS(path, string) {
+  // remove junk at the start and end of the code snippet
+  string = string
+    .split('`')[1]
+    .split('\n')
+    .slice(1, -2)
+    .join('\n');
+  lodashSet(originalCSS, path + '.defaultCSS', string);
+}

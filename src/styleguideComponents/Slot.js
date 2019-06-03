@@ -3,7 +3,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TabButton from 'react-styleguidist/lib/rsg-components/TabButton';
-import { formatDefaultTheme } from '../styles/theme';
+import { defaultTheme, originalCSS } from '../styles/theme';
+import merge from 'lodash/merge';
+import lodashGet from 'lodash/get';
+import lodashSet from 'lodash/set';
+import isPlainObject from 'lodash/isPlainObject';
 
 const StylesButton = (props) => {
   const component = props.module[props.visibleName];
@@ -17,6 +21,69 @@ const StylesTab = (props) => {
   return component && component.themePath != null
     ? formatDefaultTheme(component)
     : null;
+};
+
+const formatDefaultTheme = (component) => {
+  const path = component.themePath;
+  const extraThemePaths = component.extraThemePaths || [];
+  let mainTheme = defaultTheme;
+  let mainThemeText = '';
+  if (path !== '') {
+    mainTheme = merge(
+      {},
+      lodashGet(defaultTheme, path),
+      lodashGet(originalCSS, path),
+    );
+    mainThemeText = `The path for this component in the full theme is "${path}" with the following styles:\n`;
+  }
+
+  console.log(originalCSS);
+  const extraThemes = {};
+  for (let i = 0; i < extraThemePaths.length; i++) {
+    lodashSet(
+      extraThemes,
+      extraThemePaths[i],
+      lodashGet(defaultTheme, extraThemePaths[i]),
+    );
+  }
+
+  const extraThemeText =
+    extraThemePaths.length === 0
+      ? ''
+      : `\n\nSome other items from the full theme that might be useful to set on this component:\n${JSON.stringify(
+          extraThemes,
+          null,
+          2,
+        )}`;
+
+  return (
+    <div style={{ whiteSpace: 'pre-wrap' }}>
+      {mainThemeText}
+      {themeToReact(mainTheme)}
+      {`${extraThemeText}`}
+    </div>
+  );
+};
+
+const themeToReact = (v, k, prefix = '') => {
+  if (!isPlainObject(v)) {
+    return (
+      <div key={k}>
+        {prefix}
+        {k}: {v}
+      </div>
+    );
+  }
+  const children = [];
+  for (const k in v) {
+    children.push(themeToReact(v[k], k, prefix + '  '));
+  }
+  return (
+    <div>
+      {k ? `${prefix}${k}: ` : null}
+      {children}
+    </div>
+  );
 };
 
 export default function Slot(
