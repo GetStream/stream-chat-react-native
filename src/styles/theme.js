@@ -19,7 +19,7 @@ export const Colors = {
   transparent: 'transparent',
 };
 
-const defaultTheme = {
+export const defaultTheme = {
   colors: {
     ...Colors,
   },
@@ -208,7 +208,7 @@ const defaultTheme = {
   },
 };
 
-const themed = (OriginalComponent) => {
+export const themed = (OriginalComponent) => {
   if (OriginalComponent.themePath == null) {
     throw Error('Only use themed on components that have a static themePath');
   }
@@ -280,38 +280,14 @@ function getDisplayName(WrappedComponent) {
   return WrappedComponent.displayName || WrappedComponent.name || 'Component';
 }
 
-const formatDefaultTheme = (component) => {
-  const path = component.themePath;
-  const extraThemePaths = component.extraThemePaths || [];
-  let mainTheme = defaultTheme;
-  let mainThemeText = '';
-  if (path !== '') {
-    mainTheme = merge({}, lodashGet(defaultTheme, path));
-    mainThemeText = `The path for this component in the full theme is "${path}" with the following styles:\n`;
-  }
+export const originalCSS = {};
 
-  const extraThemes = {};
-  for (let i = 0; i < extraThemePaths.length; i++) {
-    lodashSet(
-      extraThemes,
-      extraThemePaths[i],
-      lodashGet(defaultTheme, extraThemePaths[i]),
-    );
-  }
-
-  const extraThemeText =
-    extraThemePaths.length === 0
-      ? ''
-      : `\n\nSome other items from the full theme that might be useful to set on this component:\n${JSON.stringify(
-          extraThemes,
-          null,
-          2,
-        )}`;
-
-  return (
-    <div style={{ whiteSpace: 'pre-wrap' }}>
-      {`${mainThemeText}${JSON.stringify(mainTheme, null, 2)}${extraThemeText}`}
-    </div>
-  );
-};
-export { themed, formatDefaultTheme };
+export function setOriginalCSS(path, string) {
+  // remove junk at the start and end of the code snippet
+  string = string
+    .split('`')[1]
+    .split('\n')
+    .slice(1, -2)
+    .join('\n');
+  lodashSet(originalCSS, path + '.defaultCSS', string);
+}
