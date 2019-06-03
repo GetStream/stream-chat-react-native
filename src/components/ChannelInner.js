@@ -48,6 +48,7 @@ export class ChannelInner extends PureComponent {
       threadLoadingMore: false,
       threadHasMore: true,
       kavEnabled: true,
+      channelHeight: new Animated.Value('100%'),
     };
 
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -530,7 +531,6 @@ export class ChannelInner extends PureComponent {
 
   setRootChannelView = (o) => {
     this.rootChannelView = o;
-    // this.rootChannelView.measureInWindow((x, y, height, width) => { this.initialHeight = height; });
   };
 
   onLayout = ({
@@ -541,7 +541,7 @@ export class ChannelInner extends PureComponent {
     // Not to set initial height again.
     if (!this.initialHeight) {
       this.initialHeight = height;
-      this.setState({ channelHeight: new Animated.Value(this.initialHeight) });
+      this.state.channelHeight.setValue(this.initialHeight);
     }
   };
 
@@ -559,21 +559,25 @@ export class ChannelInner extends PureComponent {
         </View>
       );
     } else {
+      const height = this.initialHeight
+        ? { height: this.state.channelHeight }
+        : {};
       core = (
         <Animated.View
-          style={{ display: 'flex', height: this.state.channelHeight }}
+          style={{ display: 'flex', ...height }}
           onLayout={this.onLayout}
         >
-          <View ref={this.setRootChannelView} collapsable={false} />
-          <ChannelContext.Provider value={this.getContext()}>
-            <SuggestionsProvider
-              handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
-                this.setState({ kavEnabled: trueOrFalse });
-              }}
-            >
-              {this.renderComponent()}
-            </SuggestionsProvider>
-          </ChannelContext.Provider>
+          <View ref={this.setRootChannelView} collapsable={false}>
+            <ChannelContext.Provider value={this.getContext()}>
+              <SuggestionsProvider
+                handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
+                  this.setState({ kavEnabled: trueOrFalse });
+                }}
+              >
+                {this.renderComponent()}
+              </SuggestionsProvider>
+            </ChannelContext.Provider>
+          </View>
         </Animated.View>
       );
     }

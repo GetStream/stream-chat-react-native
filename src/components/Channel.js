@@ -47,9 +47,7 @@ const Channel = withChatContext(
         return <Text>Please select a channel first</Text>;
       }
 
-      // We use a wrapper to make sure the key variable is set.
-      // this ensures that if you sw\itch channel the component is recreated
-      return <ChannelInner {...this.props} key={this.props.channel.cid} />;
+      return <ChannelInner {...this.props} />;
     }
   },
 );
