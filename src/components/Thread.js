@@ -116,6 +116,7 @@ class ThreadInner extends React.PureComponent {
           initialMessage
           threadList
           readOnly
+          groupStyles={['single']}
           Message={this.props.Message}
           {...this.props}
         />
