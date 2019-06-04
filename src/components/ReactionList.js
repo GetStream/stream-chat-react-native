@@ -15,26 +15,17 @@ const TouchableWrapper = styled.TouchableOpacity`
   position: absolute;
   top: -26px;
   z-index: 1000;
-  flex-direction: row;
   ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
-  ${(props) =>
-    props.position === 'left'
-      ? 'justify-content: flex-start;'
-      : 'justify-content: flex-end;'}
 `;
 
 const Container = styled.View`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: -33px;
   height: 24px;
   display: flex;
   flex-direction: row;
   align-items: center;
   padding: 0 5px;
-  border: 1px solid red;
   ${({ theme }) => theme.message.reactionList.container.css}
 `;
 
@@ -79,6 +70,10 @@ const RightCenter = styled.Image`
 const RightEnd = styled.Image`
   width: 14px;
   height: 33px;
+`;
+
+const Reactions = styled.View`
+  flex-direction: row;
 `;
 
 export class ReactionList extends React.PureComponent {
@@ -153,7 +148,7 @@ export class ReactionList extends React.PureComponent {
           )}
         </ImageWrapper>
         <Container visible={visible}>
-          {this._renderReactions(latestReactions)}
+          <Reactions>{this._renderReactions(latestReactions)}</Reactions>
           <ReactionCount>
             {this._getReactionCount(reactionCounts)}
           </ReactionCount>
