@@ -7520,9 +7520,9 @@ stream-buffers@~2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
 
-stream-chat-react-native-core@v0.1.5:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.5.tgz#2d9ce69090925021f82f2bb75b113b52a946eb23"
+stream-chat-react-native-core@v0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.6.tgz#2fb993229af3784a99a22f4ef9f436381a3397a1"
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"

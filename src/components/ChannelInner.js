@@ -102,6 +102,8 @@ export class ChannelInner extends PureComponent {
     );
 
     this._keyboardOpen = false;
+    // Following variable takes care of race condition between keyboardDidHide and keyboardDidShow.
+    this._hidingKeyboardInProgress = false;
   }
 
   static propTypes = {
@@ -167,10 +169,23 @@ export class ChannelInner extends PureComponent {
 
   // TODO: Better to extract following functions to different HOC.
   keyboardDidShow = (e) => {
+    const keyboardHidingInProgressBeforeMeasure = this
+      ._hidingKeyboardInProgress;
     const keyboardHeight = e.endCoordinates.height;
 
     this.rootChannelView.measureInWindow((x, y) => {
+      // In case if keyboard was closed in meanwhile while
+      // this measure function was being executed, then we
+      // should abort further execution and let the event callback
+      // keyboardDidHide proceed.
+      if (
+        !keyboardHidingInProgressBeforeMeasure &&
+        this._hidingKeyboardInProgress
+      )
+        return;
+
       const { height: windowHeight } = Dimensions.get('window');
+
       Animated.timing(this.state.channelHeight, {
         toValue: windowHeight - y - keyboardHeight,
         duration: 500,
@@ -180,11 +195,14 @@ export class ChannelInner extends PureComponent {
   };
 
   keyboardDidHide = () => {
+    this._hidingKeyboardInProgress = true;
     Animated.timing(this.state.channelHeight, {
       toValue: this.initialHeight,
       duration: 500,
-    }).start();
-    this._keyboardOpen = false;
+    }).start(() => {
+      this._hidingKeyboardInProgress = false;
+      this._keyboardOpen = false;
+    });
   };
 
   keyboardWillDismiss = () =>
