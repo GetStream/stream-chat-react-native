@@ -19,10 +19,12 @@ const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
   max-width: 250;
+
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
+  ${({ hasReactions }) => (hasReactions ? 'margin-top: 28px;' : null)}
   ${({ theme }) => theme.message.content.container.css};
 `;
 
@@ -177,6 +179,11 @@ export const MessageContent = themed(
           ? true
           : false;
 
+      const hasReactions =
+        reactionsEnabled &&
+        message.latest_reactions &&
+        message.latest_reactions.length > 0;
+
       const options = [{ id: 'cancel', title: 'Cancel' }];
       const images =
         hasAttachment &&
@@ -234,6 +241,7 @@ export const MessageContent = themed(
         onLongPress: options.length > 1 ? this.showActionSheet : null,
         activeOpacity: 0.7,
         disabled: readOnly,
+        hasReactions,
       };
 
       if (message.status === 'failed')
@@ -253,6 +261,7 @@ export const MessageContent = themed(
               message.latest_reactions &&
               message.latest_reactions.length > 0 && (
                 <ReactionList
+                  position={pos}
                   visible={!this.state.reactionPickerVisible}
                   latestReactions={message.latest_reactions}
                   openReactionSelector={this.openReactionSelector}
