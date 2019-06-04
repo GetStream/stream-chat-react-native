@@ -295,7 +295,11 @@ const MessageList = withChannelContext(
     render() {
       // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
       // https://github.com/facebook/react-native/issues/21196
-      if (this.props.messages && this.props.messages.length === 0) {
+      if (
+        this.props.messages &&
+        this.props.messages.length === 0 &&
+        !this.props.threadList
+      ) {
         return <View style={{ flex: 1 }}>{this.renderEmptyState()}</View>;
       }
 

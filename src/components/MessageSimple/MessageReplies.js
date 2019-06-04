@@ -28,11 +28,15 @@ export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
 
   return (
     <Container onPress={openThread}>
-      {pos === 'left' ? <MessageRepliesImage source={iconPath} /> : null}
+      {pos === 'left' ? (
+        <MessageRepliesImage source={iconPath} pos={pos} />
+      ) : null}
       <MessageRepliesText>
         {message.reply_count} {message.reply_count === 1 ? 'reply' : 'replies'}
       </MessageRepliesText>
-      {pos === 'right' ? <MessageRepliesImage source={iconPath} /> : null}
+      {pos === 'right' ? (
+        <MessageRepliesImage source={iconPath} pos={pos} />
+      ) : null}
     </Container>
   );
 };
