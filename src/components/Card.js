@@ -60,7 +60,7 @@ export const Card = withMessageContentContext(
 
       trimUrl = (url) => {
         let trimmedUrl;
-        if (url !== undefined || url !== null) {
+        if (url !== undefined && url !== null) {
           trimmedUrl = url
             .replace(/^(?:https?:\/\/)?(?:www\.)?/i, '')
             .split('/')[0];
