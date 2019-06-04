@@ -127,6 +127,10 @@ export const MessageContent = themed(
     };
 
     openReactionSelector = async () => {
+      const { readOnly } = this.props;
+
+      if (readOnly) return;
+
       // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
       // So we need to postpone the calculation for reaction picker position
       // until after keyboard is closed completely. To achieve this, we close
