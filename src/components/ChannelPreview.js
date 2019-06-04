@@ -68,6 +68,7 @@ export class ChannelPreview extends PureComponent {
     }
     if (message.deleted_at) {
       latestMessage.text = 'Message deleted';
+      return latestMessage;
     }
 
     if (message.text) {
@@ -75,11 +76,11 @@ export class ChannelPreview extends PureComponent {
     } else {
       if (message.command) {
         latestMessage.text = '/' + message.command;
-      }
-      if (message.attachments.length) {
+      } else if (message.attachments.length) {
         latestMessage.text = '🏙 Attachment...';
+      } else {
+        latestMessage.text = 'Empty message...';
       }
-      latestMessage.text = 'Empty message...';
     }
 
     if (Moment(message.created_at).isSame(new Date(), 'day'))
