@@ -14,7 +14,6 @@ import rightEnd from '../images/reactionlist/right-end.png';
 const TouchableWrapper = styled.TouchableOpacity`
   position: absolute;
   top: -26px;
-  z-index: 1000;
   ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
 `;
 
@@ -25,15 +24,15 @@ const Container = styled.View`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0 5px;
+  padding-left: 5px;
+  padding-right: 5px;
   ${({ theme }) => theme.message.reactionList.container.css}
 `;
 
 const ReactionCount = styled.Text`
   color: white;
-  padding-left: 5px;
-  padding-right: 5px;
   font-size: 12;
+  ${({ reactionCounts }) => (reactionCounts < 10 ? null : 'min-width: 20px;')}
   ${({ theme }) => theme.message.reactionList.reactionCount.css}
 `;
 
@@ -149,7 +148,9 @@ export class ReactionList extends React.PureComponent {
         </ImageWrapper>
         <Container visible={visible}>
           <Reactions>{this._renderReactions(latestReactions)}</Reactions>
-          <ReactionCount>
+          <ReactionCount
+            reactionCounts={this._getReactionCount(reactionCounts)}
+          >
             {this._getReactionCount(reactionCounts)}
           </ReactionCount>
         </Container>
