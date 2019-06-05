@@ -13,7 +13,8 @@ const Container = styled.View`
   align-items: flex-end;
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  margin-bottom: ${({ marginBottom }) => (marginBottom ? 20 : 0)};
+  margin-bottom: ${({ hasMarginBottom, isVeryLastMessage }) =>
+    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0};
   ${({ theme }) => theme.message.container.css}
 `;
 
@@ -36,13 +37,21 @@ export const MessageSimple = themed(
     render() {
       const { message, isMyMessage, groupStyles } = this.props;
       const pos = isMyMessage(message) ? 'right' : 'left';
-      const marginBottom =
+      const isVeryLastMessage =
+        this.props.channel.state.messages[
+          this.props.channel.state.messages.length - 1
+        ].id === message.id;
+      const hasMarginBottom =
         groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
           ? true
           : false;
 
       return (
-        <Container alignment={pos} marginBottom={marginBottom}>
+        <Container
+          alignment={pos}
+          hasMarginBottom={hasMarginBottom}
+          isVeryLastMessage={isVeryLastMessage}
+        >
           {isMyMessage(message) ? (
             <React.Fragment>
               <MessageContent {...this.props} alignment={pos} />

@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
+const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
+const BASE_AVATAR_SIZE = 32;
+
 const AvatarContainer = styled.View`
   display: flex;
   align-items: center;
@@ -30,7 +33,7 @@ const AvatarFallback = styled.View`
 const AvatarText = styled.Text`
   color: ${({ theme }) => theme.colors.textLight};
   text-transform: uppercase;
-  font-size: 14;
+  font-size: ${({ fontSize }) => fontSize};
   font-weight: bold;
   ${({ theme }) => theme.avatar.text.css}
 `;
@@ -80,6 +83,9 @@ export const Avatar = themed(
     render() {
       const { size, name, image } = this.props;
       const initials = this.getInitials(name);
+      const fontSize =
+        BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE);
+
       return (
         <AvatarContainer>
           {image && !this.state.imageError ? (
@@ -92,7 +98,7 @@ export const Avatar = themed(
             />
           ) : (
             <AvatarFallback size={size}>
-              <AvatarText>{initials}</AvatarText>
+              <AvatarText fontSize={fontSize}>{initials}</AvatarText>
             </AvatarFallback>
           )}
         </AvatarContainer>

@@ -153,7 +153,6 @@ export const defaultTheme = {
     attachButton: {},
     attachButtonIcon: {},
     sendButton: {},
-    typing: {},
     imageUploadPreview: {
       container: {},
       itemContainer: {},
@@ -199,11 +198,19 @@ export const defaultTheme = {
       date: {},
       dateText: {},
     },
+    typingIndicatorContainer: {},
   },
 
   thread: {
     newThread: {
       text: {},
+    },
+  },
+
+  typingIndicator: {
+    text: {
+      fontSize: 14,
+      color: Colors.textGrey,
     },
   },
 };

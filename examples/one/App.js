@@ -10,6 +10,7 @@ import {
   Thread,
   ChannelPreviewMessenger,
   CloseButton,
+  TypingIndicator,
 } from 'stream-chat-expo';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -117,6 +118,7 @@ class ChannelScreen extends PureComponent {
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
+                TypingIndicator={TypingIndicator}
                 onThreadSelect={(thread) => {
                   this.props.navigation.navigate('Thread', {
                     thread,

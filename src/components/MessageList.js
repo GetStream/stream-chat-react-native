@@ -34,6 +34,17 @@ const ErrorNotification = styled.View`
   ${({ theme }) => theme.messageList.errorNotification.css}
 `;
 
+const TypingIndicatorContainer = styled.View`
+  position: absolute;
+  bottom: 0;
+  height: 30px;
+  width: 100%;
+  padding-left: 16px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  ${({ theme }) => theme.messageList.typingIndicatorContainer.css}
+`;
+
 const MessageList = withChannelContext(
   class MessageList extends PureComponent {
     constructor(props) {
@@ -57,6 +68,8 @@ const MessageList = withChannelContext(
       disableWhileEditing: PropTypes.bool,
       /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
+      /** Typing indicator component to render  */
+      TypingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {
@@ -303,9 +316,22 @@ const MessageList = withChannelContext(
         return <View style={{ flex: 1 }}>{this.renderEmptyState()}</View>;
       }
 
+      const TypingIndicator = this.props.TypingIndicator;
+
       const messagesWithDates = this.insertDates(this.props.messages);
       const messageGroupStyles = this.getGroupStyles(messagesWithDates);
       messagesWithDates.reverse();
+
+      const typing = Object.values(this.props.typing);
+      let showTypingIndicator;
+      if (
+        typing.length === 0 ||
+        (typing.length === 1 && typing[0].user.id === this.props.client.user.id)
+      ) {
+        showTypingIndicator = false;
+      } else {
+        showTypingIndicator = true;
+      }
 
       return (
         <React.Fragment>
@@ -347,6 +373,14 @@ const MessageList = withChannelContext(
                 autoscrollToTopThreshold: 10,
               }}
             />
+            <TypingIndicatorContainer>
+              {this.props.TypingIndicator && showTypingIndicator && (
+                <TypingIndicator
+                  typing={this.props.typing}
+                  client={this.props.client}
+                />
+              )}
+            </TypingIndicatorContainer>
             {this.state.newMessagesNotification && (
               <MessageNotification
                 showNotification={this.state.newMessagesNotification}

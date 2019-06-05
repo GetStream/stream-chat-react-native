@@ -74,12 +74,6 @@ const SendButton = styled.TouchableOpacity`
   ${({ theme }) => theme.messageInput.sendButton.css}
 `;
 
-const Typing = styled.Text`
-  text-align: right;
-  height: 20;
-  ${({ theme }) => theme.messageInput.typing.css}
-`;
-
 const MessageInput = withSuggestionsContext(
   withChannelContext(
     themed(
@@ -735,12 +729,6 @@ const MessageInput = withSuggestionsContext(
                   </InputBoxContainer>
                 </Container>
               </View>
-
-              <Typing>
-                {this.props.channel.state.typing
-                  ? this.constructTypingString(this.props.channel.state.typing)
-                  : ''}
-              </Typing>
             </React.Fragment>
           );
         }
