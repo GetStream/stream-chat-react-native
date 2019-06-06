@@ -62,6 +62,9 @@ export const defaultTheme = {
       containerInner: {},
       metaContainer: {},
       metaText: {},
+      errorContainer: {
+        backgroundColor: Colors.danger,
+      },
       deletedContainer: {},
       deletedText: {},
     },

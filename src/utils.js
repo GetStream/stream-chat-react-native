@@ -37,6 +37,8 @@ export const renderText = (message) => {
     }
   }
 
+  newText = newText.replace(/[<&"'>]/, '\\$&');
+
   return <Markdown styles={markdownStyles}>{newText}</Markdown>;
 };
 

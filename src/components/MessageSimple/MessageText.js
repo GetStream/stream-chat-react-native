@@ -34,8 +34,8 @@ const TextContainer = styled.View`
     alignment === 'left'
       ? theme.message.text.leftBorderColor
       : theme.message.text.rightBorderColor};
-  background-color: ${({ theme, alignment, status }) =>
-    alignment === 'left' || status === 'error' || status === 'failed'
+  background-color: ${({ theme, alignment, type, status }) =>
+    alignment === 'left' || type === 'error' || status === 'failed'
       ? theme.colors.transparent
       : theme.colors.light};
   ${({ theme }) => theme.message.text.css}
@@ -61,6 +61,7 @@ export const MessageText = ({
         alignment={pos}
         groupStyle={groupStyle}
         status={message.status}
+        type={message.type}
       >
         {renderText(message)}
       </TextContainer>

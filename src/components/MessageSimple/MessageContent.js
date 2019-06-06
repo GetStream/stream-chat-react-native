@@ -15,16 +15,32 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 
+// Border radii are useful for the case of error message types only.
+// Otherwise background is transperant, so border radius is not really visible.
 const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
   max-width: 250;
-
+  padding: ${({ error }) => (error ? 5 : 0)}px;
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ hasReactions }) => (hasReactions ? 'margin-top: 28px;' : null)}
+  background-color: ${({ error, theme }) =>
+    error
+      ? theme.message.content.errorContainer.backgroundColor
+      : theme.colors.transparent};
+  border-bottom-left-radius: ${({ alignment, theme }) =>
+    alignment === 'left'
+      ? theme.message.text.borderRadiusS
+      : theme.message.text.borderRadiusL};
+  border-bottom-right-radius: ${({ alignment, theme }) =>
+    alignment === 'left'
+      ? theme.message.text.borderRadiusL
+      : theme.message.text.borderRadiusS};
+  border-top-left-radius: ${({ theme }) => theme.message.text.borderRadiusL};
+  border-top-right-radius: ${({ theme }) => theme.message.text.borderRadiusL};
   ${({ theme }) => theme.message.content.container.css};
 `;
 
@@ -64,7 +80,10 @@ const DeletedText = styled.Text`
   ${({ theme }) => theme.message.content.deletedText.css};
 `;
 
-const FailedText = styled.Text``;
+const FailedText = styled.Text`
+  color: #a4a4a4;
+  margin-right: 5px;
+`;
 
 export const MessageContent = themed(
   class MessageContent extends React.PureComponent {
@@ -257,7 +276,13 @@ export const MessageContent = themed(
 
       return (
         <MessageContentContext.Provider value={context}>
-          <Container {...contentProps}>
+          <Container
+            {...contentProps}
+            error={message.type === 'error' || message.status === 'failed'}
+          >
+            {message.type === 'error' ? (
+              <FailedText>ERROR · UNSENT</FailedText>
+            ) : null}
             {message.status === 'failed' ? (
               <FailedText>Message failed - try again</FailedText>
             ) : null}
@@ -294,7 +319,9 @@ export const MessageContent = themed(
                 message={message}
                 groupStyles={hasReactions ? ['top'] : groupStyles}
                 isMyMessage={isMyMessage}
-                disabled={message.status === 'failed'}
+                disabled={
+                  message.status === 'failed' || message.type === 'error'
+                }
                 onMessageTouch={this.onMessageTouch}
                 Message={Message}
                 openThread={this.openThread}
