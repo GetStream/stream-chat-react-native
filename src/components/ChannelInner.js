@@ -131,8 +131,10 @@ export class ChannelInner extends PureComponent {
   };
 
   componentDidUpdate(prevProps) {
-    if (this.props.isOnline !== prevProps.isOnline)
+    if (this.props.isOnline !== prevProps.isOnline) {
+      if (this._unmounted) return;
       this.setState({ online: this.props.isOnline });
+    }
   }
 
   async componentDidMount() {
@@ -142,6 +144,7 @@ export class ChannelInner extends PureComponent {
       try {
         await channel.watch();
       } catch (e) {
+        if (this._unmounted) return;
         this.setState({ error: true });
         errored = true;
       }
@@ -239,6 +242,7 @@ export class ChannelInner extends PureComponent {
   copyChannelState() {
     const channel = this.props.channel;
 
+    if (this._unmounted) return;
     this.setState({
       messages: channel.state.messages,
       read: channel.state.read,
@@ -275,6 +279,7 @@ export class ChannelInner extends PureComponent {
     const channel = this.props.channel;
     const threadMessages = channel.state.threads[message.id] || [];
 
+    if (this._unmounted) return;
     this.setState({
       thread: message,
       threadMessages,
@@ -284,6 +289,7 @@ export class ChannelInner extends PureComponent {
   loadMoreThread = async () => {
     // prevent duplicate loading events...
     if (this.state.threadLoadingMore) return;
+    if (this._unmounted) return;
     this.setState({
       threadLoadingMore: true,
     });
@@ -305,6 +311,7 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMoreThreadFinished = (threadHasMore, threadMessages) => {
+    if (this._unmounted) return;
     this.setState({
       threadLoadingMore: false,
       threadHasMore,
@@ -317,6 +324,7 @@ export class ChannelInner extends PureComponent {
       e.preventDefault();
     }
 
+    if (this._unmounted) return;
     this.setState({
       thread: null,
       threadMessages: [],
@@ -324,6 +332,7 @@ export class ChannelInner extends PureComponent {
   };
 
   setEditingState = (message) => {
+    if (this._unmounted) return;
     this.setState({
       editing: message,
     });
@@ -342,10 +351,12 @@ export class ChannelInner extends PureComponent {
       extraState.threadMessages =
         channel.state.threads[updatedMessage.parent_id] || [];
     }
+    if (this._unmounted) return;
     this.setState({ messages: channel.state.messages, ...extraState });
   };
 
   clearEditingState = () => {
+    if (this._unmounted) return;
     this.setState({
       editing: false,
     });
@@ -353,12 +364,14 @@ export class ChannelInner extends PureComponent {
   removeMessage = (message) => {
     const channel = this.props.channel;
     channel.state.removeMessage(message);
+    if (this._unmounted) return;
     this.setState({ messages: channel.state.messages });
   };
 
   removeEphemeralMessages() {
     const c = this.props.channel;
     c.state.selectRegularMessages();
+    if (this._unmounted) return;
     this.setState({ messages: c.state.messages });
   }
 
@@ -465,6 +478,7 @@ export class ChannelInner extends PureComponent {
     if (Object.keys(threadState).length > 0) {
       // TODO: in theory we should do 1 setState call not 2,
       // However the setStateThrottled doesn't support this
+      if (this._unmounted) return;
       this.setState(threadState);
     }
 
@@ -480,6 +494,7 @@ export class ChannelInner extends PureComponent {
   loadMore = async () => {
     // prevent duplicate loading events...
     if (this.state.loadingMore) return;
+    if (this._unmounted) return;
     this.setState({ loadingMore: true });
 
     const oldestID = this.state.messages[0] ? this.state.messages[0].id : null;
@@ -491,6 +506,7 @@ export class ChannelInner extends PureComponent {
       });
     } catch (e) {
       console.warn('message pagination request failed with error', e);
+      if (this._unmounted) return;
       this.setState({ loadingMore: false });
       return;
     }
@@ -500,6 +516,7 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMoreFinished = (hasMore, messages) => {
+    if (this._unmounted) return;
     this.setState({
       loadingMore: false,
       hasMore,
@@ -590,6 +607,7 @@ export class ChannelInner extends PureComponent {
             <ChannelContext.Provider value={this.getContext()}>
               <SuggestionsProvider
                 handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
+                  if (this._unmounted) return;
                   this.setState({ kavEnabled: trueOrFalse });
                 }}
               >

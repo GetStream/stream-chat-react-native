@@ -43,6 +43,7 @@ export const Chat = themed(
       this.setConnectionListener();
 
       this.props.client.on('connection.changed', (event) => {
+        if (this._unmounted) return;
         this.setState({
           isOnline: event.online,
           connectionRecovering: !event.online,
@@ -50,6 +51,7 @@ export const Chat = themed(
       });
 
       this.props.client.on('connection.recovered', () => {
+        if (this._unmounted) return;
         this.setState({ connectionRecovering: false });
       });
 

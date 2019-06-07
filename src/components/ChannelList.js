@@ -93,6 +93,7 @@ const ChannelList = withChatContext(
         trailing: true,
       });
       this.queryActive = false;
+      this._unmounted = false;
     }
 
     isPromise = (thing) => {
@@ -144,6 +145,7 @@ const ChannelList = withChatContext(
       if (resync) {
         offset = 0;
         options.limit = this.state.channels.length;
+        if (this._unmounted) return;
         this.setState({
           offset: 0,
         });
@@ -151,6 +153,7 @@ const ChannelList = withChatContext(
         offset = this.state.offset;
       }
 
+      if (this._unmounted) return;
       this.setState({ refreshing: true });
 
       const channelPromise = this.props.client.queryChannels(filters, sort, {
@@ -167,8 +170,8 @@ const ChannelList = withChatContext(
             this.props.setActiveChannel(channelQueryResponse[0]);
           }
         }
-        if (this._unmounted) return;
 
+        if (this._unmounted) return;
         await this.setState((prevState) => {
           let channels;
           let channelIds;
@@ -201,6 +204,7 @@ const ChannelList = withChatContext(
         });
       } catch (e) {
         console.warn(e);
+
         if (this._unmounted) return;
         this.setState({ error: true, refreshing: false });
       }
@@ -227,7 +231,9 @@ const ChannelList = withChatContext(
         // get channel if not in state currently
         const channel = await this.getChannel(e.channel.type, e.channel.id);
         this.moveChannelUp(e.cid);
+
         // move channel to starting position
+        if (this._unmounted) return;
         this.setState((prevState) => ({
           channels: uniqBy([channel, ...prevState.channels], 'cid'),
           channelIds: uniqWith([channel.id, ...prevState.channelIds], isEqual),
@@ -244,6 +250,8 @@ const ChannelList = withChatContext(
           this.props.onAddedToChannel(e);
         } else {
           const channel = await this.getChannel(e.channel.type, e.channel.id);
+
+          if (this._unmounted) return;
           this.setState((prevState) => ({
             channels: uniqBy([channel, ...prevState.channels], 'cid'),
             channelIds: uniqWith(
@@ -263,6 +271,7 @@ const ChannelList = withChatContext(
         ) {
           this.props.onRemovedFromChannel(e);
         } else {
+          if (this._unmounted) return;
           this.setState((prevState) => {
             const channels = prevState.channels.filter(
               (channel) => channel.cid !== e.channel.cid,
@@ -306,6 +315,7 @@ const ChannelList = withChatContext(
       channels.unshift(channel);
 
       // set new channel state
+      if (this._unmounted) return;
       this.setState({
         channels: [...channels],
       });
