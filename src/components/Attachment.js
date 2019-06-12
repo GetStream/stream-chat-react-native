@@ -18,11 +18,21 @@ const FileContainer = styled.View`
   align-items: center;
   background-color: #ebebeb;
   padding: 10px;
-  border-radius: 16;
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
+  border-radius: ${({ groupStyle }) => {
+    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
+
+    return 16;
+  }};
+  border-bottom-left-radius: ${({ alignment, groupStyle }) => {
+    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
+
+    return alignment === 'right' ? 16 : 2;
+  }};
+  border-bottom-right-radius: ${({ alignment, groupStyle }) => {
+    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
+
+    return alignment === 'left' ? 16 : 2;
+  }};
   ${({ theme }) => theme.message.file.container.css}
 `;
 
@@ -55,6 +65,7 @@ export const Attachment = withMessageContentContext(
       static propTypes = {
         /** The attachment to render */
         attachment: PropTypes.object.isRequired,
+        groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
       };
 
       constructor(props) {
@@ -126,7 +137,10 @@ export const Attachment = withMessageContentContext(
               }}
               onLongPress={this.props.onLongPress}
             >
-              <FileContainer alignment={this.props.alignment}>
+              <FileContainer
+                alignment={this.props.alignment}
+                groupStyle={this.props.groupStyle}
+              >
                 <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
                 <FileDetails>
                   <FileTitle ellipsizeMode="tail" numberOfLines={2}>

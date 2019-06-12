@@ -14,6 +14,7 @@ import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
+import { FileAttachmentGroup } from '../FileAttachmentGroup';
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transperant, so border radius is not really visible.
@@ -212,6 +213,10 @@ export const MessageContent = themed(
         hasAttachment &&
         message.attachments.filter((item) => item.type === 'image');
 
+      const files =
+        hasAttachment &&
+        message.attachments.filter((item) => item.type === 'file');
+
       if (
         messageActions &&
         reactionsEnabled &&
@@ -303,16 +308,28 @@ export const MessageContent = themed(
               collapsable={false}
             >
               {hasAttachment &&
-                images.length <= 1 &&
-                message.attachments.map((attachment, index) => (
-                  <Attachment
-                    key={`${message.id}-${index}`}
-                    attachment={attachment}
-                    actionHandler={this.props.handleAction}
-                    alignment={this.props.alignment}
-                  />
-                ))}
-              {images.length > 1 && (
+                message.attachments.map((attachment, index) => {
+                  // We handle files separately
+                  if (attachment.type === 'file') return null;
+                  if (attachment.type === 'image') return null;
+                  return (
+                    <Attachment
+                      key={`${message.id}-${index}`}
+                      attachment={attachment}
+                      actionHandler={this.props.handleAction}
+                      alignment={this.props.alignment}
+                    />
+                  );
+                })}
+              {files && files.length > 0 && (
+                <FileAttachmentGroup
+                  messageId={message.id}
+                  files={files}
+                  handleAction={this.props.handleAction}
+                  alignment={this.props.alignment}
+                />
+              )}
+              {images && images.length > 0 && (
                 <Gallery alignment={this.props.alignment} images={images} />
               )}
               <MessageText

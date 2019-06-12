@@ -76,6 +76,8 @@ export const Gallery = withMessageContentContext(
       }
 
       render() {
+        if (!this.props.images || this.props.images.length === 0) return null;
+
         const images = [...this.props.images].map((i) => ({
           url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
         }));
