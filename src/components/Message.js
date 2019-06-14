@@ -221,12 +221,18 @@ const Message = withChannelContext(
         message.type === 'regular' && message.status === 'received';
 
       const Component = this.props.Message;
+      const actionProps = {};
+
+      if (this.props.channel && this.props.channel.getConfig()) {
+        actionProps.reactionsEnabled = this.props.channel.getConfig().reactions;
+        actionProps.repliesEnabled = this.props.channel.getConfig().reactions;
+      }
+
       return (
         <TouchableOpacity onPress={this.onMessageTouch} activeOpacity={1}>
           <Component
             {...this.props}
-            reactionsEnabled={this.props.channel.getConfig().reactions}
-            repliesEnabled={this.props.channel.getConfig().replies}
+            {...actionProps}
             actionsEnabled={actionsEnabled}
             Message={this}
             handleReaction={this.handleReaction}
