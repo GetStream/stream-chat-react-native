@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
-import { Spinner } from './spinner';
+import { Spinner } from './Spinner';
 
 const LoadingText = styled.Text`
   margin-top: 20px;
