@@ -259,30 +259,60 @@ const MessageList = withChannelContext(
       this.setState({ lastReceivedId });
     };
 
+    getReadStates = (messages) => {
+      // create object with empty array for each message id
+      const readData = {};
+
+      for (const message of messages) {
+        readData[message.id] = [];
+      }
+
+      for (const readState of Object.values(this.props.read)) {
+        if (readState.last_read == null) {
+          break;
+        }
+        let userLastReadMsgId;
+        for (const msg of messages) {
+          if (msg.updated_at < readState.last_read) {
+            userLastReadMsgId = msg.id;
+          }
+        }
+        if (userLastReadMsgId != null) {
+          readData[userLastReadMsgId] = [
+            ...readData[userLastReadMsgId],
+            readState.user,
+          ];
+        }
+      }
+      return readData;
+    };
+
     renderItem = (message, groupStyles) => {
       if (message.type === 'message.date') {
         const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
+      } else if (message.type !== 'message.read') {
+        const readBy = this.readData[message.id] || [];
+        return (
+          <Message
+            onThreadSelect={this.props.onThreadSelect}
+            message={message}
+            groupStyles={groupStyles}
+            Message={this.props.Message}
+            readBy={readBy}
+            lastReceivedId={
+              this.state.lastReceivedId === message.id
+                ? this.state.lastReceivedId
+                : null
+            }
+            onMessageTouch={this.onMessageTouch}
+            setEditingState={this.props.setEditingState}
+            editing={this.props.editing}
+            threadList={this.props.threadList}
+            messageActions={this.props.messageActions}
+          />
+        );
       }
-
-      return (
-        <Message
-          onThreadSelect={this.props.onThreadSelect}
-          message={message}
-          groupStyles={groupStyles}
-          Message={this.props.Message}
-          lastReceivedId={
-            this.state.lastReceivedId === message.id
-              ? this.state.lastReceivedId
-              : null
-          }
-          onMessageTouch={this.onMessageTouch}
-          setEditingState={this.props.setEditingState}
-          editing={this.props.editing}
-          threadList={this.props.threadList}
-          messageActions={this.props.messageActions}
-        />
-      );
     };
 
     handleScroll = (event) => {
@@ -320,6 +350,7 @@ const MessageList = withChannelContext(
 
       const messagesWithDates = this.insertDates(this.props.messages);
       const messageGroupStyles = this.getGroupStyles(messagesWithDates);
+      this.readData = this.getReadStates(messagesWithDates);
       messagesWithDates.reverse();
 
       const typing = Object.values(this.props.typing);
