@@ -20,11 +20,11 @@ import { YellowBox } from 'react-native';
 YellowBox.ignoreWarnings(['Remote debugger']);
 
 const server = {
-  // API_KEY: 'qk4nn7rpcn75',
-  // TOKEN:
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGhpZXJyeSJ9.EJ6poZ2UbnJJvbCi6ZiImeEPeIoXVEBSdZN_-2YC3t0',
-  // USER: 'thierry',
-  // SERVER_ENDPOINT: 'http://localhost:3030',
+  API_KEY: 'qk4nn7rpcn75',
+  TOKEN:
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGhpZXJyeSJ9.EJ6poZ2UbnJJvbCi6ZiImeEPeIoXVEBSdZN_-2YC3t0',
+  USER: 'thierry',
+  SERVER_ENDPOINT: 'http://localhost:3030',
 };
 
 const apiKey = server.API_KEY || 'qk4nn7rpcn75';
@@ -42,7 +42,13 @@ const theme = {
     },
   },
   colors: {
-    primary: 'blue',
+    primary: 'magenta',
+  },
+  spinner: {
+    css: `
+      width: 15px;
+      height: 15px;
+    `,
   },
 };
 

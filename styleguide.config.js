@@ -93,6 +93,7 @@ module.exports = {
         'src/components/ChatDown.js',
         'src/components/LoadingChannels.js',
         'src/components/Avatar.js',
+        'src/components/Spinner.js',
         'src/components/LoadingIndicator.js',
         'src/components/Image.js',
         'src/components/DateSeparator.js',
