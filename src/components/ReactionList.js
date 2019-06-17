@@ -49,10 +49,15 @@ const LeftTail = styled.Image`
   width: 25px;
   height: 33px;
 `;
-const LeftCenter = styled.Image`
+const LeftCenterContainer = styled.View`
   height: 33px;
   flex: 1;
 `;
+const LeftCenter = styled.Image`
+  height: 33;
+  width: 100%;
+`;
+
 const LeftEnd = styled.Image`
   width: 14px;
   height: 33px;
@@ -62,9 +67,14 @@ const RightTail = styled.Image`
   width: 25px;
   height: 33px;
 `;
-const RightCenter = styled.Image`
+const RightCenterContainer = styled.View`
   height: 33px;
   flex: 1;
+`;
+
+const RightCenter = styled.Image`
+  height: 33;
+  width: 100%;
 `;
 const RightEnd = styled.Image`
   width: 14px;
@@ -135,13 +145,17 @@ export class ReactionList extends React.PureComponent {
           {position === 'left' ? (
             <React.Fragment>
               <LeftTail source={leftTail} />
-              <LeftCenter source={leftCenter} resizeMode="repeat" />
+              <LeftCenterContainer>
+                <LeftCenter source={leftCenter} resizeMode="stretch" />
+              </LeftCenterContainer>
               <LeftEnd source={leftEnd} />
             </React.Fragment>
           ) : (
             <React.Fragment>
               <RightEnd source={rightEnd} />
-              <RightCenter source={rightCenter} resizeMode="repeat" />
+              <RightCenterContainer>
+                <RightCenter source={rightCenter} resizeMode="stretch" />
+              </RightCenterContainer>
               <RightTail source={rightTail} />
             </React.Fragment>
           )}

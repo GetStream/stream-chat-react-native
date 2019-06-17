@@ -37,10 +37,12 @@ export const MessageSimple = themed(
     render() {
       const { message, isMyMessage, groupStyles } = this.props;
       const pos = isMyMessage(message) ? 'right' : 'left';
-      const isVeryLastMessage =
-        this.props.channel.state.messages[
-          this.props.channel.state.messages.length - 1
-        ].id === message.id;
+      const lastMessage = this.props.channel.state.messages[
+        this.props.channel.state.messages.length - 1
+      ];
+      const isVeryLastMessage = lastMessage
+        ? lastMessage.id === message.id
+        : false;
       const hasMarginBottom =
         groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
           ? true
