@@ -12,14 +12,15 @@ import rightCenter from '../images/reactionlist/right-center.png';
 import rightEnd from '../images/reactionlist/right-end.png';
 
 const TouchableWrapper = styled.TouchableOpacity`
-  position: absolute;
-  top: -26px;
+  position: relative;
   ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
+  height: 28px;
+  z-index: 10;
 `;
 
 const Container = styled.View`
   opacity: ${({ visible }) => (visible ? 1 : 0)};
-  top: -33px;
+  z-index: 10;
   height: 24px;
   display: flex;
   flex-direction: row;
@@ -37,11 +38,9 @@ const ReactionCount = styled.Text`
 `;
 
 const ImageWrapper = styled.View`
-  width: 100%;
-  min-width: 42px;
   display: flex;
-  height: 33px;
   flex-direction: row;
+  top: -23px;
   opacity: ${({ visible }) => (visible ? 1 : 0)};
 `;
 
@@ -49,13 +48,10 @@ const LeftTail = styled.Image`
   width: 25px;
   height: 33px;
 `;
-const LeftCenterContainer = styled.View`
-  height: 33px;
-  flex: 1;
-`;
+
 const LeftCenter = styled.Image`
   height: 33;
-  width: 100%;
+  flex: 1;
 `;
 
 const LeftEnd = styled.Image`
@@ -67,15 +63,12 @@ const RightTail = styled.Image`
   width: 25px;
   height: 33px;
 `;
-const RightCenterContainer = styled.View`
-  height: 33px;
-  flex: 1;
-`;
 
 const RightCenter = styled.Image`
   height: 33;
-  width: 100%;
+  flex: 1;
 `;
+
 const RightEnd = styled.Image`
   width: 14px;
   height: 33px;
@@ -141,25 +134,6 @@ export class ReactionList extends React.PureComponent {
         onPress={openReactionSelector}
         activeOpacity={1}
       >
-        <ImageWrapper visible={visible}>
-          {position === 'left' ? (
-            <React.Fragment>
-              <LeftTail source={leftTail} />
-              <LeftCenterContainer>
-                <LeftCenter source={leftCenter} resizeMode="stretch" />
-              </LeftCenterContainer>
-              <LeftEnd source={leftEnd} />
-            </React.Fragment>
-          ) : (
-            <React.Fragment>
-              <RightEnd source={rightEnd} />
-              <RightCenterContainer>
-                <RightCenter source={rightCenter} resizeMode="stretch" />
-              </RightCenterContainer>
-              <RightTail source={rightTail} />
-            </React.Fragment>
-          )}
-        </ImageWrapper>
         <Container visible={visible}>
           <Reactions>{this._renderReactions(latestReactions)}</Reactions>
           <ReactionCount
@@ -168,6 +142,21 @@ export class ReactionList extends React.PureComponent {
             {this._getReactionCount(reactionCounts)}
           </ReactionCount>
         </Container>
+        <ImageWrapper visible={visible}>
+          {position === 'left' ? (
+            <React.Fragment>
+              <LeftTail source={leftTail} />
+              <LeftCenter source={leftCenter} resizeMode="stretch" />
+              <LeftEnd source={leftEnd} />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <RightEnd source={rightEnd} />
+              <RightCenter source={rightCenter} resizeMode="stretch" />
+              <RightTail source={rightTail} />
+            </React.Fragment>
+          )}
+        </ImageWrapper>
       </TouchableWrapper>
     );
   }
