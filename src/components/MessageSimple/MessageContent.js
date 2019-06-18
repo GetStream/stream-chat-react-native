@@ -45,7 +45,8 @@ const Container = styled.TouchableOpacity`
 `;
 
 const ContainerInner = styled.View`
-  align-items: flex-end;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
@@ -303,6 +304,7 @@ export const MessageContent = themed(
               )}
             {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
             <ContainerInner
+              alignment={pos}
               ref={(o) => (this.messageContainer = o)}
               collapsable={false}
             >
