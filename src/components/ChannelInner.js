@@ -184,15 +184,22 @@ export class ChannelInner extends PureComponent {
       if (
         !keyboardHidingInProgressBeforeMeasure &&
         this._hidingKeyboardInProgress
-      )
+      ) {
+        console.log(
+          'Aborting keyboardDidShow operation since hide is in progress!',
+        );
         return;
+      }
 
       const { height: windowHeight } = Dimensions.get('window');
 
       Animated.timing(this.state.channelHeight, {
         toValue: windowHeight - y - keyboardHeight,
         duration: 500,
-      }).start();
+      }).start(() => {
+        // Force the final value, in case animation halted in between.
+        this.state.channelHeight.setValue(windowHeight - y - keyboardHeight);
+      });
     });
     this._keyboardOpen = true;
   };
@@ -203,6 +210,8 @@ export class ChannelInner extends PureComponent {
       toValue: this.initialHeight,
       duration: 500,
     }).start(() => {
+      // Force the final value, in case animation halted in between.
+      this.state.channelHeight.setValue(this.initialHeight);
       this._hidingKeyboardInProgress = false;
       this._keyboardOpen = false;
     });
@@ -219,6 +228,7 @@ export class ChannelInner extends PureComponent {
         toValue: this.initialHeight,
         duration: 500,
       }).start((response) => {
+        this.state.channelHeight.setValue(this.initialHeight);
         if (response && !response.finished) {
           // If by some chance animation didn't go smooth or had some issue,
           // then simply defer promise resolution until after 500 ms.
