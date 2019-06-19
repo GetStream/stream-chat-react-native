@@ -6,11 +6,10 @@ import { Avatar } from '../Avatar';
 
 const Spacer = styled.View`
   height: 10;
-  width: 25;
 `;
 
 const StatusContainer = styled.View`
-  width: 25;
+  width: 20;
   flex-direction: row;
   justify-content: center;
 `;
@@ -18,10 +17,7 @@ const StatusContainer = styled.View`
 const DeliveredContainer = styled.View`
   display: flex;
   align-items: center;
-  width: 20;
   height: 20;
-  padding-bottom: 10;
-  padding-left: 5;
   ${({ theme }) => theme.message.status.deliveredContainer.css};
 `;
 
@@ -45,8 +41,6 @@ const CheckMark = styled.Image`
 const SendingContainer = styled.View`
   display: flex;
   align-items: center;
-  padding-left: 5px;
-  padding-right: 5px;
   ${({ theme }) => theme.message.status.sendingContainer.css};
 `;
 
@@ -61,13 +55,6 @@ const ReadByContainer = styled.View`
   flex-direction: row;
   align-items: center;
   ${({ theme }) => theme.message.status.readByContainer.css};
-`;
-
-const ReadByCount = styled.Text`
-  font-size: 10;
-  color: rgba(0, 0, 0, 0.5);
-  margin-left: 2px;
-  ${({ theme }) => theme.message.status.readByCount.css};
 `;
 
 export const MessageStatus = ({
@@ -102,9 +89,6 @@ export const MessageStatus = ({
             image={lastReadUser.image}
             size={16}
           />
-          {readBy.length - 1 > 1 && (
-            <ReadByCount>{readBy.length - 1}</ReadByCount>
-          )}
         </ReadByContainer>
       );
     } else if (
