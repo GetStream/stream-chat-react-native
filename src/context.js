@@ -32,6 +32,12 @@ export function withMessageContentContext(OriginalComponent) {
   return getContextAwareComponent(MessageContentContext, OriginalComponent);
 }
 
+export const KeyboardContext = React.createContext({});
+
+export function withKeyboardContext(OriginalComponent) {
+  return getContextAwareComponent(KeyboardContext, OriginalComponent);
+}
+
 const getContextAwareComponent = function(context, originalComponent) {
   const Context = context;
   const OriginalComponent = originalComponent;
