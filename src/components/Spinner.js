@@ -34,6 +34,7 @@ export const Spinner = themed(
           toValue: 1,
           duration: 800,
           easing: Easing.linear,
+          useNativeDriver: true,
         }),
       ).start();
     };
