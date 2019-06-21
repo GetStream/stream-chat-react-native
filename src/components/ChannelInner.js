@@ -1,12 +1,5 @@
 import React, { PureComponent } from 'react';
-import {
-  View,
-  Text,
-  Keyboard,
-  Dimensions,
-  Animated,
-  Platform,
-} from 'react-native';
+import { View, Text } from 'react-native';
 import { ChannelContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 
@@ -19,7 +12,7 @@ import throttle from 'lodash/throttle';
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
-
+import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 import { logChatPromiseExecution } from 'stream-chat';
 
 /**
@@ -48,7 +41,6 @@ export class ChannelInner extends PureComponent {
       threadLoadingMore: false,
       threadHasMore: true,
       kavEnabled: true,
-      channelHeight: new Animated.Value('100%'),
     };
 
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -77,33 +69,7 @@ export class ChannelInner extends PureComponent {
       trailing: true,
     });
 
-    this.rootChannelView = false;
-    this.initialHeight = undefined;
     this.messageInputBox = false;
-
-    if (Platform.OS === 'ios') {
-      this.keyboardDidShowListener = Keyboard.addListener(
-        'keyboardWillShow',
-        this.keyboardDidShow,
-      );
-    } else {
-      // Android doesn't support keyboardWillShow event.
-      this.keyboardDidShowListener = Keyboard.addListener(
-        'keyboardDidShow',
-        this.keyboardDidShow,
-      );
-    }
-
-    // We dismiss the keyboard manually (along with keyboardWillHide function) when message is touched.
-    // Following listener is just for a case when keyboard gets dismissed due to something besides message touch.
-    this.keyboardDidHideListener = Keyboard.addListener(
-      'keyboardDidHide',
-      this.keyboardDidHide,
-    );
-
-    this._keyboardOpen = false;
-    // Following variable takes care of race condition between keyboardDidHide and keyboardDidShow.
-    this._hidingKeyboardInProgress = false;
   }
 
   static propTypes = {
@@ -165,79 +131,7 @@ export class ChannelInner extends PureComponent {
     this._loadMoreThreadFinishedDebounced.cancel();
     this._setStateThrottled.cancel();
     this._unmounted = true;
-
-    this.keyboardDidShowListener.remove();
-    this.keyboardDidHideListener.remove();
   }
-
-  // TODO: Better to extract following functions to different HOC.
-  keyboardDidShow = (e) => {
-    const keyboardHidingInProgressBeforeMeasure = this
-      ._hidingKeyboardInProgress;
-    const keyboardHeight = e.endCoordinates.height;
-
-    this.rootChannelView.measureInWindow((x, y) => {
-      // In case if keyboard was closed in meanwhile while
-      // this measure function was being executed, then we
-      // should abort further execution and let the event callback
-      // keyboardDidHide proceed.
-      if (
-        !keyboardHidingInProgressBeforeMeasure &&
-        this._hidingKeyboardInProgress
-      )
-        return;
-
-      const { height: windowHeight } = Dimensions.get('window');
-
-      Animated.timing(this.state.channelHeight, {
-        toValue: windowHeight - y - keyboardHeight,
-        duration: 500,
-      }).start();
-    });
-    this._keyboardOpen = true;
-  };
-
-  keyboardDidHide = () => {
-    this._hidingKeyboardInProgress = true;
-    Animated.timing(this.state.channelHeight, {
-      toValue: this.initialHeight,
-      duration: 500,
-    }).start(() => {
-      this._hidingKeyboardInProgress = false;
-      this._keyboardOpen = false;
-    });
-  };
-
-  keyboardWillDismiss = () =>
-    new Promise((resolve) => {
-      if (!this._keyboardOpen) {
-        resolve();
-        return;
-      }
-
-      Animated.timing(this.state.channelHeight, {
-        toValue: this.initialHeight,
-        duration: 500,
-      }).start((response) => {
-        if (response && !response.finished) {
-          // If by some chance animation didn't go smooth or had some issue,
-          // then simply defer promise resolution until after 500 ms.
-          // This is the time we perform animation for adjusting animation of Channel component height
-          // during keyboard dismissal.
-          setTimeout(() => {
-            resolve();
-          }, 500);
-          return;
-        }
-
-        resolve();
-      });
-    });
-
-  dismissKeyboard = async () => {
-    Keyboard.dismiss();
-    await this.keyboardWillDismiss();
-  };
 
   copyChannelState() {
     const channel = this.props.channel;
@@ -540,7 +434,6 @@ export class ChannelInner extends PureComponent {
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
-    dismissKeyboard: this.dismissKeyboard,
     markRead: this._markReadThrottled,
 
     loadMore: this.loadMore,
@@ -565,22 +458,6 @@ export class ChannelInner extends PureComponent {
     return <Indicator listType="message" />;
   };
 
-  setRootChannelView = (o) => {
-    this.rootChannelView = o;
-  };
-
-  onLayout = ({
-    nativeEvent: {
-      layout: { height },
-    },
-  }) => {
-    // Not to set initial height again.
-    if (!this.initialHeight) {
-      this.initialHeight = height;
-      this.state.channelHeight.setValue(this.initialHeight);
-    }
-  };
-
   render() {
     let core;
 
@@ -595,27 +472,19 @@ export class ChannelInner extends PureComponent {
         </View>
       );
     } else {
-      const height = this.initialHeight
-        ? { height: this.state.channelHeight }
-        : {};
       core = (
-        <Animated.View
-          style={{ display: 'flex', ...height }}
-          onLayout={this.onLayout}
-        >
-          <View ref={this.setRootChannelView} collapsable={false}>
-            <ChannelContext.Provider value={this.getContext()}>
-              <SuggestionsProvider
-                handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
-                  if (this._unmounted) return;
-                  this.setState({ kavEnabled: trueOrFalse });
-                }}
-              >
-                {this.renderComponent()}
-              </SuggestionsProvider>
-            </ChannelContext.Provider>
-          </View>
-        </Animated.View>
+        <KeyboardCompatibleView>
+          <ChannelContext.Provider value={this.getContext()}>
+            <SuggestionsProvider
+              handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
+                if (this._unmounted) return;
+                this.setState({ kavEnabled: trueOrFalse });
+              }}
+            >
+              {this.renderComponent()}
+            </SuggestionsProvider>
+          </ChannelContext.Provider>
+        </KeyboardCompatibleView>
       );
     }
 

@@ -241,10 +241,7 @@ const ChannelList = withChatContext(
 
       // move channel to start
       if (e.type === 'notification.message_new') {
-        // if new message, put move channel up
-        // get channel if not in state currently
         const channel = await this.getChannel(e.channel.type, e.channel.id);
-        this.moveChannelUp(e.cid);
 
         // move channel to starting position
         if (this._unmounted) return;
@@ -318,7 +315,7 @@ const ChannelList = withChatContext(
       const channelIndex = this.state.channels.findIndex(
         (channel) => channel.cid === cid,
       );
-      if (channelIndex === 0) return;
+      if (channelIndex <= 0) return;
 
       // get channel from channels
       const channel = channels[channelIndex];

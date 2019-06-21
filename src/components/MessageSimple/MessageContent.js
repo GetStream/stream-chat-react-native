@@ -27,7 +27,6 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ hasReactions }) => (hasReactions ? 'margin-top: 28px;' : null)}
   background-color: ${({ error, theme }) =>
     error
       ? theme.message.content.errorContainer.backgroundColor
@@ -46,7 +45,8 @@ const Container = styled.TouchableOpacity`
 `;
 
 const ContainerInner = styled.View`
-  align-items: flex-end;
+  align-items: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
@@ -136,11 +136,11 @@ export const MessageContent = themed(
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
           reactionPickerVisible: true,
-          rpTop: y - 70,
-          rpLeft: pos === 'left' ? x : null,
+          rpTop: y - 60,
+          rpLeft: pos === 'left' ? x - 10 : null,
           rpRight:
             pos === 'right'
-              ? Math.round(Dimensions.get('window').width) - (x + width)
+              ? Math.round(Dimensions.get('window').width) - (x + width + 10)
               : null,
         });
       });
@@ -304,6 +304,7 @@ export const MessageContent = themed(
               )}
             {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
             <ContainerInner
+              alignment={pos}
               ref={(o) => (this.messageContainer = o)}
               collapsable={false}
             >

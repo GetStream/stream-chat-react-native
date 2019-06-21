@@ -75,6 +75,8 @@ export const defaultTheme = {
       checkMark: {},
       sendingContainer: {},
       sendingImage: {},
+      readByContainer: {},
+      readByCount: {},
     },
     avatarWrapper: {
       container: {},
