@@ -3,8 +3,10 @@ import { View, TouchableOpacity } from 'react-native';
 import { withChannelContext } from '../context';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import uuidv4 from 'uuid/v4';
 
 import { Message } from './Message';
+import { EventIndicator } from './EventIndicator';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
 
@@ -65,6 +67,7 @@ const MessageList = withChannelContext(
       /** The message rendering component, the Message component delegates its rendering logic to this component */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       disableWhileEditing: PropTypes.bool,
       /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
@@ -74,6 +77,7 @@ const MessageList = withChannelContext(
 
     static defaultProps = {
       dateSeparator: DateSeparator,
+      eventIndicator: EventIndicator,
       disableWhileEditing: true,
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
@@ -130,6 +134,7 @@ const MessageList = withChannelContext(
 
     insertDates = (messages) => {
       const newMessages = [];
+
       for (const [i, message] of messages.entries()) {
         if (message.type === 'message.read' || message.deleted_at) {
           newMessages.push(message);
@@ -159,6 +164,16 @@ const MessageList = withChannelContext(
         } else {
           newMessages.push(message);
         }
+
+        const eventsNextToMessage = this.props.eventHistory[message.id];
+        if (eventsNextToMessage && eventsNextToMessage.length > 0) {
+          eventsNextToMessage.forEach((e) => {
+            newMessages.push({
+              type: 'channel.event',
+              event: e,
+            });
+          });
+        }
       }
 
       return newMessages;
@@ -175,15 +190,24 @@ const MessageList = withChannelContext(
         const message = messages[i];
         const nextMessage = messages[i + 1];
         const groupStyles = [];
+
+        if (message.type === 'channel.event') {
+          continue;
+        }
+
         if (message.type === 'message.date') {
           continue;
         }
-        const userId = message.user.id;
+
+        const userId = message.user ? message.user.id : null;
 
         const isTopMessage =
           !previousMessage ||
           previousMessage.type === 'message.date' ||
-          previousMessage.attachments.length !== 0 ||
+          previousMessage.type === 'system' ||
+          previousMessage.type === 'channel.event' ||
+          (previousMessage.attachments &&
+            previousMessage.attachments.length !== 0) ||
           userId !== previousMessage.user.id ||
           previousMessage.type === 'error' ||
           previousMessage.deleted_at;
@@ -191,7 +215,9 @@ const MessageList = withChannelContext(
         const isBottomMessage =
           !nextMessage ||
           nextMessage.type === 'message.date' ||
-          nextMessage.attachments.length !== 0 ||
+          nextMessage.type === 'system' ||
+          nextMessage.type === 'channel.event' ||
+          (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
           userId !== nextMessage.user.id ||
           nextMessage.type === 'error' ||
           nextMessage.deleted_at;
@@ -291,6 +317,9 @@ const MessageList = withChannelContext(
       if (message.type === 'message.date') {
         const DateSeparator = this.props.dateSeparator;
         return <DateSeparator message={message} />;
+      } else if (message.type === 'channel.event') {
+        const EventIndicator = this.props.eventIndicator;
+        return <EventIndicator event={message.event} />;
       } else if (message.type !== 'message.read') {
         const readBy = this.readData[message.id] || [];
         return (
@@ -394,7 +423,10 @@ const MessageList = withChannelContext(
               inverted
               keyboardShouldPersistTaps="always"
               keyExtractor={(item) =>
-                item.id || item.created_at || item.date.toISOString()
+                item.id ||
+                item.created_at ||
+                (item.date ? item.date.toISOString() : false) ||
+                uuidv4()
               }
               renderItem={({ item: message }) =>
                 this.renderItem(message, messageGroupStyles[message.id])

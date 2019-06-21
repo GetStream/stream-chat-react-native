@@ -41,6 +41,23 @@ export class ChannelInner extends PureComponent {
       threadLoadingMore: false,
       threadHasMore: true,
       kavEnabled: true,
+      /** We save the events in state so that we can display event message
+       * next to the message after which it was received, in MessageList.
+       *
+       * e.g., eventHistory = {
+       *   message_id_1: [
+       *     { ...event_obj_received_after_message_id_1__1 },
+       *     { ...event_obj_received_after_message_id_1__2 },
+       *     { ...event_obj_received_after_message_id_1__3 },
+       *   ],
+       *   message_id_2: [
+       *     { ...event_obj_received_after_message_id_2__1 },
+       *     { ...event_obj_received_after_message_id_2__2 },
+       *     { ...event_obj_received_after_message_id_2__3 },
+       *   ]
+       * }
+       */
+      eventHistory: {},
     };
 
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
@@ -376,12 +393,43 @@ export class ChannelInner extends PureComponent {
       this.setState(threadState);
     }
 
+    if (e.type === 'member.added') {
+      this.addToEventHistory(e);
+    }
+
+    if (e.type === 'member.removed') {
+      this.addToEventHistory(e);
+    }
     this._setStateThrottled({
       messages: channel.state.messages,
       watchers: channel.state.watchers,
       read: channel.state.read,
       typing: channel.state.typing,
       watcher_count: channel.state.watcher_count,
+    });
+  };
+
+  addToEventHistory = (e) => {
+    this.setState((prevState) => {
+      const lastMessageId =
+        prevState.messages[prevState.messages.length - 1].id;
+
+      if (!prevState.eventHistory[lastMessageId])
+        return {
+          ...prevState,
+          eventHistory: {
+            ...prevState.eventHistory,
+            [lastMessageId]: [e],
+          },
+        };
+
+      return {
+        ...prevState,
+        eventHistory: {
+          ...prevState.eventHistory,
+          [lastMessageId]: [...prevState.eventHistory[lastMessageId], e],
+        },
+      };
     });
   };
 

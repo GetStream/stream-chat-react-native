@@ -5,6 +5,8 @@ import { themed } from '../../styles/theme';
 import { MessageStatus } from './MessageStatus';
 import { MessageContent } from './MessageContent';
 import { MessageAvatar } from './MessageAvatar';
+import { MessageSystem } from '../MessageSystem';
+
 import PropTypes from 'prop-types';
 
 const Container = styled.View`
@@ -47,6 +49,10 @@ export const MessageSimple = themed(
         groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
           ? true
           : false;
+
+      if (message.type === 'system') {
+        return <MessageSystem message={message} />;
+      }
 
       return (
         <Container

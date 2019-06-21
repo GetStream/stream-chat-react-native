@@ -203,6 +203,19 @@ export const defaultTheme = {
       date: {},
       dateText: {},
     },
+    messageSystem: {
+      container: {},
+      line: {},
+      text: {},
+      textContainer: {},
+      dateText: {},
+    },
+    eventIndicator: {
+      date: {},
+      memberUpdateContainer: {},
+      memberUpdateTextContainer: {},
+      memberUpdateText: {},
+    },
     typingIndicatorContainer: {},
   },
 
