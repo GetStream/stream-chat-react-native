@@ -1,6 +1,14 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { View } from 'react-native';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import { Spinner } from './Spinner';
+
+const LoadingText = styled.Text`
+  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 600;
+`;
 
 export class LoadingIndicator extends React.PureComponent {
   static propTypes = {
@@ -14,12 +22,33 @@ export class LoadingIndicator extends React.PureComponent {
   render() {
     switch (this.props.listType) {
       case 'channel':
-        return <Text>Loading channel list ...</Text>;
+        return (
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Spinner />
+            <LoadingText>Loading channels ...</LoadingText>
+          </View>
+        );
       case 'message':
-        return <Text>Loading messages ...</Text>;
+        return (
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Spinner />
+            <LoadingText>Loading messages ...</LoadingText>
+          </View>
+        );
       case 'default':
       default:
-        return <Text>Loading ...</Text>;
+        return (
+          <View
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Spinner />
+            <LoadingText>Loading ...</LoadingText>
+          </View>
+        );
     }
   }
 }

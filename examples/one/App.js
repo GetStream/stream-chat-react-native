@@ -42,7 +42,13 @@ const theme = {
     },
   },
   colors: {
-    primary: 'blue',
+    primary: 'magenta',
+  },
+  spinner: {
+    css: `
+      width: 15px;
+      height: 15px;
+    `,
   },
 };
 

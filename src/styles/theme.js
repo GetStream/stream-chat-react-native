@@ -219,6 +219,8 @@ export const defaultTheme = {
     typingIndicatorContainer: {},
   },
 
+  spinner: {},
+
   thread: {
     newThread: {
       text: {},
