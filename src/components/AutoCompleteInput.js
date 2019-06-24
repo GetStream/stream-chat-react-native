@@ -138,6 +138,7 @@ export class AutoCompleteInput extends React.PureComponent {
   };
 
   syncCaretPosition = async (position = 0) => {
+    // console.log('syncing carret position: ' + position);
     await this.setState({ selectionStart: position, selectionEnd: position });
   };
 
@@ -151,89 +152,94 @@ export class AutoCompleteInput extends React.PureComponent {
     );
   };
 
-  handleSuggestions = async (text) => {
-    // console.log('in handle suggestions: ' + text);
-    const { selectionEnd: selectionEnd } = this.state;
+  handleSuggestions = (text) => {
+    // react native is not consistent in order of execution of onSelectionChange and onTextChange
+    // with android and iOS. onSelectionChange gets executed first on iOS (which is ideal for our scenario)
+    // Although on android, this order is reveresed. So need to add following 0 timeout to make sure that
+    // onSelectionChange is executed first before we proceed with handleSuggestions.
+    setTimeout(async () => {
+      const { selectionEnd: selectionEnd } = this.state;
+      // TODO: Move these const to props
+      const minChar = 0;
 
-    // TODO: Move these const to props
-    const minChar = 0;
+      let tokenMatch = this.tokenRegExp.exec(text.slice(0, selectionEnd));
+      // console.log(tokenMatch);
+      let lastToken = tokenMatch && tokenMatch[0];
+      const triggers = this.props.triggerSettings;
 
-    let tokenMatch = this.tokenRegExp.exec(text.slice(0, selectionEnd));
-    let lastToken = tokenMatch && tokenMatch[0];
-    const triggers = this.props.triggerSettings;
+      let currentTrigger =
+        (lastToken && Object.keys(triggers).find((a) => a === lastToken[0])) ||
+        null;
 
-    let currentTrigger =
-      (lastToken && Object.keys(triggers).find((a) => a === lastToken[0])) ||
-      null;
-
-    /*
-      if we lost the trigger token or there is no following character we want to close
-      the autocomplete
-    */
-    if (
-      (!lastToken || lastToken.length <= minChar) &&
-      // check if our current trigger disallows whitespace
-      ((this.state.currentTrigger &&
-        !triggers[this.state.currentTrigger].allowWhitespace) ||
-        !this.state.currentTrigger)
-    ) {
-      // console.log('here 1');
-      this.stopTracking();
-      return;
-    }
-
-    /**
-     * This code has to be sync that is the reason why we obtain the currentTrigger
-     * from currentTrigger not this.state.currentTrigger
-     *
-     * Check if the currently typed token has to be afterWhitespace, or not.
-     */
-    if (
-      currentTrigger &&
-      text[tokenMatch.index - 1] &&
-      (triggers[currentTrigger].afterWhitespace &&
-        !text[tokenMatch.index - 1].match(/\s/))
-    ) {
-      // console.log('here 2');
-      this.stopTracking();
-      return;
-    }
-
-    /**
-    If our current trigger allows whitespace
-    get the correct token for DataProvider, so we need to construct new RegExp
-   */
-    if (
-      this.state.currentTrigger &&
-      triggers[this.state.currentTrigger].allowWhitespace
-    ) {
-      tokenMatch = new RegExp(
-        `\\${this.state.currentTrigger}[^${this.state.currentTrigger}]*$`,
-      ).exec(text.slice(0, selectionEnd));
-      lastToken = tokenMatch && tokenMatch[0];
-
-      if (!lastToken) {
-        // console.log('here 3');
+      /*
+        if we lost the trigger token or there is no following character we want to close
+        the autocomplete
+      */
+      if (
+        (!lastToken || lastToken.length <= minChar) &&
+        // check if our current trigger disallows whitespace
+        ((this.state.currentTrigger &&
+          !triggers[this.state.currentTrigger].allowWhitespace) ||
+          !this.state.currentTrigger)
+      ) {
+        // console.log('here 1');
         this.stopTracking();
         return;
       }
 
-      currentTrigger =
-        Object.keys(triggers).find((a) => a === lastToken[0]) || null;
-    }
+      /**
+       * This code has to be sync that is the reason why we obtain the currentTrigger
+       * from currentTrigger not this.state.currentTrigger
+       *
+       * Check if the currently typed token has to be afterWhitespace, or not.
+       */
+      if (
+        currentTrigger &&
+        text[tokenMatch.index - 1] &&
+        (triggers[currentTrigger].afterWhitespace &&
+          !text[tokenMatch.index - 1].match(/\s/))
+      ) {
+        // console.log('here 2');
+        this.stopTracking();
+        return;
+      }
 
-    const actualToken = lastToken.slice(1);
+      /**
+      If our current trigger allows whitespace
+      get the correct token for DataProvider, so we need to construct new RegExp
+     */
+      if (
+        this.state.currentTrigger &&
+        triggers[this.state.currentTrigger].allowWhitespace
+      ) {
+        tokenMatch = new RegExp(
+          `\\${this.state.currentTrigger}[^${this.state.currentTrigger}]*$`,
+        ).exec(text.slice(0, selectionEnd));
+        lastToken = tokenMatch && tokenMatch[0];
 
-    // if trigger is not configured step out from the function, otherwise proceed
-    if (!currentTrigger) {
-      return;
-    }
+        if (!lastToken) {
+          // console.log('here 3');
+          this.stopTracking();
+          return;
+        }
 
-    await this.setState({ currentTrigger });
+        currentTrigger =
+          Object.keys(triggers).find((a) => a === lastToken[0]) || null;
+      }
 
-    if (!this.isTrackingStarted) this.startTracking();
-    // console.log('from handle suggestions: ' + currentTrigger);
-    this.updateSuggestions(actualToken);
+      const actualToken = lastToken.slice(1);
+
+      // if trigger is not configured step out from the function, otherwise proceed
+      if (!currentTrigger) {
+        return;
+      }
+
+      await this.setState({ currentTrigger });
+
+      if (!this.isTrackingStarted) this.startTracking();
+      // console.log('from handle suggestions: ' + currentTrigger);
+      this.updateSuggestions(actualToken);
+    });
   };
 
   render() {
