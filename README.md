@@ -9,23 +9,29 @@
 
 You can sign up for a Stream account at https://getstream.io/chat/get_started/.
 
+You can find detailed and set-by-step tutorial at https://getstream.io/chat/react-native-chat/tutorial/
+
 ## Keep in mind
 
 1. Navigation between different component is something we expect consumers to
    implement. You can checkout the example given in this repository
-2. This library is still under development, so breaking changes are to be
-   expected in next couple of weeks. So we won't really recommend integrating it
-   right now.
 
 Library currently exposes following components:
 
-1. Chat
-2. Channel
-3. MessageList
-4. MessageInput
-5. ChannelList
-6. Thread
-7. ChannelPreviewMessenger
+1. Avatar
+2. Chat
+3. Channel
+4. MessageList
+5. TypingIndicator
+6. MessageInput
+7. MessageSimple
+8. ChannelList
+9. Thread
+10. ChannelPreviewMessenger
+11. CloseButton
+12. IconBadge
+
+You can see detailed documentation about components at https://getstream.github.io/stream-chat-react-native
 
 ## Usage (creating an example app)
 
@@ -94,9 +100,3 @@ make
 cd examples/one
 yarn start
 ```
-
-## TODO:
-
-1. Play media in app - currently it goes to browser when clicked on attachment
-2. Add propTypes to each component
-3. Command support for inputbox
