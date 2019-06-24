@@ -57,9 +57,22 @@ const formatDefaultTheme = (component) => {
         )}`;
 
   return (
-    <div style={{ whiteSpace: 'pre-wrap' }}>
+    <div
+      style={{
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        whiteSpace: 'pre-wrap',
+      }}
+    >
       {mainThemeText}
-      {themeToReact(mainTheme)}
+      <table>
+        <thead />
+        <tbody>
+          <tr>
+            <td>{themeToReact(mainTheme)}</td>
+          </tr>
+        </tbody>
+      </table>
       {`${extraThemeText}`}
     </div>
   );
@@ -70,7 +83,7 @@ const themeToReact = (v, k, prefix = '') => {
     return (
       <div key={k}>
         {prefix}
-        {k}: {v}
+        {k}: <strong>{v}</strong>
       </div>
     );
   }
@@ -79,7 +92,7 @@ const themeToReact = (v, k, prefix = '') => {
     children.push(themeToReact(v[k], k, prefix + '  '));
   }
   return (
-    <div>
+    <div className="str-chat-style-row">
       {k ? `${prefix}${k}: ` : null}
       {children}
     </div>
