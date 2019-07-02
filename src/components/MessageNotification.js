@@ -7,17 +7,22 @@ const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 27px;
+  width: 112px;
   z-index: 10;
   margin-bottom: 0;
-  border-radius: 10;
-  background-color: black;
+  border-radius: 13px;
+  background-color: ${({ theme }) => theme.colors.primary};
   color: white;
-  padding: 10px;
+  transform: translateY(9px);
   ${({ theme }) => theme.messageList.messageNotification.css}
 `;
 
 const MessageNotificationText = styled.Text`
   color: white;
+  font-size: 12px;
+  font-weight: 600;
   ${({ theme }) => theme.messageList.messageNotificationText.css}
 `;
 
@@ -70,7 +75,7 @@ export class MessageNotification extends PureComponent {
           }}
         >
           <Container onPress={this.props.onClick} onClick={this.props.onClick}>
-            <MessageNotificationText>New Messages ↓</MessageNotificationText>
+            <MessageNotificationText>New Messages</MessageNotificationText>
           </Container>
         </Animated.View>
       );
