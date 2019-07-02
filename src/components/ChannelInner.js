@@ -286,7 +286,13 @@ export class ChannelInner extends PureComponent {
     this.setState({ messages: c.state.messages });
   }
 
-  createMessagePreview = (text, attachments, parent, mentioned_users) => {
+  createMessagePreview = (
+    text,
+    attachments,
+    parent,
+    mentioned_users,
+    extraFields,
+  ) => {
     // create a preview of the message
     const clientSideID = `${this.props.client.userID}-` + uuidv4();
     const message = {
@@ -305,6 +311,7 @@ export class ChannelInner extends PureComponent {
       attachments,
       mentioned_users,
       reactions: [],
+      ...extraFields,
     };
 
     if (parent && parent.id) {
@@ -314,13 +321,30 @@ export class ChannelInner extends PureComponent {
   };
 
   _sendMessage = async (message) => {
-    const { text, attachments, id, parent_id, mentioned_users } = message;
+    // Scrape the reserved fields if present.
+    const {
+      text,
+      attachments,
+      id,
+      parent_id,
+      mentioned_users,
+      html,
+      __html,
+      type,
+      status,
+      user,
+      created_at,
+      reactions,
+      ...extraFields
+    } = message;
+
     const messageData = {
       text,
       attachments,
       id,
       parent_id,
       mentioned_users,
+      ...extraFields,
     };
 
     try {
@@ -338,7 +362,13 @@ export class ChannelInner extends PureComponent {
     }
   };
 
-  sendMessage = async ({ text, attachments = [], parent, mentioned_users }) => {
+  sendMessage = async ({
+    text,
+    attachments = [],
+    parent,
+    mentioned_users,
+    ...extraFields
+  }) => {
     // remove error messages upon submit
     this.props.channel.state.filterErrorMessages();
 
@@ -348,6 +378,7 @@ export class ChannelInner extends PureComponent {
       attachments,
       parent,
       mentioned_users,
+      extraFields,
     );
 
     // first we add the message to the UI
