@@ -431,8 +431,10 @@ const MessageList = withChannelContext(
               renderItem={({ item: message }) =>
                 this.renderItem(message, messageGroupStyles[message.id])
               }
+              // This is the only available documentation for following prop:
+              // https://github.com/facebook/react-native/commit/65184ec
               maintainVisibleContentPosition={{
-                minIndexForVisible: 1,
+                minIndexForVisible: this.props.messages.length > 0 ? 1 : 0,
                 autoscrollToTopThreshold: 10,
               }}
             />

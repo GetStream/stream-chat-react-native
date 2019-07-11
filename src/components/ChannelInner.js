@@ -66,6 +66,11 @@ export class ChannelInner extends PureComponent {
       trailing: true,
     });
 
+    this._loadMoreThreadDebounced = debounce(this.loadMoreThread, 2000, {
+      leading: true,
+      trailing: true,
+    });
+
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
     this._loadMoreThreadFinishedDebounced = debounce(
       this.loadMoreThreadFinished,
@@ -117,6 +122,19 @@ export class ChannelInner extends PureComponent {
     if (this.props.isOnline !== prevProps.isOnline) {
       if (this._unmounted) return;
       this.setState({ online: this.props.isOnline });
+    }
+
+    // If there is an active thread, then in that case we should sync
+    // it with updated state of channel.
+    if (this.state.thread) {
+      for (let i = this.state.messages.length - 1; i >= 0; i--) {
+        if (this.state.messages[i].id === this.state.thread.id) {
+          this.setState({
+            thread: this.state.messages[i],
+          });
+          break;
+        }
+      }
     }
   }
 
@@ -199,8 +217,10 @@ export class ChannelInner extends PureComponent {
 
   loadMoreThread = async () => {
     // prevent duplicate loading events...
-    if (this.state.threadLoadingMore) return;
     if (this._unmounted) return;
+
+    if (!this.state.online) return;
+
     this.setState({
       threadLoadingMore: true,
     });
@@ -519,7 +539,7 @@ export class ChannelInner extends PureComponent {
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,
-    loadMoreThread: this.loadMoreThread,
+    loadMoreThread: this._loadMoreThreadDebounced,
     openSuggestions: this.openSuggestions,
     closeSuggestions: this.closeSuggestions,
     updateSuggestions: this.updateSuggestions,

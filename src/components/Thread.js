@@ -103,6 +103,17 @@ class ThreadInner extends React.PureComponent {
     }
   }
 
+  async componentDidUpdate() {
+    const parentID = this.props.thread.id;
+    if (
+      parentID &&
+      this.props.thread.reply_count > 0 &&
+      this.props.threadMessages.length === 0
+    ) {
+      await this.props.loadMoreThread();
+    }
+  }
+
   render() {
     if (!this.props.thread) {
       return null;
