@@ -7263,7 +7263,7 @@ lodash-es@^4.17.11:
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.11.tgz#145ab4a7ac5c5e52a3531fb4f310255a152b4be0"
   integrity sha512-DHb1ub+rMjjrxqlB3H56/6MXtm1lSksDp2rA2cNWjG8mlDUYFhUj3Di2Zn5IwSU87xLv8tNIQ7sSwE/YOX/D/Q==
 
-lodash._reinterpolate@~3.0.0:
+lodash._reinterpolate@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
   integrity sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
@@ -7359,19 +7359,19 @@ lodash.pick@^4.4.0:
   integrity sha1-UvBWEP/53tQiYRRB7R/BI6AwAbM=
 
 lodash.template@^4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
-  integrity sha1-5zoDhcg1VZF0bgILmWecaQ5o+6A=
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.5.0.tgz#f976195cf3f347d0d5f52483569fe8031ccce8ab"
+  integrity sha512-84vYFxIkmidUiFxidA/KjjH9pAycqW+h980j7Fuz5qxRtO9pgB7MDFTdys1N7A5mcucRiDyEq4fusljItR1T/A==
   dependencies:
-    lodash._reinterpolate "~3.0.0"
+    lodash._reinterpolate "^3.0.0"
     lodash.templatesettings "^4.0.0"
 
 lodash.templatesettings@^4.0.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/lodash.templatesettings/-/lodash.templatesettings-4.1.0.tgz#2b4d4e95ba440d915ff08bc899e4553666713316"
-  integrity sha1-K01OlbpEDZFf8IvImeRVNmZxMxY=
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.templatesettings/-/lodash.templatesettings-4.2.0.tgz#e481310f049d3cf6d47e912ad09313b154f0fb33"
+  integrity sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==
   dependencies:
-    lodash._reinterpolate "~3.0.0"
+    lodash._reinterpolate "^3.0.0"
 
 lodash.throttle@^4.1.1:
   version "4.1.1"
@@ -9980,8 +9980,9 @@ react-native-image-zoom-viewer@^2.2.25:
   dependencies:
     react-native-image-pan-zoom "^2.1.9"
 
-"react-native-maps@github:expo/react-native-maps#v0.22.1-exp.0":
+react-native-maps@expo/react-native-maps#v0.22.1-exp.0:
   version "0.22.1"
+  uid e6f98ff7272e5d0a7fe974a41f28593af2d77bb2
   resolved "https://codeload.github.com/expo/react-native-maps/tar.gz/e6f98ff7272e5d0a7fe974a41f28593af2d77bb2"
 
 react-native-reanimated@1.0.0-alpha.11:
@@ -11249,17 +11250,12 @@ stream-buffers@~2.2.0:
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
 "stream-chat-expo@link:../../expo-package":
-  version "0.0.0"
-  uid ""
+  version "0.1.13"
+  dependencies:
+    stream-chat-react-native-core v0.1.13
 
 "stream-chat-react-native-core@link:../..":
-  version "0.0.0"
-  uid ""
-
-stream-chat-react-native-core@v0.1.12:
-  version "0.1.12"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.12.tgz#92f699db6ebd184d10f3873607b17cf847071977"
-  integrity sha512-8TMVTJZoALUdDL4FurLVnjXPi3E4EGPHtg5kzA8XNv/MshtlMZOuYWtCu5XufWsCmCC7CPlNodsDkBw3slh/9g==
+  version "0.1.13"
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
@@ -11278,10 +11274,35 @@ stream-chat-react-native-core@v0.1.12:
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^0.13.4"
+    stream-chat "^0.13.5"
     uuid "^3.3.2"
 
-stream-chat@^0.13.4, stream-chat@^0.13.5:
+stream-chat-react-native-core@v0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.13.tgz#67aca7f35c8e26dbdfbff1c384d2fddfea94812b"
+  integrity sha512-g5Goy3CxTSWFlhRogJwdPVx/LUlfQkPBtpX7p+EoxerQx0zfZhyg0+qlLPzJ1FMy2rInrUP/5Auu+VOF9gswfA==
+  dependencies:
+    "@babel/runtime" "^7.1.2"
+    "@stream-io/react-native-simple-markdown" "^1.1.1"
+    "@stream-io/styled-components" "^4.2.1"
+    anchorme "^1.1.2"
+    babel-plugin-macros "^2.5.1"
+    deep-equal "^1.0.1"
+    deepmerge "^3.2.0"
+    file-loader "^3.0.1"
+    lodash-es "^4.17.11"
+    metro-react-native-babel-preset "^0.53.1"
+    mime-types "^2.1.24"
+    moment "2.23.0"
+    path "^0.12.7"
+    react-art "^16.8.6"
+    react-native-actionsheet "^2.4.2"
+    react-native-image-zoom-viewer "^2.2.25"
+    seamless-immutable "^7.1.4"
+    stream-chat "^0.13.5"
+    uuid "^3.3.2"
+
+stream-chat@^0.13.5:
   version "0.13.5"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-0.13.5.tgz#9dbf29dc5f5334833c8850d6d30b0fe296e29445"
   integrity sha512-Re+ZAu3xYfWZy42OQx0Uaoo1HT65R5QgXTZPCRcH0mbZBKDdgqwD/BQHbmwhvHozfAWfLplBeEqaIUFnzXiAyw==
