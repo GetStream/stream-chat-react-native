@@ -45,9 +45,20 @@ const ChannelList = withChatContext(
       List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       onSelect: PropTypes.func,
 
-      /** Function that overrides default behaviour when users gets added to a channel */
+      /**
+       * Function that overrides default behaviour when users receives a
+       * new message on channel not being watched.
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
+      onMessageNew: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when users gets added to a channel
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
       onAddedToChannel: PropTypes.func,
-      /** Function that overrides default behaviour when users gets removed from a channel */
+      /** Function that overrides default behaviour when users gets removed from a channel.
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
       onRemovedFromChannel: PropTypes.func,
 
       /** Object containing query filters */
