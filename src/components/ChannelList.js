@@ -45,9 +45,20 @@ const ChannelList = withChatContext(
       List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       onSelect: PropTypes.func,
 
-      /** Function that overrides default behaviour when users gets added to a channel */
+      /**
+       * Function that overrides default behaviour when users receives a
+       * new message on channel not being watched.
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
+      onMessageNew: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when users gets added to a channel
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
       onAddedToChannel: PropTypes.func,
-      /** Function that overrides default behaviour when users gets removed from a channel */
+      /** Function that overrides default behaviour when users gets removed from a channel.
+       * It receives ChannelList (this) as first parameter, and event as second.
+       */
       onRemovedFromChannel: PropTypes.func,
 
       /** Object containing query filters */
@@ -241,15 +252,25 @@ const ChannelList = withChatContext(
 
       // move channel to start
       if (e.type === 'notification.message_new') {
-        const channel = await this.getChannel(e.channel.type, e.channel.id);
+        if (
+          this.props.onMessageNew &&
+          typeof this.props.onMessageNew === 'function'
+        ) {
+          this.props.onMessageNew(this, e);
+        } else {
+          const channel = await this.getChannel(e.channel.type, e.channel.id);
 
-        // move channel to starting position
-        if (this._unmounted) return;
-        this.setState((prevState) => ({
-          channels: uniqBy([channel, ...prevState.channels], 'cid'),
-          channelIds: uniqWith([channel.id, ...prevState.channelIds], isEqual),
-          offset: prevState.offset + 1,
-        }));
+          // move channel to starting position
+          if (this._unmounted) return;
+          this.setState((prevState) => ({
+            channels: uniqBy([channel, ...prevState.channels], 'cid'),
+            channelIds: uniqWith(
+              [channel.id, ...prevState.channelIds],
+              isEqual,
+            ),
+            offset: prevState.offset + 1,
+          }));
+        }
       }
 
       // add to channel
@@ -258,7 +279,7 @@ const ChannelList = withChatContext(
           this.props.onAddedToChannel &&
           typeof this.props.onAddedToChannel === 'function'
         ) {
-          this.props.onAddedToChannel(e);
+          this.props.onAddedToChannel(this, e);
         } else {
           const channel = await this.getChannel(e.channel.type, e.channel.id);
 
@@ -280,7 +301,7 @@ const ChannelList = withChatContext(
           this.props.onRemovedFromChannel &&
           typeof this.props.onRemovedFromChannel === 'function'
         ) {
-          this.props.onRemovedFromChannel(e);
+          this.props.onRemovedFromChannel(this, e);
         } else {
           if (this._unmounted) return;
           this.setState((prevState) => {

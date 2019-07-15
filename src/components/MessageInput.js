@@ -28,7 +28,7 @@ import { AutoCompleteInput } from './AutoCompleteInput';
 // https://stackoverflow.com/a/6860916/2570866
 function generateRandomId() {
   // prettier-ignore
-  return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
 
 function S4() {
@@ -255,8 +255,8 @@ const MessageInput = withSuggestionsContext(
           if (!this.state.text && attachments.length === 0) return;
 
           if (this.props.editing) {
-            const { id } = this.props.editing;
-            const updatedMessage = { id };
+            const updatedMessage = { ...this.props.editing };
+
             updatedMessage.text = this.state.text;
             updatedMessage.attachments = attachments;
             updatedMessage.mentioned_users = this.state.mentioned_users.map(
