@@ -11,6 +11,8 @@ You can sign up for a Stream account at https://getstream.io/chat/get_started/.
 
 You can find detailed and set-by-step tutorial at https://getstream.io/chat/react-native-chat/tutorial/
 
+You can find the design kit for this project at https://getstream.io/chat/ui-kit/
+
 ## Keep in mind
 
 1. Navigation between different component is something we expect consumers to
