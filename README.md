@@ -31,7 +31,7 @@ Library currently exposes following components:
 11. CloseButton
 12. IconBadge
 
-You can see detailed documentation about components at https://getstream.github.io/stream-chat-react-native
+You can see detailed documentation about the components at https://getstream.github.io/stream-chat-react-native
 
 ## Usage (creating an example app)
 
@@ -44,9 +44,9 @@ cd StreamChatExpoExample
 yarn add stream-chat-expo
 ```
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) to see usage of components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) to see usage of the components.
 
-OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) for your `App.js` in root folder with additional following steps:
+OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) for your `App.js` in the root folder with additional following steps:
 
 ```bash
 yarn add react-navigation
