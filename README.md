@@ -38,6 +38,7 @@ You can see detailed documentation about components at https://getstream.github.
 ### Expo package
 
 ```bash
+yarn global add expo-cli
 expo init StreamChatExpoExample
 cd StreamChatExpoExample
 yarn add stream-chat-expo
@@ -45,7 +46,7 @@ yarn add stream-chat-expo
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) to see usage of components.
 
-OR you can swap this file for your `App.js` in root folder with additional following steps:
+OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) for your `App.js` in root folder with additional following steps:
 
 ```bash
 yarn add react-navigation
