@@ -27,6 +27,12 @@ export const MessageSimple = themed(
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */
       repliesEnabled: PropTypes.bool.isRequired,
+      handleReaction: PropTypes.func,
+      handleFlag: PropTypes.func,
+      handleMute: PropTypes.func,
+      handleAction: PropTypes.func,
+      handleRetry: PropTypes.func,
+      isMyMessage: PropTypes.func,
     };
 
     static defaultProps = {

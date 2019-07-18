@@ -73,6 +73,8 @@ const MessageList = withChannelContext(
       loadMoreThreshold: PropTypes.number,
       /** Typing indicator component to render  */
       TypingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** The attachment component to render, defaults to Attachment */
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {
@@ -334,11 +336,11 @@ const MessageList = withChannelContext(
                 ? this.state.lastReceivedId
                 : null
             }
-            onMessageTouch={this.onMessageTouch}
             setEditingState={this.props.setEditingState}
             editing={this.props.editing}
             threadList={this.props.threadList}
             messageActions={this.props.messageActions}
+            Attachment={this.props.Attachment}
           />
         );
       }

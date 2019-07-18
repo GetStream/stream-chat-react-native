@@ -182,11 +182,7 @@ export class ChannelInner extends PureComponent {
     channel.on(this.handleEvent);
   }
 
-  openThread = (message, e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-    }
-
+  openThread = (message) => {
     const channel = this.props.channel;
     const threadMessages = channel.state.threads[message.id] || [];
 
@@ -230,11 +226,7 @@ export class ChannelInner extends PureComponent {
     });
   };
 
-  closeThread = (e) => {
-    if (e && e.preventDefault) {
-      e.preventDefault();
-    }
-
+  closeThread = () => {
     if (this._unmounted) return;
     this.setState({
       thread: null,
@@ -248,6 +240,7 @@ export class ChannelInner extends PureComponent {
       editing: message,
     });
   };
+
   updateMessage = (updatedMessage, extraState) => {
     const channel = this.props.channel;
 
@@ -499,17 +492,12 @@ export class ChannelInner extends PureComponent {
 
   getContext = () => ({
     ...this.state,
-    channels: this.props.channels,
     client: this.props.client,
     channel: this.props.channel,
-    Message: this.props.Message,
-    Attachment: this.props.Attachment,
     updateMessage: this.updateMessage,
     removeMessage: this.removeMessage,
     sendMessage: this.sendMessage,
     retrySendMessage: this.retrySendMessage,
-    resetNotification: this.resetNotification,
-    listenToScroll: this.listenToScroll,
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
@@ -520,9 +508,6 @@ export class ChannelInner extends PureComponent {
     openThread: this.openThread,
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
-    openSuggestions: this.openSuggestions,
-    closeSuggestions: this.closeSuggestions,
-    updateSuggestions: this.updateSuggestions,
   });
 
   renderComponent = () => this.props.children;

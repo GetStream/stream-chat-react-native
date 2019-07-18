@@ -31,9 +31,17 @@ const Channel = withChatContext(
       /** Client is passed automatically via the Chat Context */
       client: PropTypes.object.isRequired,
       /** The loading indicator to use */
-      // LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** The indicator to use when there is error  */
+      LoadingErrorIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+      /** The indicator to use when message list is empty */
+      EmptyStateIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
     };
 
     static defaultProps = {

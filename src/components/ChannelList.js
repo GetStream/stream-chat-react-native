@@ -107,11 +107,6 @@ const ChannelList = withChatContext(
       this._unmounted = false;
     }
 
-    isPromise = (thing) => {
-      const promise = thing && typeof thing.then === 'function';
-      return promise;
-    };
-
     async componentDidMount() {
       await this._queryChannelsDebounced();
       this.listenToChanges();
@@ -130,15 +125,6 @@ const ChannelList = withChatContext(
     componentDidCatch(error, info) {
       console.warn(error, info);
     }
-
-    clickCreateChannel = (e) => {
-      this.props.setChannelStart();
-      e.target.blur();
-    };
-
-    closeMenu = () => {
-      this.menuButton.current.checked = false;
-    };
 
     queryChannels = async (resync = false) => {
       // Don't query again if query is already active.
@@ -359,8 +345,6 @@ const ChannelList = withChatContext(
 
     render() {
       const context = {
-        clickCreateChannel: this.clickCreateChannel,
-        closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
       };
       const List = this.props.List;

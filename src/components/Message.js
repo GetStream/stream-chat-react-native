@@ -83,14 +83,6 @@ const Message = withKeyboardContext(
           shouldUpdate = true;
         }
 
-        // editing is the last one which can trigger a change..
-        if (
-          !shouldUpdate &&
-          nextProps.messageListRect !== this.props.messageListRect
-        ) {
-          shouldUpdate = true;
-        }
-
         return shouldUpdate;
       }
 
@@ -217,10 +209,6 @@ const Message = withKeyboardContext(
 
       render() {
         const message = this.props.message;
-
-        const actionsEnabled =
-          message.type === 'regular' && message.status === 'received';
-
         const Component = this.props.Message;
         const actionProps = {};
 
@@ -234,7 +222,6 @@ const Message = withKeyboardContext(
             <Component
               {...this.props}
               {...actionProps}
-              actionsEnabled={actionsEnabled}
               Message={this}
               handleReaction={this.handleReaction}
               handleFlag={this.handleFlag}

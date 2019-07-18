@@ -53,8 +53,6 @@ const Thread = withChannelContext(
         threadHasMore: PropTypes.bool,
         /** If the thread is currently loading more messages */
         threadLoadingMore: PropTypes.bool,
-        /** Display the thread on 100% width of it's container. Useful for mobile style view */
-        fullWidth: PropTypes.bool,
         /** Make input focus on mounting thread */
         autoFocus: PropTypes.bool,
       };
@@ -62,7 +60,6 @@ const Thread = withChannelContext(
       static defaultProps = {
         threadHasMore: true,
         threadLoadingMore: true,
-        fullWidth: false,
         autoFocus: true,
       };
 

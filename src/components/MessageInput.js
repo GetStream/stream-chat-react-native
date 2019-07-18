@@ -179,11 +179,11 @@ const MessageInput = withSuggestionsContext(
         };
 
         componentDidMount() {
-          if (this.props.editing) this.inputBox.focus();
+          if (this.props.editing || this.props.focus) this.inputBox.focus();
         }
 
         componentDidUpdate(prevProps) {
-          if (this.props.editing) this.inputBox.focus();
+          if (this.props.editing || this.props.focus) this.inputBox.focus();
           if (
             this.props.editing &&
             prevProps.editing &&

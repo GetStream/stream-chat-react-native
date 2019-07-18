@@ -57,12 +57,12 @@ const Message = styled.Text`
 export class ChannelPreviewMessenger extends PureComponent {
   channelPreviewButton = React.createRef();
 
-  onSelectChannel = () => {
-    this.props.setActiveChannel(this.props.channel);
+  onSelectChannel = (e) => {
+    this.props.setActiveChannel(this.props.channel, e);
   };
 
   render() {
-    const { channel } = this.props;
+    const { channel, latestMessage, unread } = this.props;
     return (
       <Container onPress={this.onSelectChannel}>
         <Avatar image={channel.data.image} size={40} />
@@ -71,19 +71,19 @@ export class ChannelPreviewMessenger extends PureComponent {
             <Title ellipsizeMode="tail" numberOfLines={1}>
               {channel.data.name}
             </Title>
-            <Date>{this.props.latestMessage.created_at}</Date>
+            <Date>{latestMessage.created_at}</Date>
           </DetailsTop>
           <Message
-            unread={this.props.unread > 0}
+            unread={unread > 0}
             style={{
-              color: this.props.unread > 0 ? 'black' : '#767676',
+              color: unread > 0 ? 'black' : '#767676',
               fontSize: 13,
-              fontWeight: this.props.unread > 0 ? 'bold' : 'normal',
+              fontWeight: unread > 0 ? 'bold' : 'normal',
             }}
           >
             {!channel.state.messages[0]
               ? 'Nothing yet...'
-              : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), 14)}
+              : truncate(latestMessage.text.replace(/\n/g, ' '), 14)}
           </Message>
         </Details>
       </Container>
