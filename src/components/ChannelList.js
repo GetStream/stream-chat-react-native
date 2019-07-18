@@ -61,6 +61,7 @@ const ChannelList = withChatContext(
        */
       onRemovedFromChannel: PropTypes.func,
 
+      onChannelUpdated: PropTypes.func,
       /** Object containing query filters */
       filters: PropTypes.object,
       /** Object containing query options */
@@ -319,6 +320,23 @@ const ChannelList = withChatContext(
         }
       }
 
+      // // Channel data is updated
+      if (e.type === 'channel.updated') {
+        const channels = this.state.channels;
+        const channelIndex = channels.findIndex(
+          (channel) => channel.cid === e.channel.cid,
+        );
+        channels[channelIndex].data = Immutable(e.channel);
+        this.setState({
+          channels: [...channels],
+        });
+
+        if (
+          this.props.onChannelUpdated &&
+          typeof this.props.onChannelUpdated === 'function'
+        )
+          this.props.onChannelUpdated(this, e);
+      }
       return null;
     };
 
