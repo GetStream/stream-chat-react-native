@@ -69,7 +69,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
-    "stream-chat": "link:../stream-chat-js",
+    "stream-chat": "^0.13.5",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {

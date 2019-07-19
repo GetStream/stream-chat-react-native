@@ -36,7 +36,6 @@ export class ChannelInner extends PureComponent {
       members: Immutable({}),
       read: Immutable({}),
 
-      thread: props.thread,
       threadMessages: [],
       threadLoadingMore: false,
       threadHasMore: true,

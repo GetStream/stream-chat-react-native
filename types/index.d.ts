@@ -35,24 +35,23 @@ interface ChannelContextValue {
   online?: boolean;
   // TODO: Create proper type for typing object
   typing?: SeamlessImmutable.Immutable<{
-    [user_id: string]: Client.Event;
+    [user_id: string]: Client.TypingStartEvent;
   }>;
   watchers?: SeamlessImmutable.Immutable<Object>;
   watcher_count?: number;
   members?: SeamlessImmutable.Immutable<Object>;
   read?: SeamlessImmutable.Immutable<Object>;
 
-  thread?: boolean;
   threadMessages?: Client.MessageResponse[];
   threadLoadingMore?: boolean;
   threadHasMore?: boolean;
-  kavEnabled: boolean;
+  kavEnabled?: boolean;
 
   client?: Client.StreamChat;
   channel?: Client.StreamChat;
 
-  multipleUploads: boolean;
-  acceptedFiles: string[];
+  multipleUploads?: boolean;
+  acceptedFiles?: string[];
   maxNumberOfFiles?: number;
 
   // thread related
@@ -70,16 +69,18 @@ interface ChannelContextValue {
   retrySendMessage?(message: Client.Message): void;
   setEditingState?(message: Client.Message): void;
   clearEditingState?(): void;
-  EmptyStateIndicator: React.ElementType<EmptyStateIndicatorProps>;
-  markRead(): void;
+  EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
+  markRead?(): void;
   loadMore?(): void;
 
-  openThread(message: Client.Message, event: React.SyntheticEvent): void;
-  closeThread(): void;
+  openThread?(message: Client.Message, event: React.SyntheticEvent): void;
+  closeThread?(): void;
 }
 
 interface KeyboardContext extends React.Context<KeyboardContextValue> {}
-interface KeyboardContextValue {}
+interface KeyboardContextValue {
+  dismissKeyboard(): void;
+}
 
 export interface ChatProps {
   client: Client.StreamChat;
@@ -114,7 +115,7 @@ export interface DateSeparatorProps {
 }
 
 export interface EventIndicatorProps {
-  event: Client.Event;
+  event: Client.MemberAddedEvent | Client.MemberRemovedEvent;
 }
 
 interface AvatarProps {
@@ -160,11 +161,11 @@ interface ChannelListProps extends ChatContextValue {
   Preview?: React.ElementType<ChannelPreviewUIComponentProps>;
 
   /** The loading indicator to use */
-  LoadingIndicator: React.ElementType<LoadingIndicatorProps>;
+  LoadingIndicator?: React.ElementType<LoadingIndicatorProps>;
   /** The indicator to use when there is error in fetching channels */
-  LoadingErrorIndicator: React.ElementType<LoadingErrorIndicatorProps>;
+  LoadingErrorIndicator?: React.ElementType<LoadingErrorIndicatorProps>;
   /** The indicator to use when channel list is empty */
-  EmptyStateIndicator: React.ElementType<EmptyStateIndicatorProps>;
+  EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
 
   List?: React.ElementType<ChannelListUIComponentProps>;
 
@@ -174,11 +175,20 @@ interface ChannelListProps extends ChatContextValue {
    * new message on channel not being watched.
    * It receives ChannelList (this) as first parameter, and event as second.
    */
-  onMessageNew(thisArg: ChannelList, e: Client.Event): void;
+  onMessageNew?(
+    thisArg: ChannelList,
+    e: Client.NotificationNewMessageEvent,
+  ): void;
   /** Function that overrides default behaviour when users gets added to a channel */
-  onAddedToChannel?(thisArg: ChannelList, e: Client.Event): void;
+  onAddedToChannel?(
+    thisArg: ChannelList,
+    e: Client.NotificationAddedToChannelEvent,
+  ): void;
   /** Function that overrides default behaviour when users gets removed from a channel */
-  onRemovedFromChannel?(thisArg: ChannelList, e: Client.Event): void;
+  onRemovedFromChannel?(
+    thisArg: ChannelList,
+    e: Client.NotificationRemovedFromChannelEvent,
+  ): void;
 
   // TODO: Create proper interface for followings in chat js client.
   /** Object containing query filters */
@@ -207,7 +217,6 @@ interface ChannelListUIComponentProps
 }
 
 interface ChannelPreviewProps extends ChannelListUIComponentProps {
-  channel: Client.StreamChat;
   Preview: React.ElementType<ChannelPreviewUIComponentProps>;
   key: string;
 }
@@ -240,13 +249,14 @@ interface MessageListProps extends ChannelContextValue {
   threadList?: boolean;
   disableWhileEditing?: boolean;
   Message?: React.ElementType<MessageUIComponentProps>;
-  EventIndicator: React.ElementType<EventIndicatorProps>;
+  EventIndicator?: React.ElementType<EventIndicatorProps>;
   /** For flatlist  */
-  loadMoreThreshold: PropTypes.number;
+  loadMoreThreshold?: number;
   onThreadSelect?(message: Client.MessageResponse): void;
-  messageActions: 'edit' | 'delete' | 'reactions' | 'reply';
+  messageActions: Array<MessageAction>;
 }
 
+declare type MessageAction = 'edit' | 'delete' | 'reactions' | 'reply';
 interface MessageProps extends ChannelContextValue {
   onThreadSelect?(message: Client.MessageResponse): void;
   /** The message object */
@@ -265,9 +275,8 @@ interface MessageProps extends ChannelContextValue {
 }
 
 interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
-  Message: Message;
   reactionsEnabled: boolean;
-  repliesEnabled: boolea;
+  repliesEnabled: boolean;
   handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
   handleFlag(event?: React.BaseSyntheticEvent): void;
   handleMute(event?: React.BaseSyntheticEvent): void;
@@ -282,11 +291,11 @@ interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
 
 interface ThreadProps extends ChannelContextValue {
   /** the thread (the parent message object) */
-  thread?: Client.Message | boolean;
+  thread?: Client.MessageResponse | boolean;
   /** The message component to use for rendering messages */
   Message?: React.ElementType;
   /** The list of messages to render, state is handled by the parent channel component */
-  threadMessages?: React.Message[];
+  threadMessages?: Client.MessageResponse[];
   /** Make input focus on mounting thread */
   autoFocus?: boolean;
 }
@@ -322,6 +331,6 @@ export class IconBadge extends React.PureComponent {}
 
 export function registerNativeHandlers(handlers: {
   NetInfo: object;
-  pickImage;
-  pickDocument;
+  pickImage(): Promise<any>;
+  pickDocument(): Promise<any>;
 }): void;
