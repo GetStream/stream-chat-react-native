@@ -211,7 +211,10 @@ export const MessageContent = themed(
       const options = [{ id: 'cancel', title: 'Cancel' }];
       const images =
         hasAttachment &&
-        message.attachments.filter((item) => item.type === 'image');
+        message.attachments.filter(
+          (item) =>
+            item.type === 'image' && !item.title_link && !item.og_scrape_url,
+        );
 
       const files =
         hasAttachment &&
@@ -312,7 +315,12 @@ export const MessageContent = themed(
                 message.attachments.map((attachment, index) => {
                   // We handle files separately
                   if (attachment.type === 'file') return null;
-                  if (attachment.type === 'image') return null;
+                  if (
+                    attachment.type === 'image' &&
+                    !attachment.title_link &&
+                    !attachment.og_scrape_url
+                  )
+                    return null;
                   return (
                     <Attachment
                       key={`${message.id}-${index}`}
