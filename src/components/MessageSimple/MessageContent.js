@@ -123,11 +123,11 @@ export const MessageContent = themed(
     };
 
     handleDelete = async () => {
-      await this.props.Message.handleDelete();
+      await this.props.handleDelete();
     };
 
     handleEdit = () => {
-      this.props.Message.handleEdit();
+      this.props.handleEdit();
     };
 
     _setReactionPickerPosition = () => {
@@ -191,6 +191,8 @@ export const MessageContent = themed(
         groupStyles,
         reactionsEnabled,
         repliesEnabled,
+        canEditMessage,
+        canDeleteMessage,
       } = this.props;
       const hasAttachment = Boolean(
         message && message.attachments && message.attachments.length,
@@ -242,7 +244,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-        Message.canEditMessage()
+        canEditMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.edit,
@@ -252,7 +254,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-        Message.canDeleteMessage()
+        canDeleteMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.delete,

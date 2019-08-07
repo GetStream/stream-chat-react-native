@@ -102,6 +102,29 @@ module.exports = {
       exampleMode: 'collapse',
       usageMode: 'expand',
     },
+    {
+      name: 'Contexts',
+      sections: [
+        {
+          name: 'ChatContext',
+          content: 'src/components/docs/ChatContext.md',
+        },
+        {
+          name: 'withChatContext',
+          content: 'src/components/docs/withChatContext.md',
+        },
+        {
+          name: 'ChannelContext',
+          content: 'src/components/docs/ChannelContext.md',
+        },
+        {
+          name: 'withChannelContext',
+          content: 'src/components/docs/withChannelContext.md',
+        },
+      ],
+      exampleMode: 'collapse',
+      usageMode: 'expand',
+    },
     // {
     //   name: 'Styles',
     //   content: 'docs/styles.md',
@@ -178,6 +201,8 @@ module.exports = {
     ],
     externals: {
       react: 'React',
+      'react-native': 'react-native',
+      'react-native-web-player': 'react-native-web-player',
     },
   },
 };

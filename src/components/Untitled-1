@@ -1,0 +1,95 @@
+<!-- ```js
+const data = require('./data');
+const ReactNative = require('react-native');
+
+class ExampleComponent extends React.Component {
+  render() {
+    return (
+      <Chat client={data.client}>
+        <Channel channel={data.channel}>
+          <ReactNative.View style={{ display: 'flex', height: '580px' }}>
+            <MessageList />
+          </ReactNative.View>
+        </Channel>
+      </Chat>
+    )
+  }
+}
+<ReactNative.View style={{ height: '600px', width: '350px', borderColor: 'black', borderWidth: '10px', borderRadius: '20px' }}>
+  <ExampleComponent />
+</ReactNative.View>
+```
+
+```js
+const data = require('./data');
+<div data-snack-id="@vishalnarkhede/learning-vishtree" data-snack-platform="ios" data-snack-preview="true" data-snack-theme="light" style={{
+  overflow:'hidden',
+  background: '#fafafa',
+  border: '1px solid rgba(0,0,0,.08)',
+  borderRadius: '4px',
+  height: '505px',
+  width: '100%'
+}}></div>
+``` -->
+
+
+
+
+
+
+```js
+const WPFrame = require('./data').WPFrame;
+const data = require('./data');
+
+const code=`
+import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+import { Chat, Channel, MessageList } from 'stream-chat-react-native-core';
+import { StreamChat } from 'stream-chat';
+
+console.log(Chat);
+
+class App extends Component {
+  render() {
+    return (
+      <Chat />
+    );
+  }
+}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+})
+AppRegistry.registerComponent('App', () => App)`;
+
+const vendorComponents=[
+  ['stream-chat-react-native-core', 'https://cdn.jsdelivr.net/npm/stream-chat-react-native-core@0.1.15/dist/index.min.js']
+  ['@babel/runtime/helpers/defineProperty', 'https://cdn.jsdelivr.net/npm/@babel/runtime@7.5.5/helpers/defineProperty.js']
+  
+];
+
+<iframe
+  width="880"
+  height="425"
+  frameBorder="0"
+  src={
+    `//cdn.rawgit.com/dabbott/react-native-web-player/gh-v2.0.0-alpha.4/index.html#code=${encodeURIComponent(code)}&vendorComponents=${encodeURIComponent(JSON.stringify(vendorComponents))}`
+  }
+  >
+</iframe>
+
+```

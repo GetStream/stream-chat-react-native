@@ -24,15 +24,53 @@ const Channel = withChatContext(
       this.state = { error: false };
     }
     static propTypes = {
-      /** Which channel to connect to, will initialize the channel if it's not initialized yet */
+      /** Which channel to connect to */
       channel: PropTypes.shape({
         watch: PropTypes.func,
       }).isRequired,
-      /** Client is passed automatically via the Chat Context */
+      /** Client is passed via the Chat Context */
       client: PropTypes.object.isRequired,
-      /** The loading indicator to use */
-      // LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      isOnline: PropTypes.bool,
+      /**
+       * Loading indicator UI component. This will be shown on the screen until the messages are
+       * being queried from channelœ. Once the messages are loaded, loading indicator is removed from the screen
+       * and replaced with children of the Channel component.
+       *
+       * Defaults to and accepts same props as: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
+       */
+      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Error indicator UI component. This will be shown on the screen if channel query fails.
+       *
+       * Defaults to and accepts same props as: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
+       *
+       * */
+      LoadingErrorIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+      /**
+       * Empty state indicator UI component. This will be shown on the screen if channel has no messages.
+       *
+       * Defaults to and accepts same props as: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
+       *
+       * */
+      EmptyStateIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+      /**
+       * Message UI component to display a message in message list.
+       *
+       * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+       *
+       * */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Attachment UI component to display attachment in individual message.
+       *
+       * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+       * */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 

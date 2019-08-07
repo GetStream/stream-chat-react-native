@@ -11,7 +11,7 @@ client.setUser(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiSm9obiIsImlhdCI6MTU0ODI5ODUxN30.hyonbQnOLuFsr15mdmc_JF4sBOm2SURK4eBvTOx3ZIg',
 );
 
-export const channel = client.channel('team', 'docs', {
+export const channel = client.channel('messaging', 'general', {
   image:
     'https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg',
   name: 'Talk about the documentation',
@@ -302,3 +302,19 @@ export const MessageMock = {
   canDeleteMessage: () => true,
   canEditMessage: () => true,
 };
+
+// Based on: https://javascript.info/promise-basics#example-loadscript
+function dynamicallyLoadScript(url) {
+  return new Promise(function(resolve, reject) {
+    const script = document.createElement('script');
+    script.src = url;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`Error when loading ${url}!`));
+    document.body.appendChild(script);
+  });
+}
+dynamicallyLoadScript('https://snack.expo.io/embed.js');
+
+import WebPlayer from 'react-native-web-player';
+import React from 'react';
+export const WPFrame = () => <WebPlayer style={{ width: 800, height: 500 }} />;

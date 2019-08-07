@@ -240,9 +240,13 @@ const Message = withKeyboardContext(
               handleFlag={this.handleFlag}
               handleMute={this.handleMute}
               handleAction={this.handleAction}
-              handleReply={this.handleReply}
               handleRetry={this.handleRetry}
               isMyMessage={this.isMyMessage}
+              isAdmin={this.isAdmin}
+              canEditMessage={this.canEditMessage}
+              canDeleteMessage={this.canDeleteMessage}
+              handleEdit={this.handleEdit}
+              handleDelete={this.handleDelete}
               openThread={
                 this.props.openThread &&
                 this.props.openThread.bind(this, message)

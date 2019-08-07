@@ -8,12 +8,44 @@ It keeps the following state:
 
 Here's an example of how to render a list of messages:
 
+(This example is rendered using react-native-web. Some interactions such as touch may not work as expected. For full experience, use the example below using expo snack)
+
 ```js
 const data = require('./data');
+const View = require('react-native').View;
 
 <Chat client={data.client}>
   <Channel channel={data.channel}>
-    <MessageList />
+    <View
+      style={{
+        height: '500px',
+        width: '350px',
+        borderColor: 'silver',
+        borderWidth: '5px',
+        borderRadius: '20px',
+      }}
+    >
+      <MessageList />
+    </View>
   </Channel>
 </Chat>;
+```
+
+#### Snack example
+
+```js
+<div
+  data-snack-id="@vishalnarkhede/messagelist-example"
+  data-snack-platform="android"
+  data-snack-preview="true"
+  data-snack-theme="light"
+  style={{
+    overflow: 'hidden',
+    background: '#fafafa',
+    border: '1px solid rgba(0,0,0,.08)',
+    borderRadius: '4px',
+    height: '505px',
+    width: '100',
+  }}
+></div>
 ```
