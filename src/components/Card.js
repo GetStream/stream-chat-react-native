@@ -83,6 +83,7 @@ export const Card = withMessageContentContext(
           image_url,
           thumb_url,
           title,
+          text,
           title_link,
           og_scrape_url,
           type,
@@ -109,6 +110,7 @@ export const Card = withMessageContentContext(
                 }}
               >
                 {title && <Text>{title}</Text>}
+                {text && <Text>{text}</Text>}
                 <Text>{this.trimUrl(title_link || og_scrape_url)}</Text>
               </View>
               {type === 'giphy' && <Image source={giphyLogo} />}
