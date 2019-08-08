@@ -125,6 +125,7 @@ export const MessageContent = themed(
     };
 
     static defaultProps = {
+      Attachment,
       reactionsEnabled: true,
       Attachment,
       repliesEnabled: true,
