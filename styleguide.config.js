@@ -59,9 +59,7 @@ module.exports = {
       name: 'Message Components',
       components: [
         'src/components/Message.js',
-        'src/components/MessageSimple.js',
-        'src/components/MessageTeam.js',
-        'src/components/MessageLivestream.js',
+        'src/components/MessageSimple/index.js',
         'src/components/Attachment.js',
         'src/components/AttachmentActions.js',
         'src/components/AutoComplete.js',

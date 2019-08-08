@@ -427,6 +427,8 @@ const MessageList = withChannelContext(
         const readBy = this.readData[message.id] || [];
         return (
           <Message
+            client={this.props.client}
+            channel={this.props.channel}
             onThreadSelect={this.props.onThreadSelect}
             message={message}
             groupStyles={groupStyles}
@@ -443,6 +445,11 @@ const MessageList = withChannelContext(
             editing={this.props.editing}
             threadList={this.props.threadList}
             messageActions={this.props.messageActions}
+            updateMessage={this.props.updateMessage}
+            removeMessage={this.props.removeMessage}
+            retrySendMessage={this.props.retrySendMessage}
+            openThread={this.props.openThread}
+            dismissKeyboard={this.props.dismissKeyboard}
           />
         );
       }

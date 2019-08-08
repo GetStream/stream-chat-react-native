@@ -30,6 +30,214 @@ export const channels = client.queryChannels(filters, sort, {
 });
 
 export const message = {
+  attachments: [],
+  command: '',
+  created_at: '2019-01-25T00:18:59.675Z',
+  html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  own_reactions: [
+    {
+      created_at: '2019-01-25T16:24:00.173967Z',
+      id: 142,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'love',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+    {
+      created_at: '2019-01-25T16:23:58.939438Z',
+      id: 141,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'like',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+  ],
+  reaction_counts: {
+    like: 1,
+    love: 1,
+  },
+  reactions: [
+    {
+      created_at: '2019-01-25T16:24:00.173967Z',
+      id: 142,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'love',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+    {
+      created_at: '2019-01-25T16:23:58.939438Z',
+      id: 141,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'like',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+  ],
+  reply_count: 0,
+  text: 'Hey this is getstream message',
+  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
+  type: 'regular',
+  updated_at: '2019-01-25T16:24:00.181Z',
+  user: {
+    created_at: '2019-01-22T16:35:18.417456Z',
+    id: 'thierry',
+    image:
+      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
+    last_active: '2019-01-25T09:23:47.108127-07:00',
+    online: true,
+    role: 'user',
+    updated_at: '2019-01-25T16:23:47.052538Z',
+  },
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  status: 'received',
+};
+
+export const messageWithImages = {
+  attachments: [
+    {
+      image_url:
+        'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
+      thumb_url:
+        'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
+      type: 'image',
+    },
+    {
+      image_url:
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+      thumb_url:
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+      type: 'image',
+    },
+    {
+      image_url:
+        'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
+      thumb_url:
+        'https://www.fujixpassion.com/wp-content/uploads/2016/01/Image-1-Title.jpg',
+      type: 'image',
+    },
+    {
+      image_url:
+        'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
+      thumb_url:
+        'https://i-cdn.phonearena.com/images/articles/47012-image/photo2.jpg',
+      type: 'image',
+    },
+  ],
+  command: '',
+  created_at: '2019-01-25T00:18:59.675Z',
+  html: '',
+  own_reactions: [
+    {
+      created_at: '2019-01-25T16:24:00.173967Z',
+      id: 142,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'love',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+    {
+      created_at: '2019-01-25T16:23:58.939438Z',
+      id: 141,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'like',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+  ],
+  reaction_counts: {
+    like: 1,
+    love: 1,
+  },
+  reactions: [
+    {
+      created_at: '2019-01-25T16:24:00.173967Z',
+      id: 142,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'love',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+    {
+      created_at: '2019-01-25T16:23:58.939438Z',
+      id: 141,
+      message_id: 'd46540e6-fb54-42bf-9de1-654c866cf587',
+      type: 'like',
+      user: {
+        created_at: '2019-01-22T16:35:18.417456Z',
+        id: 'thierry',
+        last_active: '2019-01-25T09:23:47.108127-07:00',
+        online: true,
+        role: 'user',
+        updated_at: '2019-01-25T16:23:47.052538Z',
+      },
+    },
+  ],
+  reply_count: 0,
+  text: 'This message contains images',
+  id: 'thierry-e298f569-8745-407f-a02b-f75c0206612f',
+  type: 'regular',
+  updated_at: '2019-01-25T16:24:00.181Z',
+  user: {
+    created_at: '2019-01-22T16:35:18.417456Z',
+    id: 'thierry',
+    image:
+      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
+    last_active: '2019-01-25T09:23:47.108127-07:00',
+    online: true,
+    role: 'user',
+    updated_at: '2019-01-25T16:23:47.052538Z',
+  },
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  status: 'received',
+};
+
+export const messageWithUrlPreview = {
   attachments: [
     {
       image_url:
@@ -120,6 +328,8 @@ export const message = {
   user: {
     created_at: '2019-01-22T16:35:18.417456Z',
     id: 'thierry',
+    image:
+      'https://cdn.pixabay.com/photo/2014/03/25/16/54/user-297566__340.png',
     last_active: '2019-01-25T09:23:47.108127-07:00',
     online: true,
     role: 'user',
