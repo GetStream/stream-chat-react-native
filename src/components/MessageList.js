@@ -77,17 +77,17 @@ const MessageList = withChannelContext(
        * Boolean weather current message list is a thread.
        */
       threadList: PropTypes.bool,
-      /** **Available from [chat context](#chatcontext)** */
+      /** **Available from [chat context](https://getstream.github.io/stream-chat-react-native/#chatcontext)** */
       client: PropTypes.object,
-      /** **Available from [channel context](#channelcontext)** */
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      /** **Available from [channel context](#channelcontext)** */
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      /** **Available from [channel context](#channelcontext)** */
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       messages: PropTypes.array.isRequired,
-      /** **Available from [channel context](#channelcontext)** */
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       read: PropTypes.object,
-      /** **Available from [channel context](#channelcontext)** */
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       typing: PropTypes.object,
       /** Network status */
       online: PropTypes.bool,

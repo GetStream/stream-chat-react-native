@@ -74,12 +74,7 @@ module.exports = {
       components: [
         'src/components/MessageInput.js',
         'src/components/ImageUploadPreview.js',
-        'src/components/MessageInputSmall.js',
-        'src/components/MessageInputLarge.js',
-        'src/components/MessageInputFlat.js',
-        'src/components/ChatAutoComplete.js',
-        'src/components/AutoComplete.js',
-        'src/components/EditMessageForm.js',
+        'src/components/FileUploadPreview.js',
       ],
       exampleMode: 'collapse',
       usageMode: 'expand',
@@ -118,6 +113,22 @@ module.exports = {
         {
           name: 'withChannelContext',
           content: 'src/components/docs/withChannelContext.md',
+        },
+        {
+          name: 'KeyboardContext',
+          content: 'src/components/docs/KeyboardContext.md',
+        },
+        {
+          name: 'withKeyboardContext',
+          content: 'src/components/docs/withKeyboardContext.md',
+        },
+        {
+          name: 'SuggestionsContext',
+          content: 'src/components/docs/SuggestionsContext.md',
+        },
+        {
+          name: 'withSuggestionsContext',
+          content: 'src/components/docs/withSuggestionsContext.md',
         },
       ],
       exampleMode: 'collapse',

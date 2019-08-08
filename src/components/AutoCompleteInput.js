@@ -250,7 +250,6 @@ export class AutoCompleteInput extends React.PureComponent {
         onChangeText={(text) => {
           this.handleChange(text);
         }}
-        numberOfLines={20}
         value={this.state.text}
         onSelectionChange={this.handleSelectionChange}
         multiline

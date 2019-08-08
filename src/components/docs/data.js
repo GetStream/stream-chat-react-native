@@ -22,6 +22,12 @@ export const channelContext = {
   channel,
 };
 
+export const suggestionsContext = {
+  openSuggestions: () => {},
+  closeSuggestions: () => {},
+  setInputBoxContainerRef: () => {},
+  updateSuggestions: () => {},
+};
 const filters = { type: 'team', example: 1 };
 const sort = { last_message_at: -1 };
 
