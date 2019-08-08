@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.17] 2019-08-08
+
+- Fixing prop to override Attachment UI component
+
 ## [0.1.16] 2019-08-07
 
 - Attachment for URL preview were broken. Fixed.

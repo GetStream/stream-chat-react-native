@@ -98,6 +98,7 @@ export const MessageContent = themed(
     };
 
     static defaultProps = {
+      Attachment,
       reactionsEnabled: true,
       repliesEnabled: true,
     };
@@ -192,6 +193,8 @@ export const MessageContent = themed(
         reactionsEnabled,
         repliesEnabled,
       } = this.props;
+
+      const Attachment = this.props.Attachment;
       const hasAttachment = Boolean(
         message && message.attachments && message.attachments.length,
       );
