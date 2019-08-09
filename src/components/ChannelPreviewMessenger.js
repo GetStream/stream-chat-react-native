@@ -2,6 +2,8 @@ import React, { PureComponent } from 'react';
 import { Avatar } from './Avatar';
 import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
+import { themed } from '../styles/theme';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -54,39 +56,61 @@ const Message = styled.Text`
   ${({ theme }) => theme.channelPreview.message.css}
 `;
 
-export class ChannelPreviewMessenger extends PureComponent {
-  channelPreviewButton = React.createRef();
+/**
+ * ChannelPreviewMessenger - UI component for indivisual item in list of channels.
+ *
+ * @example ./docs/ChannelPreviewMessenger.md
+ */
+export const ChannelPreviewMessenger = themed(
+  class ChannelPreviewMessenger extends PureComponent {
+    channelPreviewButton = React.createRef();
+    static themePath = 'channelPreview';
 
-  onSelectChannel = () => {
-    this.props.setActiveChannel(this.props.channel);
-  };
+    static propTypes = {
+      /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
+      setActiveChannel: PropTypes.func,
+      /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
+      channel: PropTypes.object,
+      /** Latest message (object) on channel */
+      latestMessage: PropTypes.object,
+      /** Number of unread messages on channel */
+      unread: PropTypes.number,
+    };
 
-  render() {
-    const { channel } = this.props;
-    return (
-      <Container onPress={this.onSelectChannel}>
-        <Avatar image={channel.data.image} size={40} />
-        <Details>
-          <DetailsTop>
-            <Title ellipsizeMode="tail" numberOfLines={1}>
-              {channel.data.name}
-            </Title>
-            <Date>{this.props.latestMessage.created_at}</Date>
-          </DetailsTop>
-          <Message
-            unread={this.props.unread > 0}
-            style={{
-              color: this.props.unread > 0 ? 'black' : '#767676',
-              fontSize: 13,
-              fontWeight: this.props.unread > 0 ? 'bold' : 'normal',
-            }}
-          >
-            {!channel.state.messages[0]
-              ? 'Nothing yet...'
-              : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), 14)}
-          </Message>
-        </Details>
-      </Container>
-    );
-  }
-}
+    onSelectChannel = () => {
+      this.props.setActiveChannel(this.props.channel);
+    };
+
+    render() {
+      const { channel } = this.props;
+      return (
+        <Container onPress={this.onSelectChannel}>
+          <Avatar image={channel.data.image} size={40} />
+          <Details>
+            <DetailsTop>
+              <Title ellipsizeMode="tail" numberOfLines={1}>
+                {channel.data.name}
+              </Title>
+              <Date>{this.props.latestMessage.created_at}</Date>
+            </DetailsTop>
+            <Message
+              unread={this.props.unread > 0}
+              style={{
+                color: this.props.unread > 0 ? 'black' : '#767676',
+                fontSize: 13,
+                fontWeight: this.props.unread > 0 ? 'bold' : 'normal',
+              }}
+            >
+              {!this.props.latestMessage
+                ? 'Nothing yet...'
+                : truncate(
+                    this.props.latestMessage.text.replace(/\n/g, ' '),
+                    14,
+                  )}
+            </Message>
+          </Details>
+        </Container>
+      );
+    }
+  },
+);

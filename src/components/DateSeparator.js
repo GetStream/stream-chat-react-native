@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 import Moment from 'moment';
+import { themed } from '../styles/theme';
 
 const Container = styled.View`
   display: flex;
@@ -37,7 +38,11 @@ const Date = styled.Text`
   ${({ theme }) => theme.messageList.dateSeparator.date.css}
 `;
 
-const DateSeparator = ({ message, formatDate }) => (
+/**
+ * @extends PureComponent
+ * @example ./docs/DateSeparator.md
+ */
+const DateSeparatorComp = ({ message, formatDate }) => (
   <Container>
     <Line />
     <DateText>
@@ -54,4 +59,6 @@ const DateSeparator = ({ message, formatDate }) => (
   </Container>
 );
 
-export { DateSeparator };
+DateSeparatorComp.themePath = 'messageList.dateSeparator';
+
+export const DateSeparator = themed(DateSeparatorComp);

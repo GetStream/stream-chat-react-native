@@ -19,14 +19,17 @@ export const isPromise = (thing) => {
 };
 
 /**
- * ChannelList - A preview list of channels, allowing you to select the channel you want to open
+ * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
+ * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
+ * provided to this component as prop. By default ChannelListMessenger is used a list UI.
+ *
  * @extends PureComponent
  * @example ./docs/ChannelList.md
  */
 const ChannelList = withChatContext(
   class ChannelList extends PureComponent {
     static propTypes = {
-      /** The Preview to use, defaults to ChannelPreviewMessenger */
+      /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
       Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 
       /** The loading indicator to use */
@@ -117,7 +120,6 @@ const ChannelList = withChatContext(
       super(props);
       this.state = {
         error: false,
-        loading: true,
         channels: Immutable([]),
         channelIds: Immutable([]),
         loadingChannels: true,
@@ -158,10 +160,6 @@ const ChannelList = withChatContext(
     componentDidCatch(error, info) {
       console.warn(error, info);
     }
-
-    closeMenu = () => {
-      this.menuButton.current.checked = false;
-    };
 
     queryChannels = async (resync = false) => {
       // Don't query again if query is already active.
@@ -399,7 +397,6 @@ const ChannelList = withChatContext(
 
     render() {
       const context = {
-        closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
       };
       const List = this.props.List;

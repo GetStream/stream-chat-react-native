@@ -75,12 +75,12 @@ export const MessageSimple = themed(
       groupStyles: PropTypes.array,
       /** Boolean if current message is part of thread */
       isThreadList: PropTypes.bool,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       openThread: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       client: PropTypes.object,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
-      readBy: PropTypes.object,
+      /** A list of users who have read the message */
+      readBy: PropTypes.array,
       /** Latest message id on current channel */
       lastReceivedId: PropTypes.string,
     };

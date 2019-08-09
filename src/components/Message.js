@@ -55,17 +55,17 @@ const Message = withKeyboardContext(
       messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
       /** Latest message id on current channel */
       lastReceivedId: PropTypes.string,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       setEditingState: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       updateMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       removeMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       retrySendMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react/#channelcontext) */
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
       openThread: PropTypes.func,
-      /** @see See [Keyboard Context](https://getstream.github.io/stream-chat-react/#keyboardcontext) */
+      /** @see See [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
       dismissKeyboard: PropTypes.func,
     };
 

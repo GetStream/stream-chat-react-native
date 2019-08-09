@@ -449,7 +449,6 @@ const MessageList = withChannelContext(
             removeMessage={this.props.removeMessage}
             retrySendMessage={this.props.retrySendMessage}
             openThread={this.props.openThread}
-            dismissKeyboard={this.props.dismissKeyboard}
           />
         );
       }

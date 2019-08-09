@@ -1,3 +1,5 @@
+Unread channel preview:
+
 ```js
 const data = require('./data');
 const View = require('react-native').View;
@@ -8,7 +10,7 @@ const View = require('react-native').View;
   }}
 >
   <Chat client={data.client}>
-    <ChannelList channels={data.channels} />
+    <ChannelList channels={data.channels} List={ChannelListMessenger} />
   </Chat>
 </View>;
 ```

@@ -70,7 +70,6 @@ export class AutoCompleteInput extends React.PureComponent {
         this.state.text,
       ),
       onSelect: this.onSelectSuggestion,
-      output: triggers[this.state.currentTrigger].output,
     });
   }
 

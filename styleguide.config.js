@@ -91,6 +91,8 @@ module.exports = {
         'src/components/Image.js',
         'src/components/DateSeparator.js',
         'src/components/Window.js',
+        'src/components/ChannelListMessenger.js',
+        'src/components/ChannelPreviewMessenger.js',
       ],
       exampleMode: 'collapse',
       usageMode: 'expand',
@@ -129,6 +131,29 @@ module.exports = {
         {
           name: 'withSuggestionsContext',
           content: 'src/components/docs/withSuggestionsContext.md',
+        },
+      ],
+      exampleMode: 'collapse',
+      usageMode: 'expand',
+    },
+    {
+      name: 'Custom UI component props',
+      sections: [
+        {
+          name: 'List (in ChannelList)',
+          content: 'src/components/docs/ListProps.md',
+        },
+        {
+          name: 'Preview (in ChannelList)',
+          content: 'src/components/docs/PreviewProps.md',
+        },
+        {
+          name: 'Message (in MessageList)',
+          content: 'src/components/docs/MessageProps.md',
+        },
+        {
+          name: 'Attachment (in MessageSimple)',
+          content: 'src/components/docs/AttachmentProps.md',
         },
       ],
       exampleMode: 'collapse',

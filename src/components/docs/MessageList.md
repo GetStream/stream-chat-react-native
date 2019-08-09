@@ -8,7 +8,7 @@ It keeps the following state:
 
 Here's an example of how to render a list of messages:
 
-(This example is rendered using react-native-web. Some interactions such as touch may not work as expected. For full experience, use the example below using expo snack)
+<!-- (This example is rendered using react-native-web. Some interactions such as touch may not work as expected. For full experience, use the example below using expo snack)
 
 ```js
 const data = require('./data');
@@ -29,7 +29,7 @@ const View = require('react-native').View;
     </View>
   </Channel>
 </Chat>;
-```
+``` -->
 
 #### Snack example
 
