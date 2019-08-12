@@ -5592,9 +5592,9 @@ locate-path@^3.0.0:
     path-exists "^3.0.0"
 
 lodash-es@^4.17.11:
-  version "4.17.11"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.11.tgz#145ab4a7ac5c5e52a3531fb4f310255a152b4be0"
-  integrity sha512-DHb1ub+rMjjrxqlB3H56/6MXtm1lSksDp2rA2cNWjG8mlDUYFhUj3Di2Zn5IwSU87xLv8tNIQ7sSwE/YOX/D/Q==
+  version "4.17.15"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
+  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
 
 lodash.filter@^4.6.0:
   version "4.6.0"
@@ -8680,10 +8680,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.1.17:
-  version "0.1.17"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.17.tgz#77b31f0299df26fd4d6d2704c99e38188319b722"
-  integrity sha512-fs2XMoi8LvYmIWn71uk7u4I//SsZ4d0PP24QX0e/OqvGOc9MaAOlnC3MAEJJ112orlGSGqOO8llueXW/158G9g==
+stream-chat-react-native-core@v0.1.18:
+  version "0.1.18"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.1.18.tgz#938be46b1183c85c79eedeadf719865d6c924ad3"
+  integrity sha512-/ACcjRfyz4fZiPglA2Jjt3J4Ehi3lc1tqdJRk0FdeRjRrIhyn2T1L1boejnCpFw3LGE4APMEw+B0mXw1lBaCKw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
