@@ -28,6 +28,7 @@ export const Chat = themed(
     static propTypes = {
       /** The StreamChat client object */
       client: PropTypes.object.isRequired,
+      /** Theme object */
       style: PropTypes.object,
     };
 

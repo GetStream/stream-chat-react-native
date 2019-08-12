@@ -42,23 +42,30 @@ const Date = styled.Text`
  * @extends PureComponent
  * @example ./docs/DateSeparator.md
  */
-const DateSeparatorComp = ({ message, formatDate }) => (
-  <Container>
-    <Line />
-    <DateText>
-      {formatDate ? (
-        formatDate(message.date)
-      ) : (
-        <React.Fragment>
-          <Date>{Moment(message.date).format('dddd')}</Date> at{' '}
-          {Moment(message.date).format('hh:mm A')}
-        </React.Fragment>
-      )}
-    </DateText>
-    <Line />
-  </Container>
+
+export const DateSeparator = themed(
+  class DateSeparator extends React.PureComponent {
+    static themePath = 'messageList.dateSeparator';
+
+    render() {
+      const { message, formatDate } = this.props;
+
+      return (
+        <Container>
+          <Line />
+          <DateText>
+            {formatDate ? (
+              formatDate(message.date)
+            ) : (
+              <React.Fragment>
+                <Date>{Moment(message.date).format('dddd')}</Date> at{' '}
+                {Moment(message.date).format('hh:mm A')}
+              </React.Fragment>
+            )}
+          </DateText>
+          <Line />
+        </Container>
+      );
+    }
+  },
 );
-
-DateSeparatorComp.themePath = 'messageList.dateSeparator';
-
-export const DateSeparator = themed(DateSeparatorComp);
