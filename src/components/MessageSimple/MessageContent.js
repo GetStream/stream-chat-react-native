@@ -91,10 +91,37 @@ export const MessageContent = themed(
     static themePath = 'message.content';
 
     static propTypes = {
+      /** @see See [channel context](#channelcontext) */
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** enabled reactions, this is usually set by the parent component based on channel configs */
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */
       repliesEnabled: PropTypes.bool.isRequired,
+      /**
+       * Handler to open the thread on message. This is callback for touch event for replies button.
+       *
+       * @param message A message object to open the thread upon.
+       * */
+      onThreadSelect: PropTypes.func,
+      /**
+       * Callback handler for onPress event on message component
+       */
+      onMessageTouch: PropTypes.func,
+      /**
+       * Handler to delete a current message.
+       */
+      handleDelete: PropTypes.func,
+      /**
+       * Handler to edit a current message. This message simply sets current message as value of `editing` property of channel context.
+       * `editing` prop is then used by MessageInput component to switch to edit mode.
+       */
+      handleEdit: PropTypes.func,
+      /** @see See [keyboard context](https://getstream.io/chat/docs/#keyboardcontext) */
+      dismissKeyboard: PropTypes.func,
+      /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+      handleAction: PropTypes.func,
+      /** Position of message. 'right' | 'left' */
+      alignment: PropTypes.string,
     };
 
     static defaultProps = {
@@ -115,20 +142,16 @@ export const MessageContent = themed(
         this.props.onThreadSelect(this.props.message);
     };
 
-    onMessageTouch = () => {
-      this.props.onMessageTouch(this.props.message.id);
-    };
-
     showActionSheet = () => {
       this.ActionSheet.show();
     };
 
     handleDelete = async () => {
-      await this.props.Message.handleDelete();
+      await this.props.handleDelete();
     };
 
     handleEdit = () => {
-      this.props.Message.handleEdit();
+      this.props.handleEdit();
     };
 
     _setReactionPickerPosition = () => {
@@ -192,6 +215,8 @@ export const MessageContent = themed(
         groupStyles,
         reactionsEnabled,
         repliesEnabled,
+        canEditMessage,
+        canDeleteMessage,
       } = this.props;
 
       const Attachment = this.props.Attachment;
@@ -245,7 +270,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-        Message.canEditMessage()
+        canEditMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.edit,
@@ -255,7 +280,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-        Message.canDeleteMessage()
+        canDeleteMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.delete,
@@ -351,7 +376,6 @@ export const MessageContent = themed(
                 disabled={
                   message.status === 'failed' || message.type === 'error'
                 }
-                onMessageTouch={this.onMessageTouch}
                 Message={Message}
                 openThread={this.openThread}
                 handleReaction={handleReaction}

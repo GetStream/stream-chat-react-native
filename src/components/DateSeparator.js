@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 import Moment from 'moment';
+import { themed } from '../styles/theme';
 
 const Container = styled.View`
   display: flex;
@@ -37,21 +38,34 @@ const Date = styled.Text`
   ${({ theme }) => theme.messageList.dateSeparator.date.css}
 `;
 
-const DateSeparator = ({ message, formatDate }) => (
-  <Container>
-    <Line />
-    <DateText>
-      {formatDate ? (
-        formatDate(message.date)
-      ) : (
-        <React.Fragment>
-          <Date>{Moment(message.date).format('dddd')}</Date> at{' '}
-          {Moment(message.date).format('hh:mm A')}
-        </React.Fragment>
-      )}
-    </DateText>
-    <Line />
-  </Container>
-);
+/**
+ * @extends PureComponent
+ * @example ./docs/DateSeparator.md
+ */
 
-export { DateSeparator };
+export const DateSeparator = themed(
+  class DateSeparator extends React.PureComponent {
+    static themePath = 'messageList.dateSeparator';
+
+    render() {
+      const { message, formatDate } = this.props;
+
+      return (
+        <Container>
+          <Line />
+          <DateText>
+            {formatDate ? (
+              formatDate(message.date)
+            ) : (
+              <React.Fragment>
+                <Date>{Moment(message.date).format('dddd')}</Date> at{' '}
+                {Moment(message.date).format('hh:mm A')}
+              </React.Fragment>
+            )}
+          </DateText>
+          <Line />
+        </Container>
+      );
+    }
+  },
+);

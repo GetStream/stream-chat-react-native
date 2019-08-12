@@ -105,6 +105,9 @@ export class ChannelInner extends PureComponent {
     ]),
     /** The indicator to use when message list is empty */
     EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    isOnline: PropTypes.bool,
+    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
 
   static defaultProps = {
@@ -499,7 +502,6 @@ export class ChannelInner extends PureComponent {
 
   getContext = () => ({
     ...this.state,
-    channels: this.props.channels,
     client: this.props.client,
     channel: this.props.channel,
     Message: this.props.Message,
@@ -508,8 +510,6 @@ export class ChannelInner extends PureComponent {
     removeMessage: this.removeMessage,
     sendMessage: this.sendMessage,
     retrySendMessage: this.retrySendMessage,
-    resetNotification: this.resetNotification,
-    listenToScroll: this.listenToScroll,
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
@@ -520,9 +520,6 @@ export class ChannelInner extends PureComponent {
     openThread: this.openThread,
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
-    openSuggestions: this.openSuggestions,
-    closeSuggestions: this.closeSuggestions,
-    updateSuggestions: this.updateSuggestions,
   });
 
   renderComponent = () => this.props.children;

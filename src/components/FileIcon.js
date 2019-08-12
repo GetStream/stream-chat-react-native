@@ -207,7 +207,12 @@ function mimeTypeToIcon(mimeType) {
 export default class FileIcon extends React.Component {
   render() {
     // const { size, big, filename, mimeType } = this.props;
-    const { mimeType } = this.props;
-    return <Image source={mimeTypeToIcon(mimeType)} />;
+    const { mimeType, size } = this.props;
+    return (
+      <Image
+        source={mimeTypeToIcon(mimeType)}
+        style={{ height: size, width: size }}
+      />
+    );
   }
 }

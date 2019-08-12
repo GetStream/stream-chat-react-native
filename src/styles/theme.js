@@ -158,6 +158,7 @@ export const defaultTheme = {
     attachButton: {},
     attachButtonIcon: {},
     sendButton: {},
+    sendButtonIcon: {},
     imageUploadPreview: {
       container: {},
       itemContainer: {},

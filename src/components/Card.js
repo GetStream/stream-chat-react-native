@@ -35,6 +35,12 @@ const Cover = styled.Image`
   ${({ theme }) => theme.message.card.cover.css}
 `;
 
+/**
+ * UI component for card in attachments.
+ *
+ * @example ./docs/Card.md
+ * @extends PureComponent
+ */
 export const Card = withMessageContentContext(
   themed(
     class Card extends React.Component {
@@ -52,6 +58,9 @@ export const Card = withMessageContentContext(
         thumb_url: PropTypes.string,
         /** Description retured by the OG scraper */
         text: PropTypes.string,
+        type: PropTypes.string,
+        alignment: PropTypes.string,
+        onLongPress: PropTypes.func,
       };
 
       constructor(props) {
@@ -88,13 +97,14 @@ export const Card = withMessageContentContext(
           og_scrape_url,
           type,
           alignment,
+          onLongPress,
         } = this.props;
         return (
           <Container
             onPress={() => {
               this._goToURL(og_scrape_url || image_url || thumb_url);
             }}
-            onLongPress={this.props.onLongPress}
+            onLongPress={onLongPress}
             alignment={alignment}
           >
             <Cover

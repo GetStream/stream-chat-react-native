@@ -70,7 +70,6 @@ export class AutoCompleteInput extends React.PureComponent {
         this.state.text,
       ),
       onSelect: this.onSelectSuggestion,
-      output: triggers[this.state.currentTrigger].output,
     });
   }
 
@@ -250,7 +249,6 @@ export class AutoCompleteInput extends React.PureComponent {
         onChangeText={(text) => {
           this.handleChange(text);
         }}
-        numberOfLines={20}
         value={this.state.text}
         onSelectionChange={this.handleSelectionChange}
         multiline

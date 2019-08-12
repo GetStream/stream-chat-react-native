@@ -13,20 +13,23 @@ import uniqBy from 'lodash/uniqBy';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
 
-/**
- * ChannelList - A preview list of channels, allowing you to select the channel you want to open
- * @extends PureComponent
- * @example ./docs/ChannelList.md
- */
 export const isPromise = (thing) => {
   const promise = thing && typeof thing.then === 'function';
   return promise;
 };
 
+/**
+ * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
+ * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
+ * provided to this component as prop. By default ChannelListMessenger is used a list UI.
+ *
+ * @extends PureComponent
+ * @example ./docs/ChannelList.md
+ */
 const ChannelList = withChatContext(
   class ChannelList extends PureComponent {
     static propTypes = {
-      /** The Preview to use, defaults to ChannelPreviewMessenger */
+      /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
       Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 
       /** The loading indicator to use */
@@ -44,32 +47,59 @@ const ChannelList = withChatContext(
 
       List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       onSelect: PropTypes.func,
-
       /**
-       * Function that overrides default behaviour when users receives a
-       * new message on channel not being watched.
-       * It receives ChannelList (this) as first parameter, and event as second.
-       */
+       * Function that overrides default behaviour when new message is received on channel that is not being watched
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.message_new` event
+       * */
       onMessageNew: PropTypes.func,
       /**
        * Function that overrides default behaviour when users gets added to a channel
-       * It receives ChannelList (this) as first parameter, and event as second.
-       */
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.added_to_channel` event
+       * */
       onAddedToChannel: PropTypes.func,
-      /** Function that overrides default behaviour when users gets removed from a channel.
-       * It receives ChannelList (this) as first parameter, and event as second.
-       */
+      /**
+       * Function that overrides default behaviour when users gets removed from a channel
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.removed_from_channel` event
+       * */
       onRemovedFromChannel: PropTypes.func,
-
+      /**
+       * Function that overrides default behaviour when channel gets updated
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.channel_updated` event
+       * */
       onChannelUpdated: PropTypes.func,
-      /** Object containing query filters */
+      /**
+       * Object containing query filters
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for filter.
+       * */
       filters: PropTypes.object,
-      /** Object containing query options */
+      /**
+       * Object containing query options
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for options.
+       * */
       options: PropTypes.object,
-      /** Object containing sort parameters */
+      /**
+       * Object containing sort parameters
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for sort.
+       * */
       sort: PropTypes.object,
       /** For flatlist  */
       loadMoreThreshold: PropTypes.number,
+      /** Client object. Avaiable from [Chat context](#chatcontext) */
+      client: PropTypes.object,
+      /**
+       * Function to set change active channel. This function acts as bridge between channel list and currently active channel component.
+       *
+       * @param channel A Channel object
+       */
+      setActiveChannel: PropTypes.func,
     };
 
     static defaultProps = {
@@ -90,7 +120,6 @@ const ChannelList = withChatContext(
       super(props);
       this.state = {
         error: false,
-        loading: true,
         channels: Immutable([]),
         channelIds: Immutable([]),
         loadingChannels: true,
@@ -131,15 +160,6 @@ const ChannelList = withChatContext(
     componentDidCatch(error, info) {
       console.warn(error, info);
     }
-
-    clickCreateChannel = (e) => {
-      this.props.setChannelStart();
-      e.target.blur();
-    };
-
-    closeMenu = () => {
-      this.menuButton.current.checked = false;
-    };
 
     queryChannels = async (resync = false) => {
       // Don't query again if query is already active.
@@ -377,8 +397,6 @@ const ChannelList = withChatContext(
 
     render() {
       const context = {
-        clickCreateChannel: this.clickCreateChannel,
-        closeMenu: this.closeMenu,
         loadNextPage: this.loadNextPage,
       };
       const List = this.props.List;

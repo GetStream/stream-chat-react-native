@@ -4,9 +4,9 @@ Here's what it looks like for today.
 ```js
 const date = new Date();
 <React.Fragment>
-  <DateSeparator date={date} />
-  <DateSeparator date={date} alignment="center" />
-  <DateSeparator date={date} alignment="left" />
+  <DateSeparator message={{ date }} />
+  <DateSeparator message={{ date }} alignment="center" />
+  <DateSeparator message={{ date }} alignment="left" />
 </React.Fragment>;
 ```
 
@@ -15,9 +15,9 @@ and for a date in the past:
 ```js
 const date = new Date('December 17, 1995 03:24:00');
 <React.Fragment>
-  <DateSeparator date={date} />
-  <DateSeparator date={date} alignment="center" />
-  <DateSeparator date={date} alignment="left" />
+  <DateSeparator message={{ date }} />
+  <DateSeparator message={{ date }} alignment="center" />
+  <DateSeparator message={{ date }} alignment="left" />
 </React.Fragment>;
 ```
 
@@ -31,8 +31,12 @@ function formatDate(d) {
 }
 
 <React.Fragment>
-  <DateSeparator formatDate={formatDate} date={date} />
-  <DateSeparator formatDate={formatDate} date={date} alignment="center" />
-  <DateSeparator formatDate={formatDate} date={date} alignment="left" />
+  <DateSeparator formatDate={formatDate} message={{ date }} />
+  <DateSeparator
+    formatDate={formatDate}
+    message={{ date }}
+    alignment="center"
+  />
+  <DateSeparator formatDate={formatDate} message={{ date }} alignment="left" />
 </React.Fragment>;
 ```

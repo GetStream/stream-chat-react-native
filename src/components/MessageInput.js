@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Image, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { withChannelContext, withSuggestionsContext } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
 import { ImageUploadPreview } from './ImageUploadPreview';
@@ -74,6 +74,18 @@ const SendButton = styled.TouchableOpacity`
   ${({ theme }) => theme.messageInput.sendButton.css}
 `;
 
+const SendButtonIcon = styled.Image`
+  width: 15;
+  height: 15;
+  ${({ theme }) => theme.messageInput.sendButtonIcon.css}
+`;
+/**
+ * UI Component for message input
+ * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
+ *
+ * @example ./docs/MessageInput.md
+ * @extends PureComponent
+ */
 const MessageInput = withSuggestionsContext(
   withChannelContext(
     themed(
@@ -86,13 +98,50 @@ const MessageInput = withSuggestionsContext(
 
         static themePath = 'messageInput';
         static propTypes = {
-          /** Override image upload request */
+          /**
+           * Override image upload request
+           *
+           * @param
+           * @param channel Current channel object
+           * */
           doImageUploadRequest: PropTypes.func,
-          /** Override file upload request */
-          doFileUploadRequest: PropTypes.func,
+          /**
+           * Override file upload request
+           *
+           * @param
+           * @param channel Current channel object
+           * */
+          doDocUploadRequest: PropTypes.func,
+          /** Limit on allowed number of files to attach at a time. */
           maxNumberOfFiles: PropTypes.number,
+          /** If component should have image picker functionality  */
           hasImagePicker: PropTypes.bool,
+          /** If component should have file picker functionality  */
           hasFilePicker: PropTypes.bool,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          members: PropTypes.object,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          watchers: PropTypes.object,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          editing: PropTypes.object,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          clearEditingState: PropTypes.func,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          client: PropTypes.object,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          sendMessage: PropTypes.func,
+          /** Parent message object - in case of thread */
+          parent: PropTypes.object,
+          /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+          channel: PropTypes.object,
+          /** Ref callback to set reference on input box container */
+          setInputBoxContainerRef: PropTypes.func,
+          /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+          openSuggestions: PropTypes.func,
+          /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+          closeSuggestions: PropTypes.func,
+          /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+          updateSuggestions: PropTypes.func,
         };
 
         static defaultProps = {
@@ -572,6 +621,9 @@ const MessageInput = withSuggestionsContext(
 
         getCommands = () => {
           const config = this.props.channel.getConfig();
+
+          if (!config) return [];
+
           const allCommands = config.commands;
           return allCommands;
         };
@@ -721,9 +773,9 @@ const MessageInput = withSuggestionsContext(
                       onPress={this.sendMessage}
                     >
                       {this.props.editing ? (
-                        <Image source={iconEdit} />
+                        <SendButtonIcon source={iconEdit} />
                       ) : (
-                        <Image source={iconNewMessage} />
+                        <SendButtonIcon source={iconNewMessage} />
                       )}
                     </SendButton>
                   </InputBoxContainer>

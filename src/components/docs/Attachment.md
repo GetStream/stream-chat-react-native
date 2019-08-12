@@ -73,7 +73,7 @@ Attachment with actions:
 
 ```js
 const Immutable = require('seamless-immutable');
-
+const View = require('react-native').View;
 const a = Immutable({
   actions: [
     {
@@ -99,12 +99,13 @@ const a = Immutable({
     },
   ],
   thumb_url: 'https://media0.giphy.com/media/3o7btXkbsV26U95Uly/giphy.gif',
-  type: 'image',
+  type: 'giphy',
 });
 
 function actionHandler(action) {
   console.log(action);
 }
-
-<Attachment attachment={a} actionHandler={actionHandler} />;
+<View style={{ width: '250px' }}>
+  <Attachment attachment={a} actionHandler={actionHandler} />
+</View>;
 ```

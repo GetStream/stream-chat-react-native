@@ -16,7 +16,10 @@ const Circle = styled(AnimatedView)`
   border-right-color: transparent;
   ${({ theme }) => theme.spinner.css}
 `;
-
+/**
+ * @example ./docs/Spinner.md
+ * @extends PureComponent
+ */
 export const Spinner = themed(
   class Spinner extends React.PureComponent {
     static themePath = 'spinner';

@@ -30,7 +30,9 @@ const Container = styled.View`
   ${({ theme }) => theme.message.reactionList.container.css}
 `;
 
-const ReactionCount = styled.Text`
+const ReactionCount = styled(({ reactionCounts, ...rest }) => (
+  <Text {...rest} />
+))`
   color: white;
   font-size: 12;
   ${({ reactionCounts }) => (reactionCounts < 10 ? null : 'min-width: 20px;')}

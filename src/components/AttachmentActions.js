@@ -50,6 +50,7 @@ const ButtonText = registerCSS(
 
 /**
  * AttachmentActions - The actions you can take on an attachment
+ * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  *
  * @example ./docs/AttachmentActions.md
  * @extends PureComponent
@@ -66,24 +67,19 @@ export const AttachmentActions = themed(
       actions: PropTypes.array.isRequired,
       /** The handler to execute after selecting an action */
       actionHandler: PropTypes.func.isRequired,
-      /** Override for the styling of the component */
-      style: PropTypes.object,
     };
 
     render() {
-      const { id, actions, actionHandler, theme } = this.props;
+      const { id, actions, actionHandler } = this.props;
       return (
-        <Container theme={theme}>
+        <Container>
           {actions.map((action) => (
             <Button
               key={`${id}-${action.value}`}
               buttonStyle={action.style}
               onPress={actionHandler.bind(this, action.name, action.value)}
-              theme={theme}
             >
-              <ButtonText theme={theme} buttonStyle={action.style}>
-                {action.text}
-              </ButtonText>
+              <ButtonText buttonStyle={action.style}>{action.text}</ButtonText>
             </Button>
           ))}
         </Container>
