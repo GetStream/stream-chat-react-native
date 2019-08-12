@@ -143,7 +143,7 @@ class ThreadInner extends React.PureComponent {
       <React.Fragment>
         <MessageList
           messages={this.props.threadMessages}
-          headerComponent={headerComponent}
+          HeaderComponent={headerComponent}
           read={read}
           threadList
           loadMore={this.props.loadMoreThread}

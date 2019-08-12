@@ -172,6 +172,9 @@ const MessageList = withChannelContext(
       headerComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /**
        * UI component for header of message list. By default message list doesn't have any header.
+       * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+       * used in MessageList. Its footer instead of header, since message list is inverted.
+       *
        */
       HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
