@@ -33,7 +33,7 @@ const Channel = withChatContext(
       isOnline: PropTypes.bool,
       /**
        * Loading indicator UI component. This will be shown on the screen until the messages are
-       * being queried from channelœ. Once the messages are loaded, loading indicator is removed from the screen
+       * being queried from channel. Once the messages are loaded, loading indicator is removed from the screen
        * and replaced with children of the Channel component.
        *
        * Defaults to and accepts same props as: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)

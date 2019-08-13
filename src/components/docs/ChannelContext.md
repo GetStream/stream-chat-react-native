@@ -1,5 +1,7 @@
 The channel context provides the following properties:
 
+- `Message` UI component for message. Its same as prop `Message` of [Channel](#channel) component.
+- `Attachment` UI component for attachment in message. Its same as prop `Attachment` of [Channel](#channel) component.
 - `messages` {Array} List of immutable [message objects](https://getstream.io/chat/docs/#message_format)
 - `online` {number} A count of the online users
 - `typing` {ImmutableObject} A map of user ids of users who are typing vs corresponding typing [event object](https://getstream.io/chat/docs/#event_object) (where event type is `typing.start`).

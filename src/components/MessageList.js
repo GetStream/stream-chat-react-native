@@ -48,7 +48,7 @@ const TypingIndicatorContainer = styled.View`
 `;
 
 /**
- * MessageList - The message list components renders a list of messages.
+ * MessageList - The message list component renders a list of messages.
  * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
  *
  * @example ./docs/MessageList.md

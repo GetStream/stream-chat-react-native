@@ -57,7 +57,7 @@ const Message = styled.Text`
 `;
 
 /**
- * ChannelPreviewMessenger - UI component for indivisual item in list of channels.
+ * ChannelPreviewMessenger - UI component for individual item in list of channels.
  *
  * @example ./docs/ChannelPreviewMessenger.md
  */
