@@ -13,7 +13,7 @@ const fileUploads = [
     file: {
       uri: 'https://picsum.photos/200/300?random=2',
       name: 'File name two',
-      type: 'application/msword',
+      type: 'application/pdf',
     },
   },
   {
@@ -21,7 +21,7 @@ const fileUploads = [
     file: {
       uri: 'https://picsum.photos/200/300?random=3',
       name: 'File name three',
-      type: 'application/msword',
+      type: 'text/csv',
     },
   },
 ];
