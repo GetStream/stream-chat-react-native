@@ -62,10 +62,13 @@ yarn start
 
 ### Native package:
 
+#### For react native < 0.60
+
 ```bash
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
+yarn add @react-native-community/netinfo react-native-image-picker react-native-document-picker
 react-native link @react-native-community/netinfo
 
 # if you are plannign to use image picker or file picker or both
@@ -73,6 +76,45 @@ react-native link react-native-image-picker
 react-native link react-native-document-picker
 
 ```
+
+Just to be sure, please verify you are using appropriate version of following packages as per your react-native version.
+
+- netinfo : https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
+
+- react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
+
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/two/App.js) to see usage of components.
+
+OR you can swap this file for your `App.js` in root folder with additional following steps:
+
+```bash
+yarn add react-navigation
+yarn add react-native-gesture-handler
+react-native link react-native-gesture-handler
+```
+
+and finally
+
+```bash
+react-native run-ios
+```
+
+#### For react native >= 0.60
+
+```bash
+react-native init StreamChatReactNativeExample
+cd StreamChatReactNativeExample
+yarn add stream-chat-react-native
+yarn add @react-native-community/netinfo react-native-image-picker react-native-document-picker
+cd ios && pod install && cd ..
+
+```
+
+Just to be sure, please verify you are using appropriate version of following packages as per your react-native version.
+
+- netinfo : https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
+
+- react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/two/App.js) to see usage of components.
 
