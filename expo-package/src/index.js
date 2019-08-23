@@ -1,7 +1,7 @@
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import { NetInfo } from 'react-native';
-// import { ImagePicker, Permissions } from 'expo';
-import { ImagePicker, DocumentPicker, Permissions } from 'expo';
+import { Permissions } from 'expo-permissions';
+import { ImagePicker, DocumentPicker } from 'expo';
 
 registerNativeHandlers({
   NetInfo,

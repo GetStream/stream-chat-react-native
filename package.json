@@ -58,6 +58,7 @@
     "babel-plugin-macros": "^2.5.1",
     "deep-equal": "^1.0.1",
     "deepmerge": "^3.2.0",
+    "expo-permissions": "^6.0.0",
     "file-loader": "^3.0.1",
     "lodash-es": "^4.17.11",
     "metro-react-native-babel-preset": "^0.53.1",
