@@ -148,6 +148,27 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ![Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
 
+## Upgrade
+
+- Upgrade from 0.1.x to 0.2.x:
+
+  - 0.2.x added support for react native 0.60. Dependencies like `react-native-image-picker`, `react-native-document-picker` and `netinfo` have been taken out of hard dependencies and moved to peer dependencies and thus will have to be installed manually on consumer end ([Reference](https://github.com/GetStream/stream-chat-react-native/pull/52/files#diff-83a54d8caab0ea9fcdd5f832b03a5d83))
+  - React native 0.60 came with autolinking functionality, that means if some native libraries are linked manually before upgrade, they will have to be unliked so that react native can autolink them ([Reference](https://facebook.github.io/react-native/blog/2019/07/03/version-60#native-modules-are-now-autolinked))
+
+    ```
+    react-native unlink react-native-image-picker
+    react-native unlink react-native-document-picker
+    react-native unlink @react-native-community/netinfo
+    ```
+
+  - React native 0.60 has been migrated over to AndroidX. In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite usefull to patch these dependencies with androidx support.
+
+  - CocoaPods are not part of React Native's iOS project ([ref](https://facebook.github.io/react-native/blog/2019/07/03/version-60#cocoapods-by-default)). Thus make sure to install all the pod dependencies.
+
+    ```
+    cd ios && pod install && cd ..
+    ```
+
 ## How to run example
 
 ### Expo example

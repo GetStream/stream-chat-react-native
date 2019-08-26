@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.0] 2019-08-26
+
+- Making sdk compatible with react native 0.60
+
 ## [0.1.19] 2019-08-26
 
 - Updating ChannePreviewMessanger component to show other member's name as channel title if channel has no explicate name in channel.data
