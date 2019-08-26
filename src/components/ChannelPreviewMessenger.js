@@ -81,15 +81,38 @@ export const ChannelPreviewMessenger = themed(
       this.props.setActiveChannel(this.props.channel);
     };
 
+    renderAvatar = (otherMembers) => {
+      const { channel } = this.props;
+      if (channel.data.image)
+        return <Avatar image={channel.data.image} size={40} />;
+
+      if (otherMembers.length === 1)
+        return <Avatar image={otherMembers[0].user.image} size={40} />;
+
+      return <Avatar size={40} />;
+    };
+
     render() {
       const { channel } = this.props;
+      let name = channel.data.name;
+      let otherMembers = [];
+      if (!name) {
+        const members = Object.values(channel.state.members);
+        otherMembers = members.filter(
+          (member) => member.user.id !== this.props.client.userID,
+        );
+        name = otherMembers
+          .map((member) => member.user.name || member.user.id || 'Unnamed User')
+          .join(', ');
+      }
+
       return (
         <Container onPress={this.onSelectChannel}>
-          <Avatar image={channel.data.image} size={40} />
+          {this.renderAvatar(otherMembers)}
           <Details>
             <DetailsTop>
               <Title ellipsizeMode="tail" numberOfLines={1}>
-                {channel.data.name}
+                {name}
               </Title>
               <Date>{this.props.latestMessage.created_at}</Date>
             </DetailsTop>
