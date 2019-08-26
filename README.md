@@ -123,14 +123,26 @@ OR you can swap this file for your `App.js` in root folder with additional follo
 ```bash
 yarn add react-navigation
 yarn add react-native-gesture-handler
-react-native link react-native-gesture-handler
+cd ios && pod install && cd ..
 ```
 
 and finally
 
+**iOS**:
+
 ```bash
 react-native run-ios
 ```
+
+**Note for Android**:
+
+If you are using androidx app:
+
+> AndroidX is a major step forward in the Android ecosystem, and the old support library artifacts are being deprecated. For 0.60, React Native has been migrated over to AndroidX. This is a breaking change, and your native code and dependencies will need to be migrated as well.
+
+(reference: https://facebook.github.io/react-native/blog/2019/07/03/version-60#androidx-support)
+
+In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite usefull to patch these dependencies with androidx support.
 
 **NOTE** If you are planning to use file picker functionality, make sure you enable iCloud capability in your app
 
