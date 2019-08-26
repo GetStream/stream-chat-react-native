@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.19] 2019-08-26
+
+- Updating ChannePreviewMessanger component to show other member's name as channel title if channel has no explicate name in channel.data
+
 ## [0.1.18] 2019-08-12
 
 - Fixing keyboard compatible view for android. Status bar height was not taken into account while calculating the height of channel after opening keyboard.
