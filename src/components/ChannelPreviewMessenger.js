@@ -101,7 +101,9 @@ export const ChannelPreviewMessenger = themed(
         otherMembers = members.filter(
           (member) => member.user.id !== this.props.client.userID,
         );
-        name = otherMembers.map((member) => member.user.name).join(', ');
+        name = otherMembers
+          .map((member) => member.user.name || member.user.id || 'Unnamed User')
+          .join(', ');
       }
 
       return (
