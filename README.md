@@ -41,6 +41,10 @@ You can see detailed documentation about the components at https://getstream.git
 
 ```bash
 yarn global add expo-cli
+# expo-cli supports following Node.js versions:
+# * >=8.9.0 <9.0.0 (Maintenance LTS)
+# * >=10.13.0 <11.0.0 (Active LTS)
+# * >=12.0.0 (Current Release)
 expo init StreamChatExpoExample
 cd StreamChatExpoExample
 yarn add stream-chat-expo
@@ -68,7 +72,16 @@ yarn start
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
-yarn add @react-native-community/netinfo react-native-image-picker react-native-document-picker
+
+# https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
+# For React native 0.59.x - use @react-native-community/netinfo@3.2.1
+# For React native <= 0.58.x - use @react-native-community/netinfo@2.0.7
+yarn add @react-native-community/netinfo@3.2.1
+
+# https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
+yarn add react-native-image-picker@0.28.1
+yarn add react-native-document-picker
+
 react-native link @react-native-community/netinfo
 
 # if you are plannign to use image picker or file picker or both
@@ -77,20 +90,15 @@ react-native link react-native-document-picker
 
 ```
 
-Just to be sure, please verify you are using appropriate version of following packages as per your react-native version.
-
-- netinfo : https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
-
-- react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
-
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/two/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
 
 ```bash
 yarn add react-navigation
-yarn add react-native-gesture-handler
+yarn add react-native-gesture-handler@1.3.0 react-native-reanimated
 react-native link react-native-gesture-handler
+react-native link react-native-reanimated
 ```
 
 and finally
@@ -122,7 +130,7 @@ OR you can swap this file for your `App.js` in root folder with additional follo
 
 ```bash
 yarn add react-navigation
-yarn add react-native-gesture-handler
+yarn add react-native-gesture-handler react-native-reanimated
 cd ios && pod install && cd ..
 ```
 
