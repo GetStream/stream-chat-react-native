@@ -33,7 +33,14 @@ const normalBundle = {
       sourcemap: true,
     },
   ],
-  external: ['stream-chat-react-native-core', 'react-native'],
+  external: [
+    'stream-chat-react-native-core',
+    'react-native',
+    'expo-image-picker',
+    'expo-document-picker',
+    'expo-permissions',
+    'react-native-unimodules',
+  ],
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
