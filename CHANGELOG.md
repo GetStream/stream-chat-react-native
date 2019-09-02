@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.1] 2019-09-02
+
+- Making sdk compatible with Expo 33 and 34
+
 ## [0.2.0] 2019-08-26
 
 - Making sdk compatible with react native 0.60
