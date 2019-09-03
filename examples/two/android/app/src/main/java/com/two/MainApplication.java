@@ -1,18 +1,16 @@
 package com.two;
 
 import android.app.Application;
+import android.util.Log;
 
+import com.facebook.react.PackageList;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.ReactApplication;
-import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
-import com.imagepicker.ImagePickerPackage;
-import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
-import com.reactnativecommunity.netinfo.NetInfoPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
-import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -25,13 +23,11 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
-            new ReactNativeDocumentPicker(),
-            new ImagePickerPackage(),
-            new RNGestureHandlerPackage(),
-            new NetInfoPackage()
-      );
+      @SuppressWarnings("UnnecessaryLocalVariable")
+      List<ReactPackage> packages = new PackageList(this).getPackages();
+      // Packages that cannot be autolinked yet can be added manually here, for example:
+      // packages.add(new MyReactNativePackage());
+      return packages;
     }
 
     @Override
