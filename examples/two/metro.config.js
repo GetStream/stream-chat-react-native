@@ -11,7 +11,7 @@ function isExternalModule(modulePath) {
 }
 
 function listDirectories(rootPath, cb) {
-  FS.readdirSync(rootPath).forEach((fileName) => {
+  FS.readdirSync(rootPath).forEach(fileName => {
     if (fileName.charAt(0) === '.') return;
 
     let fullFileName = PATH.join(rootPath, fileName),
@@ -30,7 +30,7 @@ function listDirectories(rootPath, cb) {
     if (!stats.isDirectory()) return;
 
     const external = isExternalModule(fullFileName);
-    cb({ rootPath, symbolic, external, fullFileName, fileName });
+    cb({rootPath, symbolic, external, fullFileName, fileName});
   });
 }
 
@@ -52,7 +52,7 @@ function buildFullModuleMap(
 
   listDirectories(
     moduleRoot,
-    ({ fileName, fullFileName, symbolic, external }) => {
+    ({fileName, fullFileName, symbolic, external}) => {
       if (symbolic)
         return buildFullModuleMap(
           resolvePath(fullFileName, 'node_modules'),
@@ -97,7 +97,7 @@ function findAlernateRoots(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(moduleRoot, ({ fullFileName, fileName, external }) => {
+  listDirectories(moduleRoot, ({fullFileName, fileName, external}) => {
     if (fileName.charAt(0) !== '@') {
       if (external) alternateRoots.push(fullFileName);
     } else {
