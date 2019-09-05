@@ -50,9 +50,9 @@ cd StreamChatExpoExample
 yarn add stream-chat-expo
 ```
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) to see usage of the components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) to see usage of the components.
 
-OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/one/App.js) for your `App.js` in the root folder with additional following steps:
+OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) for your `App.js` in the root folder with additional following steps:
 
 ```bash
 yarn add react-navigation
@@ -90,12 +90,12 @@ react-native link react-native-document-picker
 
 ```
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/two/App.js) to see usage of components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/two/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
 
 ```bash
-yarn add react-navigation
+yarn add react-navigation@3.11.0
 yarn add react-native-gesture-handler@1.3.0 react-native-reanimated
 react-native link react-native-gesture-handler
 react-native link react-native-reanimated
@@ -124,12 +124,12 @@ Just to be sure, please verify you are using appropriate version of following pa
 
 - react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/v0.0.6/examples/two/App.js) to see usage of components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/two/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
 
 ```bash
-yarn add react-navigation
+yarn add react-navigation@3.11.0
 yarn add react-native-gesture-handler react-native-reanimated
 cd ios && pod install && cd ..
 ```
