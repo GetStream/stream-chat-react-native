@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.2] 2019-09-06
+
+- Updated example two to react native 0.60
+- Fixing UX for image/file picker - closing keyboard when you open file/image picker actionsheet
+
 ## [0.2.1] 2019-09-02
 
 - Making sdk compatible with Expo 33 and 34
