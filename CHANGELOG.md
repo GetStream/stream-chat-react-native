@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.3] 2019-09-09
+
+- Fixing pagination issue when oldest message is not received yet
+
 ## [0.2.2] 2019-09-06
 
 - Updated example two to react native 0.60
