@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+import { emojiData } from '../utils';
 
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
@@ -114,6 +115,7 @@ export class ChannelInner extends PureComponent {
     LoadingIndicator,
     LoadingErrorIndicator,
     EmptyStateIndicator,
+    emojiData,
   };
 
   componentDidUpdate(prevProps) {
@@ -531,6 +533,7 @@ export class ChannelInner extends PureComponent {
     openThread: this.openThread,
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
+    emojiData: this.props.emojiData,
   });
 
   renderComponent = () => this.props.children;

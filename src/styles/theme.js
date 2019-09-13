@@ -265,6 +265,7 @@ export const themed = (OriginalComponent) => {
               return m;
             }
             if (isPlainObject(lodashGet(defaultTheme, path.join('.')))) {
+              path.pop();
               return { css: v };
             }
             return v;

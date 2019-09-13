@@ -185,6 +185,7 @@ const MessageList = withChannelContext(
       disableWhileEditing: true,
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
+      messageGrouping: true,
     };
 
     componentDidUpdate(prevProps) {
@@ -452,6 +453,7 @@ const MessageList = withChannelContext(
             removeMessage={this.props.removeMessage}
             retrySendMessage={this.props.retrySendMessage}
             openThread={this.props.openThread}
+            emojiData={this.props.emojiData}
           />
         );
       }

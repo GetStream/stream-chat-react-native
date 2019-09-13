@@ -8,7 +8,7 @@ import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
-import { MessageText } from './MessageText';
+import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
@@ -128,6 +128,7 @@ export const MessageContent = themed(
       Attachment,
       reactionsEnabled: true,
       repliesEnabled: true,
+      MessageText: false,
     };
 
     constructor(props) {
@@ -214,9 +215,11 @@ export const MessageContent = themed(
         messageActions,
         groupStyles,
         reactionsEnabled,
+        getTotalReactionCount,
         repliesEnabled,
         canEditMessage,
         canDeleteMessage,
+        MessageFooter,
       } = this.props;
 
       const Attachment = this.props.Attachment;
@@ -329,6 +332,7 @@ export const MessageContent = themed(
                   position={pos}
                   visible={!this.state.reactionPickerVisible}
                   latestReactions={message.latest_reactions}
+                  getTotalReactionCount={getTotalReactionCount}
                   openReactionSelector={this.openReactionSelector}
                   reactionCounts={message.reaction_counts}
                 />
@@ -369,10 +373,11 @@ export const MessageContent = themed(
               {images && images.length > 0 && (
                 <Gallery alignment={this.props.alignment} images={images} />
               )}
-              <MessageText
+              <MessageTextContainer
                 message={message}
                 groupStyles={hasReactions ? ['top'] : groupStyles}
                 isMyMessage={isMyMessage}
+                MessageText={this.props.MessageText}
                 disabled={
                   message.status === 'failed' || message.type === 'error'
                 }
@@ -389,8 +394,8 @@ export const MessageContent = themed(
                 pos={pos}
               />
             ) : null}
-
-            {showTime ? (
+            {MessageFooter && <MessageFooter {...this.props} />}
+            {!MessageFooter && showTime ? (
               <MetaContainer>
                 <MetaText alignment={pos}>
                   {moment(message.created_at).format('h:mmA')}
@@ -410,6 +415,7 @@ export const MessageContent = themed(
                 rpLeft={this.state.rpLeft}
                 rpRight={this.state.rpRight}
                 rpTop={this.state.rpTop}
+                emojiData={this.props.emojiData}
               />
             ) : null}
             <ActionSheet

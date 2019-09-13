@@ -90,7 +90,7 @@ export const MessageSimple = themed(
       repliesEnabled: true,
     };
 
-    static themePath = 'messageSimple';
+    static themePath = 'message';
 
     render() {
       const { message, isMyMessage, groupStyles } = this.props;
@@ -137,4 +137,4 @@ export const MessageSimple = themed(
 export { MessageStatus } from './MessageStatus';
 export { MessageContent } from './MessageContent';
 export { MessageAvatar } from './MessageAvatar';
-export { MessageText } from './MessageText';
+export { MessageTextContainer } from './MessageTextContainer';
