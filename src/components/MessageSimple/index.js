@@ -31,6 +31,8 @@ const Container = styled.View`
 export const MessageSimple = themed(
   class MessageSimple extends React.PureComponent {
     static propTypes = {
+      /** Custom UI component for message text */
+      MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** enabled reactions, this is usually set by the parent component based on channel configs */
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */
@@ -81,6 +83,12 @@ export const MessageSimple = themed(
       client: PropTypes.object,
       /** A list of users who have read the message */
       readBy: PropTypes.array,
+      /**
+       * Force alignment of message to left or right - 'left' | 'right'
+       * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
+       * */
+      forceAlign: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+      showMessageStatus: PropTypes.bool,
       /** Latest message id on current channel */
       lastReceivedId: PropTypes.string,
     };
@@ -88,13 +96,26 @@ export const MessageSimple = themed(
     static defaultProps = {
       reactionsEnabled: true,
       repliesEnabled: true,
+      forceAlign: false,
+      showMessageStatus: true,
     };
 
     static themePath = 'message';
 
     render() {
-      const { message, isMyMessage, groupStyles } = this.props;
-      const pos = isMyMessage(message) ? 'right' : 'left';
+      const {
+        message,
+        isMyMessage,
+        groupStyles,
+        forceAlign,
+        showMessageStatus,
+      } = this.props;
+
+      let pos;
+      if ((forceAlign && forceAlign === 'left') || forceAlign === 'right')
+        pos = forceAlign;
+      else pos = isMyMessage(message) ? 'right' : 'left';
+
       const lastMessage = this.props.channel.state.messages[
         this.props.channel.state.messages.length - 1
       ];
@@ -116,11 +137,11 @@ export const MessageSimple = themed(
           hasMarginBottom={hasMarginBottom}
           isVeryLastMessage={isVeryLastMessage}
         >
-          {isMyMessage(message) ? (
+          {pos === 'right' ? (
             <React.Fragment>
               <MessageContent {...this.props} alignment={pos} />
               <MessageAvatar {...this.props} />
-              <MessageStatus {...this.props} />
+              {showMessageStatus && <MessageStatus {...this.props} />}
             </React.Fragment>
           ) : (
             <React.Fragment>
