@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.2.4] 2019-09-13
+
+- Fixing bug in theme logic
+- Adding ability to customize more the MessageSimple component
+
 ## [0.2.3] 2019-09-09
 
 - Fixing pagination issue when oldest message is not received yet
