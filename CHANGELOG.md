@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.2.6] 2019-09-23
+
+- Fixing expo package for NetInfo changes
+
 ## [0.2.5] 2019-09-23
 
 - Fixing deprecated warnings coming from NetInfo library
