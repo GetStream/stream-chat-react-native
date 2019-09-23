@@ -67,6 +67,16 @@ const Message = withKeyboardContext(
       openThread: PropTypes.func,
       /** @see See [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
       dismissKeyboard: PropTypes.func,
+      /**
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
+      onMessageTouch: PropTypes.func,
+      /** Should keyboard be dismissed when messaged is touched */
+      dismissKeyboardOnMessageTouch: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -76,6 +86,7 @@ const Message = withKeyboardContext(
       groupStyles: [],
       Attachment,
       editing: false,
+      dismissKeyboardOnMessageTouch: true,
     };
 
     shouldComponentUpdate(nextProps) {
@@ -226,8 +237,15 @@ const Message = withKeyboardContext(
       await this.props.retrySendMessage(message);
     };
 
-    onMessageTouch = () => {
-      this.props.dismissKeyboard();
+    onMessageTouch = (e, message) => {
+      const {
+        onMessageTouch,
+        dismissKeyboardOnMessageTouch,
+        dismissKeyboard,
+      } = this.props;
+
+      if (onMessageTouch) onMessageTouch(e, message);
+      if (dismissKeyboardOnMessageTouch) dismissKeyboard();
     };
 
     getTotalReactionCount = () => {
@@ -267,7 +285,12 @@ const Message = withKeyboardContext(
       }
 
       return (
-        <TouchableOpacity onPress={this.onMessageTouch} activeOpacity={1}>
+        <TouchableOpacity
+          onPress={(e) => {
+            this.onMessageTouch(e, message);
+          }}
+          activeOpacity={1}
+        >
           <Component
             {...this.props}
             {...actionProps}
@@ -275,6 +298,9 @@ const Message = withKeyboardContext(
             channel={this.props.channel}
             actionsEnabled={actionsEnabled}
             Message={this}
+            onMessageTouch={(e) => {
+              this.onMessageTouch(e, message);
+            }}
             handleReaction={this.handleReaction}
             getTotalReactionCount={this.getTotalReactionCount}
             handleFlag={this.handleFlag}

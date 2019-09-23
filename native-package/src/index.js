@@ -5,7 +5,43 @@ import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
 
 registerNativeHandlers({
-  NetInfo,
+  NetInfo: {
+    addEventListener(listener) {
+      let unsubscribe;
+      // For NetInfo >= 3.x.x
+      if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
+          listener(isConnected);
+        });
+        return unsubscribe;
+      } else {
+        // For NetInfo < 3.x.x
+        unsubscribe = NetInfo.addEventListener('connectionChange', () => {
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            listener(isConnected);
+          });
+        });
+
+        return unsubscribe.remove;
+      }
+    },
+
+    fetch() {
+      return new Promise((resolve, reject) => {
+        // For NetInfo >= 3.x.x
+        if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+          NetInfo.fetch().then(({ isConnected }) => {
+            resolve(isConnected);
+          }, reject);
+        } else {
+          // For NetInfo < 3.x.x
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            resolve(isConnected);
+          }, reject);
+        }
+      });
+    },
+  },
   pickImage: () =>
     new Promise((resolve, reject) => {
       ImagePicker.showImagePicker(null, (response) => {

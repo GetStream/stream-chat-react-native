@@ -97,6 +97,16 @@ const MessageList = withChannelContext(
        * @see See loeadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
        * */
       loadMoreThreshold: PropTypes.number,
+      /**
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
+      onMessageTouch: PropTypes.func,
+      /** Should keyboard be dismissed when messaged is touched */
+      dismissKeyboardOnMessageTouch: PropTypes.bool,
       eventHistory: PropTypes.object,
       /** Helper function to mark current channel as read. */
       markRead: PropTypes.func,
@@ -186,6 +196,7 @@ const MessageList = withChannelContext(
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
       messageGrouping: true,
+      dismissKeyboardOnMessageTouch: true,
     };
 
     componentDidUpdate(prevProps) {
@@ -444,7 +455,10 @@ const MessageList = withChannelContext(
                 ? this.state.lastReceivedId
                 : null
             }
-            onMessageTouch={this.onMessageTouch}
+            onMessageTouch={this.props.onMessageTouch}
+            dismissKeyboardOnMessageTouch={
+              this.props.dismissKeyboardOnMessageTouch
+            }
             setEditingState={this.props.setEditingState}
             editing={this.props.editing}
             threadList={this.props.threadList}

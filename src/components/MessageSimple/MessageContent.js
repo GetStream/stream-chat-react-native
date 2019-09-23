@@ -104,8 +104,12 @@ export const MessageContent = themed(
        * */
       onThreadSelect: PropTypes.func,
       /**
-       * Callback handler for onPress event on message component
-       */
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
       onMessageTouch: PropTypes.func,
       /**
        * Handler to delete a current message.
@@ -300,6 +304,7 @@ export const MessageContent = themed(
       const contentProps = {
         alignment: pos,
         status: message.status,
+        onPress: this.props.onMessageTouch,
         onLongPress: options.length > 1 ? this.showActionSheet : null,
         activeOpacity: 0.7,
         disabled: readOnly,

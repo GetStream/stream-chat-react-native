@@ -36,7 +36,7 @@ const TextContainer = styled.View`
       : theme.message.text.rightBorderColor};
   background-color: ${({ theme, alignment, type, status }) =>
     alignment === 'left' || type === 'error' || status === 'failed'
-      ? theme.colors.light
+      ? theme.colors.transparent
       : theme.colors.light};
   ${({ theme }) => theme.message.text.css}
 `;

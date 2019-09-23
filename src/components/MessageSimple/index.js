@@ -44,8 +44,12 @@ export const MessageSimple = themed(
        * */
       onThreadSelect: PropTypes.func,
       /**
-       * Callback handler for onPress event on message component
-       */
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
       onMessageTouch: PropTypes.func,
       /**
        * Handler to delete a current message.
