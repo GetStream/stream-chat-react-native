@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.5] 2019-09-23
+
+- Fixing deprecated warnings coming from NetInfo library
+- Adding onMessageTouch and dismissKeyboardOnMessageTouch prop for MessageList component
+- Fixing style issue (background color) of MessageText component, introduced in 0.2.4
+
 ## [0.2.4] 2019-09-13
 
 - Fixing bug in theme logic
