@@ -92,12 +92,6 @@ export const Chat = themed(
       });
     };
 
-    handleConnectionChange = () => {
-      NetInfo.isConnected.fetch().then((isConnected) => {
-        this.notifyChatClient(isConnected);
-      });
-    };
-
     setActiveChannel = (channel, e) => {
       if (e !== undefined && e.preventDefault) {
         e.preventDefault();

@@ -28,7 +28,23 @@ if (manifest.sdkVersion.split('.')[0] >= 33) {
 }
 
 registerNativeHandlers({
-  NetInfo,
+  NetInfo: {
+    addEventListener(listener) {
+      const unsubscribe = NetInfo.addEventListener('connectionChange', () => {
+        NetInfo.isConnected.fetch().then((isConnected) => {
+          listener(isConnected);
+        });
+      });
+      return unsubscribe.remove;
+    },
+    fetch() {
+      return new Promise((resolve, reject) => {
+        NetInfo.isConnected.fetch().then((isConnected) => {
+          resolve(isConnected);
+        }, reject);
+      });
+    },
+  },
   pickImage: async () => {
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
 
