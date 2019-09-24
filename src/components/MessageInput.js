@@ -107,14 +107,14 @@ const MessageInput = withKeyboardContext(
             /**
              * Override image upload request
              *
-             * @param
+             * @param file    File object - {uri: ''}
              * @param channel Current channel object
              * */
             doImageUploadRequest: PropTypes.func,
             /**
              * Override file upload request
              *
-             * @param
+             * @param file    File object - {uri: '', name: ''}
              * @param channel Current channel object
              * */
             doDocUploadRequest: PropTypes.func,
@@ -142,7 +142,10 @@ const MessageInput = withKeyboardContext(
             parent: PropTypes.object,
             /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
             channel: PropTypes.object,
-            /** Ref callback to set reference on input box container */
+            /**
+             * Ref callback to set reference on input box container
+             * @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
+             * */
             setInputBoxContainerRef: PropTypes.func,
             /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
             openSuggestions: PropTypes.func,

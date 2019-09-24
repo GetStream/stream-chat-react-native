@@ -1,4 +1,4 @@
-// TypeScript Version: 3.5
+// TypeScript Version: 2.8
 
 import * as React from 'react';
 import { Text, GestureResponderEvent } from 'react-native';
@@ -6,6 +6,7 @@ import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 
 declare function withChatContext(): React.FC;
+
 interface ChatContext extends React.Context<ChatContextValue> {}
 interface ChatContextValue {
   client?: Client.StreamChat;
@@ -20,66 +21,86 @@ interface ChatContextValue {
 
 declare function withSuggestionsContext(): React.FC;
 interface SuggestionsContext extends React.Context<SuggestionsContextValue> {}
-interface SuggestionsContextValue {}
+interface SuggestionsContextValue {
+  setInputBoxContainerRef?(ref: any): void;
+  openSuggestions?(title: string, component: React.ElementType): void;
+  closeSuggestions?(): void;
+  // Example of suggestion object:
+  //
+  //     {
+  //         data: [
+  //             'suggestion 1',
+  //             'suggestion 2',
+  //             'suggestion 3',
+  //             ...
+  //         ],
+  //         onSelect: (suggestionItem) => { ... },
+  //     }
+  // ```
+  updateSuggestions?(suggestions: Array<object>): void;
+}
 
 declare function withChannelContext(): React.FC;
 interface ChannelContext extends React.Context<ChannelContextValue> {}
 interface ChannelContextValue {
+  Message?: React.ElementType<MessageUIComponentProps>;
+  Attachment?: React.ElementType<AttachmentProps>;
+  EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
+  messages?: Client.MessageResponse[];
+  online?: boolean;
+  // TODO: Create proper type for typing object
+  typing?: SeamlessImmutable.Immutable<{
+    [user_id: string]: Client.Event<Client.TypingStartEvent>;
+  }>;
+  watcher_count?: number;
+  watchers?: SeamlessImmutable.Immutable<{
+    [user_id: string]: SeamlessImmutable.Immutable<Client.UserResponse>;
+  }>;
+  members?: SeamlessImmutable.Immutable<{
+    [user_id: string]: SeamlessImmutable.Immutable<
+      Client.ChannelMemberResponse
+    >;
+  }>;
+  read?: SeamlessImmutable.Immutable<{
+    [user_id: string]: SeamlessImmutable.Immutable<{
+      last_read: string;
+      user: Client.UserResponse;
+    }>;
+  }>;
   error?: boolean;
   // Loading the intial content of the channel
   loading?: boolean;
   // Loading more messages
   loadingMore?: boolean;
   hasMore?: boolean;
-  messages?: Client.MessageResponse[];
-  online?: boolean;
-  // TODO: Create proper type for typing object
-  typing?: SeamlessImmutable.Immutable<{
-    [user_id: string]: Client.TypingStartEvent;
-  }>;
-  watchers?: SeamlessImmutable.Immutable<Object>;
-  watcher_count?: number;
-  members?: SeamlessImmutable.Immutable<Object>;
-  read?: SeamlessImmutable.Immutable<Object>;
-
   threadMessages?: Client.MessageResponse[];
   threadLoadingMore?: boolean;
   threadHasMore?: boolean;
   kavEnabled?: boolean;
 
-  client?: Client.StreamChat;
-  channel?: Client.StreamChat;
-
-  multipleUploads?: boolean;
-  acceptedFiles?: string[];
-  maxNumberOfFiles?: number;
-
-  // thread related
-  loadMoreThread?(): void;
-
+  sendMessage?(message: Client.Message): void;
   /** The function to update a message, handled by the Channel component */
   updateMessage?(
     updatedMessage: Client.MessageResponse,
-    extraState: object,
+    extraState?: object,
   ): void;
-
-  removeMessage?(updatedMessage: Client.MessageResponse): void;
-  sendMessage?(message: Client.Message): void;
-  /** Function executed when user clicks on link to open thread */
   retrySendMessage?(message: Client.Message): void;
+  removeMessage?(updatedMessage: Client.MessageResponse): void;
   setEditingState?(message: Client.Message): void;
-  clearEditingState?(): void;
-  EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
-  markRead?(): void;
-  loadMore?(): void;
-
+  /** Function executed when user clicks on link to open thread */
   openThread?(message: Client.Message, event: React.SyntheticEvent): void;
+  markRead?(): void;
+
+  loadMore?(): void;
+  // thread related
+  loadMoreThread?(): void;
   closeThread?(): void;
+  clearEditingState?(): void;
 }
 
 interface KeyboardContext extends React.Context<KeyboardContextValue> {}
 interface KeyboardContextValue {
-  dismissKeyboard(): void;
+  dismissKeyboard?(): void;
 }
 
 export interface ChatProps {
@@ -87,15 +108,13 @@ export interface ChatProps {
   style?: object;
 }
 
-interface ChannelProps {
-  /** Which channel to connect to, will initialize the channel if it's not initialized yet */
-  channel?: Client.Channel;
-  /** Client is passed automatically via the Chat ContextValue */
-  client?: Client.StreamChat;
+interface ChannelProps extends ChatContextValue {
   /** The loading indicator to use */
   LoadingIndicator?: React.ElementType;
   LoadingErrorIndicator?: React.ElementType<LoadingErrorIndicatorProps>;
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
+  Message?: React.ElementType<MessageUIComponentProps>;
+  Attachment?: React.ElementType<AttachmentProps>;
 }
 
 export interface EmptyStateIndicatorProps {
@@ -115,7 +134,9 @@ export interface DateSeparatorProps {
 }
 
 export interface EventIndicatorProps {
-  event: Client.MemberAddedEvent | Client.MemberRemovedEvent;
+  event:
+    | Client.Event<Client.MemberAddedEvent>
+    | Client.Event<Client.MemberRemovedEvent>;
 }
 
 interface AvatarProps {
@@ -127,7 +148,19 @@ interface AvatarProps {
   size?: Number;
 }
 
-interface MessageInputProps {
+interface File {
+  uri: string;
+  name?: string;
+}
+
+interface FileUploadResponse {
+  file: string;
+  [name: string]: any;
+}
+interface MessageInputProps
+  extends KeyboardContextValue,
+    ChannelContextValue,
+    SuggestionsContextValue {
   /** The parent message object when replying on a thread */
   parent?: Client.Message | null;
 
@@ -135,10 +168,10 @@ interface MessageInputProps {
   Input?: React.ElementType;
 
   /** Override image upload request */
-  doImageUploadRequest?: Function;
+  doImageUploadRequest?(file: File): Promise<FileUploadResponse>;
 
   /** Override file upload request */
-  doFileUploadRequest?: Function;
+  doFileUploadRequest?(file: File): Promise<FileUploadResponse>;
   maxNumberOfFiles?: number;
   hasImagePicker?: boolean;
   hasFilePicker?: boolean;
@@ -201,12 +234,17 @@ interface ChannelListProps extends ChatContextValue {
 }
 
 interface ChannelListState {
+  // Error in querying channels
   error: boolean;
-  loading: boolean;
+  // List of channel objects.
   channels: SeamlessImmutable.Immutable<Client.Channel[]>;
+  // List of channel ids.
   channelIds: SeamlessImmutable.Immutable<string[]>;
+  // Channels are being loaded via query
   loadingChannels: boolean;
+  // List of channels is being refreshed or requeries (in case of reconnection)
   refreshing: boolean;
+  // Current offset of list of channels (for pagination)
   offset: number;
 }
 
@@ -237,47 +275,89 @@ interface ChannelPreviewUIComponentProps
 }
 
 interface MessageListProps extends ChannelContextValue {
-  /** Date separator component to render  */
-  dateSeparator?: React.ElementType<DateSeparatorProps>;
-  /** The attachment component to render, defaults to Attachment */
-  Attachment?: React.ElementType;
-  /** Typing indicator component to render  */
-  TypingIndicator?: React.ElementType;
   /** Turn off grouping of messages by user */
+  messageActions: Array<MessageAction>;
   noGroupByUser?: boolean;
   /** Weather its a thread of no. Default - false  */
   threadList?: boolean;
   disableWhileEditing?: boolean;
-  Message?: React.ElementType<MessageUIComponentProps>;
-  EventIndicator?: React.ElementType<EventIndicatorProps>;
-  /** For flatlist  */
+  /** For flatlist - https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold */
   loadMoreThreshold?: number;
+  onMessageTouch?(
+    e: GestureResponderEvent,
+    message: Client.MessageResponse,
+  ): void;
+  dismissKeyboardOnMessageTouch?: boolean;
+  /**
+   * @deprecated User DateSeparator instead.
+   *
+   * Date separator component to render
+   * */
+  dateSeparator?: React.ElementType<DateSeparatorProps>;
+  /** Date separator component to render  */
+  DateSeparator?: React.ElementType<DateSeparatorProps>;
+  /** Typing indicator component to render  */
+  TypingIndicator?: React.ElementType<TypingIndicatorProps>;
+  eventIndicator?: React.ElementType<EventIndicatorProps>;
+  EventIndicator?: React.ElementType<EventIndicatorProps>;
+  /**
+   * @deprecated Use HeaderComponent instead.
+   */
+  headerComponent?: React.ElementType;
+  /**
+   * UI component for header of message list. By default message list doesn't have any header.
+   * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+   * used in MessageList. Its footer instead of header, since message list is inverted.
+   *
+   */
+  HeaderComponent?: React.ElementType;
   onThreadSelect?(message: Client.MessageResponse): void;
-  messageActions: Array<MessageAction>;
 }
 
 declare type MessageAction = 'edit' | 'delete' | 'reactions' | 'reply';
-interface MessageProps extends ChannelContextValue {
+interface MessageProps extends KeyboardContextValue {
+  client: Client.StreamChat;
   onThreadSelect?(message: Client.MessageResponse): void;
   /** The message object */
   message: Client.Message;
   /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
   groupStyles: Array<string>;
-  /** The message rendering component, the Message component delegates its rendering logic to this component */
-  Message: React.ElementType<MessageUIComponentProps>;
   /** A list of users that have read this message **/
-  readBy: Array<Client.User>;
-  lastReceivedId?: string;
-  threadList: boolean;
-  messageActions: 'edit' | 'delete' | 'reactions' | 'reply';
-  /** Allows you to overwrite the attachment component */
+  readBy: Array<Client.UserResponse>;
+  /**
+   * Message UI component to display a message in message list.
+   * Avaialble from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+   * */
+  Message?: React.ElementType<MessageUIComponentProps>;
+  /**
+   * Attachment UI component to display attachment in individual message.
+   * Avaialble from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+   * */
   Attachment: React.ElementType<AttachmentProps>;
+  /** Latest message id on current channel */
+  lastReceivedId: string;
+  /** The function to update a message, handled by the Channel component */
+  updateMessage?(
+    updatedMessage: Client.MessageResponse,
+    extraState?: object,
+  ): void;
+  retrySendMessage?(message: Client.Message): void;
+  removeMessage?(updatedMessage: Client.MessageResponse): void;
+  setEditingState?(message: Client.Message): void;
+  /** Function executed when user clicks on link to open thread */
+  openThread?(message: Client.Message, event: React.SyntheticEvent): void;
 }
 
 interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
   reactionsEnabled: boolean;
   repliesEnabled: boolean;
+  onMessageTouch?(
+    e: GestureResponderEvent,
+    message: Client.MessageResponse,
+  ): void;
   handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
+  handleDelete?(): void;
+  handleEdit?(): void;
   handleFlag(event?: React.BaseSyntheticEvent): void;
   handleMute(event?: React.BaseSyntheticEvent): void;
   handleAction(
@@ -287,13 +367,23 @@ interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
   ): void;
   handleRetry(message: Client.Message): void;
   isMyMessage(message: Client.Message): boolean;
+  /** Boolean if current message is part of thread */
+  isThreadList: boolean;
+  /**
+   * Force alignment of message to left or right - 'left' | 'right'
+   * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
+   * */
+  forceAlign: string | boolean;
+  showMessageStatus: boolean;
+  MessageText?: React.ElementType<MessageTextProps>;
 }
 
+interface MessageTextProps {
+  message: Client.MessageResponse;
+}
 interface ThreadProps extends ChannelContextValue {
   /** the thread (the parent message object) */
-  thread?: Client.MessageResponse | boolean;
-  /** The message component to use for rendering messages */
-  Message?: React.ElementType;
+  thread: SeamlessImmutable.Immutable<Client.MessageResponse> | boolean | void;
   /** The list of messages to render, state is handled by the parent channel component */
   threadMessages?: Client.MessageResponse[];
   /** Make input focus on mounting thread */
