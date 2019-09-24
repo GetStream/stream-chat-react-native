@@ -41,11 +41,13 @@ const TextContainer = styled.View`
   ${({ theme }) => theme.message.text.css}
 `;
 
-export const MessageText = ({
-  message,
-  groupStyles = ['bottom'],
-  isMyMessage = () => false,
-}) => {
+export const MessageTextContainer = (props) => {
+  const {
+    message,
+    groupStyles = ['bottom'],
+    isMyMessage = () => false,
+    MessageText = false,
+  } = props;
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
@@ -63,7 +65,11 @@ export const MessageText = ({
         status={message.status}
         type={message.type}
       >
-        {renderText(message)}
+        {!MessageText ? (
+          renderText(message)
+        ) : (
+          <MessageText {...props} renderText={renderText} />
+        )}
       </TextContainer>
     </React.Fragment>
   );

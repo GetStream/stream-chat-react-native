@@ -8,7 +8,7 @@ import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
 import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
-import { MessageText } from './MessageText';
+import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
@@ -91,15 +91,48 @@ export const MessageContent = themed(
     static themePath = 'message.content';
 
     static propTypes = {
+      /** @see See [channel context](#channelcontext) */
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** enabled reactions, this is usually set by the parent component based on channel configs */
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */
       repliesEnabled: PropTypes.bool.isRequired,
+      /**
+       * Handler to open the thread on message. This is callback for touch event for replies button.
+       *
+       * @param message A message object to open the thread upon.
+       * */
+      onThreadSelect: PropTypes.func,
+      /**
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
+      onMessageTouch: PropTypes.func,
+      /**
+       * Handler to delete a current message.
+       */
+      handleDelete: PropTypes.func,
+      /**
+       * Handler to edit a current message. This message simply sets current message as value of `editing` property of channel context.
+       * `editing` prop is then used by MessageInput component to switch to edit mode.
+       */
+      handleEdit: PropTypes.func,
+      /** @see See [keyboard context](https://getstream.io/chat/docs/#keyboardcontext) */
+      dismissKeyboard: PropTypes.func,
+      /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+      handleAction: PropTypes.func,
+      /** Position of message. 'right' | 'left' */
+      alignment: PropTypes.string,
     };
 
     static defaultProps = {
+      Attachment,
       reactionsEnabled: true,
       repliesEnabled: true,
+      MessageText: false,
     };
 
     constructor(props) {
@@ -114,20 +147,16 @@ export const MessageContent = themed(
         this.props.onThreadSelect(this.props.message);
     };
 
-    onMessageTouch = () => {
-      this.props.onMessageTouch(this.props.message.id);
-    };
-
     showActionSheet = () => {
       this.ActionSheet.show();
     };
 
     handleDelete = async () => {
-      await this.props.Message.handleDelete();
+      await this.props.handleDelete();
     };
 
     handleEdit = () => {
-      this.props.Message.handleEdit();
+      this.props.handleEdit();
     };
 
     _setReactionPickerPosition = () => {
@@ -190,8 +219,14 @@ export const MessageContent = themed(
         messageActions,
         groupStyles,
         reactionsEnabled,
+        getTotalReactionCount,
         repliesEnabled,
+        canEditMessage,
+        canDeleteMessage,
+        MessageFooter,
       } = this.props;
+
+      const Attachment = this.props.Attachment;
       const hasAttachment = Boolean(
         message && message.attachments && message.attachments.length,
       );
@@ -211,7 +246,10 @@ export const MessageContent = themed(
       const options = [{ id: 'cancel', title: 'Cancel' }];
       const images =
         hasAttachment &&
-        message.attachments.filter((item) => item.type === 'image');
+        message.attachments.filter(
+          (item) =>
+            item.type === 'image' && !item.title_link && !item.og_scrape_url,
+        );
 
       const files =
         hasAttachment &&
@@ -239,7 +277,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-        Message.canEditMessage()
+        canEditMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.edit,
@@ -249,7 +287,7 @@ export const MessageContent = themed(
       if (
         messageActions &&
         messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-        Message.canDeleteMessage()
+        canDeleteMessage()
       )
         options.splice(1, 0, {
           id: MESSAGE_ACTIONS.delete,
@@ -266,6 +304,7 @@ export const MessageContent = themed(
       const contentProps = {
         alignment: pos,
         status: message.status,
+        onPress: this.props.onMessageTouch,
         onLongPress: options.length > 1 ? this.showActionSheet : null,
         activeOpacity: 0.7,
         disabled: readOnly,
@@ -298,6 +337,7 @@ export const MessageContent = themed(
                   position={pos}
                   visible={!this.state.reactionPickerVisible}
                   latestReactions={message.latest_reactions}
+                  getTotalReactionCount={getTotalReactionCount}
                   openReactionSelector={this.openReactionSelector}
                   reactionCounts={message.reaction_counts}
                 />
@@ -312,7 +352,12 @@ export const MessageContent = themed(
                 message.attachments.map((attachment, index) => {
                   // We handle files separately
                   if (attachment.type === 'file') return null;
-                  if (attachment.type === 'image') return null;
+                  if (
+                    attachment.type === 'image' &&
+                    !attachment.title_link &&
+                    !attachment.og_scrape_url
+                  )
+                    return null;
                   return (
                     <Attachment
                       key={`${message.id}-${index}`}
@@ -333,14 +378,14 @@ export const MessageContent = themed(
               {images && images.length > 0 && (
                 <Gallery alignment={this.props.alignment} images={images} />
               )}
-              <MessageText
+              <MessageTextContainer
                 message={message}
                 groupStyles={hasReactions ? ['top'] : groupStyles}
                 isMyMessage={isMyMessage}
+                MessageText={this.props.MessageText}
                 disabled={
                   message.status === 'failed' || message.type === 'error'
                 }
-                onMessageTouch={this.onMessageTouch}
                 Message={Message}
                 openThread={this.openThread}
                 handleReaction={handleReaction}
@@ -354,8 +399,8 @@ export const MessageContent = themed(
                 pos={pos}
               />
             ) : null}
-
-            {showTime ? (
+            {MessageFooter && <MessageFooter {...this.props} />}
+            {!MessageFooter && showTime ? (
               <MetaContainer>
                 <MetaText alignment={pos}>
                   {moment(message.created_at).format('h:mmA')}
@@ -375,6 +420,7 @@ export const MessageContent = themed(
                 rpLeft={this.state.rpLeft}
                 rpRight={this.state.rpRight}
                 rpTop={this.state.rpTop}
+                emojiData={this.props.emojiData}
               />
             ) : null}
             <ActionSheet

@@ -59,9 +59,7 @@ module.exports = {
       name: 'Message Components',
       components: [
         'src/components/Message.js',
-        'src/components/MessageSimple.js',
-        'src/components/MessageTeam.js',
-        'src/components/MessageLivestream.js',
+        'src/components/MessageSimple/index.js',
         'src/components/Attachment.js',
         'src/components/AttachmentActions.js',
         'src/components/AutoComplete.js',
@@ -76,12 +74,7 @@ module.exports = {
       components: [
         'src/components/MessageInput.js',
         'src/components/ImageUploadPreview.js',
-        'src/components/MessageInputSmall.js',
-        'src/components/MessageInputLarge.js',
-        'src/components/MessageInputFlat.js',
-        'src/components/ChatAutoComplete.js',
-        'src/components/AutoComplete.js',
-        'src/components/EditMessageForm.js',
+        'src/components/FileUploadPreview.js',
       ],
       exampleMode: 'collapse',
       usageMode: 'expand',
@@ -98,6 +91,70 @@ module.exports = {
         'src/components/Image.js',
         'src/components/DateSeparator.js',
         'src/components/Window.js',
+        'src/components/ChannelListMessenger.js',
+        'src/components/ChannelPreviewMessenger.js',
+      ],
+      exampleMode: 'collapse',
+      usageMode: 'expand',
+    },
+    {
+      name: 'Contexts',
+      sections: [
+        {
+          name: 'ChatContext',
+          content: 'src/components/docs/ChatContext.md',
+        },
+        {
+          name: 'withChatContext',
+          content: 'src/components/docs/withChatContext.md',
+        },
+        {
+          name: 'ChannelContext',
+          content: 'src/components/docs/ChannelContext.md',
+        },
+        {
+          name: 'withChannelContext',
+          content: 'src/components/docs/withChannelContext.md',
+        },
+        {
+          name: 'KeyboardContext',
+          content: 'src/components/docs/KeyboardContext.md',
+        },
+        {
+          name: 'withKeyboardContext',
+          content: 'src/components/docs/withKeyboardContext.md',
+        },
+        {
+          name: 'SuggestionsContext',
+          content: 'src/components/docs/SuggestionsContext.md',
+        },
+        {
+          name: 'withSuggestionsContext',
+          content: 'src/components/docs/withSuggestionsContext.md',
+        },
+      ],
+      exampleMode: 'collapse',
+      usageMode: 'expand',
+    },
+    {
+      name: 'Custom UI component props',
+      sections: [
+        {
+          name: 'List (in ChannelList)',
+          content: 'src/components/docs/ListProps.md',
+        },
+        {
+          name: 'Preview (in ChannelList)',
+          content: 'src/components/docs/PreviewProps.md',
+        },
+        {
+          name: 'Message (in MessageList)',
+          content: 'src/components/docs/MessageProps.md',
+        },
+        {
+          name: 'Attachment (in MessageSimple)',
+          content: 'src/components/docs/AttachmentProps.md',
+        },
       ],
       exampleMode: 'collapse',
       usageMode: 'expand',
@@ -178,6 +235,8 @@ module.exports = {
     ],
     externals: {
       react: 'React',
+      'react-native': 'react-native',
+      'react-native-web-player': 'react-native-web-player',
     },
   },
 };

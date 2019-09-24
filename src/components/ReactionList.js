@@ -30,7 +30,9 @@ const Container = styled.View`
   ${({ theme }) => theme.message.reactionList.container.css}
 `;
 
-const ReactionCount = styled.Text`
+const ReactionCount = styled(({ reactionCounts, ...rest }) => (
+  <Text {...rest} />
+))`
   color: white;
   font-size: 12;
   ${({ reactionCounts }) => (reactionCounts < 10 ? null : 'min-width: 20px;')}
@@ -107,24 +109,11 @@ export class ReactionList extends React.PureComponent {
     );
   };
 
-  _getReactionCount = (reactionCounts) => {
-    let count = null;
-    if (
-      reactionCounts !== null &&
-      reactionCounts !== undefined &&
-      Object.keys(reactionCounts).length > 0
-    ) {
-      count = 0;
-      Object.keys(reactionCounts).map((key) => (count += reactionCounts[key]));
-    }
-    return count;
-  };
-
   render() {
     const {
       latestReactions,
       openReactionSelector,
-      reactionCounts,
+      getTotalReactionCount,
       visible,
       position,
     } = this.props;
@@ -136,10 +125,8 @@ export class ReactionList extends React.PureComponent {
       >
         <Container visible={visible}>
           <Reactions>{this._renderReactions(latestReactions)}</Reactions>
-          <ReactionCount
-            reactionCounts={this._getReactionCount(reactionCounts)}
-          >
-            {this._getReactionCount(reactionCounts)}
+          <ReactionCount reactionCounts={getTotalReactionCount()}>
+            {getTotalReactionCount()}
           </ReactionCount>
         </Container>
         <ImageWrapper visible={visible}>

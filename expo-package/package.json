@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-expo",
-  "version": "0.1.14",
+  "version": "0.2.6",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -28,8 +28,8 @@
     "expo": "^32.0.0",
     "prettier": "^1.16.4",
     "react": "^16.5.0",
-    "react-native": "0.57.1",
     "react-dom": "^16.8.6",
+    "react-native": "0.57.1",
     "react-styleguidist": "^9.0.7",
     "rollup": "^0.68.2",
     "rollup-plugin-babel": "^4.0.3",
@@ -54,7 +54,11 @@
     "postpack": "rm README.md"
   },
   "dependencies": {
-    "stream-chat-react-native-core": "v0.1.14"
+    "expo-document-picker": "^6.0.0",
+    "expo-image-picker": "^6.0.0",
+    "expo-permissions": "^6.0.0",
+    "react-native-unimodules": "^0.5.4",
+    "stream-chat-react-native-core": "v0.2.6"
   },
   "peerDependencies": {
     "expo": "^32.0.0"

@@ -19,6 +19,7 @@ YellowBox.ignoreWarnings(['Remote debugger']);
 const chatClient = new StreamChat('qk4nn7rpcn75');
 const userToken =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
+
 chatClient.setUser(
   {
     id: 'billowing-firefly-8',
@@ -30,15 +31,11 @@ chatClient.setUser(
 );
 
 const filters = { type: 'messaging' };
-const sort = {
-  last_message_at: -1,
-  cid: 1,
-};
+const sort = { last_message_at: -1 };
 const options = {
-  member: true,
-  watch: true,
-};
-
+  state: true,
+  watch: true
+}
 class ChannelListScreen extends PureComponent {
   static navigationOptions = () => ({
     headerTitle: <Text style={{ fontWeight: 'bold' }}>Channel List</Text>,
@@ -50,11 +47,11 @@ class ChannelListScreen extends PureComponent {
         <Chat client={chatClient}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
-              Preview={ChannelPreviewMessenger}
               filters={filters}
               sort={sort}
               options={options}
-              onSelect={(channel) => {
+              Preview={ChannelPreviewMessenger}
+              onSelect={channel => {
                 this.props.navigation.navigate('Channel', {
                   channel,
                 });
@@ -87,7 +84,7 @@ class ChannelScreen extends PureComponent {
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
-                onThreadSelect={(thread) => {
+                onThreadSelect={thread => {
                   this.props.navigation.navigate('Thread', {
                     thread,
                     channel: channel.id,
@@ -121,8 +118,7 @@ class ThreadScreen extends PureComponent {
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 20,
-        }}
-      >
+        }}>
         <Text>X</Text>
       </TouchableOpacity>
     ),
@@ -143,15 +139,13 @@ class ThreadScreen extends PureComponent {
             client={chatClient}
             channel={channel}
             thread={thread}
-            dummyProp="DUMMY PROP"
-          >
+            dummyProp="DUMMY PROP">
             <View
               style={{
                 display: 'flex',
                 height: '100%',
                 justifyContent: 'flex-start',
-              }}
-            >
+              }}>
               <Thread thread={thread} />
             </View>
           </Channel>

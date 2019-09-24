@@ -28,6 +28,8 @@ export const Chat = themed(
     static propTypes = {
       /** The StreamChat client object */
       client: PropTypes.object.isRequired,
+      /** Theme object */
+      style: PropTypes.object,
     };
 
     constructor(props) {
@@ -40,6 +42,7 @@ export const Chat = themed(
         connectionRecovering: false,
       };
 
+      this.unsubscribeNetInfo = null;
       this.setConnectionListener();
 
       this.props.client.on('connection.changed', (event) => {
@@ -63,10 +66,7 @@ export const Chat = themed(
       this.props.client.off('connection.recovered');
       this.props.client.off('connection.changed');
       this.props.client.off(this.handleEvent);
-      NetInfo.removeEventListener(
-        'connectionChange',
-        this.handleConnectionChange,
-      );
+      this.unsubscribeNetInfo();
     }
 
     notifyChatClient = (isConnected) => {
@@ -84,15 +84,10 @@ export const Chat = themed(
     };
 
     setConnectionListener = () => {
-      NetInfo.isConnected.fetch().then((isConnected) => {
+      NetInfo.fetch().then((isConnected) => {
         this.notifyChatClient(isConnected);
       });
-
-      NetInfo.addEventListener('connectionChange', this.handleConnectionChange);
-    };
-
-    handleConnectionChange = () => {
-      NetInfo.isConnected.fetch().then((isConnected) => {
+      this.unsubscribeNetInfo = NetInfo.addEventListener((isConnected) => {
         this.notifyChatClient(isConnected);
       });
     };

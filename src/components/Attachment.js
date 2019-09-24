@@ -65,7 +65,22 @@ export const Attachment = withMessageContentContext(
       static propTypes = {
         /** The attachment to render */
         attachment: PropTypes.object.isRequired,
+        /**
+         * Position of message. 'right' | 'left'
+         * 'right' message belongs with current user while 'left' message belonds to other users.
+         * */
+        alignment: PropTypes.string,
+        /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+        actionHandler: PropTypes.func,
+        /**
+         * Position of message in group - top, bottom, middle, single.
+         *
+         * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+         * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+         */
         groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
+        /** Handler for long press event on attachment */
+        onLongPress: PropTypes.func,
       };
 
       constructor(props) {
@@ -110,18 +125,31 @@ export const Attachment = withMessageContentContext(
         }
 
         if (type === 'image') {
-          return <Gallery alignment={this.props.alignment} images={[a]} />;
+          return (
+            <React.Fragment>
+              <Gallery alignment={this.props.alignment} images={[a]} />
+              {a.actions && a.actions.length > 0 && (
+                <AttachmentActions
+                  key={'key-actions-' + a.id}
+                  {...a}
+                  actionHandler={this.props.actionHandler}
+                />
+              )}
+            </React.Fragment>
+          );
         }
         if (a.type === 'giphy' || type === 'card') {
           if (a.actions && a.actions.length) {
             return (
               <View>
                 <Card {...a} alignment={this.props.alignment} />
-                <AttachmentActions
-                  key={'key-actions-' + a.id}
-                  {...a}
-                  actionHandler={this.props.actionHandler}
-                />
+                {a.actions && a.actions.length > 0 && (
+                  <AttachmentActions
+                    key={'key-actions-' + a.id}
+                    {...a}
+                    actionHandler={this.props.actionHandler}
+                  />
+                )}
               </View>
             );
           } else {
@@ -149,6 +177,13 @@ export const Attachment = withMessageContentContext(
                   <FileSize>{a.file_size} KB</FileSize>
                 </FileDetails>
               </FileContainer>
+              {a.actions && a.actions.length > 0 && (
+                <AttachmentActions
+                  key={'key-actions-' + a.id}
+                  {...a}
+                  actionHandler={this.props.actionHandler}
+                />
+              )}
             </TouchableOpacity>
           );
         }

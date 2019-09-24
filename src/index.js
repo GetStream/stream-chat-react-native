@@ -9,4 +9,4 @@ export {
   withSuggestionsContext,
 } from './context.js';
 
-export { MESSAGE_ACTIONS } from './utils';
+export { MESSAGE_ACTIONS, renderText } from './utils';

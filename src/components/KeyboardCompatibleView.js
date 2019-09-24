@@ -1,5 +1,12 @@
 import React from 'react';
-import { Platform, View, Keyboard, Animated, Dimensions } from 'react-native';
+import {
+  Platform,
+  View,
+  Keyboard,
+  Animated,
+  Dimensions,
+  StatusBar,
+} from 'react-native';
 import { KeyboardContext } from '../context';
 
 export class KeyboardCompatibleView extends React.PureComponent {
@@ -64,13 +71,21 @@ export class KeyboardCompatibleView extends React.PureComponent {
       }
 
       const { height: windowHeight } = Dimensions.get('window');
+      let finalHeight;
+
+      if (Platform.OS === 'android') {
+        finalHeight =
+          windowHeight - y - keyboardHeight - StatusBar.currentHeight;
+      } else {
+        finalHeight = windowHeight - y - keyboardHeight;
+      }
 
       Animated.timing(this.state.channelHeight, {
-        toValue: windowHeight - y - keyboardHeight,
+        toValue: finalHeight,
         duration: 500,
       }).start(() => {
         // Force the final value, in case animation halted in between.
-        this.state.channelHeight.setValue(windowHeight - y - keyboardHeight);
+        this.state.channelHeight.setValue(finalHeight);
       });
     });
     this._keyboardOpen = true;

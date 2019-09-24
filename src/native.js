@@ -4,10 +4,7 @@ const fail = () => {
   );
 };
 export let NetInfo = {
-  isConnected: {
-    fetch: fail,
-  },
-  removeEventListener: fail,
+  fetch: fail,
   addEventListener: fail,
 };
 export let pickImage = fail;

@@ -158,6 +158,7 @@ export const defaultTheme = {
     attachButton: {},
     attachButtonIcon: {},
     sendButton: {},
+    sendButtonIcon: {},
     imageUploadPreview: {
       container: {},
       itemContainer: {},
@@ -264,6 +265,7 @@ export const themed = (OriginalComponent) => {
               return m;
             }
             if (isPlainObject(lodashGet(defaultTheme, path.join('.')))) {
+              path.pop();
               return { css: v };
             }
             return v;

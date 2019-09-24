@@ -2,13 +2,46 @@ import { Platform } from 'react-native';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import NetInfo from '@react-native-community/netinfo';
 import ImagePicker from 'react-native-image-picker';
-import {
-  DocumentPicker,
-  DocumentPickerUtil,
-} from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 
 registerNativeHandlers({
-  NetInfo,
+  NetInfo: {
+    addEventListener(listener) {
+      let unsubscribe;
+      // For NetInfo >= 3.x.x
+      if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
+          listener(isConnected);
+        });
+        return unsubscribe;
+      } else {
+        // For NetInfo < 3.x.x
+        unsubscribe = NetInfo.addEventListener('connectionChange', () => {
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            listener(isConnected);
+          });
+        });
+
+        return unsubscribe.remove;
+      }
+    },
+
+    fetch() {
+      return new Promise((resolve, reject) => {
+        // For NetInfo >= 3.x.x
+        if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+          NetInfo.fetch().then(({ isConnected }) => {
+            resolve(isConnected);
+          }, reject);
+        } else {
+          // For NetInfo < 3.x.x
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            resolve(isConnected);
+          }, reject);
+        }
+      });
+    },
+  },
   pickImage: () =>
     new Promise((resolve, reject) => {
       ImagePicker.showImagePicker(null, (response) => {
@@ -26,28 +59,27 @@ registerNativeHandlers({
         });
       });
     }),
-  pickDocument: () =>
-    new Promise((resolve, reject) => {
-      DocumentPicker.show(
-        { filetype: [DocumentPickerUtil.allFiles()] },
-        (error, response) => {
-          if (response.error) {
-            reject(Error(response.error));
-          }
+  pickDocument: async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      let { uri } = res;
+      if (Platform.OS === 'android') {
+        uri = 'file://' + res.path;
+      }
 
-          let { uri } = response;
-          if (Platform.OS === 'android') {
-            uri = 'file://' + response.path;
-          }
-
-          resolve({
-            cancelled: response.didCancel,
-            uri,
-            name: response.fileName,
-          });
-        },
-      );
-    }),
+      return {
+        cancelled: false,
+        uri,
+        name: res.name,
+      };
+    } catch (err) {
+      return {
+        cancelled: true,
+      };
+    }
+  },
 });
 
 if (Platform.OS === 'android') {

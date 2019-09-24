@@ -47,6 +47,13 @@ const TypingIndicatorContainer = styled.View`
   ${({ theme }) => theme.messageList.typingIndicatorContainer.css}
 `;
 
+/**
+ * MessageList - The message list component renders a list of messages.
+ * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
+ *
+ * @example ./docs/MessageList.md
+ * @extends PureComponent
+ */
 const MessageList = withChannelContext(
   class MessageList extends PureComponent {
     constructor(props) {
@@ -59,30 +66,137 @@ const MessageList = withChannelContext(
     }
 
     static propTypes = {
-      /** A list of immutable messages */
-      messages: PropTypes.array.isRequired,
       /** Turn off grouping of messages by user */
       noGroupByUser: PropTypes.bool,
-      online: PropTypes.bool,
-      /** The message rendering component, the Message component delegates its rendering logic to this component */
-      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      disableWhileEditing: PropTypes.bool,
-      /** For flatlist  */
-      loadMoreThreshold: PropTypes.number,
-      /** Typing indicator component to render  */
-      TypingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      /** The attachment component to render, defaults to Attachment */
+      /**
+       * Array of allowed actions on message. e.g. ['edit', 'delete', 'mute', 'flag']
+       * If all the actions need to be disabled, empty array or false should be provided as value of prop.
+       * */
+      messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
+      /**
+       * Boolean weather current message list is a thread.
+       */
+      threadList: PropTypes.bool,
+      /** **Available from [chat context](https://getstream.github.io/stream-chat-react-native/#chatcontext)** */
+      client: PropTypes.object,
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
+      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
+      messages: PropTypes.array.isRequired,
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
+      read: PropTypes.object,
+      /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
+      typing: PropTypes.object,
+      /** Network status */
+      online: PropTypes.bool,
+      disableWhileEditing: PropTypes.bool,
+      /**
+       * For flatlist
+       * @see See loeadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
+       * */
+      loadMoreThreshold: PropTypes.number,
+      /**
+       * Callback for onPress event on Message component
+       *
+       * @param e       Event object for onPress event
+       * @param message Message object which was pressed
+       *
+       * */
+      onMessageTouch: PropTypes.func,
+      /** Should keyboard be dismissed when messaged is touched */
+      dismissKeyboardOnMessageTouch: PropTypes.bool,
+      eventHistory: PropTypes.object,
+      /** Helper function to mark current channel as read. */
+      markRead: PropTypes.func,
+      /**
+       * Handler to open the thread on message. This is callback for touch event for replies button.
+       *
+       * @param message A message object to open the thread upon.
+       * */
+      onThreadSelect: PropTypes.func,
+      /**
+       *  This method gets called when user selects edit action on some message. On code level it just sets `editing` property in state to message being edited
+       *
+       * @param message A [message object](https://getstream.io/chat/docs/#message_format) which is being edited
+       */
+      setEditingState: PropTypes.func,
+      /** Function to clear the editing state. */
+      clearEditingState: PropTypes.func,
+      /**
+       * A message object which is currently in edit state.
+       */
+      editing: PropTypes.object,
+      loadMore: PropTypes.func,
+      /**
+       * Typing indicator UI component to render
+       *
+       * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
+       * */
+      TypingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * @deprecated User DateSeperator instead.
+       * Date separator UI component to render
+       *
+       * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
+       * */
+      dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Date separator UI component to render
+       *
+       * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
+       * */
+      DateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * @deprecated User EventIndicator instead.
+       *
+       * UI Component to display following events in messagelist
+       *
+       * 1. member.added
+       * 2. member.removed
+       *
+       * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
+       * */
+      eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * UI Component to display following events in messagelist
+       *
+       * 1. member.added
+       * 2. member.removed
+       *
+       * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
+       * */
+      EventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+
+      /** UI component for empty message list */
+      EmptyStateIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+      ]),
+      /**
+       * @deprecated Use HeaderComponent instead.
+       *
+       * UI component for header of message list.
+       */
+      headerComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * UI component for header of message list. By default message list doesn't have any header.
+       * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+       * used in MessageList. Its footer instead of header, since message list is inverted.
+       *
+       */
+      HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {
-      dateSeparator: DateSeparator,
-      eventIndicator: EventIndicator,
+      DateSeparator,
+      EventIndicator,
       disableWhileEditing: true,
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
+      messageGrouping: true,
+      dismissKeyboardOnMessageTouch: true,
     };
 
     componentDidUpdate(prevProps) {
@@ -317,30 +431,43 @@ const MessageList = withChannelContext(
 
     renderItem = (message, groupStyles) => {
       if (message.type === 'message.date') {
-        const DateSeparator = this.props.dateSeparator;
+        const DateSeparator =
+          this.props.dateSeparator || this.props.DateSeparator;
         return <DateSeparator message={message} />;
       } else if (message.type === 'channel.event') {
-        const EventIndicator = this.props.eventIndicator;
+        const EventIndicator =
+          this.props.eventIndicator || this.props.EventIndicator;
         return <EventIndicator event={message.event} />;
       } else if (message.type !== 'message.read') {
         const readBy = this.readData[message.id] || [];
         return (
           <Message
+            client={this.props.client}
+            channel={this.props.channel}
             onThreadSelect={this.props.onThreadSelect}
             message={message}
             groupStyles={groupStyles}
             Message={this.props.Message}
+            Attachment={this.props.Attachment}
             readBy={readBy}
             lastReceivedId={
               this.state.lastReceivedId === message.id
                 ? this.state.lastReceivedId
                 : null
             }
+            onMessageTouch={this.props.onMessageTouch}
+            dismissKeyboardOnMessageTouch={
+              this.props.dismissKeyboardOnMessageTouch
+            }
             setEditingState={this.props.setEditingState}
             editing={this.props.editing}
             threadList={this.props.threadList}
             messageActions={this.props.messageActions}
-            Attachment={this.props.Attachment}
+            updateMessage={this.props.updateMessage}
+            removeMessage={this.props.removeMessage}
+            retrySendMessage={this.props.retrySendMessage}
+            openThread={this.props.openThread}
+            emojiData={this.props.emojiData}
           />
         );
       }
@@ -378,7 +505,8 @@ const MessageList = withChannelContext(
       }
 
       const TypingIndicator = this.props.TypingIndicator;
-
+      const HeaderComponent =
+        this.props.headerComponent || this.props.HeaderComponent;
       const messagesWithDates = this.insertDates(this.props.messages);
       const messageGroupStyles = this.getGroupStyles(messagesWithDates);
       this.readData = this.getReadStates(messagesWithDates);
@@ -420,7 +548,7 @@ const MessageList = withChannelContext(
               ref={(fl) => (this.flatList = fl)}
               data={messagesWithDates}
               onScroll={this.handleScroll}
-              ListFooterComponent={this.props.headerComponent}
+              ListFooterComponent={HeaderComponent}
               onEndReached={this.props.loadMore}
               inverted
               keyboardShouldPersistTaps="always"

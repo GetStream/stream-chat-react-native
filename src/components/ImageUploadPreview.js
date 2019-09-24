@@ -52,7 +52,7 @@ const DismissImage = styled.Image`
 `;
 
 /**
- * ImageUploadPreview
+ * UI Component to preview the images set for upload
  *
  * @example ./docs/ImageUploadPreview.md
  * @extends PureComponent
@@ -64,8 +64,33 @@ export const ImageUploadPreview = themed(
       super(props);
     }
     static propTypes = {
+      /**
+       * Its an object/map of id vs image objects which are set for upload. It has following structure:
+       *
+       * ```json
+       *  {
+       *    "randomly_generated_temp_id_1": {
+       *        "id": "randomly_generated_temp_id_1",
+       *        "file": // File object
+       *        "status": "Uploading" // or "Finished"
+       *      },
+       *    "randomly_generated_temp_id_2": {
+       *        "id": "randomly_generated_temp_id_2",
+       *        "file": // File object
+       *        "status": "Uploading" // or "Finished"
+       *      },
+       *  }
+       * ```
+       *
+       * */
       imageUploads: PropTypes.array.isRequired,
+      /**
+       * @param id Index of image in `imageUploads` array in state of MessageInput.
+       */
       removeImage: PropTypes.func,
+      /**
+       * @param id Index of image in `imageUploads` array in state of MessageInput.
+       */
       retryUpload: PropTypes.func,
     };
 

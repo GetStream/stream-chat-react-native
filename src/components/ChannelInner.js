@@ -8,6 +8,7 @@ import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+import { emojiData } from '../utils';
 
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
@@ -35,7 +36,7 @@ export class ChannelInner extends PureComponent {
       watchers: Immutable({}),
       members: Immutable({}),
       read: Immutable({}),
-
+      thread: props.thread,
       threadMessages: [],
       threadLoadingMore: false,
       threadHasMore: true,
@@ -104,12 +105,16 @@ export class ChannelInner extends PureComponent {
     ]),
     /** The indicator to use when message list is empty */
     EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    isOnline: PropTypes.bool,
+    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
 
   static defaultProps = {
     LoadingIndicator,
     LoadingErrorIndicator,
     EmptyStateIndicator,
+    emojiData,
   };
 
   componentDidUpdate(prevProps) {
@@ -461,8 +466,19 @@ export class ChannelInner extends PureComponent {
     if (this.state.loadingMore) return;
     if (this._unmounted) return;
     this.setState({ loadingMore: true });
+    const oldestMessage = this.state.messages[0]
+      ? this.state.messages[0]
+      : null;
 
-    const oldestID = this.state.messages[0] ? this.state.messages[0].id : null;
+    if (oldestMessage.status !== 'received') {
+      this.setState({
+        loadingMore: false,
+      });
+
+      return;
+    }
+
+    const oldestID = oldestMessage ? oldestMessage.id : null;
     const perPage = 100;
     let queryResponse;
     try {
@@ -493,6 +509,8 @@ export class ChannelInner extends PureComponent {
     ...this.state,
     client: this.props.client,
     channel: this.props.channel,
+    Message: this.props.Message,
+    Attachment: this.props.Attachment,
     updateMessage: this.updateMessage,
     removeMessage: this.removeMessage,
     sendMessage: this.sendMessage,
@@ -501,12 +519,12 @@ export class ChannelInner extends PureComponent {
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
     markRead: this._markReadThrottled,
-
     loadMore: this.loadMore,
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
+    emojiData: this.props.emojiData,
   });
 
   renderComponent = () => this.props.children;

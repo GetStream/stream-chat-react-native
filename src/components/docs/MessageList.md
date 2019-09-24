@@ -8,12 +8,21 @@ It keeps the following state:
 
 Here's an example of how to render a list of messages:
 
-```js
-const data = require('./data');
+#### Snack example
 
-<Chat client={data.client}>
-  <Channel channel={data.channel}>
-    <MessageList />
-  </Channel>
-</Chat>;
+```js
+<div
+  data-snack-id="@vishalnarkhede/messagelist-example"
+  data-snack-platform="android"
+  data-snack-preview="true"
+  data-snack-theme="light"
+  style={{
+    overflow: 'hidden',
+    background: '#fafafa',
+    border: '1px solid rgba(0,0,0,.08)',
+    borderRadius: '4px',
+    height: '505px',
+    width: '100',
+  }}
+></div>
 ```
