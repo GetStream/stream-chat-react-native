@@ -169,7 +169,7 @@ export class ChannelInner extends PureComponent {
       typing: {},
     });
 
-    this.markRead();
+    if (channel.countUnread() > 0) this.markRead();
   }
 
   markRead = () => {

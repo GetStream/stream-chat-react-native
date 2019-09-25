@@ -476,8 +476,11 @@ const MessageList = withChannelContext(
     handleScroll = (event) => {
       const yOffset = event.nativeEvent.contentOffset.y;
       const removeNewMessageNotification = yOffset <= 0;
-
-      if (!this.props.threadList && removeNewMessageNotification)
+      if (
+        !this.props.threadList &&
+        removeNewMessageNotification &&
+        this.props.channel.countUnread() > 0
+      )
         this.props.markRead();
 
       this.setState((prevState) => ({
