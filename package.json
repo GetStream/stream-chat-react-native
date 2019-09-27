@@ -69,7 +69,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
-    "stream-chat": "^0.13.5",
+    "stream-chat": "^1.1.1",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {
@@ -87,8 +87,7 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "@types/react": "^16.8.23",
-    "@types/react-native": "^0.60.0",
-    "@types/seamless-immutable": "^0.60.0",
+    "@types/react-native": "^0.57.0",
     "ast-pretty-print": "^2.0.1",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",

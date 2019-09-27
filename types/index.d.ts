@@ -209,20 +209,23 @@ interface ChannelListProps extends ChatContextValue {
    * It receives ChannelList (this) as first parameter, and event as second.
    */
   onMessageNew?(
-    thisArg: ChannelList,
+    thisArg: React.Component<ChannelListProps>,
     e: Client.NotificationNewMessageEvent,
   ): void;
   /** Function that overrides default behaviour when users gets added to a channel */
   onAddedToChannel?(
-    thisArg: ChannelList,
+    thisArg: React.Component<ChannelListProps>,
     e: Client.NotificationAddedToChannelEvent,
   ): void;
   /** Function that overrides default behaviour when users gets removed from a channel */
   onRemovedFromChannel?(
-    thisArg: ChannelList,
+    thisArg: React.Component<ChannelListProps>,
     e: Client.NotificationRemovedFromChannelEvent,
   ): void;
-
+  onChannelUpdated?(
+    thisArg: React.Component<ChannelListProps>,
+    e: Client.ChannelUpdatedEvent,
+  ): void;
   // TODO: Create proper interface for followings in chat js client.
   /** Object containing query filters */
   filters: object;
@@ -383,7 +386,7 @@ interface MessageTextProps {
 }
 interface ThreadProps extends ChannelContextValue {
   /** the thread (the parent message object) */
-  thread: SeamlessImmutable.Immutable<Client.MessageResponse> | boolean | void;
+  thread: SeamlessImmutable.Immutable<Client.MessageResponse>;
   /** The list of messages to render, state is handled by the parent channel component */
   threadMessages?: Client.MessageResponse[];
   /** Make input focus on mounting thread */

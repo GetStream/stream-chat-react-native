@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.0] 2019-09-27
+
+- Adding typescript declaration file
+
 ## [0.2.6] 2019-09-23
 
 - Fixing expo package for NetInfo changes
