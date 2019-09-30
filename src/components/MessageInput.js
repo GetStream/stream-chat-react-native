@@ -83,6 +83,36 @@ const SendButtonIcon = styled.Image`
   height: 15;
   ${({ theme }) => theme.messageInput.sendButtonIcon.css}
 `;
+
+const ActionSheetTitleContainer = styled.View`
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding-left: 20;
+  padding-right: 20;
+  ${({ theme }) => theme.messageInput.actionSheet.titleContainer.css};
+`;
+
+const ActionSheetTitleText = styled.Text`
+  font-weight: bold;
+  ${({ theme }) => theme.messageInput.actionSheet.titleText.css};
+`;
+
+const ActionSheetButtonContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding-left: 20;
+  ${({ theme }) => theme.messageInput.actionSheet.buttonContainer.css};
+`;
+
+const ActionSheetButtonText = styled.Text`
+  ${({ theme }) => theme.messageInput.actionSheet.buttonText.css};
+`;
+
 /**
  * UI Component for message input
  * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
@@ -725,24 +755,15 @@ const MessageInput = withKeyboardContext(
                       <ActionSheet
                         ref={(o) => (this.attachActionSheet = o)}
                         title={
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              width: '100%',
-                              paddingLeft: 20,
-                              paddingRight: 20,
-                            }}
-                          >
-                            <Text style={{ fontWeight: 'bold' }}>
+                          <ActionSheetTitleContainer>
+                            <ActionSheetTitleText>
                               Add a file
-                            </Text>
+                            </ActionSheetTitleText>
                             <IconSquare
                               icon={iconClose}
                               onPress={this.closeAttachActionSheet}
                             />
-                          </View>
+                          </ActionSheetTitleContainer>
                         }
                         options={[
                           /* eslint-disable */
@@ -811,16 +832,8 @@ const MessageInput = withKeyboardContext(
 export { MessageInput };
 
 const AttachmentActionSheetItem = ({ icon, text }) => (
-  <View
-    style={{
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'flex-start',
-      width: '100%',
-      paddingLeft: 20,
-    }}
-  >
+  <ActionSheetButtonContainer>
     <IconSquare icon={icon} />
-    <Text style={{ marginLeft: 15 }}>{text}</Text>
-  </View>
+    <ActionSheetButtonText>{text}</ActionSheetButtonText>
+  </ActionSheetButtonContainer>
 );
