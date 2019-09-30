@@ -1,6 +1,10 @@
 # Changelog
 
-## [0.3.0] 2019-09-27
+## [0.3.1] 2019-09-30
+
+- Adding typescript declaration file for expo and native package
+
+## [0.3.0] 2019-09-30
 
 - Adding typescript declaration file
 - Adding style customization support for actionsheet
