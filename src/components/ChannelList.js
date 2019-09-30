@@ -137,11 +137,6 @@ const ChannelList = withChatContext(
       this._unmounted = false;
     }
 
-    isPromise = (thing) => {
-      const promise = thing && typeof thing.then === 'function';
-      return promise;
-    };
-
     async componentDidMount() {
       await this._queryChannelsDebounced();
       this.listenToChanges();

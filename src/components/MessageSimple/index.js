@@ -64,6 +64,8 @@ export const MessageSimple = themed(
       dismissKeyboard: PropTypes.func,
       /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
       handleAction: PropTypes.func,
+      /** Handler resend the message. */
+      handleRetry: PropTypes.func,
       /** Current [message object](https://getstream.io/chat/docs/#message_format) */
       message: PropTypes.object,
       /**
