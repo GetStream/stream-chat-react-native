@@ -979,22 +979,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/seamless-immutable@7.1.10":
-  version "7.1.10"
-  resolved "https://registry.yarnpkg.com/@types/seamless-immutable/-/seamless-immutable-7.1.10.tgz#4c4313ad5069c881f38a19c7df20b7b694bf0f57"
-  integrity sha512-KG2oQ6M2HhVFcm1uknm8TsL2dQKZnGWZ12lGE+rhD3uXZmrFh5fpleGAwhXtbX+hWHXWFQcMLMpah7lHfgZzkg==
-
 "@types/unist@*", "@types/unist@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
   integrity sha512-FvUupuM3rlRsRtCN+fDudtmytGO6iHJuuRKS1Ss0pG5z8oX0diNEw94UEL7hgDbpN94rgaK5R7sWm6RrSkZuAQ==
-
-"@types/uuid@^3.4.5":
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.5.tgz#d4dc10785b497a1474eae0ba7f0cb09c0ddfd6eb"
-  integrity sha512-MNL15wC3EKyw1VLF+RoVO4hJJdk9t/Hlv3rt1OL65Qvuadm4BYo6g9ZJQqoq7X8NBFSsQXgAujWciovh2lpVjA==
-  dependencies:
-    "@types/node" "*"
 
 "@types/vfile-message@*":
   version "1.0.1"
@@ -5674,9 +5662,9 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.0.0-alpha.11, node-releases@^1.1.29:
-  version "1.1.32"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.32.tgz#485b35c1bf9b4d8baa105d782f8ca731e518276e"
-  integrity sha512-VhVknkitq8dqtWoluagsGPn3dxTvN9fwgR59fV3D7sLBHe0JfDramsMI8n8mY//ccq/Kkrf8ZRHRpsyVZ3qw1A==
+  version "1.1.33"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.33.tgz#349f10291234624574f44cf32b7de259bf028303"
+  integrity sha512-I0V30bWQEoHb+10W8oedVoUrdjW5wIkYm0w7vvcrPO95pZY738m1k77GF5sO0vKg5eXYg9oGtrMAETbgZGm11A==
   dependencies:
     semver "^5.3.0"
 
@@ -7805,14 +7793,12 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.1.1.tgz#45ffb4a9e52e75e1707c3f649d3646c6e29c6aa3"
-  integrity sha512-aw2X5Qw5S+Ho4zc3coAnoT4f/68vm93Ja7BKh7bql49iuvFIUF+GuzyHmw2pcSrKTOZ7d+h7mbS1L2VhUF30NA==
+stream-chat@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.1.2.tgz#5674388f4b9d1438bddda191b9e84365d0404496"
+  integrity sha512-8ZocDy8RD5yWn4iUgEUINnnbfxsaR/X9TDu6JLsweC9H8KzRwQsDQUTWF2u6BV9C+iZO4WrvYs1WmriklKd2hA==
   dependencies:
     "@babel/runtime" "^7.3.1"
-    "@types/seamless-immutable" "7.1.10"
-    "@types/uuid" "^3.4.5"
     axios "^0.18.1"
     chai-arrays "^2.0.0"
     cross-fetch "^3.0.0"

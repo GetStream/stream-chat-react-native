@@ -11,10 +11,12 @@
   ],
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "typings": "types/index.d.ts",
   "jsnext:main": "dist/index.es.js",
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "/types"
   ],
   "devDependencies": {
     "@babel/core": "^7.4.3",

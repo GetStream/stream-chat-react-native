@@ -4686,9 +4686,9 @@ node-pre-gyp@^0.12.0:
     tar "^4"
 
 node-releases@^1.1.29:
-  version "1.1.32"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.32.tgz#485b35c1bf9b4d8baa105d782f8ca731e518276e"
-  integrity sha512-VhVknkitq8dqtWoluagsGPn3dxTvN9fwgR59fV3D7sLBHe0JfDramsMI8n8mY//ccq/Kkrf8ZRHRpsyVZ3qw1A==
+  version "1.1.33"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.33.tgz#349f10291234624574f44cf32b7de259bf028303"
+  integrity sha512-I0V30bWQEoHb+10W8oedVoUrdjW5wIkYm0w7vvcrPO95pZY738m1k77GF5sO0vKg5eXYg9oGtrMAETbgZGm11A==
   dependencies:
     semver "^5.3.0"
 
@@ -5492,9 +5492,9 @@ react-proxy@^1.1.7:
     react-deep-force-update "^1.0.0"
 
 react-simple-code-editor@^0.9.7:
-  version "0.9.14"
-  resolved "https://registry.yarnpkg.com/react-simple-code-editor/-/react-simple-code-editor-0.9.14.tgz#5b8fdc36a975cbf02fdafa2597398d8e212afebc"
-  integrity sha512-doNaIIt4w7QIiB6ysWHMtYL4M3xOGPvZJH8vGq3W/hGk43pn25RDA27IS8GkbfhA1eLX72CWDhuC7KmDKax13g==
+  version "0.9.15"
+  resolved "https://registry.yarnpkg.com/react-simple-code-editor/-/react-simple-code-editor-0.9.15.tgz#59e3583832e9e98992d3674b2d7673b4cd1c5709"
+  integrity sha512-M8iKgjBTBZK92tZYgOEfMuR7c3zZ0q0v3QYllSxIPx3SU+w003VofH50txXQSBTu92pSOm2tidON1HbQ1l8BDA==
 
 react-styleguidist@^9.0.7:
   version "9.1.16"
@@ -6280,10 +6280,10 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat-react-native-core@v0.2.6:
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.2.6.tgz#79bdbef98d8bb1328319ad95c88372c58ddd950b"
-  integrity sha512-WtYOwY3EgmHGFwuIiWbw8mosxUYg+RAYK6r7HSGRWorrPDLGsYmf0mQaHKk/xr3LNgl6s8p/k/923+bROhDBng==
+stream-chat-react-native-core@v0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.0.tgz#07b1ed27eac9601883c67f6050d79490fb90f461"
+  integrity sha512-2IPuJqNn5nzmN95+QCoXL7obtCQp8tx8V0d9I0DldsuDD0uD5v4RMHxEnBWKYBpqdrtlHW/H8huwxDJKDkzx+g==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
@@ -6302,13 +6302,13 @@ stream-chat-react-native-core@v0.2.6:
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^0.13.5"
+    stream-chat "^1.1.1"
     uuid "^3.3.2"
 
-stream-chat@^0.13.5:
-  version "0.13.8"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-0.13.8.tgz#fb3a60711cd6b74892a619d0f664ad8f25817692"
-  integrity sha512-a/G2PgWSnvKq0OqBm9Cs3/posmbqUDdGZ5FGWuaJs6cztMOFG6yze1mCQIV7PeCjMtP/DHld7OFrT0Q2dWvC6g==
+stream-chat@^1.1.1:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.1.2.tgz#5674388f4b9d1438bddda191b9e84365d0404496"
+  integrity sha512-8ZocDy8RD5yWn4iUgEUINnnbfxsaR/X9TDu6JLsweC9H8KzRwQsDQUTWF2u6BV9C+iZO4WrvYs1WmriklKd2hA==
   dependencies:
     "@babel/runtime" "^7.3.1"
     axios "^0.18.1"
