@@ -9,6 +9,7 @@ import { Message } from './Message';
 import { EventIndicator } from './EventIndicator';
 import { MessageNotification } from './MessageNotification';
 import { DateSeparator } from './DateSeparator';
+import { TypingIndicator } from './TypingIndicator';
 
 const ListContainer = styled.FlatList`
   flex: 1;
@@ -197,6 +198,7 @@ const MessageList = withChannelContext(
       loadMoreThreshold: 2,
       messageGrouping: true,
       dismissKeyboardOnMessageTouch: true,
+      TypingIndicator,
     };
 
     componentDidUpdate(prevProps) {
