@@ -282,6 +282,7 @@ export const themed = (OriginalComponent) => {
               path.pop();
               return { css: v };
             }
+            path.pop();
             return v;
           };
 
