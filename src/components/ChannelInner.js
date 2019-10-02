@@ -165,7 +165,7 @@ export class ChannelInner extends PureComponent {
       members: channel.state.members,
       watcher_count: channel.state.watcher_count,
       loading: false,
-      typing: {},
+      typing: Immutable({}),
     });
 
     this.markRead();
