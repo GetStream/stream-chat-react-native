@@ -17,12 +17,11 @@ import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
+import { SendButton } from './SendButton';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 
-import iconEdit from '../images/icons/icon_edit.png';
-import iconNewMessage from '../images/icons/icon_new_message.png';
 import iconAddAttachment from '../images/icons/plus-outline.png';
 import iconGallery from '../images/icons/icon_attach-media.png';
 import iconFolder from '../images/icons/icon_folder.png';
@@ -71,17 +70,6 @@ const AttachButtonIcon = styled.Image`
   width: 15;
   height: 15;
   ${({ theme }) => theme.messageInput.attachButtonIcon.css}
-`;
-
-const SendButton = styled.TouchableOpacity`
-  margin-left: 8;
-  ${({ theme }) => theme.messageInput.sendButton.css}
-`;
-
-const SendButtonIcon = styled.Image`
-  width: 15;
-  height: 15;
-  ${({ theme }) => theme.messageInput.sendButtonIcon.css}
 `;
 
 const ActionSheetTitleContainer = styled.View`
@@ -161,7 +149,7 @@ const MessageInput = withKeyboardContext(
             /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
             watchers: PropTypes.object,
             /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-            editing: PropTypes.object,
+            editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
             /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
             clearEditingState: PropTypes.func,
             /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
@@ -183,11 +171,24 @@ const MessageInput = withKeyboardContext(
             closeSuggestions: PropTypes.func,
             /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
             updateSuggestions: PropTypes.func,
+            /**
+             * Custom UI component for send button.
+             *
+             * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
+             * */
+            SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+            /**
+             * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
+             *
+             * @see See https://facebook.github.io/react-native/docs/textinput#reference
+             */
+            additionalTextInputProps: PropTypes.object,
           };
 
           static defaultProps = {
             hasImagePicker: true,
             hasFilePicker: true,
+            SendButton,
           };
 
           getMessageDetailsForState = (message) => {
@@ -675,8 +676,7 @@ const MessageInput = withKeyboardContext(
             this.attachActionSheet.hide();
           };
           render() {
-            const { hasImagePicker, hasFilePicker } = this.props;
-
+            const { hasImagePicker, hasFilePicker, SendButton } = this.props;
             let editingBoxStyles = {};
             if (this.props.editing) {
               editingBoxStyles = {
@@ -806,17 +806,15 @@ const MessageInput = withKeyboardContext(
                           commands: this.getCommands(),
                           onMentionSelectItem: this.onSelectItem,
                         })}
+                        additionalTextInputProps={
+                          this.props.additionalTextInputProps
+                        }
                       />
                       <SendButton
                         title="Pick an image from camera roll"
-                        onPress={this.sendMessage}
-                      >
-                        {this.props.editing ? (
-                          <SendButtonIcon source={iconEdit} />
-                        ) : (
-                          <SendButtonIcon source={iconNewMessage} />
-                        )}
-                      </SendButton>
+                        sendMessage={this.sendMessage}
+                        editing={this.props.editing}
+                      />
                     </InputBoxContainer>
                   </Container>
                 </View>

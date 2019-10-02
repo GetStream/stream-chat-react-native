@@ -127,7 +127,7 @@ const MessageList = withChannelContext(
       /**
        * A message object which is currently in edit state.
        */
-      editing: PropTypes.object,
+      editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       loadMore: PropTypes.func,
       /**
        * Typing indicator UI component to render

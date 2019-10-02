@@ -89,6 +89,7 @@ module.exports = {
         'src/components/Spinner.js',
         'src/components/LoadingIndicator.js',
         'src/components/Image.js',
+        'src/components/SendButton.js',
         'src/components/DateSeparator.js',
         'src/components/Window.js',
         'src/components/ChannelListMessenger.js',
@@ -159,10 +160,6 @@ module.exports = {
       exampleMode: 'collapse',
       usageMode: 'expand',
     },
-    // {
-    //   name: 'Styles',
-    //   content: 'docs/styles.md',
-    // },
   ],
   template: {
     favicon: 'https://getstream.imgix.net/images/favicons/favicon-96x96.png',
