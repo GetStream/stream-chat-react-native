@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.3] 2019-10-02
+
+- Making empty value of `typing` object - immutable
+- Adding support for `SendButton` UI component prop
+
 ## [0.3.2] 2019-10-01
 
 - Fixing bug in themed HOC
