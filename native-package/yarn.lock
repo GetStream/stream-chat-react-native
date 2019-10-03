@@ -6280,10 +6280,10 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat-react-native-core@v0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.2.tgz#5feed4e1ea03ad7301db51457d03283df8e97b43"
-  integrity sha512-Xqy6Kya68qm21jGyBkngFki1RXZh0oRvTKF6H3JVhVG8mzAivNqIlsAmWDbQnnSMsNrX0x+H8fusvjnIfAJRQA==
+stream-chat-react-native-core@v0.3.3:
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.3.tgz#52b5c2b673defa145ec28c69e72bcb2d0336e711"
+  integrity sha512-khziIvH+k9AHDEoixVpX9mIU2jLCbWjAoU2gqr0qAn+3lXrRUULAHjjdhqe9CpaUb9oQAc3cVegoOHqdkzdUgw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
