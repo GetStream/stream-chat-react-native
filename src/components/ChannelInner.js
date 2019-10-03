@@ -66,6 +66,11 @@ export class ChannelInner extends PureComponent {
       trailing: true,
     });
 
+    this._loadMoreThrottled = throttle(this.loadMore, 2000, {
+      leading: true,
+      trailing: true,
+    });
+
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
     this._loadMoreThreadFinishedDebounced = debounce(
       this.loadMoreThreadFinished,
@@ -463,7 +468,7 @@ export class ChannelInner extends PureComponent {
 
   loadMore = async () => {
     // prevent duplicate loading events...
-    if (this.state.loadingMore) return;
+    if (this.state.loadingMore || !this.state.hasMore) return;
     if (this._unmounted) return;
     this.setState({ loadingMore: true });
     const oldestMessage = this.state.messages[0]
@@ -519,7 +524,7 @@ export class ChannelInner extends PureComponent {
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
     markRead: this._markReadThrottled,
-    loadMore: this.loadMore,
+    loadMore: this._loadMoreThrottled,
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,
