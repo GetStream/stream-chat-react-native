@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.4] 2019-10-03
+
+- Avoiding query channel api call when there are no more messages to render
+- Making mardRead api call only if unread count is > 0
+
 ## [0.3.3] 2019-10-02
 
 - Making empty value of `typing` object - immutable
