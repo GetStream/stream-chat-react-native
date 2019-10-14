@@ -148,8 +148,8 @@ const ChannelList = withChatContext(
       this._queryChannelsDebounced.cancel();
     }
 
-    static getDerivedStateFromError() {
-      return { error: true };
+    static getDerivedStateFromError(error) {
+      return { error };
     }
 
     componentDidCatch(error, info) {
@@ -233,7 +233,7 @@ const ChannelList = withChatContext(
         console.warn(e);
 
         if (this._unmounted) return;
-        this.setState({ error: true, refreshing: false });
+        this.setState({ error: e, refreshing: false });
       }
       this.queryActive = false;
     };
