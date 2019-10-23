@@ -106,7 +106,9 @@ export const Gallery = withMessageContentContext(
               <Modal
                 visible={this.state.viewerModalOpen}
                 transparent={true}
-                onRequestClose={() => {}}
+                onRequestClose={() => {
+                  this.setState({ viewerModalOpen: false });
+                }}
               >
                 <SafeAreaView
                   style={{ flex: 1, backgroundColor: 'transparent' }}
@@ -143,7 +145,6 @@ export const Gallery = withMessageContentContext(
                   length={images.length}
                   activeOpacity={0.8}
                   onPress={() => {
-                    console.log('open');
                     this.setState({ viewerModalOpen: true });
                   }}
                   onLongPress={this.props.onLongPress}
@@ -200,7 +201,9 @@ export const Gallery = withMessageContentContext(
               ))}
             </GalleryContainer>
             <Modal
-              onRequestClose={() => {}}
+              onRequestClose={() => {
+                this.setState({ viewerModalOpen: false });
+              }}
               visible={this.state.viewerModalOpen}
               transparent={true}
             >
