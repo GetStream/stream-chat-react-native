@@ -102,6 +102,7 @@ const ActionSheetTitleText = styled.Text`
 
 const ActionSheetButtonContainer = styled.View`
   height: 50;
+  width: 100%;
   align-items: center;
   background-color: #fff;
   justify-content: center;
@@ -115,6 +116,10 @@ const ActionSheetButtonText = styled.Text`
 `;
 
 const ActionSheetCancelButtonContainer = styled.View`
+  height: 50;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
   ${({ theme }) => theme.message.actionSheet.cancelButtonContainer.css};
 `;
 const ActionSheetCancelButtonText = styled.Text`
