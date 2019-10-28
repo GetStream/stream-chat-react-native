@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.5] 2019-10-28
+
+- Fixing some styles for actionsheet in MessageSimple component.
+
 ## [0.3.4] 2019-10-03
 
 - Avoiding query channel api call when there are no more messages to render
