@@ -14,6 +14,11 @@ export class FileAttachmentGroup extends React.PureComponent {
     files: PropTypes.array,
     handleAction: PropTypes.func,
     alignment: PropTypes.oneOf(['right', 'left']),
+    /**
+     * Custom UI component for attachment icon for type 'file' attachment.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+     */
+    AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
 
   constructor(props) {
@@ -21,7 +26,13 @@ export class FileAttachmentGroup extends React.PureComponent {
   }
 
   render() {
-    const { messageId, files, handleAction, alignment } = this.props;
+    const {
+      messageId,
+      files,
+      handleAction,
+      alignment,
+      AttachmentFileIcon,
+    } = this.props;
 
     return (
       <Container>
@@ -43,6 +54,7 @@ export class FileAttachmentGroup extends React.PureComponent {
                 actionHandler={handleAction}
                 alignment={alignment}
                 groupStyle={groupStyle}
+                AttachmentFileIcon={AttachmentFileIcon}
               />
             );
           })}

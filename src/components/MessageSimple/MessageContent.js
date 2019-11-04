@@ -173,6 +173,11 @@ export const MessageContent = themed(
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
        */
       actionSheetStyles: PropTypes.object,
+      /**
+       * Custom UI component for attachment icon for type 'file' attachment.
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+       */
+      AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {
@@ -420,6 +425,7 @@ export const MessageContent = themed(
                   files={files}
                   handleAction={this.props.handleAction}
                   alignment={this.props.alignment}
+                  AttachmentFileIcon={this.props.AttachmentFileIcon}
                 />
               )}
               {images && images.length > 0 && (

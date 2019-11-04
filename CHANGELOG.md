@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.7] 2019-11-04
+
+- Adding support for `AttachmentFileIcon` prop.
+
 ## [0.3.6] 2019-11-04
 
 - Adding support for `actionSheetStyles` prop, so as to add more customizability for styles of actionsheet.
