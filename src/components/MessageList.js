@@ -188,6 +188,11 @@ const MessageList = withChannelContext(
        *
        */
       HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Style object for actionsheet (used to message actions).
+       * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+       */
+      actionSheetStyles: PropTypes.object,
     };
 
     static defaultProps = {
@@ -470,6 +475,7 @@ const MessageList = withChannelContext(
             retrySendMessage={this.props.retrySendMessage}
             openThread={this.props.openThread}
             emojiData={this.props.emojiData}
+            actionSheetStyles={this.props.actionSheetStyles}
           />
         );
       }

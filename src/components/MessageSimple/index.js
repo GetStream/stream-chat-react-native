@@ -97,6 +97,11 @@ export const MessageSimple = themed(
       showMessageStatus: PropTypes.bool,
       /** Latest message id on current channel */
       lastReceivedId: PropTypes.string,
+      /**
+       * Style object for actionsheet (used to message actions).
+       * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+       */
+      actionSheetStyles: PropTypes.object,
     };
 
     static defaultProps = {
