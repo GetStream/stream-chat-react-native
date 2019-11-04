@@ -183,6 +183,11 @@ const MessageInput = withKeyboardContext(
              * @see See https://facebook.github.io/react-native/docs/textinput#reference
              */
             additionalTextInputProps: PropTypes.object,
+            /**
+             * Style object for actionsheet (used for option to choose file attachment or photo attachment).
+             * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+             */
+            actionSheetStyles: PropTypes.object,
           };
 
           static defaultProps = {
@@ -791,6 +796,7 @@ const MessageInput = withKeyboardContext(
                             }
                           }, 1);
                         }}
+                        styles={this.props.actionSheetStyles}
                       />
                       <AutoCompleteInput
                         openSuggestions={this.props.openSuggestions}

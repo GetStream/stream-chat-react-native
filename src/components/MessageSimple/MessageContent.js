@@ -168,6 +168,11 @@ export const MessageContent = themed(
       handleAction: PropTypes.func,
       /** Position of message. 'right' | 'left' */
       alignment: PropTypes.string,
+      /**
+       * Style object for actionsheet (used to message actions).
+       * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+       */
+      actionSheetStyles: PropTypes.object,
     };
 
     static defaultProps = {
@@ -495,6 +500,7 @@ export const MessageContent = themed(
               cancelButtonIndex={0}
               destructiveButtonIndex={0}
               onPress={(index) => this.onActionPress(options[index].id)}
+              styles={this.props.actionSheetStyles}
             />
           </Container>
         </MessageContentContext.Provider>
