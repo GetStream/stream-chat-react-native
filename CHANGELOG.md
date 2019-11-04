@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.6] 2019-11-04
+
+- Adding support for `actionSheetStyles` prop, so as to add more customizability for styles of actionsheet.
+
 ## [0.3.5] 2019-10-28
 
 - Fixing some styles for actionsheet in MessageSimple component.
