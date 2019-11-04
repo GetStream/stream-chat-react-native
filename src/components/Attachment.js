@@ -6,7 +6,7 @@ import { themed } from '../styles/theme';
 
 import PropTypes from 'prop-types';
 import { Card } from './Card';
-import FileIcon from './FileIcon';
+import { FileIcon } from './FileIcon';
 import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
