@@ -176,6 +176,9 @@ interface MessageInputProps
   hasImagePicker?: boolean;
   hasFilePicker?: boolean;
   focus?: boolean;
+  /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
+  actionSheetStyles?: object;
+  AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
 interface AttachmentProps {
@@ -315,6 +318,7 @@ interface MessageListProps extends ChannelContextValue {
    */
   HeaderComponent?: React.ElementType;
   onThreadSelect?(message: Client.MessageResponse): void;
+  /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
@@ -381,6 +385,7 @@ interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
   forceAlign: string | boolean;
   showMessageStatus: boolean;
   MessageText?: React.ElementType<MessageTextProps>;
+  /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }

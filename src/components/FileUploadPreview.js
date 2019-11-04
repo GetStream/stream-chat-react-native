@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import PropTypes from 'prop-types';
-import FileIcon from './FileIcon';
+import { FileIcon } from './FileIcon';
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 import { FileState, ProgressIndicatorTypes } from '../utils';
 /**
@@ -27,6 +27,15 @@ export class FileUploadPreview extends React.PureComponent {
     fileUploads: PropTypes.array.isRequired,
     removeFile: PropTypes.func,
     retryUpload: PropTypes.func,
+    /**
+     * Custom UI component for attachment icon for type 'file' attachment.
+     * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+     */
+    AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+  };
+
+  static defaultProps = {
+    AttachmentFileIcon: FileIcon,
   };
 
   _renderItem = ({ item }) => {
@@ -38,6 +47,7 @@ export class FileUploadPreview extends React.PureComponent {
     if (item.state === FileState.UPLOAD_FAILED)
       type = ProgressIndicatorTypes.RETRY;
 
+    const AttachmentFileIcon = this.props.AttachmentFileIcon;
     return (
       <UploadProgressIndicator
         active={item.state !== FileState.UPLOADED}
@@ -58,11 +68,7 @@ export class FileUploadPreview extends React.PureComponent {
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <FileIcon
-              filename={item.file.name}
-              mimeType={item.file.type}
-              size={20}
-            />
+            <AttachmentFileIcon mimeType={item.file.type} size={20} />
             <Text style={{ paddingLeft: 10 }}>
               {item.file.name.length > 35
                 ? item.file.name.substring(0, 35).concat('...')
