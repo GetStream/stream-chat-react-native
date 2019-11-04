@@ -82,6 +82,11 @@ const MessageList = withChannelContext(
       client: PropTypes.object,
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Custom UI component for attachment icon for type 'file' attachment.
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+       */
+      AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
@@ -476,6 +481,7 @@ const MessageList = withChannelContext(
             openThread={this.props.openThread}
             emojiData={this.props.emojiData}
             actionSheetStyles={this.props.actionSheetStyles}
+            AttachmentFileIcon={this.props.AttachmentFileIcon}
           />
         );
       }
