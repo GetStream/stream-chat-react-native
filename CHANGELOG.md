@@ -2,7 +2,7 @@
 
 ## [0.3.7] 2019-11-04
 
-- Adding support for `AttachemntFileIcon` prop.
+- Adding support for `AttachmentFileIcon` prop.
 
 ## [0.3.6] 2019-11-04
 
