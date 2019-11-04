@@ -315,6 +315,8 @@ interface MessageListProps extends ChannelContextValue {
    */
   HeaderComponent?: React.ElementType;
   onThreadSelect?(message: Client.MessageResponse): void;
+  actionSheetStyles?: object;
+  AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
 declare type MessageAction = 'edit' | 'delete' | 'reactions' | 'reply';
@@ -379,6 +381,8 @@ interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
   forceAlign: string | boolean;
   showMessageStatus: boolean;
   MessageText?: React.ElementType<MessageTextProps>;
+  actionSheetStyles?: object;
+  AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
 interface MessageTextProps {
@@ -396,6 +400,11 @@ interface ThreadProps extends ChannelContextValue {
 interface TypingIndicatorProps {
   typing: [];
   client: Client.StreamChat;
+}
+
+interface FileIconUIComponentProps {
+  size: number;
+  mimeType?: string;
 }
 
 export class Avatar extends React.PureComponent<AvatarProps, any> {}
@@ -421,7 +430,10 @@ export class ChannelPreviewMessenger extends React.PureComponent<
 > {}
 export class CloseButton extends React.PureComponent {}
 export class IconBadge extends React.PureComponent {}
-
+export class FileIcon extends React.PureComponent<
+  FileIconUIComponentProps,
+  {}
+> {}
 export function registerNativeHandlers(handlers: {
   NetInfo: object;
   pickImage(): Promise<any>;
