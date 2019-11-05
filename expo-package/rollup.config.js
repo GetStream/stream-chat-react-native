@@ -40,6 +40,7 @@ const normalBundle = {
     'expo-document-picker',
     'expo-permissions',
     'react-native-unimodules',
+    'reactotron-react-native',
   ],
   plugins: [
     replace({

@@ -12,7 +12,11 @@ import { EmptyStateIndicator } from './EmptyStateIndicator';
 import uniqBy from 'lodash/uniqBy';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
-
+// import {
+//   getChannelsFromAsyncStorage,
+//   storeChannelsToAsyncStorage,
+// } from '../offline';
+import { storage } from '../native';
 export const isPromise = (thing) => {
   const promise = thing && typeof thing.then === 'function';
   return promise;
@@ -108,12 +112,11 @@ const ChannelList = withChatContext(
       LoadingIndicator,
       LoadingErrorIndicator,
       EmptyStateIndicator,
-      hasNextPage: true,
       filters: {},
       options: {},
       sort: {},
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
-      loadMoreThreshold: 2,
+      loadMoreThreshold: 0,
     };
 
     constructor(props) {
@@ -123,6 +126,7 @@ const ChannelList = withChatContext(
         channels: Immutable([]),
         channelIds: Immutable([]),
         loadingChannels: true,
+        hasNextPage: true,
         refreshing: false,
         offset: 0,
       };
@@ -138,6 +142,34 @@ const ChannelList = withChatContext(
     }
 
     async componentDidMount() {
+      // const { options, filters, sort } = this.props;
+
+      // const query = {
+      //   filters,
+      //   sort,
+      //   options: {
+      //     ...options,
+      //     offset: this.state.offset,
+      //   },
+      // };
+
+      // // console.log(JSON.stringify(query));
+      // const channels = await storage.queryChannels(JSON.stringify(query));
+      // // console.log('in component didMount');
+      // // console.log(channels.length);
+      // // console.time('fetchingToAsyncStorage');
+      // // const channels = await getChannelsFromAsyncStorage();
+      // // console.timeEnd('fetchingToAsyncStorage');
+      // this.setState({
+      //   channels,
+      //   channelIds: channels.map((c) => c.id),
+      //   loadingChannels: false,
+      //   offset: 0,
+      //   hasNextPage: true,
+      //   refreshing: false,
+      //   loadedFirstTime: true,
+      // });
+
       await this._queryChannelsDebounced();
       this.listenToChanges();
     }
@@ -157,15 +189,18 @@ const ChannelList = withChatContext(
     }
 
     queryChannels = async (resync = false) => {
+      // return;
+      // console.log('inside querychannels');
       // Don't query again if query is already active.
       if (this.queryActive) return;
 
       this.queryActive = true;
 
-      if (this._unmounted) {
+      if (this._unmounted || !this.state.hasNextPage) {
         this.queryActive = false;
         return;
       }
+
       const { options, filters, sort } = this.props;
       let offset;
 
@@ -180,9 +215,41 @@ const ChannelList = withChatContext(
         offset = this.state.offset;
       }
 
+      const query = {
+        filters,
+        sort,
+        options: {
+          ...options,
+          offset,
+        },
+      };
+
+      // if (true) {
+      // console.log('INSIDE IF');
+      // if (this.state.loadedFirstTime) {
+      //   query.options.offset = this.state.channels.length;
+      // }
+      if (window.offline) {
+        console.log(query);
+        const channels = await storage.queryChannels(JSON.stringify(query));
+        const finalChannels = [...this.state.channels, ...channels];
+        // console.time('fetchingToAsyncStorage');
+        // const channels = await getChannelsFromAsyncStorage();
+        // console.timeEnd('fetchingToAsyncStorage');
+        this.setState({
+          channels: finalChannels,
+          channelIds: finalChannels.map((c) => c.id),
+          loadingChannels: false,
+          offset: finalChannels.length,
+          hasNextPage: channels.length === (options.limit || 10),
+          refreshing: false,
+        });
+
+        return;
+      }
+      // }
       if (this._unmounted) return;
       this.setState({ refreshing: true });
-
       const channelPromise = this.props.client.queryChannels(filters, sort, {
         ...options,
         offset,
@@ -202,8 +269,8 @@ const ChannelList = withChatContext(
         await this.setState((prevState) => {
           let channels;
           let channelIds;
-
-          if (resync) {
+          if (resync || prevState.loadedFirstTime) {
+            // console.log('inside if ' + channelQueryResponse.length);
             channels = [...channelQueryResponse];
             channelIds = [...channelQueryResponse.map((c) => c.id)];
           } else {
@@ -218,22 +285,40 @@ const ChannelList = withChatContext(
               ...channelQueryResponse.map((c) => c.id),
             ];
           }
-
+          // console.log('GOT THE CHANNELS');
           return {
             channels, // not unique somehow needs more checking
             channelIds,
             loadingChannels: false,
             offset: channels.length,
+
             hasNextPage:
-              channelQueryResponse.length >= options.limit ? true : false,
+              channelQueryResponse.length >= (options.limit || 10)
+                ? true
+                : false,
             refreshing: false,
+            loadedFirstTime: false,
           };
         });
+        // console.log('TIME TAKEN: ');
+        // console.log(`Length of state channels : ${this.state.channels.length}`);
+        // console.time('storingToAsyncStorage');
+        console.log(query);
+        await storage.storeChannels(
+          JSON.stringify(query),
+          channelQueryResponse,
+        );
+        // await storeChannelsToAsyncStorage(this.state.channels);
+        // console.timeEnd('storingToAsyncStorage');
       } catch (e) {
         console.warn(e);
 
         if (this._unmounted) return;
-        this.setState({ error: true, refreshing: false });
+        this.setState({
+          error: true,
+          refreshing: false,
+          loadingChannels: false,
+        });
       }
       this.queryActive = false;
     };
@@ -258,7 +343,17 @@ const ChannelList = withChatContext(
       }
 
       if (e.type === 'message.new') {
+        console.log(e);
         this.moveChannelUp(e.cid);
+        const channels = this.state.channels;
+        const channelIndex = channels.findIndex(
+          (channel) => channel.cid === e.cid,
+        );
+        console.log(channels[channelIndex].id);
+        await storage.insertMessageForChannel(
+          channels[channelIndex].id,
+          e.message,
+        );
       }
 
       // make sure to re-render the channel list after connection is recovered
@@ -387,6 +482,7 @@ const ChannelList = withChatContext(
     };
 
     loadNextPage = () => {
+      // console.log('CALLING ENSajskdnksjd');
       this._queryChannelsDebounced();
     };
 

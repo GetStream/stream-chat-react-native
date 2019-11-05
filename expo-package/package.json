@@ -33,6 +33,7 @@
     "react-dom": "^16.8.6",
     "react-native": "0.57.1",
     "react-styleguidist": "^9.0.7",
+    "reactotron-react-native": "^4.0.2",
     "rollup": "^0.68.2",
     "rollup-plugin-babel": "^4.0.3",
     "rollup-plugin-commonjs": "^9.1.8",

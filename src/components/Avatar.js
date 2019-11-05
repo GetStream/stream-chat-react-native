@@ -91,7 +91,7 @@ export const Avatar = themed(
           {image && !this.state.imageError ? (
             <AvatarImage
               size={size}
-              source={{ uri: image }}
+              source={{ uri: image, cache: 'force-cache' }}
               accessibilityLabel="initials"
               resizeMethod="resize"
               onError={this.setError}

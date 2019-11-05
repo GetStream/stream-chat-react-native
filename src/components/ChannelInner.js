@@ -15,6 +15,7 @@ import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
 import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 import { logChatPromiseExecution } from 'stream-chat';
+import { storage } from '../native';
 
 /**
  * This component is not really exposed externally, and is only supposed to be used with
@@ -132,6 +133,12 @@ export class ChannelInner extends PureComponent {
   async componentDidMount() {
     const channel = this.props.channel;
     let errored = false;
+    if (channel.isOfflineChannel) {
+      // await this.props.channel.query();
+      // this.copyChannelState();
+      // return;
+    }
+
     if (!channel.initialized) {
       try {
         await channel.watch();
@@ -467,6 +474,9 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMore = async () => {
+    if (window.offline) return;
+
+    console.log('loading more');
     // prevent duplicate loading events...
     if (this.state.loadingMore || !this.state.hasMore) return;
     if (this._unmounted) return;
@@ -496,7 +506,18 @@ export class ChannelInner extends PureComponent {
       this.setState({ loadingMore: false });
       return;
     }
-    const hasMore = queryResponse.messages.length === perPage;
+    let hasMore;
+    if (queryResponse && queryResponse.messages) {
+      console.log('YUP SAVING');
+      await storage.insertMessagesForChannel(
+        this.props.channel.id,
+        queryResponse.messages,
+      );
+
+      hasMore = queryResponse.messages.length === perPage;
+    } else {
+      hasMore = false;
+    }
 
     this._loadMoreFinishedDebounced(hasMore, this.props.channel.state.messages);
   };

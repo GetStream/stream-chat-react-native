@@ -10,3 +10,5 @@ export {
 } from './context.js';
 
 export { MESSAGE_ACTIONS, renderText } from './utils';
+export { Storage } from './storage';
+export { RealmDB } from './realmdb';

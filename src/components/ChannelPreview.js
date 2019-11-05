@@ -61,8 +61,8 @@ export class ChannelPreview extends PureComponent {
       text: '',
       created_at: '',
     };
-
     if (!message) {
+      console.log('empty so returning');
       latestMessage.text = 'Nothing yet...';
       return latestMessage;
     }

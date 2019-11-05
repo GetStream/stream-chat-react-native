@@ -64,6 +64,7 @@ const MessageList = withChannelContext(
         newMessagesNotification: false,
         online: props.online,
       };
+      this.yOffset = 0;
     }
 
     static propTypes = {
@@ -222,7 +223,7 @@ const MessageList = withChannelContext(
       }
 
       const hasNewMessage = currentLastMessage.id !== previousLastMessage.id;
-      const userScrolledUp = this.state.yOffset > 0;
+      const userScrolledUp = this.yOffset > 0;
       const isOwner = currentLastMessage.user.id === this.props.client.userID;
 
       let scrollToBottom = false;
@@ -257,32 +258,32 @@ const MessageList = withChannelContext(
 
     insertDates = (messages) => {
       const newMessages = [];
-
       for (const [i, message] of messages.entries()) {
         if (message.type === 'message.read' || message.deleted_at) {
           newMessages.push(message);
           continue;
         }
 
-        const messageDate = message.created_at.getDay();
+        const messageCreatedAt = new Date(message.created_at);
+        const messageDate = messageCreatedAt.getDay();
         let prevMessageDate = messageDate;
 
         if (i < messages.length - 1) {
-          prevMessageDate = messages[i + 1].created_at.getDay();
+          prevMessageDate = new Date(messages[i + 1].created_at).getDay();
         }
 
         if (i === 0) {
           newMessages.push(
             {
               type: 'message.date',
-              date: message.created_at,
+              date: messageCreatedAt,
             },
             message,
           );
         } else if (messageDate !== prevMessageDate) {
           newMessages.push(message, {
             type: 'message.date',
-            date: messages[i + 1].created_at,
+            date: new Date(messages[i + 1].created_at),
           });
         } else {
           newMessages.push(message);
@@ -491,8 +492,8 @@ const MessageList = withChannelContext(
       )
         this.props.markRead();
 
+      this.yOffset = yOffset;
       this.setState((prevState) => ({
-        yOffset,
         newMessagesNotification: removeNewMessageNotification
           ? false
           : prevState.newMessagesNotification,
@@ -505,6 +506,7 @@ const MessageList = withChannelContext(
     };
 
     render() {
+      console.log('rerendering');
       // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
       // https://github.com/facebook/react-native/issues/21196
       if (
@@ -522,7 +524,6 @@ const MessageList = withChannelContext(
       const messageGroupStyles = this.getGroupStyles(messagesWithDates);
       this.readData = this.getReadStates(messagesWithDates);
       messagesWithDates.reverse();
-
       const typing = Object.values(this.props.typing);
       let showTypingIndicator;
       if (
