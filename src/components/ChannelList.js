@@ -18,6 +18,7 @@ export const isPromise = (thing) => {
   return promise;
 };
 
+export const DEFAULT_QUERY_CHANNELS_LIMIT = 10;
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
  * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
@@ -108,7 +109,6 @@ const ChannelList = withChatContext(
       LoadingIndicator,
       LoadingErrorIndicator,
       EmptyStateIndicator,
-      hasNextPage: true,
       filters: {},
       options: {},
       sort: {},
@@ -123,6 +123,7 @@ const ChannelList = withChatContext(
         channels: Immutable([]),
         channelIds: Immutable([]),
         loadingChannels: true,
+        hasNextPage: true,
         refreshing: false,
         offset: 0,
       };
@@ -157,8 +158,8 @@ const ChannelList = withChatContext(
     }
 
     queryChannels = async (resync = false) => {
-      // Don't query again if query is already active.
-      if (this.queryActive) return;
+      // Don't query again if query is already active or there are no more results.
+      if (this.queryActive || !this.state.hasNextPage) return;
 
       this.queryActive = true;
 
@@ -225,7 +226,10 @@ const ChannelList = withChatContext(
             loadingChannels: false,
             offset: channels.length,
             hasNextPage:
-              channelQueryResponse.length >= options.limit ? true : false,
+              channelQueryResponse.length >=
+              (options.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
+                ? true
+                : false,
             refreshing: false,
           };
         });
