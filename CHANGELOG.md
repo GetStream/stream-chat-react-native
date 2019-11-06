@@ -3,6 +3,7 @@
 ## [0.3.8] 2019-11-06
 
 - Adding logs to Chat, ChannelList and Channel component
+- Optimizing MessageList and ChannelList component - https://github.com/GetStream/stream-chat-react-native/pull/84
 
 ## [0.3.7] 2019-11-04
 
