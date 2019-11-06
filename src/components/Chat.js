@@ -30,6 +30,11 @@ export const Chat = themed(
       client: PropTypes.object.isRequired,
       /** Theme object */
       style: PropTypes.object,
+      logger: PropTypes.func,
+    };
+
+    static defaultProps = {
+      logger: () => {},
     };
 
     constructor(props) {
@@ -61,7 +66,29 @@ export const Chat = themed(
       this._unmounted = false;
     }
 
+    componentDidMount() {
+      this.props.logger('Chat component', 'componentDidMount', {
+        tags: ['lifecycle', 'chat'],
+        props: this.props,
+        state: this.state,
+      });
+    }
+
+    componentDidUpdate() {
+      this.props.logger('Chat component', 'componentDidUpdate', {
+        tags: ['lifecycle', 'chat'],
+        props: this.props,
+        state: this.state,
+      });
+    }
+
     componentWillUnmount() {
+      this.props.logger('Chat component', 'componentWillUnmount', {
+        tags: ['lifecycle', 'chat'],
+        props: this.props,
+        state: this.state,
+      });
+
       this._unmounted = true;
       this.props.client.off('connection.recovered');
       this.props.client.off('connection.changed');
@@ -92,10 +119,13 @@ export const Chat = themed(
       });
     };
 
-    setActiveChannel = (channel, e) => {
-      if (e !== undefined && e.preventDefault) {
-        e.preventDefault();
-      }
+    setActiveChannel = (channel) => {
+      this.props.logger('Chat component', 'setActiveChannel', {
+        tags: ['chat'],
+        props: this.props,
+        state: this.state,
+      });
+
       if (this._unmounted) return;
       this.setState(() => ({
         channel,
@@ -108,9 +138,15 @@ export const Chat = themed(
       setActiveChannel: this.setActiveChannel,
       isOnline: this.state.isOnline,
       connectionRecovering: this.state.connectionRecovering,
+      logger: this.props.logger,
     });
 
     render() {
+      this.props.logger('Chat component', 'Rerendering', {
+        props: this.props,
+        state: this.state,
+      });
+
       return (
         <ChatContext.Provider value={this.getContext()}>
           {this.props.children}

@@ -69,7 +69,7 @@ const ChannelListMessenger = withChatContext(
 
     renderLoadingError = () => {
       const Indicator = this.props.LoadingErrorIndicator;
-      return <Indicator listType="channel" />;
+      return <Indicator error={this.props.error} listType="channel" />;
     };
 
     renderEmptyState = () => {
