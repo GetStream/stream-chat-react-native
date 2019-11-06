@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.8] 2019-11-06
+
+- Adding logs to Chat, ChannelList and Channel component
+
 ## [0.3.7] 2019-11-04
 
 - Adding support for `AttachmentFileIcon` prop.
