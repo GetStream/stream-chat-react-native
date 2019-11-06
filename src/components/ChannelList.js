@@ -114,6 +114,7 @@ const ChannelList = withChatContext(
       sort: {},
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
+      logger: () => {},
     };
 
     constructor(props) {
@@ -139,11 +140,31 @@ const ChannelList = withChatContext(
     }
 
     async componentDidMount() {
+      this.props.logger('ChannelList component', 'componentDidMount', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
+
       await this._queryChannelsDebounced();
       this.listenToChanges();
     }
 
+    componentDidUpdate() {
+      this.props.logger('ChannelList component', 'componentDidUpdate', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
+    }
+
     componentWillUnmount() {
+      this.props.logger('ChannelList component', 'componentWillUnmount', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
+
       this._unmounted = true;
       this.props.client.off(this.handleEvent);
       this._queryChannelsDebounced.cancel();
@@ -183,6 +204,17 @@ const ChannelList = withChatContext(
 
       if (this._unmounted) return;
       this.setState({ refreshing: true });
+      this.props.logger('ChannelList component', 'queryChannels', {
+        tags: ['channellist'],
+        props: this.props,
+        state: this.state,
+        query: {
+          filters,
+          sort,
+          ...options,
+          offset,
+        },
+      });
 
       const channelPromise = this.props.client.queryChannels(filters, sort, {
         ...options,

@@ -241,7 +241,7 @@ interface ChannelListProps extends ChatContextValue {
 
 interface ChannelListState {
   // Error in querying channels
-  error: boolean;
+  error: boolean | object;
   // List of channel objects.
   channels: SeamlessImmutable.Immutable<Client.Channel[]>;
   // List of channel ids.

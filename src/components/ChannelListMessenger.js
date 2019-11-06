@@ -48,7 +48,7 @@ const ChannelListMessenger = withChatContext(
        * */
       loadMoreThreshold: PropTypes.number,
       /** If there is error in querying channels */
-      error: PropTypes.bool,
+      error: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
       /** If channels are being queries. LoadingIndicator will be displayed if true */
       loadingChannels: PropTypes.bool,
     };

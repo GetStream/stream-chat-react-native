@@ -125,6 +125,7 @@ export class ChannelInner extends PureComponent {
     LoadingErrorIndicator,
     EmptyStateIndicator,
     emojiData,
+    logger: () => {},
   };
 
   componentDidUpdate(prevProps) {
@@ -490,10 +491,6 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMore = async () => {
-    this.props.logger('Channel Component', 'Loading more messages', {
-      props: this.props,
-      state: this.state,
-    });
     // prevent duplicate loading events...
     if (this.state.loadingMore || !this.state.hasMore) return;
     if (this._unmounted) return;
