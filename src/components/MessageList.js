@@ -64,6 +64,7 @@ const MessageList = withChannelContext(
         newMessagesNotification: false,
         online: props.online,
       };
+      this.yOffset = 0;
     }
 
     static propTypes = {
@@ -227,7 +228,7 @@ const MessageList = withChannelContext(
       }
 
       const hasNewMessage = currentLastMessage.id !== previousLastMessage.id;
-      const userScrolledUp = this.state.yOffset > 0;
+      const userScrolledUp = this.yOffset > 0;
       const isOwner = currentLastMessage.user.id === this.props.client.userID;
 
       let scrollToBottom = false;
@@ -497,8 +498,8 @@ const MessageList = withChannelContext(
       )
         this.props.markRead();
 
+      this.yOffset = yOffset;
       this.setState((prevState) => ({
-        yOffset,
         newMessagesNotification: removeNewMessageNotification
           ? false
           : prevState.newMessagesNotification,
