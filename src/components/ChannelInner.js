@@ -492,9 +492,6 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMore = async () => {
-    if (window.offline) return;
-
-    console.log('loading more');
     // prevent duplicate loading events...
     if (this.state.loadingMore || !this.state.hasMore) return;
     if (this._unmounted) return;
