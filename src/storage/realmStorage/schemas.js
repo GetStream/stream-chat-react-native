@@ -20,11 +20,54 @@ export const ChannelSchema = {
     cid: 'string',
     members: { type: 'list', objectType: 'Member' },
     messages: { type: 'list', objectType: 'Message' },
-    latestMessage: { type: 'Message' },
+    read: { type: 'list', objectType: 'Read' },
     initialized: 'bool',
-    countUnread: 'int',
     // TODO: convert config to different schema
-    config: 'string',
+    config: 'ChannelConfig',
+  },
+};
+
+export const ChannelConfigSchema = {
+  name: 'ChannelConfig',
+  properties: {
+    name: 'string',
+    typing_events: 'bool',
+    read_events: 'bool',
+    connect_events: 'bool',
+    reactions: 'bool',
+    replies: 'bool',
+    search: 'bool',
+    mutes: 'bool',
+    message_retention: 'string',
+    max_message_length: 'int',
+    uploads: 'bool',
+    automod: 'string',
+    automod_behavior: 'string',
+    commands: {
+      type: 'list',
+      objectType: 'Command',
+    },
+  },
+};
+
+export const CommandSchema = {
+  name: 'Command',
+  primaryKey: 'name',
+  properties: {
+    name: 'string',
+    description: 'string',
+    args: 'string',
+    set: 'string',
+  },
+};
+
+export const ReadSchema = {
+  name: 'Read',
+  primaryKey: 'id',
+  properties: {
+    id: 'string', // userId + channelId
+    lastRead: 'date',
+    user: 'User',
   },
 };
 
@@ -49,6 +92,8 @@ export const UserSchema = {
   primaryKey: 'id',
   properties: {
     id: 'string',
+    name: 'string',
+    image: 'string',
     role: 'string',
     created_at: { type: 'string', optional: true },
     updated_at: { type: 'string', optional: true },
@@ -56,6 +101,8 @@ export const UserSchema = {
     deleted_at: { type: 'string', optional: true },
     deactivated_at: { type: 'string', optional: true },
     online: { type: 'bool', optional: true },
+    // TODO: Implement following
+    // extraData: { type: 'string', optional: true },
   },
 };
 
@@ -65,6 +112,7 @@ export const MessageSchema = {
   properties: {
     id: 'string',
     text: 'string',
+    // TODO: Implement the following
     // attachments?: Attachment[],
     parent_id: { type: 'string', optional: true },
     mentioned_users: { type: 'list', objectType: 'User' },
@@ -74,10 +122,7 @@ export const MessageSchema = {
     type: 'string',
     latest_reactions: { type: 'list', objectType: 'Reaction' },
     own_reactions: { type: 'list', objectType: 'Reaction' },
-    reaction_counts: {
-      type: 'list',
-      objectType: 'ReactionCount',
-    },
+    reaction_counts: { type: 'list', objectType: 'ReactionCount' },
     show_in_channel: { type: 'bool', optional: true },
     reply_count: { type: 'int', optional: true },
     created_at: 'date',
@@ -97,10 +142,14 @@ export const ReactionSchema = {
   properties: {
     id: 'string',
     type: 'string',
-    // message_id: 'string',
     user_id: { type: 'string', optional: true },
-    user: { type: 'User' },
+    user: { type: 'User', optional: true },
     created_at: 'string',
+    message: {
+      type: 'linkingObjects',
+      objectType: 'Message',
+      property: 'latest_reactions',
+    },
   },
 };
 

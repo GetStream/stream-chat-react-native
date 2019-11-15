@@ -12,11 +12,7 @@ import { EmptyStateIndicator } from './EmptyStateIndicator';
 import uniqBy from 'lodash/uniqBy';
 import uniqWith from 'lodash/uniqWith';
 import isEqual from 'lodash/isEqual';
-// import {
-//   getChannelsFromAsyncStorage,
-//   storeChannelsToAsyncStorage,
-// } from '../offline';
-import { storage } from '../native';
+
 export const isPromise = (thing) => {
   const promise = thing && typeof thing.then === 'function';
   return promise;
@@ -137,46 +133,44 @@ const ChannelList = withChatContext(
         leading: true,
         trailing: true,
       });
-      this.queryActive = false;
+      this.offlineQueryActive = false;
+      this.onlineQueryActive = false;
+
+      this.hasNextOnlinePage = true;
+      this.hasNextOfflinePage = true;
       this._unmounted = false;
     }
 
     async componentDidMount() {
-      // const { options, filters, sort } = this.props;
-
-      // const query = {
-      //   filters,
-      //   sort,
-      //   options: {
-      //     ...options,
-      //     offset: this.state.offset,
-      //   },
-      // };
-
-      // // console.log(JSON.stringify(query));
-      // const channels = await storage.queryChannels(JSON.stringify(query));
-      // // console.log('in component didMount');
-      // // console.log(channels.length);
-      // // console.time('fetchingToAsyncStorage');
-      // // const channels = await getChannelsFromAsyncStorage();
-      // // console.timeEnd('fetchingToAsyncStorage');
-      // this.setState({
-      //   channels,
-      //   channelIds: channels.map((c) => c.id),
-      //   loadingChannels: false,
-      //   offset: 0,
-      //   hasNextPage: true,
-      //   refreshing: false,
-      //   loadedFirstTime: true,
-      // });
-
-      await this._queryChannelsDebounced();
+      if (this.props.offlineSync) await this._queryOfflineChannels(true);
+      await this._queryChannelsDebounced(true);
       this.listenToChanges();
+    }
+
+    componentDidUpdate(prevProps) {
+      if (
+        prevProps.isOnline === 'unknown' &&
+        typeof this.props.isOnline === 'boolean' &&
+        this.props.isOnline
+      ) {
+        this.props.client.activeChannels = {};
+        this._queryOnlineChannels(true);
+      }
+
+      if (
+        prevProps.isOnline === 'unknown' &&
+        typeof this.props.isOnline === 'boolean' &&
+        !this.props.isOnline
+      ) {
+        this._queryOfflineChannels();
+      }
     }
 
     componentWillUnmount() {
       this._unmounted = true;
       this.props.client.off(this.handleEvent);
+      if (this.props.offlineSync)
+        this.props.client.off(this.handleEventForOfflineSync);
       this._queryChannelsDebounced.cancel();
     }
 
@@ -184,108 +178,55 @@ const ChannelList = withChatContext(
       return { error: true };
     }
 
-    componentDidCatch(error, info) {
-      console.warn(error, info);
-    }
-
-    queryChannels = async (resync = false) => {
-      // return;
-      // console.log('inside querychannels');
-      // Don't query again if query is already active.
-      if (this.queryActive) return;
-
-      this.queryActive = true;
-
-      if (this._unmounted || !this.state.hasNextPage) {
-        this.queryActive = false;
-        return;
-      }
-
-      const { options, filters, sort } = this.props;
+    getPagerParams(resync) {
+      const { options } = this.props;
       let offset;
-
+      let limit;
       if (resync) {
         offset = 0;
-        options.limit = this.state.channels.length;
+        limit = this.state.channels.length;
         if (this._unmounted) return;
         this.setState({
           offset: 0,
         });
       } else {
         offset = this.state.offset;
+        limit = options.limit;
       }
 
-      const query = {
-        filters,
-        sort,
-        options: {
-          ...options,
-          offset,
-        },
-      };
-
-      // if (true) {
-      // console.log('INSIDE IF');
-      // if (this.state.loadedFirstTime) {
-      //   query.options.offset = this.state.channels.length;
-      // }
-      if (window.offline) {
-        console.log(query);
-        const channels = await storage.queryChannels(JSON.stringify(query));
-        const finalChannels = [...this.state.channels, ...channels];
-        // console.time('fetchingToAsyncStorage');
-        // const channels = await getChannelsFromAsyncStorage();
-        // console.timeEnd('fetchingToAsyncStorage');
-        this.setState({
-          channels: finalChannels,
-          channelIds: finalChannels.map((c) => c.id),
-          loadingChannels: false,
-          offset: finalChannels.length,
-          hasNextPage: channels.length === (options.limit || 10),
-          refreshing: false,
-        });
-
-        return;
-      }
-      // }
-      if (this._unmounted) return;
-      this.setState({ refreshing: true });
-      const channelPromise = this.props.client.queryChannels(filters, sort, {
-        ...options,
+      return {
+        limit,
         offset,
-      });
+      };
+    }
 
+    // This can be moved to a hook once we stop the support for RN < 0.59
+    async setChannelValues(channelValues, resync, pagerParams) {
       try {
-        let channelQueryResponse = channelPromise;
-        if (isPromise(channelQueryResponse)) {
-          channelQueryResponse = await channelPromise;
-          if (offset === 0 && channelQueryResponse.length >= 1) {
-            if (this._unmounted) return;
-            this.props.setActiveChannel(channelQueryResponse[0]);
-          }
+        if (pagerParams.offset === 0 && channelValues.length >= 1) {
+          if (this._unmounted) return;
+          this.props.setActiveChannel(channelValues[0]);
         }
 
         if (this._unmounted) return;
+
         await this.setState((prevState) => {
           let channels;
           let channelIds;
-          if (resync || prevState.loadedFirstTime) {
-            // console.log('inside if ' + channelQueryResponse.length);
-            channels = [...channelQueryResponse];
-            channelIds = [...channelQueryResponse.map((c) => c.id)];
+          if (resync) {
+            channels = [...channelValues];
+            channelIds = [...channelValues.map((c) => c.id)];
           } else {
             // Remove duplicate channels in worse case we get repeted channel from backend.
-            channelQueryResponse = channelQueryResponse.filter(
+            channelValues = channelValues.filter(
               (c) => this.state.channelIds.indexOf(c.id) === -1,
             );
-
-            channels = [...prevState.channels, ...channelQueryResponse];
+            channels = [...prevState.channels, ...channelValues];
             channelIds = [
               ...prevState.channelIds,
-              ...channelQueryResponse.map((c) => c.id),
+              ...channelValues.map((c) => c.id),
             ];
           }
-          // console.log('GOT THE CHANNELS');
           return {
             channels, // not unique somehow needs more checking
             channelIds,
@@ -293,26 +234,12 @@ const ChannelList = withChatContext(
             offset: channels.length,
 
             hasNextPage:
-              channelQueryResponse.length >= (options.limit || 10)
-                ? true
-                : false,
+              channelValues.length >= (pagerParams.limit || 10) ? true : false,
             refreshing: false,
-            loadedFirstTime: false,
+            offlineStateActive: true,
           };
         });
-        // console.log('TIME TAKEN: ');
-        // console.log(`Length of state channels : ${this.state.channels.length}`);
-        // console.time('storingToAsyncStorage');
-        console.log(query);
-        await storage.storeChannels(
-          JSON.stringify(query),
-          channelQueryResponse,
-        );
-        // await storeChannelsToAsyncStorage(this.state.channels);
-        // console.timeEnd('storingToAsyncStorage');
       } catch (e) {
-        console.warn(e);
-
         if (this._unmounted) return;
         this.setState({
           error: true,
@@ -320,12 +247,172 @@ const ChannelList = withChatContext(
           loadingChannels: false,
         });
       }
-      this.queryActive = false;
+    }
+
+    queryChannels = async (resync = false, forceIsOnline = false) => {
+      if (this.props.isOnline === 'unknown') return;
+
+      if (this.props.isOnline || forceIsOnline) {
+        await this._queryOnlineChannels(resync);
+      } else if (this.props.offlineSync) {
+        await this._queryOfflineChannels(resync);
+      }
     };
+
+    async _queryOfflineChannels(resync) {
+      // If there is already active query.
+      if (this.offlineQueryActive) return;
+
+      this.offlineQueryActive = true;
+      if (this._unmounted || !this.hasNextOfflinePage) {
+        this.offlineQueryActive = false;
+        return;
+      }
+
+      const { filters, sort } = this.props;
+
+      const pagerParams = this.getPagerParams(resync);
+
+      if (this._unmounted) return;
+      this.setState({ refreshing: true });
+
+      const query = {
+        filters,
+        sort,
+      };
+      const channelValues = await this.props.storage.queryChannels(
+        JSON.stringify(query),
+        pagerParams.offset,
+        pagerParams.limit || 10,
+      );
+
+      await this.setChannelValues(channelValues, resync, pagerParams);
+      this.hasNextOfflinePage =
+        channelValues.length >= (pagerParams.limit || 10) ? true : false;
+      this.offlineQueryActive = false;
+    }
+
+    async _queryOnlineChannels(resync) {
+      if (this.onlineQueryActive) return;
+      this.onlineQueryActive = true;
+      if (this._unmounted || !this.hasNextOnlinePage) {
+        this.onlineQueryActive = false;
+        return;
+      }
+
+      const { options, filters, sort } = this.props;
+
+      const pagerParams = this.getPagerParams(resync);
+
+      if (this._unmounted) return;
+      this.setState({ refreshing: true });
+      const channelValues = await this.props.client.queryChannels(
+        filters,
+        sort,
+        {
+          ...options,
+          ...pagerParams,
+        },
+      );
+
+      await this.setChannelValues(channelValues, resync, pagerParams);
+
+      const query = {
+        filters,
+        sort,
+      };
+
+      if (this.props.offlineSync) {
+        await this.props.storage.storeChannels(
+          JSON.stringify(query),
+          channelValues,
+          resync,
+        );
+      }
+      this.hasNextOnlinePage =
+        channelValues.length >= (pagerParams.limit || 10) ? true : false;
+      this.onlineQueryActive = false;
+    }
 
     listenToChanges() {
       this.props.client.on(this.handleEvent);
+      if (this.props.offlineSync)
+        this.props.client.on(this.handleEventForOfflineSync);
     }
+
+    handleEventForOfflineSync = async (e) => {
+      const channels = this.state.channels;
+      const channelIndex = channels.findIndex(
+        (channel) => channel.cid === e.cid,
+      );
+
+      if (e.type === 'message.new') {
+        if (this.props.storage.insertMessageForChannel)
+          await this.props.storage.insertMessageForChannel(
+            channels[channelIndex].id,
+            e.message,
+          );
+      }
+
+      if (e.type === 'message.read') {
+        await this.props.storage.updateReadState(
+          channels[channelIndex].id,
+          e.user,
+          e.received_at,
+        );
+      }
+
+      if (e.type === 'message.updated' || e.type === 'message.deleted') {
+        if (this.props.storage.updateMessage)
+          await this.props.storage.updateMessage(e.message);
+      }
+
+      if (e.type === 'member.added') {
+        if (this.props.storage.addMemberToChannel)
+          await this.props.storage.addMemberToChannel(
+            channels[channelIndex].id,
+            e.member,
+          );
+      }
+
+      if (e.type === 'member.removed') {
+        if (this.props.storage.removeMemberFromChannel)
+          await this.props.storage.removeMemberFromChannel(
+            channels[channelIndex].id,
+            e.user.id,
+          );
+      }
+
+      if (e.type === 'member.updated') {
+        if (this.props.storage.updateMember)
+          await this.props.storage.updateMember(e.member);
+      }
+
+      // // Channel data is updated
+      if (e.type === 'channel.updated') {
+        this.props.storage.updateChannelData(e.channel.id, e.channel);
+      }
+
+      if (e.type === 'reaction.new') {
+        if (this.props.storage.addReactionForMessage)
+          await this.props.storage.addReactionForMessage(
+            e.message.id,
+            e.reaction,
+            e.reaction.userId === this.props.client.userID,
+          );
+      }
+
+      if (e.type === 'reaction.deleted') {
+        if (this.props.storage.deleteReactionForMessage)
+          await this.props.storage.deleteReactionForMessage(
+            e.message.id,
+            e.reaction,
+            e.reaction.userId === this.props.client.userID,
+          );
+      }
+
+      return null;
+    };
 
     handleEvent = async (e) => {
       if (e.type === 'user.presence.changed') {
@@ -343,22 +430,15 @@ const ChannelList = withChatContext(
       }
 
       if (e.type === 'message.new') {
-        console.log(e);
         this.moveChannelUp(e.cid);
-        const channels = this.state.channels;
-        const channelIndex = channels.findIndex(
-          (channel) => channel.cid === e.cid,
-        );
-        console.log(channels[channelIndex].id);
-        await storage.insertMessageForChannel(
-          channels[channelIndex].id,
-          e.message,
-        );
       }
 
       // make sure to re-render the channel list after connection is recovered
-      if (e.type === 'connection.recovered') {
-        this.queryChannels(true);
+      if (
+        e.type === 'connection.recovered' ||
+        e.type === 'connection.established'
+      ) {
+        this.queryChannels(true, true);
       }
 
       // move channel to start
@@ -447,6 +527,7 @@ const ChannelList = withChatContext(
         )
           this.props.onChannelUpdated(this, e);
       }
+
       return null;
     };
 
@@ -482,7 +563,6 @@ const ChannelList = withChatContext(
     };
 
     loadNextPage = () => {
-      // console.log('CALLING ENSajskdnksjd');
       this._queryChannelsDebounced();
     };
 

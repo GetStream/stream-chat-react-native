@@ -30,19 +30,21 @@ export const Chat = themed(
       client: PropTypes.object.isRequired,
       /** Theme object */
       style: PropTypes.object,
+      offlineSync: PropTypes.bool,
     };
 
     constructor(props) {
       super(props);
-
       this.state = {
         // currently active channel
         channel: {},
-        isOnline: true,
+        isOnline: 'unknown',
         connectionRecovering: false,
+        offlineSync: false,
       };
 
       this.unsubscribeNetInfo = null;
+
       this.setConnectionListener();
 
       this.props.client.on('connection.changed', (event) => {
@@ -50,6 +52,14 @@ export const Chat = themed(
         this.setState({
           isOnline: event.online,
           connectionRecovering: !event.online,
+        });
+      });
+
+      this.props.client.on('connection.established', () => {
+        if (this._unmounted) return;
+        this.setState({
+          isOnline: true,
+          connectionRecovering: false,
         });
       });
 
@@ -67,6 +77,7 @@ export const Chat = themed(
       this.props.client.off('connection.changed');
       this.props.client.off(this.handleEvent);
       this.unsubscribeNetInfo();
+      this.props.storage && this.props.storage.clear();
     }
 
     notifyChatClient = (isConnected) => {
@@ -85,11 +96,21 @@ export const Chat = themed(
 
     setConnectionListener = () => {
       NetInfo.fetch().then((isConnected) => {
+        this.setState({
+          isOnline: isConnected,
+          startedOffline: !isConnected,
+        });
         this.notifyChatClient(isConnected);
       });
-      this.unsubscribeNetInfo = NetInfo.addEventListener((isConnected) => {
-        this.notifyChatClient(isConnected);
-      });
+      this.unsubscribeNetInfo = NetInfo.addEventListener(
+        async (isConnected) => {
+          // TODO: Think more about startedOffline variable. Looks ugly!!
+          if (isConnected && this.state.startedOffline) {
+            // eslint-disable-next-line no-underscore-dangle
+            await this.props.client._setupConnection();
+          }
+        },
+      );
     };
 
     setActiveChannel = (channel, e) => {
@@ -108,6 +129,8 @@ export const Chat = themed(
       setActiveChannel: this.setActiveChannel,
       isOnline: this.state.isOnline,
       connectionRecovering: this.state.connectionRecovering,
+      storage: this.props.storage,
+      offlineSync: this.props.offlineSync,
     });
 
     render() {

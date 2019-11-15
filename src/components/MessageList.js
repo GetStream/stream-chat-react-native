@@ -92,7 +92,7 @@ const MessageList = withChannelContext(
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       typing: PropTypes.object,
       /** Network status */
-      online: PropTypes.bool,
+      online: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
       disableWhileEditing: PropTypes.bool,
       /**
        * For flatlist

@@ -30,7 +30,7 @@ const Channel = withChatContext(
       }).isRequired,
       /** Client is passed via the Chat Context */
       client: PropTypes.object.isRequired,
-      isOnline: PropTypes.bool,
+      isOnline: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
       /**
        * Loading indicator UI component. This will be shown on the screen until the messages are
        * being queried from channel. Once the messages are loaded, loading indicator is removed from the screen

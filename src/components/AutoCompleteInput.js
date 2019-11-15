@@ -201,8 +201,8 @@ export class AutoCompleteInput extends React.PureComponent {
       if (
         currentTrigger &&
         text[tokenMatch.index - 1] &&
-        (triggers[currentTrigger].afterWhitespace &&
-          !text[tokenMatch.index - 1].match(/\s/))
+        triggers[currentTrigger].afterWhitespace &&
+        !text[tokenMatch.index - 1].match(/\s/)
       ) {
         // console.log('here 2');
         this.stopTracking();

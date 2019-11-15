@@ -15,7 +15,6 @@ import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
 import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 import { logChatPromiseExecution } from 'stream-chat';
-import { storage } from '../native';
 
 /**
  * This component is not really exposed externally, and is only supposed to be used with
@@ -111,7 +110,7 @@ export class ChannelInner extends PureComponent {
     ]),
     /** The indicator to use when message list is empty */
     EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    isOnline: PropTypes.bool,
+    isOnline: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
@@ -133,13 +132,8 @@ export class ChannelInner extends PureComponent {
   async componentDidMount() {
     const channel = this.props.channel;
     let errored = false;
-    if (channel.isOfflineChannel) {
-      // await this.props.channel.query();
-      // this.copyChannelState();
-      // return;
-    }
 
-    if (!channel.initialized) {
+    if (!channel.initialized && !channel.inactive) {
       try {
         await channel.watch();
       } catch (e) {
@@ -508,11 +502,11 @@ export class ChannelInner extends PureComponent {
     }
     let hasMore;
     if (queryResponse && queryResponse.messages) {
-      console.log('YUP SAVING');
-      await storage.insertMessagesForChannel(
-        this.props.channel.id,
-        queryResponse.messages,
-      );
+      this.props.offlineSync &&
+        (await this.props.storage.insertMessagesForChannel(
+          this.props.channel.id,
+          queryResponse.messages,
+        ));
 
       hasMore = queryResponse.messages.length === perPage;
     } else {

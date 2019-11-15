@@ -83,8 +83,9 @@ export const ChannelPreviewMessenger = themed(
 
     renderAvatar = (otherMembers) => {
       const { channel } = this.props;
-      if (channel.data.image)
+      if (channel.data.image) {
         return <Avatar image={channel.data.image} size={40} />;
+      }
 
       if (otherMembers.length === 1)
         return <Avatar image={otherMembers[0].user.image} size={40} />;
@@ -97,14 +98,10 @@ export const ChannelPreviewMessenger = themed(
       let name = channel.data.name;
       let otherMembers = [];
       if (!name) {
-        console.log('INSIDE NOT NAME');
         const members = Object.values(channel.state.members);
-        console.log(members);
-        otherMembers = members.filter((member) => {
-          console.log('BUYAAA');
-          console.log(member.user.id, this.props.client.userID);
-          return member.user.id !== this.props.client.userID;
-        });
+        otherMembers = members.filter(
+          (member) => member.user.id !== this.props.client.userID,
+        );
 
         name = otherMembers
           .map((member) => member.user.name || member.user.id || 'Unnamed User')
