@@ -188,6 +188,14 @@ const MessageInput = withKeyboardContext(
              * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
              */
             actionSheetStyles: PropTypes.object,
+            /**
+             * Custom UI component for attachment icon for type 'file' attachment in preview.
+             * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+             */
+            AttachmentFileIcon: PropTypes.oneOfType([
+              PropTypes.node,
+              PropTypes.func,
+            ]),
           };
 
           static defaultProps = {
@@ -694,7 +702,6 @@ const MessageInput = withKeyboardContext(
                 backgroundColor: 'white',
               };
             }
-
             return (
               <React.Fragment>
                 <View style={editingBoxStyles}>
@@ -727,6 +734,7 @@ const MessageInput = withKeyboardContext(
                         fileUploads={this.state.fileOrder.map(
                           (id) => this.state.fileUploads[id],
                         )}
+                        AttachmentFileIcon={this.props.AttachmentFileIcon}
                       />
                     )}
                     {this.state.imageUploads && (

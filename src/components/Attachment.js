@@ -6,7 +6,7 @@ import { themed } from '../styles/theme';
 
 import PropTypes from 'prop-types';
 import { Card } from './Card';
-import FileIcon from './FileIcon';
+import { FileIcon } from './FileIcon';
 import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
@@ -81,6 +81,17 @@ export const Attachment = withMessageContentContext(
         groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
         /** Handler for long press event on attachment */
         onLongPress: PropTypes.func,
+        /**
+         * Custom UI component for attachment icon for type 'file' attachment.
+         * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+         */
+        AttachmentFileIcon: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.func,
+        ]),
+      };
+      static defaultProps = {
+        AttachmentFileIcon: FileIcon,
       };
 
       constructor(props) {
@@ -124,6 +135,7 @@ export const Attachment = withMessageContentContext(
           // extra = 'no-image';
         }
 
+        const AttachmentFileIcon = this.props.AttachmentFileIcon;
         if (type === 'image') {
           return (
             <React.Fragment>
@@ -169,7 +181,11 @@ export const Attachment = withMessageContentContext(
                 alignment={this.props.alignment}
                 groupStyle={this.props.groupStyle}
               >
-                <FileIcon filename={a.title} mimeType={a.mime_type} size={50} />
+                <AttachmentFileIcon
+                  filename={a.title}
+                  mimeType={a.mime_type}
+                  size={50}
+                />
                 <FileDetails>
                   <FileTitle ellipsizeMode="tail" numberOfLines={2}>
                     {a.title}

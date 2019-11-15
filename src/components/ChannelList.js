@@ -18,6 +18,7 @@ export const isPromise = (thing) => {
   return promise;
 };
 
+export const DEFAULT_QUERY_CHANNELS_LIMIT = 10;
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
  * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
@@ -112,7 +113,8 @@ const ChannelList = withChatContext(
       options: {},
       sort: {},
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
-      loadMoreThreshold: 0,
+      loadMoreThreshold: 2,
+      logger: () => {},
     };
 
     constructor(props) {
@@ -145,9 +147,14 @@ const ChannelList = withChatContext(
       if (this.props.offlineSync) await this._queryOfflineChannels(true);
       await this._queryChannelsDebounced(true);
       this.listenToChanges();
+      this.props.logger('ChannelList component', 'componentDidMount', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
     }
 
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
       if (
         prevProps.isOnline === 'unknown' &&
         typeof this.props.isOnline === 'boolean' &&
@@ -164,9 +171,23 @@ const ChannelList = withChatContext(
       ) {
         this._queryOfflineChannels();
       }
+
+      await this._queryChannelsDebounced();
+      this.listenToChanges();
+      this.props.logger('ChannelList component', 'componentDidUpdate', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
     }
 
     componentWillUnmount() {
+      this.props.logger('ChannelList component', 'componentWillUnmount', {
+        tags: ['lifecycle', 'channellist'],
+        props: this.props,
+        state: this.state,
+      });
+
       this._unmounted = true;
       this.props.client.off(this.handleEvent);
       if (this.props.offlineSync)
@@ -174,8 +195,8 @@ const ChannelList = withChatContext(
       this._queryChannelsDebounced.cancel();
     }
 
-    static getDerivedStateFromError() {
-      return { error: true };
+    static getDerivedStateFromError(error) {
+      return { error };
     }
 
     getPagerParams(resync) {
@@ -306,6 +327,17 @@ const ChannelList = withChatContext(
 
       if (this._unmounted) return;
       this.setState({ refreshing: true });
+
+      this.props.logger('ChannelList component', 'queryChannels', {
+        tags: ['channellist'],
+        props: this.props,
+        state: this.state,
+        query: {
+          filters,
+          sort,
+          ...options,
+        },
+      });
       const channelValues = await this.props.client.queryChannels(
         filters,
         sort,

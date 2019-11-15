@@ -92,6 +92,11 @@ export class ChannelInner extends PureComponent {
     });
 
     this.messageInputBox = false;
+
+    this.props.logger('Channel component', 'Constructor', {
+      props: this.props,
+      state: this.state,
+    });
   }
 
   static propTypes = {
@@ -120,9 +125,16 @@ export class ChannelInner extends PureComponent {
     LoadingErrorIndicator,
     EmptyStateIndicator,
     emojiData,
+    logger: () => {},
   };
 
   componentDidUpdate(prevProps) {
+    this.props.logger('Channel component', 'componentDidUpdate', {
+      tags: ['lifecycle', 'channel'],
+      props: this.props,
+      state: this.state,
+    });
+
     if (this.props.isOnline !== prevProps.isOnline) {
       if (this._unmounted) return;
       this.setState({ online: this.props.isOnline });
@@ -130,6 +142,12 @@ export class ChannelInner extends PureComponent {
   }
 
   async componentDidMount() {
+    this.props.logger('Channel component', 'componentDidMount', {
+      tags: ['lifecycle', 'channel'],
+      props: this.props,
+      state: this.state,
+    });
+
     const channel = this.props.channel;
     let errored = false;
 
@@ -138,7 +156,7 @@ export class ChannelInner extends PureComponent {
         await channel.watch();
       } catch (e) {
         if (this._unmounted) return;
-        this.setState({ error: true });
+        this.setState({ error: e });
         errored = true;
       }
     }
@@ -151,6 +169,12 @@ export class ChannelInner extends PureComponent {
   }
 
   componentWillUnmount() {
+    this.props.logger('Channel component', 'componentWillUnmount', {
+      tags: ['lifecycle', 'channel'],
+      props: this.props,
+      state: this.state,
+    });
+
     this.props.channel.off(this.handleEvent);
     this.props.client.off('connection.recovered', this.handleEvent);
 
@@ -490,6 +514,12 @@ export class ChannelInner extends PureComponent {
     const oldestID = oldestMessage ? oldestMessage.id : null;
     const perPage = 100;
     let queryResponse;
+    this.props.logger('Channel Component', 'Requerying the messages', {
+      props: this.props,
+      state: this.state,
+      limit: perPage,
+      id_lt: oldestID,
+    });
     try {
       queryResponse = await this.props.channel.query({
         messages: { limit: perPage, id_lt: oldestID },
@@ -556,13 +586,24 @@ export class ChannelInner extends PureComponent {
 
   renderLoadingError = () => {
     const Indicator = this.props.LoadingErrorIndicator;
-    return <Indicator listType="message" />;
+    return <Indicator error={this.state.error} listType="message" />;
   };
 
   render() {
     let core;
 
     if (this.state.error) {
+      this.props.logger(
+        'Channel component',
+        'Error loading channel - rendering error indicator',
+        {
+          tags: ['error', 'channelComponent'],
+          props: this.props,
+          state: this.state,
+          error: this.state.error,
+        },
+      );
+
       core = this.renderLoadingError();
     } else if (this.state.loading) {
       core = this.renderLoading();
