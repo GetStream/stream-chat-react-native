@@ -33,6 +33,11 @@ export class ChannelPreview extends PureComponent {
     channel.on('message.read', this.handleReadEvent);
   }
 
+  componentDidUpdate() {
+    const channel = this.props.channel;
+    this.setState({ unread: channel.countUnread() });
+  }
+
   componentWillUnmount() {
     const channel = this.props.channel;
     channel.off('message.new', this.handleNewMessageEvent);

@@ -71,6 +71,7 @@ export const ReadSchema = {
   },
 };
 
+// TODO: Primary key should be id - channel_id + user_id
 export const MemberSchema = {
   name: 'Member',
   primaryKey: 'user_id',

@@ -24,6 +24,7 @@ export const convertMessageToRealm = (m, realm) => {
     type: m.type,
     latest_reactions: m.latest_reactions,
     own_reactions: m.own_reactions,
+    mentioned_users: m.mentioned_users,
     reaction_counts: m.reaction_counts,
     show_in_channel: m.show_in_channel,
     reply_count: m.reply_count,

@@ -161,15 +161,14 @@ const ChannelList = withChatContext(
         this.props.isOnline
       ) {
         this.props.client.activeChannels = {};
-        this._queryOnlineChannels(true);
+        await this._queryOnlineChannels(true);
       }
-
       if (
         prevProps.isOnline === 'unknown' &&
         typeof this.props.isOnline === 'boolean' &&
         !this.props.isOnline
       ) {
-        this._queryOfflineChannels();
+        await this._queryOfflineChannels();
       }
 
       await this._queryChannelsDebounced();
@@ -346,7 +345,6 @@ const ChannelList = withChatContext(
           ...pagerParams,
         },
       );
-
       await this.setChannelValues(channelValues, resync, pagerParams);
 
       const query = {
@@ -396,7 +394,10 @@ const ChannelList = withChatContext(
 
       if (e.type === 'message.updated' || e.type === 'message.deleted') {
         if (this.props.storage.updateMessage)
-          await this.props.storage.updateMessage(e.message);
+          await this.props.storage.updateMessage(
+            channels[channelIndex].id,
+            e.message,
+          );
       }
 
       if (e.type === 'member.added') {
@@ -428,7 +429,8 @@ const ChannelList = withChatContext(
       if (e.type === 'reaction.new') {
         if (this.props.storage.addReactionForMessage)
           await this.props.storage.addReactionForMessage(
-            e.message.id,
+            channels[channelIndex].id,
+            e.message,
             e.reaction,
             e.reaction.userId === this.props.client.userID,
           );
@@ -437,7 +439,8 @@ const ChannelList = withChatContext(
       if (e.type === 'reaction.deleted') {
         if (this.props.storage.deleteReactionForMessage)
           await this.props.storage.deleteReactionForMessage(
-            e.message.id,
+            channels[channelIndex].id,
+            e.message,
             e.reaction,
             e.reaction.userId === this.props.client.userID,
           );

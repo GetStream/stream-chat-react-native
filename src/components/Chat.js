@@ -135,6 +135,8 @@ export const Chat = themed(
           if (isConnected && this.state.startedOffline) {
             // eslint-disable-next-line no-underscore-dangle
             await this.props.client._setupConnection();
+          } else {
+            this.notifyChatClient(isConnected);
           }
         },
       );

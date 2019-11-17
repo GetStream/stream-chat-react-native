@@ -189,9 +189,10 @@ export class RealmStorage {
 
   /**
    *
+   * @param {*} channelId
    * @param {*} message
    */
-  async updateMessage(message) {
+  async updateMessage(channelId, message) {
     const realm = await this.getRealm();
     realm.write(() => {
       convertMessageToRealm(message, realm);
@@ -204,7 +205,8 @@ export class RealmStorage {
    * @param {*} reaction
    * @param {*} ownReaction
    */
-  async addReactionForMessage(messageId, reaction, ownReaction = false) {
+  async addReactionForMessage(message, reaction, ownReaction = false) {
+    const messageId = message.id;
     const realm = await this.getRealm();
     realm.write(() => {
       const message = realm.objectForPrimaryKey('Message', messageId);
@@ -237,7 +239,8 @@ export class RealmStorage {
    * @param {*} messageId
    * @param {*} reaction
    */
-  async deleteReactionForMessage(messageId, reaction) {
+  async deleteReactionForMessage(message, reaction) {
+    const messageId = message.id;
     const realm = await this.getRealm();
     realm.write(() => {
       const rReaction = realm.objectForPrimaryKey(
