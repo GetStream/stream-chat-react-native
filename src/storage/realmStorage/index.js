@@ -19,7 +19,6 @@ import {
   convertReadStateToRealm,
   convertChannelToRealm,
 } from './mappers';
-import Reactotron from 'reactotron-react-native';
 
 const SCHEMA_VERSION = 0;
 
@@ -158,7 +157,6 @@ export class RealmStorage {
         channels.push(fChannel);
       }
     }
-    Reactotron.log(channels);
     return channels;
   }
 

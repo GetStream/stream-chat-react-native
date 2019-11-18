@@ -44,10 +44,7 @@ export const convertMessagesToStorable = (messages, channelId, storables) => {
     convertMessageToStorable(m, storables),
   );
 
-  storables.push([
-    getChannelMessagesKey(channelId),
-    JSON.stringify(storableMessages),
-  ]);
+  storables[getChannelMessagesKey(channelId)] = storableMessages;
 
   return getChannelMessagesKey(channelId);
 };

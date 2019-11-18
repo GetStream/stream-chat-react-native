@@ -21,10 +21,7 @@ export const convertMembersToStorable = (members, channelId, storable) => {
     return member;
   });
 
-  storable.push([
-    getChannelMembersKey(channelId),
-    JSON.stringify(storableMembers),
-  ]);
+  storable[getChannelMembersKey(channelId)] = storableMembers;
 
   return getChannelMembersKey(channelId);
 };

@@ -15,7 +15,6 @@ import {
   getChannelKey,
   getChannelMessagesKey,
   getChannelReadKey,
-  getUserKey,
 } from './keys';
 /**
  * Local storage interface based on AsyncStorage
@@ -37,16 +36,13 @@ export class AsyncLocalStorage {
 
     const channelIds = channels.map((c) => c.id);
 
-    const storables = [];
+    const storables = {};
     channels.forEach(async (c) => await convertChannelToStorable(c, storables));
 
-    const existingChannelIdsStr = await this.asyncStorage.getItem(
+    const existingChannelIds = await this.getItem(
       `getstream:chat@${query}`,
+      [],
     );
-    let existingChannelIds = [];
-
-    if (existingChannelIdsStr)
-      existingChannelIds = JSON.parse(existingChannelIdsStr);
 
     let newChannelIds = existingChannelIds.concat(channelIds);
 
@@ -54,12 +50,35 @@ export class AsyncLocalStorage {
       (item, index) => newChannelIds.indexOf(item) === index,
     );
 
-    storables.push([
-      getQueryKey(query),
-      JSON.stringify(existingChannelIds.concat(channelIds)),
-    ]);
+    storables[getQueryKey(query)] = existingChannelIds.concat(channelIds);
 
-    await this.asyncStorage.multiSet(storables);
+    await this.multiSet(storables);
+  }
+
+  /**
+   *
+   * @param {*} key
+   */
+  async getItem(key, defaultValue) {
+    const strValue = await this.asyncStorage.getItem(key);
+
+    if (!strValue) return defaultValue;
+
+    return JSON.parse(strValue);
+  }
+
+  /**
+   *
+   * @param {*} storables
+   */
+  async multiSet(storables) {
+    const storablesArray = [];
+
+    for (const key in storables) {
+      storablesArray.push([key, JSON.stringify(storables[key])]);
+    }
+
+    return await this.asyncStorage.multiSet(storablesArray);
   }
 
   clear() {}
@@ -188,23 +207,19 @@ export class AsyncLocalStorage {
    * @param {*} messages
    */
   async insertMessagesForChannel(channelId, messages) {
-    const storables = [];
-    const existingMessageStr = await this.asyncStorage.getItem(
+    const storables = {};
+    const existingMessages = await this.getItem(
       getChannelMessagesKey(channelId),
     );
-    const existingMessages = JSON.parse(existingMessageStr);
     let newMessages = messages.map((m) =>
       convertMessageToStorable(m, storables),
     );
 
     newMessages = existingMessages.concat(newMessages);
 
-    storables.push([
-      getChannelMessagesKey(channelId),
-      JSON.stringify(newMessages),
-    ]);
+    storables[getChannelMessagesKey(channelId)] = newMessages;
 
-    await this.asyncStorage.multiSet(storables);
+    await this.multiSet(storables);
   }
 
   /**
@@ -213,13 +228,10 @@ export class AsyncLocalStorage {
    * @param {*} updatedMessage
    */
   async updateMessage(channelId, updatedMessage) {
-    const storables = [];
-    const existingMessagesStr = await this.asyncStorage.getItem(
-      getChannelMessagesKey(channelId),
-    );
-    const existingMessages = existingMessagesStr
-      ? JSON.parse(existingMessagesStr)
-      : [];
+    const storables = {};
+    let existingMessages = await this.getItem(getChannelMessagesKey(channelId));
+    existingMessages = existingMessages ? JSON.parse(existingMessages) : [];
+
     const newMessages = existingMessages.map((m) => {
       if (m.id !== updatedMessage.id) {
         return m;
@@ -228,11 +240,9 @@ export class AsyncLocalStorage {
       return convertMessageToStorable(updatedMessage, storables);
     });
 
-    storables.push([
-      getChannelMessagesKey(channelId),
-      JSON.stringify(newMessages),
-    ]);
-    await this.asyncStorage.multiSet(storables);
+    storables[getChannelMessagesKey(channelId)] = newMessages;
+
+    await this.multiSet(storables);
   }
 
   /**
@@ -264,11 +274,8 @@ export class AsyncLocalStorage {
    * @param {*} lastRead
    */
   async updateReadState(channelId, user, lastRead) {
-    const readStr = await this.asyncStorage.getItem(
-      getChannelReadKey(channelId),
-    );
-    const reads = JSON.parse(readStr);
-    const storables = [];
+    const reads = await this.getItem(getChannelReadKey(channelId));
+    const storables = {};
 
     if (reads[user.id]) {
       reads[user.id] = {
@@ -277,8 +284,8 @@ export class AsyncLocalStorage {
       };
     }
 
-    storables.push([getChannelReadKey(channelId), JSON.stringify(reads)]);
-    await this.asyncStorage.multiSet(storables);
+    storables[getChannelReadKey(channelId)] = reads;
+    await this.multiSet(storables);
   }
 
   async queryMessages() {}
@@ -340,8 +347,7 @@ export class AsyncLocalStorage {
    * @param {*} query
    */
   async getChannelIdsForQuery(query) {
-    const channelIdsValue = await this.asyncStorage.getItem(getQueryKey(query));
-    let channelIds = JSON.parse(channelIdsValue);
+    let channelIds = await this.getItem(getQueryKey(query));
 
     // .log('channelIds', channelIds);
     if (!channelIds) return [];
@@ -350,22 +356,6 @@ export class AsyncLocalStorage {
     );
 
     return channelIds;
-  }
-
-  /**
-   *
-   * @param {*} memberIds
-   */
-  async getMembers(memberIds) {
-    const keys = memberIds.map((mid) => getUserKey(mid));
-    const membersValue = await this.asyncStorage.multiGet(keys);
-    const flatteneMembers = {};
-    membersValue.forEach((kmPair) => {
-      const member = JSON.parse(kmPair[1]);
-      flatteneMembers[member.user.id] = member;
-    });
-
-    return flatteneMembers;
   }
 }
 
@@ -401,6 +391,6 @@ export class AsyncLocalStorage {
 //     `getstream:chat@channel:${channelId}:messages`,
 //     JSON.stringify(newMessages),
 //   ]);
-//   await this.asyncStorage.multiSet(storables);
+//   await this.multiSet(storables);
 //   bench.stop('DONE');
 // }

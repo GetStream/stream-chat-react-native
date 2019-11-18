@@ -12,10 +12,7 @@ export const convertReadToStorable = (reads, channelId, storables) => {
 
   // Reactotron.log('Storing read', channelId, storableReadState);
 
-  storables.push([
-    getChannelReadKey(channelId),
-    JSON.stringify(storableReadState),
-  ]);
+  storables[getChannelReadKey(channelId)] = storableReadState;
 
   return getChannelReadKey(channelId);
 };

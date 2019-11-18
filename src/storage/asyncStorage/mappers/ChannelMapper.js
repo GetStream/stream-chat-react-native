@@ -21,7 +21,7 @@ export const convertChannelToStorable = (c, storable) => {
   );
   channel.members = convertMembersToStorable(c.state.members, c.id, storable);
   channel.read = convertReadToStorable(c.state.read, c.id, storable);
-  storable.push([getChannelKey(c.id), JSON.stringify(channel)]);
+  storable[getChannelKey(c.id)] = channel;
 
   return channel;
 };
