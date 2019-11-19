@@ -2,8 +2,15 @@
 
 import { convertCommandsToRealm } from './CommandMapper';
 
-export const convertChannelConfigToRealm = (c, realm) => {
+/**
+ *
+ * @param {*} type Channel type
+ * @param {*} c Config
+ * @param {*} realm
+ */
+export const convertChannelConfigToRealm = (type, c, realm) => {
   const config = {
+    type,
     name: c.name,
     typing_events: c.typing_events,
     read_events: c.read_events,

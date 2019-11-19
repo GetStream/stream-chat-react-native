@@ -9,27 +9,31 @@ export const convertChannelToRealm = (channel, realm) => {
   const stateMembers = channel.state.members
     ? Object.values(channel.state.members)
     : [];
+  const stateMessages = channel.state.messages
+    ? [...channel.state.messages]
+    : [];
   const offlineChannel = {
     type: channel.type,
     id: channel.id,
     data: JSON.stringify(channel.data),
     cid: channel.cid,
-    members: [...stateMembers],
     initialized: channel.initialized,
     config,
   };
 
-  offlineChannel.messages = convertMessagesToRealm(
-    channel.state.messages,
-    realm,
-  );
+  offlineChannel.messages = convertMessagesToRealm(stateMessages, realm);
 
   offlineChannel.members = convertChannelMembersToRealm(
-    offlineChannel.members,
+    offlineChannel.id,
+    stateMembers,
     realm,
   );
 
-  offlineChannel.config = convertChannelConfigToRealm(config, realm);
+  offlineChannel.config = convertChannelConfigToRealm(
+    channel.type,
+    config,
+    realm,
+  );
   offlineChannel.read = convertReadStatesToRealm(
     offlineChannel.id,
     channel.state.read,

@@ -22,14 +22,15 @@ export const ChannelSchema = {
     messages: { type: 'list', objectType: 'Message' },
     read: { type: 'list', objectType: 'Read' },
     initialized: 'bool',
-    // TODO: convert config to different schema
     config: 'ChannelConfig',
   },
 };
 
 export const ChannelConfigSchema = {
   name: 'ChannelConfig',
+  primaryKey: 'type',
   properties: {
+    type: 'string',
     name: 'string',
     typing_events: 'bool',
     read_events: 'bool',
@@ -71,11 +72,11 @@ export const ReadSchema = {
   },
 };
 
-// TODO: Primary key should be id - channel_id + user_id
 export const MemberSchema = {
   name: 'Member',
-  primaryKey: 'user_id',
+  primaryKey: 'id',
   properties: {
+    id: 'string',
     user_id: 'string',
     user: { type: 'User' },
     is_moderator: { type: 'bool', optional: true },
@@ -103,7 +104,7 @@ export const UserSchema = {
     deactivated_at: { type: 'string', optional: true },
     online: { type: 'bool', optional: true },
     // TODO: Implement following
-    // extraData: { type: 'string', optional: true },
+    extraData: { type: 'string', optional: true },
   },
 };
 
@@ -141,16 +142,12 @@ export const ReactionSchema = {
   name: 'Reaction',
   primaryKey: 'id',
   properties: {
-    id: 'string',
+    id: 'string', // message_id + user_id + reaction_type
     type: 'string',
+    message_id: 'string',
     user_id: { type: 'string', optional: true },
     user: { type: 'User', optional: true },
     created_at: 'string',
-    message: {
-      type: 'linkingObjects',
-      objectType: 'Message',
-      property: 'latest_reactions',
-    },
   },
 };
 

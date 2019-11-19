@@ -15,7 +15,6 @@ import {
   getReadStatesFromRealmList,
   getChannelConfigFromRealm,
   convertMessageToRealm,
-  convertReactionToRealm,
   convertReadStateToRealm,
   convertChannelToRealm,
 } from './mappers';
@@ -33,7 +32,7 @@ export class RealmStorage {
   async getRealm() {
     const that = this;
 
-    if (this.initialized) {
+    if (this.realm && !this.realm.isClosed) {
       return new Promise((resolve) => {
         resolve(that.realm);
       });
@@ -199,65 +198,20 @@ export class RealmStorage {
 
   /**
    *
-   * @param {*} messageId
-   * @param {*} reaction
-   * @param {*} ownReaction
+   * @param {*} channelId
+   * @param {*} message
    */
-  async addReactionForMessage(message, reaction, ownReaction = false) {
-    const messageId = message.id;
-    const realm = await this.getRealm();
-    realm.write(() => {
-      const message = realm.objectForPrimaryKey('Message', messageId);
-      const rReaction = convertReactionToRealm(reaction, realm);
-
-      message.latest_reactions.push(rReaction);
-      if (ownReaction) {
-        message.own_reactions.push(rReaction);
-      }
-
-      const rReactionCount = realm.objectForPrimaryKey(
-        'ReactionCount',
-        `${messageId}${reaction.type}`,
-      );
-      if (!rReactionCount) {
-        const rNewReactionCount = realm.create('ReactionCount', {
-          id: `${messageId}${reaction.type}`,
-          type: reaction.type,
-          count: 1,
-        });
-        message.reaction_counts.push(rNewReactionCount);
-      } else {
-        rReactionCount.count = rReactionCount.count + 1;
-      }
-    });
+  async addReactionForMessage(channelId, message) {
+    return await this.updateMessage(channelId, message);
   }
 
   /**
    *
-   * @param {*} messageId
-   * @param {*} reaction
+   * @param {*} channelId
+   * @param {*} message
    */
-  async deleteReactionForMessage(message, reaction) {
-    const messageId = message.id;
-    const realm = await this.getRealm();
-    realm.write(() => {
-      const rReaction = realm.objectForPrimaryKey(
-        'Reaction',
-        `${reaction.user_id}${reaction.type}`,
-      );
-
-      realm.delete(rReaction);
-
-      const rReactionCount = realm.objectForPrimaryKey(
-        'ReactionCount',
-        `${messageId}${reaction.type}`,
-      );
-      if (!rReactionCount && rReactionCount.count > 0) {
-        return;
-      } else {
-        rReactionCount.count = rReactionCount.count - 1;
-      }
-    });
+  async deleteReactionForMessage(channelId, message) {
+    return await this.updateMessage(channelId, message);
   }
 
   /**

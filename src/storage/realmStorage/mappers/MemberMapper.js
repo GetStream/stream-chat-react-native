@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
-export const convertChannelMembersToRealm = (members, realm) =>
+export const convertChannelMembersToRealm = (channelId, members, realm) =>
   members.map((m) => {
     const member = {
+      id: channelId + m.user_id,
       user_id: m.user_id,
       user: m.user,
       is_moderator: m.is_moderator,

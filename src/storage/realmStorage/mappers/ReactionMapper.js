@@ -1,9 +1,8 @@
 /* eslint-disable no-underscore-dangle */
+import { convertUserToRealm } from './UserMapper';
 
 export const getReactionFromRealmObject = (ro) => {
   const reaction = { ...ro };
-  reaction.message_id = reaction.message.id;
-  delete reaction.message;
   return reaction;
 };
 
@@ -17,13 +16,14 @@ export const convertReactionToRealm = (lr, realm) => {
   const latestReaction = {
     id: lr.id,
     type: lr.type,
+    message_id: lr.message_id,
     user_id: lr.user_id,
-    user: lr.user,
     created_at: lr.created_at,
   };
-  latestReaction.id = latestReaction.user_id + latestReaction.type;
-  // TODO: Check why user is coming as null
-  latestReaction.user = undefined; // realm.create('User', latestReaction.user, true);
+  latestReaction.id =
+    latestReaction.message_id + latestReaction.user_id + latestReaction.type;
+
+  latestReaction.user = convertUserToRealm(lr.user, realm);
   return realm.create('Reaction', latestReaction, true);
 };
 
