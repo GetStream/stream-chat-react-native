@@ -171,8 +171,6 @@ const ChannelList = withChatContext(
         await this._queryOfflineChannels();
       }
 
-      await this._queryChannelsDebounced();
-      this.listenToChanges();
       this.props.logger('ChannelList component', 'componentDidUpdate', {
         tags: ['lifecycle', 'channellist'],
         props: this.props,
@@ -270,8 +268,7 @@ const ChannelList = withChatContext(
     }
 
     queryChannels = async (resync = false, forceIsOnline = false) => {
-      if (this.props.isOnline === 'unknown') return;
-
+      if (this.props.isOnline === 'unknown' && !forceIsOnline) return;
       if (this.props.isOnline || forceIsOnline) {
         await this._queryOnlineChannels(resync);
       } else if (this.props.offlineSync) {
@@ -315,6 +312,7 @@ const ChannelList = withChatContext(
     async _queryOnlineChannels(resync) {
       if (this.onlineQueryActive) return;
       this.onlineQueryActive = true;
+
       if (this._unmounted || !this.hasNextOnlinePage) {
         this.onlineQueryActive = false;
         return;
@@ -337,6 +335,7 @@ const ChannelList = withChatContext(
           ...options,
         },
       });
+
       const channelValues = await this.props.client.queryChannels(
         filters,
         sort,
@@ -473,7 +472,7 @@ const ChannelList = withChatContext(
         e.type === 'connection.recovered' ||
         e.type === 'connection.established'
       ) {
-        this.queryChannels(true, true);
+        await this.queryChannels(true, true);
       }
 
       // move channel to start

@@ -8,6 +8,7 @@ export const convertMessageToStorable = (m, storables) => {
     text: m.text,
     parent_id: m.parent_id,
     command: m.command,
+    attachments: m.attachments,
     user: convertUserToStorable(m.user, storables),
     html: m.html,
     type: m.type,

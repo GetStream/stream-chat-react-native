@@ -154,7 +154,7 @@ export class AsyncLocalStorage {
       }
 
       channel.messages = c.messages.map((m) => {
-        const message = { ...m, attachments: [] };
+        const message = { ...m };
         message.user = flatteneUsers[message.user];
         message.mentioned_users = m.mentioned_users.map(
           (u) => flatteneUsers[u],

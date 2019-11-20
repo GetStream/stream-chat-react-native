@@ -8,6 +8,7 @@ import {
   ReactionSchema,
   ChannelConfigSchema,
   CommandSchema,
+  AttachmentSchema,
   ReactionCountSchema,
 } from './schemas';
 import {
@@ -19,7 +20,7 @@ import {
   convertChannelToRealm,
 } from './mappers';
 
-const SCHEMA_VERSION = 0;
+const SCHEMA_VERSION = 5;
 
 export class RealmStorage {
   constructor(client, RealmClass) {
@@ -49,6 +50,7 @@ export class RealmStorage {
           UserSchema,
           ReadSchema,
           ReactionSchema,
+          AttachmentSchema,
           ReactionCountSchema,
           ChannelConfigSchema,
           CommandSchema,

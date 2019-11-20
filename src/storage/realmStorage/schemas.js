@@ -103,7 +103,6 @@ export const UserSchema = {
     deleted_at: { type: 'string', optional: true },
     deactivated_at: { type: 'string', optional: true },
     online: { type: 'bool', optional: true },
-    // TODO: Implement following
     extraData: { type: 'string', optional: true },
   },
 };
@@ -114,8 +113,7 @@ export const MessageSchema = {
   properties: {
     id: 'string',
     text: 'string',
-    // TODO: Implement the following
-    // attachments?: Attachment[],
+    attachments: 'Attachment[]',
     parent_id: { type: 'string', optional: true },
     mentioned_users: { type: 'list', objectType: 'User' },
     command: { type: 'string', optional: true },
@@ -130,11 +128,27 @@ export const MessageSchema = {
     created_at: 'date',
     updated_at: 'date',
     deleted_at: { type: 'date', optional: true },
-    channel: {
-      type: 'linkingObjects',
-      objectType: 'Channel',
-      property: 'messages',
-    },
+  },
+};
+
+export const AttachmentSchema = {
+  name: 'Attachment',
+  properties: {
+    type: { type: 'string', optional: true },
+    fallback: { type: 'string', optional: true },
+    pretext: { type: 'string', optional: true },
+    autor_name: { type: 'string', optional: true },
+    author_link: { type: 'string', optional: true },
+    author_icon: { type: 'string', optional: true },
+    title: { type: 'string', optional: true },
+    title_link: { type: 'string', optional: true },
+    text: { type: 'string', optional: true },
+    image_url: { type: 'string', optional: true },
+    thumb_url: { type: 'string', optional: true },
+    footer: { type: 'string', optional: true },
+    footer_icon: { type: 'string', optional: true },
+    actions: { type: 'string', optional: true },
+    og_scrape_url: { type: 'string', optional: true },
   },
 };
 

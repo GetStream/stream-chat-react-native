@@ -5,6 +5,10 @@ import {
   getReactionsFromRealmList,
   getReactionCountsFromRealmList,
 } from './ReactionMapper';
+import {
+  convertAttachmentsToRealm,
+  getAttachmentsFromRealmList,
+} from './AttachmentMapper';
 import { convertUsersToRealm, getUsersFromRealmList } from './UserMapper';
 
 export const convertMessagesToRealm = (messages, realm) =>
@@ -24,6 +28,7 @@ export const convertMessageToRealm = (m, realm) => {
     own_reactions: [...m.own_reactions],
     mentioned_users: [...m.mentioned_users],
     reaction_counts: { ...m.reaction_counts },
+    attachments: [...m.attachments],
     show_in_channel: m.show_in_channel,
     reply_count: m.reply_count,
     created_at: m.created_at,
@@ -40,6 +45,7 @@ export const convertMessageToRealm = (m, realm) => {
     realm,
   );
   message.mentioned_users = convertUsersToRealm(message.mentioned_users, realm);
+  message.attachments = convertAttachmentsToRealm(message.attachments, realm);
   message.user = realm.create('User', message.user, true);
   return realm.create('Message', message, true);
 };
@@ -49,9 +55,8 @@ export const getMessagesFromRealmList = (ml) => {
   for (const m of ml) {
     const message = {
       ...m,
-      attachments: [],
     };
-
+    message.attachments = getAttachmentsFromRealmList(message.attachments);
     message.mentioned_users = getUsersFromRealmList(message.mentioned_users);
 
     message.latest_reactions = getReactionsFromRealmList(
