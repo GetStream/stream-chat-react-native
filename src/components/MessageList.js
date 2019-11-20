@@ -584,14 +584,14 @@ const MessageList = withChannelContext(
                 autoscrollToTopThreshold: 10,
               }}
             />
-            <TypingIndicatorContainer>
-              {this.props.TypingIndicator && showTypingIndicator && (
+            {this.props.TypingIndicator && showTypingIndicator && (
+              <TypingIndicatorContainer>
                 <TypingIndicator
                   typing={this.props.typing}
                   client={this.props.client}
                 />
-              )}
-            </TypingIndicatorContainer>
+              </TypingIndicatorContainer>
+            )}
             {this.state.newMessagesNotification && (
               <MessageNotification
                 showNotification={this.state.newMessagesNotification}

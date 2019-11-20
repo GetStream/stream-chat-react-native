@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.3.9] 2019-11-20
+
+- Showing TypingIndicatorContainer only when necessary
+
 ## [0.3.8] 2019-11-06
 
 - Adding logs to Chat, ChannelList and Channel component
