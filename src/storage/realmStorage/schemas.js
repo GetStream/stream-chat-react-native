@@ -94,9 +94,9 @@ export const UserSchema = {
   primaryKey: 'id',
   properties: {
     id: 'string',
-    name: 'string',
-    image: 'string',
-    role: 'string',
+    name: { type: 'string', optional: true },
+    image: { type: 'string', optional: true },
+    role: { type: 'string', optional: true },
     created_at: { type: 'string', optional: true },
     updated_at: { type: 'string', optional: true },
     last_active: { type: 'string', optional: true },
@@ -128,6 +128,7 @@ export const MessageSchema = {
     created_at: 'date',
     updated_at: 'date',
     deleted_at: { type: 'date', optional: true },
+    extraData: { type: 'string', optional: true },
   },
 };
 

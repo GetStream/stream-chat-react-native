@@ -202,7 +202,10 @@ const ChannelList = withChatContext(
       let limit;
       if (resync) {
         offset = 0;
-        limit = this.state.channels.length;
+        limit = Math.max(
+          this.state.channels.length,
+          options.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
+        );
         if (this._unmounted) return;
         this.setState({
           offset: 0,
@@ -252,7 +255,10 @@ const ChannelList = withChatContext(
             offset: channels.length,
 
             hasNextPage:
-              channelValues.length >= (pagerParams.limit || 10) ? true : false,
+              channelValues.length >=
+              (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
+                ? true
+                : false,
             refreshing: false,
             offlineStateActive: true,
           };
@@ -300,12 +306,15 @@ const ChannelList = withChatContext(
       const channelValues = await this.props.storage.queryChannels(
         JSON.stringify(query),
         pagerParams.offset,
-        pagerParams.limit || 10,
+        pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
       );
 
       await this.setChannelValues(channelValues, resync, pagerParams);
       this.hasNextOfflinePage =
-        channelValues.length >= (pagerParams.limit || 10) ? true : false;
+        channelValues.length >=
+        (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
+          ? true
+          : false;
       this.offlineQueryActive = false;
     }
 
@@ -350,7 +359,6 @@ const ChannelList = withChatContext(
         filters,
         sort,
       };
-
       if (this.props.offlineSync) {
         await this.props.storage.storeChannels(
           JSON.stringify(query),
@@ -358,8 +366,12 @@ const ChannelList = withChatContext(
           resync,
         );
       }
+
       this.hasNextOnlinePage =
-        channelValues.length >= (pagerParams.limit || 10) ? true : false;
+        channelValues.length >=
+        (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
+          ? true
+          : false;
       this.onlineQueryActive = false;
     }
 

@@ -15,29 +15,52 @@ export const convertMessagesToRealm = (messages, realm) =>
   messages.map((m) => convertMessageToRealm(m, realm));
 
 export const convertMessageToRealm = (m, realm) => {
+  const {
+    id,
+    text,
+    parent_id,
+    command,
+    attachments,
+    user,
+    html,
+    type,
+    mentioned_users,
+    latest_reactions,
+    own_reactions,
+    reaction_counts,
+    show_in_channel,
+    reply_count,
+    created_at,
+    updated_at,
+    deleted_at,
+    ...extraData
+  } = m;
   // reactotron.log('convertMessageToRealm', m);
   const message = {
-    id: m.id,
-    text: m.text,
-    parent_id: m.parent_id,
-    command: m.command,
-    user: m.user,
-    html: m.html,
-    type: m.type,
-    // latest_reactions: [...m.latest_reactions],
+    id,
+    text,
+    parent_id,
+    command,
+    user,
+    html,
+    type,
+    latest_reactions: [...m.latest_reactions],
     own_reactions: [...m.own_reactions],
     mentioned_users: [...m.mentioned_users],
     reaction_counts: { ...m.reaction_counts },
     attachments: [...m.attachments],
-    show_in_channel: m.show_in_channel,
-    reply_count: m.reply_count,
-    created_at: m.created_at,
-    updated_at: m.updated_at,
-    deleted_at: m.deleted_at,
+    show_in_channel,
+    reply_count,
+    created_at,
+    updated_at,
+    deleted_at,
+    extraData: JSON.stringify(extraData),
   };
 
-  const latestReactions = m.latest_reactions.map((r) => ({ ...r }));
-  message.latest_reactions = convertReactionsToRealm(latestReactions, realm);
+  message.latest_reactions = convertReactionsToRealm(
+    message.latest_reactions,
+    realm,
+  );
   message.own_reactions = convertReactionsToRealm(message.own_reactions, realm);
   message.reaction_counts = convertReactionCountsToRealm(
     message.reaction_counts,
@@ -53,8 +76,10 @@ export const convertMessageToRealm = (m, realm) => {
 export const getMessagesFromRealmList = (ml) => {
   const messages = [];
   for (const m of ml) {
+    const extraData = m.extraData ? JSON.parse(m.extraData) : {};
     const message = {
       ...m,
+      ...extraData,
     };
     message.attachments = getAttachmentsFromRealmList(message.attachments);
     message.mentioned_users = getUsersFromRealmList(message.mentioned_users);
@@ -67,7 +92,7 @@ export const getMessagesFromRealmList = (ml) => {
       message.reaction_counts,
     );
 
-    delete message.channel;
+    delete message.extraData;
     messages.push(message);
   }
 

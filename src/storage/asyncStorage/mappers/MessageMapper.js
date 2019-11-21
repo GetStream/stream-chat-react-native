@@ -3,26 +3,9 @@ import { convertReactionsToStorable } from './ReactionMapper';
 import { getChannelMessagesKey } from '../keys';
 
 export const convertMessageToStorable = (m, storables) => {
-  const message = {
-    id: m.id,
-    text: m.text,
-    parent_id: m.parent_id,
-    command: m.command,
-    attachments: m.attachments,
-    user: convertUserToStorable(m.user, storables),
-    html: m.html,
-    type: m.type,
-    mentioned_users: [...m.mentioned_users],
-    latest_reactions: [...m.latest_reactions],
-    own_reactions: [...m.own_reactions],
-    reaction_counts: { ...m.reaction_counts },
-    show_in_channel: m.show_in_channel,
-    reply_count: m.reply_count,
-    created_at: m.created_at,
-    updated_at: m.updated_at,
-    deleted_at: m.deleted_at,
-  };
+  const message = { ...m };
 
+  message.user = convertUserToStorable(m.user, storables);
   message.mentioned_users = convertUsersToStorable(
     message.mentioned_users,
     storables,

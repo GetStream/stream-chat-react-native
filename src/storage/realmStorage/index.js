@@ -20,14 +20,13 @@ import {
   convertChannelToRealm,
 } from './mappers';
 
-const SCHEMA_VERSION = 5;
+const SCHEMA_VERSION = 0;
 
 export class RealmStorage {
   constructor(client, RealmClass) {
     this.chatClient = client;
     this.RealmClass = RealmClass;
     this.realm = null;
-    this.initialized = false;
   }
 
   async getRealm() {
@@ -61,7 +60,6 @@ export class RealmStorage {
       throw Error(e);
     }
 
-    this.initialized = true;
     return this.realm;
   }
 

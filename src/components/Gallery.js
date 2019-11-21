@@ -1,11 +1,12 @@
 import React from 'react';
-import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
+import { Text, View, Modal, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 import { withMessageContentContext } from '../context';
 import { makeImageCompatibleUrl } from '../utils';
+import { CachedImage } from 'react-native-cached-image';
 
 import { CloseButton } from './CloseButton';
 
@@ -94,7 +95,7 @@ export const Gallery = withMessageContentContext(
                 }}
                 alignment={this.props.alignment}
               >
-                <Image
+                <CachedImage
                   style={{
                     width: 100 + '%',
                     height: 100 + '%',
@@ -156,7 +157,7 @@ export const Gallery = withMessageContentContext(
                         height: '100%',
                       }}
                     >
-                      <Image
+                      <CachedImage
                         style={{
                           width: 100 + '%',
                           height: 100 + '%',
@@ -188,7 +189,7 @@ export const Gallery = withMessageContentContext(
                       </View>
                     </View>
                   ) : (
-                    <Image
+                    <CachedImage
                       style={{
                         width: 100 + '%',
                         height: 100 + '%',

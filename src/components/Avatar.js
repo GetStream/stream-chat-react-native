@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
+import { CachedImage } from 'react-native-cached-image';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;
@@ -13,7 +14,7 @@ const AvatarContainer = styled.View`
   ${({ theme }) => theme.avatar.container.css}
 `;
 
-const AvatarImage = styled.Image`
+const AvatarImage = styled((props) => <CachedImage {...props} />)`
   border-radius: ${({ size }) => size / 2};
   width: ${({ size }) => size};
   height: ${({ size }) => size};
@@ -91,7 +92,7 @@ export const Avatar = themed(
           {image && !this.state.imageError ? (
             <AvatarImage
               size={size}
-              source={{ uri: image, cache: 'force-cache' }}
+              source={{ uri: image }}
               accessibilityLabel="initials"
               resizeMethod="resize"
               onError={this.setError}
