@@ -12,3 +12,4 @@ export {
 export { MESSAGE_ACTIONS, renderText } from './utils';
 export { AsyncLocalStorage } from './storage/asyncStorage';
 export { RealmStorage } from './storage/realmStorage/index.js';
+export { LocalStorage } from './storage';

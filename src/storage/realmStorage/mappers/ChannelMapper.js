@@ -5,7 +5,6 @@ import { convertChannelConfigToRealm } from './ChannelConfigMapper';
 import { convertReadStatesToRealm } from './ReadMapper';
 
 export const convertChannelToRealm = (channel, realm) => {
-  const config = channel.getConfig();
   const stateMembers = channel.state.members
     ? Object.values(channel.state.members)
     : [];
@@ -18,7 +17,7 @@ export const convertChannelToRealm = (channel, realm) => {
     data: JSON.stringify(channel.data),
     cid: channel.cid,
     initialized: channel.initialized,
-    config,
+    config: channel.config,
   };
 
   offlineChannel.messages = convertMessagesToRealm(stateMessages, realm);
@@ -31,7 +30,7 @@ export const convertChannelToRealm = (channel, realm) => {
 
   offlineChannel.config = convertChannelConfigToRealm(
     channel.type,
-    config,
+    channel.config,
     realm,
   );
   offlineChannel.read = convertReadStatesToRealm(

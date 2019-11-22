@@ -23,8 +23,7 @@ import {
 const SCHEMA_VERSION = 0;
 
 export class RealmStorage {
-  constructor(client, RealmClass) {
-    this.chatClient = client;
+  constructor(RealmClass) {
     this.RealmClass = RealmClass;
     this.realm = null;
   }
@@ -135,25 +134,13 @@ export class RealmStorage {
         const read = getReadStatesFromRealmList(c.read);
         const config = getChannelConfigFromRealm(c.config);
 
-        // eslint-disable-next-line no-underscore-dangle
-        this.chatClient._addChannelConfig({
-          channel: {
-            type: c.type,
-            config,
-          },
-        });
-
-        const fChannel = this.chatClient.channel(c.type, c.id, {}, true);
-        fChannel.data = { ...JSON.parse(c.data) };
-        // eslint-disable-next-line no-underscore-dangle
-        fChannel._initializeState({
-          members: c.members,
+        channels.push({
+          ...c,
+          data: JSON.parse(c.data),
           messages,
           read,
+          config,
         });
-        fChannel.isOfflineChannel = true;
-
-        channels.push(fChannel);
       }
     }
     return channels;

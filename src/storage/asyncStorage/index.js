@@ -20,8 +20,7 @@ import {
  * Local storage interface based on AsyncStorage
  */
 export class AsyncLocalStorage {
-  constructor(chatCLient, AsyncStorage) {
-    this.chatClient = chatCLient;
+  constructor(AsyncStorage) {
     this.asyncStorage = AsyncStorage;
   }
 
@@ -152,6 +151,7 @@ export class AsyncLocalStorage {
           channel.read[userId].last_read,
         );
       }
+      channel.read = Object.values(channel.read);
 
       channel.messages = c.messages.map((m) => {
         const message = { ...m };
@@ -176,23 +176,7 @@ export class AsyncLocalStorage {
         return message;
       });
 
-      this.chatClient._addChannelConfig({
-        channel: {
-          type: c.type,
-          config: c.config,
-        },
-      });
-
-      const fChannel = this.chatClient.channel(c.type, c.id, {}, true);
-      fChannel.data = { ...c.data };
-      // eslint-disable-next-line no-underscore-dangle
-      fChannel._initializeState({
-        members: channel.members,
-        messages: channel.messages,
-        read: Object.values(channel.read),
-      });
-
-      return fChannel;
+      return channel;
     });
 
     return finalChannels;

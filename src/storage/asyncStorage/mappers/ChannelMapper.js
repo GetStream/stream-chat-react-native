@@ -5,14 +5,13 @@ import { convertChannelConfigToStorable } from './ChannelConfigMapper';
 import { getChannelKey } from '../keys';
 
 export const convertChannelToStorable = (c, storable) => {
-  const config = c.getConfig();
   const channel = {
     type: c.type,
     id: c.id,
     data: c.data,
     cid: c.cid,
     initialized: c.initialized,
-    config,
+    config: c.config,
   };
 
   channel.messages = convertMessagesToStorable(
@@ -25,7 +24,7 @@ export const convertChannelToStorable = (c, storable) => {
 
   channel.config = convertChannelConfigToStorable(
     channel.type,
-    config,
+    channel.config,
     storable,
   );
   storable[getChannelKey(c.id)] = channel;
