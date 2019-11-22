@@ -44,7 +44,7 @@ registerNativeHandlers({
   },
   pickImage: () =>
     new Promise((resolve, reject) => {
-      ImagePicker.showImagePicker(null, (response) => {
+      ImagePicker.showImagePicker({}, (response) => {
         if (response.error) {
           reject(Error(response.error));
         }
