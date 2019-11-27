@@ -7,7 +7,7 @@
 [![Build Status](https://travis-ci.org/GetStream/stream-chat-react-native.svg?branch=master)](https://travis-ci.org/GetStream/stream-chat-react-native)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.github.io/stream-chat-react-native/)
 
-### Quick Links
+**Quick Links**
 
 * [Register](https://getstream.io/chat/trial/) for Stream Chat API
 * [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
