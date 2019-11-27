@@ -9,7 +9,7 @@
 
 **Quick Links**
 
-* [Register](https://getstream.io/chat/trial/) for Stream Chat API
+* [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
 * [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 * [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 
