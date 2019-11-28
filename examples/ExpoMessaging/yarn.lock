@@ -5598,20 +5598,20 @@ stream-buffers@~2.2.0:
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
 stream-chat-expo@^0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/stream-chat-expo/-/stream-chat-expo-0.3.9.tgz#d744adef121236a454e49ad9da274fe46119ae30"
-  integrity sha512-mZUFP/9cwN9s26SGPiZWUZU50+dolvtSngGidESEsY6UdqebM3FPWYPYiYFME+9z/GxN3zH9C0AA8dbEUVsh9w==
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/stream-chat-expo/-/stream-chat-expo-0.3.10.tgz#ba61ff1d4c16e80f166ebedcd25b812fac8b5b22"
+  integrity sha512-pRMO5cERjfizWEgLA/QQ4Lf3+QTPwj5RUVh97NS2xeAbuCVw1TCQyPdFDeJ/9cUDM2EUvMHZ9qNT682eYeOnKw==
   dependencies:
     expo-document-picker "^6.0.0"
     expo-image-picker "^6.0.0"
     expo-permissions "^6.0.0"
     react-native-unimodules "^0.5.4"
-    stream-chat-react-native-core v0.3.9
+    stream-chat-react-native-core v0.3.10
 
-stream-chat-react-native-core@v0.3.9:
-  version "0.3.9"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.9.tgz#91acda77d1b3cf298e99bf552469e9d59d5fee39"
-  integrity sha512-qtjiLf2DLnfs6m0RqfuH5+TC77VGPh5Ppbk9KQzI3Fygtu+iJ/gANoR92bK7OmU/7tj9eqTpMPiGuGeluJdD6A==
+stream-chat-react-native-core@v0.3.10:
+  version "0.3.10"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.10.tgz#bc452c1f8597f5351ba641936de2e04c7d784088"
+  integrity sha512-rk9OU5h6dkNQYGtT8C05UUSIa628CvKT+4sVKVsJcalPVC+0AQm4UQWQqGS/ddyAtr/1ehdIhkf72srCxwmgpA==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
