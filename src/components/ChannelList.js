@@ -19,6 +19,7 @@ export const isPromise = (thing) => {
 };
 
 export const DEFAULT_QUERY_CHANNELS_LIMIT = 10;
+
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
  * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
@@ -126,9 +127,8 @@ const ChannelList = withChatContext(
         loadingChannels: true,
         hasNextPage: true,
         refreshing: false,
-        offset: 0,
       };
-
+      this.offset = 0;
       this.menuButton = React.createRef();
 
       this._queryChannelsDebounced = debounce(this.queryChannels, 1000, {
@@ -137,14 +137,15 @@ const ChannelList = withChatContext(
       });
       this.offlineQueryActive = false;
       this.onlineQueryActive = false;
-
+      this.syncActive = false;
       this.hasNextOnlinePage = true;
       this.hasNextOfflinePage = true;
+      this.hasNextSyncPage = true;
       this._unmounted = false;
     }
 
     async componentDidMount() {
-      if (this.props.offlineSync) await this._queryOfflineChannels(true);
+      if (this.props.offlineSync) await this._queryFromLocalStorage(true);
       await this._queryChannelsDebounced(true);
       this.listenToChanges();
       this.props.logger('ChannelList component', 'componentDidMount', {
@@ -161,14 +162,14 @@ const ChannelList = withChatContext(
         this.props.isOnline
       ) {
         this.props.client.activeChannels = {};
-        await this._queryOnlineChannels(true);
+        await this.queryChannels(true);
       }
       if (
         prevProps.isOnline === 'unknown' &&
         typeof this.props.isOnline === 'boolean' &&
         !this.props.isOnline
       ) {
-        await this._queryOfflineChannels();
+        await this.queryChannels();
       }
 
       this.props.logger('ChannelList component', 'componentDidUpdate', {
@@ -207,11 +208,9 @@ const ChannelList = withChatContext(
           options.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
         );
         if (this._unmounted) return;
-        this.setState({
-          offset: 0,
-        });
+        this.offset = 0;
       } else {
-        offset = this.state.offset;
+        offset = this.offset;
         limit = options.limit;
       }
 
@@ -228,7 +227,6 @@ const ChannelList = withChatContext(
           if (this._unmounted) return;
           this.props.setActiveChannel(channelValues[0]);
         }
-
         if (this._unmounted) return;
 
         await this.setState((prevState) => {
@@ -275,24 +273,29 @@ const ChannelList = withChatContext(
 
     queryChannels = async (resync = false, forceIsOnline = false) => {
       if (this.props.isOnline === 'unknown' && !forceIsOnline) return;
+
       if (this.props.isOnline || forceIsOnline) {
-        await this._queryOnlineChannels(resync);
+        if (this.props.offlineSync) {
+          const isSynced = await this.syncChannels(resync);
+          isSynced && (await this._queryFromLocalStorage(resync, false));
+        } else {
+          await this._queryFromRemote(resync);
+        }
       } else if (this.props.offlineSync) {
-        await this._queryOfflineChannels(resync);
+        await this._queryFromLocalStorage(resync);
       }
     };
 
-    async _queryOfflineChannels(resync) {
+    async _queryFromLocalStorage(resync, passive) {
       // If there is already active query.
       if (this.offlineQueryActive) return;
 
       this.offlineQueryActive = true;
-      if (this._unmounted || !this.hasNextOfflinePage) {
+
+      if (this._unmounted || (!resync && !this.hasNextOfflinePage)) {
         this.offlineQueryActive = false;
         return;
       }
-
-      const { filters, sort } = this.props;
 
       const pagerParams = this.getPagerParams(resync);
 
@@ -300,13 +303,15 @@ const ChannelList = withChatContext(
       this.setState({ refreshing: true });
 
       const query = {
-        filters,
-        sort,
+        filters: this.props.filters,
+        sort: this.props.sort,
       };
+
       const channelValues = await this.props.storage.queryChannels(
         JSON.stringify(query),
         pagerParams.offset,
         pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
+        passive,
       );
 
       await this.setChannelValues(channelValues, resync, pagerParams);
@@ -318,8 +323,9 @@ const ChannelList = withChatContext(
       this.offlineQueryActive = false;
     }
 
-    async _queryOnlineChannels(resync) {
+    async _queryFromRemote(resync) {
       if (this.onlineQueryActive) return;
+
       this.onlineQueryActive = true;
 
       if (this._unmounted || !this.hasNextOnlinePage) {
@@ -353,26 +359,74 @@ const ChannelList = withChatContext(
           ...pagerParams,
         },
       );
+
       await this.setChannelValues(channelValues, resync, pagerParams);
-
-      const query = {
-        filters,
-        sort,
-      };
-      if (this.props.offlineSync) {
-        await this.props.storage.storeChannels(
-          JSON.stringify(query),
-          channelValues,
-          resync,
-        );
-      }
-
       this.hasNextOnlinePage =
         channelValues.length >=
         (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
           ? true
           : false;
+
       this.onlineQueryActive = false;
+    }
+
+    async syncChannels(resync) {
+      if (this.syncActive) {
+        return;
+      }
+      this.syncActive = true;
+
+      if (this._unmounted || !this.hasNextSyncPage) {
+        this.syncActive = false;
+        return;
+      }
+
+      const { options, filters, sort } = this.props;
+
+      const pagerParams = this.getPagerParams(resync);
+
+      if (this._unmounted) return;
+      this.setState({ refreshing: true });
+
+      this.props.logger('ChannelList component', 'queryChannels', {
+        tags: ['channellist'],
+        props: this.props,
+        state: this.state,
+        query: {
+          filters,
+          sort,
+          ...options,
+        },
+      });
+
+      const channelValues = await this.props.client.queryChannels(
+        filters,
+        sort,
+        {
+          ...options,
+          ...pagerParams,
+        },
+      );
+
+      const query = {
+        filters,
+        sort,
+      };
+
+      await this.props.storage.storeChannels(
+        JSON.stringify(query),
+        channelValues,
+        resync,
+      );
+
+      this.hasNextSyncPage =
+        channelValues.length >=
+        (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
+          ? true
+          : false;
+      this.syncActive = false;
+
+      return true;
     }
 
     listenToChanges() {
@@ -388,11 +442,12 @@ const ChannelList = withChatContext(
       );
 
       if (e.type === 'message.new') {
-        if (this.props.storage.insertMessageForChannel)
+        if (this.props.storage.insertMessageForChannel) {
           await this.props.storage.insertMessageForChannel(
             channels[channelIndex].id,
             e.message,
           );
+        }
       }
 
       if (e.type === 'message.read') {
@@ -591,7 +646,11 @@ const ChannelList = withChatContext(
       const channelIndex = this.state.channels.findIndex(
         (channel) => channel.cid === cid,
       );
-      if (channelIndex <= 0) return;
+      if (channelIndex <= 0) {
+        this.setState({
+          channels: [...this.state.channels],
+        });
+      }
 
       // get channel from channels
       const channel = channels[channelIndex];

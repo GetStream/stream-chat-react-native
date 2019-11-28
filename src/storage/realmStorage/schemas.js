@@ -109,15 +109,16 @@ export const UserSchema = {
 
 export const MessageSchema = {
   name: 'Message',
-  primaryKey: 'id',
+  primaryKey: 'mid',
   properties: {
+    mid: 'int',
     id: 'string',
     text: 'string',
     attachments: 'Attachment[]',
     parent_id: { type: 'string', optional: true },
     mentioned_users: { type: 'list', objectType: 'User' },
     command: { type: 'string', optional: true },
-    user: { type: 'User' },
+    user: { type: 'User', optional: true },
     html: 'string',
     type: 'string',
     latest_reactions: { type: 'list', objectType: 'Reaction' },
@@ -126,7 +127,8 @@ export const MessageSchema = {
     show_in_channel: { type: 'bool', optional: true },
     reply_count: { type: 'int', optional: true },
     created_at: 'date',
-    updated_at: 'date',
+    updated_at: { type: 'date', optional: true },
+    status: 'string',
     deleted_at: { type: 'date', optional: true },
     extraData: { type: 'string', optional: true },
   },

@@ -151,7 +151,7 @@ export class ChannelInner extends PureComponent {
     const channel = this.props.channel;
     let errored = false;
 
-    if (!channel.initialized && !channel.inactive) {
+    if (!channel.initialized && !channel.passive) {
       try {
         await channel.watch();
       } catch (e) {
@@ -275,7 +275,7 @@ export class ChannelInner extends PureComponent {
     });
   };
 
-  updateMessage = (updatedMessage, extraState) => {
+  updateMessage = async (updatedMessage, extraState) => {
     const channel = this.props.channel;
 
     extraState = extraState || {};
@@ -283,7 +283,12 @@ export class ChannelInner extends PureComponent {
     // adds the message to the local channel state..
     // this adds to both the main channel state as well as any reply threads
     channel.state.addMessageSorted(updatedMessage);
-
+    if (updatedMessage.status !== 'sending') {
+      await this.props.storage.updateMessage(
+        this.props.channel.id,
+        updatedMessage,
+      );
+    }
     // update the Channel component state
     if (this.state.thread && updatedMessage.parent_id) {
       extraState.threadMessages =
@@ -361,6 +366,11 @@ export class ChannelInner extends PureComponent {
       status,
       user,
       created_at,
+      updated_at,
+      deleted_at,
+      latest_reactions,
+      own_reactions,
+      reaction_counts,
       reactions,
       ...extraFields
     } = message;
@@ -375,14 +385,17 @@ export class ChannelInner extends PureComponent {
     };
 
     try {
+      await this.props.storage.insertMessageForChannel(this.props.channel.id, {
+        ...messageData,
+        user: { ...this.props.client.user },
+      });
       const messageResponse = await this.props.channel.sendMessage(messageData);
       // replace it after send is completed
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
-        this.updateMessage(messageResponse.message);
+        await this.updateMessage(messageResponse.message);
       }
     } catch (error) {
-      console.log(error);
       // set the message to failed..
       message.status = 'failed';
       this.updateMessage(message);

@@ -54,7 +54,7 @@ export class LocalStorage {
    * @param {*} offset
    * @param {*} limit
    */
-  async queryChannels(query, offset = 0, limit = 10) {
+  async queryChannels(query, offset = 0, limit = 10, passive = true) {
     const storedChannels = await this.storage.queryChannels(
       query,
       offset,
@@ -69,7 +69,7 @@ export class LocalStorage {
         },
       });
 
-      const fChannel = this.chatClient.channel(c.type, c.id, {}, true);
+      const fChannel = this.chatClient.channel(c.type, c.id, {}, passive);
       fChannel.data = { ...c.data };
       // eslint-disable-next-line no-underscore-dangle
       fChannel._initializeState({
@@ -78,7 +78,7 @@ export class LocalStorage {
         read: c.read,
       });
 
-      fChannel.isOfflineChannel = true;
+      fChannel.initialized = !passive;
       return fChannel;
     });
 
