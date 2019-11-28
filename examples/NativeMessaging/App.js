@@ -8,18 +8,40 @@ import {
   MessageInput,
   ChannelList,
   Thread,
+  CloseButton,
   ChannelPreviewMessenger,
 } from 'stream-chat-react-native';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 
-import { YellowBox } from 'react-native';
+// Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+const theme = {
+  avatar: {
+    image: {
+      size: 32,
+    },
+  },
+  colors: {
+    primary: 'magenta',
+  },
+  spinner: {
+    css: `
+      width: 15px;
+      height: 15px;
+    `,
+  },
+};
 
-YellowBox.ignoreWarnings(['Remote debugger']);
 const chatClient = new StreamChat('qk4nn7rpcn75');
 const userToken =
   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
-
+  const user = {
+    id: 'billowing-firefly-8',
+    name: 'Billowing firefly',
+    image:
+      'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
+  };
+  
 const filters = { type: 'messaging' };
 const sort = { last_message_at: -1 };
 const options = {
@@ -35,7 +57,7 @@ class ChannelListScreen extends PureComponent {
   render() {
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat client={chatClient} style={theme}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
               filters={filters}
@@ -71,7 +93,7 @@ class ChannelScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat client={chatClient} style={theme}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
@@ -110,7 +132,7 @@ class ThreadScreen extends PureComponent {
           justifyContent: 'center',
           borderRadius: 20,
         }}>
-        <Text>X</Text>
+        <CloseButton />
       </TouchableOpacity>
     ),
   });
@@ -176,12 +198,7 @@ export default class App extends React.Component {
   async componentDidMount() {
 
     await chatClient.setUser(
-      {
-        id: 'billowing-firefly-8',
-        name: 'Billowing firefly',
-        image:
-          'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
-      },
+      user,
       userToken,
     );
 
