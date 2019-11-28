@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.10] 2019-11-28
+
+- Adding strict string type check for channel name
+- Updated example apps
+- Updated readme doc
+
 ## [0.3.9] 2019-11-20
 
 - Showing TypingIndicatorContainer only when necessary
