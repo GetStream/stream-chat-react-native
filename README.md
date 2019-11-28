@@ -9,14 +9,14 @@
 
 **Quick Links**
 
-* [Stream Chat API](https://getstream.io/chat/) product overview
-* [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
-* [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
-* [Chat UI Kit](https://getstream.io/chat/ui-kit/)
+- [Stream Chat API](https://getstream.io/chat/) product overview
+- [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
+- [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
+- [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 
 ## React Chat Tutorial
 
-The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes. 
+The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes.
 
 ## Example Apps
 
@@ -28,10 +28,8 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
 2. ```bash
    yarn global add expo-cli
    git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
-   make
-   cd examples/one
-   yarn start
+   cd stream-chat-react-native/examples/ExpoMessaging
+   yarn && yarn start
    ```
 
 ### Native example
@@ -42,9 +40,8 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
 
 4. ```bash
    git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
-   make
-   cd examples/two
+   cd stream-chat-react-native/examples/NativeMessaging
+   yarn install
    ```
 5. - For iOS
      ```bash
@@ -57,7 +54,7 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
 
 ## Docs
 
-The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work. 
+The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work.
 
 The React Native components are created using the stream-chat-js library. If you're customizing the components it's important to learn how the Chat Server API works. You'll want to review our [JS chat API docs](https://getstream.io/chat/docs/js/).
 
@@ -226,8 +223,6 @@ In current context, dependencies such as `react-native-document-picker` and (if 
     ```
 
 ## Common issues
-
-
 
 #### While running native example, you may (not necessarily) run into following issues:
 
