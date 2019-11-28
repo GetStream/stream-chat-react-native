@@ -94,10 +94,14 @@ export const ChannelPreviewMessenger = themed(
 
     render() {
       const { channel } = this.props;
-      let name = channel.data.name;
       let otherMembers = [];
-      if (!name) {
-        const members = Object.values(channel.state.members);
+      let name = channel.data.name;
+      const isValidName = name && typeof name === 'string';
+
+      if (!isValidName) {
+        const members = channel.state
+          ? Object.values(channel.state.members)
+          : [];
         otherMembers = members.filter(
           (member) => member.user.id !== this.props.client.userID,
         );
