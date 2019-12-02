@@ -229,6 +229,10 @@ interface ChannelListProps extends ChatContextValue {
     thisArg: React.Component<ChannelListProps>,
     e: Client.ChannelUpdatedEvent,
   ): void;
+  onChannelDeleted?(
+    thisArg: React.Component<ChannelListProps>,
+    e: Client.ChannelDeletedEvent,
+  ): void;
   // TODO: Create proper interface for followings in chat js client.
   /** Object containing query filters */
   filters: object;

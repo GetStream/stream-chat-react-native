@@ -73,9 +73,16 @@ const ChannelList = withChatContext(
        * Function that overrides default behaviour when channel gets updated
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.channel_updated` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.updated` event
        * */
       onChannelUpdated: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.deleted` event
+       * */
+      onChannelDeleted: PropTypes.func,
       /**
        * Object containing query filters
        * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for filter.
@@ -371,7 +378,7 @@ const ChannelList = withChatContext(
         }
       }
 
-      // // Channel data is updated
+      // Channel data is updated
       if (e.type === 'channel.updated') {
         const channels = this.state.channels;
         const channelIndex = channels.findIndex(
@@ -388,6 +395,27 @@ const ChannelList = withChatContext(
         )
           this.props.onChannelUpdated(this, e);
       }
+
+      // Channel is deleted
+      if (e.type === 'channel.deleted') {
+        if (
+          this.props.onChannelDeleted &&
+          typeof this.props.onChannelDeleted === 'function'
+        ) {
+          this.props.onChannelDeleted(this, e);
+        } else {
+          const channels = this.state.channels;
+          const channelIndex = channels.findIndex(
+            (channel) => channel.cid === e.channel.cid,
+          );
+          // Remove the deleted channel from the list.
+          channels.splice(channelIndex, 1);
+          this.setState({
+            channels: [...channels],
+          });
+        }
+      }
+
       return null;
     };
 
