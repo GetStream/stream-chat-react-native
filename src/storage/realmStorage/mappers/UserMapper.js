@@ -37,14 +37,28 @@ export const convertUserToRealm = (u, realm) => {
 export const getUsersFromRealmList = (uList) => {
   const users = [];
   for (const u of uList) {
-    const user = {
-      ...u,
-      ...JSON.parse(u.extraData),
-    };
-
-    delete user.extraData;
-    users.push(user);
+    users.push(getUserFromRealm(u));
   }
 
   return users;
+};
+
+export const getUserFromRealm = (u) => {
+  const user = {
+    id: u.id,
+    name: u.name,
+    image: u.image,
+    role: u.role,
+    created_at: u.created_at,
+    updated_at: u.updated_at,
+    last_active: u.last_active,
+    deleted_at: u.deleted_at,
+    deactivated_at: u.deactivated_at,
+    online: u.online,
+    ...JSON.parse(u.extraData),
+  };
+
+  delete user.extraData;
+
+  return user;
 };

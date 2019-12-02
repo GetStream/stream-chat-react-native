@@ -18,6 +18,16 @@ export const convertReadStatesToRealm = (channelId, r, realm) => {
 };
 
 export const convertReadStateToRealm = (channelId, r, realm) => {
+  const existingReadState = realm.objectForPrimaryKey(
+    'Read',
+    `${channelId}${r.user.id}`,
+  );
+  if (existingReadState && existingReadState.lastRead) {
+    if (existingReadState.lastRead.toString() === r.last_read.toString()) {
+      return existingReadState;
+    }
+  }
+
   const read = {};
   read.id = `${channelId}${r.user.id}`;
   read.lastRead = r.last_read;

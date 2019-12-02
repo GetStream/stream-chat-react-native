@@ -295,7 +295,10 @@ export class ChannelInner extends PureComponent {
         channel.state.threads[updatedMessage.parent_id] || [];
     }
     if (this._unmounted) return;
-    this.setState({ messages: channel.state.messages, ...extraState });
+    this.setState({
+      messages: channel.state.messages,
+      ...extraState,
+    });
   };
 
   clearEditingState = () => {
@@ -517,7 +520,6 @@ export class ChannelInner extends PureComponent {
       this.setState({
         loadingMore: false,
       });
-
       return;
     }
 
@@ -531,27 +533,37 @@ export class ChannelInner extends PureComponent {
       id_lt: oldestID,
     });
     try {
-      queryResponse = await this.props.channel.query({
-        messages: { limit: perPage, id_lt: oldestID },
-      });
+      if (this.props.offlineSync && !this.props.isOnline) {
+        queryResponse = await this.props.storage.queryMessages(
+          this.props.channel.id,
+          oldestMessage,
+          perPage,
+        );
+        this.props.channel.state.addMessagesSorted(
+          queryResponse.messages,
+          true,
+        );
+      } else {
+        queryResponse = await this.props.channel.query({
+          messages: { limit: perPage, id_lt: oldestID },
+        });
+      }
     } catch (e) {
       console.warn('message pagination request failed with error', e);
       if (this._unmounted) return;
       this.setState({ loadingMore: false });
       return;
     }
-    let hasMore;
-    if (queryResponse && queryResponse.messages) {
+
+    if (this.props.isOnline && queryResponse && queryResponse.messages) {
       this.props.offlineSync &&
         (await this.props.storage.insertMessagesForChannel(
           this.props.channel.id,
           queryResponse.messages,
         ));
-
-      hasMore = queryResponse.messages.length === perPage;
-    } else {
-      hasMore = false;
     }
+
+    const hasMore = queryResponse.messages.length === perPage;
 
     this._loadMoreFinishedDebounced(hasMore, this.props.channel.state.messages);
   };

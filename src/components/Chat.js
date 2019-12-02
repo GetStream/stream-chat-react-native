@@ -70,8 +70,12 @@ export const Chat = themed(
 
       this.props.client.on('connection.recovered', () => {
         if (this._unmounted) return;
-        this.setState({ connectionRecovering: false });
+        this.setState({ isOnline: true, connectionRecovering: false });
       });
+
+      if (this.props.storage && this.props.logger) {
+        this.props.storage.setLogger(this.props.logger);
+      }
 
       this._unmounted = false;
     }

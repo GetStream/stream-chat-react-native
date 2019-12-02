@@ -24,7 +24,7 @@ function isValidDate(d) {
   return date instanceof Date && !isNaN(date);
 }
 
-export const convertMessageToRealm = (m, realm) => {
+export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
   const {
     id,
     text,
@@ -46,6 +46,14 @@ export const convertMessageToRealm = (m, realm) => {
     status = 'received',
     ...extraData
   } = m;
+  if (!forceUpdate) {
+    const existingMessage = realm.objectForPrimaryKey('Message', id);
+    if (existingMessage && existingMessage.updated_at) {
+      if (existingMessage.updated_at.toString() === updated_at.toString()) {
+        return existingMessage;
+      }
+    }
+  }
   // reactotron.log('convertMessageToRealm', m);
   const message = {
     id,
@@ -101,41 +109,36 @@ export const convertMessageToRealm = (m, realm) => {
     message.user = realm.create('User', message.user, true);
   }
 
-  const rMessage = realm.objects('Message').filtered(`id = "${id}"`);
-  // If message already exists, then we don't need to create the primary key for message.
-  if (!id || !rMessage || rMessage.length === 0) {
-    const lastMessage = realm.objects('Message').sorted('mid', true)[0];
-    let mid = 1;
-
-    // Realm doesn't have auto-increament feature for primary key. So need to do it manually.
-    // I am simply getting primary key of last message in Message table and increamenting it by 1.
-    if (lastMessage) mid = lastMessage.mid + 1;
-    // console.warn('MID ', mid);
-    message.mid = mid;
-  } else {
-    message.mid = rMessage[0].mid;
-  }
   return realm.create('Message', message, true);
 };
 
 export const getMessagesFromRealmList = (ml) => {
+  // return [];
   const messages = [];
   for (const m of ml) {
     const extraData = m.extraData ? JSON.parse(m.extraData) : {};
     const message = {
-      ...m,
+      id: m.id,
+      text: m.text,
+      parent_id: m.parent_id,
+      command: m.command,
+      user: m.user,
+      html: m.html,
+      type: m.type,
+      show_in_channel: m.show_in_channel,
+      reply_count: m.reply_count,
+      created_at: m.created_at,
+      updated_at: m.updated_at,
+      status: m.status,
+      deleted_at: m.deleted_at,
       ...extraData,
     };
-    message.attachments = getAttachmentsFromRealmList(message.attachments);
-    message.mentioned_users = getUsersFromRealmList(message.mentioned_users);
+    message.attachments = getAttachmentsFromRealmList(m.attachments);
+    message.mentioned_users = getUsersFromRealmList(m.mentioned_users);
 
-    message.latest_reactions = getReactionsFromRealmList(
-      message.latest_reactions,
-    );
-    message.own_reactions = getReactionsFromRealmList(message.own_reactions);
-    message.reaction_counts = getReactionCountsFromRealmList(
-      message.reaction_counts,
-    );
+    message.latest_reactions = getReactionsFromRealmList(m.latest_reactions);
+    message.own_reactions = getReactionsFromRealmList(m.own_reactions);
+    message.reaction_counts = getReactionCountsFromRealmList(m.reaction_counts);
 
     delete message.extraData;
     messages.push(message);

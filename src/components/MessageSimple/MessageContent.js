@@ -11,7 +11,7 @@ import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
-import { MESSAGE_ACTIONS } from '../../utils';
+import { MESSAGE_ACTIONS, capitalize } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
@@ -31,16 +31,25 @@ const Container = styled.TouchableOpacity`
     error
       ? theme.message.content.errorContainer.backgroundColor
       : theme.colors.transparent};
-  border-bottom-left-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
+  border-bottom-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('left') !== -1
       ? theme.message.text.borderRadiusS
       : theme.message.text.borderRadiusL};
-  border-bottom-right-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.text.borderRadiusL
-      : theme.message.text.borderRadiusS};
-  border-top-left-radius: ${({ theme }) => theme.message.text.borderRadiusL};
-  border-top-right-radius: ${({ theme }) => theme.message.text.borderRadiusL};
+  border-bottom-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle.indexOf('right') !== -1
+      ? theme.message.text.borderRadiusS
+      : theme.message.text.borderRadiusL};
+  border-top-left-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
+      ? theme.message.text.borderRadiusS
+      : theme.message.text.borderRadiusL};
+
+  border-top-right-radius: ${({ theme, groupStyle }) =>
+    groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
+      ? theme.message.text.borderRadiusS
+      : theme.message.text.borderRadiusL};
+  margin-top: 2;
+
   ${({ theme }) => theme.message.content.container.css};
 `;
 
@@ -369,12 +378,16 @@ export const MessageContent = themed(
       const context = {
         onLongPress: options.length > 1 ? this.showActionSheet : null,
       };
+      const groupStyle =
+        (isMyMessage(message) ? 'right' : 'left') +
+        capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
 
       return (
         <MessageContentContext.Provider value={context}>
           <Container
             {...contentProps}
             error={message.type === 'error' || message.status === 'failed'}
+            groupStyle={groupStyle}
           >
             {message.type === 'error' ? (
               <FailedText>ERROR · UNSENT</FailedText>

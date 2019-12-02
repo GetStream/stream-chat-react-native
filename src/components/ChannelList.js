@@ -137,16 +137,13 @@ const ChannelList = withChatContext(
       });
       this.offlineQueryActive = false;
       this.onlineQueryActive = false;
-      this.syncActive = false;
       this.hasNextOnlinePage = true;
       this.hasNextOfflinePage = true;
-      this.hasNextSyncPage = true;
       this._unmounted = false;
     }
 
     async componentDidMount() {
       if (this.props.offlineSync) await this._queryFromLocalStorage(true);
-      await this._queryChannelsDebounced(true);
       this.listenToChanges();
       this.props.logger('ChannelList component', 'componentDidMount', {
         tags: ['lifecycle', 'channellist'],
@@ -154,14 +151,13 @@ const ChannelList = withChatContext(
         state: this.state,
       });
     }
-
     async componentDidUpdate(prevProps) {
       if (
         prevProps.isOnline === 'unknown' &&
         typeof this.props.isOnline === 'boolean' &&
         this.props.isOnline
       ) {
-        this.props.client.activeChannels = {};
+        // this.props.client.activeChannels = {};
         await this.queryChannels(true);
       }
       if (
@@ -171,7 +167,6 @@ const ChannelList = withChatContext(
       ) {
         await this.queryChannels();
       }
-
       this.props.logger('ChannelList component', 'componentDidUpdate', {
         tags: ['lifecycle', 'channellist'],
         props: this.props,
@@ -233,25 +228,23 @@ const ChannelList = withChatContext(
           let channels;
           let channelIds;
           if (resync) {
-            channels = [...channelValues];
-            channelIds = [...channelValues.map((c) => c.id)];
+            channels = channelValues;
+            channelIds = channelValues.map((c) => c.id);
           } else {
             // Remove duplicate channels in worse case we get repeted channel from backend.
             channelValues = channelValues.filter(
               (c) => this.state.channelIds.indexOf(c.id) === -1,
             );
-            channels = [...prevState.channels, ...channelValues];
-            channelIds = [
-              ...prevState.channelIds,
-              ...channelValues.map((c) => c.id),
-            ];
+            channels = prevState.channels.concat(channelValues);
+            channelIds = prevState.channelIds.concat(
+              channelValues.map((c) => c.id),
+            );
           }
+          this.offset = channels.length;
           return {
             channels, // not unique somehow needs more checking
             channelIds,
             loadingChannels: false,
-            offset: channels.length,
-
             hasNextPage:
               channelValues.length >=
               (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
@@ -275,12 +268,7 @@ const ChannelList = withChatContext(
       if (this.props.isOnline === 'unknown' && !forceIsOnline) return;
 
       if (this.props.isOnline || forceIsOnline) {
-        if (this.props.offlineSync) {
-          const isSynced = await this.syncChannels(resync);
-          isSynced && (await this._queryFromLocalStorage(resync, false));
-        } else {
-          await this._queryFromRemote(resync);
-        }
+        await this._queryFromRemoteAndSync(resync);
       } else if (this.props.offlineSync) {
         await this._queryFromLocalStorage(resync);
       }
@@ -306,7 +294,6 @@ const ChannelList = withChatContext(
         filters: this.props.filters,
         sort: this.props.sort,
       };
-
       const channelValues = await this.props.storage.queryChannels(
         JSON.stringify(query),
         pagerParams.offset,
@@ -323,7 +310,7 @@ const ChannelList = withChatContext(
       this.offlineQueryActive = false;
     }
 
-    async _queryFromRemote(resync) {
+    async _queryFromRemoteAndSync(resync) {
       if (this.onlineQueryActive) return;
 
       this.onlineQueryActive = true;
@@ -350,7 +337,6 @@ const ChannelList = withChatContext(
           ...options,
         },
       });
-
       const channelValues = await this.props.client.queryChannels(
         filters,
         sort,
@@ -359,8 +345,16 @@ const ChannelList = withChatContext(
           ...pagerParams,
         },
       );
-
       await this.setChannelValues(channelValues, resync, pagerParams);
+      const query = {
+        filters,
+        sort,
+      };
+      await this.props.storage.storeChannels(
+        JSON.stringify(query),
+        channelValues,
+        resync,
+      );
       this.hasNextOnlinePage =
         channelValues.length >=
         (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
@@ -368,65 +362,6 @@ const ChannelList = withChatContext(
           : false;
 
       this.onlineQueryActive = false;
-    }
-
-    async syncChannels(resync) {
-      if (this.syncActive) {
-        return;
-      }
-      this.syncActive = true;
-
-      if (this._unmounted || !this.hasNextSyncPage) {
-        this.syncActive = false;
-        return;
-      }
-
-      const { options, filters, sort } = this.props;
-
-      const pagerParams = this.getPagerParams(resync);
-
-      if (this._unmounted) return;
-      this.setState({ refreshing: true });
-
-      this.props.logger('ChannelList component', 'queryChannels', {
-        tags: ['channellist'],
-        props: this.props,
-        state: this.state,
-        query: {
-          filters,
-          sort,
-          ...options,
-        },
-      });
-
-      const channelValues = await this.props.client.queryChannels(
-        filters,
-        sort,
-        {
-          ...options,
-          ...pagerParams,
-        },
-      );
-
-      const query = {
-        filters,
-        sort,
-      };
-
-      await this.props.storage.storeChannels(
-        JSON.stringify(query),
-        channelValues,
-        resync,
-      );
-
-      this.hasNextSyncPage =
-        channelValues.length >=
-        (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
-          ? true
-          : false;
-      this.syncActive = false;
-
-      return true;
     }
 
     listenToChanges() {
@@ -440,7 +375,6 @@ const ChannelList = withChatContext(
       const channelIndex = channels.findIndex(
         (channel) => channel.cid === e.cid,
       );
-
       if (e.type === 'message.new') {
         if (this.props.storage.insertMessageForChannel) {
           await this.props.storage.insertMessageForChannel(
@@ -554,13 +488,13 @@ const ChannelList = withChatContext(
 
           // move channel to starting position
           if (this._unmounted) return;
+          this.offset = this.offset + 1;
           this.setState((prevState) => ({
             channels: uniqBy([channel, ...prevState.channels], 'cid'),
             channelIds: uniqWith(
               [channel.id, ...prevState.channelIds],
               isEqual,
             ),
-            offset: prevState.offset + 1,
           }));
         }
       }
@@ -576,13 +510,13 @@ const ChannelList = withChatContext(
           const channel = await this.getChannel(e.channel.type, e.channel.id);
 
           if (this._unmounted) return;
+          this.offset = this.offset + 1;
           this.setState((prevState) => ({
             channels: uniqBy([channel, ...prevState.channels], 'cid'),
             channelIds: uniqWith(
               [channel.id, ...prevState.channelIds],
               isEqual,
             ),
-            offset: prevState.offset + 1,
           }));
         }
       }
@@ -670,7 +604,6 @@ const ChannelList = withChatContext(
     loadNextPage = () => {
       this._queryChannelsDebounced();
     };
-
     render() {
       const context = {
         loadNextPage: this.loadNextPage,

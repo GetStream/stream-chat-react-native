@@ -21,6 +21,8 @@ export const ChannelSchema = {
     members: { type: 'list', objectType: 'Member' },
     messages: { type: 'list', objectType: 'Message' },
     read: { type: 'list', objectType: 'Read' },
+    created_at: { type: 'string', optional: true },
+    updated_at: { type: 'string', optional: true },
     initialized: 'bool',
     config: 'ChannelConfig',
   },
@@ -109,9 +111,8 @@ export const UserSchema = {
 
 export const MessageSchema = {
   name: 'Message',
-  primaryKey: 'mid',
+  primaryKey: 'id',
   properties: {
-    mid: 'int',
     id: 'string',
     text: 'string',
     attachments: 'Attachment[]',
@@ -126,7 +127,7 @@ export const MessageSchema = {
     reaction_counts: { type: 'list', objectType: 'ReactionCount' },
     show_in_channel: { type: 'bool', optional: true },
     reply_count: { type: 'int', optional: true },
-    created_at: 'date',
+    created_at: { type: 'date', indexed: true },
     updated_at: { type: 'date', optional: true },
     status: 'string',
     deleted_at: { type: 'date', optional: true },

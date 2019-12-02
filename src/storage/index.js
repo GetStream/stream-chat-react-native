@@ -16,14 +16,19 @@ export class LocalStorage {
     this.StorageClass = StorageClass;
 
     if (storageType === 'realm') {
-      this.storage = new RealmStorage(StorageClass);
+      this.storage = new RealmStorage(StorageClass, chatClient.userID);
     }
 
     if (storageType === 'async-storage') {
       this.storage = new AsyncLocalStorage(StorageClass);
     }
+    this.logger = () => {};
   }
 
+  setLogger(logger) {
+    this.logger = logger;
+    this.storage.setLogger(logger);
+  }
   /**
    *
    * @param {*} query
@@ -70,7 +75,7 @@ export class LocalStorage {
       });
 
       const fChannel = this.chatClient.channel(c.type, c.id, {}, passive);
-      fChannel.data = { ...c.data };
+      fChannel.data = c.data;
       // eslint-disable-next-line no-underscore-dangle
       fChannel._initializeState({
         members: c.members,
@@ -81,7 +86,6 @@ export class LocalStorage {
       fChannel.initialized = !passive;
       return fChannel;
     });
-
     return fChannels;
   }
   async insertMessageForChannel(channel_id, message) {
@@ -111,6 +115,15 @@ export class LocalStorage {
   async updateReadState(channelId, user, lastRead) {
     return await this.storage.updateReadState(channelId, user, lastRead);
   }
+
+  async queryMessages(channelId, lastMessage, limitPerPage) {
+    return await this.storage.queryMessages(
+      channelId,
+      lastMessage,
+      limitPerPage,
+    );
+  }
+
   clear() {
     this.storage.clear();
   }

@@ -20,7 +20,6 @@ const TextContainer = styled.View`
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.text.borderRadiusS
       : theme.message.text.borderRadiusL};
-  margin-top: 2;
   padding: 5px;
   padding-left: 8;
   padding-right: 8;
