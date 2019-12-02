@@ -1,6 +1,6 @@
 # React Native Chat Components
 
-<img src="https://i.imgur.com/SRkDlFX.png" alt="react native chat" />
+<a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://i.imgur.com/SRkDlFX.png" alt="react native chat" /></a>
 
 > The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
