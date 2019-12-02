@@ -1,5 +1,7 @@
 # React Native Chat Components
 
+![](https://imgur.com/uLWODG4) 
+
 > The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
 
