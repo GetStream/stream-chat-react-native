@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.11] 2019-12-02
+
+- Adding support for `onChannelDeleted` prop to ChannelList
+- Removing channel from channel list once `channel.deleted` event is received
+
 ## [0.3.10] 2019-11-28
 
 - Adding strict string type check for channel name
