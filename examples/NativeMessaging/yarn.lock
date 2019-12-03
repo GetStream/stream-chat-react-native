@@ -6628,10 +6628,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.3.10:
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.10.tgz#bc452c1f8597f5351ba641936de2e04c7d784088"
-  integrity sha512-rk9OU5h6dkNQYGtT8C05UUSIa628CvKT+4sVKVsJcalPVC+0AQm4UQWQqGS/ddyAtr/1ehdIhkf72srCxwmgpA==
+stream-chat-react-native-core@v0.3.11:
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.11.tgz#35d6ecf70abe3847d5952a520fd6b695f9face93"
+  integrity sha512-wQ0HuACRj8Y78mzQ+Y6W6z5gRkf5iRzz1P/HZox4EvdRRrskYmvgWOKJDl0oMhCaRdVCykzN2Mkcy61fzwQjpg==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
@@ -6654,17 +6654,17 @@ stream-chat-react-native-core@v0.3.10:
     uuid "^3.3.2"
 
 stream-chat-react-native@^0.3.9:
-  version "0.3.10"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-0.3.10.tgz#67489b56e0a73919fe79bccc29f94fb78699eb5e"
-  integrity sha512-5malk6HPZnNyRM8P9VwCwRPpn7Hh0Rng3CVDOti+D2n68CGJ00G88a9n/0zdQhM72SbjBgs53XxajYrok3VBlQ==
+  version "0.3.11"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-0.3.11.tgz#89069e38e9bee320bde3c74d40bec04c3e6b142d"
+  integrity sha512-ht7SdcmKM00XclfFn5EiLap2ZzciJeOEdofEbTRDHaR7+Edu3uuSNWiDhtCbkfTkd+Bc3p2tu2SqV8BpKMTAow==
   dependencies:
     es6-symbol "^3.1.1"
-    stream-chat-react-native-core v0.3.10
+    stream-chat-react-native-core v0.3.11
 
 stream-chat@^1.1.2:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.2.0.tgz#d71c2fad091055c6ec9c4567112b18b0e41eb404"
-  integrity sha512-a5Ea/fyMuN/FO9iqPfKIDDX75iryovDmBhQ1u/nk/eyPvrcdXMV8ykp4Go6MIb52fnFwYk2FuLNUo0ar6c9jXg==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.2.1.tgz#cefd4aae598c4c58ab92df6720a8adaa797ad216"
+  integrity sha512-pSJIqoI2FfWj11hXcGrOp4yPWeVlNnCDfw+dbEGTPt0AcahbZ0jFHj9SDAX2SkWPUd1PpUo5d3rD74TM7aZihw==
   dependencies:
     "@babel/runtime" "^7.3.1"
     axios "^0.18.1"

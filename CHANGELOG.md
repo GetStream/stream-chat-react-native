@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.12] 2019-12-03
+
+- Adding support for `onChannelTruncated` prop to ChannelList
+- Updating channel from channel list once `channel.truncated` event is received
+- Fixed image picker for native package and examples
+
 ## [0.3.11] 2019-12-02
 
 - Adding support for `onChannelDeleted` prop to ChannelList
