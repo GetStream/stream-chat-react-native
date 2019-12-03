@@ -54,6 +54,15 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
      react-native run-android
      ```
 
+   If you run into following error on android:
+
+   ```bash
+   Execution failed for task ':app:validateSigningDebug'.
+   > Keystore file '/path_to_project/stream-chat-react-native/examples/NativeMessaging/android/app/debug.keystore' not found for signing config 'debug'.
+   ```
+
+   You can generate the debug keystore by running this command in the `android/app/` directory: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000` - [Reference](https://github.com/facebook/react-native/issues/25629#issuecomment-511209583)
+
 ## Docs
 
 The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work.
@@ -148,6 +157,10 @@ react-native link react-native-gesture-handler
 react-native link react-native-reanimated
 ```
 
+If you are planning to use image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+
+If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
+
 and finally
 
 ```bash
@@ -180,6 +193,10 @@ yarn add react-navigation@3.11.0
 yarn add react-native-gesture-handler react-native-reanimated
 cd ios && pod install && cd ..
 ```
+
+If you are planning to use image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+
+If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
 
 and finally
 
