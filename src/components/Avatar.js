@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
-import { CachedImage } from 'react-native-cached-image';
+import { CachedImage } from '@stream-io/react-native-cached-image';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;

@@ -6,7 +6,7 @@ import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 import { withMessageContentContext } from '../context';
 import { makeImageCompatibleUrl } from '../utils';
-import { CachedImage } from 'react-native-cached-image';
+import { CachedImage } from '@stream-io/react-native-cached-image';
 
 import { CloseButton } from './CloseButton';
 

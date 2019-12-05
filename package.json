@@ -56,6 +56,7 @@
     "@babel/runtime": "^7.1.2",
     "@stream-io/react-native-simple-markdown": "^1.1.1",
     "@stream-io/styled-components": "^4.2.1",
+    "@stream-io/react-native-cached-image": "^1.0.0",
     "anchorme": "^1.1.2",
     "babel-plugin-macros": "^2.5.1",
     "deep-equal": "^1.0.1",
@@ -69,7 +70,6 @@
     "react-art": "^16.8.6",
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
-    "react-native-cached-image": "link:../react-native-cached-image",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^1.2.1",
     "uuid": "^3.3.2"

@@ -80,7 +80,7 @@ const normalBundle = {
     '@babel/runtime/helpers/typeof',
     '@babel/runtime/helpers/taggedTemplateLiteral',
     'reactotron-react-native',
-    'react-native-cached-image',
+    '@stream-io/react-native-cached-image',
   ],
   plugins: [
     replace({
