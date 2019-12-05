@@ -29,6 +29,11 @@ const VALID_CHANNELS_SORT_KEYS = [
   'updated_at',
   'created_at',
 ];
+
+/**
+ * Storage engine based on realmjs - https://realm.io/docs/javascript/latest/
+ * Schema for the database - ./schemas.js
+ */
 export class RealmStorage {
   constructor(RealmClass, userId) {
     this.RealmClass = RealmClass;
@@ -90,10 +95,6 @@ export class RealmStorage {
     const realm = await this.getRealm();
     try {
       realm.write(() => {
-        if (resync) {
-          realm.deleteAll();
-        }
-
         const rQueryChannels = realm.objectForPrimaryKey(
           'QueryChannels',
           query,
@@ -153,46 +154,46 @@ export class RealmStorage {
   async queryChannels(query, sort, offset = 0, limit = 10) {
     const channels = [];
     const realm = await this.getRealm();
-    const rQueryChannels = realm
-      .objects('QueryChannels')
-      .filtered('query == $0', query);
+    const qc = realm.objectForPrimaryKey('QueryChannels', query);
 
-    for (const qc of rQueryChannels) {
-      const sortArray = [];
-      for (const key in sort) {
-        if (VALID_CHANNELS_SORT_KEYS.indexOf(key) === -1) {
-          continue;
-        }
+    if (!qc) {
+      return [];
+    }
 
-        sortArray.push([key, sort[key] === -1]);
+    const sortArray = [];
+    for (const key in sort) {
+      if (VALID_CHANNELS_SORT_KEYS.indexOf(key) === -1) {
+        continue;
       }
-      const slicedChannels = qc.channels
-        .sorted(sortArray)
-        .slice(offset, offset + limit);
 
-      for (const c of slicedChannels) {
-        const sortedMessages = c.messages
-          .sorted('created_at', true)
-          .slice(0, 100);
-        const messages = getMessagesFromRealmList(sortedMessages);
-        const members = getMembersFromRealmList(c.members);
-        const read = getReadStatesFromRealmList(c.read);
-        const config = getChannelConfigFromRealm(c.config);
+      sortArray.push([key, sort[key] === -1]);
+    }
+    const slicedChannels = qc.channels
+      .sorted(sortArray)
+      .slice(offset, offset + limit);
 
-        channels.push({
-          type: c.type,
-          id: c.id,
-          cid: c.cid,
-          created_at: c.created_at,
-          updated_at: c.updated_at,
-          initialized: c.initialized,
-          data: JSON.parse(c.data),
-          messages,
-          members,
-          read,
-          config,
-        });
-      }
+    for (const c of slicedChannels) {
+      const sortedMessages = c.messages
+        .sorted('created_at', true)
+        .slice(0, 100);
+      const messages = getMessagesFromRealmList(sortedMessages);
+      const members = getMembersFromRealmList(c.members);
+      const read = getReadStatesFromRealmList(c.read);
+      const config = getChannelConfigFromRealm(c.config);
+
+      channels.push({
+        type: c.type,
+        id: c.id,
+        cid: c.cid,
+        created_at: c.created_at,
+        updated_at: c.updated_at,
+        initialized: c.initialized,
+        data: JSON.parse(c.data),
+        messages,
+        members,
+        read,
+        config,
+      });
     }
     return channels;
   }
