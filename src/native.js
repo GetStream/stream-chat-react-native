@@ -9,7 +9,6 @@ export let NetInfo = {
 };
 export let pickImage = fail;
 export let pickDocument = fail;
-export let AsyncStorage = fail;
 
 export const registerNativeHandlers = (handlers) => {
   if (handlers.NetInfo) {
@@ -22,9 +21,5 @@ export const registerNativeHandlers = (handlers) => {
 
   if (handlers.pickDocument) {
     pickDocument = handlers.pickDocument;
-  }
-
-  if (handlers.AsyncStorage) {
-    AsyncStorage = handlers.AsyncStorage;
   }
 };

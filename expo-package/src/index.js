@@ -3,28 +3,9 @@
  * And they have been removed from Expo package. But these packages don't work with Expo 32 sdk (because of linking issue).
  */
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
-import { NetInfo, AsyncStorage } from 'react-native';
+import { NetInfo } from 'react-native';
 import { Constants } from 'react-native-unimodules';
 import * as Expo from 'expo';
-import Reactotron, { asyncStorage, overlay } from 'reactotron-react-native';
-
-Reactotron.setAsyncStorageHandler(AsyncStorage) // AsyncStorage would either come from `react-native` or `@react-native-community/async-storage` depending on where you get it from
-  .configure({
-    name: 'React Native Demo',
-  })
-  .useReactNative({
-    asyncStorage: true, // there are more options to the async storage.
-    networking: {
-      // optionally, you can turn it off with false.
-      ignoreUrls: /symbolicate/,
-    },
-    editor: false, // there are more options to editor
-    errors: { veto: () => false }, // or turn it off with false
-    overlay: false, // just turning off overlay
-  })
-  .use(asyncStorage())
-  .use(overlay())
-  .connect();
 
 let ImagePicker;
 let DocumentPicker;
@@ -40,7 +21,6 @@ if (manifest.sdkVersion.split('.')[0] >= 33) {
   ImagePicker = require('expo-image-picker');
   Permissions = require('expo-permissions');
   DocumentPicker = require('expo-document-picker');
-  // ExpoSqlite = require('expo-sqlite');
 } else {
   ImagePicker = Expo.ImagePicker;
   Permissions = Expo.Permissions;
@@ -76,7 +56,6 @@ registerNativeHandlers({
     });
   },
   pickDocument: async () => await DocumentPicker.getDocumentAsync(),
-  AsyncStorage,
 });
 
 export * from 'stream-chat-react-native-core';
