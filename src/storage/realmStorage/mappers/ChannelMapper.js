@@ -73,5 +73,9 @@ export const convertChannelToRealm = (channel, realm) => {
     offlineChannel.deleted_at = channel.data.deleted_at;
   }
 
+  if (isValidDate(channel.data.last_message_at)) {
+    offlineChannel.last_message_at = channel.data.last_message_at;
+  }
+
   return realm.create('Channel', offlineChannel, true);
 };

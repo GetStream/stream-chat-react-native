@@ -143,7 +143,10 @@ const ChannelList = withChatContext(
     }
 
     async componentDidMount() {
+      // Start by showing channels form our local storage, instead of waiting for channels from server.
       if (this.props.offlineSync) await this._queryFromLocalStorage(true);
+      // Channels that we receive from local storage are valid channel objects in client.
+      // So we can already setup the listeners.
       this.listenToChanges();
       this.props.logger('ChannelList component', 'componentDidMount', {
         tags: ['lifecycle', 'channellist'],
@@ -296,6 +299,7 @@ const ChannelList = withChatContext(
       };
       const channelValues = await this.props.storage.queryChannels(
         JSON.stringify(query),
+        this.props.sort,
         pagerParams.offset,
         pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
         passive,

@@ -92,9 +92,8 @@ export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
     message.latest_reactions,
     realm,
   );
-
+  // TODO: Check if following two can be done at runtime instead of storing them in database.
   message.own_reactions = convertReactionsToRealm(message.own_reactions, realm);
-
   message.reaction_counts = convertReactionCountsToRealm(
     message.reaction_counts,
     message.id,
@@ -137,6 +136,7 @@ export const getMessagesFromRealmList = (ml) => {
     message.mentioned_users = getUsersFromRealmList(m.mentioned_users);
 
     message.latest_reactions = getReactionsFromRealmList(m.latest_reactions);
+    // TODO: Check if following two can be done at runtime instead of storing them in database.
     message.own_reactions = getReactionsFromRealmList(m.own_reactions);
     message.reaction_counts = getReactionCountsFromRealmList(m.reaction_counts);
 
