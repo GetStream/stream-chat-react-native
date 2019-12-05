@@ -213,21 +213,29 @@ interface ChannelListProps extends ChatContextValue {
    */
   onMessageNew?(
     thisArg: React.Component<ChannelListProps>,
-    e: Client.NotificationNewMessageEvent,
+    e: Client.Event<Client.NotificationNewMessageEvent>,
   ): void;
   /** Function that overrides default behaviour when users gets added to a channel */
   onAddedToChannel?(
     thisArg: React.Component<ChannelListProps>,
-    e: Client.NotificationAddedToChannelEvent,
+    e: Client.Event<Client.NotificationAddedToChannelEvent>,
   ): void;
   /** Function that overrides default behaviour when users gets removed from a channel */
   onRemovedFromChannel?(
     thisArg: React.Component<ChannelListProps>,
-    e: Client.NotificationRemovedFromChannelEvent,
+    e: Client.Event<Client.NotificationRemovedFromChannelEvent>,
   ): void;
   onChannelUpdated?(
     thisArg: React.Component<ChannelListProps>,
-    e: Client.ChannelUpdatedEvent,
+    e: Client.Event<Client.ChannelUpdatedEvent>,
+  ): void;
+  onChannelDeleted?(
+    thisArg: React.Component<ChannelListProps>,
+    e: Client.Event<Client.ChannelDeletedEvent>,
+  ): void;
+  onChannelTruncated?(
+    thisArg: React.Component<ChannelListProps>,
+    e: Client.Event<Client.ChannelTruncatedEvent>,
   ): void;
   // TODO: Create proper interface for followings in chat js client.
   /** Object containing query filters */

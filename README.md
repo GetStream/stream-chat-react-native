@@ -1,5 +1,7 @@
 # React Native Chat Components
 
+<a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://i.imgur.com/SRkDlFX.png" alt="react native chat" /></a>
+
 > The official React Native and Expo components for Stream Chat, a service for
 > building chat applications.
 
@@ -7,11 +9,65 @@
 [![Build Status](https://travis-ci.org/GetStream/stream-chat-react-native.svg?branch=master)](https://travis-ci.org/GetStream/stream-chat-react-native)
 [![Component Reference](https://img.shields.io/badge/docs-component%20reference-blue.svg)](https://getstream.github.io/stream-chat-react-native/)
 
-You can sign up for a Stream account at https://getstream.io/chat/get_started/.
+**Quick Links**
 
-You can find detailed and set-by-step tutorial at https://getstream.io/chat/react-native-chat/tutorial/
+- [Stream Chat API](https://getstream.io/chat/) product overview
+- [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
+- [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
+- [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 
-You can find the design kit for this project at https://getstream.io/chat/ui-kit/
+## React Chat Tutorial
+
+The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes.
+
+## Example Apps
+
+This repo includes 2 example apps. One that's used with Expo, and one for native.
+
+### Expo example
+
+1. Make sure node version is >= v10.13.0
+2. ```bash
+   yarn global add expo-cli
+   git clone https://github.com/GetStream/stream-chat-react-native.git
+   cd stream-chat-react-native/examples/ExpoMessaging
+   yarn && yarn start
+   ```
+
+### Native example
+
+1. Please make sure you have installed necessary dependencies depending on your development OS and target OS. Follow the guidelines given on official react native documentation for installing dependencies: https://facebook.github.io/react-native/docs/getting-started#
+2. Make sure node version is >= v10.13.0
+3. Start the simulator
+
+4. ```bash
+   git clone https://github.com/GetStream/stream-chat-react-native.git
+   cd stream-chat-react-native/examples/NativeMessaging
+   yarn install
+   ```
+5. - For iOS
+     ```bash
+     react-native run-ios
+     ```
+   - For android
+     ```bash
+     react-native run-android
+     ```
+
+   If you run into following error on android:
+
+   ```bash
+   Execution failed for task ':app:validateSigningDebug'.
+   > Keystore file '/path_to_project/stream-chat-react-native/examples/NativeMessaging/android/app/debug.keystore' not found for signing config 'debug'.
+   ```
+
+   You can generate the debug keystore by running this command in the `android/app/` directory: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000` - [Reference](https://github.com/facebook/react-native/issues/25629#issuecomment-511209583)
+
+## Docs
+
+The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work.
+
+The React Native components are created using the stream-chat-js library. If you're customizing the components it's important to learn how the Chat Server API works. You'll want to review our [JS chat API docs](https://getstream.io/chat/docs/js/).
 
 ## Keep in mind
 
@@ -101,6 +157,10 @@ react-native link react-native-gesture-handler
 react-native link react-native-reanimated
 ```
 
+If you are planning to use image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+
+If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
+
 and finally
 
 ```bash
@@ -133,6 +193,10 @@ yarn add react-navigation@3.11.0
 yarn add react-native-gesture-handler react-native-reanimated
 cd ios && pod install && cd ..
 ```
+
+If you are planning to use image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+
+If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
 
 and finally
 
@@ -177,40 +241,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
     cd ios && pod install && cd ..
     ```
 
-## How to run example
-
-### Expo example
-
-1. Make sure node version is >= v10.13.0
-2. ```bash
-   yarn global add expo-cli
-   git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
-   make
-   cd examples/one
-   yarn start
-   ```
-
-### Native example
-
-1. Please make sure you have installed necessary dependencies depending on your development OS and target OS. Follow the guidelines given on official react native documentation for installing dependencies: https://facebook.github.io/react-native/docs/getting-started#
-2. Make sure node version is >= v10.13.0
-3. Start the simulator
-
-4. ```bash
-   git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
-   make
-   cd examples/two
-   ```
-5. - For iOS
-     ```bash
-     react-native run-ios
-     ```
-   - For android
-     ```bash
-     react-native run-android
-     ```
+## Common issues
 
 #### While running native example, you may (not necessarily) run into following issues:
 

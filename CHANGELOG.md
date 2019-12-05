@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.12] 2019-12-03
+
+- Adding support for `onChannelTruncated` prop to ChannelList
+- Updating channel from channel list once `channel.truncated` event is received
+- Fixed image picker for native package and examples
+
+## [0.3.11] 2019-12-02
+
+- Adding support for `onChannelDeleted` prop to ChannelList
+- Removing channel from channel list once `channel.deleted` event is received
+
+## [0.3.10] 2019-11-28
+
+- Adding strict string type check for channel name
+- Updated example apps
+- Updated readme doc
+
+## [0.3.9] 2019-11-20
+
+- Showing TypingIndicatorContainer only when necessary
+
 ## [0.3.8] 2019-11-06
 
 - Adding logs to Chat, ChannelList and Channel component

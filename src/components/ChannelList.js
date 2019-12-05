@@ -74,9 +74,23 @@ const ChannelList = withChatContext(
        * Function that overrides default behaviour when channel gets updated
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.channel_updated` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.updated` event
        * */
       onChannelUpdated: PropTypes.func,
+      /**
+       * Function to customize behaviour when channel gets truncated
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.truncated` event
+       * */
+      onChannelTruncated: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.deleted` event
+       * */
+      onChannelDeleted: PropTypes.func,
       /**
        * Object containing query filters
        * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for filter.
@@ -102,6 +116,10 @@ const ChannelList = withChatContext(
        * @param channel A Channel object
        */
       setActiveChannel: PropTypes.func,
+      /**
+       * If true, channels won't be dynamically sorted by most recent message.
+       */
+      lockChannelOrder: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -115,6 +133,7 @@ const ChannelList = withChatContext(
       sort: {},
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
+      lockChannelOrder: false,
       logger: () => {},
     };
 
@@ -469,7 +488,7 @@ const ChannelList = withChatContext(
       }
 
       if (e.type === 'message.new') {
-        this.moveChannelUp(e.cid);
+        !this.props.lockChannelOrder && this.moveChannelUp(e.cid);
       }
 
       // make sure to re-render the channel list after connection is recovered
@@ -549,7 +568,7 @@ const ChannelList = withChatContext(
         }
       }
 
-      // // Channel data is updated
+      // Channel data is updated
       if (e.type === 'channel.updated') {
         const channels = this.state.channels;
         const channelIndex = channels.findIndex(
@@ -565,6 +584,38 @@ const ChannelList = withChatContext(
           typeof this.props.onChannelUpdated === 'function'
         )
           this.props.onChannelUpdated(this, e);
+      }
+
+      // Channel is deleted
+      if (e.type === 'channel.deleted') {
+        if (
+          this.props.onChannelDeleted &&
+          typeof this.props.onChannelDeleted === 'function'
+        ) {
+          this.props.onChannelDeleted(this, e);
+        } else {
+          const channels = this.state.channels;
+          const channelIndex = channels.findIndex(
+            (channel) => channel.cid === e.channel.cid,
+          );
+          // Remove the deleted channel from the list.
+          channels.splice(channelIndex, 1);
+          this.setState({
+            channels: [...channels],
+          });
+        }
+      }
+
+      if (e.type === 'channel.truncated') {
+        this.setState((prevState) => ({
+          channels: [...prevState.channels],
+        }));
+
+        if (
+          this.props.onChannelTruncated &&
+          typeof this.props.onChannelTruncated === 'function'
+        )
+          this.props.onChannelTruncated(this, e);
       }
 
       return null;

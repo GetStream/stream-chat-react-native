@@ -486,7 +486,9 @@ export class ChannelInner extends PureComponent {
   addToEventHistory = (e) => {
     this.setState((prevState) => {
       const lastMessageId =
-        prevState.messages[prevState.messages.length - 1].id;
+        prevState.messages.length > 0
+          ? prevState.messages[prevState.messages.length - 1].id
+          : 'none';
 
       if (!prevState.eventHistory[lastMessageId])
         return {
@@ -512,11 +514,20 @@ export class ChannelInner extends PureComponent {
     if (this.state.loadingMore || !this.state.hasMore) return;
     if (this._unmounted) return;
     this.setState({ loadingMore: true });
+
+    if (!this.state.messages.length === 0) {
+      this.setState({
+        loadingMore: false,
+      });
+
+      return;
+    }
+
     const oldestMessage = this.state.messages[0]
       ? this.state.messages[0]
       : null;
 
-    if (oldestMessage.status !== 'received') {
+    if (oldestMessage && oldestMessage.status !== 'received') {
       this.setState({
         loadingMore: false,
       });

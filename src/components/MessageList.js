@@ -263,6 +263,17 @@ const MessageList = withChannelContext(
 
     insertDates = (messages) => {
       const newMessages = [];
+      if (messages.length === 0) {
+        this.props.eventHistory.none.forEach((e) => {
+          newMessages.push({
+            type: 'channel.event',
+            event: e,
+          });
+        });
+
+        return newMessages;
+      }
+
       for (const [i, message] of messages.entries()) {
         if (message.type === 'message.read' || message.deleted_at) {
           newMessages.push(message);
@@ -512,12 +523,16 @@ const MessageList = withChannelContext(
     };
 
     render() {
-      console.log('rerendering');
+      const hasEventHistory =
+        this.props.eventHistory &&
+        Object.keys(this.props.eventHistory).length > 0;
+
       // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
       // https://github.com/facebook/react-native/issues/21196
       if (
         this.props.messages &&
         this.props.messages.length === 0 &&
+        !hasEventHistory &&
         !this.props.threadList
       ) {
         return <View style={{ flex: 1 }}>{this.renderEmptyState()}</View>;
@@ -584,14 +599,14 @@ const MessageList = withChannelContext(
                 autoscrollToTopThreshold: 10,
               }}
             />
-            <TypingIndicatorContainer>
-              {this.props.TypingIndicator && showTypingIndicator && (
+            {this.props.TypingIndicator && showTypingIndicator && (
+              <TypingIndicatorContainer>
                 <TypingIndicator
                   typing={this.props.typing}
                   client={this.props.client}
                 />
-              )}
-            </TypingIndicatorContainer>
+              </TypingIndicatorContainer>
+            )}
             {this.state.newMessagesNotification && (
               <MessageNotification
                 showNotification={this.state.newMessagesNotification}
