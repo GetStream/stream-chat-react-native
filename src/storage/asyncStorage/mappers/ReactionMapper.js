@@ -11,5 +11,8 @@ export const convertReactionToStorable = (r, storables) => {
 
   return reaction;
 };
-export const convertReactionsToStorable = (reactions, storables) =>
-  reactions.map((lr) => convertReactionToStorable(lr, storables));
+export const convertReactionsToStorable = (reactions, storables) => {
+  if (!reactions) return [];
+
+  return reactions.map((lr) => convertReactionToStorable(lr, storables));
+};

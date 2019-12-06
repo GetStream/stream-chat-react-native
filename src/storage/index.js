@@ -56,16 +56,22 @@ export class LocalStorage {
   /**
    *
    * @param {*} query
+   * @param {*} sort
    * @param {*} offset
    * @param {*} limit
    */
-  async queryChannels(query, offset = 0, limit = 10, passive = true) {
+  async queryChannels(
+    query,
+    sort = { last_message_at: -1 },
+    offset = 0,
+    limit = 10,
+  ) {
     const storedChannels = await this.storage.queryChannels(
       query,
+      sort,
       offset,
       limit,
     );
-
     const fChannels = storedChannels.map((c) => {
       this.chatClient._addChannelConfig({
         channel: {
@@ -74,7 +80,7 @@ export class LocalStorage {
         },
       });
 
-      const fChannel = this.chatClient.channel(c.type, c.id, {}, passive);
+      const fChannel = this.chatClient.channel(c.type, c.id, {}, true);
       fChannel.data = c.data;
       // eslint-disable-next-line no-underscore-dangle
       fChannel._initializeState({
@@ -83,7 +89,15 @@ export class LocalStorage {
         read: c.read,
       });
 
-      fChannel.initialized = !passive;
+      // TODO: Currently I am maintainign two variables on channel
+      //
+      // - initialized : where state is initialized from remove server
+      // - passive : offline channel
+      //
+      // This is to keep original behaviour intact, in case if someone does not want offline behaviour.
+      // Although I am sure we can find a way to achieve it using one single variable instead of two.
+      fChannel.initialized = false;
+
       return fChannel;
     });
     return fChannels;

@@ -162,7 +162,14 @@ const ChannelList = withChatContext(
     }
 
     async componentDidMount() {
-      // Start by showing channels form our local storage, instead of waiting for channels from server.
+      /**
+       * Start by showing channels form our local storage, instead of waiting for channels from server.
+       *
+       * TODO: Something about fetching the channels from remote server is blocking the UI from updating
+       * with offline channels. When you open the app without any network, channels show up instantly,
+       * but when you open the app with the network, it takes a second before offline channels appear on UI.
+       * Need to fix it.
+       */
       if (this.props.offlineSync) await this._queryFromLocalStorage(true);
       // Channels that we receive from local storage are valid channel objects in client.
       // So we can already setup the listeners.
@@ -176,19 +183,11 @@ const ChannelList = withChatContext(
     async componentDidUpdate(prevProps) {
       if (
         prevProps.isOnline === 'unknown' &&
-        typeof this.props.isOnline === 'boolean' &&
-        this.props.isOnline
+        typeof this.props.isOnline === 'boolean'
       ) {
-        // this.props.client.activeChannels = {};
         await this.queryChannels(true);
       }
-      if (
-        prevProps.isOnline === 'unknown' &&
-        typeof this.props.isOnline === 'boolean' &&
-        !this.props.isOnline
-      ) {
-        await this.queryChannels();
-      }
+
       this.props.logger('ChannelList component', 'componentDidUpdate', {
         tags: ['lifecycle', 'channellist'],
         props: this.props,
@@ -218,6 +217,7 @@ const ChannelList = withChatContext(
       const { options } = this.props;
       let offset;
       let limit;
+
       if (resync) {
         offset = 0;
         limit = Math.max(
@@ -296,9 +296,11 @@ const ChannelList = withChatContext(
       }
     };
 
-    async _queryFromLocalStorage(resync, passive) {
+    async _queryFromLocalStorage(resync) {
       // If there is already active query.
-      if (this.offlineQueryActive) return;
+      if (this.offlineQueryActive) {
+        return;
+      }
 
       this.offlineQueryActive = true;
 
@@ -321,7 +323,6 @@ const ChannelList = withChatContext(
         this.props.sort,
         pagerParams.offset,
         pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
-        passive,
       );
 
       await this.setChannelValues(channelValues, resync, pagerParams);
@@ -333,6 +334,10 @@ const ChannelList = withChatContext(
       this.offlineQueryActive = false;
     }
 
+    /**
+     * Fucntion to fetch channels from remote server.
+     * @param {*} resync
+     */
     async _queryFromRemoteAndSync(resync) {
       if (this.onlineQueryActive) return;
 
@@ -657,6 +662,7 @@ const ChannelList = withChatContext(
     };
 
     loadNextPage = () => {
+      // TODO: Here we can add a condition to avoid loading next page if network status is still unknown.
       this._queryChannelsDebounced();
     };
     render() {

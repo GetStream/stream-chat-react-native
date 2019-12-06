@@ -41,9 +41,7 @@ export const convertChannelToRealm = (channel, realm) => {
   };
   const newMessages = convertMessagesToRealm(stateMessages, realm);
 
-  const rChannel = realm.objectForPrimaryKey('Channel', channel.id);
-  if (rChannel) offlineChannel.messages = rChannel.messages;
-  else offlineChannel.messages = newMessages;
+  offlineChannel.messages = newMessages;
 
   if (isUpdated) {
     offlineChannel.members = convertChannelMembersToRealm(

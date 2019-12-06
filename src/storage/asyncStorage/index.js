@@ -22,6 +22,11 @@ import {
 export class AsyncLocalStorage {
   constructor(AsyncStorage) {
     this.asyncStorage = AsyncStorage;
+    this.logger = () => {};
+  }
+
+  setLogger(logger) {
+    this.logger = logger;
   }
 
   /**
@@ -31,22 +36,18 @@ export class AsyncLocalStorage {
    * @param {*} resync
    */
   async storeChannels(query, channels, resync) {
-    if (resync) await this.asyncStorage.clear();
-
     const channelIds = channels.map((c) => getChannelKey(c.id));
 
     const storables = {};
     channels.forEach(async (c) => await convertChannelToStorable(c, storables));
 
-    const existingChannelIds = await this.getItem(getQueryKey(query), []);
+    if (resync) {
+      storables[getQueryKey(query)] = channelIds;
+    } else {
+      const existingChannelIds = await this.getItem(getQueryKey(query), []);
 
-    let newChannelIds = existingChannelIds.concat(channelIds);
-
-    newChannelIds = newChannelIds.filter(
-      (item, index) => newChannelIds.indexOf(item) === index,
-    );
-
-    storables[getQueryKey(query)] = existingChannelIds.concat(channelIds);
+      storables[getQueryKey(query)] = existingChannelIds.concat(channelIds);
+    }
 
     await this.multiSet(storables);
   }
@@ -83,7 +84,7 @@ export class AsyncLocalStorage {
    *
    * @param {*} query
    */
-  async queryChannels(query, offset, limit) {
+  async queryChannels(query, sort, offset, limit) {
     let channelIds = await this.getChannelIdsForQuery(query);
     if (!channelIds) return [];
 
