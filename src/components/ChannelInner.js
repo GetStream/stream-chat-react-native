@@ -182,6 +182,7 @@ export class ChannelInner extends PureComponent {
     this._loadMoreThreadFinishedDebounced.cancel();
     this._setStateThrottled.cancel();
     this._unmounted = true;
+    this.props.storage.close();
   }
 
   copyChannelState() {
@@ -602,7 +603,7 @@ export class ChannelInner extends PureComponent {
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
     markRead: this._markReadThrottled,
-    loadMore: this._loadMoreThrottled,
+    loadMore: this.loadMore,
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,

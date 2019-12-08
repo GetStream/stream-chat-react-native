@@ -96,7 +96,7 @@ export class LocalStorage {
       //
       // This is to keep original behaviour intact, in case if someone does not want offline behaviour.
       // Although I am sure we can find a way to achieve it using one single variable instead of two.
-      fChannel.initialized = false;
+      fChannel.initialized = true;
 
       return fChannel;
     });
@@ -138,7 +138,17 @@ export class LocalStorage {
     );
   }
 
-  clear() {
-    this.storage.clear();
+  /**
+   * Close any open connections to database.
+   */
+  close() {
+    this.storage.close();
+  }
+
+  /**
+   * Delete all the entries in database.
+   */
+  async deleteAll() {
+    await this.storage.deleteAll();
   }
 }

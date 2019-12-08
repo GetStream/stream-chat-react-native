@@ -207,6 +207,7 @@ const ChannelList = withChatContext(
       if (this.props.offlineSync)
         this.props.client.off(this.handleEventForOfflineSync);
       this._queryChannelsDebounced.cancel();
+      this.props.storage.close();
     }
 
     static getDerivedStateFromError(error) {
@@ -663,7 +664,7 @@ const ChannelList = withChatContext(
 
     loadNextPage = () => {
       // TODO: Here we can add a condition to avoid loading next page if network status is still unknown.
-      this._queryChannelsDebounced();
+      this.queryChannels();
     };
     render() {
       const context = {

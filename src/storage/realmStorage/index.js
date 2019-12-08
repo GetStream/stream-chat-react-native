@@ -80,7 +80,27 @@ export class RealmStorage {
     return this.realm;
   }
 
-  clear() {
+  /**
+   * Deletes all the entried in database.
+   */
+  async deleteAll() {
+    const realm = await this.getRealm();
+    try {
+      realm.write(() => {
+        realm.deleteAll();
+      });
+    } catch (e) {
+      this.logger('Realm storage', 'deleteAll failed', {
+        tags: ['realmStorage'],
+        error: e,
+      });
+    }
+  }
+
+  /**
+   * Close any open connections to database.
+   */
+  close() {
     this.realm && this.realm.close();
   }
 

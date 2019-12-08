@@ -43,14 +43,13 @@ export const Chat = themed(
       this.state = {
         // currently active channel
         channel: {},
+        startedOffline: true,
         isOnline: 'unknown',
         connectionRecovering: false,
         offlineSync: false,
       };
 
       this.unsubscribeNetInfo = null;
-
-      this.setConnectionListener();
 
       this.props.client.on('connection.changed', (event) => {
         if (this._unmounted) return;
@@ -81,6 +80,8 @@ export const Chat = themed(
     }
 
     componentDidMount() {
+      this.setConnectionListener();
+
       this.props.logger('Chat component', 'componentDidMount', {
         tags: ['lifecycle', 'chat'],
         props: this.props,
@@ -132,18 +133,18 @@ export const Chat = themed(
           startedOffline: !isConnected,
         });
         this.notifyChatClient(isConnected);
+        this.unsubscribeNetInfo = NetInfo.addEventListener(
+          async (isConnected) => {
+            // TODO: Think more about startedOffline variable. Looks ugly!!
+            if (isConnected && this.state.startedOffline) {
+              // eslint-disable-next-line no-underscore-dangle
+              await this.props.client._setupConnection();
+            } else {
+              this.notifyChatClient(isConnected);
+            }
+          },
+        );
       });
-      this.unsubscribeNetInfo = NetInfo.addEventListener(
-        async (isConnected) => {
-          // TODO: Think more about startedOffline variable. Looks ugly!!
-          if (isConnected && this.state.startedOffline) {
-            // eslint-disable-next-line no-underscore-dangle
-            await this.props.client._setupConnection();
-          } else {
-            this.notifyChatClient(isConnected);
-          }
-        },
-      );
     };
 
     setActiveChannel = (channel) => {
