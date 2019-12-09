@@ -2,33 +2,41 @@ import { convertUsersToStorable, convertUserToStorable } from './UserMapper';
 import { convertReactionsToStorable } from './ReactionMapper';
 import { getChannelMessagesKey } from '../keys';
 
-export const convertMessageToStorable = (m, storables) => {
+export const convertMessageToStorable = (m, storables, appUserId) => {
   const message = { ...m };
 
-  message.user = convertUserToStorable(m.user, storables);
+  message.user = convertUserToStorable(m.user, storables, appUserId);
   message.mentioned_users = convertUsersToStorable(
     message.mentioned_users,
     storables,
+    appUserId,
   );
 
   message.latest_reactions = convertReactionsToStorable(
     message.latest_reactions,
     storables,
+    appUserId,
   );
 
   message.own_reactions = convertReactionsToStorable(
     message.own_reactions,
     storables,
+    appUserId,
   );
 
   return message;
 };
-export const convertMessagesToStorable = (messages, channelId, storables) => {
+export const convertMessagesToStorable = (
+  messages,
+  channelId,
+  storables,
+  appUserId,
+) => {
   const storableMessages = messages.map((m) =>
-    convertMessageToStorable(m, storables),
+    convertMessageToStorable(m, storables, appUserId),
   );
 
-  storables[getChannelMessagesKey(channelId)] = storableMessages;
+  storables[getChannelMessagesKey(appUserId, channelId)] = storableMessages;
 
-  return getChannelMessagesKey(channelId);
+  return getChannelMessagesKey(appUserId, channelId);
 };

@@ -71,6 +71,7 @@ export const Chat = themed(
         this.setState({ isOnline: true, connectionRecovering: false });
       });
 
+      this.verifyStorage();
       if (this.props.storage && this.props.logger) {
         this.props.storage.setLogger(this.props.logger);
       }
@@ -110,6 +111,16 @@ export const Chat = themed(
       this.unsubscribeNetInfo();
       this.isOfflineModeEnabled() && this.props.storage.close();
     }
+
+    verifyStorage = () => {
+      // If storage class is not not provided, thats fine. It means offlineMode is disabled.
+      if (!this.props.storage) return;
+      if (this.props.storage && this.props.storage instanceof LocalStorage) {
+        return;
+      }
+
+      throw Error(`Invalid storage class provided to Chat component`);
+    };
 
     isOfflineModeEnabled = () =>
       this.props.storage && this.props.storage instanceof LocalStorage;

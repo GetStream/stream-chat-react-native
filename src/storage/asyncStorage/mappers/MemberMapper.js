@@ -3,12 +3,17 @@
 import { convertUserToStorable } from './UserMapper';
 import { getChannelMembersKey } from '../keys';
 
-export const convertMembersToStorable = (members, channelId, storable) => {
+export const convertMembersToStorable = (
+  members,
+  channelId,
+  storable,
+  appUserId,
+) => {
   const _members = members ? Object.values(members) : [];
   const storableMembers = _members.map((m) => {
     const member = {
       user_id: m.user_id,
-      user: convertUserToStorable(m.user, storable),
+      user: convertUserToStorable(m.user, storable, appUserId),
       is_moderator: m.is_moderator,
       invited: m.invited,
       invite_accepted_at: m.invite_accepted_at,
@@ -21,7 +26,7 @@ export const convertMembersToStorable = (members, channelId, storable) => {
     return member;
   });
 
-  storable[getChannelMembersKey(channelId)] = storableMembers;
+  storable[getChannelMembersKey(appUserId, channelId)] = storableMembers;
 
-  return getChannelMembersKey(channelId);
+  return getChannelMembersKey(appUserId, channelId);
 };

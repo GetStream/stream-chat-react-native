@@ -1,11 +1,11 @@
 import { getUserKey } from '../keys';
 
-export const convertUsersToStorable = (users, storables) => {
+export const convertUsersToStorable = (users, storables, appUserId) => {
   if (!users) return [];
-  return users.map((u) => convertUserToStorable(u, storables));
+  return users.map((u) => convertUserToStorable(u, storables, appUserId));
 };
 
-export const convertUserToStorable = (user, storables) => {
-  storables[getUserKey(user.id)] = user;
-  return getUserKey(user.id);
+export const convertUserToStorable = (user, storables, appUserId) => {
+  storables[getUserKey(appUserId, user.id)] = user;
+  return getUserKey(appUserId, user.id);
 };

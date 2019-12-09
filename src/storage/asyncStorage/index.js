@@ -20,8 +20,9 @@ import {
  * Local storage interface based on AsyncStorage
  */
 export class AsyncLocalStorage {
-  constructor(AsyncStorage) {
+  constructor(AsyncStorage, userId) {
     this.asyncStorage = AsyncStorage;
+    this.userId = userId;
     this.logger = () => {};
   }
 
@@ -36,17 +37,24 @@ export class AsyncLocalStorage {
    * @param {*} resync
    */
   async storeChannels(query, channels, resync) {
-    const channelIds = channels.map((c) => getChannelKey(c.id));
+    const channelIds = channels.map((c) => getChannelKey(this.userId, c.id));
 
     const storables = {};
-    channels.forEach(async (c) => await convertChannelToStorable(c, storables));
+    channels.forEach(
+      async (c) => await convertChannelToStorable(c, storables, this.userId),
+    );
 
     if (resync) {
-      storables[getQueryKey(query)] = channelIds;
+      storables[getQueryKey(this.userId, query)] = channelIds;
     } else {
-      const existingChannelIds = await this.getItem(getQueryKey(query), []);
+      const existingChannelIds = await this.getItem(
+        getQueryKey(this.userId, query),
+        [],
+      );
 
-      storables[getQueryKey(query)] = existingChannelIds.concat(channelIds);
+      storables[getQueryKey(this.userId, query)] = existingChannelIds.concat(
+        channelIds,
+      );
     }
 
     await this.multiSet(storables);
@@ -204,15 +212,15 @@ export class AsyncLocalStorage {
   async insertMessagesForChannel(channelId, messages) {
     const storables = {};
     const existingMessages = await this.getItem(
-      getChannelMessagesKey(channelId),
+      getChannelMessagesKey(this.userId, channelId),
     );
     let newMessages = messages.map((m) =>
-      convertMessageToStorable(m, storables),
+      convertMessageToStorable(m, storables, this.userId),
     );
 
     newMessages = existingMessages.concat(newMessages);
 
-    storables[getChannelMessagesKey(channelId)] = newMessages;
+    storables[getChannelMessagesKey(this.userId, channelId)] = newMessages;
 
     await this.multiSet(storables);
   }
@@ -225,7 +233,7 @@ export class AsyncLocalStorage {
   async updateMessage(channelId, updatedMessage) {
     const storables = {};
     const existingMessages = await this.getItem(
-      getChannelMessagesKey(channelId),
+      getChannelMessagesKey(this.userId, channelId),
       [],
     );
 
@@ -234,10 +242,10 @@ export class AsyncLocalStorage {
         return m;
       }
 
-      return convertMessageToStorable(updatedMessage, storables);
+      return convertMessageToStorable(updatedMessage, storables, this.userId);
     });
 
-    storables[getChannelMessagesKey(channelId)] = newMessages;
+    storables[getChannelMessagesKey(this.userId, channelId)] = newMessages;
 
     await this.multiSet(storables);
   }
@@ -271,17 +279,17 @@ export class AsyncLocalStorage {
    * @param {*} lastRead
    */
   async updateReadState(channelId, user, lastRead) {
-    const reads = await this.getItem(getChannelReadKey(channelId));
+    const reads = await this.getItem(getChannelReadKey(this.userId, channelId));
     const storables = {};
 
     if (reads[user.id]) {
       reads[user.id] = {
         last_read: lastRead,
-        user: convertUserToStorable(user, storables),
+        user: convertUserToStorable(user, storables, this.userId),
       };
     }
 
-    storables[getChannelReadKey(channelId)] = reads;
+    storables[getChannelReadKey(this.userId, channelId)] = reads;
     await this.multiSet(storables);
   }
 
@@ -294,7 +302,7 @@ export class AsyncLocalStorage {
   insertChannels(channels) {
     const values = [];
     channels.forEach((c) => {
-      values.push([getChannelKey(c.id), JSON.stringify(c)]);
+      values.push([getChannelKey(this.userId, c.id), JSON.stringify(c)]);
     });
 
     return values;
@@ -316,7 +324,7 @@ export class AsyncLocalStorage {
    */
   async getChannelMessages(channelIds) {
     const channelMsgsToRetrieve = channelIds.map((i) =>
-      getChannelMessagesKey(i),
+      getChannelMessagesKey(this.userId, i),
     );
 
     const channelMessagesValue = await this.asyncStorage.multiGet(
@@ -338,7 +346,7 @@ export class AsyncLocalStorage {
    * @param {*} query
    */
   async getChannelIdsForQuery(query) {
-    let channelIds = await this.getItem(getQueryKey(query));
+    let channelIds = await this.getItem(getQueryKey(this.userId, query));
 
     // .log('channelIds', channelIds);
     if (!channelIds) return [];

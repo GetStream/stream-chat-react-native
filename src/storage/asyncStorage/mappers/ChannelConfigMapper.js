@@ -8,7 +8,12 @@ import { getChannelConfigKey } from '../keys';
  * @param {*} c
  * @param {*} storables
  */
-export const convertChannelConfigToStorable = (type, c, storables) => {
+export const convertChannelConfigToStorable = (
+  type,
+  c,
+  storables,
+  appUserId,
+) => {
   const config = {
     type,
     name: c.name,
@@ -27,6 +32,6 @@ export const convertChannelConfigToStorable = (type, c, storables) => {
     commands: c.commands,
   };
 
-  storables[getChannelConfigKey(type)] = config;
-  return getChannelConfigKey(type);
+  storables[getChannelConfigKey(appUserId, type)] = config;
+  return getChannelConfigKey(appUserId, type);
 };

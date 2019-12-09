@@ -25,7 +25,7 @@ export class LocalStorage {
     }
 
     if (storageType === 'async-storage') {
-      this.storage = new AsyncLocalStorage(StorageClass);
+      this.storage = new AsyncLocalStorage(StorageClass, chatClient.userID);
     }
     this.logger = () => {};
   }
@@ -96,7 +96,7 @@ export class LocalStorage {
 
       // TODO: Currently I am maintainign two variables on channel
       //
-      // - initialized : where state is initialized from remove server
+      // - initialized : where state is initialized from remote server
       // - passive : offline channel
       //
       // This is to keep original behaviour intact, in case if someone does not want offline behaviour.
