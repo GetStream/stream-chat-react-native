@@ -4,6 +4,7 @@ import { ChatContext } from '../context';
 import { NetInfo } from '../native';
 
 import { themed } from '../styles/theme';
+import { LocalStorage } from '../storage';
 
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
@@ -30,7 +31,6 @@ export const Chat = themed(
       client: PropTypes.object.isRequired,
       /** Theme object */
       style: PropTypes.object,
-      offlineSync: PropTypes.bool,
       logger: PropTypes.func,
     };
 
@@ -46,7 +46,6 @@ export const Chat = themed(
         startedOffline: true,
         isOnline: 'unknown',
         connectionRecovering: false,
-        offlineSync: false,
       };
 
       this.unsubscribeNetInfo = null;
@@ -109,8 +108,11 @@ export const Chat = themed(
       this.props.client.off('connection.changed');
       this.props.client.off(this.handleEvent);
       this.unsubscribeNetInfo();
-      this.props.storage && this.props.storage.clear();
+      this.isOfflineModeEnabled() && this.props.storage.close();
     }
+
+    isOfflineModeEnabled = () =>
+      this.props.storage && this.props.storage instanceof LocalStorage;
 
     notifyChatClient = (isConnected) => {
       if (this.props.client != null && this.props.client.wsConnection != null) {
@@ -167,8 +169,8 @@ export const Chat = themed(
       isOnline: this.state.isOnline,
       connectionRecovering: this.state.connectionRecovering,
       storage: this.props.storage,
-      offlineSync: this.props.offlineSync,
       logger: this.props.logger,
+      offlineMode: this.isOfflineModeEnabled(),
     });
 
     render() {

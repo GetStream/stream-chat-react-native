@@ -35,10 +35,11 @@ const VALID_CHANNELS_SORT_KEYS = [
  * Schema for the database - ./schemas.js
  */
 export class RealmStorage {
-  constructor(RealmClass, userId) {
+  constructor(RealmClass, userId, encryptionKey) {
     this.RealmClass = RealmClass;
     this.realm = null;
     this.userId = userId;
+    this.encryptionKey = encryptionKey;
     this.logger = () => {};
   }
 
@@ -58,6 +59,7 @@ export class RealmStorage {
     try {
       this.realm = await this.RealmClass.open({
         path: `stream.chat.rn.${this.userId}.realm`,
+        encryptionKey: this.encryptionKey,
         schema: [
           MessageSchema,
           QueryChannelsSchema,

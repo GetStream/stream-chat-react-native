@@ -78,7 +78,8 @@ export class AsyncLocalStorage {
     return await this.asyncStorage.multiSet(storablesArray);
   }
 
-  clear() {}
+  deleteAll() {}
+  close() {}
 
   /**
    *

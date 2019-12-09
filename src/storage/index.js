@@ -11,12 +11,17 @@ import { AsyncLocalStorage } from './asyncStorage';
  * back to `Channel` instance, which can then be consumed by components.
  */
 export class LocalStorage {
-  constructor(chatClient, StorageClass, storageType) {
+  constructor(chatClient, StorageClass, storageType, encryptionKey) {
     this.chatClient = chatClient;
     this.StorageClass = StorageClass;
+    this.encryptionKey = encryptionKey;
 
     if (storageType === 'realm') {
-      this.storage = new RealmStorage(StorageClass, chatClient.userID);
+      this.storage = new RealmStorage(
+        StorageClass,
+        chatClient.userID,
+        this.encryptionKey,
+      );
     }
 
     if (storageType === 'async-storage') {

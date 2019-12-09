@@ -182,7 +182,7 @@ export class ChannelInner extends PureComponent {
     this._loadMoreThreadFinishedDebounced.cancel();
     this._setStateThrottled.cancel();
     this._unmounted = true;
-    this.props.storage.close();
+    this.props.offlineMode && this.props.storage.close();
   }
 
   copyChannelState() {
@@ -545,7 +545,7 @@ export class ChannelInner extends PureComponent {
       id_lt: oldestID,
     });
     try {
-      if (this.props.offlineSync && !this.props.isOnline) {
+      if (this.props.offlineMode && !this.props.isOnline) {
         queryResponse = await this.props.storage.queryMessages(
           this.props.channel.id,
           oldestMessage,
@@ -568,7 +568,7 @@ export class ChannelInner extends PureComponent {
     }
 
     if (this.props.isOnline && queryResponse && queryResponse.messages) {
-      this.props.offlineSync &&
+      this.props.offlineMode &&
         (await this.props.storage.insertMessagesForChannel(
           this.props.channel.id,
           queryResponse.messages,
