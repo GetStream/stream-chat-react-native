@@ -84,6 +84,12 @@ const MessageList = withChannelContext(
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /**
+       * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+       * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+       * on device for use in offline mode.
+       **/
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
        * Custom UI component for attachment icon for type 'file' attachment.
        * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
        */
@@ -473,6 +479,7 @@ const MessageList = withChannelContext(
             groupStyles={groupStyles}
             Message={this.props.Message}
             Attachment={this.props.Attachment}
+            ImageComponent={this.props.ImageComponent}
             readBy={readBy}
             lastReceivedId={
               this.state.lastReceivedId === message.id

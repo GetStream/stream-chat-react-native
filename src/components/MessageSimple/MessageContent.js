@@ -442,7 +442,11 @@ export const MessageContent = themed(
                 />
               )}
               {images && images.length > 0 && (
-                <Gallery alignment={this.props.alignment} images={images} />
+                <Gallery
+                  alignment={this.props.alignment}
+                  images={images}
+                  ImageComponent={this.props.ImageComponent}
+                />
               )}
               <MessageTextContainer
                 message={message}

@@ -33,7 +33,12 @@ const ChannelList = withChatContext(
     static propTypes = {
       /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
       Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-
+      /**
+       * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+       * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+       * on device for use in offline mode.
+       **/
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** The loading indicator to use */
       LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** The indicator to use when there is error in fetching channels */

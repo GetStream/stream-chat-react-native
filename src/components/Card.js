@@ -29,7 +29,9 @@ const Footer = styled.View`
   ${({ theme }) => theme.message.card.footer.css}
 `;
 
-const Cover = styled.Image`
+const Cover = styled(({ ImageComponent, ...otherProps }) => (
+  <ImageComponent {...otherProps} />
+))`
   display: flex;
   height: 150;
   ${({ theme }) => theme.message.card.cover.css}
@@ -61,6 +63,15 @@ export const Card = withMessageContentContext(
         type: PropTypes.string,
         alignment: PropTypes.string,
         onLongPress: PropTypes.func,
+        /**
+         * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+         * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+         * on device for use in offline mode.
+         **/
+        ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      };
+      static defaultProps = {
+        ImageComponent: Image,
       };
 
       constructor(props) {
@@ -110,6 +121,7 @@ export const Card = withMessageContentContext(
             <Cover
               source={{ uri: makeImageCompatibleUrl(image_url || thumb_url) }}
               resizMode="cover"
+              ImageComponent={this.props.ImageComponent}
             />
             <Footer>
               <View

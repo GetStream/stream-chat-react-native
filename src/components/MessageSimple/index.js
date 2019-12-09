@@ -107,6 +107,8 @@ export const MessageSimple = themed(
        * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
        */
       AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /** Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image) */
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {

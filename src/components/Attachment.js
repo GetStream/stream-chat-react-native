@@ -66,6 +66,12 @@ export const Attachment = withMessageContentContext(
         /** The attachment to render */
         attachment: PropTypes.object.isRequired,
         /**
+         * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+         * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+         * on device for use in offline mode.
+         **/
+        ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        /**
          * Position of message. 'right' | 'left'
          * 'right' message belongs with current user while 'left' message belonds to other users.
          * */
@@ -139,7 +145,11 @@ export const Attachment = withMessageContentContext(
         if (type === 'image') {
           return (
             <React.Fragment>
-              <Gallery alignment={this.props.alignment} images={[a]} />
+              <Gallery
+                alignment={this.props.alignment}
+                images={[a]}
+                ImageComponent={this.props.ImageComponent}
+              />
               {a.actions && a.actions.length > 0 && (
                 <AttachmentActions
                   key={'key-actions-' + a.id}

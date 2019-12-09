@@ -118,6 +118,12 @@ export class ChannelInner extends PureComponent {
     isOnline: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    /**
+     * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+     * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+     * on device for use in offline mode.
+     **/
+    ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   };
 
   static defaultProps = {
@@ -600,6 +606,7 @@ export class ChannelInner extends PureComponent {
     channel: this.props.channel,
     Message: this.props.Message,
     Attachment: this.props.Attachment,
+    ImageComponent: this.props.ImageComponent,
     updateMessage: this.updateMessage,
     removeMessage: this.removeMessage,
     sendMessage: this.sendMessage,

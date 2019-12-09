@@ -14,7 +14,12 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
+export const MessageAvatar = ({
+  message,
+  isMyMessage,
+  groupStyles,
+  ImageComponent,
+}) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
   const showAvatar =
@@ -26,6 +31,7 @@ export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
         <Avatar
           image={message.user.image}
           name={message.user.name || message.user.id}
+          ImageComponent={ImageComponent}
         />
       ) : (
         <Spacer />

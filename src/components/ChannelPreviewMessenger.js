@@ -75,6 +75,7 @@ export const ChannelPreviewMessenger = themed(
       latestMessage: PropTypes.object,
       /** Number of unread messages on channel */
       unread: PropTypes.number,
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     onSelectChannel = () => {
@@ -84,13 +85,25 @@ export const ChannelPreviewMessenger = themed(
     renderAvatar = (otherMembers) => {
       const { channel } = this.props;
       if (channel.data.image) {
-        return <Avatar image={channel.data.image} size={40} />;
+        return (
+          <Avatar
+            image={channel.data.image}
+            size={50}
+            ImageComponent={this.props.ImageComponent}
+          />
+        );
       }
 
       if (otherMembers.length === 1)
-        return <Avatar image={otherMembers[0].user.image} size={40} />;
+        return (
+          <Avatar
+            image={otherMembers[0].user.image}
+            size={50}
+            ImageComponent={this.props.ImageComponent}
+          />
+        );
 
-      return <Avatar size={40} />;
+      return <Avatar size={40} ImageComponent={this.props.ImageComponent} />;
     };
 
     render() {

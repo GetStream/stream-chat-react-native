@@ -1,13 +1,11 @@
 import React from 'react';
-import { Text, View, Modal, SafeAreaView } from 'react-native';
+import { Text, View, Modal, SafeAreaView, Image } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 import { withMessageContentContext } from '../context';
 import { makeImageCompatibleUrl } from '../utils';
-import { CachedImage } from '@stream-io/react-native-cached-image';
-
 import { CloseButton } from './CloseButton';
 
 const Single = styled.TouchableOpacity`
@@ -60,6 +58,12 @@ export const Gallery = withMessageContentContext(
     class Gallery extends React.PureComponent {
       static themePath = 'message.gallery';
       static propTypes = {
+        /**
+         * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+         * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+         * on device for use in offline mode.
+         **/
+        ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
         /** The images to render */
         images: PropTypes.arrayOf(
           PropTypes.shape({
@@ -67,6 +71,9 @@ export const Gallery = withMessageContentContext(
             thumb_url: PropTypes.string,
           }),
         ),
+      };
+      static defaultProps = {
+        ImageComponent: Image,
       };
 
       constructor(props) {
@@ -82,6 +89,7 @@ export const Gallery = withMessageContentContext(
         const images = [...this.props.images].map((i) => ({
           url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
         }));
+        const ImageComponent = this.props.ImageComponent;
 
         if (images.length === 1) {
           return (
@@ -95,7 +103,7 @@ export const Gallery = withMessageContentContext(
                 }}
                 alignment={this.props.alignment}
               >
-                <CachedImage
+                <ImageComponent
                   style={{
                     width: 100 + '%',
                     height: 100 + '%',
@@ -157,7 +165,7 @@ export const Gallery = withMessageContentContext(
                         height: '100%',
                       }}
                     >
-                      <CachedImage
+                      <ImageComponent
                         style={{
                           width: 100 + '%',
                           height: 100 + '%',
@@ -189,7 +197,7 @@ export const Gallery = withMessageContentContext(
                       </View>
                     </View>
                   ) : (
-                    <CachedImage
+                    <ImageComponent
                       style={{
                         width: 100 + '%',
                         height: 100 + '%',

@@ -72,6 +72,12 @@ const Channel = withChatContext(
        * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
        * */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      /**
+       * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+       * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+       * on device for use in offline mode.
+       **/
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {

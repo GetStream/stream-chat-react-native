@@ -1,9 +1,9 @@
 import React from 'react';
+import { Image } from 'react-native';
 import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
-import { CachedImage } from '@stream-io/react-native-cached-image';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;
@@ -14,7 +14,9 @@ const AvatarContainer = styled.View`
   ${({ theme }) => theme.avatar.container.css}
 `;
 
-const AvatarImage = styled((props) => <CachedImage {...props} />)`
+const AvatarImage = styled(({ ImageComponent, ...otherProps }) => (
+  <ImageComponent {...otherProps} />
+))`
   border-radius: ${({ size }) => size / 2};
   width: ${({ size }) => size};
   height: ${({ size }) => size};
@@ -57,10 +59,17 @@ export const Avatar = themed(
       size: PropTypes.number,
       /** Style overrides */
       style: PropTypes.object,
+      /**
+       * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
+       * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
+       * on device for use in offline mode.
+       **/
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     };
 
     static defaultProps = {
       size: 32,
+      ImageComponent: Image,
     };
 
     state = {
@@ -96,6 +105,7 @@ export const Avatar = themed(
               accessibilityLabel="initials"
               resizeMethod="resize"
               onError={this.setError}
+              ImageComponent={this.props.ImageComponent}
             />
           ) : (
             <AvatarFallback size={size}>
