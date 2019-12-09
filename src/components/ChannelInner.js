@@ -284,11 +284,15 @@ export class ChannelInner extends PureComponent {
     // adds the message to the local channel state..
     // this adds to both the main channel state as well as any reply threads
     channel.state.addMessageSorted(updatedMessage);
+
+    // If the status is 'sending' then it means we have just inserted
+    // this message in local storage via _sendMessage function. So no need to add/update again.
     if (updatedMessage.status !== 'sending') {
-      await this.props.storage.updateMessage(
-        this.props.channel.id,
-        updatedMessage,
-      );
+      this.props.offlineMode &&
+        (await this.props.storage.updateMessage(
+          this.props.channel.id,
+          updatedMessage,
+        ));
     }
     // update the Channel component state
     if (this.state.thread && updatedMessage.parent_id) {
@@ -545,6 +549,7 @@ export class ChannelInner extends PureComponent {
       id_lt: oldestID,
     });
     try {
+      // If offlineMode is enabled and network is down, then fetch the messages from local storage.
       if (this.props.offlineMode && !this.props.isOnline) {
         queryResponse = await this.props.storage.queryMessages(
           this.props.channel.id,
