@@ -408,4 +408,20 @@ export class RealmStorage {
     const messages = getMessagesFromRealmList(channelMessages);
     return { messages };
   }
+
+  async truncateChannel(channelId) {
+    const realm = await this.getRealm();
+    try {
+      realm.write(() => {
+        const channel = realm.objectForPrimaryKey('Channel', channelId);
+        realm.delete(channel.messages);
+        channel.last_message_at = null;
+      });
+    } catch (e) {
+      this.logger('Realm storage', 'truncateChannel failed', {
+        tags: ['realmStorage'],
+        error: e,
+      });
+    }
+  }
 }

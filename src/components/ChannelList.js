@@ -520,6 +520,11 @@ const ChannelList = withChatContext(
           );
       }
 
+      if (e.type === 'channel.truncated') {
+        if (this.props.storage.truncateChannel)
+          await this.props.storage.truncateChannel(channels[channelIndex].id);
+      }
+
       return null;
     };
 

@@ -143,6 +143,9 @@ export class LocalStorage {
     );
   }
 
+  async truncateChannel(channelId) {
+    return await this.storage.truncateChannel(channelId);
+  }
   /**
    * Close any open connections to database.
    */

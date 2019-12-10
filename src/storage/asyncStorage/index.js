@@ -16,6 +16,13 @@ import {
   getChannelMessagesKey,
   getChannelReadKey,
 } from './keys';
+
+const VALID_CHANNELS_SORT_KEYS = [
+  'last_message_at',
+  'updated_at',
+  'created_at',
+];
+
 /**
  * Local storage interface based on AsyncStorage
  */
@@ -74,6 +81,14 @@ export class AsyncLocalStorage {
 
   /**
    *
+   * @param {*} key
+   */
+  async setItem(key, value) {
+    return await this.asyncStorage.setItem(key, JSON.stringify(value));
+  }
+
+  /**
+   *
    * @param {*} storables
    */
   async multiSet(storables) {
@@ -86,7 +101,13 @@ export class AsyncLocalStorage {
     return await this.asyncStorage.multiSet(storablesArray);
   }
 
-  deleteAll() {}
+  async deleteAll() {
+    const allKeys = await this.asyncStorage.getAllKeys();
+    const streamKeys = allKeys.filter((k) => k.indexOf('getstream:chat') === 0);
+
+    return this.asyncStorage.multiRemove(streamKeys);
+  }
+
   close() {}
 
   /**
@@ -94,13 +115,31 @@ export class AsyncLocalStorage {
    * @param {*} query
    */
   async queryChannels(query, sort, offset, limit) {
-    let channelIds = await this.getChannelIdsForQuery(query);
+    const channelIds = await this.getChannelIdsForQuery(query);
     if (!channelIds) return [];
 
-    channelIds = channelIds.slice(offset, offset + limit);
-    const channels = await this.getChannels(channelIds);
-    const fChannels = await this.enrichChannels(channels);
+    let channels = await this.getChannels(channelIds);
+    const sortKeys = Object.keys(sort);
 
+    channels.sort((a, b) => {
+      let answer = 0;
+      sortKeys.forEach((sortKey) => {
+        if (VALID_CHANNELS_SORT_KEYS.indexOf(sortKey) === -1) {
+          return;
+        }
+
+        answer =
+          answer ||
+          (sort[sortKey] === -1
+            ? new Date(b[sortKey]) - new Date(a[sortKey])
+            : new Date(a[sortKey]) - new Date(b[sortKey]));
+      });
+
+      return answer;
+    });
+
+    channels = channels.slice(offset, offset + limit);
+    const fChannels = await this.enrichChannels(channels);
     return fChannels;
   }
 
@@ -115,18 +154,19 @@ export class AsyncLocalStorage {
         keysToRetrieve.push(c.config);
     });
 
-    const messagesAndMembers = await this.asyncStorage.multiGet(keysToRetrieve);
-    const flattenedMessagesAndMembers = {};
-    messagesAndMembers.forEach((kmPair) => {
-      flattenedMessagesAndMembers[kmPair[0]] = JSON.parse(kmPair[1]);
+    const state = await this.asyncStorage.multiGet(keysToRetrieve);
+    const flattenedstate = {};
+    state.forEach((kmPair) => {
+      flattenedstate[kmPair[0]] = kmPair[1] ? JSON.parse(kmPair[1]) : [];
     });
+
     let usersToRetrive = [];
     const storedChannels = channels.map((c) => ({
       ...c,
-      messages: flattenedMessagesAndMembers[c.messages],
-      members: flattenedMessagesAndMembers[c.members],
-      read: flattenedMessagesAndMembers[c.read],
-      config: flattenedMessagesAndMembers[c.config],
+      messages: flattenedstate[c.messages],
+      members: flattenedstate[c.members],
+      read: flattenedstate[c.read],
+      config: flattenedstate[c.config],
     }));
 
     storedChannels.forEach((c) => {
@@ -320,6 +360,16 @@ export class AsyncLocalStorage {
 
   /**
    *
+   * @param {*} channelId
+   */
+  async getChannel(channelId) {
+    const channel = await this.getItem(getChannelKey(this.userId, channelId));
+
+    return channel;
+  }
+
+  /**
+   *
    * @param {*} channelIds
    */
   async getChannelMessages(channelIds) {
@@ -333,9 +383,9 @@ export class AsyncLocalStorage {
 
     const channelMessages = {};
     for (let i = 0; i < channelMessagesValue.length; i++) {
-      channelMessages[channelMessagesValue[i][0]] = JSON.parse(
-        channelMessagesValue[i][1],
-      );
+      channelMessages[channelMessagesValue[i][0]] = channelMessagesValue[i][1]
+        ? JSON.parse(channelMessagesValue[i][1])
+        : [];
     }
 
     return channelMessages;
@@ -355,5 +405,20 @@ export class AsyncLocalStorage {
     );
 
     return channelIds;
+  }
+
+  async truncateChannel(channelId) {
+    const channelMessagesKey = getChannelMessagesKey(this.userId, channelId);
+    const storables = {};
+
+    // Empty all the messages in the channel.
+    storables[channelMessagesKey] = [];
+
+    // update the last_message_at of that channel.
+    const channel = await this.getChannel(channelId);
+    channel.last_message_at = null;
+    storables[getChannelKey(this.userId, channelId)] = channel;
+
+    await this.multiSet(storables);
   }
 }
