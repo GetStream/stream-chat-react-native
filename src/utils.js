@@ -80,6 +80,16 @@ export const emojiData = [
   },
 ];
 
+export const isValidDate = (d) => {
+  let date = d;
+
+  if (typeof d === 'string') {
+    date = new Date(d);
+  }
+
+  return date instanceof Date && !isNaN(date);
+};
+
 export const capitalize = (s) => {
   if (typeof s !== 'string') return '';
   return s.charAt(0).toUpperCase() + s.slice(1);

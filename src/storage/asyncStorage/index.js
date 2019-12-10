@@ -1,20 +1,16 @@
 /* eslint-disable no-underscore-dangle */
-/**
- * =======================================================================================
- * ==================== STILL IN PROGRESS ================================================
- * =======================================================================================
- */
-
 import {
   convertChannelToStorable,
   convertMessageToStorable,
   convertUserToStorable,
+  convertMemberToStorable,
 } from './mappers';
 import {
   getQueryKey,
   getChannelKey,
   getChannelMessagesKey,
   getChannelReadKey,
+  getChannelMembersKey,
 } from './keys';
 
 const VALID_CHANNELS_SORT_KEYS = [
@@ -108,6 +104,7 @@ export class AsyncLocalStorage {
     return this.asyncStorage.multiRemove(streamKeys);
   }
 
+  // Nothing to close here.
   close() {}
 
   /**
@@ -232,8 +229,17 @@ export class AsyncLocalStorage {
     return finalChannels;
   };
 
-  // TODO: Implement the following
-  async updateChannelData() {}
+  async updateChannelData(channelId, data) {
+    const channel = await this.getChannel(channelId);
+    const { members, ...customData } = data;
+    channel.data = JSON.stringify(customData);
+
+    channel.created_at = data.created_at;
+    channel.updated_at = data.updated_at;
+    channel.last_message_at = data.last_message_at;
+
+    await this.setItem(getChannelKey(this.userId, channelId), channel);
+  }
 
   /**
    *
@@ -308,9 +314,47 @@ export class AsyncLocalStorage {
     await this.updateMessage(channelId, message);
   }
 
-  async addMemberToChannel() {}
-  async removeMemberFromChannel() {}
-  async updateMember() {}
+  async addMemberToChannel(channelId, member) {
+    const storables = {};
+    const channelMembersKey = getChannelMembersKey(this.userId, channelId);
+    const newMember = convertMemberToStorable(member, storables, this.userId);
+    const channelMembers = await this.getItem(channelMembersKey);
+
+    channelMembers.push(newMember);
+
+    storables[channelMembersKey] = channelMembers;
+
+    await this.multiSet(storables);
+  }
+
+  async removeMemberFromChannel(channelId, user_id) {
+    const storables = {};
+    const channelMembersKey = getChannelMembersKey(this.userId, channelId);
+    let channelMembers = await this.getItem(channelMembersKey);
+
+    channelMembers = channelMembers.filter((m) => m.user_id !== user_id);
+
+    storables[channelMembersKey] = channelMembers;
+
+    await this.multiSet(storables);
+  }
+
+  // TODO: Test this scenario
+  async updateMember(channelId, member) {
+    const storables = {};
+    const channelMembersKey = getChannelMembersKey(this.userId, channelId);
+    let channelMembers = await this.getItem(channelMembersKey);
+
+    channelMembers = channelMembers.map((m) => {
+      if (m.user_id !== member.user.id) return m;
+
+      return convertMemberToStorable(member, storables, this.userId);
+    });
+
+    storables[channelMembersKey] = channelMembers;
+
+    await this.multiSet(storables);
+  }
 
   /**
    *

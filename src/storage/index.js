@@ -128,7 +128,7 @@ export class LocalStorage {
   async removeMemberFromChannel(channel_id, userId) {
     return await this.storage.removeMemberFromChannel(channel_id, userId);
   }
-  async updateMember(member) {
+  async updateMember(channel_id, member) {
     return await this.storage.updateMember(member);
   }
   async updateReadState(channelId, user, lastRead) {

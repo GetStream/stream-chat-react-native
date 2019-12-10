@@ -158,6 +158,17 @@ export class RealmStorage {
       realm.write(() => {
         const channel = realm.objectForPrimaryKey('Channel', channelId);
         channel.data = JSON.stringify(data);
+        if (isValidDate(data.updated_at)) {
+          channel.updated_at = data.updated_at;
+        }
+
+        if (isValidDate(data.created_at)) {
+          channel.deleted_at = data.deleted_at;
+        }
+
+        if (isValidDate(data.last_message_at)) {
+          channel.last_message_at = data.last_message_at;
+        }
       });
     } catch (e) {
       this.logger('Realm storage', 'updateChannelData failed', {
@@ -346,7 +357,7 @@ export class RealmStorage {
    * @param {*} member
    */
   // TODO: Test this scenario
-  async updateMember(member) {
+  async updateMember(channelId, member) {
     const realm = await this.getRealm();
     try {
       realm.write(() => {

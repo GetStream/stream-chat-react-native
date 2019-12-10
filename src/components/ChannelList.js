@@ -492,7 +492,10 @@ const ChannelList = withChatContext(
 
       if (e.type === 'member.updated') {
         if (this.props.storage.updateMember)
-          await this.props.storage.updateMember(e.member);
+          await this.props.storage.updateMember(
+            channels[channelIndex].id,
+            e.member,
+          );
       }
 
       // // Channel data is updated

@@ -17,6 +17,8 @@ export const convertChannelToStorable = (c, storable, appUserId) => {
     config: c.config,
   };
 
+  const { members, ...customData } = c.data;
+  channel.data = customData;
   channel.messages = convertMessagesToStorable(
     c.state.messages,
     c.id,

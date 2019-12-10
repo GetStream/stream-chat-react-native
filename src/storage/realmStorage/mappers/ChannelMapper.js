@@ -3,15 +3,7 @@ import { convertMessagesToRealm } from './MessageMapper';
 import { convertChannelMembersToRealm } from './MemberMapper';
 import { convertChannelConfigToRealm } from './ChannelConfigMapper';
 import { convertReadStatesToRealm } from './ReadMapper';
-function isValidDate(d) {
-  let date = d;
-
-  if (typeof d === 'string') {
-    date = new Date(d);
-  }
-
-  return date instanceof Date && !isNaN(date);
-}
+import { isValidDate } from '../../../utils';
 
 export const convertChannelToRealm = (channel, realm) => {
   let isUpdated = true;
