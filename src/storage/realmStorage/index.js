@@ -21,6 +21,7 @@ import {
   convertChannelMemberToRealm,
   getMembersFromRealmList,
 } from './mappers';
+import { isValidDate } from '../../utils';
 
 const SCHEMA_VERSION = 0;
 
@@ -49,6 +50,26 @@ export class RealmStorage {
 
   async getRealm() {
     const that = this;
+    const realmConfig = {
+      path: `stream.chat.rn.${this.userId}.realm`,
+      schema: [
+        MessageSchema,
+        QueryChannelsSchema,
+        ChannelSchema,
+        MemberSchema,
+        UserSchema,
+        ReadSchema,
+        ReactionSchema,
+        AttachmentSchema,
+        ReactionCountSchema,
+        ChannelConfigSchema,
+        CommandSchema,
+      ],
+      schemaVersion: SCHEMA_VERSION,
+    };
+    if (this.encryptionKey) {
+      realmConfig.encryptionKey = this.encryptionKey;
+    }
 
     if (this.realm && !this.realm.isClosed) {
       return new Promise((resolve) => {
@@ -57,24 +78,7 @@ export class RealmStorage {
     }
 
     try {
-      this.realm = await this.RealmClass.open({
-        path: `stream.chat.rn.${this.userId}.realm`,
-        encryptionKey: this.encryptionKey,
-        schema: [
-          MessageSchema,
-          QueryChannelsSchema,
-          ChannelSchema,
-          MemberSchema,
-          UserSchema,
-          ReadSchema,
-          ReactionSchema,
-          AttachmentSchema,
-          ReactionCountSchema,
-          ChannelConfigSchema,
-          CommandSchema,
-        ],
-        schemaVersion: SCHEMA_VERSION,
-      });
+      this.realm = await this.RealmClass.open(realmConfig);
     } catch (e) {
       throw Error(e);
     }
@@ -87,16 +91,9 @@ export class RealmStorage {
    */
   async deleteAll() {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        realm.deleteAll();
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'deleteAll failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+    realm.write(() => {
+      realm.deleteAll();
+    });
   }
 
   /**
@@ -115,36 +112,26 @@ export class RealmStorage {
    */
   async storeChannels(query, channels, resync) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const rQueryChannels = realm.objectForPrimaryKey(
-          'QueryChannels',
-          query,
-        );
-        const offlineChannels = channels.map((c) =>
-          convertChannelToRealm(c, realm),
-        );
+    realm.write(() => {
+      const rQueryChannels = realm.objectForPrimaryKey('QueryChannels', query);
+      const offlineChannels = channels.map((c) =>
+        convertChannelToRealm(c, realm),
+      );
 
-        if (!rQueryChannels || resync) {
-          realm.create(
-            'QueryChannels',
-            {
-              query,
-              channels: offlineChannels,
-            },
-            true,
-          );
-        } else {
-          offlineChannels.forEach((oc) => rQueryChannels.channels.push(oc));
-        }
-        return;
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'storeChannels failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+      if (!rQueryChannels || resync) {
+        realm.create(
+          'QueryChannels',
+          {
+            query,
+            channels: offlineChannels,
+          },
+          true,
+        );
+      } else {
+        offlineChannels.forEach((oc) => rQueryChannels.channels.push(oc));
+      }
+      return;
+    });
   }
 
   /**
@@ -154,28 +141,21 @@ export class RealmStorage {
    */
   async updateChannelData(channelId, data) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const channel = realm.objectForPrimaryKey('Channel', channelId);
-        channel.data = JSON.stringify(data);
-        if (isValidDate(data.updated_at)) {
-          channel.updated_at = data.updated_at;
-        }
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channelId);
+      channel.data = JSON.stringify(data);
+      if (isValidDate(data.updated_at)) {
+        channel.updated_at = data.updated_at;
+      }
 
-        if (isValidDate(data.created_at)) {
-          channel.deleted_at = data.deleted_at;
-        }
+      if (isValidDate(data.created_at)) {
+        channel.deleted_at = data.deleted_at;
+      }
 
-        if (isValidDate(data.last_message_at)) {
-          channel.last_message_at = data.last_message_at;
-        }
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'updateChannelData failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+      if (isValidDate(data.last_message_at)) {
+        channel.last_message_at = data.last_message_at;
+      }
+    });
   }
 
   /**
@@ -247,21 +227,14 @@ export class RealmStorage {
    */
   async insertMessagesForChannel(channel_id, messages) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const channel = realm.objectForPrimaryKey('Channel', channel_id);
-        messages.forEach((m) => {
-          const message = convertMessageToRealm(m, realm, true);
-          channel.messages.push(message);
-          channel.last_message_at = message.created_at;
-        });
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channel_id);
+      messages.forEach((m) => {
+        const message = convertMessageToRealm(m, realm, true);
+        channel.messages.push(message);
+        channel.last_message_at = message.created_at;
       });
-    } catch (e) {
-      this.logger('Realm storage', 'insertMessagesForChannel failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+    });
   }
 
   /**
@@ -271,16 +244,9 @@ export class RealmStorage {
    */
   async updateMessage(channelId, message) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        convertMessageToRealm(message, realm, true);
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'updateMessage failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+    realm.write(() => {
+      convertMessageToRealm(message, realm, true);
+    });
   }
 
   /**
@@ -308,24 +274,17 @@ export class RealmStorage {
    */
   async addMemberToChannel(channel_id, member) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const channel = realm.objectForPrimaryKey('Channel', channel_id);
-        const rMember = convertChannelMemberToRealm(
-          channel_id,
-          member,
-          realm,
-          true,
-        );
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channel_id);
+      const rMember = convertChannelMemberToRealm(
+        channel_id,
+        member,
+        realm,
+        true,
+      );
 
-        channel.members.push(rMember);
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'addMemberToChannel failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+      channel.members.push(rMember);
+    });
   }
 
   /**
@@ -335,21 +294,14 @@ export class RealmStorage {
    */
   async removeMemberFromChannel(channel_id, userId) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const channel = realm.objectForPrimaryKey('Channel', channel_id);
-        const memberIndex = channel.members.findIndex(
-          (m) => m.user_id === userId,
-        );
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channel_id);
+      const memberIndex = channel.members.findIndex(
+        (m) => m.user_id === userId,
+      );
 
-        channel.members.splice(memberIndex, 1);
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'removeMemberFromChannel failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+      channel.members.splice(memberIndex, 1);
+    });
   }
 
   /**
@@ -359,17 +311,10 @@ export class RealmStorage {
   // TODO: Test this scenario
   async updateMember(channelId, member) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const rUser = realm.create('User', member.user, true);
-        realm.create('Member', { ...member, user: rUser }, true);
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'updateMember failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+    realm.write(() => {
+      const rUser = realm.create('User', member.user, true);
+      realm.create('Member', { ...member, user: rUser }, true);
+    });
   }
 
   /**
@@ -380,33 +325,23 @@ export class RealmStorage {
    */
   async updateReadState(channelId, user, lastRead) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const read = realm.objectForPrimaryKey(
-          'Read',
-          `${channelId}${user.id}`,
-        );
-        if (read) {
-          read.lastRead = lastRead;
-          read.user = realm.create('User', user, true);
-          return;
-        }
+    realm.write(() => {
+      const read = realm.objectForPrimaryKey('Read', `${channelId}${user.id}`);
+      if (read) {
+        read.lastRead = lastRead;
+        read.user = realm.create('User', user, true);
+        return;
+      }
 
-        const channel = realm.objectForPrimaryKey('Channel', channelId);
-        channel.read.push(
-          convertReadStateToRealm(channelId, {
-            last_read: lastRead,
-            user,
-            realm,
-          }),
-        );
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'updateReadState failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+      const channel = realm.objectForPrimaryKey('Channel', channelId);
+      channel.read.push(
+        convertReadStateToRealm(channelId, {
+          last_read: lastRead,
+          user,
+          realm,
+        }),
+      );
+    });
   }
 
   async queryMessages(channelId, lastMessage, limitPerPage) {
@@ -422,17 +357,10 @@ export class RealmStorage {
 
   async truncateChannel(channelId) {
     const realm = await this.getRealm();
-    try {
-      realm.write(() => {
-        const channel = realm.objectForPrimaryKey('Channel', channelId);
-        realm.delete(channel.messages);
-        channel.last_message_at = null;
-      });
-    } catch (e) {
-      this.logger('Realm storage', 'truncateChannel failed', {
-        tags: ['realmStorage'],
-        error: e,
-      });
-    }
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channelId);
+      realm.delete(channel.messages);
+      channel.last_message_at = null;
+    });
   }
 }

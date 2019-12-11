@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { Image } from 'react-native';
 import { Avatar } from './Avatar';
 import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
@@ -75,7 +76,15 @@ export const ChannelPreviewMessenger = themed(
       latestMessage: PropTypes.object,
       /** Number of unread messages on channel */
       unread: PropTypes.number,
-      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      ImageComponent: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+        PropTypes.elementType,
+      ]),
+    };
+
+    static defaultProps = {
+      ImageComponent: Image,
     };
 
     onSelectChannel = () => {

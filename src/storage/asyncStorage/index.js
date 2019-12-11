@@ -21,6 +21,18 @@ const VALID_CHANNELS_SORT_KEYS = [
 
 /**
  * Local storage interface based on AsyncStorage
+ *
+ * For user with id - U1234 data is stored in following keys:
+ *
+ * 1. `getstream:chat:U1234@query:{stringified_qoery}` - List of channel ids for stringified_query
+ * 2. `getstream:chat:U1234@channel:{channel_id}` - Channel object
+ * 3. `getstream:chat:U1234@channel:{channel_id}:messages` - Messages for channel with id - channel_id
+ * 4. `getstream:chat:U1234@channel:{channel_id}:members` - Members for channel with id - channel_id
+ * 5. `getstream:chat:U1234@channel:{channel_id}:reads` - Read states for channel with id - channel_id
+ * 6. `getstream:chat:U1234@user:{user_id}` - User object for user with id - user_id
+ * 7. `getstream:chat:U1234@config:{type}` - Channel config of channel type - type
+ *
+ * All the getters/generators for keys are defined in `./keys.js`.
  */
 export class AsyncLocalStorage {
   constructor(AsyncStorage, userId) {
@@ -34,6 +46,7 @@ export class AsyncLocalStorage {
   }
 
   /**
+   * Function takes the array of new channels for a query to store and saves it in asyncStorage.
    *
    * @param {*} query
    * @param {*} channels

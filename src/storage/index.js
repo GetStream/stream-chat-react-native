@@ -15,7 +15,7 @@ export class LocalStorage {
     this.chatClient = chatClient;
     this.StorageClass = StorageClass;
     this.encryptionKey = encryptionKey;
-
+    this.storageType = storageType;
     if (storageType === 'realm') {
       this.storage = new RealmStorage(
         StorageClass,
@@ -34,6 +34,7 @@ export class LocalStorage {
     this.logger = logger;
     this.storage.setLogger(logger);
   }
+
   /**
    *
    * @param {*} query
@@ -46,7 +47,14 @@ export class LocalStorage {
       config: c.getConfig(),
     }));
 
-    await this.storage.storeChannels(query, channelValues, resync);
+    try {
+      await this.storage.storeChannels(query, channelValues, resync);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'storeChannels failed', {
+        tags: [`${this.storageType}`, 'storeChannels'],
+        error: e,
+      });
+    }
   }
 
   /**
@@ -55,7 +63,14 @@ export class LocalStorage {
    * @param {*} data
    */
   async updateChannelData(channelId, data) {
-    return await this.storage.updateChannelData(channelId, data);
+    try {
+      await this.storage.updateChannelData(channelId, data);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'updateChannelData failed', {
+        tags: [`${this.storageType}`, 'updateChannelData'],
+        error: e,
+      });
+    }
   }
 
   /**
@@ -71,12 +86,23 @@ export class LocalStorage {
     offset = 0,
     limit = 10,
   ) {
-    const storedChannels = await this.storage.queryChannels(
-      query,
-      sort,
-      offset,
-      limit,
-    );
+    let storedChannels;
+    try {
+      storedChannels = await this.storage.queryChannels(
+        query,
+        sort,
+        offset,
+        limit,
+      );
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'queryChannels failed', {
+        tags: [`${this.storageType}`, 'queryChannels'],
+        error: e,
+      });
+    }
+
+    if (!storedChannels) return [];
+
     const fChannels = storedChannels.map((c) => {
       this.chatClient._addChannelConfig({
         channel: {
@@ -108,43 +134,136 @@ export class LocalStorage {
     return fChannels;
   }
   async insertMessageForChannel(channel_id, message) {
-    return await this.storage.insertMessageForChannel(channel_id, message);
+    try {
+      await this.storage.insertMessageForChannel(channel_id, message);
+    } catch (e) {
+      this.logger(
+        `${this.storageType} storage`,
+        'insertMessageForChannel failed',
+        {
+          tags: [`${this.storageType}`, 'insertMessageForChannel'],
+          error: e,
+        },
+      );
+    }
   }
   async insertMessagesForChannel(channel_id, messages) {
-    return await this.storage.insertMessagesForChannel(channel_id, messages);
+    try {
+      await this.storage.insertMessagesForChannel(channel_id, messages);
+    } catch (e) {
+      this.logger(
+        `${this.storageType} storage`,
+        'insertMessagesForChannel failed',
+        {
+          tags: [`${this.storageType}`, 'insertMessagesForChannel'],
+          error: e,
+        },
+      );
+    }
   }
   async updateMessage(channelId, message) {
-    return await this.storage.updateMessage(channelId, message);
+    try {
+      await this.storage.updateMessage(channelId, message);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'updateMessage failed', {
+        tags: [`${this.storageType}`, 'updateMessage'],
+        error: e,
+      });
+    }
   }
   async addReactionForMessage(channelId, message) {
-    return await this.storage.addReactionForMessage(channelId, message);
+    try {
+      await this.storage.addReactionForMessage(channelId, message);
+    } catch (e) {
+      this.logger(
+        `${this.storageType} storage`,
+        'addReactionForMessage failed',
+        {
+          tags: [`${this.storageType}`, 'addReactionForMessage'],
+          error: e,
+        },
+      );
+    }
   }
   async deleteReactionForMessage(channelId, message) {
-    return await this.storage.deleteReactionForMessage(channelId, message);
+    try {
+      await this.storage.deleteReactionForMessage(channelId, message);
+    } catch (e) {
+      this.logger(
+        `${this.storageType} storage`,
+        'deleteReactionForMessage failed',
+        {
+          tags: [`${this.storageType}`, 'deleteReactionForMessage'],
+          error: e,
+        },
+      );
+    }
   }
   async addMemberToChannel(channel_id, member) {
-    return await this.storage.addMemberToChannel(channel_id, member);
+    try {
+      await this.storage.addMemberToChannel(channel_id, member);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'addMemberToChannel failed', {
+        tags: [`${this.storageType}`, 'addMemberToChannel'],
+        error: e,
+      });
+    }
   }
   async removeMemberFromChannel(channel_id, userId) {
-    return await this.storage.removeMemberFromChannel(channel_id, userId);
+    try {
+      await this.storage.removeMemberFromChannel(channel_id, userId);
+    } catch (e) {
+      this.logger(
+        `${this.storageType} storage`,
+        'removeMemberFromChannel failed',
+        {
+          tags: [`${this.storageType}`, 'removeMemberFromChannel'],
+          error: e,
+        },
+      );
+    }
   }
   async updateMember(channel_id, member) {
-    return await this.storage.updateMember(member);
+    try {
+      await this.storage.updateMember(member);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'updateMember failed', {
+        tags: [`${this.storageType}`, 'updateMember'],
+        error: e,
+      });
+    }
   }
   async updateReadState(channelId, user, lastRead) {
-    return await this.storage.updateReadState(channelId, user, lastRead);
+    try {
+      await this.storage.updateReadState(channelId, user, lastRead);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'updateReadState failed', {
+        tags: [`${this.storageType}`, 'updateReadState'],
+        error: e,
+      });
+    }
   }
 
   async queryMessages(channelId, lastMessage, limitPerPage) {
-    return await this.storage.queryMessages(
-      channelId,
-      lastMessage,
-      limitPerPage,
-    );
+    try {
+      await this.storage.queryMessages(channelId, lastMessage, limitPerPage);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'queryMessages failed', {
+        tags: [`${this.storageType}`, 'queryMessages'],
+        error: e,
+      });
+    }
   }
 
   async truncateChannel(channelId) {
-    return await this.storage.truncateChannel(channelId);
+    try {
+      await this.storage.truncateChannel(channelId);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'truncateChannel failed', {
+        tags: [`${this.storageType}`, 'truncateChannel'],
+        error: e,
+      });
+    }
   }
   /**
    * Close any open connections to database.
