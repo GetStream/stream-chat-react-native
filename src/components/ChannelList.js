@@ -422,12 +422,12 @@ const ChannelList = withChatContext(
         sort,
       };
 
-      this.props.offlineMode &&
-        (await this.props.storage.storeChannels(
+      if (this.props.offlineMode)
+        this.props.storage.storeChannels(
           JSON.stringify(query),
           channelValues,
           resync,
-        ));
+        );
 
       this.hasNextOnlinePage =
         channelValues.length >=
@@ -721,7 +721,7 @@ const ChannelList = withChatContext(
         return;
       }
 
-      this.queryChannels();
+      await this.queryChannels();
     };
     render() {
       const context = {

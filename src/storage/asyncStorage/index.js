@@ -114,7 +114,7 @@ export class AsyncLocalStorage {
     const allKeys = await this.asyncStorage.getAllKeys();
     const streamKeys = allKeys.filter((k) => k.indexOf('getstream:chat') === 0);
 
-    return this.asyncStorage.multiRemove(streamKeys);
+    await this.asyncStorage.multiRemove(streamKeys);
   }
 
   // Nothing to close here.
