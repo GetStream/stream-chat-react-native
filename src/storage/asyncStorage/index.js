@@ -212,8 +212,12 @@ export class AsyncLocalStorage {
         );
       }
       channel.read = Object.values(channel.read);
-
-      channel.messages = c.messages.map((m) => {
+      const messages = c.messages
+        .sort((a, b) =>
+          new Date(a.created_at) > new Date(b.created_at) ? -1 : 1,
+        )
+        .slice(0, 100);
+      channel.messages = messages.map((m) => {
         const message = { ...m };
         message.user = flatteneUsers[message.user];
         message.mentioned_users = m.mentioned_users.map(
@@ -390,7 +394,69 @@ export class AsyncLocalStorage {
     await this.multiSet(storables);
   }
 
-  async queryMessages() {}
+  /**
+   * TODO: Abstract out logic between queryChannels and queryMessages functions.
+   *
+   * @param {*} channelId
+   * @param {*} lastMessage
+   * @param {*} limitPerPage
+   */
+  async queryMessages(channelId, lastMessage, limitPerPage = 100) {
+    const channelMessagesKey = getChannelMessagesKey(this.userId, channelId);
+    let messages = await this.getItem(channelMessagesKey);
+    if (!messages || messages.length === 0) return [];
+
+    messages = messages.sort((a, b) =>
+      new Date(a.created_at) > new Date(b.created_at) ? -1 : 1,
+    );
+    const indexOfLastMessage = messages.findIndex(
+      (m) => m.id === lastMessage.id,
+    );
+    const paginatedMessages = messages.slice(
+      indexOfLastMessage,
+      indexOfLastMessage + limitPerPage,
+    );
+    let usersToRetrive = [];
+
+    paginatedMessages.forEach((m) => {
+      usersToRetrive.push(m.user);
+      m.mentioned_users.forEach((u) => usersToRetrive.push(u));
+      m.latest_reactions.forEach((r) => usersToRetrive.push(r.user));
+    });
+
+    usersToRetrive = usersToRetrive.filter(
+      (item, index) => usersToRetrive.indexOf(item) === index,
+    );
+
+    const users = await this.asyncStorage.multiGet(usersToRetrive);
+    const flatteneUsers = {};
+    users.forEach((kuPair) => {
+      flatteneUsers[kuPair[0]] = JSON.parse(kuPair[1]);
+    });
+    reactotron.log('users', users);
+    const finalMessages = paginatedMessages.map((m) => {
+      const message = { ...m };
+      message.user = flatteneUsers[message.user];
+      message.mentioned_users = m.mentioned_users.map((u) => flatteneUsers[u]);
+      message.latest_reactions = m.latest_reactions.map((r) => {
+        const reaction = r;
+        reaction.user = flatteneUsers[r.user];
+
+        return reaction;
+      });
+
+      message.own_reactions = m.own_reactions.map((r) => {
+        const reaction = r;
+        reaction.user = flatteneUsers[r.user];
+
+        return reaction;
+      });
+
+      return message;
+    });
+    reactotron.log('final messages', finalMessages);
+    return { messages: finalMessages };
+  }
 
   /**
    *

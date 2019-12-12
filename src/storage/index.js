@@ -246,7 +246,11 @@ export class LocalStorage {
 
   async queryMessages(channelId, lastMessage, limitPerPage) {
     try {
-      await this.storage.queryMessages(channelId, lastMessage, limitPerPage);
+      return await this.storage.queryMessages(
+        channelId,
+        lastMessage,
+        limitPerPage,
+      );
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'queryMessages failed', {
         tags: [`${this.storageType}`, 'queryMessages'],
