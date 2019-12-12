@@ -433,7 +433,6 @@ export class AsyncLocalStorage {
     users.forEach((kuPair) => {
       flatteneUsers[kuPair[0]] = JSON.parse(kuPair[1]);
     });
-    reactotron.log('users', users);
     const finalMessages = paginatedMessages.map((m) => {
       const message = { ...m };
       message.user = flatteneUsers[message.user];
@@ -454,7 +453,6 @@ export class AsyncLocalStorage {
 
       return message;
     });
-    reactotron.log('final messages', finalMessages);
     return { messages: finalMessages };
   }
 

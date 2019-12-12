@@ -10,19 +10,10 @@ import {
   getAttachmentsFromRealmList,
 } from './AttachmentMapper';
 import { convertUsersToRealm, getUsersFromRealmList } from './UserMapper';
+import { isValidDate } from '../../../utils';
 
 export const convertMessagesToRealm = (messages, realm) =>
   messages.map((m) => convertMessageToRealm(m, realm));
-
-function isValidDate(d) {
-  let date = d;
-
-  if (typeof d === 'string') {
-    date = new Date(d);
-  }
-
-  return date instanceof Date && !isNaN(date);
-}
 
 export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
   const {
