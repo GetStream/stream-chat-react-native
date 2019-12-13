@@ -16,6 +16,15 @@
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 
+## Supported features
+
+1. Channel List
+2. Message List
+3. Reactions
+4. Threads
+5. Attachments
+6. Offline chat
+
 ## React Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes.
@@ -240,6 +249,71 @@ In current context, dependencies such as `react-native-document-picker` and (if 
     ```
     cd ios && pod install && cd ..
     ```
+
+## Offline support
+
+This sdk has added support to use the chat in offline mode.
+We support two options for storage:
+
+1. ### AsyncStorage - https://github.com/react-native-community/async-storage
+
+   #### Install
+
+   Please follow instructions mentioned here - https://github.com/react-native-community/async-storage#install
+
+   #### Usage
+
+   ```
+   import {
+     ...
+     LocalStorage,
+   } from 'stream-chat-react-native';
+
+   import AsyncStorage from '@react-native-community/async-storage';
+
+   ....
+   storage = new LocalStorage(chatClient, AsyncStorage, 'async-storage');
+
+   ...
+
+     render() {
+       return (
+         <SafeAreaView>
+           <Chat client={chatClient} storage={storage}>
+             ...
+           </Chat>
+         </SafeAreaView>
+       );
+   ```
+
+2. RealmJS - https://github.com/realm/realm-js
+
+   #### Install
+
+   Please follow the instructions given here - https://realm.io/docs/javascript/latest/#installation
+
+   #### Usage
+
+   ```
+   import {
+     ...
+     LocalStorage
+   } from 'stream-chat-react-native';
+
+   const Realm = require('realm');
+   ....
+   storage = new LocalStorage(chatClient, Realm, 'realm');
+   ...
+
+     render() {
+       return (
+         <SafeAreaView>
+           <Chat client={chatClient} storage={storage}>
+             ...
+           </Chat>
+         </SafeAreaView>
+       );
+   ```
 
 ## Common issues
 
