@@ -286,6 +286,19 @@ We support two options for storage:
        );
    ```
 
+   Following methods are exposed for our Async Storage interface:
+
+   - `deleteAll()` Deletes all the stored data related to stream chat.
+   - `getAllKeys()` Returns async storage keys for stream chat.
+
+   e.g.,
+
+   ```
+   // To clear the local database related to stream chat
+   storage = new LocalStorage(chatClient, AsyncStorage, 'async-storage');
+   storage.db.deleteAll();
+   ```
+
 2. **RealmJS - https://github.com/realm/realm-js**
 
    #### Install
@@ -314,6 +327,18 @@ We support two options for storage:
          </SafeAreaView>
        );
    ```
+
+   Following methods are exposed for our Async Storage interface:
+
+   - `deleteAll()` Deletes all the stored data related to stream chat.
+
+To log the errors, you can set the logger function on storage class:
+
+```
+storage.setLogger((storageType, msg, extraData) => {
+  reactotron.log(storageType, msg, extraData);
+})
+```
 
 ## Common issues
 

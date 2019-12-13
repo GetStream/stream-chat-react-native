@@ -18,7 +18,7 @@ export class LocalStorage {
     this.storageType = storageType;
 
     if (storageType === 'realm') {
-      this.storage = new RealmStorage(
+      this.db = new RealmStorage(
         StorageClass,
         chatClient.userID,
         this.encryptionKey,
@@ -26,14 +26,14 @@ export class LocalStorage {
     }
 
     if (storageType === 'async-storage') {
-      this.storage = new AsyncLocalStorage(StorageClass, chatClient.userID);
+      this.db = new AsyncLocalStorage(StorageClass, chatClient.userID);
     }
     this.logger = () => {};
   }
 
   setLogger(logger) {
     this.logger = logger;
-    this.storage.setLogger(logger);
+    this.db.setLogger(logger);
   }
 
   /**
@@ -49,7 +49,7 @@ export class LocalStorage {
     }));
 
     try {
-      await this.storage.storeChannels(query, channelValues, resync);
+      await this.db.storeChannels(query, channelValues, resync);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'storeChannels failed', {
         tags: [`${this.storageType}`, 'storeChannels'],
@@ -65,7 +65,7 @@ export class LocalStorage {
    */
   async updateChannelData(channelId, data) {
     try {
-      await this.storage.updateChannelData(channelId, data);
+      await this.db.updateChannelData(channelId, data);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateChannelData failed', {
         tags: [`${this.storageType}`, 'updateChannelData'],
@@ -89,12 +89,7 @@ export class LocalStorage {
   ) {
     let storedChannels;
     try {
-      storedChannels = await this.storage.queryChannels(
-        query,
-        sort,
-        offset,
-        limit,
-      );
+      storedChannels = await this.db.queryChannels(query, sort, offset, limit);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'queryChannels failed', {
         tags: [`${this.storageType}`, 'queryChannels'],
@@ -136,7 +131,7 @@ export class LocalStorage {
   }
   async insertMessageForChannel(channel_id, message) {
     try {
-      await this.storage.insertMessageForChannel(channel_id, message);
+      await this.db.insertMessageForChannel(channel_id, message);
     } catch (e) {
       this.logger(
         `${this.storageType} storage`,
@@ -150,7 +145,7 @@ export class LocalStorage {
   }
   async insertMessagesForChannel(channel_id, messages) {
     try {
-      await this.storage.insertMessagesForChannel(channel_id, messages);
+      await this.db.insertMessagesForChannel(channel_id, messages);
     } catch (e) {
       this.logger(
         `${this.storageType} storage`,
@@ -164,7 +159,7 @@ export class LocalStorage {
   }
   async updateMessage(channelId, message) {
     try {
-      await this.storage.updateMessage(channelId, message);
+      await this.db.updateMessage(channelId, message);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateMessage failed', {
         tags: [`${this.storageType}`, 'updateMessage'],
@@ -174,7 +169,7 @@ export class LocalStorage {
   }
   async addReactionForMessage(channelId, message) {
     try {
-      await this.storage.addReactionForMessage(channelId, message);
+      await this.db.addReactionForMessage(channelId, message);
     } catch (e) {
       this.logger(
         `${this.storageType} storage`,
@@ -188,7 +183,7 @@ export class LocalStorage {
   }
   async deleteReactionForMessage(channelId, message) {
     try {
-      await this.storage.deleteReactionForMessage(channelId, message);
+      await this.db.deleteReactionForMessage(channelId, message);
     } catch (e) {
       this.logger(
         `${this.storageType} storage`,
@@ -202,7 +197,7 @@ export class LocalStorage {
   }
   async addMemberToChannel(channel_id, member) {
     try {
-      await this.storage.addMemberToChannel(channel_id, member);
+      await this.db.addMemberToChannel(channel_id, member);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'addMemberToChannel failed', {
         tags: [`${this.storageType}`, 'addMemberToChannel'],
@@ -212,7 +207,7 @@ export class LocalStorage {
   }
   async removeMemberFromChannel(channel_id, userId) {
     try {
-      await this.storage.removeMemberFromChannel(channel_id, userId);
+      await this.db.removeMemberFromChannel(channel_id, userId);
     } catch (e) {
       this.logger(
         `${this.storageType} storage`,
@@ -226,7 +221,7 @@ export class LocalStorage {
   }
   async updateMember(channel_id, member) {
     try {
-      await this.storage.updateMember(member);
+      await this.db.updateMember(member);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateMember failed', {
         tags: [`${this.storageType}`, 'updateMember'],
@@ -236,7 +231,7 @@ export class LocalStorage {
   }
   async updateReadState(channelId, user, lastRead) {
     try {
-      await this.storage.updateReadState(channelId, user, lastRead);
+      await this.db.updateReadState(channelId, user, lastRead);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateReadState failed', {
         tags: [`${this.storageType}`, 'updateReadState'],
@@ -247,11 +242,7 @@ export class LocalStorage {
 
   async queryMessages(channelId, lastMessage, limitPerPage) {
     try {
-      return await this.storage.queryMessages(
-        channelId,
-        lastMessage,
-        limitPerPage,
-      );
+      return await this.db.queryMessages(channelId, lastMessage, limitPerPage);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'queryMessages failed', {
         tags: [`${this.storageType}`, 'queryMessages'],
@@ -262,7 +253,7 @@ export class LocalStorage {
 
   async truncateChannel(channelId) {
     try {
-      await this.storage.truncateChannel(channelId);
+      await this.db.truncateChannel(channelId);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'truncateChannel failed', {
         tags: [`${this.storageType}`, 'truncateChannel'],
@@ -274,13 +265,13 @@ export class LocalStorage {
    * Close any open connections to database.
    */
   close() {
-    this.storage.close();
+    this.db.close();
   }
 
   /**
    * Delete all the entries in database.
    */
   async deleteAll() {
-    await this.storage.deleteAll();
+    await this.db.deleteAll();
   }
 }
