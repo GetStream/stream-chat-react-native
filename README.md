@@ -23,7 +23,7 @@
 3. Reactions
 4. Threads
 5. Attachments
-6. Offline chat
+6. [Offline chat](#offline-support)
 
 ## React Chat Tutorial
 
@@ -252,6 +252,8 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ## Offline support
 
+### Storage options
+
 This sdk has added support to use the chat in offline mode.
 We support two options for storage:
 
@@ -331,6 +333,49 @@ We support two options for storage:
    Following methods are exposed for our Async Storage interface:
 
    - `deleteAll()` Deletes all the stored data related to stream chat.
+
+### Images
+
+Images are not cached/stored by default. Although it is totally supported.
+We support `ImageComponent` prop for `ChannelList` and `Channel` component, which will be
+used to display images in places components like avatar and attachments.
+
+You can use [`CachedImage`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) for this purpose.
+Its a package, which is forked from https://github.com/fungilation/react-native-cached-image.
+It handles storing images on device and using local images whenever required.
+
+Ofcourse, you don't need to use it, you can also write your own component for this purpose.
+
+#### Installing
+
+```
+yarn add @stream-io/react-native-cached-image rn-fetch-blob
+
+// For RN > 0.60
+cd ios && pod install && cd ..
+// For RN < 0.60
+react-native link rn-fetch-blob
+```
+
+#### Usage
+
+```
+import {
+  CachedImage,
+  ImageCacheProvider
+} from 'react-native-cached-image';
+
+...
+
+<ChannelList
+  filters={filters}
+  sort={sort}
+  options={options}
+  ImageComponent={CachedImage}
+/>
+```
+
+### Logging
 
 To log the errors, you can set the logger function on storage class:
 
