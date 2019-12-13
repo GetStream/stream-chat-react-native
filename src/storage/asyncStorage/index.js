@@ -45,6 +45,14 @@ export class AsyncLocalStorage {
     this.logger = logger;
   }
 
+  //
+  // ==========================================================================
+  // ==========================================================================
+  // Methods to access AsyncStorage.
+  // ==========================================================================
+  // ==========================================================================
+  //
+
   /**
    *
    * @param {*} key
@@ -111,6 +119,14 @@ export class AsyncLocalStorage {
 
   // Nothing to close here.
   close() {}
+
+  //
+  // ==========================================================================
+  // ==========================================================================
+  //  Methods exposed for functionality of offline storage.
+  // ==========================================================================
+  // ==========================================================================
+  //
 
   /**
    * Function takes the array of new channels for a query to store and saves it in asyncStorage.
@@ -261,7 +277,7 @@ export class AsyncLocalStorage {
   async updateChannelData(channelId, data) {
     const channel = await this.getChannel(channelId);
     const { members, ...customData } = data;
-    channel.data = JSON.stringify(customData);
+    channel.data = customData;
 
     channel.created_at = data.created_at;
     channel.updated_at = data.updated_at;
@@ -463,19 +479,6 @@ export class AsyncLocalStorage {
       return message;
     });
     return { messages: finalMessages };
-  }
-
-  /**
-   *
-   * @param {*} channels
-   */
-  insertChannels(channels) {
-    const values = [];
-    channels.forEach((c) => {
-      values.push([getChannelKey(this.userId, c.id), JSON.stringify(c)]);
-    });
-
-    return values;
   }
 
   /**
