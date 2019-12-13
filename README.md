@@ -255,7 +255,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 This sdk has added support to use the chat in offline mode.
 We support two options for storage:
 
-1. ### AsyncStorage - https://github.com/react-native-community/async-storage
+1. **AsyncStorage - https://github.com/react-native-community/async-storage**
 
    #### Install
 
@@ -286,7 +286,7 @@ We support two options for storage:
        );
    ```
 
-2. RealmJS - https://github.com/realm/realm-js
+2. **RealmJS - https://github.com/realm/realm-js**
 
    #### Install
 

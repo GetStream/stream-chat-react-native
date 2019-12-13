@@ -16,6 +16,7 @@ export class LocalStorage {
     this.StorageClass = StorageClass;
     this.encryptionKey = encryptionKey;
     this.storageType = storageType;
+
     if (storageType === 'realm') {
       this.storage = new RealmStorage(
         StorageClass,

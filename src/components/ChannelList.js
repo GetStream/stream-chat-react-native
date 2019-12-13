@@ -160,9 +160,14 @@ const ChannelList = withChatContext(
         trailing: true,
       });
 
+      // If the current list of channels are from local storage or remote server.
+      this.onlineChannelsActive = false;
+
+      // If the queryChannels request from local storage is active or not.
       this.offlineQueryActive = false;
       this.hasNextOfflinePage = true;
 
+      // If the queryChannels request from remote storage/api is active or not.
       this.onlineQueryActive = false;
       this.hasNextOnlinePage = true;
       this._unmounted = false;
@@ -193,13 +198,15 @@ const ChannelList = withChatContext(
       if (
         this.props.offlineMode &&
         prevProps.isOnline === 'unknown' &&
-        typeof this.props.isOnline === 'boolean'
+        typeof this.props.isOnline === 'boolean' &&
+        this.props.isOnline &&
+        !this.onlineChannelsActive
       ) {
         // This is a bit hackey solution to allow UI to first update nicely with
         // offline channels. Otherwise for some reason, offline channels don't reflect on screen
         // if network request happens to quickly after loading channels from local storage.
         await this.delay(20);
-        await this.queryChannels(true);
+        await this.queryChannels(true, true);
       }
       this.props.logger('ChannelList component', 'componentDidUpdate', {
         tags: ['lifecycle', 'channellist'],
@@ -329,13 +336,11 @@ const ChannelList = withChatContext(
         return;
       }
 
-      this.offlineQueryActive = true;
-
       if (this._unmounted || (!resync && !this.hasNextOfflinePage)) {
-        this.offlineQueryActive = false;
         return;
       }
 
+      this.offlineQueryActive = true;
       const pagerParams = this.getPagerParams(resync);
 
       if (this._unmounted) return;
@@ -355,10 +360,10 @@ const ChannelList = withChatContext(
       // For this function, will be called with 'resync=true' only at the begining of the app.
       // If channels returned from local storage is empty, that means we haven't stored any channels yet.
       // In that case we would like to show loading indicator instead of EmptyStateIndicator.
-      // Thus following return.
+      // Thus delegating the task to remote API instantly.
       if (resync && channelValues.length === 0) {
         this.offlineQueryActive = false;
-        return;
+        return await this._queryFromRemoteAndSync(resync);
       }
 
       await this.setChannelValues(channelValues, resync, pagerParams);
@@ -381,7 +386,9 @@ const ChannelList = withChatContext(
      * @param {*} resync
      */
     async _queryFromRemoteAndSync(resync) {
-      if (this.onlineQueryActive) return;
+      if (this.onlineQueryActive) {
+        return;
+      }
 
       this.onlineQueryActive = true;
 
@@ -408,34 +415,40 @@ const ChannelList = withChatContext(
         },
       });
       // This is a bit hacky solution.
-      const channelValues = await this.props.client.queryChannels(
-        filters,
-        sort,
-        {
+      let channelValues = [];
+      try {
+        channelValues = await this.props.client.queryChannels(filters, sort, {
           ...options,
           ...pagerParams,
-        },
-      );
+        });
+      } catch (e) {
+        this.onlineQueryActive = false;
+        this.setState({ error: e });
+        return;
+      }
+
       await this.setChannelValues(channelValues, resync, pagerParams);
       const query = {
         filters,
         sort,
       };
 
-      if (this.props.offlineMode)
+      if (this.props.offlineMode) {
         this.props.storage.storeChannels(
           JSON.stringify(query),
           channelValues,
           resync,
         );
+      }
 
       this.hasNextOnlinePage =
         channelValues.length >=
         (pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
           ? true
           : false;
-
       this.onlineQueryActive = false;
+
+      this.onlineChannelsActive = true;
     }
 
     listenToChanges() {
@@ -715,12 +728,7 @@ const ChannelList = withChatContext(
       });
     };
 
-    loadNextPage = () => {
-      // TODO: Here we can add a condition to avoid loading next page if network status is still unknown.
-      if (this.props.isOnline === 'unknown') {
-        return;
-      }
-
+    loadNextPage = async () => {
       await this.queryChannels();
     };
     render() {

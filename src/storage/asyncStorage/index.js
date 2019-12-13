@@ -46,6 +46,73 @@ export class AsyncLocalStorage {
   }
 
   /**
+   *
+   * @param {*} key
+   * @param {*} defaultValue
+   */
+  async getItem(key, defaultValue) {
+    const strValue = await this.asyncStorage.getItem(key);
+
+    if (!strValue) return defaultValue;
+
+    return JSON.parse(strValue);
+  }
+
+  /**
+   *
+   * @param {*} key
+   */
+  async setItem(key, value) {
+    return await this.asyncStorage.setItem(key, JSON.stringify(value));
+  }
+
+  /**
+   *
+   * @param {*} storables
+   */
+  async multiSet(storables) {
+    const storablesArray = [];
+
+    for (const key in storables) {
+      storablesArray.push([key, JSON.stringify(storables[key])]);
+    }
+
+    return await this.asyncStorage.multiSet(storablesArray);
+  }
+
+  async multiGet(keys) {
+    const items = await this.asyncStorage.multiGet(keys);
+    const flattenedItems = {};
+    items.forEach((kuPair) => {
+      flattenedItems[kuPair[0]] = JSON.parse(kuPair[1]);
+    });
+
+    return flattenedItems;
+  }
+
+  /**
+   * Get all the stream storage keys
+   */
+  async getAllKeys() {
+    const allKeys = await this.asyncStorage.getAllKeys();
+    if (!allKeys) return [];
+
+    return allKeys.filter((k) => k.indexOf('getstream:chat') === 0);
+  }
+
+  /**
+   * Deletes all stream storage keys
+   */
+  async deleteAll() {
+    const streamKeys = await this.getAllKeys();
+
+    await this.asyncStorage.multiRemove(streamKeys);
+  }
+
+  // Nothing to close here.
+  close() {}
+
+  /**
    * Function takes the array of new channels for a query to store and saves it in asyncStorage.
    *
    * @param {*} query
@@ -78,50 +145,6 @@ export class AsyncLocalStorage {
 
   /**
    *
-   * @param {*} key
-   */
-  async getItem(key, defaultValue) {
-    const strValue = await this.asyncStorage.getItem(key);
-
-    if (!strValue) return defaultValue;
-
-    return JSON.parse(strValue);
-  }
-
-  /**
-   *
-   * @param {*} key
-   */
-  async setItem(key, value) {
-    return await this.asyncStorage.setItem(key, JSON.stringify(value));
-  }
-
-  /**
-   *
-   * @param {*} storables
-   */
-  async multiSet(storables) {
-    const storablesArray = [];
-
-    for (const key in storables) {
-      storablesArray.push([key, JSON.stringify(storables[key])]);
-    }
-
-    return await this.asyncStorage.multiSet(storablesArray);
-  }
-
-  async deleteAll() {
-    const allKeys = await this.asyncStorage.getAllKeys();
-    const streamKeys = allKeys.filter((k) => k.indexOf('getstream:chat') === 0);
-
-    await this.asyncStorage.multiRemove(streamKeys);
-  }
-
-  // Nothing to close here.
-  close() {}
-
-  /**
-   *
    * @param {*} query
    */
   async queryChannels(query, sort, offset, limit) {
@@ -147,14 +170,13 @@ export class AsyncLocalStorage {
 
       return answer;
     });
-
     channels = channels.slice(offset, offset + limit);
     const fChannels = await this.enrichChannels(channels);
     return fChannels;
   }
 
   /**
-   *
+   * This is a bit of a monolithic function.
    */
   enrichChannels = async (channels) => {
     const keysToRetrieve = [];
@@ -164,19 +186,15 @@ export class AsyncLocalStorage {
         keysToRetrieve.push(c.config);
     });
 
-    const state = await this.asyncStorage.multiGet(keysToRetrieve);
-    const flattenedstate = {};
-    state.forEach((kmPair) => {
-      flattenedstate[kmPair[0]] = kmPair[1] ? JSON.parse(kmPair[1]) : [];
-    });
+    const state = await this.multiGet(keysToRetrieve);
 
     let usersToRetrive = [];
     const storedChannels = channels.map((c) => ({
       ...c,
-      messages: flattenedstate[c.messages],
-      members: flattenedstate[c.members],
-      read: flattenedstate[c.read],
-      config: flattenedstate[c.config],
+      messages: state[c.messages],
+      members: state[c.members],
+      read: state[c.read],
+      config: state[c.config],
     }));
 
     storedChannels.forEach((c) => {
@@ -191,22 +209,18 @@ export class AsyncLocalStorage {
       (item, index) => usersToRetrive.indexOf(item) === index,
     );
 
-    const users = await this.asyncStorage.multiGet(usersToRetrive);
-    const flatteneUsers = {};
-    users.forEach((kuPair) => {
-      flatteneUsers[kuPair[0]] = JSON.parse(kuPair[1]);
-    });
+    const users = await this.multiGet(usersToRetrive);
 
     const finalChannels = storedChannels.map((c) => {
       const channel = { ...c };
       channel.members = c.members.map((m) => {
         const member = m;
-        member.user = flatteneUsers[member.user];
+        member.user = users[member.user];
         return member;
       });
 
       for (const userId in channel.read) {
-        channel.read[userId].user = flatteneUsers[channel.read[userId].user];
+        channel.read[userId].user = users[channel.read[userId].user];
         channel.read[userId].last_read = new Date(
           channel.read[userId].last_read,
         );
@@ -219,20 +233,18 @@ export class AsyncLocalStorage {
         .slice(0, 100);
       channel.messages = messages.map((m) => {
         const message = { ...m };
-        message.user = flatteneUsers[message.user];
-        message.mentioned_users = m.mentioned_users.map(
-          (u) => flatteneUsers[u],
-        );
+        message.user = users[message.user];
+        message.mentioned_users = m.mentioned_users.map((u) => users[u]);
         message.latest_reactions = m.latest_reactions.map((r) => {
           const reaction = r;
-          reaction.user = flatteneUsers[r.user];
+          reaction.user = users[r.user];
 
           return reaction;
         });
 
         message.own_reactions = m.own_reactions.map((r) => {
           const reaction = r;
-          reaction.user = flatteneUsers[r.user];
+          reaction.user = users[r.user];
 
           return reaction;
         });
@@ -428,25 +440,22 @@ export class AsyncLocalStorage {
       (item, index) => usersToRetrive.indexOf(item) === index,
     );
 
-    const users = await this.asyncStorage.multiGet(usersToRetrive);
-    const flatteneUsers = {};
-    users.forEach((kuPair) => {
-      flatteneUsers[kuPair[0]] = JSON.parse(kuPair[1]);
-    });
+    const users = await this.multiGet(usersToRetrive);
+
     const finalMessages = paginatedMessages.map((m) => {
       const message = { ...m };
-      message.user = flatteneUsers[message.user];
-      message.mentioned_users = m.mentioned_users.map((u) => flatteneUsers[u]);
+      message.user = users[message.user];
+      message.mentioned_users = m.mentioned_users.map((u) => users[u]);
       message.latest_reactions = m.latest_reactions.map((r) => {
         const reaction = r;
-        reaction.user = flatteneUsers[r.user];
+        reaction.user = users[r.user];
 
         return reaction;
       });
 
       message.own_reactions = m.own_reactions.map((r) => {
         const reaction = r;
-        reaction.user = flatteneUsers[r.user];
+        reaction.user = users[r.user];
 
         return reaction;
       });
@@ -498,18 +507,7 @@ export class AsyncLocalStorage {
       getChannelMessagesKey(this.userId, i),
     );
 
-    const channelMessagesValue = await this.asyncStorage.multiGet(
-      channelMsgsToRetrieve,
-    );
-
-    const channelMessages = {};
-    for (let i = 0; i < channelMessagesValue.length; i++) {
-      channelMessages[channelMessagesValue[i][0]] = channelMessagesValue[i][1]
-        ? JSON.parse(channelMessagesValue[i][1])
-        : [];
-    }
-
-    return channelMessages;
+    return await this.multiGet(channelMsgsToRetrieve);
   }
 
   /**
@@ -524,7 +522,6 @@ export class AsyncLocalStorage {
     channelIds = channelIds.filter(
       (item, index) => channelIds.indexOf(item) === index,
     );
-
     return channelIds;
   }
 
@@ -543,3 +540,5 @@ export class AsyncLocalStorage {
     await this.multiSet(storables);
   }
 }
+
+export * from './keys';

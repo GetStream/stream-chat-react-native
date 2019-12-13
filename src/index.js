@@ -10,6 +10,16 @@ export {
 } from './context.js';
 
 export { MESSAGE_ACTIONS, renderText } from './utils';
-export { AsyncLocalStorage } from './storage/asyncStorage';
+export {
+  AsyncLocalStorage,
+  getStreamChatKey,
+  getQueryKey,
+  getChannelKey,
+  getChannelMessagesKey,
+  getChannelMembersKey,
+  getChannelReadKey,
+  getUserKey,
+  getChannelConfigKey,
+} from './storage/asyncStorage';
 export { RealmStorage } from './storage/realmStorage/index.js';
 export { LocalStorage } from './storage';
