@@ -261,6 +261,18 @@ export class LocalStorage {
       });
     }
   }
+
+  async deleteChannel(channelId) {
+    try {
+      await this.db.deleteChannel(channelId);
+    } catch (e) {
+      this.logger(`${this.storageType} storage`, 'deleteChannel failed', {
+        tags: [`${this.storageType}`, 'deleteChannel'],
+        error: e,
+      });
+    }
+  }
+
   /**
    * Close any open connections to database.
    */

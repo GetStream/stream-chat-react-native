@@ -363,4 +363,15 @@ export class RealmStorage {
       channel.last_message_at = null;
     });
   }
+
+  async deleteChannel(channelId) {
+    const realm = await this.getRealm();
+    realm.write(() => {
+      const channel = realm.objectForPrimaryKey('Channel', channelId);
+      realm.delete(channel.messages);
+      realm.delete(channel.members);
+      realm.delete(channel.read);
+      realm.delete(channel);
+    });
+  }
 }

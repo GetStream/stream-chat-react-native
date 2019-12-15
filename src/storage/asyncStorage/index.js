@@ -488,7 +488,9 @@ export class AsyncLocalStorage {
   async getChannels(channelIds) {
     const channelsValue = await this.asyncStorage.multiGet(channelIds);
 
-    return channelsValue.map((ckPair) => JSON.parse(ckPair[1]));
+    return channelsValue
+      .map((ckPair) => JSON.parse(ckPair[1]))
+      .filter((c) => (c ? true : false));
   }
 
   /**
@@ -541,6 +543,20 @@ export class AsyncLocalStorage {
     storables[getChannelKey(this.userId, channelId)] = channel;
 
     await this.multiSet(storables);
+  }
+
+  async deleteChannel(channelId) {
+    const channelMessagesKey = getChannelMessagesKey(this.userId, channelId);
+    const channelMembersKey = getChannelMembersKey(this.userId, channelId);
+    const channelReadKey = getChannelReadKey(this.userId, channelId);
+    const channelKey = getChannelKey(this.userId, channelId);
+
+    await this.asyncStorage.multiRemove([
+      channelMessagesKey,
+      channelMembersKey,
+      channelReadKey,
+      channelKey,
+    ]);
   }
 }
 

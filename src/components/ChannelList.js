@@ -452,9 +452,10 @@ const ChannelList = withChatContext(
     }
 
     listenToChanges() {
-      this.props.client.on(this.handleEvent);
       if (this.props.offlineMode)
         this.props.client.on(this.handleEventForOfflineSync);
+
+      this.props.client.on(this.handleEvent);
     }
 
     handleEventForOfflineSync = async (e) => {
@@ -539,6 +540,11 @@ const ChannelList = withChatContext(
       if (e.type === 'channel.truncated') {
         if (this.props.storage.truncateChannel)
           await this.props.storage.truncateChannel(channels[channelIndex].id);
+      }
+
+      if (e.type === 'channel.deleted') {
+        if (this.props.storage.deleteChannel)
+          await this.props.storage.deleteChannel(channels[channelIndex].id);
       }
 
       return null;
