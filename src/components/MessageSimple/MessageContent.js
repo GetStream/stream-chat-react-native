@@ -33,14 +33,16 @@ const Container = styled.TouchableOpacity`
       : theme.colors.transparent};
   border-bottom-left-radius: ${({ alignment, theme }) =>
     alignment === 'left'
-      ? theme.message.text.borderRadiusS
-      : theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusS
+      : theme.message.content.container.borderRadiusL};
   border-bottom-right-radius: ${({ alignment, theme }) =>
     alignment === 'left'
-      ? theme.message.text.borderRadiusL
-      : theme.message.text.borderRadiusS};
-  border-top-left-radius: ${({ theme }) => theme.message.text.borderRadiusL};
-  border-top-right-radius: ${({ theme }) => theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusL
+      : theme.message.content.container.borderRadiusS};
+  border-top-left-radius: ${({ theme }) =>
+    theme.message.content.container.borderRadiusL};
+  border-top-right-radius: ${({ theme }) =>
+    theme.message.content.container.borderRadiusL};
   ${({ theme }) => theme.message.content.container.css};
 `;
 

@@ -53,3 +53,31 @@ const data = require('./data');
   {...data.channelContext}
 />;
 ```
+
+We use [markdown](https://github.com/CharlesMangwa/react-native-simple-markdown) to render the text in message.
+
+You can customize the styles of message text by providing custom styles in theme object:
+
+Available options for customization are: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
+
+```json
+const theme = {
+  message: {
+    content: {
+      markdown: {
+        text: {
+          fontFamily: 'AppleSDGothicNeo-Bold'
+        },
+        link: {
+          color: 'pink'
+        }
+      }
+    }
+  }
+}
+
+...
+<Chat client={client} style={theme}>
+  ...
+</Chat>
+```
