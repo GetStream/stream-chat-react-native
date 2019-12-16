@@ -6287,10 +6287,10 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat-react-native-core@v0.3.11:
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.11.tgz#35d6ecf70abe3847d5952a520fd6b695f9face93"
-  integrity sha512-wQ0HuACRj8Y78mzQ+Y6W6z5gRkf5iRzz1P/HZox4EvdRRrskYmvgWOKJDl0oMhCaRdVCykzN2Mkcy61fzwQjpg==
+stream-chat-react-native-core@v0.3.12:
+  version "0.3.12"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.12.tgz#0fd5301eed144c67bb57265915e2772e52ee268f"
+  integrity sha512-9u7XIVEMGRvp57aJnYkFfzX+ppKQGy0ILgBjvzpdeDyroxRYZK006i7vgLh+dOOCpeGdz9lfc8/sk9pye4Wm7Q==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
@@ -6309,10 +6309,10 @@ stream-chat-react-native-core@v0.3.11:
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^1.1.2"
+    stream-chat "^1.2.1"
     uuid "^3.3.2"
 
-stream-chat@^1.1.2:
+stream-chat@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.2.1.tgz#cefd4aae598c4c58ab92df6720a8adaa797ad216"
   integrity sha512-pSJIqoI2FfWj11hXcGrOp4yPWeVlNnCDfw+dbEGTPt0AcahbZ0jFHj9SDAX2SkWPUd1PpUo5d3rD74TM7aZihw==
