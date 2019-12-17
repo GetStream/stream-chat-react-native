@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.4.0] 2019-12-16
+
+- Adding support for customizing markdown styles - https://github.com/GetStream/stream-chat-react-native/pull/99/files#diff-ede54911d9164ea37e65e92f2e18cb91R56
+- Removing `text` property theme with `textContainer`.
+
 ## [0.3.12] 2019-12-03
 
 - Adding support for `onChannelTruncated` prop to ChannelList

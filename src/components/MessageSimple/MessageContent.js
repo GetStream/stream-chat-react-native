@@ -33,23 +33,22 @@ const Container = styled.TouchableOpacity`
       : theme.colors.transparent};
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('left') !== -1
-      ? theme.message.text.borderRadiusS
-      : theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusS
+      : theme.message.content.container.borderRadiusL};
   border-bottom-right-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('right') !== -1
-      ? theme.message.text.borderRadiusS
-      : theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusS
+      : theme.message.content.container.borderRadiusL};
   border-top-left-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
-      ? theme.message.text.borderRadiusS
-      : theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusS
+      : theme.message.content.container.borderRadiusL};
 
   border-top-right-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
-      ? theme.message.text.borderRadiusS
-      : theme.message.text.borderRadiusL};
+      ? theme.message.content.container.borderRadiusS
+      : theme.message.content.container.borderRadiusL};
   margin-top: 2;
-
   ${({ theme }) => theme.message.content.container.css};
 `;
 
