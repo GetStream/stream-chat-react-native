@@ -334,6 +334,11 @@ We support two options for storage:
 
    - `deleteAll()` Deletes all the stored data related to stream chat.
 
+   #### Limitations
+
+   - RealmJS doesn't work with [Hermes engine](https://hermesengine.dev). For more details, take a look at this issue - https://github.com/realm/realm-js/issues/2455
+   - Expo does not support Realm. - https://expo.canny.io/feature-requests/p/support-for-realm
+
 ### Images
 
 Images are not cached/stored by default. Although it is totally supported.
