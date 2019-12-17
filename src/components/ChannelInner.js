@@ -30,6 +30,7 @@ export class ChannelInner extends PureComponent {
       // Loading more messages
       loadingMore: false,
       hasMore: true,
+      hasMoreLocalMessages: true,
       messages: Immutable([]),
       online: props.isOnline,
       typing: Immutable({}),
@@ -65,6 +66,15 @@ export class ChannelInner extends PureComponent {
       leading: true,
       trailing: true,
     });
+
+    this._loadMoreFromLocalStorageFinishedDebounced = debounce(
+      this.loadMoreFromLocalStorageFinished,
+      2000,
+      {
+        leading: true,
+        trailing: true,
+      },
+    );
 
     this._loadMoreThrottled = throttle(this.loadMore, 2000, {
       leading: true,
@@ -123,7 +133,11 @@ export class ChannelInner extends PureComponent {
      * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
      * on device for use in offline mode.
      **/
-    ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    ImageComponent: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.func,
+      PropTypes.elementType,
+    ]),
   };
 
   static defaultProps = {
@@ -530,8 +544,21 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMore = async () => {
+    if (this.state.loadingMore) return;
+
     // prevent duplicate loading events...
-    if (this.state.loadingMore || !this.state.hasMore) return;
+    if (
+      this.props.offlineMode &&
+      !this.props.isOnline &&
+      !this.state.hasMoreLocalMessages
+    ) {
+      return;
+    }
+
+    if (this.props.isOnline && !this.state.hasMore) {
+      return;
+    }
+
     if (this._unmounted) return;
     this.setState({ loadingMore: true });
 
@@ -563,9 +590,9 @@ export class ChannelInner extends PureComponent {
       limit: perPage,
       id_lt: oldestID,
     });
-    try {
-      // If offlineMode is enabled and network is down, then fetch the messages from local storage.
-      if (this.props.offlineMode && !this.props.isOnline) {
+    // If offlineMode is enabled and network is down, then fetch the messages from local storage.
+    if (this.props.offlineMode && !this.props.isOnline) {
+      try {
         queryResponse = await this.props.storage.queryMessages(
           this.props.channel.id,
           oldestMessage,
@@ -575,29 +602,50 @@ export class ChannelInner extends PureComponent {
           queryResponse.messages,
           true,
         );
-      } else {
-        queryResponse = await this.props.channel.query({
-          messages: { limit: perPage, id_lt: oldestID },
-        });
+
+        const hasMore = queryResponse.messages.length === perPage;
+
+        this._loadMoreFromLocalStorageFinishedDebounced(
+          hasMore,
+          this.props.channel.state.messages,
+        );
+        return;
+      } catch (e) {
+        console.warn(
+          'message pagination request from local storage failed with error',
+          e,
+        );
+        if (this._unmounted) return;
+        this.setState({ loadingMore: false });
+        return;
       }
+    }
+
+    try {
+      queryResponse = await this.props.channel.query({
+        messages: { limit: perPage, id_lt: oldestID },
+      });
+      const hasMore = queryResponse.messages.length === perPage;
+
+      this._loadMoreFinishedDebounced(
+        hasMore,
+        this.props.channel.state.messages,
+      );
+
+      if (this.props.isOnline && queryResponse && queryResponse.messages) {
+        this.props.offlineMode &&
+          (await this.props.storage.insertMessagesForChannel(
+            this.props.channel.id,
+            queryResponse.messages,
+          ));
+      }
+      return;
     } catch (e) {
       console.warn('message pagination request failed with error', e);
       if (this._unmounted) return;
       this.setState({ loadingMore: false });
       return;
     }
-
-    if (this.props.isOnline && queryResponse && queryResponse.messages) {
-      this.props.offlineMode &&
-        (await this.props.storage.insertMessagesForChannel(
-          this.props.channel.id,
-          queryResponse.messages,
-        ));
-    }
-
-    const hasMore = queryResponse.messages.length === perPage;
-
-    this._loadMoreFinishedDebounced(hasMore, this.props.channel.state.messages);
   };
 
   loadMoreFinished = (hasMore, messages) => {
@@ -605,6 +653,15 @@ export class ChannelInner extends PureComponent {
     this.setState({
       loadingMore: false,
       hasMore,
+      messages,
+    });
+  };
+
+  loadMoreFromLocalStorageFinished = (hasMore, messages) => {
+    if (this._unmounted) return;
+    this.setState({
+      loadingMore: false,
+      hasMoreLocalMessages: hasMore,
       messages,
     });
   };

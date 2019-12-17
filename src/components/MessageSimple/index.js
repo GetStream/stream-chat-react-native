@@ -108,7 +108,11 @@ export const MessageSimple = themed(
        */
       AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /** Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image) */
-      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      ImageComponent: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.func,
+        PropTypes.elementType,
+      ]),
     };
 
     static defaultProps = {

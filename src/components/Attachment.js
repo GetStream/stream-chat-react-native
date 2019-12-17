@@ -164,7 +164,11 @@ export const Attachment = withMessageContentContext(
           if (a.actions && a.actions.length) {
             return (
               <View>
-                <Card {...a} alignment={this.props.alignment} />
+                <Card
+                  ImageComponent={this.props.ImageComponent}
+                  {...a}
+                  alignment={this.props.alignment}
+                />
                 {a.actions && a.actions.length > 0 && (
                   <AttachmentActions
                     key={'key-actions-' + a.id}
@@ -175,7 +179,13 @@ export const Attachment = withMessageContentContext(
               </View>
             );
           } else {
-            return <Card alignment={this.props.alignment} {...a} />;
+            return (
+              <Card
+                ImageComponent={this.props.ImageComponent}
+                alignment={this.props.alignment}
+                {...a}
+              />
+            );
           }
         }
 
@@ -217,7 +227,11 @@ export const Attachment = withMessageContentContext(
         if (a.type === 'video' && a.asset_url && a.image_url) {
           return (
             // TODO: Put in video component
-            <Card alignment={this.props.alignment} {...a} />
+            <Card
+              ImageComponent={this.props.ImageComponent}
+              alignment={this.props.alignment}
+              {...a}
+            />
           );
         }
 

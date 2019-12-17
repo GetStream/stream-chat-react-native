@@ -28,7 +28,7 @@ export class LocalStorage {
     if (storageType === 'async-storage') {
       this.db = new AsyncLocalStorage(StorageClass, chatClient.userID);
     }
-    this.logger = () => { };
+    this.logger = () => {};
   }
 
   setLogger(logger) {

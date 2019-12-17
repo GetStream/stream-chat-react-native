@@ -105,7 +105,9 @@ export class AsyncLocalStorage {
     const allKeys = await this.asyncStorage.getAllKeys();
     if (!allKeys) return [];
 
-    return allKeys.filter((k) => k.indexOf('getstream:chat') === 0);
+    return allKeys.filter(
+      (k) => k.indexOf(`getstream:chat:${this.userId}`) === 0,
+    );
   }
 
   /**

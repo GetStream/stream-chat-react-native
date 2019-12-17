@@ -425,6 +425,7 @@ export const MessageContent = themed(
                     return null;
                   return (
                     <Attachment
+                      ImageComponent={this.props.ImageComponent}
                       key={`${message.id}-${index}`}
                       attachment={attachment}
                       actionHandler={this.props.handleAction}
