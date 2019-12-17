@@ -232,7 +232,9 @@ export class RealmStorage {
       messages.forEach((m) => {
         const message = convertMessageToRealm(m, realm, true);
         channel.messages.push(message);
-        channel.last_message_at = message.created_at;
+        if (new Date(channel.last_message_at) < new Date(message.created_at)) {
+          channel.last_message_at = message.created_at;
+        }
       });
     });
   }
@@ -344,6 +346,12 @@ export class RealmStorage {
     });
   }
 
+  /**
+   *
+   * @param {*} channelId
+   * @param {*} lastMessage
+   * @param {*} limitPerPage
+   */
   async queryMessages(channelId, lastMessage, limitPerPage) {
     const realm = await this.getRealm();
     const channel = realm.objectForPrimaryKey('Channel', `${channelId}`);
@@ -355,6 +363,10 @@ export class RealmStorage {
     return { messages };
   }
 
+  /**
+   *
+   * @param {*} channelId
+   */
   async truncateChannel(channelId) {
     const realm = await this.getRealm();
     realm.write(() => {
@@ -364,6 +376,10 @@ export class RealmStorage {
     });
   }
 
+  /**
+   *
+   * @param {*} channelId
+   */
   async deleteChannel(channelId) {
     const realm = await this.getRealm();
     realm.write(() => {

@@ -37,6 +37,10 @@ export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
     status = 'received',
     ...extraData
   } = m;
+
+  // Ignore threads for now
+  if (parent_id && parent_id.length > 0) return;
+
   if (!forceUpdate) {
     const existingMessage = realm.objectForPrimaryKey('Message', id);
     if (existingMessage && existingMessage.updated_at) {

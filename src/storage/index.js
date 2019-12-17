@@ -28,7 +28,7 @@ export class LocalStorage {
     if (storageType === 'async-storage') {
       this.db = new AsyncLocalStorage(StorageClass, chatClient.userID);
     }
-    this.logger = () => {};
+    this.logger = () => { };
   }
 
   setLogger(logger) {
@@ -130,6 +130,10 @@ export class LocalStorage {
     return fChannels;
   }
   async insertMessageForChannel(channel_id, message) {
+    if (message.parent_id && message.parent_id.length > 0) {
+      return;
+    }
+
     try {
       await this.db.insertMessageForChannel(channel_id, message);
     } catch (e) {
@@ -158,6 +162,10 @@ export class LocalStorage {
     }
   }
   async updateMessage(channelId, message) {
+    if (message.parent_id && message.parent_id.length > 0) {
+      return;
+    }
+
     try {
       await this.db.updateMessage(channelId, message);
     } catch (e) {
@@ -168,6 +176,10 @@ export class LocalStorage {
     }
   }
   async addReactionForMessage(channelId, message) {
+    if (message.parent_id && message.parent_id.length > 0) {
+      return;
+    }
+
     try {
       await this.db.addReactionForMessage(channelId, message);
     } catch (e) {
@@ -182,6 +194,10 @@ export class LocalStorage {
     }
   }
   async deleteReactionForMessage(channelId, message) {
+    if (message.parent_id && message.parent_id.length > 0) {
+      return;
+    }
+
     try {
       await this.db.deleteReactionForMessage(channelId, message);
     } catch (e) {

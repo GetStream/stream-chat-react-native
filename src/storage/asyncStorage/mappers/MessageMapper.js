@@ -3,6 +3,9 @@ import { convertReactionsToStorable } from './ReactionMapper';
 import { getChannelMessagesKey } from '../keys';
 
 export const convertMessageToStorable = (m, storables, appUserId) => {
+  // Ignore threads for now
+  if (m.parent_id && m.parent_id.length > 0) return;
+
   const message = { ...m };
 
   message.user = convertUserToStorable(m.user, storables, appUserId);

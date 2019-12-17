@@ -305,12 +305,19 @@ export class AsyncLocalStorage {
     const existingMessages = await this.getItem(
       getChannelMessagesKey(this.userId, channelId),
     );
-    let newMessages = messages.map((m) =>
-      convertMessageToStorable(m, storables, this.userId),
-    );
+    const channel = await this.getChannel(channelId);
+    const channelKey = getChannelKey(this.userId, channelId);
+    let newMessages = messages.map((m) => {
+      if (new Date(channel.last_message_at) < new Date(m.created_at)) {
+        channel.last_message_at = new Date(m.created_at);
+      }
+
+      return convertMessageToStorable(m, storables, this.userId);
+    });
 
     newMessages = existingMessages.concat(newMessages);
 
+    storables[channelKey] = channel;
     storables[getChannelMessagesKey(this.userId, channelId)] = newMessages;
 
     await this.multiSet(storables);
