@@ -197,6 +197,7 @@ export class ChannelInner extends PureComponent {
 
     this.props.channel.off(this.handleEvent);
     this.props.client.off('connection.recovered', this.handleEvent);
+    this.props.client.off('connection.established');
 
     this._loadMoreFinishedDebounced.cancel();
     this._loadMoreThreadFinishedDebounced.cancel();
@@ -233,6 +234,13 @@ export class ChannelInner extends PureComponent {
     // The more complex sync logic is done in chat.js
     // listen to client.connection.recovered and all channel events
     this.props.client.on('connection.recovered', this.handleEvent);
+
+    // Once the connection is established, the best thing we can do is to query the channels
+    this.props.client.on('connection.established', () => {
+      this.props.channel.activate();
+      this.loadMore(true, true);
+    });
+
     const channel = this.props.channel;
     channel.on(this.handleEvent);
   }
@@ -422,10 +430,14 @@ export class ChannelInner extends PureComponent {
     };
 
     try {
-      await this.props.storage.insertMessageForChannel(this.props.channel.id, {
-        ...messageData,
-        user: { ...this.props.client.user },
-      });
+      this.props.offlineMode &&
+        (await this.props.storage.insertMessageForChannel(
+          this.props.channel.id,
+          {
+            ...messageData,
+            user: { ...this.props.client.user },
+          },
+        ));
       const messageResponse = await this.props.channel.sendMessage(messageData);
       // replace it after send is completed
       if (messageResponse.message) {
@@ -543,7 +555,7 @@ export class ChannelInner extends PureComponent {
     });
   };
 
-  loadMore = async () => {
+  loadMore = async (resync, forceOnline) => {
     if (this.state.loadingMore) return;
 
     // prevent duplicate loading events...
@@ -566,13 +578,11 @@ export class ChannelInner extends PureComponent {
       this.setState({
         loadingMore: false,
       });
-
       return;
     }
 
-    const oldestMessage = this.state.messages[0]
-      ? this.state.messages[0]
-      : null;
+    const oldestMessage =
+      this.state.messages[0] && !resync ? this.state.messages[0] : null;
 
     if (oldestMessage && oldestMessage.status !== 'received') {
       this.setState({
@@ -590,6 +600,35 @@ export class ChannelInner extends PureComponent {
       limit: perPage,
       id_lt: oldestID,
     });
+
+    if (this.props.online || forceOnline) {
+      try {
+        queryResponse = await this.props.channel.query({
+          messages: { limit: perPage, id_lt: oldestID },
+        });
+        const hasMore = queryResponse.messages.length === perPage;
+
+        this._loadMoreFinishedDebounced(
+          hasMore,
+          this.props.channel.state.messages,
+        );
+
+        if (this.props.isOnline && queryResponse && queryResponse.messages) {
+          this.props.offlineMode &&
+            (await this.props.storage.insertMessagesForChannel(
+              this.props.channel.id,
+              queryResponse.messages,
+            ));
+        }
+        return;
+      } catch (e) {
+        console.log('message pagination request failed with error', e);
+        if (this._unmounted) return;
+        this.setState({ loadingMore: false });
+        return;
+      }
+    }
+
     // If offlineMode is enabled and network is down, then fetch the messages from local storage.
     if (this.props.offlineMode && !this.props.isOnline) {
       try {
@@ -619,32 +658,6 @@ export class ChannelInner extends PureComponent {
         this.setState({ loadingMore: false });
         return;
       }
-    }
-
-    try {
-      queryResponse = await this.props.channel.query({
-        messages: { limit: perPage, id_lt: oldestID },
-      });
-      const hasMore = queryResponse.messages.length === perPage;
-
-      this._loadMoreFinishedDebounced(
-        hasMore,
-        this.props.channel.state.messages,
-      );
-
-      if (this.props.isOnline && queryResponse && queryResponse.messages) {
-        this.props.offlineMode &&
-          (await this.props.storage.insertMessagesForChannel(
-            this.props.channel.id,
-            queryResponse.messages,
-          ));
-      }
-      return;
-    } catch (e) {
-      console.warn('message pagination request failed with error', e);
-      if (this._unmounted) return;
-      this.setState({ loadingMore: false });
-      return;
     }
   };
 

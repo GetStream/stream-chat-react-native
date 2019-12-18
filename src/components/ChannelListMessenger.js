@@ -96,7 +96,7 @@ const ChannelListMessenger = withChatContext(
     );
 
     render() {
-      if (this.props.error) {
+      if (this.props.error && this.props.channels.length === 0) {
         return this.renderLoadingError();
       } else if (this.props.loadingChannels) {
         return this.renderLoading();

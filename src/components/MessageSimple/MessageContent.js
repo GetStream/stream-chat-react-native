@@ -406,6 +406,7 @@ export const MessageContent = themed(
                   reactionCounts={message.reaction_counts}
                 />
               )}
+
             {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
             <ContainerInner
               alignment={pos}

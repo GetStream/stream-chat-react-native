@@ -15,6 +15,10 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
     this.state = {
       channelHeight: new Animated.Value('100%'),
+      // For some reason UI doesn't update sometimes, when state is updated using setValue.
+      // So to force update the component, I am using following key, which will be increamented
+      // for every keyboard slide up and down.
+      key: 0,
     };
 
     if (Platform.OS === 'ios') {
@@ -82,10 +86,13 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
       Animated.timing(this.state.channelHeight, {
         toValue: finalHeight,
-        duration: 500,
+        duration: 300,
       }).start(() => {
         // Force the final value, in case animation halted in between.
         this.state.channelHeight.setValue(finalHeight);
+        this.setState({
+          key: this.state.key + 1,
+        });
       });
     });
     this._keyboardOpen = true;
@@ -95,12 +102,15 @@ export class KeyboardCompatibleView extends React.PureComponent {
     this._hidingKeyboardInProgress = true;
     Animated.timing(this.state.channelHeight, {
       toValue: this.initialHeight,
-      duration: 500,
+      duration: 300,
     }).start(() => {
       // Force the final value, in case animation halted in between.
       this.state.channelHeight.setValue(this.initialHeight);
       this._hidingKeyboardInProgress = false;
       this._keyboardOpen = false;
+      this.setState({
+        key: this.state.key + 1,
+      });
     });
   };
 
@@ -113,7 +123,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
       Animated.timing(this.state.channelHeight, {
         toValue: this.initialHeight,
-        duration: 500,
+        duration: 300,
       }).start((response) => {
         this.state.channelHeight.setValue(this.initialHeight);
         if (response && !response.finished) {

@@ -354,12 +354,19 @@ const ChannelList = withChatContext(
         filters: this.props.filters,
         sort: this.props.sort,
       };
-      const channelValues = await this.props.storage.queryChannels(
-        JSON.stringify(query),
-        this.props.sort,
-        pagerParams.offset,
-        pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
-      );
+      let channelValues;
+      try {
+        channelValues = await this.props.storage.queryChannels(
+          JSON.stringify(query),
+          this.props.sort,
+          pagerParams.offset,
+          pagerParams.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
+        );
+      } catch (error) {
+        this.offlineQueryActive = true;
+        this.setState({ refreshing: false, error });
+        return;
+      }
 
       // For this function, will be called with 'resync=true' only at the begining of the app.
       // If channels returned from local storage is empty, that means we haven't stored any channels yet.
@@ -427,7 +434,7 @@ const ChannelList = withChatContext(
         });
       } catch (e) {
         this.onlineQueryActive = false;
-        this.setState({ error: e });
+        this.setState({ error: e, refreshing: false });
         return;
       }
 
