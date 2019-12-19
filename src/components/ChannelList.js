@@ -245,10 +245,18 @@ const ChannelList = withChatContext(
 
       if (resync) {
         offset = 0;
-        limit = Math.max(
-          this.state.channels.length,
-          options.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
-        );
+        // When app starts for the first time, length of channels is 0, so in that case
+        // just use the limit provided by props.
+        if (this.state.channels.length === 0) {
+          limit = options.limit || DEFAULT_QUERY_CHANNELS_LIMIT;
+        } else {
+          limit = Math.max(
+            this.state.channels.length,
+            options.limit || DEFAULT_QUERY_CHANNELS_LIMIT,
+          );
+          limit =
+            limit > MAX_QUERY_CHANNELS_LIMIT ? MAX_QUERY_CHANNELS_LIMIT : limit;
+        }
         if (this._unmounted) return;
         this.offset = 0;
       } else {
