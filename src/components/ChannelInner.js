@@ -601,7 +601,7 @@ export class ChannelInner extends PureComponent {
       id_lt: oldestID,
     });
 
-    if (this.props.online || forceOnline) {
+    if (this.props.isOnline || forceOnline) {
       try {
         queryResponse = await this.props.channel.query({
           messages: { limit: perPage, id_lt: oldestID },
