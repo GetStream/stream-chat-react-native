@@ -1,13 +1,12 @@
 import React, { PureComponent } from 'react';
 import { withChatContext } from '../context';
 import { Text } from 'react-native';
-
-// import { LoadingIndicator } from './LoadingIndicator';
-
 import PropTypes from 'prop-types';
+import { LocalStorage } from '../storage';
 
-// import { MessageSimple } from './MessageSimple';
-// import { Attachment } from './Attachment';
+import { LoadingIndicator } from './LoadingIndicator';
+import { MessageSimple } from './MessageSimple';
+import { Attachment } from './Attachment';
 import { ChannelInner } from './ChannelInner';
 
 /**
@@ -82,12 +81,16 @@ const Channel = withChatContext(
         PropTypes.func,
         PropTypes.elementType,
       ]),
+      /**
+       * Instance of LocalStorage for offline storage
+       * */
+      storage: PropTypes.instanceOf(LocalStorage),
     };
 
     static defaultProps = {
-      // LoadingIndicator,
-      // Message: MessageSimple,
-      // Attachment,
+      LoadingIndicator,
+      Message: MessageSimple,
+      Attachment,
     };
 
     render() {

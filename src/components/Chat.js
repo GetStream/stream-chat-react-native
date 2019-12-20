@@ -32,6 +32,12 @@ export const Chat = themed(
       /** Theme object */
       style: PropTypes.object,
       logger: PropTypes.func,
+      /**
+       * Instance of LocalStorage for offline storage
+       *
+       * e.g. `storage = new LocalStorage(chatClient, AsyncStorage, 'async-storage');`
+       */
+      storage: PropTypes.instanceOf(LocalStorage),
     };
 
     static defaultProps = {

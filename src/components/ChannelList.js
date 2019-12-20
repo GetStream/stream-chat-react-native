@@ -5,6 +5,7 @@ import { withChatContext } from '../context';
 import { ChannelListMessenger } from './ChannelListMessenger';
 import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
+import { LocalStorage } from '../storage';
 
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
@@ -130,6 +131,8 @@ const ChannelList = withChatContext(
        * If true, channels won't be dynamically sorted by most recent message.
        */
       lockChannelOrder: PropTypes.bool,
+      /** Instance of LocalStorage for offline storage */
+      storage: PropTypes.instanceOf(LocalStorage),
     };
 
     static defaultProps = {
