@@ -23,11 +23,11 @@ export const MentionsItem = themed(
     static themePath = 'messageInput.suggestions.mention';
     render() {
       const {
-        item: { name, icon, id },
+        item: { name, image, id },
       } = this.props;
       return (
         <Container>
-          <Avatar image={icon} />
+          <Avatar image={image} />
           <Name>{name || id}</Name>
         </Container>
       );

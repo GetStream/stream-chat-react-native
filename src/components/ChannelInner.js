@@ -556,7 +556,9 @@ export class ChannelInner extends PureComponent {
   };
 
   loadMore = async (resync, forceOnline) => {
-    if (this.state.loadingMore) return;
+    if (this.state.loadingMore) {
+      return;
+    }
 
     // prevent duplicate loading events...
     if (
@@ -694,7 +696,7 @@ export class ChannelInner extends PureComponent {
     clearEditingState: this.clearEditingState,
     EmptyStateIndicator: this.props.EmptyStateIndicator,
     markRead: this._markReadThrottled,
-    loadMore: this.loadMore,
+    loadMore: () => this.loadMore(),
     // thread related
     openThread: this.openThread,
     closeThread: this.closeThread,

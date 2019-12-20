@@ -441,7 +441,7 @@ export class AsyncLocalStorage {
   async queryMessages(channelId, lastMessage, limitPerPage = 100) {
     const channelMessagesKey = getChannelMessagesKey(this.userId, channelId);
     let messages = await this.getItem(channelMessagesKey);
-    if (!messages || messages.length === 0) return [];
+    if (!messages || messages.length === 0) return { messages: [] };
 
     messages = messages.sort((a, b) =>
       new Date(a.created_at) > new Date(b.created_at) ? -1 : 1,

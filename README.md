@@ -345,11 +345,12 @@ Images are not cached/stored by default. Although it is totally supported.
 We support `ImageComponent` prop for `ChannelList` and `Channel` component, which will be
 used to display images in places components like avatar and attachments.
 
-You can use [`CachedImage`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) for this purpose.
-Its a package, which is forked from https://github.com/fungilation/react-native-cached-image.
-It handles storing images on device and using local images whenever required.
+You can use following components with ready made caching functionality:
 
-Ofcourse, you don't need to use it, you can also write your own component for this purpose.
+1. [`FastImage`](https://github.com/DylanVann/react-native-fast-image)
+2. [`CachedImage`](https://www.npmjs.com/package/@stream-io/react-native-cached-image)
+
+Ofcourse, you don't NEED to use it, you can also write your own component for this purpose.
 
 #### Installing
 

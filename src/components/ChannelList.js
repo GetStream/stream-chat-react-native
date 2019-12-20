@@ -19,6 +19,7 @@ export const isPromise = (thing) => {
 };
 
 export const DEFAULT_QUERY_CHANNELS_LIMIT = 10;
+export const MAX_QUERY_CHANNELS_LIMIT = 30;
 
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
