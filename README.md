@@ -348,38 +348,65 @@ used to display images in places components like avatar and attachments.
 You can use following components with ready made caching functionality:
 
 1. [`FastImage`](https://github.com/DylanVann/react-native-fast-image)
+
+   #### Installing
+
+   ```
+   yarn add react-native-fast-image
+
+   // For RN > 0.60
+   cd ios && pod install && cd ..
+   // For RN < 0.60
+   react-native link react-native-fast-image
+   ```
+
+   #### Usage
+
+   ```
+   import FastImage from 'react-native-fast-image'
+    ...
+
+    <ChannelList
+      filters={filters}
+      sort={sort}
+      options={options}
+      ImageComponent={FastImage}
+    />
+   ```
+
 2. [`CachedImage`](https://www.npmjs.com/package/@stream-io/react-native-cached-image)
 
-Ofcourse, you don't NEED to use it, you can also write your own component for this purpose.
+   #### Installing
 
-#### Installing
+   ```
+   yarn add @stream-io/react-native-cached-image rn-fetch-blob
 
-```
-yarn add @stream-io/react-native-cached-image rn-fetch-blob
+   // For RN > 0.60
+   cd ios && pod install && cd ..
+   // For RN < 0.60
+   react-native link rn-fetch-blob
+   ```
 
-// For RN > 0.60
-cd ios && pod install && cd ..
-// For RN < 0.60
-react-native link rn-fetch-blob
-```
+   #### Usage
 
-#### Usage
+   ```
+   import {
+     CachedImage,
+     ImageCacheProvider
+   } from 'react-native-cached-image';
 
-```
-import {
-  CachedImage,
-  ImageCacheProvider
-} from 'react-native-cached-image';
+   ...
 
-...
+   <ChannelList
+     filters={filters}
+     sort={sort}
+     options={options}
+     ImageComponent={CachedImage}
+   />
+   ```
 
-<ChannelList
-  filters={filters}
-  sort={sort}
-  options={options}
-  ImageComponent={CachedImage}
-/>
-```
+Ofcourse, you don't really HAVE to use these. You can build your own implementation around
+caching of images on device.
 
 ### Logging
 
