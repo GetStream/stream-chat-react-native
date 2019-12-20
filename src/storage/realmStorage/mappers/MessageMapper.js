@@ -49,7 +49,6 @@ export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
       }
     }
   }
-  // reactotron.log('convertMessageToRealm', m);
   const message = {
     id,
     text,
