@@ -423,7 +423,7 @@ export class AsyncLocalStorage {
     if (reads[user.id]) {
       reads[user.id] = {
         last_read: lastRead,
-        user: convertUserToStorable(user, storables, this.userId),
+        user: convertUserToStorable(user.id, user, storables, this.userId),
       };
     }
 

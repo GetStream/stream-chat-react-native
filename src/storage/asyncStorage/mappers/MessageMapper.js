@@ -8,13 +8,12 @@ export const convertMessageToStorable = (m, storables, appUserId) => {
 
   const message = { ...m };
 
-  message.user = convertUserToStorable(m.user, storables, appUserId);
+  message.user = convertUserToStorable(m.user.id, m.user, storables, appUserId);
   message.mentioned_users = convertUsersToStorable(
     message.mentioned_users,
     storables,
     appUserId,
   );
-
   message.latest_reactions = convertReactionsToStorable(
     message.latest_reactions,
     storables,

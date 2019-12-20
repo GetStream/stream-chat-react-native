@@ -22,7 +22,7 @@ export const convertMembersToStorable = (
 export const convertMemberToStorable = (m, storable, appUserId) => {
   const member = {
     user_id: m.user_id,
-    user: convertUserToStorable(m.user, storable, appUserId),
+    user: convertUserToStorable(m.user_id, m.user, storable, appUserId),
     is_moderator: m.is_moderator,
     invited: m.invited,
     invite_accepted_at: m.invite_accepted_at,

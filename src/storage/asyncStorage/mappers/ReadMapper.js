@@ -11,11 +11,14 @@ export const convertReadToStorable = (
   for (const userId in reads) {
     storableReadState[userId] = {
       last_read: reads[userId].last_read,
-      user: convertUserToStorable(reads[userId].user, storables, appUserId),
+      user: convertUserToStorable(
+        userId,
+        reads[userId].user,
+        storables,
+        appUserId,
+      ),
     };
   }
-
-  // Reactotron.log('Storing read', channelId, storableReadState);
 
   storables[getChannelReadKey(appUserId, channelId)] = storableReadState;
 

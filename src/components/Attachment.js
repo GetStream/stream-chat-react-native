@@ -70,7 +70,11 @@ export const Attachment = withMessageContentContext(
          * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
          * on device for use in offline mode.
          **/
-        ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        ImageComponent: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.func,
+          PropTypes.elementType,
+        ]),
         /**
          * Position of message. 'right' | 'left'
          * 'right' message belongs with current user while 'left' message belonds to other users.
