@@ -10,6 +10,10 @@ assignees: vishalnarkhede
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+**Dev environment info (please complete the following information):**
+ - Package version (stream-chat-react-native/stream-chat-expo)
+ - Device/Emulator (android/ios) and OS version
+
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
@@ -19,11 +23,6 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
-
-**Dev environment info (please complete the following information):**
- - Package version (stream-chat-react-native/stream-chat-expo)
- - Device/Emulator (android/ios)
- - OS version
 
 **Additional context**
 Add any other context about the problem here.
