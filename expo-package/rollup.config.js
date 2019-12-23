@@ -40,6 +40,7 @@ const normalBundle = {
     'expo-document-picker',
     'expo-permissions',
     'react-native-unimodules',
+    '@react-native-community/netinfo',
   ],
   plugins: [
     replace({

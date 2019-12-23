@@ -103,7 +103,7 @@ yarn global add expo-cli
 # * >=12.0.0 (Current Release)
 expo init StreamChatExpoExample
 cd StreamChatExpoExample
-yarn add stream-chat-expo
+yarn add stream-chat-expo @react-native-community/netinfo
 ```
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) to see usage of the components.
