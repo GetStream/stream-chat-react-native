@@ -264,12 +264,14 @@ const MessageList = withChannelContext(
     insertDates = (messages) => {
       const newMessages = [];
       if (messages.length === 0) {
-        this.props.eventHistory.none.forEach((e) => {
-          newMessages.push({
-            type: 'channel.event',
-            event: e,
+        this.props.eventHistory &&
+          this.props.eventHistory.none &&
+          this.props.eventHistory.none.forEach((e) => {
+            newMessages.push({
+              type: 'channel.event',
+              event: e,
+            });
           });
-        });
 
         return newMessages;
       }
