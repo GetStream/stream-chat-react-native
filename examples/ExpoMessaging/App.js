@@ -40,7 +40,7 @@ const theme = {
     `,
   },
 };
-  
+
 
 const filters = { type: 'messaging' };
 const sort = { last_message_at: -1 };
