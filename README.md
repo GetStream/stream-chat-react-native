@@ -103,7 +103,12 @@ yarn global add expo-cli
 # * >=12.0.0 (Current Release)
 expo init StreamChatExpoExample
 cd StreamChatExpoExample
-yarn add stream-chat-expo @react-native-community/netinfo
+
+# Add chat expo package
+yarn add stream-chat-expo
+
+# If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency. Since previously we used use NetInfo from react-native package.
+yarn add @react-native-community/netinfo
 ```
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) to see usage of the components.
