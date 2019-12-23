@@ -10,8 +10,9 @@ assignees: vishalnarkhede
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Dev environment info (please complete the following information):**
+**Dev environment info (please complete/provide the following information):**
  - Package version (stream-chat-react-native/stream-chat-expo)
+ - react-native or expo version
  - Device/Emulator (android/ios) and OS version
 
 **To Reproduce**
