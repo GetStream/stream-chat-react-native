@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0] 2019-12-16
+
+#### stream-chat-expo
+
+- Changes to add compatibility for Expo 36. Adding [netinfo](https://github.com/react-native-community/react-native-netinfo) as peer dependency - https://github.com/GetStream/stream-chat-react-native/issues/97
+
+#### stream-chat-react-native
+
+- no change
+
+#### stream-chat-react-native-core
+
+- no change
+
 ## [0.4.0] 2019-12-16
 
 - Adding support for customizing markdown styles - https://github.com/GetStream/stream-chat-react-native/pull/99/files#diff-ede54911d9164ea37e65e92f2e18cb91R56
