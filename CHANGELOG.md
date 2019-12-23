@@ -2,17 +2,14 @@
 
 ## [0.5.0] 2019-12-23
 
-#### stream-chat-expo
+#### stream-chat-expo (Expo package)
 
 - Changes to add compatibility for Expo 36. Adding [netinfo](https://github.com/react-native-community/react-native-netinfo) as peer dependency - https://github.com/GetStream/stream-chat-react-native/issues/97
+- Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 
-#### stream-chat-react-native
+#### stream-chat-react-native (Native package)
 
-- no change
-
-#### stream-chat-react-native-core
-
-- no change
+- Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 
 ## [0.4.0] 2019-12-16
 
