@@ -8,12 +8,14 @@
 - Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 - Fixing broken threads issue
 - Support for `additionalFlatListProps` prop in `MessageList` and `ChannelList` component
+- Changing proptype for component type props to `elementType` instead of `func`
 
 #### stream-chat-react-native (Native package)
 
 - Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 - Fixing broken threads issue
 - Support for `additionalFlatListProps` prop in `MessageList` and `ChannelList` component
+- Changing proptype for component type props to `elementType` instead of `func`
 
 ## [0.4.0] 2019-12-16
 
