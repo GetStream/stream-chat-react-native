@@ -27,18 +27,21 @@ const ChannelListMessenger = withChatContext(
       ]).isRequired,
       /** UI Component to display individual channel item in list.
        * Defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
-      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /** The loading indicator to use. Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator) */
-      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      LoadingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** The indicator to use when there is error in fetching channels. Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator) */
       LoadingErrorIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /** The indicator to use when channel list is empty. Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator) */
       EmptyStateIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /** Loads next page of channels in channels object, which is present here as prop */
       loadNextPage: PropTypes.func,

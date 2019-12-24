@@ -176,7 +176,10 @@ const MessageInput = withKeyboardContext(
              *
              * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
              * */
-            SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+            SendButton: PropTypes.oneOfType([
+              PropTypes.node,
+              PropTypes.elementType,
+            ]),
             /**
              * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
              *
@@ -194,7 +197,7 @@ const MessageInput = withKeyboardContext(
              */
             AttachmentFileIcon: PropTypes.oneOfType([
               PropTypes.node,
-              PropTypes.func,
+              PropTypes.elementType,
             ]),
           };
 

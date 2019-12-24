@@ -46,7 +46,7 @@ const Thread = withChannelContext(
         /**
          *  **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
          * */
-        Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         /**
          * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
          * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */

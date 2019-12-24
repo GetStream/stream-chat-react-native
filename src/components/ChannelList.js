@@ -31,22 +31,25 @@ const ChannelList = withChatContext(
   class ChannelList extends PureComponent {
     static propTypes = {
       /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
-      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 
       /** The loading indicator to use */
-      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      LoadingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** The indicator to use when there is error in fetching channels */
       LoadingErrorIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /** The indicator to use when channel list is empty */
       EmptyStateIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
 
-      List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       onSelect: PropTypes.func,
       /**
        * Function that overrides default behaviour when new message is received on channel that is not being watched

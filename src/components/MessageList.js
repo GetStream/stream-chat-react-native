@@ -82,14 +82,17 @@ const MessageList = withChannelContext(
       /** **Available from [chat context](https://getstream.github.io/stream-chat-react-native/#chatcontext)** */
       client: PropTypes.object,
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
-      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
        * Custom UI component for attachment icon for type 'file' attachment.
        * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
        */
-      AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      AttachmentFileIcon: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
-      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
       messages: PropTypes.array.isRequired,
       /** **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)** */
@@ -141,20 +144,29 @@ const MessageList = withChannelContext(
        *
        * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
        * */
-      TypingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      TypingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * @deprecated User DateSeperator instead.
        * Date separator UI component to render
        *
        * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
        * */
-      dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      dateSeparator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * Date separator UI component to render
        *
        * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
        * */
-      DateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      DateSeparator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * @deprecated User EventIndicator instead.
        *
@@ -165,7 +177,10 @@ const MessageList = withChannelContext(
        *
        * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
        * */
-      eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      eventIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * UI Component to display following events in messagelist
        *
@@ -174,26 +189,35 @@ const MessageList = withChannelContext(
        *
        * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
        * */
-      EventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      EventIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
 
       /** UI component for empty message list */
       EmptyStateIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /**
        * @deprecated Use HeaderComponent instead.
        *
        * UI component for header of message list.
        */
-      headerComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      headerComponent: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * UI component for header of message list. By default message list doesn't have any header.
        * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
        * used in MessageList. Its footer instead of header, since message list is inverted.
        *
        */
-      HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      HeaderComponent: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * Style object for actionsheet (used to message actions).
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
