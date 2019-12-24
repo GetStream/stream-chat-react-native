@@ -87,7 +87,7 @@ export const Attachment = withMessageContentContext(
          */
         AttachmentFileIcon: PropTypes.oneOfType([
           PropTypes.node,
-          PropTypes.func,
+          PropTypes.elementType,
         ]),
       };
       static defaultProps = {

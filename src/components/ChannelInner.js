@@ -107,17 +107,23 @@ export class ChannelInner extends PureComponent {
     /** Client is passed via the Chat Context */
     client: PropTypes.object.isRequired,
     /** The loading indicator to use */
-    LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    LoadingIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     /** The indicator to use when there is error  */
     LoadingErrorIndicator: PropTypes.oneOfType([
       PropTypes.node,
-      PropTypes.func,
+      PropTypes.elementType,
     ]),
     /** The indicator to use when message list is empty */
-    EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    EmptyStateIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     isOnline: PropTypes.bool,
-    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   };
 
   static defaultProps = {

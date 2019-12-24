@@ -3,7 +3,7 @@
  * And they have been removed from Expo package. But these packages don't work with Expo 32 sdk (because of linking issue).
  */
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
-import { NetInfo } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 import { Constants } from 'react-native-unimodules';
 import * as Expo from 'expo';
 
@@ -30,18 +30,38 @@ if (manifest.sdkVersion.split('.')[0] >= 33) {
 registerNativeHandlers({
   NetInfo: {
     addEventListener(listener) {
-      const unsubscribe = NetInfo.addEventListener('connectionChange', () => {
-        NetInfo.isConnected.fetch().then((isConnected) => {
+      let unsubscribe;
+      // For NetInfo >= 3.x.x
+      if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+        unsubscribe = NetInfo.addEventListener(({ isConnected }) => {
           listener(isConnected);
         });
-      });
-      return unsubscribe.remove;
+        return unsubscribe;
+      } else {
+        // For NetInfo < 3.x.x
+        unsubscribe = NetInfo.addEventListener('connectionChange', () => {
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            listener(isConnected);
+          });
+        });
+
+        return unsubscribe.remove;
+      }
     },
+
     fetch() {
       return new Promise((resolve, reject) => {
-        NetInfo.isConnected.fetch().then((isConnected) => {
-          resolve(isConnected);
-        }, reject);
+        // For NetInfo >= 3.x.x
+        if (NetInfo.fetch && typeof NetInfo.fetch === 'function') {
+          NetInfo.fetch().then(({ isConnected }) => {
+            resolve(isConnected);
+          }, reject);
+        } else {
+          // For NetInfo < 3.x.x
+          NetInfo.isConnected.fetch().then((isConnected) => {
+            resolve(isConnected);
+          }, reject);
+        }
       });
     },
   },
