@@ -199,6 +199,19 @@ const MessageList = withChannelContext(
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
        */
       actionSheetStyles: PropTypes.object,
+      /**
+       * Besides existing (default) UX behaviour of underlying flatlist of MessageList component, if you want
+       * to attach some additional props to un derlying flatlist, you can add it to following prop.
+       *
+       * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+       *
+       * e.g.
+       * ```
+       * <MessageList
+       *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
+       * ```
+       */
+      additionalFlatListProps: PropTypes.object,
     };
 
     static defaultProps = {
@@ -208,6 +221,7 @@ const MessageList = withChannelContext(
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
       messageGrouping: true,
+      additionalFlatListProps: {},
       dismissKeyboardOnMessageTouch: true,
       TypingIndicator,
     };
@@ -600,6 +614,7 @@ const MessageList = withChannelContext(
                 minIndexForVisible: 1,
                 autoscrollToTopThreshold: 10,
               }}
+              {...this.props.additionalFlatListProps}
             />
             {this.props.TypingIndicator && showTypingIndicator && (
               <TypingIndicatorContainer>
