@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.5.1] 2019-12-23
+
+#### stream-chat-expo (Expo package)
+
+- Adding support for following props
+  - `additionalParentMessageProps`
+  - `additionalMessageListProps`
+  - `additionalMessageInputProps`
+- Adding missing types for prop `additionalFlatListProps` in MessageList and ChannelList
+
+#### stream-chat-react-native (Native package)
+
+- Adding support for following props
+  - `additionalParentMessageProps`
+  - `additionalMessageListProps`
+  - `additionalMessageInputProps`
+- Adding missing types for prop `additionalFlatListProps` in MessageList and ChannelList
+
 ## [0.5.0] 2019-12-23
 
 #### stream-chat-expo (Expo package)
