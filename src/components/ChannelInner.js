@@ -117,17 +117,15 @@ export class ChannelInner extends PureComponent {
     /** Client is passed via the Chat Context */
     client: PropTypes.object.isRequired,
     /** The loading indicator to use */
-    LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    LoadingIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     /** The indicator to use when there is error  */
     LoadingErrorIndicator: PropTypes.oneOfType([
       PropTypes.node,
-      PropTypes.func,
+      PropTypes.elementType,
     ]),
-    /** The indicator to use when message list is empty */
-    EmptyStateIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    isOnline: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
     /**
      * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
      * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
@@ -138,6 +136,14 @@ export class ChannelInner extends PureComponent {
       PropTypes.func,
       PropTypes.elementType,
     ]),
+    /** The indicator to use when message list is empty */
+    EmptyStateIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    isOnline: PropTypes.bool,
+    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   };
 
   static defaultProps = {

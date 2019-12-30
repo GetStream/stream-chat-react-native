@@ -32,7 +32,7 @@ export const MessageSimple = themed(
   class MessageSimple extends React.PureComponent {
     static propTypes = {
       /** Custom UI component for message text */
-      MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /** enabled reactions, this is usually set by the parent component based on channel configs */
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */
@@ -102,15 +102,14 @@ export const MessageSimple = themed(
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
        */
       actionSheetStyles: PropTypes.object,
+      /** Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image) */
+      ImageComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
       /**
        * Custom UI component for attachment icon for type 'file' attachment.
        * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
        */
-      AttachmentFileIcon: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      /** Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image) */
-      ImageComponent: PropTypes.oneOfType([
+      AttachmentFileIcon: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
         PropTypes.elementType,
       ]),
     };

@@ -34,7 +34,7 @@ const ChannelList = withChatContext(
   class ChannelList extends PureComponent {
     static propTypes = {
       /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
-      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
        * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
        * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
@@ -42,23 +42,25 @@ const ChannelList = withChatContext(
        **/
       ImageComponent: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
         PropTypes.elementType,
       ]),
       /** The loading indicator to use */
-      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      LoadingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** The indicator to use when there is error in fetching channels */
       LoadingErrorIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /** The indicator to use when channel list is empty */
       EmptyStateIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
 
-      List: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       onSelect: PropTypes.func,
       /**
        * Function that overrides default behaviour when new message is received on channel that is not being watched
@@ -133,6 +135,21 @@ const ChannelList = withChatContext(
       lockChannelOrder: PropTypes.bool,
       /** Instance of LocalStorage for offline storage */
       storage: PropTypes.instanceOf(LocalStorage),
+      /**
+       * Besides existing (default) UX behaviour of underlying flatlist of ChannelList component, if you want
+       * to attach some additional props to un derlying flatlist, you can add it to following prop.
+       *
+       * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+       *
+       * e.g.
+       * ```
+       * <ChannelList
+       *  filters={filters}
+       *  sort={sort}
+       *  additionalFlatListProps={{ bounces: true }} />
+       * ```
+       */
+      additionalFlatListProps: PropTypes.object,
     };
 
     static defaultProps = {
@@ -147,6 +164,7 @@ const ChannelList = withChatContext(
       // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
       loadMoreThreshold: 2,
       lockChannelOrder: false,
+      additionalFlatListProps: {},
       logger: () => {},
     };
 

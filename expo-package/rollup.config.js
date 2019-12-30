@@ -41,6 +41,7 @@ const normalBundle = {
     'expo-permissions',
     'react-native-unimodules',
     'reactotron-react-native',
+    '@react-native-community/netinfo',
   ],
   plugins: [
     replace({

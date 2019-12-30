@@ -18,7 +18,7 @@ export class ChannelPreview extends PureComponent {
     channel: PropTypes.object.isRequired,
     client: PropTypes.object.isRequired,
     setActiveChannel: PropTypes.func.isRequired,
-    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   };
 
   static defaultProps = {

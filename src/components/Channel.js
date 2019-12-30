@@ -37,7 +37,10 @@ const Channel = withChatContext(
        *
        * Defaults to and accepts same props as: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
        */
-      LoadingIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      LoadingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /**
        * Error indicator UI component. This will be shown on the screen if channel query fails.
        *
@@ -46,7 +49,7 @@ const Channel = withChatContext(
        * */
       LoadingErrorIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /**
        * Empty state indicator UI component. This will be shown on the screen if channel has no messages.
@@ -56,7 +59,7 @@ const Channel = withChatContext(
        * */
       EmptyStateIndicator: PropTypes.oneOfType([
         PropTypes.node,
-        PropTypes.func,
+        PropTypes.elementType,
       ]),
       /**
        * Message UI component to display a message in message list.
@@ -64,13 +67,7 @@ const Channel = withChatContext(
        * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
        *
        * */
-      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
-      /**
-       * Attachment UI component to display attachment in individual message.
-       *
-       * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
-       * */
-      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+      Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
        * Custom component for Image. Defaults to [Image](https://facebook.github.io/react-native/docs/image)
        * CachedImage from [`@stream-io/react-native-cached-image`](https://www.npmjs.com/package/@stream-io/react-native-cached-image) is an alternative to cache images
@@ -85,6 +82,12 @@ const Channel = withChatContext(
        * Instance of LocalStorage for offline storage
        * */
       storage: PropTypes.instanceOf(LocalStorage),
+      /**
+       * Attachment UI component to display attachment in individual message.
+       *
+       * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+       * */
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     };
 
     static defaultProps = {

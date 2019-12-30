@@ -15,6 +15,7 @@
 - [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
+- [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
 
 ## Supported features
 
@@ -112,15 +113,20 @@ yarn global add expo-cli
 # * >=12.0.0 (Current Release)
 expo init StreamChatExpoExample
 cd StreamChatExpoExample
+
+# Add chat expo package
 yarn add stream-chat-expo
+
+# If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency. Since previously we used use NetInfo from react-native package.
+yarn add @react-native-community/netinfo
 ```
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) to see usage of the components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) to see usage of the components.
 
-OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/one/App.js) for your `App.js` in the root folder with additional following steps:
+OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) for your `App.js` in the root folder with additional following steps:
 
 ```bash
-yarn add react-navigation
+yarn add react-navigation@3.2.1 react-native-gesture-handler react-native-reanimated
 ```
 
 and finally
@@ -155,7 +161,7 @@ react-native link react-native-document-picker
 
 ```
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/two/App.js) to see usage of components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/NativeMessaging/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
 
@@ -193,7 +199,7 @@ Just to be sure, please verify you are using appropriate version of following pa
 
 - react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
 
-Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/two/App.js) to see usage of components.
+Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/NativeMessaging/App.js) to see usage of components.
 
 OR you can swap this file for your `App.js` in root folder with additional following steps:
 
@@ -425,7 +431,7 @@ storage.setLogger((storageType, msg, extraData) => {
 1. When you execute `react-native run-ios` for the first time, it starts a metro bundler in parallel. It can result into some errors, since build process isn't complete yet. Try the following to fix this:
    1. Close/stop the metro bundler process.
    2. Let the build process finish completely, it can take usually around 2-3 minutes for the first time.
-   3. Start the metro bundler manually by executing `yarn start` inside `stream-chat-react-native/examples/two` directory.
+   3. Start the metro bundler manually by executing `yarn start` inside `stream-chat-react-native/examples/NativeMessaging` directory.
 2. When you execute `react-native run-android`, you may (not necessarily) run into following error:
 
    ```ERROR
@@ -454,9 +460,9 @@ storage.setLogger((storageType, msg, extraData) => {
 
    To resolve this, do the following
 
-   1. Craete a file named `local.properties` inside `stream-chat-react-native/examples/two/android` directory
+   1. Craete a file named `local.properties` inside `stream-chat-react-native/examples/NativeMessaging/android` directory
    2. Put the this line in that file. Make sure sdk path is correctly mentioned as per your system:
       ```
       sdk.dir=/Users/{user_name}/Library/Android/sdk/
       ```
-   3. Rerun `react-native run-android` in `stream-chat-react-native/examples/two` directory
+   3. Rerun `react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory

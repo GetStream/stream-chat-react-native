@@ -16,15 +16,15 @@ CHAT_DEPS = ../client/package.json
 
 example-deps: $(EXAMPLES_APPS_DEPS)
 
-$(EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
+$(EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
 	cd $* && yarn install
 	touch $@
 
-$(WRAPPER_PACKAGES_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) node_modules/installed_dependencies
+$(WRAPPER_PACKAGES_DEPS): %/node_modules/installed_dependencies: %/package.json $(SOURCES) node_modules/installed_dependencies
 	cd $* && yarn install
 	touch $@
 
-node_modules/installed_dependencies: yarn.lock package.json
+node_modules/installed_dependencies: package.json
 	yarn install
 	touch $@
 
@@ -33,8 +33,11 @@ dist/built: $(LIB_SOURCES) node_modules/installed_dependencies
 	touch $@ q
 
 clean:
-	rm -rf $(addsuffix /node_modules,$(EXAMPLES_APPS))
-	rm -rf $(addsuffix /node_modules,$(WRAPPER_PACKAGES))
-	rm -rf $(addsuffix /dist,$(WRAPPER_PACKAGES))
-	rm -rf dist
-	rm -rf node_modules
+	rm -rf $(addsuffix /node_modules,$(EXAMPLES_APPS)) || true
+	rm $(addsuffix /yarn.lock,$(EXAMPLES_APPS)) || true
+	rm -rf $(addsuffix /node_modules,$(WRAPPER_PACKAGES)) || true
+	rm -rf $(addsuffix /dist,$(WRAPPER_PACKAGES)) || true
+	rm $(addsuffix /yarn.lock,$(WRAPPER_PACKAGES)) || true
+	rm -rf dist || true
+	rm -rf node_modules || true
+	rm yarn.lock || true
