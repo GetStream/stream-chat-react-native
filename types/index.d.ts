@@ -408,6 +408,9 @@ interface ThreadProps extends ChannelContextValue {
   threadMessages?: Client.MessageResponse[];
   /** Make input focus on mounting thread */
   autoFocus?: boolean;
+  additionalParentMessageProps?: object;
+  additionalMessageListProps?: object;
+  additionalMessageInputProps?: object;
 }
 
 interface TypingIndicatorProps {

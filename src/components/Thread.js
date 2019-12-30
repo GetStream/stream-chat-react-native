@@ -28,6 +28,10 @@ const NewThreadText = styled.Text`
  * The thread is only used for the list of replies to a message.
  *
  * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+ * Underlying MessageList, MessageInput and Message components can be customized using props:
+ * - additionalParentMessageProps
+ * - additionalMessageListProps
+ * - additionalMessageInputProps
  *
  * @example ./docs/Thread.md
  * @extends Component
@@ -71,6 +75,21 @@ const Thread = withChannelContext(
          * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
          * If the thread is currently loading more messages. This is helpful to display a loading indicator on threadlist */
         threadLoadingMore: PropTypes.bool,
+        /**
+         * Additional props for underlying Message component of parent message at the top.
+         * Available props - https://getstream.github.io/stream-chat-react-native/#message
+         * */
+        additionalParentMessageProps: PropTypes.object,
+        /**
+         * Additional props for underlying MessageList component.
+         * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
+         * */
+        additionalMessageListProps: PropTypes.object,
+        /**
+         * Additional props for underlying MessageInput component.
+         * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
+         * */
+        additionalMessageInputProps: PropTypes.object,
       };
 
       static defaultProps = {
@@ -131,7 +150,9 @@ class ThreadInner extends React.PureComponent {
           readOnly
           groupStyles={['single']}
           Message={this.props.Message}
+          // TODO: remove the following line in next release, since we already have additionalParentMessageProps now.
           {...this.props}
+          {...this.props.additionalParentMessageProps}
         />
         <NewThread>
           <NewThreadText>Start of a new thread</NewThreadText>
@@ -150,8 +171,13 @@ class ThreadInner extends React.PureComponent {
           hasMore={this.props.threadHasMore}
           loadingMore={this.props.threadLoadingMore}
           Message={this.props.Message}
+          {...this.props.additionalMessageListProps}
         />
-        <MessageInput parent={this.props.thread} focus={this.props.autoFocus} />
+        <MessageInput
+          parent={this.props.thread}
+          focus={this.props.autoFocus}
+          {...this.props.additionalMessageInputProps}
+        />
       </React.Fragment>
     );
   }
