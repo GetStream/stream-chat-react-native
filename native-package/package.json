@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "es6-symbol": "^3.1.1",
-    "stream-chat-react-native-core": "v0.5.0"
+    "stream-chat-react-native-core": "v0.5.1"
   },
   "peerDependencies": {
     "@react-native-community/netinfo": ">=2.0.7",
