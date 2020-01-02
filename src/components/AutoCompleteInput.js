@@ -14,9 +14,10 @@ export class AutoCompleteInput extends React.PureComponent {
     value: PropTypes.string,
     openSuggestions: PropTypes.func,
     closeSuggestions: PropTypes.func,
+    updateSuggestions: PropTypes.func,
     triggerSettings: PropTypes.object,
-    getUsers: PropTypes.func,
     setInputBoxRef: PropTypes.func,
+    onChange: PropTypes.func,
     /**
      * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
      *

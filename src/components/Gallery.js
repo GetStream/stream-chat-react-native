@@ -66,6 +66,8 @@ export const Gallery = withMessageContentContext(
             thumb_url: PropTypes.string,
           }),
         ),
+        onLongPress: PropTypes.func,
+        alignment: PropTypes.string,
       };
 
       constructor(props) {
