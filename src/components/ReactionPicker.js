@@ -124,7 +124,7 @@ export const ReactionPicker = themed(
                               borderWidth: 1,
                             },
                           }}
-                          name={latestUser.id}
+                          name={latestUser.name}
                         />
                       ) : (
                         !hideReactionOwners && (
