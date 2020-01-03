@@ -25,6 +25,7 @@ const ChannelListMessenger = withChatContext(
         }),
         PropTypes.object,
       ]).isRequired,
+      setActiveChannel: PropTypes.func,
       /** UI Component to display individual channel item in list.
        * Defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
       Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),

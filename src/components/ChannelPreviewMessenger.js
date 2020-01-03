@@ -120,7 +120,9 @@ export const ChannelPreviewMessenger = themed(
               </Title>
               <Date>{this.props.latestMessage.created_at}</Date>
             </DetailsTop>
-            <Message unread={this.props.unread > 0}>
+            <Message
+              unread={this.props.unread > 0 ? this.props.unread : undefined}
+            >
               {!this.props.latestMessage
                 ? 'Nothing yet...'
                 : truncate(

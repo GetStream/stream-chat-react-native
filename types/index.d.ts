@@ -7,8 +7,8 @@ import * as SeamlessImmutable from 'seamless-immutable';
 
 declare function withChatContext(): React.FC;
 
-interface ChatContext extends React.Context<ChatContextValue> {}
-interface ChatContextValue {
+export interface ChatContext extends React.Context<ChatContextValue> {}
+export interface ChatContextValue {
   client?: Client.StreamChat;
   channel?: Client.Channel;
   setActiveChannel?(
@@ -20,8 +20,9 @@ interface ChatContextValue {
 }
 
 declare function withSuggestionsContext(): React.FC;
-interface SuggestionsContext extends React.Context<SuggestionsContextValue> {}
-interface SuggestionsContextValue {
+export interface SuggestionsContext
+  extends React.Context<SuggestionsContextValue> {}
+export interface SuggestionsContextValue {
   setInputBoxContainerRef?(ref: any): void;
   openSuggestions?(title: string, component: React.ElementType): void;
   closeSuggestions?(): void;
@@ -41,8 +42,8 @@ interface SuggestionsContextValue {
 }
 
 declare function withChannelContext(): React.FC;
-interface ChannelContext extends React.Context<ChannelContextValue> {}
-interface ChannelContextValue {
+export interface ChannelContext extends React.Context<ChannelContextValue> {}
+export interface ChannelContextValue {
   Message?: React.ElementType<MessageUIComponentProps>;
   Attachment?: React.ElementType<AttachmentProps>;
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
@@ -98,8 +99,8 @@ interface ChannelContextValue {
   clearEditingState?(): void;
 }
 
-interface KeyboardContext extends React.Context<KeyboardContextValue> {}
-interface KeyboardContextValue {
+export interface KeyboardContext extends React.Context<KeyboardContextValue> {}
+export interface KeyboardContextValue {
   dismissKeyboard?(): void;
 }
 
@@ -108,7 +109,7 @@ export interface ChatProps {
   style?: object;
 }
 
-interface ChannelProps extends ChatContextValue {
+export interface ChannelProps extends ChatContextValue {
   /** The loading indicator to use */
   LoadingIndicator?: React.ElementType;
   LoadingErrorIndicator?: React.ElementType<LoadingErrorIndicatorProps>;
@@ -139,7 +140,7 @@ export interface EventIndicatorProps {
     | Client.Event<Client.MemberRemovedEvent>;
 }
 
-interface AvatarProps {
+export interface AvatarProps {
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
@@ -148,16 +149,16 @@ interface AvatarProps {
   size?: Number;
 }
 
-interface File {
+export interface File {
   uri: string;
   name?: string;
 }
 
-interface FileUploadResponse {
+export interface FileUploadResponse {
   file: string;
   [name: string]: any;
 }
-interface MessageInputProps
+export interface MessageInputProps
   extends KeyboardContextValue,
     ChannelContextValue,
     SuggestionsContextValue {
@@ -181,7 +182,7 @@ interface MessageInputProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
-interface AttachmentProps {
+export interface AttachmentProps {
   /** The attachment to render */
   attachment: Client.Attachment;
   /**
@@ -192,7 +193,7 @@ interface AttachmentProps {
   groupStyle: 'single' | 'top' | 'middle' | 'bottom';
 }
 
-interface ChannelListProps extends ChatContextValue {
+export interface ChannelListProps extends ChatContextValue {
   /** The Preview to use, defaults to ChannelPreviewLastMessage */
   Preview?: React.ElementType<ChannelPreviewUIComponentProps>;
 
@@ -248,7 +249,7 @@ interface ChannelListProps extends ChatContextValue {
   additionalFlatListProps?: object;
 }
 
-interface ChannelListState {
+export interface ChannelListState {
   // Error in querying channels
   error: boolean | object;
   // List of channel objects.
@@ -263,24 +264,24 @@ interface ChannelListState {
   offset: number;
 }
 
-interface ChannelListUIComponentProps
+export interface ChannelListUIComponentProps
   extends ChannelListProps,
     ChannelListState {
   loadNextPage(): void;
 }
 
-interface ChannelPreviewProps extends ChannelListUIComponentProps {
+export interface ChannelPreviewProps extends ChannelListUIComponentProps {
   Preview: React.ElementType<ChannelPreviewUIComponentProps>;
   key: string;
 }
 
-interface ChannelPreviewState {
+export interface ChannelPreviewState {
   unread: number;
   lastMessage: Client.MessageResponse;
   lastRead: Date;
 }
 
-interface ChannelPreviewUIComponentProps
+export interface ChannelPreviewUIComponentProps
   extends ChannelPreviewProps,
     ChannelPreviewState {
   latestMessage: {
@@ -289,7 +290,7 @@ interface ChannelPreviewUIComponentProps
   };
 }
 
-interface MessageListProps extends ChannelContextValue {
+export interface MessageListProps extends ChannelContextValue {
   /** Turn off grouping of messages by user */
   messageActions: Array<MessageAction>;
   noGroupByUser?: boolean;
@@ -334,7 +335,7 @@ interface MessageListProps extends ChannelContextValue {
 }
 
 declare type MessageAction = 'edit' | 'delete' | 'reactions' | 'reply';
-interface MessageProps extends KeyboardContextValue {
+export interface MessageProps extends KeyboardContextValue {
   client: Client.StreamChat;
   onThreadSelect?(message: Client.MessageResponse): void;
   /** The message object */
@@ -376,7 +377,9 @@ interface MessageProps extends KeyboardContextValue {
   dismissKeyboardOnMessageTouch: boolean;
 }
 
-interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
+export interface MessageUIComponentProps
+  extends MessageProps,
+    KeyboardContextValue {
   reactionsEnabled: boolean;
   repliesEnabled: boolean;
   onMessageTouch?(
@@ -409,10 +412,10 @@ interface MessageUIComponentProps extends MessageProps, KeyboardContextValue {
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
-interface MessageTextProps {
+export interface MessageTextProps {
   message: Client.MessageResponse;
 }
-interface ThreadProps extends ChannelContextValue {
+export interface ThreadProps extends ChannelContextValue {
   /** the thread (the parent message object) */
   thread: SeamlessImmutable.Immutable<Client.MessageResponse>;
   /** The list of messages to render, state is handled by the parent channel component */
@@ -424,17 +427,17 @@ interface ThreadProps extends ChannelContextValue {
   additionalMessageInputProps?: object;
 }
 
-interface TypingIndicatorProps {
+export interface TypingIndicatorProps {
   typing: [];
   client: Client.StreamChat;
 }
 
-interface FileIconUIComponentProps {
+export interface FileIconUIComponentProps {
   size: number;
   mimeType?: string;
 }
 
-interface AutoCompleteInputProps {
+export interface AutoCompleteInputProps {
   value: string;
   openSuggestions?(title: string, component: React.ElementType<any, any>): void;
   closeSuggestions?(): void;
@@ -445,7 +448,7 @@ interface AutoCompleteInputProps {
   additionalTextInputProps: object;
 }
 
-interface CardProps {
+export interface CardProps {
   title: string;
   title_link: string;
   og_scrape_url: string;
@@ -457,45 +460,45 @@ interface CardProps {
   onLongPress?: (event: GestureResponderEvent) => void;
 }
 
-interface CommandsItemProps {
+export interface CommandsItemProps {
   name: string;
   args: string;
   description: string;
 }
 
-interface DateSeparatorProps {
+export interface DateSeparatorProps {
   message: Client.MessageResponse;
   formatDate?(date: Date): string;
 }
-interface EmptyStateIndicatorProps {
+export interface EmptyStateIndicatorProps {
   listType: 'string';
 }
-interface EventIndicatorProps {
+export interface EventIndicatorProps {
   event: Client.Event;
 }
-interface FileAttachmentGroupProps {
+export interface FileAttachmentGroupProps {
   messageId: string;
   files: [];
   handleAction?(): void;
   alignment: 'right' | 'left';
   AttachmentFileIcon: React.ElementType<any, any>;
 }
-interface FileUploadPreviewProps {
+export interface FileUploadPreviewProps {
   fileUploads: [];
   removeFile?(id: string): void;
   retryUpload?(id: string): Promise<any>;
   AttachmentFileIcon: React.ElementType<any, any>;
 }
-interface GalleryProps {
+export interface GalleryProps {
   images: Client.Attachment[];
   onLongPress: (event: GestureResponderEvent) => void;
   alignment: 'right' | 'left';
 }
-interface IconSquareProps {
+export interface IconSquareProps {
   icon: string;
   onPress?(event: GestureResponderEvent): void;
 }
-interface ImageUploadPreviewProps {
+export interface ImageUploadPreviewProps {
   imageUploads: Array<{
     [id: string]: {
       id: string;
@@ -506,14 +509,14 @@ interface ImageUploadPreviewProps {
   removeImage?(id: string): void;
   retryUpload?(id: string): Promise<any>;
 }
-interface KeyboardCompatibleViewProps {}
-interface LoadingErrorIndicatorProps {
+export interface KeyboardCompatibleViewProps {}
+export interface LoadingErrorIndicatorProps {
   listType: string;
 }
-interface LoadingIndicatorProps {
+export interface LoadingIndicatorProps {
   listType: 'channel' | 'message' | 'default';
 }
-interface MentionsItemProps {
+export interface MentionsItemProps {
   item: {
     name?: string;
     icon: string;
@@ -521,16 +524,16 @@ interface MentionsItemProps {
   };
 }
 
-interface MessageNotificationProps {
+export interface MessageNotificationProps {
   showNotification: boolean;
   onPress?(event: GestureResponderEvent): void;
 }
 
-interface MessageSystemProps {
+export interface MessageSystemProps {
   message: Client.MessageResponse;
 }
 
-interface ReactionListProps {
+export interface ReactionListProps {
   latestReactions: any;
   openReactionSelector?(event: GestureResponderEvent): void;
   getTotalReactionCount?(): string | number;
@@ -538,9 +541,9 @@ interface ReactionListProps {
   position: string;
 }
 
-interface SpinnerProps {}
+export interface SpinnerProps {}
 
-interface SuggestionsProviderProps {
+export interface SuggestionsProviderProps {
   active: boolean;
   marginLeft: string | number;
   width: string | number;
@@ -549,13 +552,13 @@ interface SuggestionsProviderProps {
   handleDismiss?(event: GestureResponderEvent): void;
   suggestionsTitle: string;
 }
-interface UploadProgressIndicatorProps {
+export interface UploadProgressIndicatorProps {
   active: boolean;
   type: 'in_progress' | 'retry';
   action?(event: GestureResponderEvent): void;
 }
 
-interface AttachmentActionsProps {
+export interface AttachmentActionsProps {
   text: string;
   actions: Client.Action[];
   actionHandler?(name: string, value: string): any;
