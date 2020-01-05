@@ -462,14 +462,14 @@ export interface AutoCompleteInputProps {
 }
 
 export interface CardProps {
-  title: string;
-  title_link: string;
-  og_scrape_url: string;
-  image_url: string;
-  thumb_url: string;
-  text: string;
-  type: string;
-  alignment: 'right' | 'left';
+  title?: string;
+  title_link?: string;
+  og_scrape_url?: string;
+  image_url?: string;
+  thumb_url?: string;
+  text?: string;
+  type?: string;
+  alignment?: 'right' | 'left';
   onLongPress?: (event: GestureResponderEvent) => void;
 }
 
@@ -484,7 +484,7 @@ export interface DateSeparatorProps {
   formatDate?(date: Date): string;
 }
 export interface EmptyStateIndicatorProps {
-  listType: 'string';
+  listType?: 'string';
 }
 export interface EventIndicatorProps {
   event: Client.Event;
@@ -547,11 +547,39 @@ export interface MessageSystemProps {
 }
 
 export interface ReactionListProps {
-  latestReactions: any;
+  latestReactions: Client.ReactionResponse[];
   openReactionSelector?(event: GestureResponderEvent): void;
   getTotalReactionCount?(): string | number;
   visible: boolean;
   position: string;
+}
+
+export interface ReactionPickerProps {
+  hideReactionOwners: boolean;
+  reactionPickerVisible: boolean;
+  handleDismiss?(): void;
+  handleReaction?(id: string): void;
+  latestReactions: Client.ReactionResponse[];
+  reactionCounts: { [key: string]: number };
+  rpLeft: string | number;
+  rpTop: string | number;
+  rpRight: string | number;
+  emojiData: Array<{
+    icon: string;
+    id: string;
+  }>;
+}
+
+export interface ReactionPickerWrapperProps {
+  isMyMessage?(message: Client.MessageResponse): boolean;
+  message: Client.MessageResponse;
+  offset: string | number;
+  handleReaction?(id: string): void;
+  emojiData: Array<{
+    icon: string;
+    id: string;
+  }>;
+  style: object;
 }
 
 export interface SpinnerProps {}
@@ -639,6 +667,14 @@ export class MessageSystem extends React.PureComponent<
   any
 > {}
 export class ReactionList extends React.PureComponent<ReactionListProps, any> {}
+export class ReactionPicker extends React.PureComponent<
+  ReactionPickerProps,
+  any
+> {}
+export class ReactionPickerWrapper extends React.PureComponent<
+  ReactionPickerWrapperProps,
+  any
+> {}
 export class Spinner extends React.PureComponent<SpinnerProps, any> {}
 export class SuggestionsProvider extends React.PureComponent<
   SuggestionsProviderProps,

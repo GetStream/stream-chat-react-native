@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Modal } from 'react-native';
 import { themed } from '../styles/theme';
+import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { Avatar } from './Avatar';
@@ -46,6 +47,20 @@ const ReactionCount = styled.Text`
 export const ReactionPicker = themed(
   class ReactionPicker extends React.PureComponent {
     static themePath = 'message.reactionPicker';
+
+    static propTypes = {
+      hideReactionOwners: PropTypes.bool,
+      reactionPickerVisible: PropTypes.bool,
+      handleDismiss: PropTypes.func,
+      handleReaction: PropTypes.func,
+      latestReactions: PropTypes.array,
+      reactionCounts: PropTypes.object,
+      rpLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      rpTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      rpRight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      emojiData: PropTypes.array,
+    };
+
     constructor(props) {
       super(props);
     }
