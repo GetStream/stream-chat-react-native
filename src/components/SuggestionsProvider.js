@@ -4,6 +4,7 @@ import { View, FlatList, findNodeHandle } from 'react-native';
 import { SuggestionsContext } from '../context';
 
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 const Wrapper = styled.TouchableOpacity`
   position: absolute;
@@ -164,6 +165,15 @@ class SuggestionsView extends React.PureComponent {
     super(props);
   }
 
+  static propTypes = {
+    active: PropTypes.bool,
+    marginLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    suggestions: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    backdropHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    handleDismiss: PropTypes.func,
+    suggestionsTitle: PropTypes.string,
+  };
   renderHeader = () => <SuggestionsHeader />;
   renderItem = ({ item }) => {
     const {

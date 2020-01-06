@@ -2,6 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import { emojiData } from '../utils';
+import PropTypes from 'prop-types';
 
 import leftTail from '../images/reactionlist/left-tail.png';
 import leftCenter from '../images/reactionlist/left-center.png';
@@ -84,6 +85,14 @@ export class ReactionList extends React.PureComponent {
   constructor(props) {
     super(props);
   }
+
+  static propTypes = {
+    latestReactions: PropTypes.array,
+    openReactionSelector: PropTypes.func,
+    getTotalReactionCount: PropTypes.func,
+    visible: PropTypes.bool,
+    position: PropTypes.string,
+  };
 
   _renderReactions = (reactions) => {
     const reactionsByType = {};

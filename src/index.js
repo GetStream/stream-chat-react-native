@@ -7,6 +7,8 @@ export {
   withChannelContext,
   SuggestionsContext,
   withSuggestionsContext,
+  KeyboardContext,
+  withKeyboardContext,
 } from './context.js';
 
 export { MESSAGE_ACTIONS, renderText } from './utils';

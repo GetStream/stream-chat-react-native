@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
+import PropTypes from 'prop-types';
 
 export const IconSquare = ({ icon, onPress }) => {
   if (onPress)
@@ -27,4 +28,9 @@ export const IconSquare = ({ icon, onPress }) => {
         <Image source={icon} style={{ height: 15, width: 15 }} />
       </View>
     );
+};
+
+IconSquare.propTypes = {
+  icon: PropTypes.string,
+  onPress: PropTypes.func,
 };

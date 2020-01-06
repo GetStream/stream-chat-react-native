@@ -815,7 +815,6 @@ const MessageInput = withKeyboardContext(
                         updateSuggestions={this.props.updateSuggestions}
                         value={this.state.text}
                         onChange={this.onChange}
-                        getUsers={this.getUsers}
                         getCommands={this.getCommands}
                         setInputBoxRef={this.setInputBoxRef}
                         triggerSettings={ACITriggerSettings({

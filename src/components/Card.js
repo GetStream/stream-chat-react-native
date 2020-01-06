@@ -47,7 +47,7 @@ export const Card = withMessageContentContext(
       static themePath = 'card';
       static propTypes = {
         /** Title retured by the OG scraper */
-        title: PropTypes.string.isRequired,
+        title: PropTypes.string,
         /** Link retured by the OG scraper */
         title_link: PropTypes.string,
         /** The scraped url, used as a fallback if the OG-data doesnt include a link */

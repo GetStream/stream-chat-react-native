@@ -1,9 +1,20 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import { TouchableOpacity, Dimensions } from 'react-native';
 
 import { ReactionPicker } from './ReactionPicker';
 
 export class ReactionPickerWrapper extends React.PureComponent {
+  static propTypes = {
+    isMyMessage: PropTypes.func,
+    message: PropTypes.object,
+    offset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    handleReaction: PropTypes.func,
+    emojiData: PropTypes.array,
+    style: PropTypes.any,
+  };
+
   constructor(props) {
     super(props);
     this.state = { reactionPickerVisible: false };

@@ -93,7 +93,7 @@ export const Chat = themed(
       this.props.client.off('connection.recovered');
       this.props.client.off('connection.changed');
       this.props.client.off(this.handleEvent);
-      this.unsubscribeNetInfo();
+      this.unsubscribeNetInfo && this.unsubscribeNetInfo();
     }
 
     notifyChatClient = (isConnected) => {

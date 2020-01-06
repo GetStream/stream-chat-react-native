@@ -37,9 +37,7 @@ export class MessageNotification extends PureComponent {
     /** If we should show the notification or not */
     showNotification: PropTypes.bool,
     /** Onclick handler */
-    onClick: PropTypes.func.isRequired,
-    /** Style overrides */
-    style: PropTypes.object,
+    onPress: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -74,7 +72,7 @@ export class MessageNotification extends PureComponent {
             opacity: this.state.notificationOpacity,
           }}
         >
-          <Container onPress={this.props.onClick} onClick={this.props.onClick}>
+          <Container onPress={this.props.onPress}>
             <MessageNotificationText>New Messages</MessageNotificationText>
           </Container>
         </Animated.View>

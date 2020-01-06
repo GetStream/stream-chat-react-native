@@ -651,7 +651,7 @@ const MessageList = withChannelContext(
             {this.state.newMessagesNotification && (
               <MessageNotification
                 showNotification={this.state.newMessagesNotification}
-                onClick={this.goToNewMessages}
+                onPress={this.goToNewMessages}
               />
             )}
             {!this.state.online && (

@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import Moment from 'moment';
 import { Avatar } from './Avatar';
+import PropTypes from 'prop-types';
 
 const Date = styled.Text`
   font-size: 10;
@@ -56,6 +57,10 @@ const EventIndicator = ({ event }) => {
   }
 
   return null;
+};
+
+EventIndicator.propTypes = {
+  event: PropTypes.object,
 };
 
 export { EventIndicator };
