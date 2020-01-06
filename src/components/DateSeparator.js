@@ -48,6 +48,12 @@ export const DateSeparator = themed(
   class DateSeparator extends React.PureComponent {
     static propTypes = {
       message: PropTypes.object.isRequired,
+      /**
+       * Formatter function for date object.
+       *
+       * @param date Date object of message
+       * @returns string
+       */
       formatDate: PropTypes.func,
     };
 

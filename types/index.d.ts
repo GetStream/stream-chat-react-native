@@ -110,6 +110,12 @@ export interface KeyboardContextValue {
   dismissKeyboard?(): void;
 }
 
+export interface MessageContentContext
+  extends React.Context<MessageContentContextValue> {}
+export interface MessageContentContextValue {
+  onLongPress?: (event: GestureResponderEvent) => void;
+}
+
 //================================================================================================
 //================================================================================================
 //
@@ -202,7 +208,7 @@ export interface MessageInputProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
-export interface AttachmentProps {
+export interface AttachmentProps extends MessageContentContextValue {
   /** The attachment to render */
   attachment: Client.Attachment;
   /**
@@ -436,6 +442,7 @@ export interface MessageUIComponentProps
    * */
   forceAlign: string | boolean;
   showMessageStatus: boolean;
+  /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
@@ -487,6 +494,28 @@ export interface MessageAvatarUIComponentProps {
 export interface MessageContentUIComponentProps
   extends MessageUIComponentProps {
   alignment: string;
+}
+
+export interface MessageTextContainerUIComponentProps {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: Client.MessageResponse;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: [];
+  /**
+   * Returns true if message (param) belongs to current user, else false
+   *
+   * @param message
+   * */
+  isMyMessage?(message: Client.MessageResponse): boolean;
+  /** Custom UI component for message text */
+  MessageText?: React.ElementType<MessageTextProps>;
+  /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
+  theme?: object;
 }
 
 export interface MessageTextProps {
@@ -788,6 +817,11 @@ export class MessageStatus extends React.PureComponent<
 > {}
 export class MessageAvatar extends React.PureComponent<
   MessageAvatarUIComponentProps,
+  any
+> {}
+
+export class MessageTextContainer extends React.PureComponent<
+  MessageTextContainerUIComponentProps,
   any
 > {}
 
