@@ -455,7 +455,7 @@ const MessageInput = withKeyboardContext(
               return;
 
             const result = await pickDocument();
-            if (result.type === 'cancel') {
+            if (result.type === 'cancel' || result.cancelled) {
               return;
             }
             const mimeType = lookup(result.name);

@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { withTheme } from '@stream-io/styled-components';
 
 import { renderText, capitalize } from '../../utils';
+import PropTypes from 'prop-types';
 
 const TextContainer = styled.View`
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
@@ -76,3 +77,25 @@ export const MessageTextContainer = withTheme((props) => {
     </React.Fragment>
   );
 });
+
+MessageTextContainer.propTypes = {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: PropTypes.array,
+  /**
+   * Returns true if message (param) belongs to current user, else false
+   *
+   * @param message
+   * */
+  isMyMessage: PropTypes.func,
+  /** Custom UI component for message text */
+  MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
+  theme: PropTypes.object,
+};

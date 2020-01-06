@@ -110,6 +110,12 @@ export interface KeyboardContextValue {
   dismissKeyboard?(): void;
 }
 
+export interface MessageContentContext
+  extends React.Context<MessageContentContextValue> {}
+export interface MessageContentContextValue {
+  onLongPress?: (event: GestureResponderEvent) => void;
+}
+
 //================================================================================================
 //================================================================================================
 //
@@ -118,7 +124,13 @@ export interface KeyboardContextValue {
 //================================================================================================
 //================================================================================================
 export interface ChatProps {
+  /** The StreamChat client object */
   client: Client.StreamChat;
+  /**
+   * Theme object
+   *
+   * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+   * */
   style?: object;
 }
 
@@ -131,16 +143,17 @@ export interface ChannelProps extends ChatContextValue {
   Attachment?: React.ElementType<AttachmentProps>;
 }
 
-export interface EmptyStateIndicatorProps {
-  listType?: 'channel' | 'message' | 'default';
-}
+export type listType = 'channel' | 'message' | 'default';
 
 export interface LoadingErrorIndicatorProps {
-  listType?: 'channel' | 'message' | 'default';
+  listType?: listType;
+}
+export interface EmptyStateIndicatorProps {
+  listType?: listType;
 }
 
 export interface LoadingIndicatorProps {
-  listType: 'channel' | 'message' | 'default';
+  listType?: listType;
 }
 export interface DateSeparatorProps {
   message: Client.MessageResponse;
@@ -195,7 +208,7 @@ export interface MessageInputProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
-export interface AttachmentProps {
+export interface AttachmentProps extends MessageContentContextValue {
   /** The attachment to render */
   attachment: Client.Attachment;
   /**
@@ -429,15 +442,86 @@ export interface MessageUIComponentProps
    * */
   forceAlign: string | boolean;
   showMessageStatus: boolean;
+  /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
 }
 
+export interface MessageRepliesUIComponentProps {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: Client.MessageResponse;
+  /** Boolean if current message is part of thread */
+  isThreadList: boolean;
+  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  openThread?(message: Client.Message, event: React.SyntheticEvent): void;
+  /** right | left */
+  pos: string;
+}
+
+export interface MessageStatusUIComponentProps {
+  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  client: Client.StreamChat;
+  /** A list of users who have read the message */
+  readBy: Array<Client.UserResponse>;
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: Client.MessageResponse;
+  /** Latest message id on current channel */
+  lastReceivedId: string;
+  /** Boolean if current message is part of thread */
+  isThreadList: boolean;
+}
+
+export interface MessageAvatarUIComponentProps {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: Client.MessageResponse;
+  /**
+   * Returns true if message (param) belongs to current user, else false
+   *
+   * @param message
+   * */
+  isMyMessage?(message: Client.MessageResponse): boolean;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: [];
+}
+
+export interface MessageContentUIComponentProps
+  extends MessageUIComponentProps {
+  alignment: string;
+}
+
+export interface MessageTextContainerUIComponentProps {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: Client.MessageResponse;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: [];
+  /**
+   * Returns true if message (param) belongs to current user, else false
+   *
+   * @param message
+   * */
+  isMyMessage?(message: Client.MessageResponse): boolean;
+  /** Custom UI component for message text */
+  MessageText?: React.ElementType<MessageTextProps>;
+  /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
+  theme?: object;
+}
+
 export interface MessageTextProps {
   message: Client.MessageResponse;
 }
+
 export interface ThreadProps extends ChannelContextValue {
   /** the thread (the parent message object) */
   thread: SeamlessImmutable.Immutable<Client.MessageResponse>;
@@ -462,7 +546,7 @@ export interface FileIconUIComponentProps {
 
 export interface AutoCompleteInputProps {
   value: string;
-  openSuggestions?(title: string, component: React.ElementType<any, any>): void;
+  openSuggestions?(title: string, component: React.ElementType<any>): void;
   closeSuggestions?(): void;
   updateSuggestions?(param: object): void;
   triggerSettings: object;
@@ -493,24 +577,18 @@ export interface DateSeparatorProps {
   message: Client.MessageResponse;
   formatDate?(date: Date): string;
 }
-export interface EmptyStateIndicatorProps {
-  listType?: 'string';
-}
-export interface EventIndicatorProps {
-  event: Client.Event;
-}
 export interface FileAttachmentGroupProps {
   messageId: string;
   files: [];
   handleAction?(): void;
   alignment: 'right' | 'left';
-  AttachmentFileIcon: React.ElementType<any, any>;
+  AttachmentFileIcon: React.ElementType<any>;
 }
 export interface FileUploadPreviewProps {
   fileUploads: [];
   removeFile?(id: string): void;
   retryUpload?(id: string): Promise<any>;
-  AttachmentFileIcon: React.ElementType<any, any>;
+  AttachmentFileIcon: React.ElementType<any>;
 }
 export interface GalleryProps {
   images: Client.Attachment[];
@@ -533,11 +611,22 @@ export interface ImageUploadPreviewProps {
   retryUpload?(id: string): Promise<any>;
 }
 export interface KeyboardCompatibleViewProps {}
+
+export interface EmptyStateIndicatorProps {
+  listType?: listType;
+}
+export interface EventIndicatorProps {
+  event:
+    | Client.Event<Client.MemberAddedEvent>
+    | Client.Event<Client.MemberRemovedEvent>
+    | null;
+}
+
 export interface LoadingErrorIndicatorProps {
-  listType: string;
+  listType?: listType;
 }
 export interface LoadingIndicatorProps {
-  listType: 'channel' | 'message' | 'default';
+  listType?: listType;
 }
 export interface MentionsItemProps {
   item: {
@@ -714,6 +803,28 @@ export class MessageSimple extends React.PureComponent<
   MessageUIComponentProps,
   any
 > {}
+export class MessageContent extends React.PureComponent<
+  MessageContentUIComponentProps,
+  any
+> {}
+export class MessageReplies extends React.PureComponent<
+  MessageRepliesUIComponentProps,
+  any
+> {}
+export class MessageStatus extends React.PureComponent<
+  MessageStatusUIComponentProps,
+  any
+> {}
+export class MessageAvatar extends React.PureComponent<
+  MessageAvatarUIComponentProps,
+  any
+> {}
+
+export class MessageTextContainer extends React.PureComponent<
+  MessageTextContainerUIComponentProps,
+  any
+> {}
+
 export class ChannelList extends React.PureComponent<ChannelListProps, any> {}
 
 export class Thread extends React.PureComponent<ThreadProps, any> {}

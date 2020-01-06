@@ -65,13 +65,16 @@ export const MessageSimple = themed(
        *      {...props}
        *      onPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent
-       *        // component such as handleEdit, handleDelete, showActionSheet
-       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )
        * }
        * ```
+       *
+       * Similarly, you can also call other methods available on MessageContent
+       * component such as handleEdit, handleDelete, showActionSheet etc.
+       *
+       * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
+       *
        * @param {Component} thisArg Reference to MessageContent component
        * @param message Message object which was pressed
        * @param e       Event object for onPress event
@@ -90,13 +93,17 @@ export const MessageSimple = themed(
        *      {...props}
        *      onLongPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent
-       *        // component such as handleEdit, handleDelete, showActionSheet
-       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )
        * }
+       *
+       * Similarly, you can also call other methods available on MessageContent
+       * component such as handleEdit, handleDelete, showActionSheet etc.
+       *
+       * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
        * ```
+       *
+       * By default we show action sheet with all the message actions on long press.
        *
        * @param {Component} thisArg Reference to MessageContent component
        * @param message Message object which was long pressed

@@ -3,6 +3,7 @@ import styled from '@stream-io/styled-components';
 import loadingGif from '../../images/loading.gif';
 import iconDeliveredUnseen from '../../images/icons/delivered_unseen.png';
 import { Avatar } from '../Avatar';
+import PropTypes from 'prop-types';
 
 const Spacer = styled.View`
   height: 10;
@@ -110,4 +111,17 @@ export const MessageStatus = ({
   };
 
   return <StatusContainer>{renderStatus()}</StatusContainer>;
+};
+
+MessageStatus.propTypes = {
+  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  client: PropTypes.object,
+  /** A list of users who have read the message */
+  readBy: PropTypes.array,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /** Latest message id on current channel */
+  lastReceivedId: PropTypes.string,
+  /** Boolean if current message is part of thread */
+  isThreadList: PropTypes.bool,
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import iconPath from '../../images/icons/icon_path.png';
 
@@ -39,4 +40,15 @@ export const MessageReplies = ({ message, isThreadList, openThread, pos }) => {
       ) : null}
     </Container>
   );
+};
+
+MessageReplies.propTypes = {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /** Boolean if current message is part of thread */
+  isThreadList: PropTypes.bool,
+  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  openThread: PropTypes.func,
+  /** right | left */
+  pos: PropTypes.string,
 };
