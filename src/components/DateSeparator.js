@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import Moment from 'moment';
 import { themed } from '../styles/theme';
+import PropTypes from 'prop-types';
 
 const Container = styled.View`
   display: flex;
@@ -45,6 +46,11 @@ const Date = styled.Text`
 
 export const DateSeparator = themed(
   class DateSeparator extends React.PureComponent {
+    static propTypes = {
+      message: PropTypes.object.isRequired,
+      formatDate: PropTypes.func,
+    };
+
     static themePath = 'messageList.dateSeparator';
 
     render() {

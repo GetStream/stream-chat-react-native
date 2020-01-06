@@ -1,5 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
+import PropTypes from 'prop-types';
 
 export const LoadingErrorIndicator = ({ listType }) => {
   let Loader;
@@ -16,4 +17,8 @@ export const LoadingErrorIndicator = ({ listType }) => {
   }
 
   return Loader;
+};
+
+LoadingErrorIndicator.propTypes = {
+  listType: PropTypes.oneOf(['channel', 'message', 'default']),
 };

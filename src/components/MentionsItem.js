@@ -1,5 +1,6 @@
 import React from 'react';
 import { Avatar } from './Avatar';
+import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
@@ -34,3 +35,9 @@ export const MentionsItem = themed(
     }
   },
 );
+
+MentionsItem.propTypes = {
+  name: PropTypes.string,
+  icon: PropTypes.string,
+  id: PropTypes.string,
+};
