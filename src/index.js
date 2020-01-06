@@ -13,4 +13,4 @@ export {
   withMessageContentContext,
 } from './context.js';
 
-export { MESSAGE_ACTIONS, renderText } from './utils';
+export * from './utils';

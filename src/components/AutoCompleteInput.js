@@ -12,11 +12,17 @@ const InputBox = styled.TextInput`
 export class AutoCompleteInput extends React.PureComponent {
   static propTypes = {
     value: PropTypes.string,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
     openSuggestions: PropTypes.func,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
     closeSuggestions: PropTypes.func,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
     updateSuggestions: PropTypes.func,
     triggerSettings: PropTypes.object,
     setInputBoxRef: PropTypes.func,
+    /**
+     * @param text string
+     */
     onChange: PropTypes.func,
     /**
      * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.

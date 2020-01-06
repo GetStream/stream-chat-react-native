@@ -53,6 +53,11 @@ const ImageContainer = styled.TouchableOpacity`
     length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
   ${({ theme }) => theme.message.gallery.imageContainer.css}
 `;
+/**
+ * UI component for card in attachments.
+ *
+ * @example ./docs/Gallery.md
+ */
 
 export const Gallery = withMessageContentContext(
   themed(
