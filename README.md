@@ -75,6 +75,8 @@ The React Native components are created using the stream-chat-js library. If you
 1. Navigation between different component is something we expect consumers to
    implement. You can checkout the example given in this repository
 
+2. Minor releases may come with some breaking changes, so always check the release notes before upgrading minor version.
+
 Library currently exposes following components:
 
 1. Avatar
