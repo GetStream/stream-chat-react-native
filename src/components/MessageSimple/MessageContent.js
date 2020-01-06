@@ -153,7 +153,7 @@ export const MessageContent = themed(
        * @param e       Event object for onPress event
        * @param message Message object which was pressed
        *
-       * @deprecated User onPress instead
+       * @deprecated Use onPress instead
        * */
       onMessageTouch: PropTypes.func,
       /**
@@ -169,7 +169,8 @@ export const MessageContent = themed(
        *      {...props}
        *      onPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent component such as handleEdit, handleDelete, showActionSheet
+       *        // Similarly, you can also call other methods available on MessageContent
+       *        // component such as handleEdit, handleDelete, showActionSheet
        *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )
@@ -193,7 +194,8 @@ export const MessageContent = themed(
        *      {...props}
        *      onLongPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent component such as handleEdit, handleDelete, showActionSheet
+       *        // Similarly, you can also call other methods available on MessageContent
+       *        // component such as handleEdit, handleDelete, showActionSheet
        *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )

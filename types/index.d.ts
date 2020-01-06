@@ -399,6 +399,16 @@ export interface MessageUIComponentProps
     e: GestureResponderEvent,
     message: Client.MessageResponse,
   ): void;
+  onPress?(
+    thisArg: React.Component<MessageUIComponentProps>,
+    message: Client.MessageResponse,
+    e: GestureResponderEvent,
+  ): any;
+  onLongPress?(
+    thisArg: React.Component<MessageUIComponentProps>,
+    message: Client.MessageResponse,
+    e: GestureResponderEvent,
+  ): any;
   handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
   handleDelete?(): void;
   handleEdit?(): void;
