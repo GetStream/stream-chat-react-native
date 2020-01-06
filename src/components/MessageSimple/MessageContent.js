@@ -169,13 +169,16 @@ export const MessageContent = themed(
        *      {...props}
        *      onPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent
-       *        // component such as handleEdit, handleDelete, showActionSheet
-       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )
        * }
        * ```
+       *
+       * Similarly, you can also call other methods available on MessageContent
+       * component such as handleEdit, handleDelete, showActionSheet etc.
+       *
+       * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
+       *
        * @param {Component} thisArg Reference to MessageContent component
        * @param message Message object which was pressed
        * @param e       Event object for onPress event
@@ -194,12 +197,16 @@ export const MessageContent = themed(
        *      {...props}
        *      onLongPress={(thisArg, message, e) => {
        *        thisArg.openReactionSelector();
-       *        // Similarly, you can also call other methods available on MessageContent
-       *        // component such as handleEdit, handleDelete, showActionSheet
-       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
        *      }}
        *  )
        * }
+       *
+       * Similarly, you can also call other methods available on MessageContent
+       * component such as handleEdit, handleDelete, showActionSheet etc.
+       *
+       * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
+       *
+       * By default we show action sheet with all the message actions on long press.
        * ```
        *
        * @param {Component} thisArg Reference to MessageContent component
@@ -222,6 +229,13 @@ export const MessageContent = themed(
       handleAction: PropTypes.func,
       /** Position of message. 'right' | 'left' */
       alignment: PropTypes.string,
+      /**
+       * Position of message in group - top, bottom, middle, single.
+       *
+       * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+       * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+       */
+      groupStyles: PropTypes.array,
       /**
        * Style object for actionsheet (used to message actions).
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js

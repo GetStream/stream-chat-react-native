@@ -28,7 +28,11 @@ export const Chat = themed(
     static propTypes = {
       /** The StreamChat client object */
       client: PropTypes.object.isRequired,
-      /** Theme object */
+      /**
+       * Theme object
+       *
+       * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+       * */
       style: PropTypes.object,
       logger: PropTypes.func,
     };
