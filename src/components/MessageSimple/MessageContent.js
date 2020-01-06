@@ -153,8 +153,60 @@ export const MessageContent = themed(
        * @param e       Event object for onPress event
        * @param message Message object which was pressed
        *
+       * @deprecated Use onPress instead
        * */
       onMessageTouch: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when message is pressed/touched
+       * e.g. if you would like to open reaction picker on message press:
+       *
+       * ```
+       * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
+       * ...
+       * const MessageUIComponent = (props) => {
+       *  return (
+       *    <MessageSimple
+       *      {...props}
+       *      onPress={(thisArg, message, e) => {
+       *        thisArg.openReactionSelector();
+       *        // Similarly, you can also call other methods available on MessageContent
+       *        // component such as handleEdit, handleDelete, showActionSheet
+       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
+       *      }}
+       *  )
+       * }
+       * ```
+       * @param {Component} thisArg Reference to MessageContent component
+       * @param message Message object which was pressed
+       * @param e       Event object for onPress event
+       * */
+      onPress: PropTypes.func,
+      /**
+       * Function that overrides default behaviour when message is long pressed
+       * e.g. if you would like to open reaction picker on message long press:
+       *
+       * ```
+       * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
+       * ...
+       * const MessageUIComponent = (props) => {
+       *  return (
+       *    <MessageSimple
+       *      {...props}
+       *      onLongPress={(thisArg, message, e) => {
+       *        thisArg.openReactionSelector();
+       *        // Similarly, you can also call other methods available on MessageContent
+       *        // component such as handleEdit, handleDelete, showActionSheet
+       *        // Source - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
+       *      }}
+       *  )
+       * }
+       * ```
+       *
+       * @param {Component} thisArg Reference to MessageContent component
+       * @param message Message object which was long pressed
+       * @param e       Event object for onLongPress event
+       * */
+      onLongPress: PropTypes.func,
       /**
        * Handler to delete a current message.
        */
@@ -358,11 +410,18 @@ export const MessageContent = themed(
           </DeletedContainer>
         );
 
+      const onLongPress = this.props.onLongPress;
       const contentProps = {
         alignment: pos,
         status: message.status,
-        onPress: this.props.onMessageTouch,
-        onLongPress: options.length > 1 ? this.showActionSheet : null,
+        onPress: this.props.onPress
+          ? this.props.onPress.bind(this, this, message)
+          : this.props.onMessageTouch,
+        onLongPress: onLongPress
+          ? onLongPress.bind(this, this, message)
+          : options.length > 1
+          ? this.showActionSheet
+          : null,
         activeOpacity: 0.7,
         disabled: readOnly,
         hasReactions,
@@ -372,7 +431,7 @@ export const MessageContent = themed(
         contentProps.onPress = retrySendMessage.bind(this, Immutable(message));
 
       const context = {
-        onLongPress: options.length > 1 ? this.showActionSheet : null,
+        onLongPress: contentProps.onLongPress,
       };
 
       return (

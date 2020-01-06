@@ -31,6 +31,6 @@ export const IconSquare = ({ icon, onPress }) => {
 };
 
 IconSquare.propTypes = {
-  icon: PropTypes.string,
+  icon: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onPress: PropTypes.func,
 };
