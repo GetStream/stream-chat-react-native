@@ -27,3 +27,5 @@ export const CloseButton = themed(
     }
   },
 );
+
+CloseButton.propTypes = {};

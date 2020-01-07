@@ -213,8 +213,10 @@ export const defaultTheme = {
 
   messageList: {
     listContainer: {},
-    messageNotification: {},
-    messageNotificationText: {},
+    messageNotification: {
+      container: {},
+      text: {},
+    },
     errorNotification: {},
     errorNotificationText: {},
     dateSeparator: {
