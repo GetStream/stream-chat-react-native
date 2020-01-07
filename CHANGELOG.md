@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.6.0] 2020-01-07
+
+- Exporting all the missing components and utils
+  - AutoCompleteInput
+  - Card
+  - CommandsItem
+  - DateSeparator
+  - EmptyStateIndicator
+  - EventIndicator
+  - FileAttachmentGroup
+  - FileUploadPreview
+  - Gallery
+  - IconSquare
+  - ImageUploadPreview
+  - KeyboardCompatibleView
+  - LoadingErrorIndicator
+  - LoadingIndicator
+  - MentionsItem
+  - Message
+  - MessageNotification
+  - MessageSystem
+  - ReactionList
+  - Spinner
+  - SuggestionsProvider
+  - UploadProgressIndicator
+- Refining prop-types and typescript types for components.
+- Fixing theme paths for MessageNotification component.
+
+#### Breaking Change
+
+- Replacing theme path `messageList.messageNotificationText` with `messageList.messageNotification.text` ([#3593dfb](https://github.com/GetStream/stream-chat-react-native/commit/9ad366562996edaef09b66bbee4eb657a99fb89e#diff-bff2172a77e0b6357dc54230974c9a61))
+- Replacing theme path `messageList.messageNotification` with `messageList.messageNotification.container` ([#3593dfb](https://github.com/GetStream/stream-chat-react-native/commit/9ad366562996edaef09b66bbee4eb657a99fb89e#diff-bff2172a77e0b6357dc54230974c9a61))
+
 ## [0.5.1] 2019-12-23
 
 #### stream-chat-expo (Expo package)

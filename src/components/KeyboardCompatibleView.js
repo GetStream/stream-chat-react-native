@@ -9,6 +9,21 @@ import {
 } from 'react-native';
 import { KeyboardContext } from '../context';
 
+/**
+ * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
+ * designed to work with MessageInput and MessageList component.
+ *
+ * Main motivation of writing this our own component was to get rid of issues that come with KeyboardAvoidingView from react-native
+ * when used with components of fixed height. [Channel](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelInner.js) component
+ * uses `KeyboardCompatibleView` internally, so you don't need to explicitely add it.
+ *
+ * ```json
+ * <KeyboardCompatibleView>
+ *  <MessageList />
+ *  <MessageInput />
+ * </KeyboardCompatibleView>
+ * ```
+ */
 export class KeyboardCompatibleView extends React.PureComponent {
   constructor(props) {
     super(props);
