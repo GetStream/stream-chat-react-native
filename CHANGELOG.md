@@ -26,6 +26,10 @@
   - SuggestionsProvider
   - UploadProgressIndicator
 - Refining prop-types and typescript types for components.
+- Fixed issue about app crash when document picker is cancelled - [#110](https://github.com/GetStream/stream-chat-react-native/issues/110)
+- Adding `onPress` and `onLongPress` props on `MessageSimple` component
+  - Fixes issue [#108](https://github.com/GetStream/stream-chat-react-native/issues/108)
+  - commit [9e3064d](https://github.com/GetStream/stream-chat-react-native/commit/8ffde0010a6e8a4a61c47063570350849fd995f4)
 - Fixing theme paths for MessageNotification component.
 
 #### Breaking Change
