@@ -188,7 +188,22 @@ const ChannelList = withChatContext(
       this.listenToChanges();
     }
 
-    componentDidUpdate() {
+    async componentDidUpdate(prevProps) {
+      // do we need deepequal?
+      if (!isEqual(prevProps.filters, this.props.filters)) {
+        await this.setState({
+          error: false,
+          channels: Immutable([]),
+          channelIds: Immutable([]),
+          loadingChannels: true,
+          hasNextPage: true,
+          refreshing: false,
+          offset: 0,
+        });
+        console.log('tets');
+        await this.queryChannels();
+      }
+
       this.props.logger('ChannelList component', 'componentDidUpdate', {
         tags: ['lifecycle', 'channellist'],
         props: this.props,
