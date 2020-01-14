@@ -200,7 +200,6 @@ const ChannelList = withChatContext(
           refreshing: false,
           offset: 0,
         });
-        console.log('tets');
         await this.queryChannels();
       }
 
