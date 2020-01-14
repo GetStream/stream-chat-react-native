@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.6.1] 2019-01-14
+
+- When you change the filters prop on the ChannelList component this now we will refresh the channels with the new query
+
 ## [0.6.0] 2020-01-07
 
 - Exporting all the missing components and utils
