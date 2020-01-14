@@ -190,7 +190,10 @@ const ChannelList = withChatContext(
 
     async componentDidUpdate(prevProps) {
       // do we need deepequal?
-      if (!isEqual(prevProps.filters, this.props.filters)) {
+      if (
+        !isEqual(prevProps.filters, this.props.filters) ||
+        !isEqual(prevProps.sort, this.props.sort)
+      ) {
         await this.setState({
           error: false,
           channels: Immutable([]),
