@@ -141,7 +141,7 @@ export interface ChannelProps extends ChatContextValue {
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
   Message?: React.ElementType<MessageUIComponentProps>;
   Attachment?: React.ElementType<AttachmentProps>;
-  /** Function that overrides default sendMessage if chat client */
+  /** Function that overrides default sendMessage in chat client */
   doSendMessageRequest?(
     channelId: string,
     message: Client.Message,
