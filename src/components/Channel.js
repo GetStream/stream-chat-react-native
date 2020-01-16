@@ -79,6 +79,10 @@ const Channel = withChatContext(
        * Override send message request (Advanced usage only)
        * */
       doSendMessageRequest: PropTypes.func,
+      /**
+       * Override update message request (Advanced usage only)
+       * */
+      doUpdateMessageRequest: PropTypes.func,
     };
 
     static defaultProps = {

@@ -91,6 +91,7 @@ export interface ChannelContextValue {
     updatedMessage: Client.MessageResponse,
     extraState?: object,
   ): void;
+  editMessage?(message: Client.Message): void | Promise<Client.MessageResponse>;
   retrySendMessage?(message: Client.Message): void;
   removeMessage?(updatedMessage: Client.MessageResponse): void;
   setEditingState?(message: Client.Message): void;
@@ -143,6 +144,11 @@ export interface ChannelProps extends ChatContextValue {
   Attachment?: React.ElementType<AttachmentProps>;
   /** Function that overrides default sendMessage in chat client */
   doSendMessageRequest?(
+    channelId: string,
+    message: Client.Message,
+  ): void | Promise<Client.MessageResponse>;
+  /** Function that overrides default updateMessage in chat client */
+  doUpdateMessageRequest?(
     channelId: string,
     message: Client.Message,
   ): void | Promise<Client.MessageResponse>;

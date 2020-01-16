@@ -374,11 +374,9 @@ const MessageInput = withKeyboardContext(
               // TODO: Remove this line and show an error when submit fails
               this.props.clearEditingState();
 
-              const updateMessagePromise = this.props.client
-                .updateMessage(updatedMessage)
-                .then(() => {
-                  this.props.clearEditingState();
-                });
+              const updateMessagePromise = this.props
+                .editMessage(updatedMessage)
+                .then(this.props.clearEditingState);
               logChatPromiseExecution(updateMessagePromise, 'update message');
             } else {
               try {
@@ -404,7 +402,7 @@ const MessageInput = withKeyboardContext(
 
           updateMessage = async () => {
             try {
-              await this.props.client.updateMessage({
+              await this.props.client.editMessage({
                 ...this.props.editing,
                 text: this.state.text,
               });
