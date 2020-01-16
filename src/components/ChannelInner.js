@@ -124,6 +124,8 @@ export class ChannelInner extends PureComponent {
     isOnline: PropTypes.bool,
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /** Override send message request (Advanced usage only) */
+    doSendMessageRequest: PropTypes.func,
   };
 
   static defaultProps = {
@@ -380,7 +382,16 @@ export class ChannelInner extends PureComponent {
     };
 
     try {
-      const messageResponse = await this.props.channel.sendMessage(messageData);
+      let messageResponse;
+      if (this.props.doSendMessageRequest) {
+        messageResponse = await this.props.doSendMessageRequest(
+          this.props.channel.cid,
+          messageData,
+        );
+      } else {
+        messageResponse = await this.props.channel.sendMessage(messageData);
+      }
+
       // replace it after send is completed
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
