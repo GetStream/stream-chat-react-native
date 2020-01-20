@@ -8820,10 +8820,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.6.0.tgz#77a55d27ebdc513b196475f923359ba660b671c8"
-  integrity sha512-4Ag/Npmn5ak3xKYDSTO4CpP2CBsP5lVDFXyZ+xK9rnRW6iC/1O7KETAN4IzH8B5uIQBzIyroZ4zoOM7JIk2qyg==
+stream-chat-react-native-core@0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.6.1.tgz#a71cbe9e8b2395d9dbee9beb601f98a3cb4a5ee9"
+  integrity sha512-TdRKRNLT7X5SRsu5rpJXM576uyu2DUgKipr/oZ6STfcm9H+el/U1p+O9zNX3PV6m/rmExcfxBjXShzJKaZQxvQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
