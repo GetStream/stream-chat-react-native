@@ -124,6 +124,10 @@ export class ChannelInner extends PureComponent {
     isOnline: PropTypes.bool,
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /** Override send message request (Advanced usage only) */
+    doSendMessageRequest: PropTypes.func,
+    /** Override update message request (Advanced usage only) */
+    doUpdateMessageRequest: PropTypes.func,
   };
 
   static defaultProps = {
@@ -352,6 +356,20 @@ export class ChannelInner extends PureComponent {
     return message;
   };
 
+  // eslint-disable-next-line require-await
+  editMessage = async (updatedMessage) => {
+    if (this.props.doUpdateMessageRequest) {
+      return Promise.resolve(
+        this.props.doUpdateMessageRequest(
+          this.props.channel.cid,
+          updatedMessage,
+        ),
+      );
+    }
+
+    return this.props.client.updateMessage(updatedMessage);
+  };
+
   _sendMessage = async (message) => {
     // Scrape the reserved fields if present.
     const {
@@ -380,7 +398,16 @@ export class ChannelInner extends PureComponent {
     };
 
     try {
-      const messageResponse = await this.props.channel.sendMessage(messageData);
+      let messageResponse;
+      if (this.props.doSendMessageRequest) {
+        messageResponse = await this.props.doSendMessageRequest(
+          this.props.channel.cid,
+          messageData,
+        );
+      } else {
+        messageResponse = await this.props.channel.sendMessage(messageData);
+      }
+
       // replace it after send is completed
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
@@ -566,6 +593,7 @@ export class ChannelInner extends PureComponent {
     updateMessage: this.updateMessage,
     removeMessage: this.removeMessage,
     sendMessage: this.sendMessage,
+    editMessage: this.editMessage,
     retrySendMessage: this.retrySendMessage,
     setEditingState: this.setEditingState,
     clearEditingState: this.clearEditingState,

@@ -75,6 +75,14 @@ const Channel = withChatContext(
        * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
        * */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Override send message request (Advanced usage only)
+       * */
+      doSendMessageRequest: PropTypes.func,
+      /**
+       * Override update message request (Advanced usage only)
+       * */
+      doUpdateMessageRequest: PropTypes.func,
     };
 
     static defaultProps = {
