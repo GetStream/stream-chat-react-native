@@ -75,6 +75,12 @@ export const ChannelPreviewMessenger = themed(
       latestMessage: PropTypes.object,
       /** Number of unread messages on channel */
       unread: PropTypes.number,
+      /** Length at which latest message should be truncated */
+      latestMessageLength: PropTypes.number,
+    };
+
+    static defaultProps = {
+      latestMessageLength: 30,
     };
 
     onSelectChannel = () => {
@@ -125,10 +131,9 @@ export const ChannelPreviewMessenger = themed(
             >
               {!this.props.latestMessage
                 ? 'Nothing yet...'
-                : truncate(
-                    this.props.latestMessage.text.replace(/\n/g, ' '),
-                    14,
-                  )}
+                : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), {
+                    length: this.props.latestMessageLength,
+                  })}
             </Message>
           </Details>
         </Container>

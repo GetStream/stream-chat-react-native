@@ -324,7 +324,10 @@ export interface ChannelPreviewUIComponentProps
   latestMessage: {
     text: string;
     created_at: string;
+    originalMessageObject: Client.MessageResponse;
   };
+  /** Length at which latest message should be truncated */
+  latestMessageLength: number;
 }
 
 export interface MessageListProps extends ChannelContextValue {

@@ -60,6 +60,7 @@ export class ChannelPreview extends PureComponent {
     const latestMessage = {
       text: '',
       created_at: '',
+      originalMessageObject: { ...message },
     };
 
     if (!message) {
@@ -72,7 +73,7 @@ export class ChannelPreview extends PureComponent {
     }
 
     if (message.text) {
-      latestMessage.text = message.text.slice(0, 20);
+      latestMessage.text = message.text;
     } else {
       if (message.command) {
         latestMessage.text = '/' + message.command;
