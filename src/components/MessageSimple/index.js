@@ -169,6 +169,7 @@ export const MessageSimple = themed(
         PropTypes.node,
         PropTypes.elementType,
       ]),
+      formatDate: PropTypes.func,
     };
 
     static defaultProps = {
