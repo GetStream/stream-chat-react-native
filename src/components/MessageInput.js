@@ -18,11 +18,11 @@ import uniq from 'lodash/uniq';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 import { SendButton } from './SendButton';
+import { AttachButton } from './AttachButton';
 
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 
-import iconAddAttachment from '../images/icons/plus-outline.png';
 import iconGallery from '../images/icons/icon_attach-media.png';
 import iconFolder from '../images/icons/icon_folder.png';
 import iconClose from '../images/icons/icon_close.png';
@@ -59,17 +59,6 @@ const InputBoxContainer = styled.View`
   margin: 10px;
   align-items: center;
   ${({ theme }) => theme.messageInput.inputBoxContainer.css}
-`;
-
-const AttachButton = styled.TouchableOpacity`
-  margin-right: 8;
-  ${({ theme }) => theme.messageInput.attachButton.css}
-`;
-
-const AttachButtonIcon = styled.Image`
-  width: 15;
-  height: 15;
-  ${({ theme }) => theme.messageInput.attachButtonIcon.css}
 `;
 
 const ActionSheetTitleContainer = styled.View`
@@ -181,6 +170,15 @@ const MessageInput = withKeyboardContext(
               PropTypes.elementType,
             ]),
             /**
+             * Custom UI component for attach button.
+             *
+             * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
+             * */
+            AttachButton: PropTypes.oneOfType([
+              PropTypes.node,
+              PropTypes.elementType,
+            ]),
+            /**
              * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
              *
              * @see See https://facebook.github.io/react-native/docs/textinput#reference
@@ -205,6 +203,7 @@ const MessageInput = withKeyboardContext(
             hasImagePicker: true,
             hasFilePicker: true,
             SendButton,
+            AttachButton,
           };
 
           getMessageDetailsForState = (message) => {
@@ -690,7 +689,12 @@ const MessageInput = withKeyboardContext(
             this.attachActionSheet.hide();
           };
           render() {
-            const { hasImagePicker, hasFilePicker, SendButton } = this.props;
+            const {
+              hasImagePicker,
+              hasFilePicker,
+              SendButton,
+              AttachButton,
+            } = this.props;
             let editingBoxStyles = {};
             if (this.props.editing) {
               editingBoxStyles = {
@@ -749,7 +753,7 @@ const MessageInput = withKeyboardContext(
                     )}
                     <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
                       <AttachButton
-                        onPress={async () => {
+                        handleOnPress={async () => {
                           if (hasImagePicker && hasFilePicker) {
                             await this.props.dismissKeyboard();
                             this.attachActionSheet.show();
@@ -758,9 +762,7 @@ const MessageInput = withKeyboardContext(
                           else if (!hasImagePicker && hasFilePicker)
                             this._pickFile();
                         }}
-                      >
-                        <AttachButtonIcon source={iconAddAttachment} />
-                      </AttachButton>
+                      />
                       {/**
                     TODO: Use custom action sheet to show icon with titles of button. But it doesn't
                     work well with async onPress operations. So find a solution.

@@ -91,6 +91,7 @@ module.exports = {
         'src/components/LoadingIndicator.js',
         'src/components/Image.js',
         'src/components/SendButton.js',
+        'src/components/AttachButton.js',
         'src/components/DateSeparator.js',
         'src/components/Window.js',
         'src/components/ChannelListMessenger.js',
