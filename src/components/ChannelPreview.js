@@ -60,7 +60,7 @@ export class ChannelPreview extends PureComponent {
     const latestMessage = {
       text: '',
       created_at: '',
-      originalMessageObject: { ...message },
+      messageObject: { ...message },
     };
 
     if (!message) {
