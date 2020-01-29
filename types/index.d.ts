@@ -217,6 +217,7 @@ export interface MessageInputProps
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
+  AttachButton?: React.ElementType<AttachButtonProps>;
   SendButton: React.ElementType<SendButtonProps>;
 }
 
@@ -721,6 +722,10 @@ export interface AttachmentActionsProps {
   actionHandler?(name: string, value: string): any;
 }
 
+export interface AttachButtonProps {
+  handleOnPress(): void;
+}
+
 export interface SendButtonProps {
   title: string;
   editing: Client.MessageResponse | boolean;
@@ -822,6 +827,7 @@ export class TypingIndicator extends React.PureComponent<
 > {}
 export class MessageInput extends React.PureComponent<MessageInputProps, any> {}
 
+export class AttachButton extends React.PureComponent<AttachButtonProps, any> {}
 export class SendButton extends React.PureComponent<SendButtonProps> {}
 export class MessageSimple extends React.PureComponent<
   MessageUIComponentProps,
