@@ -638,6 +638,7 @@ export interface LoadingErrorIndicatorProps {
 }
 export interface LoadingIndicatorProps {
   listType?: listType;
+  loadingText?: string;
 }
 export interface MentionsItemProps {
   item: {

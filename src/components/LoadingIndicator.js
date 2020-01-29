@@ -1,18 +1,25 @@
 import React from 'react';
-import { View } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { Spinner } from './Spinner';
 
+const Container = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  ${({ theme }) => theme.loadingIndicator.container.css}
+`;
 const LoadingText = styled.Text`
   margin-top: 20px;
   font-size: 14px;
   font-weight: 600;
+  ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
 export class LoadingIndicator extends React.PureComponent {
   static propTypes = {
     listType: PropTypes.oneOf(['channel', 'message', 'default']),
+    loadingText: PropTypes.string,
   };
 
   static defaultProps = {
@@ -23,31 +30,35 @@ export class LoadingIndicator extends React.PureComponent {
     switch (this.props.listType) {
       case 'channel':
         return (
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
+          <Container>
             <Spinner />
-            <LoadingText>Loading channels ...</LoadingText>
-          </View>
+            <LoadingText>
+              {this.props.loadingText
+                ? this.props.loadingText
+                : 'Loading channels ...'}
+            </LoadingText>
+          </Container>
         );
       case 'message':
         return (
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
+          <Container>
             <Spinner />
-            <LoadingText>Loading messages ...</LoadingText>
-          </View>
+            <LoadingText>
+              {this.props.loadingText
+                ? this.props.loadingText
+                : 'Loading messages ...'}
+            </LoadingText>
+          </Container>
         );
       case 'default':
       default:
         return (
-          <View
-            style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-          >
+          <Container>
             <Spinner />
-            <LoadingText>Loading ...</LoadingText>
-          </View>
+            <LoadingText>
+              {this.props.loadingText ? this.props.loadingText : 'Loading ...'}
+            </LoadingText>
+          </Container>
         );
     }
   }
