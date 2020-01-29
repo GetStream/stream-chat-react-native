@@ -161,7 +161,10 @@ export const defaultTheme = {
       cancelButtonText: {},
     },
   },
-
+  loadingIndicator: {
+    container: {},
+    loadingText: {},
+  },
   messageInput: {
     container: {
       conditionalPadding: 20,

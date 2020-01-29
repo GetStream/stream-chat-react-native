@@ -218,6 +218,7 @@ export interface MessageInputProps
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   AttachButton?: React.ElementType<AttachButtonProps>;
+  SendButton: React.ElementType<SendButtonProps>;
 }
 
 export interface AttachmentProps extends MessageContentContextValue {
@@ -325,7 +326,10 @@ export interface ChannelPreviewUIComponentProps
   latestMessage: {
     text: string;
     created_at: string;
+    messageObject: Client.MessageResponse;
   };
+  /** Length at which latest message should be truncated */
+  latestMessageLength: number;
 }
 
 export interface MessageListProps extends ChannelContextValue {
@@ -459,6 +463,7 @@ export interface MessageUIComponentProps
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
+  formatDate(date: string): string;
 }
 
 export interface MessageRepliesUIComponentProps {
@@ -639,6 +644,7 @@ export interface LoadingErrorIndicatorProps {
 }
 export interface LoadingIndicatorProps {
   listType?: listType;
+  loadingText?: string;
 }
 export interface MentionsItemProps {
   item: {
@@ -718,6 +724,12 @@ export interface AttachmentActionsProps {
 
 export interface AttachButtonProps {
   handleOnPress(): void;
+}
+
+export interface SendButtonProps {
+  title: string;
+  editing: Client.MessageResponse | boolean;
+  sendMessage(): void;
 }
 
 //================================================================================================
@@ -816,6 +828,7 @@ export class TypingIndicator extends React.PureComponent<
 export class MessageInput extends React.PureComponent<MessageInputProps, any> {}
 
 export class AttachButton extends React.PureComponent<AttachButtonProps, any> {}
+export class SendButton extends React.PureComponent<SendButtonProps> {}
 export class MessageSimple extends React.PureComponent<
   MessageUIComponentProps,
   any

@@ -249,6 +249,7 @@ export const MessageContent = themed(
         PropTypes.node,
         PropTypes.elementType,
       ]),
+      formatDate: PropTypes.func,
     };
 
     static defaultProps = {
@@ -534,7 +535,9 @@ export const MessageContent = themed(
             {!MessageFooter && showTime ? (
               <MetaContainer>
                 <MetaText alignment={pos}>
-                  {moment(message.created_at).format('h:mmA')}
+                  {this.props.formatDate
+                    ? this.props.formatDate(message.created_at)
+                    : moment(message.created_at).format('h:mmA')}
                 </MetaText>
               </MetaContainer>
             ) : null}

@@ -51,11 +51,11 @@ const MessageSystem = ({ message }) => (
     <TextContainer>
       <Text>{message.text.toUpperCase()}</Text>
       <DateText>
-        {Moment(message.received_at)
+        {Moment(message.created_at)
           .format('dddd')
           .toUpperCase()}{' '}
         at{' '}
-        {Moment(message.received_at)
+        {Moment(message.created_at)
           .format('hh:mm A')
           .toUpperCase()}
       </DateText>
