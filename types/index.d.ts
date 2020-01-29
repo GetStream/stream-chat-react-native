@@ -324,7 +324,10 @@ export interface ChannelPreviewUIComponentProps
   latestMessage: {
     text: string;
     created_at: string;
+    messageObject: Client.MessageResponse;
   };
+  /** Length at which latest message should be truncated */
+  latestMessageLength: number;
 }
 
 export interface MessageListProps extends ChannelContextValue {
@@ -458,6 +461,7 @@ export interface MessageUIComponentProps
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
+  formatDate(date: string): string;
 }
 
 export interface MessageRepliesUIComponentProps {
