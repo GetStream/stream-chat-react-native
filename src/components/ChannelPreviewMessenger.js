@@ -100,12 +100,24 @@ export const ChannelPreviewMessenger = themed(
     renderAvatar = (otherMembers) => {
       const { channel } = this.props;
       if (channel.data.image)
-        return <Avatar image={channel.data.image} size={40} />;
+        return (
+          <Avatar
+            image={channel.data.image}
+            size={40}
+            name={channel.data.name}
+          />
+        );
 
       if (otherMembers.length === 1)
-        return <Avatar image={otherMembers[0].user.image} size={40} />;
+        return (
+          <Avatar
+            image={otherMembers[0].user.image}
+            size={40}
+            name={channel.data.name}
+          />
+        );
 
-      return <Avatar size={40} />;
+      return <Avatar size={40} name={channel.data.name} />;
     };
 
     render() {
