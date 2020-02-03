@@ -79,6 +79,7 @@ export const Gallery = withMessageContentContext(
         super(props);
         this.state = {
           viewerModalOpen: false,
+          viewerModalImageIndex: 0,
         };
       }
 
@@ -156,7 +157,10 @@ export const Gallery = withMessageContentContext(
                   length={images.length}
                   activeOpacity={0.8}
                   onPress={() => {
-                    this.setState({ viewerModalOpen: true });
+                    this.setState({
+                      viewerModalOpen: true,
+                      viewerModalImageIndex: i,
+                    });
                   }}
                   onLongPress={this.props.onLongPress}
                 >
@@ -224,6 +228,7 @@ export const Gallery = withMessageContentContext(
                   onCancel={() => {
                     this.setState({ viewerModalOpen: false });
                   }}
+                  index={this.state.viewerModalImageIndex}
                   enableSwipeDown
                   renderHeader={() => (
                     <GalleryHeader
