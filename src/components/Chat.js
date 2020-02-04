@@ -16,7 +16,8 @@ import { themed } from '../styles/theme';
  * - setActiveChannel (a function to set the currently active channel)
  * - channel (the currently active channel)
  *
- * It also exposes the withChatContext HOC which you can use to consume the ChatContext
+ * It also exposes the withChatContext HOC which you can use to consume the ChatContext,
+ * alternatively you can use useChat hook if you are using react >= 16.8.
  *
  * @example ./docs/Chat.md
  * @extends PureComponent

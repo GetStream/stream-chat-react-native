@@ -15,7 +15,7 @@
 ></div>
 ```
 
-**NOTE** The Channel produces the [ChannelContext](#channelcontext) and exposes a [withChannelContext](#withchannelcontext) HOC.
+**NOTE** The Channel produces the [ChannelContext](#channelcontext) and exposes a [withChannelContext](#withchannelcontext) HOC or [useChannel](#usechannel) hook.
 
 The example below shows you how to write components that consume the channel context.
 

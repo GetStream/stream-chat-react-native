@@ -10,7 +10,7 @@ class DemoComponent extends React.Component {
     render() {
         return (
             <Button
-                onPress={() => this.props.dismissKeyboard}
+                onPress={() => this.props.dismissKeyboard()}
                 title="Button to dismiss keybaord"
             />
         )
