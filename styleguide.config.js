@@ -118,12 +118,20 @@ module.exports = {
           content: 'src/components/docs/withChatContext.md',
         },
         {
+          name: 'useChat',
+          content: 'src/components/docs/useChat.md',
+        },
+        {
           name: 'ChannelContext',
           content: 'src/components/docs/ChannelContext.md',
         },
         {
           name: 'withChannelContext',
           content: 'src/components/docs/withChannelContext.md',
+        },
+        {
+          name: 'useChannel',
+          content: 'src/components/docs/useChannel.md',
         },
         {
           name: 'KeyboardContext',
@@ -134,12 +142,20 @@ module.exports = {
           content: 'src/components/docs/withKeyboardContext.md',
         },
         {
+          name: 'useKeyboard',
+          content: 'src/components/docs/useKeyboard.md',
+        },
+        {
           name: 'SuggestionsContext',
           content: 'src/components/docs/SuggestionsContext.md',
         },
         {
           name: 'withSuggestionsContext',
           content: 'src/components/docs/withSuggestionsContext.md',
+        },
+        {
+          name: 'useSuggestions',
+          content: 'src/components/docs/useSuggestions.md',
         },
       ],
       exampleMode: 'collapse',
