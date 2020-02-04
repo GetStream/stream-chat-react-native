@@ -451,6 +451,7 @@ const MessageList = withChannelContext(
     getLastReceived = (messages) => {
       const l = messages.length;
       let lastReceivedId = null;
+
       for (let i = l; i > 0; i--) {
         if (
           messages[i] !== undefined &&
@@ -461,7 +462,10 @@ const MessageList = withChannelContext(
           break;
         }
       }
-      this.setState({ lastReceivedId });
+
+      if (this.state.lastReceivedId !== lastReceivedId) {
+        this.setState({ lastReceivedId });
+      }
     };
 
     getReadStates = (messages) => {
