@@ -13,6 +13,7 @@ import * as SeamlessImmutable from 'seamless-immutable';
 //================================================================================================
 //================================================================================================
 declare function withChatContext(): React.FC;
+declare function useChat(): ChatContextValue;
 export interface ChatContext extends React.Context<ChatContextValue> {}
 export interface ChatContextValue {
   client?: Client.StreamChat;
@@ -26,6 +27,7 @@ export interface ChatContextValue {
 }
 
 declare function withSuggestionsContext(): React.FC;
+declare function useSuggestions(): SuggestionsContextValue;
 export interface SuggestionsContext
   extends React.Context<SuggestionsContextValue> {}
 export interface SuggestionsContextValue {
@@ -48,6 +50,7 @@ export interface SuggestionsContextValue {
 }
 
 declare function withChannelContext(): React.FC;
+declare function useChannel(): ChannelContextValue;
 export interface ChannelContext extends React.Context<ChannelContextValue> {}
 export interface ChannelContextValue {
   Message?: React.ElementType<MessageUIComponentProps>;
@@ -106,11 +109,13 @@ export interface ChannelContextValue {
   clearEditingState?(): void;
 }
 
+declare function useKeyboard(): KeyboardContextValue;
 export interface KeyboardContext extends React.Context<KeyboardContextValue> {}
 export interface KeyboardContextValue {
   dismissKeyboard?(): void;
 }
 
+declare function useMessage(): MessageContentContextValue;
 export interface MessageContentContext
   extends React.Context<MessageContentContextValue> {}
 export interface MessageContentContextValue {
