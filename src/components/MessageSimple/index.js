@@ -183,6 +183,7 @@ export const MessageSimple = themed(
       repliesEnabled: true,
       forceAlign: false,
       showMessageStatus: true,
+      // eslint-disable-next-line no-unused-vars
       shouldShowAvatar: ({ message, isMyMessage }) => true,
     };
 
