@@ -450,6 +450,10 @@ export interface MessageUIComponentProps
   ): void;
   handleRetry(message: Client.Message): void;
   isMyMessage(message: Client.Message): boolean;
+  shouldShowAvatar?(o: {
+    message: Client.Message;
+    isMyMessage: (message: Client.Message) => boolean;
+  }): boolean;
   /** Boolean if current message is part of thread */
   isThreadList: boolean;
   /**

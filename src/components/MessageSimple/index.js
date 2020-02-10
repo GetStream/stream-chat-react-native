@@ -134,6 +134,12 @@ export const MessageSimple = themed(
        * */
       isMyMessage: PropTypes.func,
       /**
+       * Returns true if message should be rendered with its avatar
+       *
+       * @param { message, isMyMessage }
+       * */
+      shouldShowAvatar: PropTypes.func,
+      /**
        * Position of message in group - top, bottom, middle, single.
        *
        * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
@@ -177,6 +183,7 @@ export const MessageSimple = themed(
       repliesEnabled: true,
       forceAlign: false,
       showMessageStatus: true,
+      shouldShowAvatar: ({ message, isMyMessage }) => true,
     };
 
     static themePath = 'message';
@@ -188,6 +195,7 @@ export const MessageSimple = themed(
         groupStyles,
         forceAlign,
         showMessageStatus,
+        shouldShowAvatar,
       } = this.props;
 
       let pos;
@@ -210,6 +218,8 @@ export const MessageSimple = themed(
         return <MessageSystem message={message} />;
       }
 
+      const showAvatar = shouldShowAvatar({ message, isMyMessage });
+
       return (
         <Container
           alignment={pos}
@@ -219,12 +229,12 @@ export const MessageSimple = themed(
           {pos === 'right' ? (
             <React.Fragment>
               <MessageContent {...this.props} alignment={pos} />
-              <MessageAvatar {...this.props} />
+              {showAvatar && <MessageAvatar {...this.props} />}
               {showMessageStatus && <MessageStatus {...this.props} />}
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <MessageAvatar {...this.props} />
+              {showAvatar && <MessageAvatar {...this.props} />}
               <MessageContent {...this.props} alignment={pos} />
             </React.Fragment>
           )}

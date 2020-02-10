@@ -9,6 +9,14 @@ The Message component provides the following functions to the rendered component
 
   - `message`
 
+- **shouldShowAvatar** returns true if message belongs to current user, else false
+
+  **Params**
+
+  - `hash`
+    - `message`
+    - `isMyMessage`
+
 - **isAdmin** returns true if current user has admin role.
 - **canEditMessage** returns true if current user has permission to edit message.
 - **canDeleteMessage** returns true if current user has permission to edit message.
