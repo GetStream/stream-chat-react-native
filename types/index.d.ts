@@ -458,6 +458,14 @@ export interface MessageUIComponentProps
    * */
   forceAlign: string | boolean;
   showMessageStatus: boolean;
+  /** Custom UI component for the avatar next to a message */
+  MessageAvatar?: React.ElementType<MessageAvatarUIComponentProps>;
+  /** Custom UI component for message content */
+  MessageContent?: React.ElementType<MessageContentUIComponentProps>;
+  /** Custom UI component for message status (delivered/read) */
+  MessageStatus?: React.ElementType<MessageStatusUIComponentProps>;
+  /** Custom UI component for Messages of type "system" */
+  MessageSystem?: React.ElementType<MessageSystemProps>;
   /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
