@@ -1,4 +1,6 @@
 export * from './components';
+export * from './locale';
+
 export { registerNativeHandlers, NetInfo } from './native';
 export {
   ChatContext,
