@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
-import { ChannelContext } from '../context';
+import { ChannelContext, withLocalizationContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 
 import uuidv4 from 'uuid/v4';
@@ -15,12 +15,13 @@ import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
 import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 import { logChatPromiseExecution } from 'stream-chat';
+import { LSK_CHANNEL_MISSING_MESSAGE } from '../locale';
 
 /**
  * This component is not really exposed externally, and is only supposed to be used with
  * 'Channel' component (which is actually exposed to customers).
  */
-export class ChannelInner extends PureComponent {
+class ChannelInner extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -621,6 +622,7 @@ export class ChannelInner extends PureComponent {
 
   render() {
     let core;
+    const { localizedStrings } = this.props;
 
     if (this.state.error) {
       this.props.logger(
@@ -640,7 +642,7 @@ export class ChannelInner extends PureComponent {
     } else if (!this.props.channel || !this.props.channel.watch) {
       core = (
         <View>
-          <Text>Channel Missing</Text>
+          <Text>{localizedStrings[LSK_CHANNEL_MISSING_MESSAGE]}</Text>
         </View>
       );
     } else {
@@ -663,3 +665,7 @@ export class ChannelInner extends PureComponent {
     return <View>{core}</View>;
   }
 }
+
+const ChannelInnerWithContext = withLocalizationContext(ChannelInner);
+
+export { ChannelInnerWithContext as ChannelInner };

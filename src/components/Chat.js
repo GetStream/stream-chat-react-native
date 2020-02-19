@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { ChatContext } from '../context';
+import { ChatContext, LocalizationContext } from '../context';
 import { NetInfo } from '../native';
 
 import { themed } from '../styles/theme';
-
+import { DEFAULT_LANGUAGE, getLocalizedStringInstance } from '../locale';
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
  * This Chat component provides the ChatContext to all other components.
@@ -34,11 +34,38 @@ export const Chat = themed(
        * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
        * */
       style: PropTypes.object,
+      /**
+       * Localized strings for different texts in components.
+       * Default values for english strings - https://github.com/GetStream/stream-chat-react-native/blob/master/src/context.js
+       *
+       * e.g.
+       * {
+       *    // For english (default)
+       *    en: {
+       *      'auto-complete-input-placeholder': 'Type some message',
+       *      'no-channel-selected-message': 'No channel selected',
+       *      'channel-missing-message': 'Channel missing',
+       *      'single-user-typing': '{0} is typing ...',
+       *      ...
+       *    },
+       *    it: {
+       *      'auto-complete-input-placeholder': 'Digita qualche messaggio',
+       *      'no-channel-selected-message': 'Seleziona prima un canale',
+       *      'channel-missing-message': 'Manca il canale',
+       *      'single-user-typing': '{0} sta scrivendo ...',
+       *      ...
+       *    },
+       * }
+       */
+      localizedStrings: PropTypes.object,
+      /** Language (from localizedStrings object) to be used. Defaults to 'en' */
+      language: PropTypes.string,
       logger: PropTypes.func,
     };
 
     static defaultProps = {
       logger: () => {},
+      language: DEFAULT_LANGUAGE,
     };
 
     constructor(props) {
@@ -150,10 +177,20 @@ export const Chat = themed(
         props: this.props,
         state: this.state,
       });
+      const { localizedStrings, language } = this.props;
 
       return (
         <ChatContext.Provider value={this.getContext()}>
-          {this.props.children}
+          <LocalizationContext.Provider
+            value={{
+              localizedStrings: getLocalizedStringInstance(
+                localizedStrings,
+                language,
+              ),
+            }}
+          >
+            {this.props.children}
+          </LocalizationContext.Provider>
         </ChatContext.Provider>
       );
     }

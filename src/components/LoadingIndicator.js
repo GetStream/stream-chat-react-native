@@ -2,6 +2,12 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { Spinner } from './Spinner';
+import { withLocalizationContext } from '../context';
+import {
+  LSK_LOADING_INDICATOR_LOADING_CHANNELS,
+  LSK_LOADING_INDICATOR_LOADING_MESSAGES,
+  LSK_LOADING_INDICATOR_LOADING_DEFAULT,
+} from '../locale';
 
 const Container = styled.View`
   flex: 1;
@@ -16,7 +22,7 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
-export class LoadingIndicator extends React.PureComponent {
+class LoadingIndicator extends React.PureComponent {
   static propTypes = {
     listType: PropTypes.oneOf(['channel', 'message', 'default']),
     loadingText: PropTypes.string,
@@ -27,15 +33,16 @@ export class LoadingIndicator extends React.PureComponent {
   };
 
   render() {
-    switch (this.props.listType) {
+    const { localizedStrings, listType, loadingText } = this.props;
+    switch (listType) {
       case 'channel':
         return (
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText
-                ? this.props.loadingText
-                : 'Loading channels ...'}
+              {loadingText
+                ? loadingText
+                : localizedStrings[LSK_LOADING_INDICATOR_LOADING_CHANNELS]}
             </LoadingText>
           </Container>
         );
@@ -44,9 +51,9 @@ export class LoadingIndicator extends React.PureComponent {
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText
-                ? this.props.loadingText
-                : 'Loading messages ...'}
+              {loadingText
+                ? loadingText
+                : localizedStrings[LSK_LOADING_INDICATOR_LOADING_MESSAGES]}
             </LoadingText>
           </Container>
         );
@@ -56,10 +63,16 @@ export class LoadingIndicator extends React.PureComponent {
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText ? this.props.loadingText : 'Loading ...'}
+              {loadingText
+                ? loadingText
+                : localizedStrings[LSK_LOADING_INDICATOR_LOADING_DEFAULT]}
             </LoadingText>
           </Container>
         );
     }
   }
 }
+
+const LoadingIndicatorWithContext = withLocalizationContext(LoadingIndicator);
+
+export { LoadingIndicatorWithContext as LoadingIndicator };

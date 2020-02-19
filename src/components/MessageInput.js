@@ -4,6 +4,7 @@ import {
   withChannelContext,
   withSuggestionsContext,
   withKeyboardContext,
+  withLocalizationContext,
 } from '../context';
 import { logChatPromiseExecution } from 'stream-chat';
 import { ImageUploadPreview } from './ImageUploadPreview';
@@ -27,6 +28,12 @@ import iconGallery from '../images/icons/icon_attach-media.png';
 import iconFolder from '../images/icons/icon_folder.png';
 import iconClose from '../images/icons/icon_close.png';
 import { AutoCompleteInput } from './AutoCompleteInput';
+import {
+  LSK_SEND_MESSAGE_BUTTON_TITLE,
+  LSK_ATTACHMENT_ACTIONSHEET_TITLE,
+  LSK_ATTACHMENT_ACTIONSHEET_UPLOAD_PHOTO_OPTION,
+  LSK_ATTACHMENT_ACTIONSHEET_UPLOAD_FILE_OPTION,
+} from '../locale';
 
 // https://stackoverflow.com/a/6860916/2570866
 function generateRandomId() {
@@ -694,6 +701,7 @@ const MessageInput = withKeyboardContext(
               hasFilePicker,
               SendButton,
               AttachButton,
+              localizedStrings,
             } = this.props;
             let editingBoxStyles = {};
             if (this.props.editing) {
@@ -773,7 +781,11 @@ const MessageInput = withKeyboardContext(
                         title={
                           <ActionSheetTitleContainer>
                             <ActionSheetTitleText>
-                              Add a file
+                              {
+                                localizedStrings[
+                                  LSK_ATTACHMENT_ACTIONSHEET_TITLE
+                                ]
+                              }
                             </ActionSheetTitleText>
                             <IconSquare
                               icon={iconClose}
@@ -785,11 +797,19 @@ const MessageInput = withKeyboardContext(
                           /* eslint-disable */
                           <AttachmentActionSheetItem
                             icon={iconGallery}
-                            text="Upload a photo"
+                            text={
+                              localizedStrings[
+                                LSK_ATTACHMENT_ACTIONSHEET_UPLOAD_PHOTO_OPTION
+                              ]
+                            }
                           />,
                           <AttachmentActionSheetItem
                             icon={iconFolder}
-                            text="Upload a file"
+                            text={
+                              localizedStrings[
+                                LSK_ATTACHMENT_ACTIONSHEET_UPLOAD_FILE_OPTION
+                              ]
+                            }
                           />,
                           /* eslint-enable */
                         ]}
@@ -827,7 +847,7 @@ const MessageInput = withKeyboardContext(
                         }
                       />
                       <SendButton
-                        title="Pick an image from camera roll"
+                        title={localizedStrings[LSK_SEND_MESSAGE_BUTTON_TITLE]}
                         sendMessage={this.sendMessage}
                         editing={this.props.editing}
                       />
@@ -843,7 +863,8 @@ const MessageInput = withKeyboardContext(
   ),
 );
 
-export { MessageInput };
+const MessageInputWithContext = withLocalizationContext(MessageInput);
+export { MessageInputWithContext as MessageInput };
 
 const AttachmentActionSheetItem = ({ icon, text }) => (
   <ActionSheetButtonContainer>

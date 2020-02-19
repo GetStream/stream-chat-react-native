@@ -2,8 +2,15 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import Moment from 'moment';
+import { withLocalizationContext } from '../context';
+import {
+  LSK_CHANNEL_PREVIEW_NO_MESSAGE,
+  LSK_CHANNEL_PREVIEW_MESSAGE_DELETED,
+  LSK_CHANNEL_PREVIEW_ATTACHMENT,
+  LSK_CHANNEL_PREVIEW_EMPTY_MESSAGE,
+} from '../locale';
 
-export class ChannelPreview extends PureComponent {
+class ChannelPreview extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -54,7 +61,7 @@ export class ChannelPreview extends PureComponent {
   };
 
   getLatestMessage = () => {
-    const { channel } = this.props;
+    const { channel, localizedStrings } = this.props;
     const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
@@ -64,11 +71,12 @@ export class ChannelPreview extends PureComponent {
     };
 
     if (!message) {
-      latestMessage.text = 'Nothing yet...';
+      latestMessage.text = localizedStrings[LSK_CHANNEL_PREVIEW_NO_MESSAGE];
       return latestMessage;
     }
     if (message.deleted_at) {
-      latestMessage.text = 'Message deleted';
+      latestMessage.text =
+        localizedStrings[LSK_CHANNEL_PREVIEW_MESSAGE_DELETED];
       return latestMessage;
     }
 
@@ -78,9 +86,10 @@ export class ChannelPreview extends PureComponent {
       if (message.command) {
         latestMessage.text = '/' + message.command;
       } else if (message.attachments.length) {
-        latestMessage.text = '🏙 Attachment...';
+        latestMessage.text = localizedStrings[LSK_CHANNEL_PREVIEW_ATTACHMENT];
       } else {
-        latestMessage.text = 'Empty message...';
+        latestMessage.text =
+          localizedStrings[LSK_CHANNEL_PREVIEW_EMPTY_MESSAGE];
       }
     }
 
@@ -99,3 +108,6 @@ export class ChannelPreview extends PureComponent {
     return <Preview {...props} latestMessage={this.getLatestMessage()} />;
   }
 }
+
+const ChannelPreviewWithContext = withLocalizationContext(ChannelPreview);
+export { ChannelPreviewWithContext as ChannelPreview };

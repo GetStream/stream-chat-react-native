@@ -79,6 +79,7 @@ const normalBundle = {
     '@babel/runtime/helpers/slicedToArray',
     '@babel/runtime/helpers/typeof',
     '@babel/runtime/helpers/taggedTemplateLiteral',
+    'localized-strings',
   ],
   plugins: [
     replace({

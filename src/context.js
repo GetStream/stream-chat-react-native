@@ -10,6 +10,16 @@ export function withChatContext(OriginalComponent) {
   return ContextAwareComponent;
 }
 
+export const LocalizationContext = React.createContext({ client: null });
+
+export function withLocalizationContext(OriginalComponent) {
+  const ContextAwareComponent = getContextAwareComponent(
+    LocalizationContext,
+    OriginalComponent,
+  );
+  return ContextAwareComponent;
+}
+
 export const ChannelContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {

@@ -3,6 +3,11 @@ import styled from '@stream-io/styled-components';
 import Moment from 'moment';
 import { Avatar } from './Avatar';
 import PropTypes from 'prop-types';
+import { withLocalizationContext } from '../context';
+import {
+  LSK_EVENT_INDICATOR_MEMBER_JOINED,
+  LSK_EVENT_INDICATOR_MEMBER_REMOVED,
+} from '../locale';
 
 const Date = styled.Text`
   font-size: 10;
@@ -38,17 +43,22 @@ const MemberUpdateText = styled.Text`
  * A component to display a message regarding channel notifications such as
  * 'member.added', 'member.removed' etc.
  */
-const EventIndicator = ({ event }) => {
+const EventIndicator = ({ event, localizedStrings }) => {
   if (event.type === 'member.added' || event.type === 'member.removed') {
     return (
       <MemberUpdateContainer>
         <Avatar name={event.user.name} image={event.user.image} />
         <MemberUpdateTextContainer>
           <MemberUpdateText>
-            {event.user.name}
             {event.type === 'member.added'
-              ? ' joined the chat'
-              : ' was removed from the chat'}
+              ? localizedStrings.formatString(
+                  localizedStrings[LSK_EVENT_INDICATOR_MEMBER_JOINED],
+                  event.user.name,
+                )
+              : localizedStrings.formatString(
+                  localizedStrings[LSK_EVENT_INDICATOR_MEMBER_REMOVED],
+                  event.user.name,
+                )}
           </MemberUpdateText>
           <Date>{Moment(event.received_at).format('hh:mm A')}</Date>
         </MemberUpdateTextContainer>
@@ -63,4 +73,5 @@ EventIndicator.propTypes = {
   event: PropTypes.object,
 };
 
-export { EventIndicator };
+const EventIndicatorWithContext = withLocalizationContext(EventIndicator);
+export { EventIndicatorWithContext as EventIndicator };
