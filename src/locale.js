@@ -42,6 +42,16 @@ export const LSK_NEW_MESSAGE_NOTIFICATION = 'new-message-notification';
 export const LSK_THREAD_HEADER_MESSAGE = 'thread-header-message';
 export const LSK_MESSAGELIST_CONNECTION_FAILURE_MESSAGE =
   'messagelist-connection-failure-message';
+export const LSK_MESSAGE_ACTIONSHEET_TITLE = 'message-actionsheet-title';
+export const LSK_MESSAGE_ACTIONSHEET_REPLY_OPTION =
+  'message-actionsheet-reply-option';
+export const LSK_MESSAGE_ACTIONSHEET_REACTION_OPTION =
+  'message-actionsheet-reaction-option';
+export const LSK_MESSAGE_ACTIONSHEET_EDIT_OPTION =
+  'message-actionsheet-edit-option';
+export const LSK_MESSAGE_ACTIONSHEET_DELETE_OPTION =
+  'message-actionsheet-delete-option';
+export const LSK_MESSAGE_DELETED_TEXT = 'message-deleted-text';
 
 export const defaultStrings = {
   'auto-complete-input-placeholder': 'Write your message',
@@ -72,6 +82,12 @@ export const defaultStrings = {
   'thread-header-message': 'Start of a new thread',
   'messagelist-connection-failure-message':
     'Connection failure, reconnecting now aa...',
+  'message-actionsheet-title': 'Choose an action',
+  'message-actionsheet-reply-option': 'Reply',
+  'message-actionsheet-reaction-option': 'Add Reaction',
+  'message-actionsheet-edit-option': 'Edit Message',
+  'message-actionsheet-delete-option': 'Delete Message',
+  'message-deleted-text': 'This message was deleted ...',
 };
 
 export const DEFAULT_LANGUAGE = 'en';
