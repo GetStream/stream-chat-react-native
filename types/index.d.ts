@@ -12,7 +12,9 @@ import * as SeamlessImmutable from 'seamless-immutable';
 //
 //================================================================================================
 //================================================================================================
-declare function withChatContext(): React.FC;
+declare function withChatContext<T>(
+  OriginalComponent: React.ElementType<T>,
+): React.ElementType<T>;
 export interface ChatContext extends React.Context<ChatContextValue> {}
 export interface ChatContextValue {
   client?: Client.StreamChat;
@@ -25,7 +27,9 @@ export interface ChatContextValue {
   connectionRecovering?: boolean;
 }
 
-declare function withSuggestionsContext(): React.FC;
+declare function withSuggestionsContext<T>(
+  OriginalComponent: React.ElementType<T>,
+): React.ElementType<T>;
 export interface SuggestionsContext
   extends React.Context<SuggestionsContextValue> {}
 export interface SuggestionsContextValue {
@@ -47,7 +51,9 @@ export interface SuggestionsContextValue {
   updateSuggestions?(suggestions: Array<object>): void;
 }
 
-declare function withChannelContext(): React.FC;
+declare function withChannelContext<T>(
+  OriginalComponent: React.ElementType<T>,
+): React.ElementType<T>;
 export interface ChannelContext extends React.Context<ChannelContextValue> {}
 export interface ChannelContextValue {
   Message?: React.ElementType<MessageUIComponentProps>;
