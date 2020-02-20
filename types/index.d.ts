@@ -634,10 +634,6 @@ export interface CommandsItemProps {
   description: string;
 }
 
-export interface DateSeparatorProps {
-  message: Client.MessageResponse;
-  formatDate?(date: Date): string;
-}
 export interface FileAttachmentGroupProps {
   messageId: string;
   files: [];
