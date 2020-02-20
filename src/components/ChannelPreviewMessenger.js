@@ -113,7 +113,7 @@ export const ChannelPreviewMessenger = themed(
           <Avatar
             image={otherMembers[0].user.image}
             size={40}
-            name={channel.data.name}
+            name={channel.data.name || otherMembers[0].user.name}
           />
         );
 
