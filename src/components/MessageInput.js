@@ -827,7 +827,7 @@ const MessageInput = withKeyboardContext(
                         }
                       />
                       <SendButton
-                        title="Pick an image from camera roll"
+                        title="Send message"
                         sendMessage={this.sendMessage}
                         editing={this.props.editing}
                       />

@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 // import { MessageSimple } from './MessageSimple';
 // import { Attachment } from './Attachment';
 import { ChannelInner } from './ChannelInner';
+import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 
 /**
  * Channel - Wrapper component for a channel. It needs to be place inside of the Chat component.
@@ -83,12 +84,42 @@ const Channel = withChatContext(
        * Override update message request (Advanced usage only)
        * */
       doUpdateMessageRequest: PropTypes.func,
+      /**
+       * If true, KeyboardCompatibleView wrapper is disabled.
+       *
+       * Channel component internally uses [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js) component
+       * internally to adjust the height of Channel component when keyboard is opened or dismissed. This prop gives you ability to disable this functionality, in case if you
+       * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or you want to handle keyboard dismissal yourself.
+       * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
+       * */
+      disableKeyboardCompatibleView: PropTypes.bool,
+      /**
+       * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed.
+       * Defaults to [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+       *
+       * This prop can be used to configure default KeyboardCompatibleView component.
+       * e.g.,
+       * <Channel
+       *  channel={channel}
+       *  ...
+       *  KeyboardCompatibleView={(props) => {
+       *    return (
+       *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
+       *        {props.children}
+       *      </KeyboardCompatibleView>
+       *    )
+       *  }}
+       * />
+       */
+      KeyboardCompatibleView: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
     };
 
     static defaultProps = {
-      // LoadingIndicator,
-      // Message: MessageSimple,
-      // Attachment,
+      disableKeyboardCompatibleView: false,
+      KeyboardCompatibleView,
     };
 
     render() {
