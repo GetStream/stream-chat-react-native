@@ -31,22 +31,35 @@ const Container = styled.View`
 export const MessageSimple = themed(
   class MessageSimple extends React.PureComponent {
     static propTypes = {
-      /** Custom UI component for the avatar next to a message */
+      /**
+       * Custom UI component for the avatar next to a message
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.js
+       * */
       MessageAvatar: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
       ]),
-      /** Custom UI component for message content */
+      /**
+       * Custom UI component for message content
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
+       * */
       MessageContent: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
       ]),
-      /** Custom UI component for message status (delivered/read) */
+      /**
+       * Custom UI component for message status (delivered/read)
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.js
+       *
+       * */
       MessageStatus: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
       ]),
-      /** Custom UI component for Messages of type "system" */
+      /**
+       * Custom UI component for Messages of type "system"
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSystem.js
+       * */
       MessageSystem: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
