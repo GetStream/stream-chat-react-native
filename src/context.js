@@ -1,4 +1,5 @@
 import React from 'react';
+import { defaultStrings, DEFAULT_LANGUAGE } from './locale';
 
 export const ChatContext = React.createContext({ client: null });
 
@@ -10,7 +11,10 @@ export function withChatContext(OriginalComponent) {
   return ContextAwareComponent;
 }
 
-export const LocalizationContext = React.createContext({ client: null });
+export const LocalizationContext = React.createContext({
+  translatedStrings: { en: defaultStrings },
+  language: DEFAULT_LANGUAGE,
+});
 
 export function withLocalizationContext(OriginalComponent) {
   const ContextAwareComponent = getContextAwareComponent(
