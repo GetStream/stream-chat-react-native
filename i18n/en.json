@@ -1,0 +1,6 @@
+{
+    "Nothing yet...": "Nothing yet...",
+    "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...",
+    "{{ firstUser }} and {{ secondUser }} are styping...": "{{ firstUser }} and {{ secondUser }} are styping...",
+    "{{ user }} is typing...": "{{ user }} is typing..."
+}

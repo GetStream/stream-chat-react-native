@@ -62,6 +62,7 @@ const normalBundle = {
     'uuid/v4',
     'mime-types',
     'path',
+    'i18next',
     '@stream-io/styled-components',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',

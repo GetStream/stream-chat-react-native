@@ -2,7 +2,7 @@ import { MentionsItem } from '../components/MentionsItem';
 import { CommandsItem } from '../components/CommandsItem';
 
 export { renderText } from './renderText';
-
+export { Streami18n } from './Streami18n';
 export const emojiData = [
   {
     id: 'like',

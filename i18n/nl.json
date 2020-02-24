@@ -1,0 +1,6 @@
+{
+  "Nothing yet...": "Nog niets...",
+  "{{ user }} is typing...": "{{ user }} is aan het typen...",
+  "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} en {{ secondUser }} zijn aan het typen...",
+  "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} en {{ lastUser }} zijn aan het typen..."
+}
