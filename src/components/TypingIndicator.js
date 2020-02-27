@@ -39,7 +39,7 @@ class TypingIndicator extends React.PureComponent {
     } else if (arr3.length === 2) {
       //joins all with "and" but =no commas
       //example: "bob and sam"
-      outStr = t('{{ firstUser }} and {{ secondUser }} are styping...', {
+      outStr = t('{{ firstUser }} and {{ secondUser }} are typing...', {
         firstUser: arr3[0],
         secondUser: arr3[1],
       });

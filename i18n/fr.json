@@ -23,7 +23,7 @@
     "Upload a photo": "",
     "Write your message": "",
     "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "",
-    "{{ firstUser }} and {{ secondUser }} are styping...": "",
+    "{{ firstUser }} and {{ secondUser }} are typing...": "",
     "{{ user }} is typing...": "",
     "{{ username }} joined the chat": "",
     "{{ username }} was removed from the chat": "",
