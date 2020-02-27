@@ -2,6 +2,12 @@ import i18n from 'i18next';
 
 import english from '../../i18n/en.json';
 import dutch from '../../i18n/nl.json';
+import russian from '../../i18n/ru.json';
+import turkish from '../../i18n/tr.json';
+import french from '../../i18n/fr.json';
+import hindi from '../../i18n/hi.json';
+import italian from '../../i18n/it.json';
+import spanish from '../../i18n/es.json';
 
 const defaultNS = 'translation';
 /**
@@ -11,8 +17,11 @@ const defaultNS = 'translation';
  * Stream provides following list of in-built translations:
  * 1. English (en)
  * 2. Dutch (nl)
- * 3. ...
- * 4. ...
+ * 3. Russian (ru)
+ * 4. Turkish (tr)
+ * 5. French (fr)
+ * 6. Italian (it)
+ * 7. Spanish (es)
  *
  * Simplest way to start using chat components in one of the in-built languages would be following:
  *
@@ -64,10 +73,16 @@ export class Streami18n {
   translations = {
     en: { [defaultNS]: english },
     nl: { [defaultNS]: dutch },
+    ru: { [defaultNS]: russian },
+    tr: { [defaultNS]: turkish },
+    fr: { [defaultNS]: french },
+    hi: { [defaultNS]: hindi },
+    it: { [defaultNS]: italian },
+    es: { [defaultNS]: spanish },
   };
 
   /**
-   * @param {*} currentLanguage e.g., 'en', 'nl
+   * @param {*} currentLanguage e.g., 'en', 'nl' etc
    * @param {*} i18nextConfig Config object to override default config - https://www.i18next.com/overview/configuration-options
    * @param {*} logger - Logger function to get error logs if something fails. Should be used in dev mode.
    */
@@ -95,10 +110,10 @@ export class Streami18n {
    */
   async init() {
     try {
-      const t = await this.i18nInstance.init(this.i18nextConfig);
+      this.t = await this.i18nInstance.init(this.i18nextConfig);
       this.initialized = true;
 
-      return t;
+      return this.t;
     } catch (e) {
       this.logger(`Something went wrong with init:`, e);
     }
