@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { View, Text } from 'react-native';
-import { ChannelContext } from '../context';
+import { ChannelContext, withTranslationContext } from '../context';
 import { SuggestionsProvider } from './SuggestionsProvider';
 
 import uuidv4 from 'uuid/v4';
@@ -19,7 +19,7 @@ import { logChatPromiseExecution } from 'stream-chat';
  * This component is not really exposed externally, and is only supposed to be used with
  * 'Channel' component (which is actually exposed to customers).
  */
-export class ChannelInner extends PureComponent {
+class ChannelInner extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -620,7 +620,7 @@ export class ChannelInner extends PureComponent {
 
   render() {
     let core;
-    const { KeyboardCompatibleView } = this.props;
+    const { KeyboardCompatibleView, t } = this.props;
     if (this.state.error) {
       this.props.logger(
         'Channel component',
@@ -639,7 +639,7 @@ export class ChannelInner extends PureComponent {
     } else if (!this.props.channel || !this.props.channel.watch) {
       core = (
         <View>
-          <Text>Channel Missing</Text>
+          <Text>{t('Channel Missing')}</Text>
         </View>
       );
     } else {
@@ -664,3 +664,7 @@ export class ChannelInner extends PureComponent {
     return <View>{core}</View>;
   }
 }
+
+const ChannelInnerWithContext = withTranslationContext(ChannelInner);
+
+export { ChannelInnerWithContext as ChannelInner };

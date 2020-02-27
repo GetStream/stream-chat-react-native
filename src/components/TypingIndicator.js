@@ -24,14 +24,14 @@ class TypingIndicator extends React.PureComponent {
   constructTypingString = (dict) => {
     const { t } = this.props;
     const arr2 = Object.keys(dict);
-    let arr3 = [];
+    const arr3 = [];
     arr2.forEach((item, i) => {
       if (this.props.client.user.id === dict[arr2[i]].user.id) {
         return;
       }
       arr3.push(dict[arr2[i]].user.name || dict[arr2[i]].user.id);
     });
-    arr3 = ['vishal', 'kate', 'dushyant'];
+
     let outStr = '';
     if (arr3.length === 1) {
       outStr = t('{{ user }} is typing...', { user: arr3[0] });

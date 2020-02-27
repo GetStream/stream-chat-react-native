@@ -151,7 +151,7 @@ class ChannelPreviewMessenger extends PureComponent {
           <Message
             unread={this.props.unread > 0 ? this.props.unread : undefined}
           >
-              {!this.props.latestMessage
+            {!this.props.latestMessage
               ? t('Nothing yet...')
               : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), {
                   length: this.props.latestMessageLength,

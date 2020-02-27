@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { Spinner } from './Spinner';
+import { withTranslationContext } from '../context';
 
 const Container = styled.View`
   flex: 1;
@@ -16,7 +17,7 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
-export class LoadingIndicator extends React.PureComponent {
+class LoadingIndicator extends React.PureComponent {
   static propTypes = {
     listType: PropTypes.oneOf(['channel', 'message', 'default']),
     loadingText: PropTypes.string,
@@ -27,15 +28,14 @@ export class LoadingIndicator extends React.PureComponent {
   };
 
   render() {
-    switch (this.props.listType) {
+    const { t, listType, loadingText } = this.props;
+    switch (listType) {
       case 'channel':
         return (
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText
-                ? this.props.loadingText
-                : 'Loading channels ...'}
+              {loadingText ? loadingText : t('Loading channels ...')}
             </LoadingText>
           </Container>
         );
@@ -44,9 +44,7 @@ export class LoadingIndicator extends React.PureComponent {
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText
-                ? this.props.loadingText
-                : 'Loading messages ...'}
+              {loadingText ? loadingText : t('Loading messages ...')}
             </LoadingText>
           </Container>
         );
@@ -56,10 +54,13 @@ export class LoadingIndicator extends React.PureComponent {
           <Container>
             <Spinner />
             <LoadingText>
-              {this.props.loadingText ? this.props.loadingText : 'Loading ...'}
+              {loadingText ? loadingText : t('Loading ...')}
             </LoadingText>
           </Container>
         );
     }
   }
 }
+
+const LoadingIndicatorWithContext = withTranslationContext(LoadingIndicator);
+export { LoadingIndicatorWithContext as LoadingIndicator };

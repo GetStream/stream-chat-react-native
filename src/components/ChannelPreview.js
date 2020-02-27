@@ -2,8 +2,9 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import Moment from 'moment';
+import { withTranslationContext } from '../context';
 
-export class ChannelPreview extends PureComponent {
+class ChannelPreview extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -54,7 +55,7 @@ export class ChannelPreview extends PureComponent {
   };
 
   getLatestMessage = () => {
-    const { channel } = this.props;
+    const { channel, t } = this.props;
     const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
@@ -64,11 +65,11 @@ export class ChannelPreview extends PureComponent {
     };
 
     if (!message) {
-      latestMessage.text = 'Nothing yet...';
+      latestMessage.text = t('Nothing yet...');
       return latestMessage;
     }
     if (message.deleted_at) {
-      latestMessage.text = 'Message deleted';
+      latestMessage.text = t('Message deleted');
       return latestMessage;
     }
 
@@ -78,9 +79,9 @@ export class ChannelPreview extends PureComponent {
       if (message.command) {
         latestMessage.text = '/' + message.command;
       } else if (message.attachments.length) {
-        latestMessage.text = '🏙 Attachment...';
+        latestMessage.text = t('🏙 Attachment...');
       } else {
-        latestMessage.text = 'Empty message...';
+        latestMessage.text = t('Empty message...');
       }
     }
 
@@ -99,3 +100,7 @@ export class ChannelPreview extends PureComponent {
     return <Preview {...props} latestMessage={this.getLatestMessage()} />;
   }
 }
+
+const ChannelPreviewWithContext = withTranslationContext(ChannelPreview);
+
+export { ChannelPreviewWithContext as ChannelPreview };

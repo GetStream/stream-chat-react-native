@@ -3,6 +3,7 @@ import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
+import { withTranslationContext } from '../context';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -29,60 +30,67 @@ const MessageNotificationText = styled.Text`
  * @example ./docs/MessageNotification.md
  * @extends PureComponent
  */
-export const MessageNotification = themed(
-  class MessageNotification extends PureComponent {
-    static themePath = 'messageList.messageNotification';
-    constructor(props) {
-      super(props);
-      this.state = {
-        notificationOpacity: new Animated.Value(0),
-      };
-    }
-    static propTypes = {
-      /** If we should show the notification or not */
-      showNotification: PropTypes.bool,
-      /** Onclick handler */
-      onPress: PropTypes.func.isRequired,
+class MessageNotification extends PureComponent {
+  static themePath = 'messageList.messageNotification';
+  constructor(props) {
+    super(props);
+    this.state = {
+      notificationOpacity: new Animated.Value(0),
     };
+  }
+  static propTypes = {
+    /** If we should show the notification or not */
+    showNotification: PropTypes.bool,
+    /** Onclick handler */
+    onPress: PropTypes.func.isRequired,
+  };
 
-    static defaultProps = {
-      showNotification: true,
-    };
+  static defaultProps = {
+    showNotification: true,
+  };
 
-    componentDidMount() {
+  componentDidMount() {
+    Animated.timing(this.state.notificationOpacity, {
+      toValue: this.props.showNotification ? 1 : 0,
+      duration: 500,
+    }).start();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.showNotification !== this.props.showNotification) {
       Animated.timing(this.state.notificationOpacity, {
         toValue: this.props.showNotification ? 1 : 0,
         duration: 500,
       }).start();
     }
+  }
 
-    componentDidUpdate(prevProps) {
-      if (prevProps.showNotification !== this.props.showNotification) {
-        Animated.timing(this.state.notificationOpacity, {
-          toValue: this.props.showNotification ? 1 : 0,
-          duration: 500,
-        }).start();
-      }
-    }
+  render() {
+    const { t } = this.props;
 
-    render() {
-      if (!this.props.showNotification) {
-        return null;
-      } else {
-        return (
-          <Animated.View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              opacity: this.state.notificationOpacity,
-            }}
-          >
-            <Container onPress={this.props.onPress}>
-              <MessageNotificationText>New Messages</MessageNotificationText>
-            </Container>
-          </Animated.View>
-        );
-      }
+    if (!this.props.showNotification) {
+      return null;
+    } else {
+      return (
+        <Animated.View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            opacity: this.state.notificationOpacity,
+          }}
+        >
+          <Container onPress={this.props.onPress}>
+            <MessageNotificationText>
+              {t('New Messages')}
+            </MessageNotificationText>
+          </Container>
+        </Animated.View>
+      );
     }
-  },
+  }
+}
+
+const MessageNotificationWithContext = withTranslationContext(
+  themed(MessageNotification),
 );
+export { MessageNotificationWithContext as MessageNotification };
