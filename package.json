@@ -69,7 +69,6 @@
     "moment": "2.23.0",
     "path": "^0.12.7",
     "react-art": "^16.8.6",
-    "react-i18next": "^11.3.3",
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
