@@ -14,3 +14,5 @@ export {
 } from './context.js';
 
 export * from './utils';
+
+export * from './i18n';

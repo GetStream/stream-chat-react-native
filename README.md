@@ -291,3 +291,100 @@ In current context, dependencies such as `react-native-document-picker` and (if 
       sdk.dir=/Users/{user_name}/Library/Android/sdk/
       ```
    3. Rerun `react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory
+
+## Internationalization
+
+Stream provides following list of in-built translations for components:
+
+1.  English (en)
+2.  Dutch (nl)
+3.  Russian (ru)
+4.  Turkish (tr)
+5.  French (fr)
+6.  Italian (it)
+7.  Hindi (hi)
+
+Default language is English. Simplest way to start using chat components in one of the in-built languages would be following:
+
+```js
+const i18n = new Streami18n('nl');
+<Chat client={chatClient} i18nInstance={i18n}>
+  ...
+</Chat>;
+```
+
+If you would like to override certain keys in in-built translation.
+UI will be automatically updated in this case.
+
+```js
+const i18n = new Streami18n('nl');
+
+i18n.registerTranslation('nl', {
+  'Nothing yet...': 'Nog Niet ...',
+  '{{ firstUser }} and {{ secondUser }} are typing...':
+    '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+});
+
+<Chat client={chatClient} i18nInstance={i18n}>
+  ...
+</Chat>;
+```
+
+You can use the same function to add whole new language.
+
+```js
+const i18n = new Streami18n('it');
+
+i18n.registerTranslation('it', {
+  'Nothing yet...': 'Non ancora ...',
+  '{{ firstUser }} and {{ secondUser }} are typing...':
+    '{{ firstUser }} a {{ secondUser }} stanno scrivendo...',
+});
+
+// Make sure to call setLanguage to reflect new language in UI.
+i18n.setLanguage('it');
+<Chat client={chatClient} i18nInstance={i18n}>
+  ...
+</Chat>;
+```
+
+We have stored and exported all the in-built translations in our library.
+
+You can import them in your project like following:
+
+```js
+import {
+  enTranslations,
+  nlTranslations,
+  ruTranslations,
+  trTranslations,
+  frTranslations,
+  hiTranslations,
+  itTranslations,
+  esTranslations,
+} from 'stream-chat-react-native'; // or 'stream-chat-expo'
+```
+
+If you would like to maintain your own translation files:
+
+1. Create a json file in your project with whatever name you prefer. Best practice would be to name it after
+   the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
+2. Copy the content of file https://github.com/GetStream/stream-chat-react-native/blob/master/src/i18n/en.json
+3. Change the values of the keys as translation of key.
+4. Use it in chat client:
+
+```js
+import koTranslation from 'path/to/ko.json';
+import deTranslation from 'path/to/de.json';
+
+const i18n = new Streami18n();
+i18n.registerTranslation('ko', koTranslation);
+i18n.registerTranslation('de', deTranslation);
+
+// You can switch language at any point in lifetime of component, it will automatically reflect in UI.
+i18n.setLanguage('ko');
+
+<Chat client={chatClient} i18nInstance={i18n}>
+  ...
+</Chat>;
+```

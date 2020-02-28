@@ -1,15 +1,18 @@
 import i18n from 'i18next';
 
-import english from '../../i18n/en.json';
-import dutch from '../../i18n/nl.json';
-import russian from '../../i18n/ru.json';
-import turkish from '../../i18n/tr.json';
-import french from '../../i18n/fr.json';
-import hindi from '../../i18n/hi.json';
-import italian from '../../i18n/it.json';
-import spanish from '../../i18n/es.json';
+import {
+  enTranslations,
+  nlTranslations,
+  ruTranslations,
+  trTranslations,
+  frTranslations,
+  hiTranslations,
+  itTranslations,
+  esTranslations,
+} from '../i18n';
 
 const defaultNS = 'translation';
+const defaultLng = 'en';
 /**
  * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
  * Instance of this class should be provided to Chat component to handle translations.
@@ -21,7 +24,7 @@ const defaultNS = 'translation';
  * 4. Turkish (tr)
  * 5. French (fr)
  * 6. Italian (it)
- * 7. Spanish (es)
+ * 7. Hindi (hi)
  *
  * Simplest way to start using chat components in one of the in-built languages would be following:
  *
@@ -71,14 +74,14 @@ export class Streami18n {
   initialized = false;
   t = null;
   translations = {
-    en: { [defaultNS]: english },
-    nl: { [defaultNS]: dutch },
-    ru: { [defaultNS]: russian },
-    tr: { [defaultNS]: turkish },
-    fr: { [defaultNS]: french },
-    hi: { [defaultNS]: hindi },
-    it: { [defaultNS]: italian },
-    es: { [defaultNS]: spanish },
+    en: { [defaultNS]: enTranslations },
+    nl: { [defaultNS]: nlTranslations },
+    ru: { [defaultNS]: ruTranslations },
+    tr: { [defaultNS]: trTranslations },
+    fr: { [defaultNS]: frTranslations },
+    hi: { [defaultNS]: hiTranslations },
+    it: { [defaultNS]: itTranslations },
+    es: { [defaultNS]: esTranslations },
   };
 
   /**
@@ -86,7 +89,11 @@ export class Streami18n {
    * @param {*} i18nextConfig Config object to override default config - https://www.i18next.com/overview/configuration-options
    * @param {*} logger - Logger function to get error logs if something fails. Should be used in dev mode.
    */
-  constructor(currentLanguage, i18nextConfig = {}, logger = () => {}) {
+  constructor(
+    currentLanguage = defaultLng,
+    i18nextConfig = {},
+    logger = () => {},
+  ) {
     this.currentLanguage = currentLanguage;
     this.logger = logger;
     this.i18nextConfig = {
@@ -95,7 +102,6 @@ export class Streami18n {
       fallbackLng: false,
       debug: true,
       lng: this.currentLanguage,
-      resources: this.translations,
       parseMissingKeyHandler: (key) => {
         this.logger(`Missing translation for key: ${key}`);
 
@@ -103,14 +109,21 @@ export class Streami18n {
       },
       ...i18nextConfig,
     };
+
+    this.validateCurrentLanguage(currentLanguage);
   }
 
   /**
    * Initializes the i18next instance with configuration (which enables natural language as default keys)
    */
   async init() {
+    this.validateCurrentLanguage();
     try {
-      this.t = await this.i18nInstance.init(this.i18nextConfig);
+      this.t = await this.i18nInstance.init({
+        ...this.i18nextConfig,
+        resources: this.translations,
+        lng: this.currentLanguage,
+      });
       this.initialized = true;
 
       return this.t;
@@ -118,6 +131,19 @@ export class Streami18n {
       this.logger(`Something went wrong with init:`, e);
     }
   }
+
+  validateCurrentLanguage = () => {
+    const availableLanguages = Object.keys(this.translations);
+    if (availableLanguages.indexOf(this.currentLanguage) === -1) {
+      console.error(
+        `'${this.currentLanguage}' language is not registered.` +
+          ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
+          `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
+      );
+
+      this.currentLanguage = defaultLng;
+    }
+  };
 
   /** Returns an instance of i18next used within this class instance */
   geti18Instance = () => this.i18nInstance;
@@ -162,6 +188,9 @@ export class Streami18n {
    */
   async setLanguage(language) {
     this.currentLanguage = language;
+
+    if (!this.initialized) return;
+
     try {
       const t = await this.i18nInstance.changeLanguage(language);
       this.setLanguageCallback(t);
