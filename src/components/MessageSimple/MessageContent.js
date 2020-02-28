@@ -384,7 +384,7 @@ class MessageContent extends React.PureComponent {
     ) {
       options.splice(1, 0, {
         id: MESSAGE_ACTIONS.reactions,
-        title: 'Add Reaction',
+        title: t('Add Reaction'),
       });
     }
 
@@ -394,7 +394,7 @@ class MessageContent extends React.PureComponent {
       messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
       !threadList
     ) {
-      options.splice(1, 0, { id: MESSAGE_ACTIONS.reply, title: 'Reply' });
+      options.splice(1, 0, { id: MESSAGE_ACTIONS.reply, title: t('Reply') });
     }
     if (
       messageActions &&
@@ -403,7 +403,7 @@ class MessageContent extends React.PureComponent {
     )
       options.splice(1, 0, {
         id: MESSAGE_ACTIONS.edit,
-        title: 'Edit Message',
+        title: t('Edit Message'),
       });
 
     if (
@@ -413,7 +413,7 @@ class MessageContent extends React.PureComponent {
     )
       options.splice(1, 0, {
         id: MESSAGE_ACTIONS.delete,
-        title: 'Delete Message',
+        title: t('Delete Message'),
       });
 
     if (message.deleted_at)

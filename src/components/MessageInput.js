@@ -678,7 +678,7 @@ class MessageInput extends PureComponent {
                 padding: 10,
               }}
             >
-              <Text style={{ fontWeight: 'bold' }}>Editing Message</Text>
+              <Text style={{ fontWeight: 'bold' }}>{t('Editing Message')}</Text>
               <IconSquare
                 onPress={() => {
                   this.props.clearEditingState();
@@ -728,7 +728,9 @@ class MessageInput extends PureComponent {
                 ref={(o) => (this.attachActionSheet = o)}
                 title={
                   <ActionSheetTitleContainer>
-                    <ActionSheetTitleText>Add a file</ActionSheetTitleText>
+                    <ActionSheetTitleText>
+                      {t('Add a file')}
+                    </ActionSheetTitleText>
                     <IconSquare
                       icon={iconClose}
                       onPress={this.closeAttachActionSheet}
@@ -775,6 +777,7 @@ class MessageInput extends PureComponent {
                   users: this.getUsers(),
                   commands: this.getCommands(),
                   onMentionSelectItem: this.onSelectItem,
+                  t,
                 })}
                 additionalTextInputProps={this.props.additionalTextInputProps}
               />

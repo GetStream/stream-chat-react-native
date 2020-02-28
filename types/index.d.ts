@@ -695,8 +695,8 @@ export interface LoadingIndicatorProps {
 export interface MentionsItemProps {
   item: {
     name?: string;
-    icon: string;
-    id?: string;
+    image?: string;
+    id: string;
   };
 }
 

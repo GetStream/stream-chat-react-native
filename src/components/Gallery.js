@@ -4,7 +4,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
-import { withMessageContentContext } from '../context';
+import { withMessageContentContext, withTranslationContext } from '../context';
 import { makeImageCompatibleUrl } from '../utils';
 
 import { CloseButton } from './CloseButton';
@@ -59,193 +59,191 @@ const ImageContainer = styled.TouchableOpacity`
  * @example ./docs/Gallery.md
  */
 
-export const Gallery = withMessageContentContext(
-  themed(
-    class Gallery extends React.PureComponent {
-      static themePath = 'message.gallery';
-      static propTypes = {
-        /** The images to render */
-        images: PropTypes.arrayOf(
-          PropTypes.shape({
-            image_url: PropTypes.string,
-            thumb_url: PropTypes.string,
-          }),
-        ),
-        onLongPress: PropTypes.func,
-        alignment: PropTypes.string,
-      };
+class Gallery extends React.PureComponent {
+  static themePath = 'message.gallery';
+  static propTypes = {
+    /** The images to render */
+    images: PropTypes.arrayOf(
+      PropTypes.shape({
+        image_url: PropTypes.string,
+        thumb_url: PropTypes.string,
+      }),
+    ),
+    onLongPress: PropTypes.func,
+    alignment: PropTypes.string,
+  };
 
-      constructor(props) {
-        super(props);
-        this.state = {
-          viewerModalOpen: false,
-          viewerModalImageIndex: 0,
-        };
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      viewerModalOpen: false,
+      viewerModalImageIndex: 0,
+    };
+  }
 
-      render() {
-        if (!this.props.images || this.props.images.length === 0) return null;
+  render() {
+    const { t } = this.props;
+    if (!this.props.images || this.props.images.length === 0) return null;
 
-        const images = [...this.props.images].map((i) => ({
-          url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
-        }));
+    const images = [...this.props.images].map((i) => ({
+      url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
+    }));
 
-        if (images.length === 1) {
-          return (
-            <React.Fragment>
-              <Single
-                onPress={() => {
-                  this.setState({ viewerModalOpen: true });
+    if (images.length === 1) {
+      return (
+        <React.Fragment>
+          <Single
+            onPress={() => {
+              this.setState({ viewerModalOpen: true });
+            }}
+            onLongPress={() => {
+              this.props.onLongPress();
+            }}
+            alignment={this.props.alignment}
+          >
+            <Image
+              style={{
+                width: 100 + '%',
+                height: 100 + '%',
+              }}
+              resizeMode="cover"
+              source={{ uri: images[0].url }}
+            />
+          </Single>
+          <Modal
+            visible={this.state.viewerModalOpen}
+            transparent={true}
+            onRequestClose={() => {
+              this.setState({ viewerModalOpen: false });
+            }}
+          >
+            <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+              <ImageViewer
+                imageUrls={images}
+                // TODO: We don't have 'save image' functionality.
+                // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+                // opens up popup menu to with an option "Save to the album", which basically does nothing.
+                saveToLocalByLongPress={false}
+                onCancel={() => {
+                  this.setState({ viewerModalOpen: false });
                 }}
-                onLongPress={() => {
-                  this.props.onLongPress();
-                }}
-                alignment={this.props.alignment}
-              >
+                enableSwipeDown
+                renderHeader={() => (
+                  <GalleryHeader
+                    handleDismiss={() => {
+                      this.setState({ viewerModalOpen: false });
+                    }}
+                  />
+                )}
+              />
+            </SafeAreaView>
+          </Modal>
+        </React.Fragment>
+      );
+    }
+
+    return (
+      <React.Fragment>
+        <GalleryContainer
+          length={images.length}
+          alignment={this.props.alignment}
+        >
+          {images.slice(0, 4).map((image, i) => (
+            <ImageContainer
+              key={`gallery-item-${i}`}
+              length={images.length}
+              activeOpacity={0.8}
+              onPress={() => {
+                this.setState({
+                  viewerModalOpen: true,
+                  viewerModalImageIndex: i,
+                });
+              }}
+              onLongPress={this.props.onLongPress}
+            >
+              {i === 3 && images.length > 4 ? (
+                <View
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                  }}
+                >
+                  <Image
+                    style={{
+                      width: 100 + '%',
+                      height: 100 + '%',
+                    }}
+                    resizeMode="cover"
+                    source={{ uri: images[3].url }}
+                  />
+                  <View
+                    style={{
+                      position: 'absolute',
+                      height: '100%',
+                      width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: 'rgba(0,0,0,0.69)',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: '700',
+                        fontSize: 22,
+                      }}
+                    >
+                      {' '}
+                      +{' '}
+                      {t('{{ imageCount }} more', {
+                        imageCount: images.length - 3,
+                      })}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
                 <Image
                   style={{
                     width: 100 + '%',
                     height: 100 + '%',
                   }}
                   resizeMode="cover"
-                  source={{ uri: images[0].url }}
+                  source={{ uri: image.url }}
                 />
-              </Single>
-              <Modal
-                visible={this.state.viewerModalOpen}
-                transparent={true}
-                onRequestClose={() => {
-                  this.setState({ viewerModalOpen: false });
-                }}
-              >
-                <SafeAreaView
-                  style={{ flex: 1, backgroundColor: 'transparent' }}
-                >
-                  <ImageViewer
-                    imageUrls={images}
-                    // TODO: We don't have 'save image' functionality.
-                    // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-                    // opens up popup menu to with an option "Save to the album", which basically does nothing.
-                    saveToLocalByLongPress={false}
-                    onCancel={() => {
-                      this.setState({ viewerModalOpen: false });
-                    }}
-                    enableSwipeDown
-                    renderHeader={() => (
-                      <GalleryHeader
-                        handleDismiss={() => {
-                          this.setState({ viewerModalOpen: false });
-                        }}
-                      />
-                    )}
-                  />
-                </SafeAreaView>
-              </Modal>
-            </React.Fragment>
-          );
-        }
-
-        return (
-          <React.Fragment>
-            <GalleryContainer
-              length={images.length}
-              alignment={this.props.alignment}
-            >
-              {images.slice(0, 4).map((image, i) => (
-                <ImageContainer
-                  key={`gallery-item-${i}`}
-                  length={images.length}
-                  activeOpacity={0.8}
-                  onPress={() => {
-                    this.setState({
-                      viewerModalOpen: true,
-                      viewerModalImageIndex: i,
-                    });
-                  }}
-                  onLongPress={this.props.onLongPress}
-                >
-                  {i === 3 && images.length > 4 ? (
-                    <View
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                      }}
-                    >
-                      <Image
-                        style={{
-                          width: 100 + '%',
-                          height: 100 + '%',
-                        }}
-                        resizeMode="cover"
-                        source={{ uri: images[3].url }}
-                      />
-                      <View
-                        style={{
-                          position: 'absolute',
-                          height: '100%',
-                          width: '100%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          backgroundColor: 'rgba(0,0,0,0.69)',
-                        }}
-                      >
-                        <Text
-                          style={{
-                            color: 'white',
-                            fontWeight: '700',
-                            fontSize: 22,
-                          }}
-                        >
-                          {' '}
-                          + {images.length - 3} more
-                        </Text>
-                      </View>
-                    </View>
-                  ) : (
-                    <Image
-                      style={{
-                        width: 100 + '%',
-                        height: 100 + '%',
-                      }}
-                      resizeMode="cover"
-                      source={{ uri: image.url }}
-                    />
-                  )}
-                </ImageContainer>
-              ))}
-            </GalleryContainer>
-            <Modal
-              onRequestClose={() => {
+              )}
+            </ImageContainer>
+          ))}
+        </GalleryContainer>
+        <Modal
+          onRequestClose={() => {
+            this.setState({ viewerModalOpen: false });
+          }}
+          visible={this.state.viewerModalOpen}
+          transparent={true}
+        >
+          <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
+            <ImageViewer
+              imageUrls={images}
+              onCancel={() => {
                 this.setState({ viewerModalOpen: false });
               }}
-              visible={this.state.viewerModalOpen}
-              transparent={true}
-            >
-              <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-                <ImageViewer
-                  imageUrls={images}
-                  onCancel={() => {
+              index={this.state.viewerModalImageIndex}
+              enableSwipeDown
+              renderHeader={() => (
+                <GalleryHeader
+                  handleDismiss={() => {
                     this.setState({ viewerModalOpen: false });
                   }}
-                  index={this.state.viewerModalImageIndex}
-                  enableSwipeDown
-                  renderHeader={() => (
-                    <GalleryHeader
-                      handleDismiss={() => {
-                        this.setState({ viewerModalOpen: false });
-                      }}
-                    />
-                  )}
                 />
-              </SafeAreaView>
-            </Modal>
-          </React.Fragment>
-        );
-      }
-    },
-  ),
-);
+              )}
+            />
+          </SafeAreaView>
+        </Modal>
+      </React.Fragment>
+    );
+  }
+}
 
 const HeaderContainer = styled.View`
   display: flex;
@@ -276,3 +274,9 @@ const GalleryHeader = ({ handleDismiss }) => (
     </HeaderButton>
   </HeaderContainer>
 );
+
+const GalleyWithContext = withTranslationContext(
+  withMessageContentContext(themed(Gallery)),
+);
+
+export { GalleyWithContext as Gallery };
