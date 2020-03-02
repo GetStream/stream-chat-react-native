@@ -17,7 +17,22 @@
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
 
-## React Chat Tutorial
+## Contents
+
+- [React Native Chat Tutorial](#react-native-chat-tutorial)
+- [Example Apps](#example-apps)
+  - [Expo Example](#expo-example)
+  - [Native Example](#native-example)
+- [Docs](#docs)
+- [Keep in mind](#keep-in-mind)
+- [Setup](#setup)
+  - [Expo package](#expo-package)
+  - [Native package](#native-package)
+- [Upgrade](#upgrade)
+- [Common Issues](#common-issues)
+- [Knowledge articles based on frequently asked questions](#knowledge-articles-based-on-frequently-asked-questions)
+
+## React Native Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes.
 
@@ -94,7 +109,7 @@ Library currently exposes following components:
 
 You can see detailed documentation about the components at https://getstream.github.io/stream-chat-react-native
 
-## Usage (creating an example app)
+## Setup (Seting up an chat app)
 
 ### Expo package
 
@@ -291,3 +306,132 @@ In current context, dependencies such as `react-native-document-picker` and (if 
       sdk.dir=/Users/{user_name}/Library/Android/sdk/
       ```
    3. Rerun `react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory
+
+## Knowledge articles based on frequently asked questions
+
+### Customizing message component
+
+Stream comes with some in-built components for message.
+
+1.  MessageLivestream - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageLivestream.js
+2.  MessageSimple - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageSimple.js
+3.  MessageTeam - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageTeam.js
+4.  MessageCommerce - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageTeam.js
+
+All these components are exported from 'stream-chat-react' package.
+Simply import them in your project using import:
+
+```js
+import {
+  MessageSimple,
+  MessageCommerce,
+  MessageTeam,
+  MessageLivestream,
+} from 'stream-chat-react';
+```
+
+`MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
+You can in-build as it is, but every product requires its own functionality/behaviour and styles.
+For this you can either build your own component or you can also use in-built components with some modifications.
+
+Here I am going to build some custom components, which use in-built components underneath with some modifications.
+Then all you need to do is to pass this component to MessageList component:
+
+e.g.,
+
+```js
+<Chat client={chatClient}>
+  <Channel>
+    <MessageList Message={MessageCommerceModified} />
+    <MessageInput />
+  </Channel>
+</Chat>
+```
+
+#### EXAMPLE 1 - Inbuilt message component with different/modified/overriden props.
+
+Suppose if you want to use MessageCommerce component provided by Stream, but need to make some modification to its props.
+
+Not just MessageCommerce, we have few more alternatives available (docs - https://getstream.github.io/stream-chat-react/#section-message-components)
+
+e.g., here I am gonna add my own behaviour on top of existing behavior - when thread is opened from message component
+
+```js
+const MessageCommerceModified = (props) => {
+  const handleOpenThread = () => {
+    // Custom behaviour
+    alert(`Thread is being opened from message with id - ${props.message.id}`);
+    // Continue with original handler.
+    props.handleOpenThread();
+  };
+
+  return <MessageCommerce {...props} handleOpenThread={handleOpenThread} />;
+};
+```
+
+#### EXAMPLE 2 - Hiding message for certain users/condition.
+
+Another usecase of custom message component would be to hide the message for certain users.
+I am gonna use MessageSimple component for this example
+
+```js
+const restrictedUserIds = ['user_id1', 'user_id2', 'user_id3'];
+
+const MessageSimpleModified = (props) => {
+  const currentUserId = props.user.id;
+  if (restrictedUserIds.indexOf(currentUserId) > -1) {
+    // current user is part of restricted user list;
+    // In that case don't don't render anything, so user won't see the message
+    return null;
+  }
+
+  // Otherwise render the message normally;
+  return <MessageSimple {...props} />;
+};
+```
+
+#### EXAMPLE 3 - Custom styling based on condition.
+
+Another usecase of custom message component would be if you want different styles for received messages and sent messages.
+
+The approach for this is to have your own div wrapper around inner MessageSimple component and add styles to this wrapper
+for underlying componeng. For example in this case I want to make background color of sent message to be yellow and
+background color of received message as blue. So if the message belongs to me, then I will add a wrapper around message with class
+`.message-simple-styled-sent`. Otherwise I will wrap it with class `.message-simple-styled-received` (you can ofcourse choose
+your own class names. ... this is just an example).
+
+You can use inspect element feature to get classnames for underlying components or scan through source code of component.
+
+Add following styles to stylesheet:
+
+```css
+.message-simple-styled-sent .str-chat__message-simple-text-inner {
+  background-color: yellow;
+}
+
+.message-simple-styled-received .str-chat__message-simple-text-inner {
+  background-color: blue;
+}
+```
+
+```js
+const MessageSimpleStyled = (props) => {
+  const { isMyMessage, message } = props;
+
+  if (isMyMessage(message)) {
+    // If the message belongs to me or is sent by me, the wrap it with `.message-simple-styled-sent`
+    return (
+      <div className="message-simple-styled-sent">
+        <MessageSimple {...props} />
+      </div>
+    );
+  }
+
+  // Otherwise wrap it with `.message-simple-styled-received`
+  return (
+    <div className="message-simple-styled-received">
+      <MessageSimple {...props} />
+    </div>
+  );
+};
+```
