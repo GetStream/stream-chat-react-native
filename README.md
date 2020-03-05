@@ -413,3 +413,25 @@ Default language is English. Simplest way to start using chat components in one 
   }
   );
   ```
+
+  Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
+
+  https://github.com/moment/moment/tree/develop/locale
+
+  Stream uses locale configs provided by momentjs for built-in languages. You can also use one of these locale configs whiles registering
+  a new language. If you would liek to use the locale provided by momentjs as it is, simply import the file in your project.
+
+  e.g.,
+
+  ```js static
+
+    // Registering locale config for Danish language
+    import 'moment/locale/da';
+
+    const i18n = new Streami18n({
+      language: 'da',
+      translationsForLanguage: {
+        ...
+      },
+    });
+  ```
