@@ -8,7 +8,6 @@ import {
   frTranslations,
   hiTranslations,
   itTranslations,
-  esTranslations,
 } from '../i18n';
 
 import 'moment/locale/nl';
@@ -17,7 +16,6 @@ import 'moment/locale/ru';
 import 'moment/locale/tr';
 import 'moment/locale/fr';
 import 'moment/locale/hi';
-import 'moment/locale/es';
 
 const defaultNS = 'translation';
 const defaultLng = 'en';
@@ -150,7 +148,6 @@ export class Streami18n {
     fr: { [defaultNS]: frTranslations },
     hi: { [defaultNS]: hiTranslations },
     it: { [defaultNS]: itTranslations },
-    es: { [defaultNS]: esTranslations },
   };
 
   /**
@@ -180,6 +177,7 @@ export class Streami18n {
     };
     this.currentLanguage = finalOptions.language;
     const translationsForLanguage = finalOptions.translationsForLanguage;
+
     if (translationsForLanguage) {
       this.translations[this.currentLanguage] = {
         [defaultNS]: translationsForLanguage,
