@@ -4,7 +4,8 @@ import * as React from 'react';
 import { Text, GestureResponderEvent } from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
-
+import * as i18next from 'i18next';
+import * as moment from 'moment';
 //================================================================================================
 //================================================================================================
 //
@@ -26,6 +27,13 @@ export interface ChatContextValue {
   isOnline?: boolean;
   connectionRecovering?: boolean;
 }
+
+declare function withTranslationContext<T>(
+  OriginalComponent: React.ElementType<T>,
+): React.ElementType<T>;
+export interface TranslationContext
+  extends React.Context<TranslationContextValue> {}
+export interface TranslationContextValue extends Streami18nTranslators {}
 
 declare function withSuggestionsContext<T>(
   OriginalComponent: React.ElementType<T>,
@@ -141,7 +149,9 @@ export interface ChatProps {
   style?: object;
 }
 
-export interface ChannelProps extends ChatContextValue {
+export interface ChannelProps
+  extends ChatContextValue,
+    TranslationContextValue {
   /** The loading indicator to use */
   LoadingIndicator?: React.ElementType;
   LoadingErrorIndicator?: React.ElementType<LoadingErrorIndicatorProps>;
@@ -202,12 +212,12 @@ export interface EmptyStateIndicatorProps {
 export interface LoadingIndicatorProps {
   listType?: listType;
 }
-export interface DateSeparatorProps {
+export interface DateSeparatorProps extends TranslationContextValue {
   message: Client.MessageResponse;
   formatDate(date: string): string;
 }
 
-export interface EventIndicatorProps {
+export interface EventIndicatorProps extends TranslationContextValue {
   event:
     | Client.Event<Client.MemberAddedEvent>
     | Client.Event<Client.MemberRemovedEvent>;
@@ -234,7 +244,8 @@ export interface FileUploadResponse {
 export interface MessageInputProps
   extends KeyboardContextValue,
     ChannelContextValue,
-    SuggestionsContextValue {
+    SuggestionsContextValue,
+    TranslationContextValue {
   /** The parent message object when replying on a thread */
   parent?: Client.Message | null;
 
@@ -345,7 +356,9 @@ export interface ChannelListUIComponentProps
   loadNextPage(): void;
 }
 
-export interface ChannelPreviewProps extends ChannelListUIComponentProps {
+export interface ChannelPreviewProps
+  extends ChannelListUIComponentProps,
+    TranslationContextValue {
   Preview: React.ElementType<ChannelPreviewUIComponentProps>;
   key: string;
 }
@@ -368,7 +381,9 @@ export interface ChannelPreviewUIComponentProps
   latestMessageLength: number;
 }
 
-export interface MessageListProps extends ChannelContextValue {
+export interface MessageListProps
+  extends ChannelContextValue,
+    TranslationContextValue {
   /** Turn off grouping of messages by user */
   messageActions: Array<MessageAction>;
   noGroupByUser?: boolean;
@@ -510,7 +525,8 @@ export interface MessageUIComponentProps
   formatDate(date: string): string;
 }
 
-export interface MessageRepliesUIComponentProps {
+export interface MessageRepliesUIComponentProps
+  extends TranslationContextValue {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: Client.MessageResponse;
   /** Boolean if current message is part of thread */
@@ -553,7 +569,8 @@ export interface MessageAvatarUIComponentProps {
 }
 
 export interface MessageContentUIComponentProps
-  extends MessageUIComponentProps {
+  extends MessageUIComponentProps,
+    TranslationContextValue {
   alignment: string;
 }
 
@@ -583,7 +600,9 @@ export interface MessageTextProps {
   message: Client.MessageResponse;
 }
 
-export interface ThreadProps extends ChannelContextValue {
+export interface ThreadProps
+  extends ChannelContextValue,
+    TranslationContextValue {
   /** the thread (the parent message object) */
   thread: SeamlessImmutable.Immutable<Client.MessageResponse>;
   /** The list of messages to render, state is handled by the parent channel component */
@@ -595,7 +614,7 @@ export interface ThreadProps extends ChannelContextValue {
   additionalMessageInputProps?: object;
 }
 
-export interface TypingIndicatorProps {
+export interface TypingIndicatorProps extends TranslationContextValue {
   typing: [];
   client: Client.StreamChat;
 }
@@ -605,7 +624,7 @@ export interface FileIconUIComponentProps {
   mimeType?: string;
 }
 
-export interface AutoCompleteInputProps {
+export interface AutoCompleteInputProps extends TranslationContextValue {
   value: string;
   openSuggestions?(title: string, component: React.ElementType<any>): void;
   closeSuggestions?(): void;
@@ -647,7 +666,7 @@ export interface FileUploadPreviewProps {
   retryUpload?(id: string): Promise<any>;
   AttachmentFileIcon: React.ElementType<any>;
 }
-export interface GalleryProps {
+export interface GalleryProps extends TranslationContextValue {
   images: Client.Attachment[];
   onLongPress: (event: GestureResponderEvent) => void;
   alignment: 'right' | 'left';
@@ -685,14 +704,14 @@ export interface EventIndicatorProps {
     | null;
 }
 
-export interface LoadingErrorIndicatorProps {
+export interface LoadingErrorIndicatorProps extends TranslationContextValue {
   listType?: listType;
 }
-export interface LoadingIndicatorProps {
+export interface LoadingIndicatorProps extends TranslationContextValue {
   listType?: listType;
   loadingText?: string;
 }
-export interface MentionsItemProps {
+export interface MentionsItemProps extends TranslationContextValue {
   item: {
     name?: string;
     image?: string;
@@ -700,12 +719,12 @@ export interface MentionsItemProps {
   };
 }
 
-export interface MessageNotificationProps {
+export interface MessageNotificationProps extends TranslationContextValue {
   showNotification: boolean;
   onPress?(event: GestureResponderEvent): void;
 }
 
-export interface MessageSystemProps {
+export interface MessageSystemProps extends TranslationContextValue {
   message: Client.MessageResponse;
 }
 
@@ -927,3 +946,39 @@ export function registerNativeHandlers(handlers: {
   pickImage(): Promise<any>;
   pickDocument(): Promise<any>;
 }): void;
+
+export interface Streami18nOptions {
+  language: string;
+  disableDateTimeTranslations: boolean;
+  debug: boolean;
+  logger(msg: string): any;
+  momentLocaleConfigForLanguage: object;
+}
+
+export interface Streami18nTranslators {
+  t?: i18next.TFunction;
+  moment?(): moment.Moment;
+}
+
+export class Streami18n {
+  constructor(options?: Streami18nOptions);
+
+  init(): Promise<Streami18nTranslators>;
+  momentLocaleExists(language: String): boolean;
+  validateCurrentLanguage(): void;
+  geti18Instance(): i18next.i18n;
+  getAvailableLanguages(): Array<String>;
+  getTranslations(): Array<Object>;
+  getTranslators(): Promise<Streami18nTranslators>;
+  registerTranslation(
+    key: String,
+    translation: Object,
+    customMomentLocale: moment.LocaleSpecification,
+  ): void;
+  addOrUpdateMomentLocaleConfig(
+    key: String,
+    customMomentLocale: moment.LocaleSpecification,
+  ): void;
+  setLanguage(language: String): Promise<void>;
+  registerSetLanguageCallback(callback: (t: i18next.TFunction) => void): void;
+}
