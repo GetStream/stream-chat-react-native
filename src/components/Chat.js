@@ -136,15 +136,15 @@ export const Chat = themed(
       if (i18nInstance && i18nInstance instanceof Streami18n) {
         streami18n = i18nInstance;
       } else {
-        streami18n = new Streami18n('en');
+        streami18n = new Streami18n({ language: 'en' });
       }
 
       streami18n.registerSetLanguageCallback((t) => {
         this.setState({ t });
       });
 
-      const t = await streami18n.getTranslator();
-      this.setState({ t });
+      const { t, moment } = await streami18n.getTranslators();
+      this.setState({ t, moment });
     }
 
     componentDidUpdate() {
@@ -224,7 +224,9 @@ export const Chat = themed(
 
       return (
         <ChatContext.Provider value={this.getContext()}>
-          <TranslationContext.Provider value={{ t: this.state.t }}>
+          <TranslationContext.Provider
+            value={{ t: this.state.t, moment: this.state.moment }}
+          >
             {this.props.children}
           </TranslationContext.Provider>
         </ChatContext.Provider>

@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
-import Moment from 'moment';
 import { withTranslationContext } from '../context';
 
 class ChannelPreview extends PureComponent {
@@ -55,7 +54,7 @@ class ChannelPreview extends PureComponent {
   };
 
   getLatestMessage = () => {
-    const { channel, t } = this.props;
+    const { channel, t, moment } = this.props;
     const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
@@ -85,10 +84,10 @@ class ChannelPreview extends PureComponent {
       }
     }
 
-    if (Moment(message.created_at).isSame(new Date(), 'day'))
-      latestMessage.created_at = Moment(message.created_at).format('HH:mm A');
+    if (moment(message.created_at).isSame(new Date(), 'day'))
+      latestMessage.created_at = moment(message.created_at).format('HH:mm A');
     else {
-      latestMessage.created_at = Moment(message.created_at).format('DD/MM/YY');
+      latestMessage.created_at = moment(message.created_at).format('DD/MM/YY');
     }
 
     return latestMessage;

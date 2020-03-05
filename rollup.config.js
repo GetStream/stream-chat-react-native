@@ -38,6 +38,13 @@ const normalBundle = {
   external: [
     'anchorme',
     'moment',
+    'moment/locale/nl',
+    'moment/locale/it',
+    'moment/locale/ru',
+    'moment/locale/tr',
+    'moment/locale/fr',
+    'moment/locale/hi',
+    'moment/locale/es',
     'lodash/debounce',
     'lodash/get',
     'lodash/isEqual',

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dimensions } from 'react-native';
-import moment from 'moment';
 import { MessageContentContext, withTranslationContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
@@ -348,6 +347,7 @@ class MessageContent extends React.PureComponent {
       canDeleteMessage,
       MessageFooter,
       t,
+      moment,
     } = this.props;
 
     const Attachment = this.props.Attachment;
@@ -533,7 +533,7 @@ class MessageContent extends React.PureComponent {
               <MetaText alignment={pos}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
-                  : moment(message.created_at).format('h:mmA')}
+                  : moment(message.created_at).format('hh:mmA')}
               </MetaText>
             </MetaContainer>
           ) : null}

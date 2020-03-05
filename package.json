@@ -13,11 +13,24 @@
     "README.md",
     "/types"
   ],
+  "jest": {
+    "verbose": true,
+    "maxConcurrency": 1,
+    "transformIgnorePatterns": [
+      "/node_modules"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/examples/"
+    ]
+  },
   "scripts": {
     "start": "rm -rf dist && rollup -c -w",
     "build": "rm -rf dist && rollup -c",
     "docs": "styleguidist build",
+    "test": "jest",
     "docs-server": "styleguidist server",
+    "build-translations": "yarn run babel -f .babelrc 'src/**/*.{js,jsx,ts,tsx}'",
     "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
@@ -104,6 +117,7 @@
     "eslint-plugin-markdown": "^1.0.0",
     "eslint-plugin-react": "^7.12.4",
     "husky": "^2.1.0",
+    "jest": "^25.1.0",
     "prettier": "^1.16.4",
     "react": "^16.5.0",
     "react-dom": "^16.8.6",

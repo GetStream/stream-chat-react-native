@@ -1,5 +1,5 @@
 import i18n from 'i18next';
-
+import Moment from 'moment';
 import {
   enTranslations,
   nlTranslations,
@@ -11,12 +11,19 @@ import {
   esTranslations,
 } from '../i18n';
 
+import 'moment/locale/nl';
+import 'moment/locale/it';
+import 'moment/locale/ru';
+import 'moment/locale/tr';
+import 'moment/locale/fr';
+import 'moment/locale/hi';
+import 'moment/locale/es';
+
 const defaultNS = 'translation';
 const defaultLng = 'en';
 /**
  * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
  * Instance of this class should be provided to Chat component to handle translations.
- *
  * Stream provides following list of in-built translations:
  * 1. English (en)
  * 2. Dutch (nl)
@@ -29,7 +36,7 @@ const defaultLng = 'en';
  * Simplest way to start using chat components in one of the in-built languages would be following:
  *
  * ```
- * const i18n = new Streami18n('nl);
+ * const i18n = new Streami18n({ language 'nl' });
  * <Chat client={chatClient} i18nInstance={i18n}>
  *  ...
  * </Chat>
@@ -39,9 +46,17 @@ const defaultLng = 'en';
  * UI will be automatically updated in this case.
  *
  * ```
- * const i18n = new Streami18n('nl);
+ * const i18n = new Streami18n({
+ *  language: 'nl',
+ *  translationsForLanguage: {
+ *    'Nothing yet...': 'Nog Niet ...',
+ *    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+ *  }
+ * });
  *
- * i18n.registerTranslation('nl', {
+ * If you would like to register additional languages, use registerTranslation. You can add as many languages as you want:
+ *
+ * i18n.registerTranslation('zh', {
  *  'Nothing yet...': 'Nog Niet ...',
  *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
  * });
@@ -51,14 +66,14 @@ const defaultLng = 'en';
  * </Chat>
  * ```
  *
- * You can use the same function to add whole new language.
+ * You can use the same function to add whole new language as well.
  *
  * ```
- * const i18n = new Streami18n('it');
+ * const i18n = new Streami18n();
  *
- * i18n.registerTranslation('it', {
- *  'Nothing yet...': 'Non ancora ...',
- *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} a {{ secondUser }} stanno scrivendo...',
+ * i18n.registerTranslation('mr', {
+ *  'Nothing yet...': 'काहीही नाही  ...',
+ *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
  * });
  *
  * // Make sure to call setLanguage to reflect new language in UI.
@@ -67,9 +82,63 @@ const defaultLng = 'en';
  *  ...
  * </Chat>
  * ```
+ *
+ * ## Datetime translations
+ *
+ * Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp.
+ * e.g., in ChannelPreview, MessageContent components.
+ *
+ * When you use any of the built-in translations, datetime will also be translated in corresponding langauge
+ * by default. If you would like to stick with english language for datetimes, you can set `disableDateTimeTranslations` to true.
+ *
+ * You can override the locale config for momentjs.
+ *
+ * e.g.,
+ * ```
+ * const i18n = new Streami18n({
+ *  language: 'nl',
+ *  momentLocaleConfigForLanguage: {
+ *    months: [...],
+ *    monthsShort: [...],
+ *    calendar: {
+ *      sameDay: ...'
+ *    }
+ *  }
+ * });
+ * ```
+ *
+ * Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+ *
+ * e.g.,
+ * ```
+ * const i18n = new Streami18n();
+ *
+ * i18n.registerTranslation(
+ *  'mr',
+ *  {
+ *    'Nothing yet...': 'काहीही नाही  ...',
+ *    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+ *  },
+ *  {
+ *    months: [...],
+ *    monthsShort: [...],
+ *    calendar: {
+ *      sameDay: ...'
+ *    }
+ *  }
+ * );
+ *```
  */
+const defaultStreami18nOptions = {
+  language: 'en',
+  disableDateTimeTranslations: false,
+  debug: false,
+  logger: () => {},
+  momentLocaleConfigForLanguage: null,
+};
 export class Streami18n {
   i18nInstance = i18n.createInstance();
+  momentInstance = null;
   setLanguageCallback = () => null;
   initialized = false;
   t = null;
@@ -85,32 +154,78 @@ export class Streami18n {
   };
 
   /**
-   * @param {*} currentLanguage e.g., 'en', 'nl' etc
-   * @param {*} i18nextConfig Config object to override default config - https://www.i18next.com/overview/configuration-options
-   * @param {*} logger - Logger function to get error logs if something fails. Should be used in dev mode.
+   * Contructor accepts following options:
+   *  - language (String) default: 'en'
+   *    Language code e.g., en, tr
+   *
+   *  - disableDateTimeTranslations (boolean) default: false
+   *    Disable translations for datetimes
+   *
+   *  - debug (boolean) default: false
+   *    Enable debug mode in internal i18n class
+   *
+   *  - logger (function) default: () => {}
+   *    Logger function to log warnings/errors from this class
+   *
+   *  - momentLocaleConfigForLanguage (object) default: 'enConfig'
+   *    [Config object](https://momentjs.com/docs/#/i18n/changing-locale/) for internal moment object,
+   *    corresponding to language (param)
+   *
+   * @param {*} options
    */
-  constructor(
-    currentLanguage = defaultLng,
-    i18nextConfig = {},
-    logger = () => {},
-  ) {
-    this.currentLanguage = currentLanguage;
-    this.logger = logger;
+  constructor(options = {}) {
+    const finalOptions = {
+      ...defaultStreami18nOptions,
+      ...options,
+    };
+    this.currentLanguage = finalOptions.language;
+    const translationsForLanguage = finalOptions.translationsForLanguage;
+    if (translationsForLanguage) {
+      this.translations[this.currentLanguage] = {
+        [defaultNS]: translationsForLanguage,
+      };
+    }
+
+    const momentLocaleConfigForLanguage =
+      finalOptions.momentLocaleConfigForLanguage;
+
+    this.logger = finalOptions.logger;
     this.i18nextConfig = {
       nsSeparator: false,
       keySeparator: false,
       fallbackLng: false,
-      debug: true,
+      debug: finalOptions.debug,
       lng: this.currentLanguage,
       parseMissingKeyHandler: (key) => {
         this.logger(`Missing translation for key: ${key}`);
 
         return key;
       },
-      ...i18nextConfig,
     };
 
-    this.validateCurrentLanguage(currentLanguage);
+    this.validateCurrentLanguage(this.currentLanguage);
+
+    if (momentLocaleConfigForLanguage) {
+      this.addOrUpdateMomentLocaleConfig(
+        this.currentLanguage,
+        momentLocaleConfigForLanguage,
+      );
+    }
+
+    this.momentInstance = (timestamp) => {
+      if (finalOptions.disableDateTimeTranslations) {
+        return Moment(timestamp).locale(defaultLng);
+      }
+
+      if (this.momentLocaleExists(this.currentLanguage)) {
+        return Moment(timestamp).locale(this.currentLanguage);
+      }
+
+      console.warn(
+        `Locale config for ${this.currentLanguage} does not exist in momentjs.`,
+      );
+      return Moment(timestamp).locale(defaultLng);
+    };
   }
 
   /**
@@ -126,16 +241,24 @@ export class Streami18n {
       });
       this.initialized = true;
 
-      return this.t;
+      return {
+        t: this.t,
+        moment: this.momentInstance,
+      };
     } catch (e) {
       this.logger(`Something went wrong with init:`, e);
     }
   }
 
+  momentLocaleExists = (language) => {
+    const locales = Moment.locales();
+    return locales.indexOf(language) > -1;
+  };
+
   validateCurrentLanguage = () => {
     const availableLanguages = Object.keys(this.translations);
     if (availableLanguages.indexOf(this.currentLanguage) === -1) {
-      console.error(
+      console.warn(
         `'${this.currentLanguage}' language is not registered.` +
           ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
           `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
@@ -157,24 +280,32 @@ export class Streami18n {
   /**
    * Returns current version translator function.
    */
-  async getTranslator() {
+  async getTranslators() {
     if (!this.initialized) {
       return await this.init();
     } else {
-      return this.t;
+      return {
+        t: this.t,
+        moment: this.momentInstance,
+      };
     }
   }
 
   /**
    *
-   * @param {*} key e.g., 'en' | 'nl
+   * @param {*} key
    * @param {*} translation
+   * @param {*} customMomentLocale
    */
-  registerTranslation(key, translation) {
+  registerTranslation(key, translation, customMomentLocale) {
     if (!this.translations[key]) {
       this.translations[key] = { [defaultNS]: translation };
     } else {
       this.translations[key][defaultNS] = translation;
+    }
+
+    if (customMomentLocale) {
+      this.addOrUpdateMomentLocaleConfig(key, { ...customMomentLocale });
     }
 
     if (this.initialized) {
@@ -182,6 +313,13 @@ export class Streami18n {
     }
   }
 
+  addOrUpdateMomentLocaleConfig(key, config) {
+    if (this.momentLocaleExists(key)) {
+      Moment.updateLocale(key, config);
+    } else {
+      Moment.defineLocale(key, config);
+    }
+  }
   /**
    *
    * @param {*} language
