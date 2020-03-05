@@ -1,0 +1,25 @@
+{
+  "presets": ["@babel/env", "@babel/react"],
+  "plugins": [
+    [
+      "i18next-extract",
+      {
+        "contextSeparator": "__",
+        "defaultContexts": [""],
+        "defaultNS": "en",
+        "locales": ["nl", "en", "it", "tr", "fr", "es", "hi", "ru", "pt"],
+        "jsonSpace": 4,
+        "keySeparator": null,
+        "nsSeparator": null,
+        "keyAsDefaultValue": ["en"],
+        "keyAsDefaultValueForDerivedKeys": false,
+        "outputPath": "src/i18n/{{locale}}.json",
+        "discardOldKeys": true
+      }
+    ],
+    "macros",
+    "@babel/proposal-class-properties",
+    "@babel/transform-runtime",
+    "babel-plugin-styled-components"
+  ]
+}

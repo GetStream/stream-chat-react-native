@@ -25,12 +25,12 @@
     ]
   },
   "scripts": {
-    "start": "rm -rf dist && rollup -c -w",
-    "build": "rm -rf dist && rollup -c",
+    "start": "rm -rf dist && yarn build-translations && rollup -c -w",
+    "build": "rm -rf dist && yarn build-translations && rollup -c",
     "docs": "styleguidist build",
     "test": "jest",
     "docs-server": "styleguidist server",
-    "build-translations": "yarn run babel -f .babelrc 'src/**/*.{js,jsx,ts,tsx}'",
+    "build-translations": "yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --quiet",
     "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
