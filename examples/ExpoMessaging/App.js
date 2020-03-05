@@ -56,7 +56,7 @@ const options = {
  * Please refer to description of this PR for details: https://github.com/GetStream/stream-chat-react-native/pull/150
  */
 const streami18n = new Streami18n({
-  language: 'hi'
+  language: 'en'
 });
 
 class ChannelListScreen extends PureComponent {
