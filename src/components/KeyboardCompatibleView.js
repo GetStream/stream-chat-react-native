@@ -8,6 +8,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { KeyboardContext } from '../context';
+import PropTypes from 'prop-types';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
@@ -25,12 +26,39 @@ import { KeyboardContext } from '../context';
  * ```
  */
 export class KeyboardCompatibleView extends React.PureComponent {
+  static propTypes = {
+    keyboardDismissAnimationDuration: PropTypes.number,
+    keyboardOpenAnimationDuration: PropTypes.number,
+    enabled: PropTypes.bool,
+  };
+  static defaultProps = {
+    keyboardDismissAnimationDuration: 500,
+    keyboardOpenAnimationDuration: 500,
+    enabled: true,
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
       channelHeight: new Animated.Value('100%'),
+      // For some reason UI doesn't update sometimes, when state is updated using setValue.
+      // So to force update the component, I am using following key, which will be increamented
+      // for every keyboard slide up and down.
+      key: 0,
     };
+
+    this.setupListeners();
+
+    this._keyboardOpen = false;
+    // Following variable takes care of race condition between keyboardDidHide and keyboardDidShow.
+    this._hidingKeyboardInProgress = false;
+    this.rootChannelView = false;
+    this.initialHeight = undefined;
+  }
+
+  setupListeners = () => {
+    if (!this.props.enabled) return;
 
     if (Platform.OS === 'ios') {
       this.keyboardDidShowListener = Keyboard.addListener(
@@ -51,14 +79,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
       'keyboardDidHide',
       this.keyboardDidHide,
     );
-
-    this._keyboardOpen = false;
-    // Following variable takes care of race condition between keyboardDidHide and keyboardDidShow.
-    this._hidingKeyboardInProgress = false;
-    this.rootChannelView = false;
-    this.initialHeight = undefined;
-  }
-
+  };
   componentWillUnmount() {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
@@ -66,6 +87,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
   // TODO: Better to extract following functions to different HOC.
   keyboardDidShow = (e) => {
+    if (!this.props.enabled) return;
     const keyboardHidingInProgressBeforeMeasure = this
       ._hidingKeyboardInProgress;
     const keyboardHeight = e.endCoordinates.height;
@@ -79,9 +101,6 @@ export class KeyboardCompatibleView extends React.PureComponent {
         !keyboardHidingInProgressBeforeMeasure &&
         this._hidingKeyboardInProgress
       ) {
-        console.log(
-          'Aborting keyboardDidShow operation since hide is in progress!',
-        );
         return;
       }
 
@@ -97,10 +116,13 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
       Animated.timing(this.state.channelHeight, {
         toValue: finalHeight,
-        duration: 500,
+        duration: this.props.keyboardOpenAnimationDuration,
       }).start(() => {
         // Force the final value, in case animation halted in between.
         this.state.channelHeight.setValue(finalHeight);
+        this.setState({
+          key: this.state.key + 1,
+        });
       });
     });
     this._keyboardOpen = true;
@@ -110,12 +132,15 @@ export class KeyboardCompatibleView extends React.PureComponent {
     this._hidingKeyboardInProgress = true;
     Animated.timing(this.state.channelHeight, {
       toValue: this.initialHeight,
-      duration: 500,
+      duration: this.props.keyboardDismissAnimationDuration,
     }).start(() => {
       // Force the final value, in case animation halted in between.
       this.state.channelHeight.setValue(this.initialHeight);
       this._hidingKeyboardInProgress = false;
       this._keyboardOpen = false;
+      this.setState({
+        key: this.state.key + 1,
+      });
     });
   };
 
@@ -128,7 +153,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
       Animated.timing(this.state.channelHeight, {
         toValue: this.initialHeight,
-        duration: 500,
+        duration: this.props.keyboardDismissAnimationDuration,
       }).start((response) => {
         this.state.channelHeight.setValue(this.initialHeight);
         if (response && !response.finished) {
@@ -138,7 +163,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
           // during keyboard dismissal.
           setTimeout(() => {
             resolve();
-          }, 500);
+          }, this.props.keyboardDismissAnimationDuration);
           return;
         }
 
@@ -164,7 +189,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
 
   dismissKeyboard = async () => {
     Keyboard.dismiss();
-    await this.keyboardWillDismiss();
+    if (this.props.enabled) await this.keyboardWillDismiss();
   };
 
   getContext = () => ({

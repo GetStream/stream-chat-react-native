@@ -13,7 +13,6 @@ import { emojiData } from '../utils';
 import { LoadingIndicator } from './LoadingIndicator';
 import { LoadingErrorIndicator } from './LoadingErrorIndicator';
 import { EmptyStateIndicator } from './EmptyStateIndicator';
-import { KeyboardCompatibleView } from './KeyboardCompatibleView';
 import { logChatPromiseExecution } from 'stream-chat';
 
 /**
@@ -621,7 +620,7 @@ export class ChannelInner extends PureComponent {
 
   render() {
     let core;
-
+    const { KeyboardCompatibleView } = this.props;
     if (this.state.error) {
       this.props.logger(
         'Channel component',
@@ -645,7 +644,9 @@ export class ChannelInner extends PureComponent {
       );
     } else {
       core = (
-        <KeyboardCompatibleView>
+        <KeyboardCompatibleView
+          enabled={!this.props.disableKeyboardCompatibleView}
+        >
           <ChannelContext.Provider value={this.getContext()}>
             <SuggestionsProvider
               handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
