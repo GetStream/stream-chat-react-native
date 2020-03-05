@@ -294,6 +294,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ## Internationalization
 
+Instance of this class `Streami18n` should be provided to Chat component to handle translations.
 Stream provides following list of in-built translations for components:
 
 1.  English (en)
@@ -306,85 +307,109 @@ Stream provides following list of in-built translations for components:
 
 Default language is English. Simplest way to start using chat components in one of the in-built languages would be following:
 
-```js
-const i18n = new Streami18n('nl');
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
+### Docs
 
-If you would like to override certain keys in in-built translation.
-UI will be automatically updated in this case.
+- **Text translations**
 
-```js
-const i18n = new Streami18n('nl');
+  Simplest way to start using chat components in one of the in-built languages would be following:
 
-i18n.registerTranslation('nl', {
-  'Nothing yet...': 'Nog Niet ...',
-  '{{ firstUser }} and {{ secondUser }} are typing...':
-    '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
-});
+  ```js static
+  const i18n = new Streami18n({ language: 'nl' });
+  <Chat client={chatClient} i18nInstance={i18n}>
+    ...
+  </Chat>;
+  ```
 
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
+  If you would like to override certain keys in in-built translation.
+  UI will be automatically updated in this case.
 
-You can use the same function to add whole new language.
+  ```js static
+  const i18n = new Streami18n({
+    language: 'nl',
+    translationsForLanguage: {
+      'Nothing yet...': 'Nog Niet ...',
+      '{{ firstUser }} and {{ secondUser }} are typing...':
+        '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+    },
+  });
+  ```
 
-```js
-const i18n = new Streami18n('it');
+  If you would like to register additional languages, use registerTranslation. You can add as many languages as you want:
 
-i18n.registerTranslation('it', {
-  'Nothing yet...': 'Non ancora ...',
-  '{{ firstUser }} and {{ secondUser }} are typing...':
-    '{{ firstUser }} a {{ secondUser }} stanno scrivendo...',
-});
+  ```js static
+  i18n.registerTranslation('zh', {
+    'Nothing yet...': 'Nog Niet ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...':
+      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+  });
 
-// Make sure to call setLanguage to reflect new language in UI.
-i18n.setLanguage('it');
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
+  <Chat client={chatClient} i18nInstance={i18n}>
+    ...
+  </Chat>;
+  ```
 
-We have stored and exported all the in-built translations in our library.
+  You can use the same function to add whole new language as well.
 
-You can import them in your project like following:
+  ```js static
+  const i18n = new Streami18n();
 
-```js
-import {
-  enTranslations,
-  nlTranslations,
-  ruTranslations,
-  trTranslations,
-  frTranslations,
-  hiTranslations,
-  itTranslations,
-  esTranslations,
-} from 'stream-chat-react-native'; // or 'stream-chat-expo'
-```
+  i18n.registerTranslation('mr', {
+    'Nothing yet...': 'काहीही नाही  ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...':
+      '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+  });
 
-If you would like to maintain your own translation files:
+  // Make sure to call setLanguage to reflect new language in UI.
+  i18n.setLanguage('it');
+  <Chat client={chatClient} i18nInstance={i18n}>
+    ...
+  </Chat>;
+  ```
 
-1. Create a json file in your project with whatever name you prefer. Best practice would be to name it after
-   the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
-2. Copy the content of file https://github.com/GetStream/stream-chat-react-native/blob/master/src/i18n/en.json
-3. Change the values of the keys as translation of key.
-4. Use it in chat client:
+- **Datetime translations**
 
-```js
-import koTranslation from 'path/to/ko.json';
-import deTranslation from 'path/to/de.json';
+  Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp.
+  e.g., in ChannelPreview, MessageContent components.
 
-const i18n = new Streami18n();
-i18n.registerTranslation('ko', koTranslation);
-i18n.registerTranslation('de', deTranslation);
+  When you use any of the built-in translations, datetime will also be translated in corresponding langauge
+  by default. If you would like to stick with english language for datetimes, you can set `disableDateTimeTranslations` to true.
 
-// You can switch language at any point in lifetime of component, it will automatically reflect in UI.
-i18n.setLanguage('ko');
+  You can override the locale config for momentjs.
 
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
+  e.g.,
+
+  ```js static
+  const i18n = new Streami18n({
+    language: 'nl',
+    momentLocaleConfigForLanguage: {
+      months: [...],
+      monthsShort: [...],
+      calendar: {
+        sameDay: '...'
+      }
+    }
+  });
+  ```
+
+  Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+
+  e.g.,
+
+  ```js static
+  const i18n = new Streami18n();
+
+  i18n.registerTranslation(
+  'mr',
+  {
+    'Nothing yet...': 'काहीही नाही  ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+  },
+  {
+    months: [...],
+    monthsShort: [...],
+    calendar: {
+      sameDay: '...'
+    }
+  }
+  );
+  ```
