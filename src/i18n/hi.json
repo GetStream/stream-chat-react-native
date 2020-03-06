@@ -14,7 +14,7 @@
   "Empty message...": "खाली संदेश ...",
   "Error loading": "लोड होने मे त्रुटि",
   "Error loading channel list ...": "चैनल सूची लोड करने में त्रुटि ...",
-  "Error loading messages for this channel ...": "",
+  "Error loading messages for this channel ...": "इस चैनल के लिए मेसेजेस लोड करने में त्रुटि हुई ...",
   "Loading ...": "लोड हो रहा है ...",
   "Loading channels ...": "चैनल लोड हो रहे हैं ...",
   "Loading messages ...": "मेसेजस लोड हो रहे हैं ...",

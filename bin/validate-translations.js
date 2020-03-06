@@ -2,8 +2,8 @@
 
 const path = require('path');
 const fs = require('fs');
-
-const directoryPath = path.join(__dirname, '../i18n');
+const i18nDirectoryRelativePath = '../src/i18n/';
+const directoryPath = path.join(__dirname, i18nDirectoryRelativePath);
 let countMissingTranslations = 0;
 
 fs.readdir(directoryPath, function(err, files) {
@@ -12,8 +12,9 @@ fs.readdir(directoryPath, function(err, files) {
   }
 
   files.forEach(function(file) {
+    if (file === 'index.js') return;
     // Do whatever you want to do with the file
-    const data = require('../i18n/' + file);
+    const data = require(i18nDirectoryRelativePath + file);
     const keys = Object.keys(data);
     keys.forEach((key) => {
       if (!data[key] || data[key] === '') {
