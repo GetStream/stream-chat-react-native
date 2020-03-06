@@ -311,30 +311,13 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ### Customizing message component
 
-Stream comes with some in-built components for message.
-
-1.  MessageLivestream - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageLivestream.js
-2.  MessageSimple - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageSimple.js
-3.  MessageTeam - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageTeam.js
-4.  MessageCommerce - https://github.com/GetStream/stream-chat-react/blob/master/src/components/MessageTeam.js
-
-All these components are exported from 'stream-chat-react' package.
-Simply import them in your project using import:
-
-```js
-import {
-  MessageSimple,
-  MessageCommerce,
-  MessageTeam,
-  MessageLivestream,
-} from 'stream-chat-react';
-```
-
 `MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
-You can in-build as it is, but every product requires its own functionality/behaviour and styles.
+You can use built-in component as it is, but every product requires its own functionality/behaviour and styles.
 For this you can either build your own component or you can also use in-built components with some modifications.
 
-Here I am going to build some custom components, which use in-built components underneath with some modifications.
+Here I am going to build some custom components, which use in-built components underneath with some modifications to its props.
+All the props accepted by MessageSimple component are mentioned here - https://getstream.github.io/stream-chat-react-native/#messagesimple
+
 Then all you need to do is to pass this component to MessageList component:
 
 e.g.,
@@ -342,96 +325,163 @@ e.g.,
 ```js
 <Chat client={chatClient}>
   <Channel>
-    <MessageList Message={MessageCommerceModified} />
+    <MessageList Message={MessageSimpleModified} />
     <MessageInput />
   </Channel>
 </Chat>
 ```
 
-#### EXAMPLE 1 - Inbuilt message component with different/modified/overriden props.
+#### EXAMPLE 1 - Show alert box with confirm/cancel buttons when message is deleted.
 
-Suppose if you want to use MessageCommerce component provided by Stream, but need to make some modification to its props.
+`MessageSimple` accepts a prop function - `handleDelete`. Default value (function) is provided by HOC Message component - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message.js#L150
 
-Not just MessageCommerce, we have few more alternatives available (docs - https://getstream.github.io/stream-chat-react/#section-message-components)
-
-e.g., here I am gonna add my own behaviour on top of existing behavior - when thread is opened from message component
+So in this example we will override `handleDelete` prop:
 
 ```js
-const MessageCommerceModified = (props) => {
-  const handleOpenThread = () => {
-    // Custom behaviour
-    alert(`Thread is being opened from message with id - ${props.message.id}`);
-    // Continue with original handler.
-    props.handleOpenThread();
-  };
-
-  return <MessageCommerce {...props} handleOpenThread={handleOpenThread} />;
-};
-```
-
-#### EXAMPLE 2 - Hiding message for certain users/condition.
-
-Another usecase of custom message component would be to hide the message for certain users.
-I am gonna use MessageSimple component for this example
-
-```js
-const restrictedUserIds = ['user_id1', 'user_id2', 'user_id3'];
+import { Alert } from 'react-native';
+import { MessageSimple } from 'stream-chat-react-native';
 
 const MessageSimpleModified = (props) => {
-  const currentUserId = props.user.id;
-  if (restrictedUserIds.indexOf(currentUserId) > -1) {
-    // current user is part of restricted user list;
-    // In that case don't don't render anything, so user won't see the message
-    return null;
-  }
+  const onDelete = () => {
+    // Custom behaviour
+    // If you face the issue of Alert disappearing instantly, then refer to this answer:
+    // https://stackoverflow.com/a/40041564/1460210
+    Alert.alert(
+      'Deleting message',
+      'Are you sure you want to delete the message?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log(`Message won't be deleted`),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user says ok, then go ahead with deleting the message.
+            props.handleDelete();
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+    // Continue with original handler.
+  };
 
-  // Otherwise render the message normally;
-  return <MessageSimple {...props} />;
+  return <MessageSimple {...props} handleDelete={onDelete} />;
 };
 ```
 
-#### EXAMPLE 3 - Custom styling based on condition.
+#### EXAMPLE 2 - Instagram style double-tap reaction (Similar to )
 
-Another usecase of custom message component would be if you want different styles for received messages and sent messages.
+This case has two aspects:
 
-The approach for this is to have your own div wrapper around inner MessageSimple component and add styles to this wrapper
-for underlying componeng. For example in this case I want to make background color of sent message to be yellow and
-background color of received message as blue. So if the message belongs to me, then I will add a wrapper around message with class
-`.message-simple-styled-sent`. Otherwise I will wrap it with class `.message-simple-styled-received` (you can ofcourse choose
-your own class names. ... this is just an example).
+1. Handle double tap and send `love` reaction
 
-You can use inspect element feature to get classnames for underlying components or scan through source code of component.
+- There is no built-in way of handling double-taps in react-native. So we will implement it on our own (thanks to this blog - https://medium.com/handlebar-labs/instagram-style-double-tap-with-react-native-49e757f68de)
 
-Add following styles to stylesheet:
+2. Remove `Add Reaction` option from actionsheet, which is shown when message is long pressed.
+   `MessageSimple` accepts a array prop - `messageActions`. You can use this prop to remove `Add Reaction` option from actionsheet.
 
-```css
-.message-simple-styled-sent .str-chat__message-simple-text-inner {
-  background-color: yellow;
-}
+```js
+import { MessageSimple } from 'stream-chat-react-native';
 
-.message-simple-styled-received .str-chat__message-simple-text-inner {
-  background-color: blue;
-}
+const MessageSimpleIgReaction = (props) => {
+  let lastTap = null;
+  const handleDoubleTap = () => {
+    const now = Date.now();
+    if (lastTap && now - lastTap < 300) {
+      props.handleReaction('love');
+    } else {
+      lastTap = now;
+    }
+  };
+
+  return (
+    <MessageSimple
+      {...props}
+      onPress={handleDoubleTap}
+      messageActions={['edit', 'delete', 'reply']} // not including `reactions` here.
+    />
+  );
+};
 ```
+
+#### EXAMPLE 3 - Custom/different style for received and sent messages
+
+As mentioned in tutorial, we use StyledComponents and themes to simplify making style changes - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+
+You pass the theme object with all the defined styles for all the components (as given in tutorial). here you can mention the styles for
+MessageSimple component as well - check the list of inner components you can customize [here](https://getstream.github.io/stream-chat-react-native/#messagesimple) (switch to `STYLES` tab)
+
+But these global style will apply to both received and sent message.
+
+So in this case, we will provide styles to MessageSimple component separately, depending on whether the message belongs to current user or not.
+
+Here I am aiming for following styles:
+
+- If message belongs to me
+
+  - White background
+  - Black colored text
+
+- If message doesn't belong to me
+  - Blue background
+  - white colored text
 
 ```js
 const MessageSimpleStyled = (props) => {
   const { isMyMessage, message } = props;
 
-  if (isMyMessage(message)) {
-    // If the message belongs to me or is sent by me, the wrap it with `.message-simple-styled-sent`
-    return (
-      <div className="message-simple-styled-sent">
-        <MessageSimple {...props} />
-      </div>
-    );
-  }
+  const sentMessageStyles = {
+    'message.content.markdown': {
+      text: {
+        color: 'black',
+      },
+    },
+    'message.content.textContainer':
+      'background-color: white; border-color: black; border-width: 1',
+  };
 
-  // Otherwise wrap it with `.message-simple-styled-received`
-  return (
-    <div className="message-simple-styled-received">
-      <MessageSimple {...props} />
-    </div>
-  );
+  const receivedMessageStyles = {
+    'message.content.markdown': {
+      text: {
+        color: 'white',
+      },
+    },
+    'message.content.textContainer': 'background-color: #9999FF;',
+  };
+
+  if (isMyMessage(message)) {
+    return <MessageSimple {...props} style={sentMessageStyles} />;
+  } else {
+    return <MessageSimple {...props} style={receivedMessageStyles} />;
+  }
 };
 ```
+
+#### EXAMPLE 4 - Message with custom reactions
+
+`MessageSimple` accepts a prop - `supportedReactions`. You can pass your emoji data to this prop to set your own reactions.
+
+In this example I will support only two reactions - Monkey face (🐵) and Lion (🦁)
+
+```js
+const MessageSimpleWithCustomReactions = (props) => (
+    <MessageSimple
+      {...props}
+      supportedReactions={[
+        {
+          id: 'monkey',
+          icon: '🐵',
+        },
+        {
+          id: 'lion',
+          icon: '🦁',
+        },
+      ]}
+    />
+  );
+```
+
+#### EXAMPLE 5 - Message bubble with name of sender

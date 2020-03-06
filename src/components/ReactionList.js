@@ -1,7 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
-import { emojiData } from '../utils';
 import PropTypes from 'prop-types';
 import { themed } from '../styles/theme';
 
@@ -104,6 +103,7 @@ export const ReactionList = themed(
     };
 
     _renderReactions = (reactions) => {
+      const { supportedReactions } = this.props;
       const reactionsByType = {};
       reactions.map((item) => {
         if (reactions[item.type] === undefined) {
@@ -117,9 +117,9 @@ export const ReactionList = themed(
       });
 
       const emojiDataByType = {};
-      emojiData.forEach((e) => (emojiDataByType[e.id] = e));
+      supportedReactions.forEach((e) => (emojiDataByType[e.id] = e));
 
-      const reactionTypes = emojiData.map((e) => e.id);
+      const reactionTypes = supportedReactions.map((e) => e.id);
       return Object.keys(reactionsByType).map((type) =>
         reactionTypes.indexOf(type) > -1 ? (
           <Text key={type}>{emojiDataByType[type].icon}</Text>

@@ -15,6 +15,7 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
+import { emojiData } from '../../utils';
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transperant, so border radius is not really visible.
@@ -257,6 +258,7 @@ export const MessageContent = themed(
       reactionsEnabled: true,
       repliesEnabled: true,
       MessageText: false,
+      supportedReactions: emojiData,
     };
 
     constructor(props) {
@@ -284,15 +286,14 @@ export const MessageContent = themed(
     };
 
     _setReactionPickerPosition = () => {
-      const { isMyMessage, message } = this.props;
-      const pos = isMyMessage(message) ? 'right' : 'left';
+      const { alignment } = this.props;
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
           reactionPickerVisible: true,
           rpTop: y - 60,
-          rpLeft: pos === 'left' ? x - 10 : null,
+          rpLeft: alignment === 'left' ? x - 10 : null,
           rpRight:
-            pos === 'right'
+            alignment === 'right'
               ? Math.round(Dimensions.get('window').width) - (x + width + 10)
               : null,
         });
@@ -333,6 +334,7 @@ export const MessageContent = themed(
 
     render() {
       const {
+        alignment,
         message,
         isMyMessage,
         readOnly,
@@ -348,14 +350,13 @@ export const MessageContent = themed(
         canEditMessage,
         canDeleteMessage,
         MessageFooter,
+        supportedReactions,
       } = this.props;
 
       const Attachment = this.props.Attachment;
       const hasAttachment = Boolean(
         message && message.attachments && message.attachments.length,
       );
-
-      const pos = isMyMessage(message) ? 'right' : 'left';
 
       const showTime =
         groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
@@ -420,14 +421,14 @@ export const MessageContent = themed(
 
       if (message.deleted_at)
         return (
-          <DeletedContainer alignment={pos}>
+          <DeletedContainer alignment={alignment}>
             <DeletedText>This message was deleted ...</DeletedText>
           </DeletedContainer>
         );
 
       const onLongPress = this.props.onLongPress;
       const contentProps = {
-        alignment: pos,
+        alignment,
         status: message.status,
         onPress: this.props.onPress
           ? this.props.onPress.bind(this, this, message)
@@ -465,17 +466,18 @@ export const MessageContent = themed(
               message.latest_reactions &&
               message.latest_reactions.length > 0 && (
                 <ReactionList
-                  position={pos}
+                  position={alignment}
                   visible={!this.state.reactionPickerVisible}
                   latestReactions={message.latest_reactions}
                   getTotalReactionCount={getTotalReactionCount}
                   openReactionSelector={this.openReactionSelector}
                   reactionCounts={message.reaction_counts}
+                  supportedReactions={supportedReactions}
                 />
               )}
             {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
             <ContainerInner
-              alignment={pos}
+              alignment={alignment}
               ref={(o) => (this.messageContainer = o)}
               collapsable={false}
             >
@@ -514,6 +516,7 @@ export const MessageContent = themed(
                 message={message}
                 groupStyles={hasReactions ? ['top'] : groupStyles}
                 isMyMessage={isMyMessage}
+                alignment={alignment}
                 MessageText={this.props.MessageText}
                 disabled={
                   message.status === 'failed' || message.type === 'error'
@@ -528,13 +531,13 @@ export const MessageContent = themed(
                 message={message}
                 isThreadList={!!threadList}
                 openThread={this.openThread}
-                pos={pos}
+                pos={alignment}
               />
             ) : null}
             {MessageFooter && <MessageFooter {...this.props} />}
             {!MessageFooter && showTime ? (
               <MetaContainer>
-                <MetaText alignment={pos}>
+                <MetaText alignment={alignment}>
                   {this.props.formatDate
                     ? this.props.formatDate(message.created_at)
                     : moment(message.created_at).format('h:mmA')}
@@ -554,7 +557,7 @@ export const MessageContent = themed(
                 rpLeft={this.state.rpLeft}
                 rpRight={this.state.rpRight}
                 rpTop={this.state.rpTop}
-                emojiData={this.props.emojiData}
+                supportedReactions={supportedReactions}
               />
             ) : null}
             <ActionSheet

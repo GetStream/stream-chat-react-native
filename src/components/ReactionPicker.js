@@ -58,7 +58,7 @@ export const ReactionPicker = themed(
       rpLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       rpTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       rpRight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      emojiData: PropTypes.array,
+      supportedReactions: PropTypes.array,
     };
 
     constructor(props) {
@@ -91,7 +91,7 @@ export const ReactionPicker = themed(
         rpLeft,
         rpTop,
         rpRight,
-        emojiData,
+        supportedReactions,
       } = this.props;
 
       if (!reactionPickerVisible) return null;
@@ -123,7 +123,7 @@ export const ReactionPicker = themed(
                   ...position,
                 }}
               >
-                {emojiData.map(({ id, icon }) => {
+                {supportedReactions.map(({ id, icon }) => {
                   const latestUser = this.getLatestUser(latestReactions, id);
                   const count = reactionCounts && reactionCounts[id];
                   return (

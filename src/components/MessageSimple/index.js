@@ -71,6 +71,11 @@ export const MessageSimple = themed(
       /** enabled replies, this is usually set by the parent component based on channel configs */
       repliesEnabled: PropTypes.bool.isRequired,
       /**
+       * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
+       * If all the actions need to be disabled, empty array or false should be provided as value of prop.
+       * */
+      messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
+      /**
        * Handler to open the thread on message. This is callback for touch event for replies button.
        *
        * @param message A message object to open the thread upon.
@@ -203,6 +208,7 @@ export const MessageSimple = themed(
         PropTypes.elementType,
       ]),
       formatDate: PropTypes.func,
+      supportedReactions: PropTypes.array,
     };
 
     static defaultProps = {
@@ -232,7 +238,7 @@ export const MessageSimple = themed(
       } = this.props;
 
       let pos;
-      if ((forceAlign && forceAlign === 'left') || forceAlign === 'right')
+      if (forceAlign && (forceAlign === 'left' || forceAlign === 'right'))
         pos = forceAlign;
       else pos = isMyMessage(message) ? 'right' : 'left';
 
@@ -242,6 +248,7 @@ export const MessageSimple = themed(
       const isVeryLastMessage = lastMessage
         ? lastMessage.id === message.id
         : false;
+
       const hasMarginBottom =
         groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
           ? true
