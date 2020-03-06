@@ -64,6 +64,13 @@ const Channel = withChatContext(
         PropTypes.elementType,
       ]),
       /**
+       * Empty channel UI component. This will be shown on the screen if there is no active channel.
+       *
+       * Defaults to a simple text asking to select a channel
+       *
+       * */
+      EmptyPlaceholder: PropTypes.node,
+      /**
        * Message UI component to display a message in message list.
        *
        * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -119,12 +126,13 @@ const Channel = withChatContext(
 
     static defaultProps = {
       disableKeyboardCompatibleView: false,
+      EmptyPlaceholder: <Text>Please select a channel first</Text>,
       KeyboardCompatibleView,
     };
 
     render() {
       if (!this.props.channel.cid) {
-        return <Text>Please select a channel first</Text>;
+        return this.props.EmptyPlaceholder;
       }
 
       return <ChannelInner {...this.props} />;
