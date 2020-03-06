@@ -127,9 +127,9 @@ describe('Streami18n instance - with built-in langauge', () => {
       const localeConfig = moment().localeData()['_config'];
       // console.log(streami18nOptions.momentLocaleConfigForLanguage);
       for (const key in streami18nOptions.momentLocaleConfigForLanguage) {
-        expect(
+        expect(localeConfig[key]).toStrictEqual(
           streami18nOptions.momentLocaleConfigForLanguage[key],
-        ).toStrictEqual(localeConfig[key]);
+        );
       }
     });
   });

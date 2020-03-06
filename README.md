@@ -316,8 +316,7 @@ const i18n = new Streami18n({ language: 'nl' });
 </Chat>;
 ```
 
-If you would like to override certain keys in in-built translation.
-UI will be automatically updated in this case.
+If you would like to override certain keys in in-built translation:
 
 ```js static
 const i18n = new Streami18n({
@@ -329,5 +328,7 @@ const i18n = new Streami18n({
   },
 });
 ```
+
+UI will be automatically updated in this case.
 
 Please read this docs on i18n for more details and further customizations - https://getstream.github.io/stream-chat-react-native/#streami18n

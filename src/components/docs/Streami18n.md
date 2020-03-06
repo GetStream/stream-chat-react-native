@@ -56,17 +56,21 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
   - customMomentLocale | object (optional)
 
   ```js static
-  streami18n.registerTranslation('mr', {
-  'Nothing yet...': 'काहीही नाही  ...',
-  '{{ firstUser }} and {{ secondUser }} are typing...':
-      '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
-  }, {
-  months: [...],
-  monthsShort: [...],
-  calendar: {
-      sameDay: '...'
-  }
-  });
+    streami18n.registerTranslation(
+      'mr',
+      {
+        'Nothing yet...': 'काहीही नाही  ...',
+        '{{ firstUser }} and {{ secondUser }} are typing...':
+            '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+      },
+      {
+        months: [...],
+        monthsShort: [...],
+        calendar: {
+            sameDay: '...'
+        }
+      }
+    );
   ```
 
 - **setLanguage**
@@ -142,164 +146,162 @@ Stream provides following list of in-built translations:
 
   // Make sure to call setLanguage to reflect new language in UI.
   i18n.setLanguage('it');
+
   <Chat client={chatClient} i18nInstance={i18n}>
     ...
-  </Chat>;
+  </Chat>
   ```
 
 - **Datetime translations**
 
-  Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp.
-  e.g., in ChannelPreview, MessageContent components.
+  Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
+  Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
 
-  When you use any of the built-in translations, datetime will also be translated in corresponding langauge
-  by default. If you would like to stick with english language for datetimes, you can set `disableDateTimeTranslations` to true.
+  Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
+  https://github.com/moment/moment/tree/develop/locale
 
-  You can override the locale config for momentjs.
+  You can either configure locale for moment globally or you can provide the locale config while registering
+  language with Streami18n (either via constructor or registerTranslation())
 
-  e.g.,
+  1. Via import
 
-  ```js static
-  const i18n = new Streami18n({
+    Easiest way to register a locale with momentjs is via import in your app.
+    ```js static
+    import 'moment/locale/nl';
+    import 'moment/locale/it';
+    ```
+
+  2. Via language registration
+
+    You can provide custom locale config for moment, while registering a language with Streami18n
+
+    e.g.,
+    ```js static
+    const i18n = new Streami18n({
     language: 'nl',
     momentLocaleConfigForLanguage: {
       months: [...],
       monthsShort: [...],
       calendar: {
-        sameDay: '...'
+        sameDay: ...'
       }
     }
-  });
-  ```
-
-  The default `en` locale config from moment is as follow:
-
-  ```json
-  {
-    "months": [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ],
-    "monthsShort": [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec"
-    ],
-    "week": {
-      "dow": 0,
-      "doy": 6
-    },
-    "weekdays": [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ],
-    "weekdaysMin": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-    "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    "calendar": {
-      "sameDay": "[Today at] LT",
-      "nextDay": "[Tomorrow at] LT",
-      "nextWeek": "dddd [at] LT",
-      "lastDay": "[Yesterday at] LT",
-      "lastWeek": "[Last] dddd [at] LT",
-      "sameElse": "L"
-    },
-    "longDateFormat": {
-      "LTS": "h:mm:ss A",
-      "LT": "h:mm A",
-      "L": "MM/DD/YYYY",
-      "LL": "MMMM D, YYYY",
-      "LLL": "MMMM D, YYYY h:mm A",
-      "LLLL": "dddd, MMMM D, YYYY h:mm A"
-    },
-    "invalidDate": "Invalid date",
-    "ordinal": "%d.",
-    "dayOfMonthOrdinalParse": /\\d{1,2}(th|st|nd|rd)/,
-    "relativeTime": {
-      "future": "in %s",
-      "past": "%s ago",
-      "s": "a few seconds",
-      "ss": "%d seconds",
-      "m": "a minute",
-      "mm": "%d minutes",
-      "h": "an hour",
-      "hh": "%d hours",
-      "d": "a day",
-      "dd": "%d days",
-      "M": "a month",
-      "MM": "%d months",
-      "y": "a year",
-      "yy": "%d years"
-    },
-    "meridiemParse": /[ap]\\.?m?\\.?/i,
-    "abbr": "en"
-  }
-  ```
-
-  Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
-
-  e.g.,
-
-  ```js static
-  const i18n = new Streami18n();
-
-  i18n.registerTranslation(
-  'mr',
-  {
-    'Nothing yet...': 'काहीही नाही  ...',
-    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
-  },
-  {
-    months: [...],
-    monthsShort: [...],
-    calendar: {
-      sameDay: '...'
-    }
-  }
-  );
-  ```
-
-  Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
-
-  https://github.com/moment/moment/tree/develop/locale
-
-  Stream uses locale configs provided by momentjs for built-in languages. You can also use one of these locale configs whiles registering
-  a new language. If you would liek to use the locale provided by momentjs as it is, simply import the file in your project.
-
-  e.g.,
-
-  ```js static
-
-    // Registering locale config for Danish language
-    import 'moment/locale/da';
-
-    const i18n = new Streami18n({
-      language: 'da',
-      translationsForLanguage: {
-        ...
-      },
     });
-  ```
+    ```
+    Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+    e.g.,
+
+    ```js static
+      const i18n = new Streami18n();
+      i18n.registerTranslation(
+      'mr',
+      {
+        'Nothing yet...': 'काहीही नाही  ...',
+        '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+      },
+      {
+        months: [...],
+        monthsShort: [...],
+        calendar: {
+          sameDay: ...'
+        }
+      }
+      );
+    ```
+
+**TIP**: If you would like to stick with english language for datetimes in Stream compoments,
+you can set `disableDateTimeTranslations` to true.
+
+```js static
+const i18n = new Streami18n({
+  language: 'nl',
+  disableDateTimeTranslations: false
+});
+
+```
+
+The default `en` locale config from moment is as follow:
+```json static
+{
+  "months": [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ],
+  "monthsShort": [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ],
+  "week": {
+    "dow": 0,
+    "doy": 6
+  },
+  "weekdays": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "weekdaysMin": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+  "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "calendar": {
+    "sameDay": "[Today at] LT",
+    "nextDay": "[Tomorrow at] LT",
+    "nextWeek": "dddd [at] LT",
+    "lastDay": "[Yesterday at] LT",
+    "lastWeek": "[Last] dddd [at] LT",
+    "sameElse": "L"
+  },
+  "longDateFormat": {
+    "LTS": "h:mm:ss A",
+    "LT": "h:mm A",
+    "L": "MM/DD/YYYY",
+    "LL": "MMMM D, YYYY",
+    "LLL": "MMMM D, YYYY h:mm A",
+    "LLLL": "dddd, MMMM D, YYYY h:mm A"
+  },
+  "invalidDate": "Invalid date",
+  "ordinal": "%d.",
+  "dayOfMonthOrdinalParse": /\\d{1,2}(th|st|nd|rd)/,
+  "relativeTime": {
+    "future": "in %s",
+    "past": "%s ago",
+    "s": "a few seconds",
+    "ss": "%d seconds",
+    "m": "a minute",
+    "mm": "%d minutes",
+    "h": "an hour",
+    "hh": "%d hours",
+    "d": "a day",
+    "dd": "%d days",
+    "M": "a month",
+    "MM": "%d months",
+    "y": "a year",
+    "yy": "%d years"
+  },
+  "meridiemParse": /[ap]\\.?m?\\.?/i,
+  "abbr": "en"
+}
+```

@@ -10,15 +10,9 @@ import {
   itTranslations,
 } from '../i18n';
 
-import 'moment/locale/nl';
-import 'moment/locale/it';
-import 'moment/locale/ru';
-import 'moment/locale/tr';
-import 'moment/locale/fr';
-import 'moment/locale/hi';
-
 const defaultNS = 'translation';
 const defaultLng = 'en';
+
 /**
  * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
  * Instance of this class should be provided to Chat component to handle translations.
@@ -83,13 +77,24 @@ const defaultLng = 'en';
  *
  * ## Datetime translations
  *
- * Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp.
- * e.g., in ChannelPreview, MessageContent components.
+ * Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
+ * Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
  *
- * When you use any of the built-in translations, datetime will also be translated in corresponding langauge
- * by default. If you would like to stick with english language for datetimes, you can set `disableDateTimeTranslations` to true.
+ * Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
+ * https://github.com/moment/moment/tree/develop/locale
  *
- * You can override the locale config for momentjs.
+ * You can either configure locale for moment globally or you can provide the locale config while registering
+ * language with Streami18n (either via constructor or registerTranslation())
+ *
+ * 1. Via import
+ * Easiest way to register a locale with momentjs is via import in your app.
+ *
+ * ```js
+ * import 'moment/locale/nl';
+ * import 'moment/locale/it';
+ * ```
+ *
+ * 2. Via language registration
  *
  * e.g.,
  * ```
@@ -126,6 +131,8 @@ const defaultLng = 'en';
  *  }
  * );
  *```
+ * If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
+ *
  */
 const defaultStreami18nOptions = {
   language: 'en',
@@ -149,7 +156,13 @@ export class Streami18n {
     hi: { [defaultNS]: hiTranslations },
     it: { [defaultNS]: itTranslations },
   };
-
+  /**
+   * moment.defineLanguage('nl') also changes the global locale. We don't want to do that
+   * when user calls registerTranslation() function. So intead we will store the locale configs
+   * given to registerTranslation() function in `momentLocales` object, and register the required locale
+   * with moment, when setLanguage is called.
+   * */
+  momentLocales = {};
   /**
    * Contructor accepts following options:
    *  - language (String) default: 'en'
@@ -184,9 +197,6 @@ export class Streami18n {
       };
     }
 
-    const momentLocaleConfigForLanguage =
-      finalOptions.momentLocaleConfigForLanguage;
-
     this.logger = finalOptions.logger;
     this.i18nextConfig = {
       nsSeparator: false,
@@ -203,6 +213,9 @@ export class Streami18n {
 
     this.validateCurrentLanguage(this.currentLanguage);
 
+    const momentLocaleConfigForLanguage =
+      finalOptions.momentLocaleConfigForLanguage;
+
     if (momentLocaleConfigForLanguage) {
       this.addOrUpdateMomentLocaleConfig(
         this.currentLanguage,
@@ -215,14 +228,15 @@ export class Streami18n {
         return Moment(timestamp).locale(defaultLng);
       }
 
-      if (this.momentLocaleExists(this.currentLanguage)) {
-        return Moment(timestamp).locale(this.currentLanguage);
+      if (!this.momentLocaleExists(this.currentLanguage)) {
+        console.warn(
+          `Locale config for ${this.currentLanguage} does not exist in momentjs.` +
+            `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
+            `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
+        );
       }
 
-      console.warn(
-        `Locale config for ${this.currentLanguage} does not exist in momentjs.`,
-      );
-      return Moment(timestamp).locale(defaultLng);
+      return Moment(timestamp).locale(this.currentLanguage);
     };
   }
 
@@ -290,36 +304,38 @@ export class Streami18n {
   }
 
   /**
+   * Register translation
    *
-   * @param {*} key
+   * @param {*} language
    * @param {*} translation
    * @param {*} customMomentLocale
    */
-  registerTranslation(key, translation, customMomentLocale) {
-    if (!this.translations[key]) {
-      this.translations[key] = { [defaultNS]: translation };
+  registerTranslation(language, translation, customMomentLocale) {
+    if (!this.translations[language]) {
+      this.translations[language] = { [defaultNS]: translation };
     } else {
-      this.translations[key][defaultNS] = translation;
+      this.translations[language][defaultNS] = translation;
     }
 
     if (customMomentLocale) {
-      this.addOrUpdateMomentLocaleConfig(key, { ...customMomentLocale });
+      this.momentLocales[language] = { ...customMomentLocale };
     }
 
     if (this.initialized) {
-      this.i18nInstance.addResources(key, defaultNS, translation);
+      this.i18nInstance.addResources(language, defaultNS, translation);
     }
   }
 
-  addOrUpdateMomentLocaleConfig(key, config) {
-    if (this.momentLocaleExists(key)) {
-      Moment.updateLocale(key, config);
+  addOrUpdateMomentLocaleConfig(language, config) {
+    if (this.momentLocaleExists(language)) {
+      Moment.updateLocale(language, config);
     } else {
-      Moment.defineLocale(key, config);
+      Moment.defineLocale(language, config);
     }
   }
+
   /**
-   *
+   * Changes the language.
    * @param {*} language
    */
   async setLanguage(language) {
@@ -329,6 +345,13 @@ export class Streami18n {
 
     try {
       const t = await this.i18nInstance.changeLanguage(language);
+      if (this.momentLocales[language]) {
+        this.addOrUpdateMomentLocaleConfig(
+          language,
+          this.momentLocales[language],
+        );
+      }
+
       this.setLanguageCallback(t);
       return t;
     } catch (e) {
