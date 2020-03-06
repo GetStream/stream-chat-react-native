@@ -172,6 +172,93 @@ Stream provides following list of in-built translations:
   });
   ```
 
+  The default `en` locale config from moment is as follow:
+
+  ```json
+  {
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "monthsShort": [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    "week": {
+      "dow": 0,
+      "doy": 6
+    },
+    "weekdays": [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ],
+    "weekdaysMin": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    "weekdaysShort": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    "calendar": {
+      "sameDay": "[Today at] LT",
+      "nextDay": "[Tomorrow at] LT",
+      "nextWeek": "dddd [at] LT",
+      "lastDay": "[Yesterday at] LT",
+      "lastWeek": "[Last] dddd [at] LT",
+      "sameElse": "L"
+    },
+    "longDateFormat": {
+      "LTS": "h:mm:ss A",
+      "LT": "h:mm A",
+      "L": "MM/DD/YYYY",
+      "LL": "MMMM D, YYYY",
+      "LLL": "MMMM D, YYYY h:mm A",
+      "LLLL": "dddd, MMMM D, YYYY h:mm A"
+    },
+    "invalidDate": "Invalid date",
+    "ordinal": "%d.",
+    "dayOfMonthOrdinalParse": /\\d{1,2}(th|st|nd|rd)/,
+    "relativeTime": {
+      "future": "in %s",
+      "past": "%s ago",
+      "s": "a few seconds",
+      "ss": "%d seconds",
+      "m": "a minute",
+      "mm": "%d minutes",
+      "h": "an hour",
+      "hh": "%d hours",
+      "d": "a day",
+      "dd": "%d days",
+      "M": "a month",
+      "MM": "%d months",
+      "y": "a year",
+      "yy": "%d years"
+    },
+    "meridiemParse": /[ap]\\.?m?\\.?/i,
+    "abbr": "en"
+  }
+  ```
+
   Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
 
   e.g.,
@@ -194,6 +281,7 @@ Stream provides following list of in-built translations:
   }
   );
   ```
+
   Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
 
   https://github.com/moment/moment/tree/develop/locale
@@ -201,17 +289,17 @@ Stream provides following list of in-built translations:
   Stream uses locale configs provided by momentjs for built-in languages. You can also use one of these locale configs whiles registering
   a new language. If you would liek to use the locale provided by momentjs as it is, simply import the file in your project.
 
-  e.g., 
+  e.g.,
 
   ```js static
 
-  // Registering locale config for Danish language
-  import 'moment/locale/da';
+    // Registering locale config for Danish language
+    import 'moment/locale/da';
 
-  const i18n = new Streami18n({
-    language: 'da',
-    translationsForLanguage: {
-      ...
-    },
-  });
-```
+    const i18n = new Streami18n({
+      language: 'da',
+      translationsForLanguage: {
+        ...
+      },
+    });
+  ```
