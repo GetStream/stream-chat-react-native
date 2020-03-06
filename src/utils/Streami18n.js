@@ -138,7 +138,7 @@ const defaultStreami18nOptions = {
   language: 'en',
   disableDateTimeTranslations: false,
   debug: false,
-  logger: () => {},
+  logger: (msg) => console.warn(msg),
   momentLocaleConfigForLanguage: null,
 };
 export class Streami18n {
@@ -205,7 +205,7 @@ export class Streami18n {
       debug: finalOptions.debug,
       lng: this.currentLanguage,
       parseMissingKeyHandler: (key) => {
-        this.logger(`Missing translation for key: ${key}`);
+        this.logger(`Streami18n: Missing translation for key: ${key}`);
 
         return key;
       },
@@ -217,23 +217,20 @@ export class Streami18n {
       finalOptions.momentLocaleConfigForLanguage;
 
     if (momentLocaleConfigForLanguage) {
-      this.addOrUpdateMomentLocaleConfig(
-        this.currentLanguage,
-        momentLocaleConfigForLanguage,
+      this.addOrUpdateMomentLocaleConfig(this.currentLanguage, {
+        ...momentLocaleConfigForLanguage,
+      });
+    } else if (!this.momentLocaleExists(this.currentLanguage)) {
+      this.logger(
+        `Streami18n: Streami18n(...) - Locale config for ${this.currentLanguage} does not exist in momentjs.` +
+          `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
+          `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
       );
     }
 
     this.momentInstance = (timestamp) => {
       if (finalOptions.disableDateTimeTranslations) {
         return Moment(timestamp).locale(defaultLng);
-      }
-
-      if (!this.momentLocaleExists(this.currentLanguage)) {
-        console.warn(
-          `Locale config for ${this.currentLanguage} does not exist in momentjs.` +
-            `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
-            `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
-        );
       }
 
       return Moment(timestamp).locale(this.currentLanguage);
@@ -270,8 +267,8 @@ export class Streami18n {
   validateCurrentLanguage = () => {
     const availableLanguages = Object.keys(this.translations);
     if (availableLanguages.indexOf(this.currentLanguage) === -1) {
-      console.warn(
-        `'${this.currentLanguage}' language is not registered.` +
+      this.logger(
+        `Streami18n: '${this.currentLanguage}' language is not registered.` +
           ` Please make sure to call streami18n.registerTranslation('${this.currentLanguage}', {...}) or ` +
           `use one the built-in supported languages - ${this.getAvailableLanguages()}`,
       );
@@ -311,6 +308,13 @@ export class Streami18n {
    * @param {*} customMomentLocale
    */
   registerTranslation(language, translation, customMomentLocale) {
+    if (!translation) {
+      this.logger(
+        `Streami18n: registerTranslation(language, translation, customMomentLocale) called without translation`,
+      );
+      return;
+    }
+
     if (!this.translations[language]) {
       this.translations[language] = { [defaultNS]: translation };
     } else {
@@ -319,6 +323,13 @@ export class Streami18n {
 
     if (customMomentLocale) {
       this.momentLocales[language] = { ...customMomentLocale };
+    } else if (!this.momentLocaleExists(language)) {
+      this.logger(
+        `Streami18n: registerTranslation(language, translation, customMomentLocale) - ` +
+          `Locale config for ${language} does not exist in momentjs.` +
+          `Please import the locale file using "import 'moment/locale/${language}';" in your app or ` +
+          `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
+      );
     }
 
     if (this.initialized) {
