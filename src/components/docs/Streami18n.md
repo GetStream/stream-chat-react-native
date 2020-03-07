@@ -152,6 +152,42 @@ Stream provides following list of in-built translations:
   </Chat>
   ```
 
+  We have exported all the in-built translations in our library. You can import them in your project as following:
+
+  ```js
+  import {
+    enTranslations,
+    nlTranslations,
+    ruTranslations,
+    trTranslations,
+    frTranslations,
+    hiTranslations,
+    itTranslations,
+    esTranslations,
+  } from 'stream-chat-react-native'; // or 'stream-chat-expo'
+  ```
+
+  If you would like to maintain your own translation files:
+
+  1. Create a json file in your project with whatever name you prefer. Best practice would be to name it after
+    the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
+  2. Copy the content of file https://github.com/GetStream/stream-chat-react-native/blob/master/src/i18n/en.json
+  3. Change the values of the keys as translation of key.
+  4. Use it in chat client:
+
+  ```js
+  import koTranslation from 'path/to/ko.json';
+  import deTranslation from 'path/to/de.json';
+  const i18n = new Streami18n();
+  i18n.registerTranslation('ko', koTranslation);
+  i18n.registerTranslation('de', deTranslation);
+  // You can switch language at any point in lifetime of component, it will automatically reflect in UI.
+  i18n.setLanguage('ko');
+  <Chat client={chatClient} i18nInstance={i18n}>
+    ...
+  </Chat>;
+  ```
+
 - **Datetime translations**
 
   Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
