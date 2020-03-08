@@ -1,12 +1,10 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
 import moment from 'moment';
 import { MessageContentContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
 import { Attachment } from '../Attachment';
 import { ReactionList } from '../ReactionList';
-import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
@@ -16,6 +14,7 @@ import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
 import { emojiData } from '../../utils';
+import { ReactionPickerWrapper } from '../ReactionPickerWrapper';
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transperant, so border radius is not really visible.
@@ -250,6 +249,10 @@ export const MessageContent = themed(
         PropTypes.node,
         PropTypes.elementType,
       ]),
+      ReactionList: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       formatDate: PropTypes.func,
     };
 
@@ -259,13 +262,14 @@ export const MessageContent = themed(
       repliesEnabled: true,
       MessageText: false,
       supportedReactions: emojiData,
+      ReactionList,
     };
 
     constructor(props) {
       super(props);
 
       this.ActionSheet = false;
-      this.state = { reactionPickerVisible: false };
+      this.state = {};
     }
 
     openThread = () => {
@@ -285,32 +289,34 @@ export const MessageContent = themed(
       this.props.handleEdit();
     };
 
-    _setReactionPickerPosition = () => {
-      const { alignment } = this.props;
-      this.messageContainer.measureInWindow((x, y, width) => {
-        this.setState({
-          reactionPickerVisible: true,
-          rpTop: y - 60,
-          rpLeft: alignment === 'left' ? x - 10 : null,
-          rpRight:
-            alignment === 'right'
-              ? Math.round(Dimensions.get('window').width) - (x + width + 10)
-              : null,
-        });
-      });
+    /**
+     * @todo: Remove the method in future 1.0.0.
+     * This method has been moved to `ReactionPickerWrapper`.
+     *
+     * @deprecated
+     */
+    _setReactionPickerPosition = async () => {
+      console.warn(
+        'openReactionSelector has been deprecared and will be removed in next major release.' +
+          'Please use this.props.openReactionPicker instead.',
+      );
+
+      await this.props.openReactionPicker();
     };
 
+    /**
+     * @todo: Remove the method in future 1.0.0.
+     * This method has been moved to parent `MessageSimple` component.
+     *
+     * @deprecated
+     */
     openReactionSelector = async () => {
-      const { readOnly } = this.props;
+      console.warn(
+        'openReactionSelector has been deprecared and will be removed in next major release.' +
+          'Please use this.props.openReactionPicker instead.',
+      );
 
-      if (readOnly) return;
-
-      // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
-      // So we need to postpone the calculation for reaction picker position
-      // until after keyboard is closed completely. To achieve this, we close
-      // the keyboard forcefully and then calculate position of picker in callback.
-      await this.props.dismissKeyboard();
-      this._setReactionPickerPosition();
+      await this.props.openReactionPicker();
     };
 
     onActionPress = (action) => {
@@ -325,7 +331,7 @@ export const MessageContent = themed(
           this.openThread();
           break;
         case MESSAGE_ACTIONS.reactions:
-          this.openReactionSelector();
+          this.props.openReactionPicker();
           break;
         default:
           break;
@@ -339,6 +345,7 @@ export const MessageContent = themed(
         isMyMessage,
         readOnly,
         Message,
+        ReactionList,
         handleReaction,
         threadList,
         retrySendMessage,
@@ -351,6 +358,9 @@ export const MessageContent = themed(
         canDeleteMessage,
         MessageFooter,
         supportedReactions,
+        openReactionPicker,
+        dismissReactionPicker,
+        reactionPickerVisible,
       } = this.props;
 
       const Attachment = this.props.Attachment;
@@ -464,16 +474,31 @@ export const MessageContent = themed(
             ) : null}
             {reactionsEnabled &&
               message.latest_reactions &&
-              message.latest_reactions.length > 0 && (
-                <ReactionList
-                  position={alignment}
-                  visible={!this.state.reactionPickerVisible}
-                  latestReactions={message.latest_reactions}
-                  getTotalReactionCount={getTotalReactionCount}
-                  openReactionSelector={this.openReactionSelector}
-                  reactionCounts={message.reaction_counts}
+              message.latest_reactions.length > 0 &&
+              ReactionList && (
+                <ReactionPickerWrapper
+                  reactionPickerVisible={reactionPickerVisible}
+                  handleReaction={handleReaction}
+                  openReactionPicker={openReactionPicker}
+                  message={message}
+                  dismissReactionPicker={dismissReactionPicker}
+                  emojiData={supportedReactions}
+                  alignment={alignment}
+                  offset={{
+                    top: 40,
+                    left: 30,
+                  }}
                   supportedReactions={supportedReactions}
-                />
+                >
+                  <ReactionList
+                    position={alignment}
+                    visible={!reactionPickerVisible}
+                    latestReactions={message.latest_reactions}
+                    getTotalReactionCount={getTotalReactionCount}
+                    reactionCounts={message.reaction_counts}
+                    supportedReactions={supportedReactions}
+                  />
+                </ReactionPickerWrapper>
               )}
             {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
             <ContainerInner
@@ -534,7 +559,16 @@ export const MessageContent = themed(
                 pos={alignment}
               />
             ) : null}
-            {MessageFooter && <MessageFooter {...this.props} />}
+            {MessageFooter && (
+              <MessageFooter
+                {...this.props}
+                {...this.state}
+                openThread={this.openThread}
+                showActionSheet={this.showActionSheet}
+                handleDelete={this.handleDelete}
+                handleEdit={this.handleEdit}
+              />
+            )}
             {!MessageFooter && showTime ? (
               <MetaContainer>
                 <MetaText alignment={alignment}>
@@ -543,22 +577,6 @@ export const MessageContent = themed(
                     : moment(message.created_at).format('h:mmA')}
                 </MetaText>
               </MetaContainer>
-            ) : null}
-
-            {reactionsEnabled ? (
-              <ReactionPicker
-                reactionPickerVisible={this.state.reactionPickerVisible}
-                handleReaction={handleReaction}
-                latestReactions={message.latest_reactions}
-                reactionCounts={message.reaction_counts}
-                handleDismiss={() => {
-                  this.setState({ reactionPickerVisible: false });
-                }}
-                rpLeft={this.state.rpLeft}
-                rpRight={this.state.rpRight}
-                rpTop={this.state.rpTop}
-                supportedReactions={supportedReactions}
-              />
             ) : null}
             <ActionSheet
               ref={(o) => {

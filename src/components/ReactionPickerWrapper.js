@@ -12,54 +12,76 @@ export class ReactionPickerWrapper extends React.PureComponent {
     offset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     handleReaction: PropTypes.func,
     emojiData: PropTypes.array,
+    ReactionPicker: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     style: PropTypes.any,
+  };
+
+  static defaultProps = {
+    offset: {
+      top: 40,
+      left: 30,
+    },
+    ReactionPicker,
   };
 
   constructor(props) {
     super(props);
-    this.state = { reactionPickerVisible: false };
+    this.state = {};
   }
+
+  componentDidMount() {
+    if (this.props.reactionPickerVisible) this._setReactionPickerPosition();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.reactionPickerVisible && this.props.reactionPickerVisible) {
+      this._setReactionPickerPosition();
+    }
+  }
+
   _setReactionPickerPosition = () => {
-    const { isMyMessage, message, offset } = this.props;
-    const pos = isMyMessage(message) ? 'right' : 'left';
+    const { alignment, offset } = this.props;
     this.messageContainer.measureInWindow((x, y, width) => {
       this.setState({
-        reactionPickerVisible: true,
         rpTop: y - 60 + offset.top,
-        rpLeft: pos === 'left' ? x - 10 + offset.left : null,
+        rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
         rpRight:
-          pos === 'right'
+          alignment === 'right'
             ? Math.round(Dimensions.get('window').width) - (x + width + 10)
             : null,
       });
     });
   };
 
-  openReactionSelector = () => {
-    // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
-    // So we need to postpone the calculation for reaction picker position
-    // until after keyboard is closed completely. To achieve this, we close
-    // the keyboard forcefully and then calculate position of picker in callback.
-    this._setReactionPickerPosition();
-  };
-
   render() {
-    const { handleReaction, message, emojiData, style } = this.props;
+    const {
+      handleReaction,
+      message,
+      emojiData,
+      style,
+      dismissReactionPicker,
+      reactionPickerVisible,
+      ReactionPicker,
+      openReactionPicker,
+    } = this.props;
     return (
       <TouchableOpacity
-        onPress={this.openReactionSelector}
+        onPress={() => {
+          openReactionPicker();
+        }}
         ref={(o) => (this.messageContainer = o)}
       >
         {this.props.children}
         <ReactionPicker
-          reactionPickerVisible={this.state.reactionPickerVisible}
+          {...this.props}
+          reactionPickerVisible={reactionPickerVisible}
           handleReaction={handleReaction}
-          hideReactionOwners={true}
           latestReactions={message.latest_reactions}
           reactionCounts={message.reaction_counts}
-          handleDismiss={() => {
-            this.setState({ reactionPickerVisible: false });
-          }}
+          handleDismiss={dismissReactionPicker}
           style={style}
           emojiData={emojiData}
           rpLeft={this.state.rpLeft}

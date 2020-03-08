@@ -2,6 +2,7 @@ import { MentionsItem } from '../components/MentionsItem';
 import { CommandsItem } from '../components/CommandsItem';
 
 export { renderText } from './renderText';
+export { renderReactions } from './renderReactions';
 
 export const emojiData = [
   {

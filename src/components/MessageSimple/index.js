@@ -192,6 +192,7 @@ export const MessageSimple = themed(
        * */
       forceAlign: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
       showMessageStatus: PropTypes.bool,
+      showReactionsList: PropTypes.bool,
       /** Latest message id on current channel */
       lastReceivedId: PropTypes.string,
       /**
@@ -204,6 +205,10 @@ export const MessageSimple = themed(
        * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
        */
       AttachmentFileIcon: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      ReactionList: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
       ]),
@@ -220,6 +225,33 @@ export const MessageSimple = themed(
       MessageContent: DefaultMessageContent,
       MessageStatus: DefaultMessageStatus,
       MessageSystem: DefaultMessageSystem,
+    };
+
+    constructor(props) {
+      super(props);
+
+      // State reactionPickerVisible has been lifeted up in MessageSimple component
+      // so that one can use ReactionPickerWrapper component outside MessageContent as well.
+      // This way `Add Reaction` message action can trigger the ReactionPickerWrapper to
+      // open the reaction picker.
+      this.state = {
+        reactionPickerVisible: false,
+      };
+    }
+
+    openReactionPicker = async () => {
+      const { readOnly } = this.props;
+      if (readOnly) return;
+      // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
+      // So we need to postpone the calculation for reaction picker position
+      // until after keyboard is closed completely. To achieve this, we close
+      // the keyboard forcefully and then calculate position of picker in callback.
+      await this.props.dismissKeyboard();
+      this.setState({ reactionPickerVisible: true });
+    };
+
+    dismissReactionPicker = () => {
+      this.setState({ reactionPickerVisible: false });
     };
 
     static themePath = 'message';
@@ -258,6 +290,13 @@ export const MessageSimple = themed(
         return <MessageSystem message={message} />;
       }
 
+      const forwardedProps = {
+        ...this.props,
+        reactionPickerVisible: this.state.reactionPickerVisible,
+        openReactionPicker: this.openReactionPicker,
+        dismissReactionPicker: this.dismissReactionPicker,
+      };
+
       return (
         <Container
           alignment={pos}
@@ -266,14 +305,14 @@ export const MessageSimple = themed(
         >
           {pos === 'right' ? (
             <React.Fragment>
-              <MessageContent {...this.props} alignment={pos} />
-              <MessageAvatar {...this.props} />
-              {showMessageStatus && <MessageStatus {...this.props} />}
+              <MessageContent {...forwardedProps} alignment={pos} />
+              <MessageAvatar {...forwardedProps} />
+              {showMessageStatus && <MessageStatus {...forwardedProps} />}
             </React.Fragment>
           ) : (
             <React.Fragment>
-              <MessageAvatar {...this.props} />
-              <MessageContent {...this.props} alignment={pos} />
+              <MessageAvatar {...forwardedProps} />
+              <MessageContent {...forwardedProps} alignment={pos} />
             </React.Fragment>
           )}
         </Container>

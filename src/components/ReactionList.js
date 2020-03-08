@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { themed } from '../styles/theme';
+import { renderReactions } from '../utils/renderReactions';
 
 import leftTail from '../images/reactionlist/left-tail.png';
 import leftCenter from '../images/reactionlist/left-center.png';
@@ -12,7 +13,7 @@ import rightTail from '../images/reactionlist/right-tail.png';
 import rightCenter from '../images/reactionlist/right-center.png';
 import rightEnd from '../images/reactionlist/right-end.png';
 
-const TouchableWrapper = styled.TouchableOpacity`
+const TouchableWrapper = styled.View`
   position: relative;
   ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
   height: 28px;
@@ -102,47 +103,20 @@ export const ReactionList = themed(
       position: PropTypes.string,
     };
 
-    _renderReactions = (reactions) => {
-      const { supportedReactions } = this.props;
-      const reactionsByType = {};
-      reactions.map((item) => {
-        if (reactions[item.type] === undefined) {
-          return (reactionsByType[item.type] = [item]);
-        } else {
-          return (reactionsByType[item.type] = [
-            ...reactionsByType[item.type],
-            item,
-          ]);
-        }
-      });
-
-      const emojiDataByType = {};
-      supportedReactions.forEach((e) => (emojiDataByType[e.id] = e));
-
-      const reactionTypes = supportedReactions.map((e) => e.id);
-      return Object.keys(reactionsByType).map((type) =>
-        reactionTypes.indexOf(type) > -1 ? (
-          <Text key={type}>{emojiDataByType[type].icon}</Text>
-        ) : null,
-      );
-    };
-
     render() {
       const {
         latestReactions,
-        openReactionSelector,
         getTotalReactionCount,
         visible,
         position,
+        supportedReactions,
       } = this.props;
       return (
-        <TouchableWrapper
-          position={position}
-          onPress={openReactionSelector}
-          activeOpacity={1}
-        >
+        <TouchableWrapper position={position} activeOpacity={1}>
           <Container visible={visible}>
-            <Reactions>{this._renderReactions(latestReactions)}</Reactions>
+            <Reactions>
+              {renderReactions(latestReactions, supportedReactions)}
+            </Reactions>
             <ReactionCount reactionCounts={getTotalReactionCount()}>
               {getTotalReactionCount()}
             </ReactionCount>
