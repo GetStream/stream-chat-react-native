@@ -168,6 +168,9 @@ export class Streami18n {
    *  - language (String) default: 'en'
    *    Language code e.g., en, tr
    *
+   *  - translationsForLanguage (object)
+   *    Translations object. Please check src/i18n/en.json for example.
+   *
    *  - disableDateTimeTranslations (boolean) default: false
    *    Disable translations for datetimes
    *

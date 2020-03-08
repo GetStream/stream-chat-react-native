@@ -950,15 +950,16 @@ export function registerNativeHandlers(handlers: {
 
 export interface Streami18nOptions {
   language: string;
-  disableDateTimeTranslations: boolean;
-  debug: boolean;
-  logger(msg: string): any;
-  momentLocaleConfigForLanguage: object;
+  disableDateTimeTranslations?: boolean;
+  translationsForLanguage?: object;
+  debug?: boolean;
+  logger?(msg: string): any;
+  momentLocaleConfigForLanguage?: object;
 }
 
 export interface Streami18nTranslators {
-  t?: i18next.TFunction;
-  moment?(): moment.Moment;
+  t: i18next.TFunction;
+  moment(datetime: moment.MomentInput): moment.Moment;
 }
 
 export class Streami18n {
@@ -974,7 +975,7 @@ export class Streami18n {
   registerTranslation(
     key: String,
     translation: Object,
-    customMomentLocale: moment.LocaleSpecification,
+    customMomentLocale?: moment.LocaleSpecification,
   ): void;
   addOrUpdateMomentLocaleConfig(
     key: String,
@@ -983,3 +984,11 @@ export class Streami18n {
   setLanguage(language: String): Promise<void>;
   registerSetLanguageCallback(callback: (t: i18next.TFunction) => void): void;
 }
+
+export const enTranslations: object;
+export const nlTranslations: object;
+export const ruTranslations: object;
+export const trTranslations: object;
+export const frTranslations: object;
+export const hiTranslations: object;
+export const itTranslations: object;

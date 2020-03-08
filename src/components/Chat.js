@@ -140,7 +140,7 @@ export const Chat = themed(
       }
 
       streami18n.registerSetLanguageCallback((t) => {
-        this.setState({ t, moment });
+        this.setState({ t });
       });
 
       const { t, moment } = await streami18n.getTranslators();

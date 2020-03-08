@@ -2,6 +2,7 @@
 import babel from 'rollup-plugin-babel';
 import external from 'rollup-plugin-peer-deps-external';
 import commonjs from 'rollup-plugin-commonjs';
+import copy from 'rollup-plugin-copy';
 import json from 'rollup-plugin-json';
 import images from './rollup-react-native-image.js';
 import path from 'path';
@@ -102,6 +103,9 @@ const normalBundle = {
     }),
     commonjs(),
     json(),
+    copy({
+      targets: [{ src: 'src/i18n/*.json', dest: 'dist/i18n' }],
+    }),
   ],
 };
 
