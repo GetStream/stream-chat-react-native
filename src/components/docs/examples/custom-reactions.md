@@ -1,4 +1,4 @@
-#### EXAMPLE 4 - Message with custom reactions
+# Message with custom reactions
 
 `MessageSimple` accepts a prop - `supportedReactions`. You can pass your emoji data to this prop to set your own reactions.
 

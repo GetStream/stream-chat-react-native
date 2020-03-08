@@ -1,13 +1,8 @@
-#### EXAMPLE 2 - Custom/different style for received and sent messages
+# Custom/different style for received and sent messages
 
-As mentioned in tutorial, we use StyledComponents and themes to simplify making style changes - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+**NOTE:** Please read [Message bubble with custom text styles/font](custom-text-style-font.md) before proceeding.
 
-You pass the theme object with all the defined styles for all the components (as given in tutorial). here you can mention the styles for
-MessageSimple component as well - check the list of inner components you can customize [here](https://getstream.github.io/stream-chat-react-native/#messagesimple) (switch to `STYLES` tab)
-
-But these global style will apply to both received and sent message.
-
-So in this case, we will provide styles to MessageSimple component separately, depending on whether the message belongs to current user or not.
+Global style will apply to both received and sent message. So in this case, we will provide styles to MessageSimple component separately, depending on whether the message belongs to current user or not.
 
 Here I am aiming for following styles:
 

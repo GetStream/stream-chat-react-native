@@ -9,7 +9,7 @@ export class ReactionPickerWrapper extends React.PureComponent {
   static propTypes = {
     isMyMessage: PropTypes.func,
     message: PropTypes.object,
-    offset: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    offset: PropTypes.object,
     handleReaction: PropTypes.func,
     emojiData: PropTypes.array,
     ReactionPicker: PropTypes.oneOfType([

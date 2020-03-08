@@ -1,4 +1,4 @@
-#### EXAMPLE 1 - Show alert box with confirm/cancel buttons when message is deleted.
+# Show alert box with confirm/cancel buttons when message is deleted.
 
 `MessageSimple` accepts a prop function - `handleDelete`. Default value (function) is provided by HOC Message component - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message.js#L150
 

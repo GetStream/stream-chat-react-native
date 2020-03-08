@@ -18,12 +18,14 @@ e.g.,
 </Chat>
 ```
 
-[EXAMPLE 1 - Show alert box with confirm/cancel buttons when message is deleted.](src/components/docs/examples/1.md)
+[EXAMPLE 1 - Show alert box with confirm/cancel buttons when message is deleted.](alert-on-delete.md)
 
-[EXAMPLE 2 - Custom/different style for received and sent messages](src/components/docs/examples/2.md)
+[EXAMPLE 2 - Message bubble with custom text styles/font](custom-text-style-font.md)
 
-[EXAMPLE 3 - Instagram style double-tap reaction](src/components/docs/examples/3.md)
+[EXAMPLE 3 - Custom/different style for received and sent messages](different-styles-for-sent-&-received-message.md)
 
-[EXAMPLE 4 - Message with custom reactions](src/components/docs/examples/4.md)
+[EXAMPLE 4 - Instagram style double-tap reaction](ig-style-double-tap.md)
 
-[EXAMPLE 5 - Message bubble with reactions at bottom of message](src/components/docs/examples/5.md)
+[EXAMPLE 5 - Message with custom reactions](custom-reactions.md)
+
+[EXAMPLE 6 - Message bubble with reactions at bottom of message](reactions-at-bottom-of-message.md)
