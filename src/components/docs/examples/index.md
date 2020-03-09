@@ -1,3 +1,5 @@
+# Different use cases of message bubble/component
+
 `MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
 You can use built-in component as it is, but every product requires its own functionality/behaviour and styles.
 For this you can either build your own component or you can also use in-built components with some modifications.
@@ -29,3 +31,5 @@ e.g.,
 [EXAMPLE 5 - Message with custom reactions](custom-reactions.md)
 
 [EXAMPLE 6 - Message bubble with reactions at bottom of message](reactions-at-bottom-of-message.md)
+
+[EXAMPLE 7 - slack style - all the messages on left side ](slack-style-messages-on-left-side.md)
