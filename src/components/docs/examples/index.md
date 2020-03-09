@@ -38,6 +38,8 @@ e.g.,
 
 - [Message bubble with name of sender ](message-with-username.md)
 
+- [Swipe message left to delete and right to reply](swipe-message-reply-delete.md)
+
 _**in progress ...**_
 ## Actionsheet
 
