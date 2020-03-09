@@ -1,6 +1,6 @@
 # Message bubble with name of the sender
 
-In gorup messaging, its important to show the name of the sender with message bubble - similar to
+In group messaging, its important to show the name of the sender with message bubble - similar to
 slack or whatsapp. In this example we are going to add name of the sender on top of message content.
 
 I can foresee different types of designs for this:

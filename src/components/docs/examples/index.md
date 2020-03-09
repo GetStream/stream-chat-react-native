@@ -26,9 +26,9 @@ e.g.,
 
 [EXAMPLE 3 - Custom/different style for received and sent messages](different-styles-for-sent-&-received-message.md)
 
-[EXAMPLE 4 - Instagram style double-tap reaction](ig-style-double-tap.md)
+[EXAMPLE 4 - Message with custom reactions](custom-reactions.md)
 
-[EXAMPLE 5 - Message with custom reactions](custom-reactions.md)
+[EXAMPLE 5 - Instagram style double-tap reaction](ig-style-double-tap.md)
 
 [EXAMPLE 6 - Message bubble with reactions at bottom of message](reactions-at-bottom-of-message.md)
 

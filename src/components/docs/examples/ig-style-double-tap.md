@@ -9,6 +9,8 @@ This case has two aspects:
 2. Remove `Add Reaction` option from actionsheet, which is shown when message is long pressed.
    `MessageSimple` accepts a array prop - `messageActions`. You can use this prop to remove `Add Reaction` option from actionsheet.
 
+3. Limit the reactions to only `love` - [EXAMPLE 4 - Message with custom reactions](custom-reactions.md)
+
 ```js
 import { MessageSimple } from 'stream-chat-react-native';
 
@@ -27,6 +29,12 @@ const MessageSimpleIgReaction = (props) => {
     <MessageSimple
       {...props}
       onPress={handleDoubleTap}
+      supportedReactions={[
+        {
+          id: 'love',
+          icon: '❤️️',
+        },
+      ]}
       messageActions={['edit', 'delete', 'reply']} // not including `reactions` here.
     />
   );
