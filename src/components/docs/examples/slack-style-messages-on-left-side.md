@@ -8,7 +8,7 @@ Its value could be either `left` or `right`.
 ```js
 
 const MessageSimpleLeftAligned = props => {
-  return <MessageSimple {...props} forceAlign="right" />;
+  return <MessageSimple {...props} forceAlign="left" />;
 };
 
 ```

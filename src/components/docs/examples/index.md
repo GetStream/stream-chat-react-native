@@ -32,4 +32,6 @@ e.g.,
 
 [EXAMPLE 6 - Message bubble with reactions at bottom of message](reactions-at-bottom-of-message.md)
 
-[EXAMPLE 7 - slack style - all the messages on left side ](slack-style-messages-on-left-side.md)
+[EXAMPLE 7 - Slack style - all the messages on left side ](slack-style-messages-on-left-side.md)
+
+[EXAMPLE 8 - Message bubble with name of sender ](message-with-username.md)
