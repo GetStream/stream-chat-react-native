@@ -33,7 +33,10 @@ declare function withTranslationContext<T>(
 ): React.ElementType<T>;
 export interface TranslationContext
   extends React.Context<TranslationContextValue> {}
-export interface TranslationContextValue extends Streami18nTranslators {}
+export interface TranslationContextValue {
+  t?: i18next.TFunction;
+  moment?(datetime: moment.MomentInput): moment.Moment;
+}
 
 declare function withSuggestionsContext<T>(
   OriginalComponent: React.ElementType<T>,
@@ -959,7 +962,7 @@ export interface Streami18nOptions {
 
 export interface Streami18nTranslators {
   t: i18next.TFunction;
-  moment(datetime: moment.MomentInput): moment.Moment;
+  moment?(datetime: moment.MomentInput): moment.Moment;
 }
 
 export class Streami18n {
