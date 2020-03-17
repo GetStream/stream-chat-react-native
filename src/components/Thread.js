@@ -52,6 +52,16 @@ const Thread = withChannelContext(
          * */
         Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         /**
+         * **Customized MessageInput component to used within Thread instead of default MessageInput
+         * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
+         * */
+        MessageInput: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        /**
+         * **Customized MessageList component to used within Thread instead of default MessageList
+         * **Available from [MessageList](https://getstream.github.io/stream-chat-react-native/#messagelist)**
+         * */
+        MessageList: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        /**
          * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
          * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */
         thread: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
@@ -96,6 +106,8 @@ const Thread = withChannelContext(
         threadHasMore: true,
         threadLoadingMore: true,
         autoFocus: true,
+        MessageList,
+        MessageInput,
       };
 
       render() {
@@ -160,9 +172,14 @@ class ThreadInner extends React.PureComponent {
       </React.Fragment>
     );
 
+    const {
+      MessageList: MessageListComponent,
+      MessageInput: MessageInputComponent,
+    } = this.props;
+
     return (
       <React.Fragment>
-        <MessageList
+        <MessageListComponent
           messages={this.props.threadMessages}
           HeaderComponent={headerComponent}
           read={read}
@@ -173,7 +190,7 @@ class ThreadInner extends React.PureComponent {
           Message={this.props.Message}
           {...this.props.additionalMessageListProps}
         />
-        <MessageInput
+        <MessageInputComponent
           parent={this.props.thread}
           focus={this.props.autoFocus}
           {...this.props.additionalMessageInputProps}
