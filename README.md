@@ -16,6 +16,7 @@
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
+- [Internationalisation (i18n)](#internationalisation)
 
 ## React Chat Tutorial
 
@@ -292,7 +293,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
       ```
    3. Rerun `react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory
 
-## Internationalization
+## Internationalisation
 
 Instance of class `Streami18n` should be provided to Chat component to handle translations.
 Stream provides following list of in-built translations for components:
