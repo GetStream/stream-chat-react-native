@@ -154,7 +154,7 @@ Stream provides following list of in-built translations:
 
   We have exported all the in-built translations in our library. You can import them in your project as following:
 
-  ```js
+  ```js static
   import {
     enTranslations,
     nlTranslations,
@@ -175,7 +175,7 @@ Stream provides following list of in-built translations:
   3. Change the values of the keys as translation of key.
   4. Use it in chat client:
 
-  ```js
+  ```js static
   import koTranslation from 'path/to/ko.json';
   import deTranslation from 'path/to/de.json';
   const i18n = new Streami18n();
