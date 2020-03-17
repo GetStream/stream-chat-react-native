@@ -49,6 +49,7 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
    ```
 5. - For iOS
      ```bash
+     cd ios && pod install && cd ..
      react-native run-ios
      ```
    - For android

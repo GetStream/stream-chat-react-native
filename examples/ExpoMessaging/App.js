@@ -11,6 +11,7 @@ import {
   Thread,
   CloseButton,
   ChannelPreviewMessenger,
+  Streami18n
 } from 'stream-chat-expo';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -56,7 +57,7 @@ const options = {
  * Please refer to description of this PR for details: https://github.com/GetStream/stream-chat-react-native/pull/150
  */
 const streami18n = new Streami18n({
-  language: 'en'
+  language: 'nl'
 });
 
 class ChannelListScreen extends PureComponent {
