@@ -10,6 +10,18 @@ export function withChatContext(OriginalComponent) {
   return ContextAwareComponent;
 }
 
+export const TranslationContext = React.createContext({
+  t: () => 'Value not found',
+});
+
+export function withTranslationContext(OriginalComponent) {
+  const ContextAwareComponent = getContextAwareComponent(
+    TranslationContext,
+    OriginalComponent,
+  );
+  return ContextAwareComponent;
+}
+
 export const ChannelContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {

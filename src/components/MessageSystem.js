@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
-import Moment from 'moment';
+import { withTranslationContext } from '../context';
 
 const Container = styled.View`
   display: flex;
@@ -45,18 +45,14 @@ const DateText = styled.Text`
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = ({ message }) => (
+const MessageSystem = ({ message, moment }) => (
   <Container>
     <Line />
     <TextContainer>
       <Text>{message.text.toUpperCase()}</Text>
       <DateText>
-        {Moment(message.created_at)
-          .format('dddd')
-          .toUpperCase()}{' '}
-        at{' '}
-        {Moment(message.created_at)
-          .format('hh:mm A')
+        {moment(message.created_at)
+          .calendar()
           .toUpperCase()}
       </DateText>
     </TextContainer>
@@ -64,4 +60,5 @@ const MessageSystem = ({ message }) => (
   </Container>
 );
 
-export { MessageSystem };
+const MessageSystemWithContext = withTranslationContext(MessageSystem);
+export { MessageSystemWithContext as MessageSystem };

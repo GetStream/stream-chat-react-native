@@ -4,3 +4,4 @@ dist/
 .expo/
 vendor/
 examples/
+src/components/docs/

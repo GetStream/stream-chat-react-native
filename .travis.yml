@@ -3,6 +3,6 @@ node_js:
   - 11
 script:
   - yarn lint
-  # - yarn test
+  - yarn test
   - yarn docs
-
+  - yarn validate-translations

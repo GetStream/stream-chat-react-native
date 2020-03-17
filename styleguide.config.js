@@ -102,6 +102,10 @@ module.exports = {
           name: 'renderText',
           content: 'src/components/docs/renderText.md',
         },
+        {
+          name: 'Streami18n',
+          content: 'src/components/docs/Streami18n.md',
+        },
       ],
       exampleMode: 'collapse',
       usageMode: 'expand',

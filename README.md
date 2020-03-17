@@ -291,3 +291,44 @@ In current context, dependencies such as `react-native-document-picker` and (if 
       sdk.dir=/Users/{user_name}/Library/Android/sdk/
       ```
    3. Rerun `react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory
+
+## Internationalization
+
+Instance of class `Streami18n` should be provided to Chat component to handle translations.
+Stream provides following list of in-built translations for components:
+
+1.  English (en)
+2.  Dutch (nl)
+3.  Russian (ru)
+4.  Turkish (tr)
+5.  French (fr)
+6.  Italian (it)
+7.  Hindi (hi)
+
+Default language is English. Simplest way to start using chat components in one of the in-built languages would be following:
+
+Simplest way to start using chat components in one of the in-built languages would be following:
+
+```js static
+const i18n = new Streami18n({ language: 'nl' });
+<Chat client={chatClient} i18nInstance={i18n}>
+  ...
+</Chat>;
+```
+
+If you would like to override certain keys in in-built translation:
+
+```js static
+const i18n = new Streami18n({
+  language: 'nl',
+  translationsForLanguage: {
+    'Nothing yet...': 'Nog Niet ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...':
+      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+  },
+});
+```
+
+UI will be automatically updated in this case.
+
+Please read this docs on i18n for more details and further customizations - https://getstream.github.io/stream-chat-react-native/#streami18n
