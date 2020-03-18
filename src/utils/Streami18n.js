@@ -13,6 +13,17 @@ import {
 const defaultNS = 'translation';
 const defaultLng = 'en';
 
+import 'moment/locale/nl';
+import 'moment/locale/ru';
+import 'moment/locale/tr';
+import 'moment/locale/fr';
+import 'moment/locale/hi';
+import 'moment/locale/it';
+// These locale imports also set these locale globally.
+// So As a last step I am going to import english locale
+// to make sure I don't mess up language at other places in app.
+import 'moment/locale/en-gb';
+
 /**
  * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
  * Instance of this class should be provided to Chat component to handle translations.
@@ -83,18 +94,11 @@ const defaultLng = 'en';
  * Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
  * https://github.com/moment/moment/tree/develop/locale
  *
- * You can either configure locale for moment globally or you can provide the locale config while registering
- * language with Streami18n (either via constructor or registerTranslation())
+ * You can either provide the moment locale config while registering
+ * language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Moment instance
+ * to Streami18n constructor, which will be then used internally (using the language locale) in components.
  *
- * 1. Via import
- * Easiest way to register a locale with momentjs is via import in your app.
- *
- * ```js
- * import 'moment/locale/nl';
- * import 'moment/locale/it';
- * ```
- *
- * 2. Via language registration
+ * 1. Via language registration
  *
  * e.g.,
  * ```
@@ -131,6 +135,22 @@ const defaultLng = 'en';
  *  }
  * );
  *```
+ * 2. Provide your own Moment object
+ *
+ * ```js
+ * import 'moment/locale/nl';
+ * import 'moment/locale/it';
+ * // or if you want to include all locales
+ * import 'moment/min/locales';
+ *
+ * import Moment from moment
+ *
+ * const i18n = new Streami18n({
+ *  language: 'nl',
+ *  Moment: Moment
+ * })
+ * ```
+ *
  * If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
  *
  */
@@ -140,13 +160,16 @@ const defaultStreami18nOptions = {
   debug: false,
   logger: (msg) => console.warn(msg),
   momentLocaleConfigForLanguage: null,
+  Moment,
 };
 export class Streami18n {
   i18nInstance = i18n.createInstance();
-  momentInstance = null;
+  Moment = null;
   setLanguageCallback = () => null;
   initialized = false;
+
   t = null;
+  tMoment = null;
   translations = {
     en: { [defaultNS]: enTranslations },
     nl: { [defaultNS]: nlTranslations },
@@ -184,6 +207,9 @@ export class Streami18n {
    *    [Config object](https://momentjs.com/docs/#/i18n/changing-locale/) for internal moment object,
    *    corresponding to language (param)
    *
+   *  - Moment (function) Moment instance. e.g. import Moment from 'moment';
+   *    Make sure to load all the required locales in this Moment instance that you will be provide to Streami18n
+   *
    * @param {*} options
    */
   constructor(options = {}) {
@@ -191,7 +217,9 @@ export class Streami18n {
       ...defaultStreami18nOptions,
       ...options,
     };
+
     this.currentLanguage = finalOptions.language;
+    this.Moment = finalOptions.Moment;
     const translationsForLanguage = finalOptions.translationsForLanguage;
 
     if (translationsForLanguage) {
@@ -200,6 +228,14 @@ export class Streami18n {
       };
     }
 
+    // If translations don't exist for given language, then set it as empty object.
+    if (!this.translations[this.currentLanguage]) {
+      this.translations[this.currentLanguage] = {
+        [defaultNS]: {},
+      };
+    }
+
+    // Prepare the i18next configuration.
     this.logger = finalOptions.logger;
     this.i18nextConfig = {
       nsSeparator: false,
@@ -207,6 +243,7 @@ export class Streami18n {
       fallbackLng: false,
       debug: finalOptions.debug,
       lng: this.currentLanguage,
+
       parseMissingKeyHandler: (key) => {
         this.logger(`Streami18n: Missing translation for key: ${key}`);
 
@@ -231,12 +268,14 @@ export class Streami18n {
       );
     }
 
-    this.momentInstance = (timestamp) => {
-      if (finalOptions.disableDateTimeTranslations) {
-        return Moment(timestamp).locale(defaultLng);
+    this.tMoment = (timestamp) => {
+      if (
+        finalOptions.disableDateTimeTranslations ||
+        !this.momentLocaleExists(this.currentLanguage)
+      ) {
+        return this.Moment(timestamp).locale(defaultLng);
       }
-
-      return Moment(timestamp).locale(this.currentLanguage);
+      return this.Moment(timestamp).locale(this.currentLanguage);
     };
   }
 
@@ -255,7 +294,7 @@ export class Streami18n {
 
       return {
         t: this.t,
-        moment: this.momentInstance,
+        moment: this.tMoment,
       };
     } catch (e) {
       this.logger(`Something went wrong with init:`, e);
@@ -263,7 +302,7 @@ export class Streami18n {
   }
 
   momentLocaleExists = (language) => {
-    const locales = Moment.locales();
+    const locales = this.Moment.locales();
     return locales.indexOf(language) > -1;
   };
 
@@ -298,7 +337,7 @@ export class Streami18n {
     } else {
       return {
         t: this.t,
-        moment: this.momentInstance,
+        moment: this.tMoment,
       };
     }
   }

@@ -26,6 +26,10 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
 
     [Config object](https://momentjs.com/docs/#/i18n/changing-locale/) for internal moment object, corresponding to language (param)
 
+  - **Moment** (function)
+
+    Moment instance/function.
+
 - **geti18Instance**
 
   Returns an instance of [i18next](https://www.i18next.com/) used internally.
@@ -188,62 +192,69 @@ Stream provides following list of in-built translations:
   </Chat>;
   ```
 
-- **Datetime translations**
+ ## Datetime translations
 
-  Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
-  Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
+ Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
+ Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
 
-  Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
-  https://github.com/moment/moment/tree/develop/locale
+ You can either provide the moment locale config while registering
+ language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Moment instance
+ to Streami18n constructor, which will be then used internally (using the language locale) in components.
 
-  You can either configure locale for moment globally or you can provide the locale config while registering
-  language with Streami18n (either via constructor or registerTranslation())
+ 1. Via language registration
 
-  1. Via import
-
-    Easiest way to register a locale with momentjs is via import in your app.
-    ```js static
-    import 'moment/locale/nl';
-    import 'moment/locale/it';
-    ```
-
-  2. Via language registration
-
-    You can provide custom locale config for moment, while registering a language with Streami18n
-
-    e.g.,
-    ```js static
-    const i18n = new Streami18n({
-    language: 'nl',
-    momentLocaleConfigForLanguage: {
-      months: [...],
-      monthsShort: [...],
-      calendar: {
-        sameDay: ...'
-      }
+ e.g.,
+ ```
+ const i18n = new Streami18n({
+  language: 'nl',
+  momentLocaleConfigForLanguage: {
+    months: [...],
+    monthsShort: [...],
+    calendar: {
+      sameDay: ...'
     }
-    });
-    ```
-    Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
-    e.g.,
+  }
+ });
+ ```
 
-    ```js static
-      const i18n = new Streami18n();
-      i18n.registerTranslation(
-      'mr',
-      {
-        'Nothing yet...': 'काहीही नाही  ...',
-        '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
-      },
-      {
-        months: [...],
-        monthsShort: [...],
-        calendar: {
-          sameDay: ...'
-        }
-      }
-      );
-    ```
+ Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+
+ e.g.,
+ ```
+ const i18n = new Streami18n();
+
+ i18n.registerTranslation(
+  'mr',
+  {
+    'Nothing yet...': 'काहीही नाही  ...',
+    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+  },
+  {
+    months: [...],
+    monthsShort: [...],
+    calendar: {
+      sameDay: ...'
+    }
+  }
+ );
+```
+ 2. Provide your own Moment object
+
+ ```js
+ import 'moment/locale/nl';
+ import 'moment/locale/it';
+ // or if you want to include all locales
+ import 'moment/min/locales';
+
+ import Moment from moment
+
+ const i18n = new Streami18n({
+  language: 'nl',
+  Moment: Moment
+ })
+ ```
+
+ If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
 
 **TIP**: If you would like to stick with english language for datetimes in Stream compoments,
 you can set `disableDateTimeTranslations` to true.

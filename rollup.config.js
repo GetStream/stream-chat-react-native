@@ -46,6 +46,7 @@ const normalBundle = {
     'moment/locale/fr',
     'moment/locale/hi',
     'moment/locale/es',
+    'moment/locale/en-gb',
     'lodash/debounce',
     'lodash/get',
     'lodash/isEqual',
