@@ -55,12 +55,12 @@ const Thread = withChannelContext(
          * **Customized MessageInput component to used within Thread instead of default MessageInput
          * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
          * */
-        MessageInput: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        MessageInput: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         /**
          * **Customized MessageList component to used within Thread instead of default MessageList
          * **Available from [MessageList](https://getstream.github.io/stream-chat-react-native/#messagelist)**
          * */
-        MessageList: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
+        MessageList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         /**
          * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
          * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */
