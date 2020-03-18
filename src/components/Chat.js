@@ -1,10 +1,10 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import { ChatContext } from '../context';
+import { ChatContext, TranslationContext } from '../context';
 import { NetInfo } from '../native';
 
 import { themed } from '../styles/theme';
-
+import { Streami18n } from '../utils/Streami18n';
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
  * This Chat component provides the ChatContext to all other components.
@@ -35,6 +35,58 @@ export const Chat = themed(
        * */
       style: PropTypes.object,
       logger: PropTypes.func,
+      /**
+       * Instance of Streami18n class should be provided to Chat component to enable internationalization.
+       *
+       * Stream provides following list of in-built translations:
+       * 1. English (en)
+       * 2. Dutch (nl)
+       * 3. ...
+       * 4. ...
+       *
+       * Simplest way to start using chat components in one of the in-built languages would be following:
+       *
+       * ```
+       * const i18n = new Streami18n('nl);
+       * <Chat client={chatClient} i18nInstance={i18n}>
+       *  ...
+       * </Chat>
+       * ```
+       *
+       * If you would like to override certain keys in in-built translation.
+       * UI will be automatically updated in this case.
+       *
+       * ```
+       * const i18n = new Streami18n('nl);
+       *
+       * i18n.registerTranslation('nl', {
+       *  'Nothing yet...': 'Nog Niet ...',
+       *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
+       * });
+       *
+       * <Chat client={chatClient} i18nInstance={i18n}>
+       *  ...
+       * </Chat>
+       * ```
+       *
+       * You can use the same function to add whole new language.
+       *
+       * ```
+       * const i18n = new Streami18n('it');
+       *
+       * i18n.registerTranslation('it', {
+       *  'Nothing yet...': 'Non ancora ...',
+       *  '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} a {{ secondUser }} stanno scrivendo...',
+       * });
+       *
+       * // Make sure to call setLanguage to reflect new language in UI.
+       * i18n.setLanguage('it');
+       * <Chat client={chatClient} i18nInstance={i18n}>
+       *  ...
+       * </Chat>
+       * ```
+       */
+      i18nInstance: PropTypes.instanceOf(Streami18n),
     };
 
     static defaultProps = {
@@ -49,6 +101,7 @@ export const Chat = themed(
         channel: {},
         isOnline: true,
         connectionRecovering: false,
+        t: null,
       };
 
       this.unsubscribeNetInfo = null;
@@ -70,12 +123,28 @@ export const Chat = themed(
       this._unmounted = false;
     }
 
-    componentDidMount() {
+    async componentDidMount() {
       this.props.logger('Chat component', 'componentDidMount', {
         tags: ['lifecycle', 'chat'],
         props: this.props,
         state: this.state,
       });
+
+      const { i18nInstance } = this.props;
+
+      let streami18n;
+      if (i18nInstance && i18nInstance instanceof Streami18n) {
+        streami18n = i18nInstance;
+      } else {
+        streami18n = new Streami18n({ language: 'en' });
+      }
+
+      streami18n.registerSetLanguageCallback((t) => {
+        this.setState({ t });
+      });
+
+      const { t, moment } = await streami18n.getTranslators();
+      this.setState({ t, moment });
     }
 
     componentDidUpdate() {
@@ -151,9 +220,15 @@ export const Chat = themed(
         state: this.state,
       });
 
+      if (!this.state.t) return null;
+
       return (
         <ChatContext.Provider value={this.getContext()}>
-          {this.props.children}
+          <TranslationContext.Provider
+            value={{ t: this.state.t, moment: this.state.moment }}
+          >
+            {this.props.children}
+          </TranslationContext.Provider>
         </ChatContext.Provider>
       );
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0] 2020-03-17
+
+- Introducing internationalisation (i18n) support for the sdk - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/docs/Streami18n.md
+
 ## [0.6.6] 2020-02-20
 
 - Adding following props to KeyboardCompatibleView component [6650109](https://github.com/GetStream/stream-chat-react-native/commit/6650109669cdd13c3b2a5bc59cc235d7a2796b3e)

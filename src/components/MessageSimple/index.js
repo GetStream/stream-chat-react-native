@@ -269,10 +269,10 @@ export const MessageSimple = themed(
         MessageSystem,
       } = this.props;
 
-      let pos;
+      let alignment;
       if (forceAlign && (forceAlign === 'left' || forceAlign === 'right'))
-        pos = forceAlign;
-      else pos = isMyMessage(message) ? 'right' : 'left';
+        alignment = forceAlign;
+      else alignment = isMyMessage(message) ? 'right' : 'left';
 
       const lastMessage = this.props.channel.state.messages[
         this.props.channel.state.messages.length - 1
@@ -295,24 +295,25 @@ export const MessageSimple = themed(
         reactionPickerVisible: this.state.reactionPickerVisible,
         openReactionPicker: this.openReactionPicker,
         dismissReactionPicker: this.dismissReactionPicker,
+        alignment,
       };
 
       return (
         <Container
-          alignment={pos}
+          alignment={alignment}
           hasMarginBottom={hasMarginBottom}
           isVeryLastMessage={isVeryLastMessage}
         >
-          {pos === 'right' ? (
+          {alignment === 'right' ? (
             <React.Fragment>
-              <MessageContent {...forwardedProps} alignment={pos} />
+              <MessageContent {...forwardedProps} />
               <MessageAvatar {...forwardedProps} />
               {showMessageStatus && <MessageStatus {...forwardedProps} />}
             </React.Fragment>
           ) : (
             <React.Fragment>
               <MessageAvatar {...forwardedProps} />
-              <MessageContent {...forwardedProps} alignment={pos} />
+              <MessageContent {...forwardedProps} />
             </React.Fragment>
           )}
         </Container>

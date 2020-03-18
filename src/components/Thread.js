@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { withChannelContext } from '../context';
+import { withChannelContext, withTranslationContext } from '../context';
 import { MessageList } from './MessageList';
 import { MessageInput } from './MessageInput';
 import PropTypes from 'prop-types';
@@ -36,84 +36,80 @@ const NewThreadText = styled.Text`
  * @example ./docs/Thread.md
  * @extends Component
  */
-const Thread = withChannelContext(
-  themed(
-    class Thread extends React.PureComponent {
-      static themePath = 'thread';
-      static propTypes = {
-        /** Make input focus on mounting thread */
-        autoFocus: PropTypes.bool,
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * */
-        channel: PropTypes.object.isRequired,
-        /**
-         *  **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * */
-        Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */
-        thread: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * The array of immutable messages to render. By default they are provided by parent Channel component */
-        threadMessages: PropTypes.array.isRequired,
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         *
-         * Function which provides next page of thread messages.
-         * loadMoreThread is called when infinite scroll wants to load more messages
-         * */
-        loadMoreThread: PropTypes.func.isRequired,
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * If there are more messages available, set to false when the end of pagination is reached.
-         * */
-        threadHasMore: PropTypes.bool,
-        /**
-         * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
-         * If the thread is currently loading more messages. This is helpful to display a loading indicator on threadlist */
-        threadLoadingMore: PropTypes.bool,
-        /**
-         * Additional props for underlying Message component of parent message at the top.
-         * Available props - https://getstream.github.io/stream-chat-react-native/#message
-         * */
-        additionalParentMessageProps: PropTypes.object,
-        /**
-         * Additional props for underlying MessageList component.
-         * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
-         * */
-        additionalMessageListProps: PropTypes.object,
-        /**
-         * Additional props for underlying MessageInput component.
-         * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
-         * */
-        additionalMessageInputProps: PropTypes.object,
-      };
+class Thread extends React.PureComponent {
+  static themePath = 'thread';
+  static propTypes = {
+    /** Make input focus on mounting thread */
+    autoFocus: PropTypes.bool,
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * */
+    channel: PropTypes.object.isRequired,
+    /**
+     *  **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * */
+    Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */
+    thread: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * The array of immutable messages to render. By default they are provided by parent Channel component */
+    threadMessages: PropTypes.array.isRequired,
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     *
+     * Function which provides next page of thread messages.
+     * loadMoreThread is called when infinite scroll wants to load more messages
+     * */
+    loadMoreThread: PropTypes.func.isRequired,
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * If there are more messages available, set to false when the end of pagination is reached.
+     * */
+    threadHasMore: PropTypes.bool,
+    /**
+     * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
+     * If the thread is currently loading more messages. This is helpful to display a loading indicator on threadlist */
+    threadLoadingMore: PropTypes.bool,
+    /**
+     * Additional props for underlying Message component of parent message at the top.
+     * Available props - https://getstream.github.io/stream-chat-react-native/#message
+     * */
+    additionalParentMessageProps: PropTypes.object,
+    /**
+     * Additional props for underlying MessageList component.
+     * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
+     * */
+    additionalMessageListProps: PropTypes.object,
+    /**
+     * Additional props for underlying MessageInput component.
+     * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
+     * */
+    additionalMessageInputProps: PropTypes.object,
+  };
 
-      static defaultProps = {
-        threadHasMore: true,
-        threadLoadingMore: true,
-        autoFocus: true,
-      };
+  static defaultProps = {
+    threadHasMore: true,
+    threadLoadingMore: true,
+    autoFocus: true,
+  };
 
-      render() {
-        if (!this.props.thread) {
-          return null;
-        }
+  render() {
+    if (!this.props.thread) {
+      return null;
+    }
 
-        const parentID = this.props.thread.id;
-        const cid = this.props.channel.cid;
+    const parentID = this.props.thread.id;
+    const cid = this.props.channel.cid;
 
-        const key = `thread-${parentID}-${cid}`;
-        // We use a wrapper to make sure the key variable is set.
-        // this ensures that if you switch thread the component is recreated
-        return <ThreadInner {...this.props} key={key} />;
-      }
-    },
-  ),
-);
+    const key = `thread-${parentID}-${cid}`;
+    // We use a wrapper to make sure the key variable is set.
+    // this ensures that if you switch thread the component is recreated
+    return <ThreadInner {...this.props} key={key} />;
+  }
+}
 
 class ThreadInner extends React.PureComponent {
   static propTypes = {
@@ -136,7 +132,19 @@ class ThreadInner extends React.PureComponent {
   }
 
   render() {
-    if (!this.props.thread) {
+    const {
+      t,
+      thread,
+      additionalParentMessageProps,
+      threadMessages,
+      loadMoreThread,
+      threadHasMore,
+      threadLoadingMore,
+      additionalMessageListProps,
+      autoFocus,
+      additionalMessageInputProps,
+    } = this.props;
+    if (!thread) {
       return null;
     }
 
@@ -144,7 +152,7 @@ class ThreadInner extends React.PureComponent {
     const headerComponent = (
       <React.Fragment>
         <Message
-          message={this.props.thread}
+          message={thread}
           initialMessage
           threadList
           readOnly
@@ -152,10 +160,10 @@ class ThreadInner extends React.PureComponent {
           Message={this.props.Message}
           // TODO: remove the following line in next release, since we already have additionalParentMessageProps now.
           {...this.props}
-          {...this.props.additionalParentMessageProps}
+          {...additionalParentMessageProps}
         />
         <NewThread>
-          <NewThreadText>Start of a new thread</NewThreadText>
+          <NewThreadText>{t('Start of a new thread')}</NewThreadText>
         </NewThread>
       </React.Fragment>
     );
@@ -163,24 +171,28 @@ class ThreadInner extends React.PureComponent {
     return (
       <React.Fragment>
         <MessageList
-          messages={this.props.threadMessages}
+          messages={threadMessages}
           HeaderComponent={headerComponent}
           read={read}
           threadList
-          loadMore={this.props.loadMoreThread}
-          hasMore={this.props.threadHasMore}
-          loadingMore={this.props.threadLoadingMore}
+          loadMore={loadMoreThread}
+          hasMore={threadHasMore}
+          loadingMore={threadLoadingMore}
           Message={this.props.Message}
-          {...this.props.additionalMessageListProps}
+          {...additionalMessageListProps}
         />
         <MessageInput
-          parent={this.props.thread}
-          focus={this.props.autoFocus}
-          {...this.props.additionalMessageInputProps}
+          parent={thread}
+          focus={autoFocus}
+          {...additionalMessageInputProps}
         />
       </React.Fragment>
     );
   }
 }
 
-export { Thread };
+const ThreadWithContext = withTranslationContext(
+  withChannelContext(themed(Thread)),
+);
+
+export { ThreadWithContext as Thread };

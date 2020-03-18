@@ -1579,7 +1579,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-base64-js@^1.1.2, base64-js@^1.2.3:
+base64-js@^1.1.2, base64-js@^1.2.3, base64-js@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.1.tgz#58ece8cb75dd07e71ed08c736abc5fac4dbf8df1"
   integrity sha512-mLQ4i2QO1ytvGWFWmcngKO//JXAQueZvwEKtjgQFM4jIK0kU+ytMfplL8j+n5mspOfjHwoAg+9yhb7BwAHm36g==
@@ -3268,6 +3268,13 @@ http-signature@~1.2.0:
     assert-plus "^1.0.0"
     jsprim "^1.2.2"
     sshpk "^1.7.0"
+
+i18next@^19.3.1:
+  version "19.3.3"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-19.3.3.tgz#04bd79b315e5fe2c87ab8f411e5d55eda0a17bd8"
+  integrity sha512-CnuPqep5/JsltkGvQqzYN4d79eCe0TreCBRF3a8qHHi8x4SON1qqZ/pvR2X7BfNkNqpA5HXIqw0E731H+VsgSg==
+  dependencies:
+    "@babel/runtime" "^7.3.1"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
@@ -6628,10 +6635,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.3.11:
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.3.11.tgz#35d6ecf70abe3847d5952a520fd6b695f9face93"
-  integrity sha512-wQ0HuACRj8Y78mzQ+Y6W6z5gRkf5iRzz1P/HZox4EvdRRrskYmvgWOKJDl0oMhCaRdVCykzN2Mkcy61fzwQjpg==
+stream-chat-react-native-core@v0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.7.0.tgz#94ebe769a86ce32d0d23f0d2d712656443c746b3"
+  integrity sha512-XJwNrnOO/vffT8ujzd076rCCxu9rmNE3Fhe/grp7WmERIIp0CKxwfXoWTBh1gO5DPlkrV7QYBYeZM1kLWc052w==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
@@ -6641,6 +6648,7 @@ stream-chat-react-native-core@v0.3.11:
     deep-equal "^1.0.1"
     deepmerge "^3.2.0"
     file-loader "^3.0.1"
+    i18next "^19.3.1"
     lodash-es "^4.17.11"
     metro-react-native-babel-preset "^0.53.1"
     mime-types "^2.1.24"
@@ -6650,24 +6658,25 @@ stream-chat-react-native-core@v0.3.11:
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^1.1.2"
+    stream-chat "^1.2.1"
     uuid "^3.3.2"
 
-stream-chat-react-native@^0.3.9:
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-0.3.11.tgz#89069e38e9bee320bde3c74d40bec04c3e6b142d"
-  integrity sha512-ht7SdcmKM00XclfFn5EiLap2ZzciJeOEdofEbTRDHaR7+Edu3uuSNWiDhtCbkfTkd+Bc3p2tu2SqV8BpKMTAow==
+stream-chat-react-native@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native/-/stream-chat-react-native-0.7.0.tgz#7107d205ba96007c257c1b8dbc27bde317dd47e0"
+  integrity sha512-8sC/VrOnD5xqNWqMkWQVROloIkDO/vA3JBWI9EQWhhlyce4fGqwwfwu0IQ3nfngGMy2mhLE6SyjGRatJrAc34w==
   dependencies:
     es6-symbol "^3.1.1"
-    stream-chat-react-native-core v0.3.11
+    stream-chat-react-native-core v0.7.0
 
-stream-chat@^1.1.2:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.2.1.tgz#cefd4aae598c4c58ab92df6720a8adaa797ad216"
-  integrity sha512-pSJIqoI2FfWj11hXcGrOp4yPWeVlNnCDfw+dbEGTPt0AcahbZ0jFHj9SDAX2SkWPUd1PpUo5d3rD74TM7aZihw==
+stream-chat@^1.2.1:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.4.0.tgz#6b17a2ec1bae09202160fafcc79ea9670b0c00e6"
+  integrity sha512-NiA8yvmBi6RwHL6uebah/AFh/SoJXUGpPsPO2vga3zN1795j4C5pRz8I542oAKlrBJzPexb1Gn7dzVKtDPfjkg==
   dependencies:
     "@babel/runtime" "^7.3.1"
     axios "^0.18.1"
+    base64-js "^1.3.1"
     chai-arrays "^2.0.0"
     cross-fetch "^3.0.0"
     form-data "^2.3.3"

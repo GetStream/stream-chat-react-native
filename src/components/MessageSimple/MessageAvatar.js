@@ -15,14 +15,12 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
-  const pos = isMyMessage(message) ? 'right' : 'left';
-
+export const MessageAvatar = ({ message, alignment, groupStyles }) => {
   const showAvatar =
     groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
 
   return (
-    <Container alignment={pos}>
+    <Container alignment={alignment}>
       {showAvatar ? (
         <Avatar
           image={message.user.image}

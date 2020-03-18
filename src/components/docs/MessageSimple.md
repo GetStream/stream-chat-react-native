@@ -25,6 +25,7 @@ const readBy = [
   editing={false}
   style={{ 'avatar.fallback': 'background-color: red;' }}
   {...data.channelContext}
+  {...data.translationContext}
 />;
 ```
 
@@ -38,6 +39,7 @@ const data = require('./data');
   groupStyles={['single']}
   editing={false}
   {...data.channelContext}
+  {...data.translationContext}
 />;
 ```
 
@@ -51,6 +53,7 @@ const data = require('./data');
   groupStyles={['single']}
   editing={false}
   {...data.channelContext}
+  {...data.translationContext}
 />;
 ```
 
@@ -60,7 +63,7 @@ You can customize the styles of message text by providing custom styles in theme
 
 Available options for customization are: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
 
-```json
+```js static
 const theme = {
   message: {
     content: {

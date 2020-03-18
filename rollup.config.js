@@ -2,6 +2,7 @@
 import babel from 'rollup-plugin-babel';
 import external from 'rollup-plugin-peer-deps-external';
 import commonjs from 'rollup-plugin-commonjs';
+import copy from 'rollup-plugin-copy';
 import json from 'rollup-plugin-json';
 import images from './rollup-react-native-image.js';
 import path from 'path';
@@ -38,6 +39,14 @@ const normalBundle = {
   external: [
     'anchorme',
     'moment',
+    'moment/locale/nl',
+    'moment/locale/it',
+    'moment/locale/ru',
+    'moment/locale/tr',
+    'moment/locale/fr',
+    'moment/locale/hi',
+    'moment/locale/es',
+    'moment/locale/en-gb',
     'lodash/debounce',
     'lodash/get',
     'lodash/isEqual',
@@ -62,6 +71,7 @@ const normalBundle = {
     'uuid/v4',
     'mime-types',
     'path',
+    'i18next',
     '@stream-io/styled-components',
     '@babel/runtime/regenerator',
     '@babel/runtime/helpers/asyncToGenerator',
@@ -94,6 +104,9 @@ const normalBundle = {
     }),
     commonjs(),
     json(),
+    copy({
+      targets: [{ src: 'src/i18n/*.json', dest: 'dist/i18n' }],
+    }),
   ],
 };
 

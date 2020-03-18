@@ -5,3 +5,4 @@ dist/
 vendor/
 examples/
 *.md
+src/components/docs/

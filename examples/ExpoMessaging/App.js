@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+
 import { StreamChat } from 'stream-chat';
 import {
   Chat,
@@ -10,6 +11,7 @@ import {
   Thread,
   CloseButton,
   ChannelPreviewMessenger,
+  Streami18n
 } from 'stream-chat-expo';
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
@@ -50,6 +52,14 @@ const options = {
   limit: 30,
 };
 
+/**
+ * Start playing with streami18n instance here:
+ * Please refer to description of this PR for details: https://github.com/GetStream/stream-chat-react-native/pull/150
+ */
+const streami18n = new Streami18n({
+  language: 'nl'
+});
+
 class ChannelListScreen extends PureComponent {
   static navigationOptions = () => ({
     headerTitle: <Text style={{ fontWeight: 'bold' }}>Channel List</Text>,
@@ -58,7 +68,7 @@ class ChannelListScreen extends PureComponent {
   render() {
     return (
       <SafeAreaView>
-        <Chat client={chatClient} style={theme}>
+        <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
           <View style={{ display: 'flex', height: '100%', padding: 10 }}>
             <ChannelList
               filters={filters}
@@ -94,7 +104,7 @@ class ChannelScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat client={chatClient} style={theme}>
+        <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
           <Channel client={chatClient} channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
@@ -149,7 +159,7 @@ class ThreadScreen extends PureComponent {
 
     return (
       <SafeAreaView>
-        <Chat client={chatClient}>
+        <Chat client={chatClient} i18nInstance={streami18n}>
           <Channel
             client={chatClient}
             channel={channel}
