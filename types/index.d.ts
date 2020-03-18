@@ -958,6 +958,7 @@ export interface Streami18nOptions {
   debug?: boolean;
   logger?(msg: string): any;
   momentLocaleConfigForLanguage?: object;
+  Moment?(): moment.Moment;
 }
 
 export interface Streami18nTranslators {
