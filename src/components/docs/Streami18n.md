@@ -204,7 +204,7 @@ Stream provides following list of in-built translations:
  1. Via language registration
 
  e.g.,
- ```
+ ```js static
  const i18n = new Streami18n({
   language: 'nl',
   momentLocaleConfigForLanguage: {
@@ -220,7 +220,7 @@ Stream provides following list of in-built translations:
  Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
 
  e.g.,
- ```
+ ```js static
  const i18n = new Streami18n();
 
  i18n.registerTranslation(
@@ -240,7 +240,7 @@ Stream provides following list of in-built translations:
 ```
  2. Provide your own Moment object
 
- ```js
+ ```js static
  import 'moment/locale/nl';
  import 'moment/locale/it';
  // or if you want to include all locales
