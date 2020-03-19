@@ -25,8 +25,6 @@ const TextContainer = styled.View`
   padding: 5px;
   padding-left: 8;
   padding-right: 8;
-  align-self: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth

@@ -523,11 +523,22 @@ export interface MessageUIComponentProps
   MessageSystem?: React.ElementType<MessageSystemProps>;
   /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
+  /** Custom UI component for message footer */
+  MessageText?: React.ElementType<MessageTextProps>;
+  /** Custom UI component for reaction list */
+  ReactionList?: React.ElementType<ReactionListProps>;
+  supportedReactions?: Array<{
+    icon: string;
+    id: string;
+  }>;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
 }
+
+export interface MessageFooterUIComponentProps
+  extends MessageContentUIComponentProps {}
 
 export interface MessageRepliesUIComponentProps
   extends TranslationContextValue {
@@ -538,7 +549,7 @@ export interface MessageRepliesUIComponentProps
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   openThread?(message: Client.Message, event: React.SyntheticEvent): void;
   /** right | left */
-  pos: string;
+  alignment: string;
 }
 
 export interface MessageStatusUIComponentProps {
@@ -576,6 +587,12 @@ export interface MessageContentUIComponentProps
   extends MessageUIComponentProps,
     TranslationContextValue {
   alignment: string;
+  /** Open the reaction picker */
+  openReactionPicker?(): void;
+  /** Dismiss the reaction picker */
+  dismissReactionPicker?(): void;
+  /** Boolean - if reaction picker is visible. Hides the reaction list in that case */
+  reactionPickerVisible?: boolean;
 }
 
 export interface MessageTextContainerUIComponentProps {
@@ -738,6 +755,10 @@ export interface ReactionListProps {
   getTotalReactionCount?(): string | number;
   visible: boolean;
   position: string;
+  supportedReactions?: Array<{
+    icon: string;
+    id: string;
+  }>;
 }
 
 export interface ReactionPickerProps {
@@ -750,7 +771,7 @@ export interface ReactionPickerProps {
   rpLeft: string | number;
   rpTop: string | number;
   rpRight: string | number;
-  emojiData: Array<{
+  supportedReactions?: Array<{
     icon: string;
     id: string;
   }>;
@@ -759,12 +780,18 @@ export interface ReactionPickerProps {
 export interface ReactionPickerWrapperProps {
   isMyMessage?(message: Client.MessageResponse): boolean;
   message: Client.MessageResponse;
-  offset: string | number;
+  offset: {
+    top: string | number;
+    left: string | number;
+  };
   handleReaction?(id: string): void;
-  emojiData: Array<{
+  supportedReactions?: Array<{
     icon: string;
     id: string;
   }>;
+  dismissReactionPicker?(): void;
+  reactionPickerVisible: boolean;
+  openReactionPicker?(): void;
   style: object;
 }
 

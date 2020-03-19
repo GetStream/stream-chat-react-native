@@ -15,9 +15,11 @@ import rightEnd from '../images/reactionlist/right-end.png';
 
 const TouchableWrapper = styled.View`
   position: relative;
-  ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
+  ${(props) => (props.alignment === 'left' ? 'left: -10px;' : 'right: -10px;')}
   height: 28px;
   z-index: 10;
+  align-self: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
 `;
 
 const Container = styled.View`
@@ -101,6 +103,28 @@ export const ReactionList = themed(
       getTotalReactionCount: PropTypes.func,
       visible: PropTypes.bool,
       position: PropTypes.string,
+      /**
+       * e.g.,
+       * [
+       *  {
+       *    id: 'like',
+       *    icon: '👍',
+       *  },
+       *  {
+       *    id: 'love',
+       *    icon: '❤️️',
+       *  },
+       *  {
+       *    id: 'haha',
+       *    icon: '😂',
+       *  },
+       *  {
+       *    id: 'wow',
+       *    icon: '😮',
+       *  },
+       * ]
+       */
+      supportedReactions: PropTypes.array,
     };
 
     render() {
@@ -108,11 +132,11 @@ export const ReactionList = themed(
         latestReactions,
         getTotalReactionCount,
         visible,
-        position,
+        alignment,
         supportedReactions,
       } = this.props;
       return (
-        <TouchableWrapper position={position} activeOpacity={1}>
+        <TouchableWrapper alignment={alignment} activeOpacity={1}>
           <Container visible={visible}>
             <Reactions>
               {renderReactions(latestReactions, supportedReactions)}
@@ -122,7 +146,7 @@ export const ReactionList = themed(
             </ReactionCount>
           </Container>
           <ImageWrapper visible={visible}>
-            {position === 'left' ? (
+            {alignment === 'left' ? (
               <React.Fragment>
                 <LeftTail source={leftTail} />
                 <LeftCenter source={leftCenter} resizeMode="stretch" />

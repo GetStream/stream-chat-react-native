@@ -11,11 +11,35 @@ export class ReactionPickerWrapper extends React.PureComponent {
     message: PropTypes.object,
     offset: PropTypes.object,
     handleReaction: PropTypes.func,
-    emojiData: PropTypes.array,
+    /**
+     * e.g.,
+     * [
+     *  {
+     *    id: 'like',
+     *    icon: '👍',
+     *  },
+     *  {
+     *    id: 'love',
+     *    icon: '❤️️',
+     *  },
+     *  {
+     *    id: 'haha',
+     *    icon: '😂',
+     *  },
+     *  {
+     *    id: 'wow',
+     *    icon: '😮',
+     *  },
+     * ]
+     */
+    supportedReactions: PropTypes.array,
     ReactionPicker: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    dismissReactionPicker: PropTypes.func,
+    reactionPickerVisible: PropTypes.bool,
+    openReactionPicker: PropTypes.func,
     style: PropTypes.any,
   };
 
@@ -60,7 +84,7 @@ export class ReactionPickerWrapper extends React.PureComponent {
     const {
       handleReaction,
       message,
-      emojiData,
+      supportedReactions,
       style,
       dismissReactionPicker,
       reactionPickerVisible,
@@ -83,7 +107,7 @@ export class ReactionPickerWrapper extends React.PureComponent {
           reactionCounts={message.reaction_counts}
           handleDismiss={dismissReactionPicker}
           style={style}
-          emojiData={emojiData}
+          supportedReactions={supportedReactions}
           rpLeft={this.state.rpLeft}
           rpRight={this.state.rpRight}
           rpTop={this.state.rpTop}

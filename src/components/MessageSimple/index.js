@@ -6,6 +6,7 @@ import { MessageAvatar as DefaultMessageAvatar } from './MessageAvatar';
 import { MessageContent as DefaultMessageContent } from './MessageContent';
 import { MessageStatus as DefaultMessageStatus } from './MessageStatus';
 import { MessageSystem as DefaultMessageSystem } from '../MessageSystem';
+import { emojiData } from '../../utils';
 
 import PropTypes from 'prop-types';
 
@@ -208,11 +209,36 @@ export const MessageSimple = themed(
         PropTypes.node,
         PropTypes.elementType,
       ]),
+      /**
+       * Custom UI component to display reaction list.
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+       */
       ReactionList: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
       ]),
       formatDate: PropTypes.func,
+      /**
+       * e.g.,
+       * [
+       *  {
+       *    id: 'like',
+       *    icon: '👍',
+       *  },
+       *  {
+       *    id: 'love',
+       *    icon: '❤️️',
+       *  },
+       *  {
+       *    id: 'haha',
+       *    icon: '😂',
+       *  },
+       *  {
+       *    id: 'wow',
+       *    icon: '😮',
+       *  },
+       * ]
+       */
       supportedReactions: PropTypes.array,
     };
 
@@ -225,6 +251,7 @@ export const MessageSimple = themed(
       MessageContent: DefaultMessageContent,
       MessageStatus: DefaultMessageStatus,
       MessageSystem: DefaultMessageSystem,
+      supportedReactions: emojiData,
     };
 
     constructor(props) {

@@ -226,7 +226,7 @@ class MessageContent extends React.PureComponent {
     /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
     handleAction: PropTypes.func,
     /** Position of message. 'right' | 'left' */
-    alignment: PropTypes.string,
+    alignment: PropTypes.oneOf(['right', 'left']),
     /**
      * Position of message in group - top, bottom, middle, single.
      *
@@ -247,6 +247,41 @@ class MessageContent extends React.PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    /**
+     * Custom UI component to display reaction list.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+     */
+    ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * e.g.,
+     * [
+     *  {
+     *    id: 'like',
+     *    icon: '👍',
+     *  },
+     *  {
+     *    id: 'love',
+     *    icon: '❤️️',
+     *  },
+     *  {
+     *    id: 'haha',
+     *    icon: '😂',
+     *  },
+     *  {
+     *    id: 'wow',
+     *    icon: '😮',
+     *  },
+     * ]
+     */
+    supportedReactions: PropTypes.array,
+    /** Open the reaction picker */
+    openReactionPicker: PropTypes.func,
+    /** Dismiss the reaction picker */
+    dismissReactionPicker: PropTypes.func,
+    /** Boolean - if reaction picker is visible. Hides the reaction list in that case */
+    reactionPickerVisible: PropTypes.bool,
+    /** Custom UI component for message text */
+    MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     formatDate: PropTypes.func,
   };
 
@@ -479,7 +514,7 @@ class MessageContent extends React.PureComponent {
               {message.latest_reactions &&
                 message.latest_reactions.length > 0 && (
                   <ReactionList
-                    position={alignment}
+                    alignment={alignment}
                     visible={!reactionPickerVisible}
                     latestReactions={message.latest_reactions}
                     getTotalReactionCount={getTotalReactionCount}
@@ -543,19 +578,10 @@ class MessageContent extends React.PureComponent {
               message={message}
               isThreadList={!!threadList}
               openThread={this.openThread}
-              pos={alignment}
+              alignment={alignment}
             />
           ) : null}
-          {MessageFooter && (
-            <MessageFooter
-              {...this.props}
-              {...this.state}
-              openThread={this.openThread}
-              showActionSheet={this.showActionSheet}
-              handleDelete={this.handleDelete}
-              handleEdit={this.handleEdit}
-            />
-          )}
+          {MessageFooter && <MessageFooter {...this.props} />}
           {!MessageFooter && showTime ? (
             <MetaContainer>
               <MetaText alignment={alignment}>
