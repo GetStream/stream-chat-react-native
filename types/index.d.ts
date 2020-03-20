@@ -391,7 +391,7 @@ export interface MessageListProps
   extends ChannelContextValue,
     TranslationContextValue {
   /** Turn off grouping of messages by user */
-  messageActions: Array<MessageAction>;
+  messageActions?: Array<MessageAction>;
   noGroupByUser?: boolean;
   /** Weather its a thread of no. Default - false  */
   threadList?: boolean;
