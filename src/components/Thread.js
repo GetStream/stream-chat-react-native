@@ -50,6 +50,16 @@ class Thread extends React.PureComponent {
      * */
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
+     * **Customized MessageInput component to used within Thread instead of default MessageInput
+     * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
+     * */
+    MessageInput: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * **Customized MessageList component to used within Thread instead of default MessageList
+     * **Available from [MessageList](https://getstream.github.io/stream-chat-react-native/#messagelist)**
+     * */
+    MessageList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
      * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
      * The thread (the parent [message object](https://getstream.io/chat/docs/#message_format)) */
     thread: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
@@ -94,6 +104,8 @@ class Thread extends React.PureComponent {
     threadHasMore: true,
     threadLoadingMore: true,
     autoFocus: true,
+    MessageList,
+    MessageInput,
   };
 
   render() {
@@ -143,6 +155,8 @@ class ThreadInner extends React.PureComponent {
       additionalMessageListProps,
       autoFocus,
       additionalMessageInputProps,
+      MessageList: MessageListComponent,
+      MessageInput: MessageInputComponent,
     } = this.props;
     if (!thread) {
       return null;
@@ -170,7 +184,7 @@ class ThreadInner extends React.PureComponent {
 
     return (
       <React.Fragment>
-        <MessageList
+        <MessageListComponent
           messages={threadMessages}
           HeaderComponent={headerComponent}
           read={read}
@@ -181,7 +195,7 @@ class ThreadInner extends React.PureComponent {
           Message={this.props.Message}
           {...additionalMessageListProps}
         />
-        <MessageInput
+        <MessageInputComponent
           parent={thread}
           focus={autoFocus}
           {...additionalMessageInputProps}
