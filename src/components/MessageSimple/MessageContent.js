@@ -247,6 +247,10 @@ class MessageContent extends React.PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    MessageReplies: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     /**
      * Custom UI component to display reaction list.
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
@@ -291,6 +295,7 @@ class MessageContent extends React.PureComponent {
     repliesEnabled: true,
     MessageText: false,
     ReactionList,
+    MessageReplies,
     supportedReactions: emojiData,
   };
 
@@ -385,6 +390,7 @@ class MessageContent extends React.PureComponent {
       handleAction,
       AttachmentFileIcon,
       MessageText,
+      MessageReplies,
       t,
       moment,
     } = this.props;
