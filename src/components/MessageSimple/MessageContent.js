@@ -270,6 +270,7 @@ class MessageContent extends React.PureComponent {
   };
 
   showActionSheet = () => {
+    this.props.dismissKeyboard();
     this.ActionSheet.show();
   };
 
