@@ -438,7 +438,7 @@ export interface MessageProps extends KeyboardContextValue {
   client: Client.StreamChat;
   onThreadSelect?(message: Client.MessageResponse): void;
   /** The message object */
-  message: Client.Message;
+  message: Client.MessageResponse;
   /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
   groupStyles: Array<string>;
   /** A list of users that have read this message **/
