@@ -76,14 +76,6 @@ class Channel extends PureComponent {
      * */
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
-     * Override send message request (Advanced usage only)
-     * */
-    doSendMessageRequest: PropTypes.func,
-    /**
-     * Override update message request (Advanced usage only)
-     * */
-    doUpdateMessageRequest: PropTypes.func,
-    /**
      * If true, KeyboardCompatibleView wrapper is disabled.
      *
      * Channel component internally uses [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js) component
@@ -114,6 +106,25 @@ class Channel extends PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    /**
+     * Override mark channel read request (Advanced usage only)
+     *
+     * @param channel Channel object
+     * */
+    doMarkReadRequest: PropTypes.func,
+    /**
+     * Override send message request (Advanced usage only)
+     *
+     * @param channelId
+     * @param messageData Message object
+     * */
+    doSendMessageRequest: PropTypes.func,
+    /**
+     * Override update message request (Advanced usage only)
+     * @param channelId
+     * @param updatedMessage UpdatedMessage object
+     * */
+    doUpdateMessageRequest: PropTypes.func,
   };
 
   static defaultProps = {

@@ -123,9 +123,24 @@ class ChannelInner extends PureComponent {
     isOnline: PropTypes.bool,
     Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-    /** Override send message request (Advanced usage only) */
+    /**
+     * Override mark channel read request (Advanced usage only)
+     *
+     * @param channel Channel object
+     * */
+    doMarkReadRequest: PropTypes.func,
+    /**
+     * Override send message request (Advanced usage only)
+     *
+     * @param channelId
+     * @param messageData Message object
+     * */
     doSendMessageRequest: PropTypes.func,
-    /** Override update message request (Advanced usage only) */
+    /**
+     * Override update message request (Advanced usage only)
+     * @param channelId
+     * @param updatedMessage UpdatedMessage object
+     * */
     doUpdateMessageRequest: PropTypes.func,
   };
 
@@ -213,7 +228,14 @@ class ChannelInner extends PureComponent {
     if (!this.props.channel.getConfig().read_events) {
       return;
     }
-    logChatPromiseExecution(this.props.channel.markRead(), 'mark read');
+
+    const { doMarkReadRequest, channel } = this.props;
+
+    if (doMarkReadRequest) {
+      doMarkReadRequest(channel);
+    } else {
+      logChatPromiseExecution(channel.markRead(), 'mark read');
+    }
   };
 
   listenToChanges() {

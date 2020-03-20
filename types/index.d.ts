@@ -162,6 +162,8 @@ export interface ChannelProps
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
   Message?: React.ElementType<MessageUIComponentProps>;
   Attachment?: React.ElementType<AttachmentProps>;
+  /** Function that overrides default markRead in channel */
+  doMarkReadRequest?(channel: Client.Channel): void;
   /** Function that overrides default sendMessage in chat client */
   doSendMessageRequest?(
     channelId: string,
