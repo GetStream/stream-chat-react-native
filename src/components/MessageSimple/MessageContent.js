@@ -221,6 +221,8 @@ class MessageContent extends React.PureComponent {
      * `editing` prop is then used by MessageInput component to switch to edit mode.
      */
     handleEdit: PropTypes.func,
+    // enable hiding reaction owners from reaction picker
+    hideReactionOwners: PropTypes.bool,
     /** @see See [keyboard context](https://getstream.io/chat/docs/#keyboardcontext) */
     dismissKeyboard: PropTypes.func,
     /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
@@ -337,6 +339,7 @@ class MessageContent extends React.PureComponent {
       readOnly,
       Message,
       handleReaction,
+      hideReactionOwners,
       threadList,
       retrySendMessage,
       messageActions,
@@ -543,6 +546,7 @@ class MessageContent extends React.PureComponent {
             <ReactionPicker
               reactionPickerVisible={this.state.reactionPickerVisible}
               handleReaction={handleReaction}
+              hideReactionOwners={hideReactionOwners}
               latestReactions={message.latest_reactions}
               reactionCounts={message.reaction_counts}
               handleDismiss={() => {
