@@ -623,6 +623,7 @@ export interface ThreadProps
 export interface TypingIndicatorProps extends TranslationContextValue {
   typing: [];
   client: Client.StreamChat;
+  Avatar?: React.ElementType<AvatarProps>;
 }
 
 export interface FileIconUIComponentProps {

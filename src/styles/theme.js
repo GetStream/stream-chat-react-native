@@ -260,6 +260,7 @@ export const defaultTheme = {
       fontSize: 14,
       color: Colors.textGrey,
     },
+    container: {},
   },
 };
 

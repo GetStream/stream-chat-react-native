@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import { Avatar } from './Avatar';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 import { withTranslationContext } from '../context';
+import { StreamChat } from 'stream-chat';
 
 const TypingText = styled.Text`
   margin-left: 10px;
@@ -17,16 +19,29 @@ const Container = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+  ${({ theme }) => theme.typingIndicator.container.css};
 `;
 
 class TypingIndicator extends React.PureComponent {
   static themePath = 'typingIndicator';
+  static propTypes = {
+    typing: PropTypes.object,
+    client: PropTypes.instanceOf(StreamChat),
+    /**
+     * Defaults to and accepts same props as: [Avatar](https://getstream.github.io/stream-chat-react-native/#avatar)
+     */
+    Avatar: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  };
+  static defaultProps = {
+    Avatar,
+  };
+
   constructTypingString = (dict) => {
-    const { t } = this.props;
+    const { client, t } = this.props;
     const arr2 = Object.keys(dict);
     const arr3 = [];
     arr2.forEach((item, i) => {
-      if (this.props.client.user.id === dict[arr2[i]].user.id) {
+      if (client.user.id === dict[arr2[i]].user.id) {
         return;
       }
       arr3.push(dict[arr2[i]].user.name || dict[arr2[i]].user.id);
@@ -56,12 +71,13 @@ class TypingIndicator extends React.PureComponent {
   };
 
   render() {
-    const typing = Object.values(this.props.typing);
+    const { typing, Avatar, client } = this.props;
+    const typingUsers = Object.values(typing);
 
     return (
       <Container>
-        {typing
-          .filter(({ user }) => user.id !== this.props.client.user.id)
+        {typingUsers
+          .filter(({ user }) => user.id !== client.user.id)
           .map(({ user }, idx) => (
             <Avatar
               image={user.image}
@@ -70,7 +86,7 @@ class TypingIndicator extends React.PureComponent {
               key={user.id + idx}
             />
           ))}
-        <TypingText>{this.constructTypingString(this.props.typing)}</TypingText>
+        <TypingText>{this.constructTypingString(typing)}</TypingText>
       </Container>
     );
   }
