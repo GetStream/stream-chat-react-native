@@ -495,6 +495,8 @@ export interface MessageUIComponentProps
     message: Client.MessageResponse,
     e: GestureResponderEvent,
   ): any;
+  hideReactionCount?: boolean;
+  hideReactionOwners?: boolean;
   handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
   handleDelete?(): void;
   handleEdit?(): void;
@@ -744,6 +746,7 @@ export interface ReactionListProps {
 }
 
 export interface ReactionPickerProps {
+  hideReactionCount?: boolean;
   hideReactionOwners: boolean;
   reactionPickerVisible: boolean;
   handleDismiss?(): void;
