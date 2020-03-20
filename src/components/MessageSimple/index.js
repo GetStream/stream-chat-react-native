@@ -158,6 +158,10 @@ export const MessageSimple = themed(
       handleAction: PropTypes.func,
       /** Handler resend the message. */
       handleRetry: PropTypes.func,
+      // enable hiding reaction count from reaction picker
+      hideReactionCount: PropTypes.bool,
+      /** enable hiding reaction owners from reaction picker. */
+      hideReactionOwners: PropTypes.bool,
       /** Current [message object](https://getstream.io/chat/docs/#message_format) */
       message: PropTypes.object,
       /**

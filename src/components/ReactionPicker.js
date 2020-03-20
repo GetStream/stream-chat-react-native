@@ -49,6 +49,7 @@ export const ReactionPicker = themed(
     static themePath = 'message.reactionPicker';
 
     static propTypes = {
+      hideReactionCount: PropTypes.bool,
       hideReactionOwners: PropTypes.bool,
       reactionPickerVisible: PropTypes.bool,
       handleDismiss: PropTypes.func,
@@ -82,6 +83,7 @@ export const ReactionPicker = themed(
 
     render() {
       const {
+        hideReactionCount,
         hideReactionOwners,
         reactionPickerVisible,
         handleDismiss,
@@ -153,7 +155,9 @@ export const ReactionPicker = themed(
                       >
                         {icon}
                       </Emoji>
-                      <ReactionCount>{count > 0 ? count : ''}</ReactionCount>
+                      <ReactionCount>
+                        {!hideReactionCount && count > 0 ? count : ''}
+                      </ReactionCount>
                     </Column>
                   );
                 })}
