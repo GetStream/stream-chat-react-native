@@ -243,6 +243,7 @@ export class Streami18n {
       fallbackLng: false,
       debug: finalOptions.debug,
       lng: this.currentLanguage,
+      interpolation: { escapeValue: false },
 
       parseMissingKeyHandler: (key) => {
         this.logger(`Streami18n: Missing translation for key: ${key}`);
