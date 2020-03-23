@@ -224,7 +224,10 @@ export class Streami18n {
 
     if (translationsForLanguage) {
       this.translations[this.currentLanguage] = {
-        [defaultNS]: translationsForLanguage,
+        [defaultNS]: {
+          ...(this.translations[this.currentLanguage][defaultNS] || []),
+          ...translationsForLanguage,
+        },
       };
     }
 
@@ -361,7 +364,10 @@ export class Streami18n {
     if (!this.translations[language]) {
       this.translations[language] = { [defaultNS]: translation };
     } else {
-      this.translations[language][defaultNS] = translation;
+      this.translations[language][defaultNS] = {
+        ...this.translations[language][defaultNS],
+        ...translation,
+      };
     }
 
     if (customMomentLocale) {
