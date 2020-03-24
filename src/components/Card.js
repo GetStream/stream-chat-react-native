@@ -99,6 +99,7 @@ export const Card = withMessageContentContext(
           alignment,
           onLongPress,
         } = this.props;
+        const uri = makeImageCompatibleUrl(image_url || thumb_url);
         return (
           <Container
             onPress={() => {
@@ -107,16 +108,13 @@ export const Card = withMessageContentContext(
             onLongPress={onLongPress}
             alignment={alignment}
           >
-            <Cover
-              source={{ uri: makeImageCompatibleUrl(image_url || thumb_url) }}
-              resizMode="cover"
-            />
+            {uri && <Cover source={{ uri }} resizeMode="cover" />}
             <Footer>
               <View
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  backgroundColor: 'transperant',
+                  backgroundColor: 'transparent',
                 }}
               >
                 {title && <Text>{title}</Text>}
