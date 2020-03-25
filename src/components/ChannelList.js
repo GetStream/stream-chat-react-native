@@ -334,7 +334,7 @@ const ChannelList = withChatContext(
     }
 
     handleEvent = async (e) => {
-      if (e.type === 'user.presence.changed') {
+      if (e.type === 'user.presence.changed' || e.type === 'user.updated') {
         let newChannels = this.state.channels;
 
         newChannels = newChannels.map((channel) => {
