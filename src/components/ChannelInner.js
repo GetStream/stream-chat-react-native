@@ -224,6 +224,19 @@ class ChannelInner extends PureComponent {
     if (channel.countUnread() > 0) this.markRead();
   }
 
+  copyChannelMessages() {
+    const { channel } = this.props;
+    let threadMessages = [];
+
+    if (this.state.thread) {
+      threadMessages = channel.state.threads[this.state.thread.id] || [];
+    }
+    this._setStateThrottled({
+      messages: channel.state.messages,
+      threadMessages,
+    });
+  }
+
   markRead = () => {
     if (!this.props.channel.getConfig().read_events) {
       return;
@@ -329,6 +342,7 @@ class ChannelInner extends PureComponent {
       editing: false,
     });
   };
+
   removeMessage = (message) => {
     const channel = this.props.channel;
     channel.state.removeMessage(message);
@@ -520,6 +534,72 @@ class ChannelInner extends PureComponent {
     });
   };
 
+  handleReaction = async (message, reactionType) => {
+    const { client, channel } = this.props;
+    let userExistingReaction = null;
+
+    const currentUser = client.userID;
+    for (const reaction of message.own_reactions) {
+      // own user should only ever contain the current user id
+      // just in case we check to prevent bugs with message updates from breaking reactions
+      if (currentUser === reaction.user.id && reaction.type === reactionType) {
+        userExistingReaction = reaction;
+      } else if (currentUser !== reaction.user.id) {
+        console.warn(
+          `message.own_reactions contained reactions from a different user, this indicates a bug`,
+        );
+      }
+    }
+
+    let reactionChangePromise;
+    let resetReaction;
+    /*
+     * - Add the reaction to the local state
+     * - Make the API call in the background
+     * - If it fails, revert to the old message...
+     */
+    if (userExistingReaction) {
+      channel.state.removeReaction(userExistingReaction, message);
+      resetReaction = () => {
+        channel.state.addReaction(userExistingReaction);
+      };
+      this.copyChannelMessages();
+
+      reactionChangePromise = channel.deleteReaction(
+        message.id,
+        userExistingReaction.type,
+      );
+    } else {
+      // add the reaction
+      const messageID = message.id;
+      const tmpReaction = {
+        message_id: messageID,
+        user: client.user,
+        type: reactionType,
+        created_at: new Date(),
+      };
+      const reaction = { type: reactionType };
+
+      channel.state.addReaction(tmpReaction, message);
+      resetReaction = () => {
+        channel.state.removeReaction(tmpReaction);
+      };
+
+      this.copyChannelMessages();
+
+      reactionChangePromise = channel.sendReaction(messageID, reaction);
+    }
+
+    try {
+      // only wait for the API call after the state is updated
+      await reactionChangePromise;
+    } catch (e) {
+      // revert to the original message if the API call fails
+      resetReaction();
+      this.copyChannelMessages();
+    }
+  };
+
   addToEventHistory = (e) => {
     this.setState((prevState) => {
       const lastMessageId =
@@ -613,6 +693,7 @@ class ChannelInner extends PureComponent {
     Attachment: this.props.Attachment,
     updateMessage: this.updateMessage,
     removeMessage: this.removeMessage,
+    handleReaction: this.handleReaction,
     sendMessage: this.sendMessage,
     editMessage: this.editMessage,
     retrySendMessage: this.retrySendMessage,

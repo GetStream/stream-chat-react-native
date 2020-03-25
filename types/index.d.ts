@@ -108,6 +108,10 @@ export interface ChannelContextValue {
     updatedMessage: Client.MessageResponse,
     extraState?: object,
   ): void;
+  handleReaction?(
+    message: Client.MessageResponse,
+    reactionType: string,
+  ): Promise<void>;
   editMessage?(message: Client.Message): void | Promise<Client.MessageResponse>;
   retrySendMessage?(message: Client.Message): void;
   removeMessage?(updatedMessage: Client.MessageResponse): void;
@@ -497,7 +501,7 @@ export interface MessageUIComponentProps
   ): any;
   hideReactionCount?: boolean;
   hideReactionOwners?: boolean;
-  handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
+  handleReaction(reactionType: string): Promise<void>;
   handleDelete?(): void;
   handleEdit?(): void;
   handleFlag(event?: React.BaseSyntheticEvent): void;
