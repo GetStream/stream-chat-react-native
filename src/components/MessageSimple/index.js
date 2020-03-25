@@ -290,6 +290,7 @@ export const MessageSimple = themed(
         groupStyles,
         forceAlign,
         showMessageStatus,
+        reactionsEnabled,
         MessageAvatar,
         MessageContent,
         MessageStatus,
@@ -316,6 +317,10 @@ export const MessageSimple = themed(
       if (message.type === 'system') {
         return <MessageSystem message={message} />;
       }
+      const hasReactions =
+        reactionsEnabled &&
+        message.latest_reactions &&
+        message.latest_reactions.length > 0;
 
       const forwardedProps = {
         ...this.props,
@@ -323,6 +328,7 @@ export const MessageSimple = themed(
         openReactionPicker: this.openReactionPicker,
         dismissReactionPicker: this.dismissReactionPicker,
         alignment,
+        groupStyles: hasReactions ? ['top'] : groupStyles,
       };
 
       return (

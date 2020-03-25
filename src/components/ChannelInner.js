@@ -148,6 +148,65 @@ class ChannelInner extends PureComponent {
       if (this._unmounted) return;
       this.setState({ online: this.props.isOnline });
     }
+
+    if (this.props.channel.id !== prevProps.channel.id) {
+      this.setState({
+        error: false,
+        // Loading the intial content of the channel
+        loading: true,
+        // Loading more messages
+        loadingMore: false,
+        hasMore: true,
+        messages: Immutable([]),
+        online: this.props.isOnline,
+        typing: Immutable({}),
+        watchers: Immutable({}),
+        members: Immutable({}),
+        read: Immutable({}),
+        thread: this.props.thread,
+        threadMessages: [],
+        threadLoadingMore: false,
+        threadHasMore: true,
+        kavEnabled: true,
+        /** We save the events in state so that we can display event message
+         * next to the message after which it was received, in MessageList.
+         *
+         * e.g., eventHistory = {
+         *   message_id_1: [
+         *     { ...event_obj_received_after_message_id_1__1 },
+         *     { ...event_obj_received_after_message_id_1__2 },
+         *     { ...event_obj_received_after_message_id_1__3 },
+         *   ],
+         *   message_id_2: [
+         *     { ...event_obj_received_after_message_id_2__1 },
+         *     { ...event_obj_received_after_message_id_2__2 },
+         *     { ...event_obj_received_after_message_id_2__3 },
+         *   ]
+         * }
+         */
+        eventHistory: {},
+      });
+      setTimeout(async () => {
+        const channel = this.props.channel;
+        let errored = false;
+        if (!channel.initialized) {
+          try {
+            await channel.watch();
+          } catch (e) {
+            if (this._unmounted) return;
+            console.warn('errored');
+            this.setState({ error: e });
+            errored = true;
+          }
+        }
+
+        this.lastRead = new Date();
+        if (!errored) {
+          this.copyChannelState();
+          this.listenToChanges();
+        }
+      }, 1000);
+    }
   }
 
   async componentDidMount() {

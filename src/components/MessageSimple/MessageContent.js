@@ -26,6 +26,7 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
+  padding-left: 8px;
   background-color: ${({ error, theme }) =>
     error
       ? theme.message.content.errorContainer.backgroundColor
@@ -390,6 +391,7 @@ class MessageContent extends React.PureComponent {
       handleAction,
       AttachmentFileIcon,
       MessageText,
+      channel,
       MessageReplies,
       t,
       moment,
@@ -569,7 +571,7 @@ class MessageContent extends React.PureComponent {
             )}
             <MessageTextContainer
               message={message}
-              groupStyles={hasReactions ? ['top'] : groupStyles}
+              groupStyles={groupStyles}
               isMyMessage={isMyMessage}
               MessageText={MessageText}
               disabled={message.status === 'failed' || message.type === 'error'}
@@ -585,6 +587,7 @@ class MessageContent extends React.PureComponent {
               isThreadList={!!threadList}
               openThread={this.openThread}
               alignment={alignment}
+              channel={channel}
             />
           ) : null}
           {MessageFooter && <MessageFooter {...this.props} />}
