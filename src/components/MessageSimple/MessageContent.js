@@ -137,6 +137,13 @@ class MessageContent extends React.PureComponent {
     Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /** enabled reactions, this is usually set by the parent component based on channel configs */
     reactionsEnabled: PropTypes.bool.isRequired,
+    /** Position of ReactionList relative to the message container - top, bottom. */
+    reactionListPosition: PropTypes.oneOf(['top', 'bottom']),
+    /**
+     * Custom UI component for ReactionList.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+     */
+    ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /** enabled replies, this is usually set by the parent component based on channel configs */
     repliesEnabled: PropTypes.bool.isRequired,
     /**
@@ -257,6 +264,8 @@ class MessageContent extends React.PureComponent {
   static defaultProps = {
     Attachment,
     reactionsEnabled: true,
+    reactionListPosition: 'top',
+    ReactionList,
     repliesEnabled: true,
     MessageText: false,
   };
@@ -334,6 +343,33 @@ class MessageContent extends React.PureComponent {
     }
   };
 
+  renderReactionList = () => {
+    const {
+      ReactionList,
+      reactionsEnabled,
+      isMyMessage,
+      message,
+      getTotalReactionCount,
+    } = this.props;
+
+    const pos = isMyMessage(message) ? 'right' : 'left';
+
+    return (
+      reactionsEnabled &&
+      message.latest_reactions &&
+      message.latest_reactions.length > 0 && (
+        <ReactionList
+          position={pos}
+          visible={!this.state.reactionPickerVisible}
+          latestReactions={message.latest_reactions}
+          getTotalReactionCount={getTotalReactionCount}
+          openReactionSelector={this.openReactionSelector}
+          reactionCounts={message.reaction_counts}
+        />
+      )
+    );
+  };
+
   render() {
     const {
       message,
@@ -348,7 +384,7 @@ class MessageContent extends React.PureComponent {
       messageActions,
       groupStyles,
       reactionsEnabled,
-      getTotalReactionCount,
+      reactionListPosition,
       repliesEnabled,
       canEditMessage,
       canDeleteMessage,
@@ -466,18 +502,7 @@ class MessageContent extends React.PureComponent {
           {message.status === 'failed' ? (
             <FailedText>{t('Message failed - try again')}</FailedText>
           ) : null}
-          {reactionsEnabled &&
-            message.latest_reactions &&
-            message.latest_reactions.length > 0 && (
-              <ReactionList
-                position={pos}
-                visible={!this.state.reactionPickerVisible}
-                latestReactions={message.latest_reactions}
-                getTotalReactionCount={getTotalReactionCount}
-                openReactionSelector={this.openReactionSelector}
-                reactionCounts={message.reaction_counts}
-              />
-            )}
+          {reactionListPosition === 'top' && this.renderReactionList()}
           {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
           <ContainerInner
             alignment={pos}
@@ -526,6 +551,7 @@ class MessageContent extends React.PureComponent {
               handleReaction={handleReaction}
             />
           </ContainerInner>
+          {reactionListPosition === 'bottom' && this.renderReactionList()}
           {repliesEnabled ? (
             <MessageReplies
               message={message}
