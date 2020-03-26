@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import {
   withChannelContext,
   withSuggestionsContext,
@@ -49,6 +49,29 @@ const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
   margin-left: 10px;
   margin-right: 10px;
   ${({ theme }) => theme.messageInput.container.css}
+`;
+
+const EditingBoxContainer = styled.View`
+  padding-left: 0;
+  padding-right: 0;
+  shadow-color: grey;
+  shadow-opacity: 0.5;
+  z-index: 100;
+  background-color: white;
+  ${({ theme }) => theme.messageInput.editingBoxContainer.css}
+`;
+
+const EditingBoxHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  ${({ theme }) => theme.messageInput.editingBoxHeader.css}
+`;
+
+const EditingBoxHeaderTitle = styled.Text`
+  font-weight: bold;
+  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css}
 `;
 
 const InputBoxContainer = styled.View`
@@ -646,7 +669,8 @@ class MessageInput extends PureComponent {
   closeAttachActionSheet = () => {
     this.attachActionSheet.hide();
   };
-  render() {
+
+  renderInputContainer = () => {
     const {
       hasImagePicker,
       hasFilePicker,
@@ -654,143 +678,132 @@ class MessageInput extends PureComponent {
       AttachButton,
       t,
     } = this.props;
-    let editingBoxStyles = {};
-    if (this.props.editing) {
-      editingBoxStyles = {
-        paddingLeft: 0,
-        paddingRight: 0,
-        shadowColor: 'gray',
-        shadowOpacity: 0.5,
-        shadowOffset: { width: 1, height: -3 },
-        zIndex: 100,
-        backgroundColor: 'white',
-      };
-    }
+
     return (
-      <React.Fragment>
-        <View style={editingBoxStyles}>
-          {this.props.editing && (
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: 10,
-              }}
-            >
-              <Text style={{ fontWeight: 'bold' }}>{t('Editing Message')}</Text>
+      <Container padding={this.state.imageUploads.length > 0}>
+        {this.state.fileUploads && (
+          <FileUploadPreview
+            removeFile={this._removeFile}
+            retryUpload={this._uploadFile}
+            fileUploads={this.state.fileOrder.map(
+              (id) => this.state.fileUploads[id],
+            )}
+            AttachmentFileIcon={this.props.AttachmentFileIcon}
+          />
+        )}
+        {this.state.imageUploads && (
+          <ImageUploadPreview
+            removeImage={this._removeImage}
+            retryUpload={this._uploadImage}
+            imageUploads={this.state.imageOrder.map(
+              (id) => this.state.imageUploads[id],
+            )}
+          />
+        )}
+        <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
+          <AttachButton
+            handleOnPress={async () => {
+              if (hasImagePicker && hasFilePicker) {
+                await this.props.dismissKeyboard();
+                this.attachActionSheet.show();
+              } else if (hasImagePicker && !hasFilePicker) this._pickImage();
+              else if (!hasImagePicker && hasFilePicker) this._pickFile();
+            }}
+          />
+          {/**
+            TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+            work well with async onPress operations. So find a solution.
+          */}
+
+          <ActionSheet
+            ref={(o) => (this.attachActionSheet = o)}
+            title={
+              <ActionSheetTitleContainer>
+                <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
+                <IconSquare
+                  icon={iconClose}
+                  onPress={this.closeAttachActionSheet}
+                />
+              </ActionSheetTitleContainer>
+            }
+            options={[
+              /* eslint-disable */
+              <AttachmentActionSheetItem
+                icon={iconGallery}
+                text={t('Upload a photo')}
+              />,
+              <AttachmentActionSheetItem
+                icon={iconFolder}
+                text={t('Upload a file')}
+              />,
+              /* eslint-enable */
+            ]}
+            onPress={(index) => {
+              // https://github.com/beefe/react-native-actionsheet/issues/36
+              setTimeout(() => {
+                switch (index) {
+                  case 0:
+                    this._pickImage();
+                    break;
+                  case 1:
+                    this._pickFile();
+                    break;
+                  default:
+                }
+              }, 1);
+            }}
+            styles={this.props.actionSheetStyles}
+          />
+          <AutoCompleteInput
+            openSuggestions={this.props.openSuggestions}
+            closeSuggestions={this.props.closeSuggestions}
+            updateSuggestions={this.props.updateSuggestions}
+            value={this.state.text}
+            onChange={this.onChange}
+            getCommands={this.getCommands}
+            setInputBoxRef={this.setInputBoxRef}
+            triggerSettings={ACITriggerSettings({
+              users: this.getUsers(),
+              commands: this.getCommands(),
+              onMentionSelectItem: this.onSelectItem,
+              t,
+            })}
+            additionalTextInputProps={this.props.additionalTextInputProps}
+          />
+          <SendButton
+            title={t('Send message')}
+            sendMessage={this.sendMessage}
+            editing={this.props.editing}
+          />
+        </InputBoxContainer>
+      </Container>
+    );
+  };
+
+  render() {
+    const { t } = this.props;
+    if (this.props.editing) {
+      return (
+        <React.Fragment>
+          <EditingBoxContainer>
+            <EditingBoxHeader>
+              <EditingBoxHeaderTitle>
+                {t('Editing Message')}
+              </EditingBoxHeaderTitle>
               <IconSquare
                 onPress={() => {
                   this.props.clearEditingState();
                 }}
                 icon={iconClose}
               />
-            </View>
-          )}
+            </EditingBoxHeader>
+            {this.renderInputContainer()}
+          </EditingBoxContainer>
+        </React.Fragment>
+      );
+    }
 
-          <Container padding={this.state.imageUploads.length > 0}>
-            {this.state.fileUploads && (
-              <FileUploadPreview
-                removeFile={this._removeFile}
-                retryUpload={this._uploadFile}
-                fileUploads={this.state.fileOrder.map(
-                  (id) => this.state.fileUploads[id],
-                )}
-                AttachmentFileIcon={this.props.AttachmentFileIcon}
-              />
-            )}
-            {this.state.imageUploads && (
-              <ImageUploadPreview
-                removeImage={this._removeImage}
-                retryUpload={this._uploadImage}
-                imageUploads={this.state.imageOrder.map(
-                  (id) => this.state.imageUploads[id],
-                )}
-              />
-            )}
-            <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
-              <AttachButton
-                handleOnPress={async () => {
-                  if (hasImagePicker && hasFilePicker) {
-                    await this.props.dismissKeyboard();
-                    this.attachActionSheet.show();
-                  } else if (hasImagePicker && !hasFilePicker)
-                    this._pickImage();
-                  else if (!hasImagePicker && hasFilePicker) this._pickFile();
-                }}
-              />
-              {/**
-                    TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-                    work well with async onPress operations. So find a solution.
-                  */}
-
-              <ActionSheet
-                ref={(o) => (this.attachActionSheet = o)}
-                title={
-                  <ActionSheetTitleContainer>
-                    <ActionSheetTitleText>
-                      {t('Add a file')}
-                    </ActionSheetTitleText>
-                    <IconSquare
-                      icon={iconClose}
-                      onPress={this.closeAttachActionSheet}
-                    />
-                  </ActionSheetTitleContainer>
-                }
-                options={[
-                  /* eslint-disable */
-                  <AttachmentActionSheetItem
-                    icon={iconGallery}
-                    text={t('Upload a photo')}
-                  />,
-                  <AttachmentActionSheetItem
-                    icon={iconFolder}
-                    text={t('Upload a file')}
-                  />,
-                  /* eslint-enable */
-                ]}
-                onPress={(index) => {
-                  // https://github.com/beefe/react-native-actionsheet/issues/36
-                  setTimeout(() => {
-                    switch (index) {
-                      case 0:
-                        this._pickImage();
-                        break;
-                      case 1:
-                        this._pickFile();
-                        break;
-                      default:
-                    }
-                  }, 1);
-                }}
-                styles={this.props.actionSheetStyles}
-              />
-              <AutoCompleteInput
-                openSuggestions={this.props.openSuggestions}
-                closeSuggestions={this.props.closeSuggestions}
-                updateSuggestions={this.props.updateSuggestions}
-                value={this.state.text}
-                onChange={this.onChange}
-                getCommands={this.getCommands}
-                setInputBoxRef={this.setInputBoxRef}
-                triggerSettings={ACITriggerSettings({
-                  users: this.getUsers(),
-                  commands: this.getCommands(),
-                  onMentionSelectItem: this.onSelectItem,
-                  t,
-                })}
-                additionalTextInputProps={this.props.additionalTextInputProps}
-              />
-              <SendButton
-                title={t('Send message')}
-                sendMessage={this.sendMessage}
-                editing={this.props.editing}
-              />
-            </InputBoxContainer>
-          </Container>
-        </View>
-      </React.Fragment>
-    );
+    return this.renderInputContainer();
   }
 }
 

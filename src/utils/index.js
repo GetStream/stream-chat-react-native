@@ -54,7 +54,7 @@ export const ACITriggerSettings = ({
   users,
   onMentionSelectItem,
   commands,
-  t,
+  t = (msg) => msg,
 }) => ({
   '@': {
     dataProvider: (q) => {

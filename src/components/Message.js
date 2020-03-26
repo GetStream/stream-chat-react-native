@@ -122,12 +122,31 @@ const Message = withKeyboardContext(
 
     isMyMessage = (message) => this.props.client.user.id === message.user.id;
     isAdmin = () => this.props.client.user.role === 'admin';
+    isOwner = () => {
+      const { channel, client } = this.props;
+      return (
+        channel.state.members &&
+        channel.state.members[client.user.id] &&
+        channel.state.members[client.user.id].role === 'owner'
+      );
+    };
+
+    isModerator = () => {
+      const { channel, client } = this.props;
+      return (
+        channel.state.members &&
+        channel.state.members[client.user.id] &&
+        channel.state.members[client.user.id].is_moderator
+      );
+    };
 
     canEditMessage = () =>
-      this.isMyMessage(this.props.message) || this.isAdmin();
+      this.isMyMessage(this.props.message) ||
+      this.isModerator() ||
+      this.isOwner() ||
+      this.isAdmin();
 
-    canDeleteMessage = () =>
-      this.isMyMessage(this.props.message) || this.isAdmin();
+    canDeleteMessage = () => this.canEditMessage();
 
     handleFlag = async (event) => {
       event.preventDefault();
@@ -309,6 +328,7 @@ const Message = withKeyboardContext(
             handleRetry={this.handleRetry}
             isMyMessage={this.isMyMessage}
             isAdmin={this.isAdmin}
+            isModerator={this.isModerator}
             canEditMessage={this.canEditMessage}
             canDeleteMessage={this.canDeleteMessage}
             handleEdit={this.handleEdit}

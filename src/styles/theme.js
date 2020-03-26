@@ -171,6 +171,9 @@ export const defaultTheme = {
     },
     inputBox: {},
     inputBoxContainer: {},
+    editingBoxContainer: {},
+    editingBoxHeader: {},
+    editingBoxHeaderTitle: {},
     attachButton: {},
     attachButtonIcon: {},
     sendButton: {},
@@ -257,6 +260,7 @@ export const defaultTheme = {
       fontSize: 14,
       color: Colors.textGrey,
     },
+    container: {},
   },
 };
 

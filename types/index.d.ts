@@ -162,6 +162,8 @@ export interface ChannelProps
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
   Message?: React.ElementType<MessageUIComponentProps>;
   Attachment?: React.ElementType<AttachmentProps>;
+  /** Function that overrides default markRead in channel */
+  doMarkReadRequest?(channel: Client.Channel): void;
   /** Function that overrides default sendMessage in chat client */
   doSendMessageRequest?(
     channelId: string,
@@ -389,7 +391,7 @@ export interface MessageListProps
   extends ChannelContextValue,
     TranslationContextValue {
   /** Turn off grouping of messages by user */
-  messageActions: Array<MessageAction>;
+  messageActions?: Array<MessageAction>;
   noGroupByUser?: boolean;
   /** Weather its a thread of no. Default - false  */
   threadList?: boolean;
@@ -436,7 +438,7 @@ export interface MessageProps extends KeyboardContextValue {
   client: Client.StreamChat;
   onThreadSelect?(message: Client.MessageResponse): void;
   /** The message object */
-  message: Client.Message;
+  message: Client.MessageResponse;
   /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
   groupStyles: Array<string>;
   /** A list of users that have read this message **/
@@ -493,6 +495,8 @@ export interface MessageUIComponentProps
     message: Client.MessageResponse,
     e: GestureResponderEvent,
   ): any;
+  hideReactionCount?: boolean;
+  hideReactionOwners?: boolean;
   handleReaction(reactionType: string, event?: React.BaseSyntheticEvent): void;
   handleDelete?(): void;
   handleEdit?(): void;
@@ -638,6 +642,7 @@ export interface ThreadProps
 export interface TypingIndicatorProps extends TranslationContextValue {
   typing: [];
   client: Client.StreamChat;
+  Avatar?: React.ElementType<AvatarProps>;
 }
 
 export interface FileIconUIComponentProps {
@@ -762,6 +767,7 @@ export interface ReactionListProps {
 }
 
 export interface ReactionPickerProps {
+  hideReactionCount?: boolean;
   hideReactionOwners: boolean;
   reactionPickerVisible: boolean;
   handleDismiss?(): void;
