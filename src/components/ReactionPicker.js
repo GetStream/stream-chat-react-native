@@ -155,9 +155,9 @@ export const ReactionPicker = themed(
                       >
                         {icon}
                       </Emoji>
-                      <ReactionCount>
-                        {!hideReactionCount && count > 0 ? count : ''}
-                      </ReactionCount>
+                      {!hideReactionCount && (
+                        <ReactionCount>{count > 0 ? count : ''}</ReactionCount>
+                      )}
                     </Column>
                   );
                 })}
