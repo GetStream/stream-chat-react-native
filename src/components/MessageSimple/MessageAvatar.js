@@ -18,8 +18,7 @@ const Spacer = styled.View`
 export const MessageAvatar = ({ message, isMyMessage, groupStyles }) => {
   const pos = isMyMessage(message) ? 'right' : 'left';
 
-  const showAvatar =
-    groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
+  const showAvatar = groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
   return (
     <Container alignment={pos}>
