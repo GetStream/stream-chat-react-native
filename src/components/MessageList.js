@@ -114,6 +114,13 @@ class MessageList extends PureComponent {
      *
      * */
     onMessageTouch: PropTypes.func,
+    /**
+     * Handler for reaction.
+     *
+     * @param message Message object
+     * @param reactionType e.g., love, haha
+     */
+    handleReaction: PropTypes.func,
     /** Should keyboard be dismissed when messaged is touched */
     dismissKeyboardOnMessageTouch: PropTypes.bool,
     eventHistory: PropTypes.object,
@@ -523,6 +530,7 @@ class MessageList extends PureComponent {
           editing={this.props.editing}
           threadList={this.props.threadList}
           messageActions={this.props.messageActions}
+          handleReaction={this.props.handleReaction}
           updateMessage={this.props.updateMessage}
           removeMessage={this.props.removeMessage}
           retrySendMessage={this.props.retrySendMessage}
