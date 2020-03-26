@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
 
 // Border radii are useful for the case of error message types only.
-// Otherwise background is transperant, so border radius is not really visible.
+// Otherwise background is transparent, so border radius is not really visible.
 const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
