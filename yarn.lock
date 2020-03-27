@@ -9354,10 +9354,10 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.5.1.tgz#2eedc1e8ebb59c4892d3988c153d8c4f0aceeb53"
-  integrity sha512-PVhvFpMnT2il+G+20L/+M8sLwx2EehYNqz1qyvWhXOHKF0QLpOFp2HyhpjOZ0SWk5UAVsYpnGQ73FaOarnhi0Q==
+stream-chat@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.6.0.tgz#7756285e9a9c2e3e2c0b47ed65885c29c547b6a0"
+  integrity sha512-f1Yrc56/fJMRO2Nv1GYxtj+mMh3rofslViuoirOyjcj9uUoV6iLNdHOZxs3HE1EDp5jbaMIqTxT6w8Tz1gqJHA==
   dependencies:
     "@babel/runtime" "^7.3.1"
     axios "^0.18.1"
