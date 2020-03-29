@@ -256,6 +256,8 @@ class MessageContent extends React.PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    MessageHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    MessageFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display reaction list.
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
@@ -302,6 +304,8 @@ class MessageContent extends React.PureComponent {
     ReactionList,
     MessageReplies,
     supportedReactions: emojiData,
+    hideReactionCount: false,
+    hideReactionOwners: false,
   };
 
   constructor(props) {
@@ -390,6 +394,7 @@ class MessageContent extends React.PureComponent {
       repliesEnabled,
       canEditMessage,
       canDeleteMessage,
+      MessageHeader,
       MessageFooter,
       supportedReactions,
       openReactionPicker,
@@ -518,13 +523,13 @@ class MessageContent extends React.PureComponent {
               hideReactionCount={hideReactionCount}
               hideReactionOwners={hideReactionOwners}
               openReactionPicker={openReactionPicker}
-              message={message}
               dismissReactionPicker={dismissReactionPicker}
-              emojiData={supportedReactions}
+              message={message}
               alignment={alignment}
               offset={{
                 top: 25,
                 left: 10,
+                right: 10,
               }}
               supportedReactions={supportedReactions}
             >
@@ -541,6 +546,7 @@ class MessageContent extends React.PureComponent {
                 )}
             </ReactionPickerWrapper>
           )}
+          {MessageHeader && <MessageHeader {...this.props} />}
           {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
           <ContainerInner
             alignment={alignment}

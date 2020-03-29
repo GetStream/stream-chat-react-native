@@ -528,7 +528,9 @@ export interface MessageUIComponentProps
   /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
   /** Custom UI component for message footer */
-  MessageText?: React.ElementType<MessageTextProps>;
+  MessageHeader?: React.ElementType<MessageHeaderUIComponentProps>;
+  /** Custom UI component for message footer */
+  MessageFooter?: React.ElementType<MessageFooterUIComponentProps>;
   /** Custom UI component for reaction list */
   ReactionList?: React.ElementType<ReactionListProps>;
   supportedReactions?: Array<{
@@ -540,6 +542,9 @@ export interface MessageUIComponentProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
 }
+
+export interface MessageHeaderUIComponentProps
+  extends MessageContentUIComponentProps {}
 
 export interface MessageFooterUIComponentProps
   extends MessageContentUIComponentProps {}
@@ -553,7 +558,7 @@ export interface MessageRepliesUIComponentProps
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   openThread?(message: Client.Message, event: React.SyntheticEvent): void;
   /** right | left */
-  alignment: string;
+  alignment: 'right' | 'left';
 }
 
 export interface MessageStatusUIComponentProps {
@@ -590,7 +595,7 @@ export interface MessageAvatarUIComponentProps {
 export interface MessageContentUIComponentProps
   extends MessageUIComponentProps,
     TranslationContextValue {
-  alignment: string;
+  alignment: 'right' | 'left';
   /** Open the reaction picker */
   openReactionPicker?(): void;
   /** Dismiss the reaction picker */
@@ -786,12 +791,25 @@ export interface ReactionPickerProps {
 export interface ReactionPickerWrapperProps {
   isMyMessage?(message: Client.MessageResponse): boolean;
   message: Client.MessageResponse;
+  hideReactionCount: boolean;
+  hideReactionOwners: boolean;
   offset: {
     top: string | number;
     left: string | number;
+    right: string | number;
   };
   handleReaction?(id: string): void;
   supportedReactions?: Array<{
+    icon: string;
+    id: string;
+  }>;
+  /**
+   * @deprecated
+   * emojiData is deprecated. But going to keep it for now
+   * to have backward compatibility. Please use supportedReactions instead.
+   * TODO: Remove following prop in 1.x.x
+   */
+  emojiData?: Array<{
     icon: string;
     id: string;
   }>;

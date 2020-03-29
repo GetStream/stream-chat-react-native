@@ -4,12 +4,15 @@ import PropTypes from 'prop-types';
 import { TouchableOpacity, Dimensions } from 'react-native';
 
 import { ReactionPicker } from './ReactionPicker';
+import { emojiData } from '../utils';
 
 export class ReactionPickerWrapper extends React.PureComponent {
   static propTypes = {
     isMyMessage: PropTypes.func,
     message: PropTypes.object,
     offset: PropTypes.object,
+    hideReactionCount: PropTypes.bool,
+    hideReactionOwners: PropTypes.bool,
     handleReaction: PropTypes.func,
     /**
      * e.g.,
@@ -33,6 +36,13 @@ export class ReactionPickerWrapper extends React.PureComponent {
      * ]
      */
     supportedReactions: PropTypes.array,
+    /**
+     * @deprecated
+     * emojiData is deprecated. But going to keep it for now
+     * to have backward compatibility. Please use supportedReactions instead.
+     * TODO: Remove following prop in 1.x.x
+     */
+    emojiData: PropTypes.array,
     ReactionPicker: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.elementType,
@@ -47,8 +57,13 @@ export class ReactionPickerWrapper extends React.PureComponent {
     offset: {
       top: 40,
       left: 30,
+      right: 10,
     },
     ReactionPicker,
+    supportedReactions: emojiData,
+    emojiData,
+    hideReactionCount: false,
+    hideReactionOwners: false,
   };
 
   constructor(props) {
@@ -74,7 +89,8 @@ export class ReactionPickerWrapper extends React.PureComponent {
         rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
         rpRight:
           alignment === 'right'
-            ? Math.round(Dimensions.get('window').width) - (x + width + 10)
+            ? Math.round(Dimensions.get('window').width) -
+              (x + width + offset.right)
             : null,
       });
     });
@@ -85,11 +101,15 @@ export class ReactionPickerWrapper extends React.PureComponent {
       handleReaction,
       message,
       supportedReactions,
+      /** @deprecated */
+      emojiData,
       style,
       dismissReactionPicker,
       reactionPickerVisible,
       ReactionPicker,
       openReactionPicker,
+      hideReactionCount,
+      hideReactionOwners,
     } = this.props;
     return (
       <TouchableOpacity
@@ -106,8 +126,10 @@ export class ReactionPickerWrapper extends React.PureComponent {
           latestReactions={message.latest_reactions}
           reactionCounts={message.reaction_counts}
           handleDismiss={dismissReactionPicker}
+          hideReactionCount={hideReactionCount}
+          hideReactionOwners={hideReactionOwners}
           style={style}
-          supportedReactions={supportedReactions}
+          supportedReactions={supportedReactions || emojiData}
           rpLeft={this.state.rpLeft}
           rpRight={this.state.rpRight}
           rpTop={this.state.rpTop}
