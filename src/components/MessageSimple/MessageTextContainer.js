@@ -21,8 +21,11 @@ const TextContainer = styled.View`
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
+  padding: 5px;
   margin-top: 2;
   padding-right: 8;
+  align-self: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth

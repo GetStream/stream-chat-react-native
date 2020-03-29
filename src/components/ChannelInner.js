@@ -22,43 +22,7 @@ import { logChatPromiseExecution } from 'stream-chat';
 class ChannelInner extends PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      error: false,
-      // Loading the intial content of the channel
-      loading: true,
-      // Loading more messages
-      loadingMore: false,
-      hasMore: true,
-      messages: Immutable([]),
-      online: props.isOnline,
-      typing: Immutable({}),
-      watchers: Immutable({}),
-      members: Immutable({}),
-      read: Immutable({}),
-      thread: props.thread,
-      threadMessages: [],
-      threadLoadingMore: false,
-      threadHasMore: true,
-      kavEnabled: true,
-      /** We save the events in state so that we can display event message
-       * next to the message after which it was received, in MessageList.
-       *
-       * e.g., eventHistory = {
-       *   message_id_1: [
-       *     { ...event_obj_received_after_message_id_1__1 },
-       *     { ...event_obj_received_after_message_id_1__2 },
-       *     { ...event_obj_received_after_message_id_1__3 },
-       *   ],
-       *   message_id_2: [
-       *     { ...event_obj_received_after_message_id_2__1 },
-       *     { ...event_obj_received_after_message_id_2__2 },
-       *     { ...event_obj_received_after_message_id_2__3 },
-       *   ]
-       * }
-       */
-      eventHistory: {},
-    };
-
+    this.state = this.getInitialStateFromProps(props);
     // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
     this._loadMoreFinishedDebounced = debounce(this.loadMoreFinished, 2000, {
       leading: true,
@@ -152,7 +116,7 @@ class ChannelInner extends PureComponent {
     logger: () => {},
   };
 
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     this.props.logger('Channel component', 'componentDidUpdate', {
       tags: ['lifecycle', 'channel'],
       props: this.props,
@@ -165,72 +129,52 @@ class ChannelInner extends PureComponent {
     }
 
     if (this.props.channel.id !== prevProps.channel.id) {
-      this.setState({
-        error: false,
-        // Loading the intial content of the channel
-        loading: true,
-        // Loading more messages
-        loadingMore: false,
-        hasMore: true,
-        messages: Immutable([]),
-        online: this.props.isOnline,
-        typing: Immutable({}),
-        watchers: Immutable({}),
-        members: Immutable({}),
-        read: Immutable({}),
-        thread: this.props.thread,
-        threadMessages: [],
-        threadLoadingMore: false,
-        threadHasMore: true,
-        kavEnabled: true,
-        /** We save the events in state so that we can display event message
-         * next to the message after which it was received, in MessageList.
-         *
-         * e.g., eventHistory = {
-         *   message_id_1: [
-         *     { ...event_obj_received_after_message_id_1__1 },
-         *     { ...event_obj_received_after_message_id_1__2 },
-         *     { ...event_obj_received_after_message_id_1__3 },
-         *   ],
-         *   message_id_2: [
-         *     { ...event_obj_received_after_message_id_2__1 },
-         *     { ...event_obj_received_after_message_id_2__2 },
-         *     { ...event_obj_received_after_message_id_2__3 },
-         *   ]
-         * }
-         */
-        eventHistory: {},
-      });
-      setTimeout(async () => {
-        const channel = this.props.channel;
-        let errored = false;
-        if (!channel.initialized) {
-          try {
-            await channel.watch();
-          } catch (e) {
-            if (this._unmounted) return;
-            console.warn('errored');
-            this.setState({ error: e });
-            errored = true;
-          }
-        }
-
-        this.lastRead = new Date();
-        if (!errored) {
-          this.copyChannelState();
-          this.listenToChanges();
-        }
-      }, 1000);
+      const resetState = this.getInitialStateFromProps(this.props);
+      this.setState(resetState);
+      await this.initChannel();
     }
   }
 
-  async componentDidMount() {
-    this.props.logger('Channel component', 'componentDidMount', {
-      tags: ['lifecycle', 'channel'],
-      props: this.props,
-      state: this.state,
-    });
+  getInitialStateFromProps(props) {
+    return {
+      error: false,
+      // Loading the intial content of the channel
+      loading: true,
+      // Loading more messages
+      loadingMore: false,
+      hasMore: true,
+      messages: Immutable([]),
+      online: props.isOnline,
+      typing: Immutable({}),
+      watchers: Immutable({}),
+      members: Immutable({}),
+      read: Immutable({}),
+      thread: props.thread,
+      threadMessages: [],
+      threadLoadingMore: false,
+      threadHasMore: true,
+      kavEnabled: true,
+      /** We save the events in state so that we can display event message
+       * next to the message after which it was received, in MessageList.
+       *
+       * e.g., eventHistory = {
+       *   message_id_1: [
+       *     { ...event_obj_received_after_message_id_1__1 },
+       *     { ...event_obj_received_after_message_id_1__2 },
+       *     { ...event_obj_received_after_message_id_1__3 },
+       *   ],
+       *   message_id_2: [
+       *     { ...event_obj_received_after_message_id_2__1 },
+       *     { ...event_obj_received_after_message_id_2__2 },
+       *     { ...event_obj_received_after_message_id_2__3 },
+       *   ]
+       * }
+       */
+      eventHistory: {},
+    };
+  }
 
+  async initChannel() {
     const channel = this.props.channel;
     let errored = false;
     if (!channel.initialized) {
@@ -238,6 +182,7 @@ class ChannelInner extends PureComponent {
         await channel.watch();
       } catch (e) {
         if (this._unmounted) return;
+        console.warn('errored');
         this.setState({ error: e });
         errored = true;
       }
@@ -248,6 +193,15 @@ class ChannelInner extends PureComponent {
       this.copyChannelState();
       this.listenToChanges();
     }
+  }
+
+  async componentDidMount() {
+    this.props.logger('Channel component', 'componentDidMount', {
+      tags: ['lifecycle', 'channel'],
+      props: this.props,
+      state: this.state,
+    });
+    await this.initChannel();
   }
 
   componentWillUnmount() {

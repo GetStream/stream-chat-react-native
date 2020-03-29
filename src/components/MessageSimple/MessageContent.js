@@ -26,7 +26,6 @@ const Container = styled.TouchableOpacity`
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  padding-left: 8px;
   background-color: ${({ error, theme }) =>
     error
       ? theme.message.content.errorContainer.backgroundColor

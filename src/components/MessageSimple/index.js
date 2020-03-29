@@ -332,7 +332,7 @@ export const MessageSimple = themed(
         openReactionPicker: this.openReactionPicker,
         dismissReactionPicker: this.dismissReactionPicker,
         alignment,
-        groupStyles: hasReactions ? ['top'] : groupStyles,
+        groupStyles: hasReactions ? ['bottom'] : groupStyles,
       };
 
       return (
