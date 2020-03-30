@@ -283,6 +283,10 @@ const defaultStreami18nOptions = {
   logger: (msg) => console.warn(msg),
   dayjsLocaleConfigForLanguage: null,
   DateTimeParser: Dayjs,
+  /**
+   * @deprecated Please use DateTimeParser instead
+   */
+  Moment: null,
 };
 export class Streami18n {
   i18nInstance = i18n.createInstance();
@@ -343,7 +347,13 @@ export class Streami18n {
     this.logger = finalOptions.logger;
 
     this.currentLanguage = finalOptions.language;
-    this.DateTimeParser = finalOptions.DateTimeParser;
+    this.DateTimeParser = finalOptions.Moment || finalOptions.DateTimeParser;
+
+    if (options.Moment) {
+      this.logger(
+        '"Moment" option has been deprecated from Streami18n options. Please use DateTimeParser instead.',
+      );
+    }
 
     try {
       // This is a shallow check to see if given parser is instance of Dayjs.
@@ -361,7 +371,7 @@ export class Streami18n {
       );
     }
 
-    this.isCustomDateTimeParser = !!options.DateTimeParser;
+    this.isCustomDateTimeParser = !!(options.Moment || options.DateTimeParser);
     const translationsForLanguage = finalOptions.translationsForLanguage;
 
     if (translationsForLanguage) {
