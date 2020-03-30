@@ -331,6 +331,23 @@ const i18n = new Streami18n({
 });
 ```
 
+You can find all the available keys here: https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n
+
+They are also exported as json object from the library.
+
+```js static
+import {
+  enTranslations,
+  nlTranslations,
+  ruTranslations,
+  trTranslations,
+  frTranslations,
+  hiTranslations,
+  itTranslations,
+  esTranslations,
+} from 'stream-chat-react-native'; // or 'stream-chat-expo'
+```
+
 UI will be automatically updated in this case.
 
 Please read this docs on i18n for more details and further customizations - https://getstream.github.io/stream-chat-react-native/#streami18n
