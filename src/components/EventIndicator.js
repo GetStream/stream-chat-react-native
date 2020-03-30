@@ -38,7 +38,7 @@ const MemberUpdateText = styled.Text`
  * A component to display a message regarding channel notifications such as
  * 'member.added', 'member.removed' etc.
  */
-const EventIndicator = ({ event, t, moment }) => {
+const EventIndicator = ({ event, t, tDateTimeParser }) => {
   if (event.type === 'member.added' || event.type === 'member.removed') {
     return (
       <MemberUpdateContainer>
@@ -53,7 +53,7 @@ const EventIndicator = ({ event, t, moment }) => {
                   username: event.user.name,
                 })}
           </MemberUpdateText>
-          <Date>{moment(event.received_at).format('hh:mm A')}</Date>
+          <Date>{tDateTimeParser(event.received_at).format('hh:mm A')}</Date>
         </MemberUpdateTextContainer>
       </MemberUpdateContainer>
     );

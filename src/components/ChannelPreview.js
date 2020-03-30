@@ -54,7 +54,7 @@ class ChannelPreview extends PureComponent {
   };
 
   getLatestMessage = () => {
-    const { channel, t, moment } = this.props;
+    const { channel, t, tDateTimeParser } = this.props;
     const message = channel.state.messages[channel.state.messages.length - 1];
 
     const latestMessage = {
@@ -84,10 +84,14 @@ class ChannelPreview extends PureComponent {
       }
     }
 
-    if (moment(message.created_at).isSame(new Date(), 'day'))
-      latestMessage.created_at = moment(message.created_at).format('HH:mm A');
+    if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
+      latestMessage.created_at = tDateTimeParser(message.created_at).format(
+        'HH:mm A',
+      );
     else {
-      latestMessage.created_at = moment(message.created_at).format('DD/MM/YY');
+      latestMessage.created_at = tDateTimeParser(message.created_at).format(
+        'DD/MM/YY',
+      );
     }
 
     return latestMessage;

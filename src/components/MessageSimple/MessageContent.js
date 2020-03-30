@@ -354,7 +354,7 @@ class MessageContent extends React.PureComponent {
       canDeleteMessage,
       MessageFooter,
       t,
-      moment,
+      tDateTimeParser,
     } = this.props;
 
     const Attachment = this.props.Attachment;
@@ -540,7 +540,7 @@ class MessageContent extends React.PureComponent {
               <MetaText alignment={pos}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
-                  : moment(message.created_at).format('hh:mmA')}
+                  : tDateTimeParser(message.created_at).format('hh:mmA')}
               </MetaText>
             </MetaContainer>
           ) : null}
