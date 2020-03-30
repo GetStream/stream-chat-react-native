@@ -433,12 +433,12 @@ const ChannelList = withChatContext(
           (channel) => channel.cid === e.channel.cid,
         );
 
-        if (channelIndex < 0) return;
-
-        channels[channelIndex].data = Immutable(e.channel);
-        this.setState({
-          channels: [...channels],
-        });
+        if (channelIndex > -1) {
+          channels[channelIndex].data = Immutable(e.channel);
+          this.setState({
+            channels: [...channels],
+          });
+        }
 
         if (
           this.props.onChannelUpdated &&
