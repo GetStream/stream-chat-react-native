@@ -432,6 +432,9 @@ const ChannelList = withChatContext(
         const channelIndex = channels.findIndex(
           (channel) => channel.cid === e.channel.cid,
         );
+
+        if (channelIndex < 0) return;
+
         channels[channelIndex].data = Immutable(e.channel);
         this.setState({
           channels: [...channels],
@@ -456,6 +459,9 @@ const ChannelList = withChatContext(
           const channelIndex = channels.findIndex(
             (channel) => channel.cid === e.channel.cid,
           );
+
+          if (channelIndex < 0) return;
+
           // Remove the deleted channel from the list.
           channels.splice(channelIndex, 1);
           this.setState({

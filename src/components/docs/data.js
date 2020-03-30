@@ -1,7 +1,7 @@
 /* global require */
 
 const StreamChat = require('stream-chat').StreamChat;
-const Moment = require('moment');
+const Dayjs = require('dayjs');
 export const client = new StreamChat('qk4nn7rpcn75');
 
 client.setUser(
@@ -24,7 +24,7 @@ export const channelContext = {
 
 export const translationContext = {
   t: (text) => text,
-  moment: (date) => Moment(date),
+  tDateTimeParser: (date) => Dayjs(date),
 };
 export const suggestionsContext = {
   openSuggestions: () => {},

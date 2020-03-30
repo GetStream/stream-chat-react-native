@@ -22,13 +22,13 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
 
     Logger function to log warnings/errors from this class
 
-  - **momentLocaleConfigForLanguage** (object) default: 'enConfig'
+  - **dayjsLocaleConfigForLanguage** (object) default: 'enConfig'
 
-    [Config object](https://momentjs.com/docs/#/i18n/changing-locale/) for internal moment object, corresponding to language (param)
+    [Config object](https://github.com/iamkun/dayjs/tree/dev/src/locale) for internal dayjs object, corresponding to language (param)
 
-  - **Moment** (function)
+  - **DateTimeParser** (function)
 
-    Moment instance/function.
+    Moment or Dayjs instance/function.
 
 - **geti18Instance**
 
@@ -48,7 +48,7 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
 
   ```js static
   const streami18n = new Streami18n({ language: 'nl' });
-  const { t, moment } = await streami18n.getTranslators();
+  const { t, tDateTimeParser } = await streami18n.getTranslators();
   ```
 
 - **registerTranslation**
@@ -57,7 +57,7 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
 
   - language | string
   - translator | object
-  - customMomentLocale | object (optional)
+  - customDayjsLocale | object (optional)
 
   ```js static
     streami18n.registerTranslation(
@@ -153,7 +153,7 @@ Stream provides following list of in-built translations:
 
   <Chat client={chatClient} i18nInstance={i18n}>
     ...
-  </Chat>
+  </Chat>;
   ```
 
   We have exported all the in-built translations in our library. You can import them in your project as following:
@@ -174,8 +174,8 @@ Stream provides following list of in-built translations:
   If you would like to maintain your own translation files:
 
   1. Create a json file in your project with whatever name you prefer. Best practice would be to name it after
-    the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
-  2. Copy the content of file https://github.com/GetStream/stream-chat-react-native/blob/master/src/i18n/en.json
+     the language-translations it contains e.g, If you are creating a translation file for Korean language then `ko.json`
+  2. Copy the content of file https://github.com/GetStream/stream-chat-react/blob/master/src/i18n/en.json
   3. Change the values of the keys as translation of key.
   4. Use it in chat client:
 
@@ -192,82 +192,118 @@ Stream provides following list of in-built translations:
   </Chat>;
   ```
 
- ## Datetime translations
+## Datetime translations
 
- Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
- Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
+Stream react chat components uses [dayjs](https://day.js.org/en/) internally by default to format datetime stamp.
+e.g., in ChannelPreview, MessageContent components.
+Dayjs has locale support as well - https://day.js.org/docs/en/i18n/i18n
+Dayjs is a lightweight alternative to Momentjs with the same modern API.
 
- You can either provide the moment locale config while registering
- language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Moment instance
- to Streami18n constructor, which will be then used internally (using the language locale) in components.
+Dayjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
+https://github.com/iamkun/dayjs/tree/dev/src/locale
 
- 1. Via language registration
+You can either provide the dayjs locale config while registering
+language with Streami18n (either via constructor or registerTranslation()) OR you can provide your own Dayjs or Moment instance
+to Streami18n constructor, which will be then used internally (using the language locale) in components.
 
- e.g.,
- ```js static
- const i18n = new Streami18n({
-  language: 'nl',
-  momentLocaleConfigForLanguage: {
-    months: [...],
-    monthsShort: [...],
-    calendar: {
-      sameDay: ...'
-    }
-  }
- });
- ```
+### Via language registration
 
- Similarly, you can add locale config for moment while registering translation via `registerTranslation` function.
+e.g.,
 
- e.g.,
- ```js static
- const i18n = new Streami18n();
-
- i18n.registerTranslation(
-  'mr',
-  {
-    'Nothing yet...': 'काहीही नाही  ...',
-    '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
-  },
-  {
-    months: [...],
-    monthsShort: [...],
-    calendar: {
-      sameDay: ...'
-    }
-  }
- );
+```js static
+const i18n = new Streami18n({
+ language: 'nl',
+ dayjsLocaleConfigForLanguage: {
+   months: [...],
+   monthsShort: [...],
+   calendar: {
+     sameDay: ...'
+   }
+ }
+});
 ```
- 2. Provide your own Moment object
 
- ```js static
- import 'moment/locale/nl';
- import 'moment/locale/it';
- // or if you want to include all locales
- import 'moment/min/locales';
+Similarly, you can add locale config for dayjs while registering translation via `registerTranslation` function.
 
- import Moment from moment
+e.g.,
 
- const i18n = new Streami18n({
+```js static
+const i18n = new Streami18n();
+
+i18n.registerTranslation(
+ 'mr',
+ {
+   'Nothing yet...': 'काहीही नाही  ...',
+   '{{ firstUser }} and {{ secondUser }} are typing...': '{{ firstUser }} आणि {{ secondUser }} टीपी करत आहेत ',
+ },
+ {
+   months: [...],
+   monthsShort: [...],
+   calendar: {
+     sameDay: ...'
+   }
+ }
+);
+```
+
+### Provide your own Moment object
+
+```js static
+import 'moment/locale/nl';
+import 'moment/locale/it';
+// or if you want to include all locales
+import 'moment/min/locales';
+
+import Moment from moment
+
+const i18n = new Streami18n({
+ language: 'nl',
+ DateTimeParser: Moment
+})
+```
+
+### Provide your own Dayjs object
+
+```js static
+import Dayjs from 'dayjs';
+
+import 'dayjs/locale/nl';
+import 'dayjs/locale/it';
+
+const i18n = new Streami18n({
   language: 'nl',
-  Moment: Moment
- })
- ```
+  DateTimeParser: Dayjs,
+});
+```
 
- If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
+If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
 
-**TIP**: If you would like to stick with english language for datetimes in Stream compoments,
-you can set `disableDateTimeTranslations` to true.
+**NOTE** Please note here that locales in `dayjs/locale/it` (and all other language locale files), does not load calendar related
+config like 'today at', 'tomorrow at' etc. You will need to manually configure calendar locale using [updateLocale](https://day.js.org/docs/en/plugin/update-locale).
+
+**TIPS**
+
+1. If you would like to stick with english language for datetimes in Stream compoments,
+   you can set `disableDateTimeTranslations` to true.
 
 ```js static
 const i18n = new Streami18n({
   language: 'nl',
-  disableDateTimeTranslations: false
+  disableDateTimeTranslations: false,
 });
-
 ```
 
-The default `en` locale config from moment is as follow:
+2. If you want to disable all the warnings, you can override logger option:
+
+```js static
+const i18n = new Streami18n({
+  language: 'nl',
+  logger: () => null,
+});
+```
+
+The default `en` locale config from dayjs is as follow:
+
 ```json static
 {
   "months": [
@@ -321,7 +357,7 @@ The default `en` locale config from moment is as follow:
     "lastWeek": "[Last] dddd [at] LT",
     "sameElse": "L"
   },
-  "longDateFormat": {
+  "formats": {
     "LTS": "h:mm:ss A",
     "LT": "h:mm A",
     "L": "MM/DD/YYYY",

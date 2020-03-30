@@ -72,6 +72,7 @@
     "@stream-io/styled-components": "^4.2.1",
     "anchorme": "^1.1.2",
     "babel-plugin-macros": "^2.5.1",
+    "dayjs": "^1.8.23",
     "deep-equal": "^1.0.1",
     "deepmerge": "^3.2.0",
     "file-loader": "^3.0.1",
@@ -79,13 +80,12 @@
     "lodash-es": "^4.17.11",
     "metro-react-native-babel-preset": "^0.53.1",
     "mime-types": "^2.1.24",
-    "moment": "2.23.0",
     "path": "^0.12.7",
     "react-art": "^16.8.6",
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
-    "stream-chat": "^1.5.1",
+    "stream-chat": "^1.6.0",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {

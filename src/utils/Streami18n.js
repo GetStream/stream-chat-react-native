@@ -1,5 +1,11 @@
 import i18n from 'i18next';
-import Moment from 'moment';
+import Dayjs from 'dayjs';
+import calendar from 'dayjs/plugin/calendar';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import LocalizedFormat from 'dayjs/plugin/localizedFormat';
+import localeData from 'dayjs/plugin/localeData';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
 import {
   enTranslations,
   nlTranslations,
@@ -13,16 +19,115 @@ import {
 const defaultNS = 'translation';
 const defaultLng = 'en';
 
-import 'moment/locale/nl';
-import 'moment/locale/ru';
-import 'moment/locale/tr';
-import 'moment/locale/fr';
-import 'moment/locale/hi';
-import 'moment/locale/it';
+import 'dayjs/locale/nl';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/tr';
+import 'dayjs/locale/fr';
+import 'dayjs/locale/hi';
+import 'dayjs/locale/it';
 // These locale imports also set these locale globally.
 // So As a last step I am going to import english locale
 // to make sure I don't mess up language at other places in app.
-import 'moment/locale/en-gb';
+import 'dayjs/locale/en';
+
+Dayjs.extend(updateLocale);
+
+Dayjs.updateLocale('nl', {
+  calendar: {
+    sameDay: '[vandaag om] LT',
+    nextDay: '[morgen om] LT',
+    nextWeek: 'dddd [om] LT',
+    lastDay: '[gisteren om] LT',
+    lastWeek: '[afgelopen] dddd [om] LT',
+    sameElse: 'L',
+  },
+});
+Dayjs.updateLocale('it', {
+  calendar: {
+    sameDay: '[Oggi alle] LT',
+    nextDay: '[Domani alle] LT',
+    nextWeek: 'dddd [alle] LT',
+    lastDay: '[Ieri alle] LT',
+    lastWeek: '[lo scorso] dddd [alle] LT',
+    sameElse: 'L',
+  },
+});
+Dayjs.updateLocale('hi', {
+  calendar: {
+    sameDay: '[आज] LT',
+    nextDay: '[कल] LT',
+    nextWeek: 'dddd, LT',
+    lastDay: '[कल] LT',
+    lastWeek: '[पिछले] dddd, LT',
+    sameElse: 'L',
+  },
+  // Hindi notation for meridiems are quite fuzzy in practice. While there exists
+  // a rigid notion of a 'Pahar' it is not used as rigidly in modern Hindi.
+  meridiemParse: /रात|सुबह|दोपहर|शाम/,
+  meridiemHour(hour, meridiem) {
+    if (hour === 12) {
+      hour = 0;
+    }
+    if (meridiem === 'रात') {
+      return hour < 4 ? hour : hour + 12;
+    } else if (meridiem === 'सुबह') {
+      return hour;
+    } else if (meridiem === 'दोपहर') {
+      return hour >= 10 ? hour : hour + 12;
+    } else if (meridiem === 'शाम') {
+      return hour + 12;
+    }
+  },
+  meridiem(hour) {
+    if (hour < 4) {
+      return 'रात';
+    } else if (hour < 10) {
+      return 'सुबह';
+    } else if (hour < 17) {
+      return 'दोपहर';
+    } else if (hour < 20) {
+      return 'शाम';
+    } else {
+      return 'रात';
+    }
+  },
+});
+Dayjs.updateLocale('fr', {
+  calendar: {
+    sameDay: '[Aujourd’hui à] LT',
+    nextDay: '[Demain à] LT',
+    nextWeek: 'dddd [à] LT',
+    lastDay: '[Hier à] LT',
+    lastWeek: 'dddd [dernier à] LT',
+    sameElse: 'L',
+  },
+});
+Dayjs.updateLocale('tr', {
+  calendar: {
+    sameDay: '[bugün saat] LT',
+    nextDay: '[yarın saat] LT',
+    nextWeek: '[gelecek] dddd [saat] LT',
+    lastDay: '[dün] LT',
+    lastWeek: '[geçen] dddd [saat] LT',
+    sameElse: 'L',
+  },
+});
+Dayjs.updateLocale('ru', {
+  calendar: {
+    sameDay: '[Сегодня, в] LT',
+    nextDay: '[Завтра, в] LT',
+    lastDay: '[Вчера, в] LT',
+  },
+});
+
+const en_locale = {
+  weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split(
+    '_',
+  ),
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split(
+    '_',
+  ),
+};
 
 /**
  * Wrapper around [i18next](https://www.i18next.com/) class for Stream related translations.
@@ -88,14 +193,16 @@ import 'moment/locale/en-gb';
  *
  * ## Datetime translations
  *
- * Stream components uses [momentjs](http://momentjs.com/) internally to format datetime stamp. e.g., in ChannelPreview, MessageContent components.
- * Momentjs has locale support as well -https://momentjs.com/docs/#/i18n/
+ * Stream react chat components uses [dayjs](https://day.js.org/en/) internally by default to format datetime stamp.
+ * e.g., in ChannelPreview, MessageContent components.
+ * Dayjs has locale support as well - https://day.js.org/docs/en/i18n/i18n
+ * Dayjs is a lightweight alternative to Momentjs with the same modern API.
  *
- * Momentjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
- * https://github.com/moment/moment/tree/develop/locale
+ * Dayjs provides locale config for plenty of languages, you can check the whole list of locale configs at following url
+ * https://github.com/iamkun/dayjs/tree/dev/src/locale
  *
- * You can either provide the moment locale config while registering
- * language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Moment instance
+ * You can either provide the dayjs locale config while registering
+ * language with Streami18n (either via constructor or registerTranslation()) or you can provide your own Dayjs or Moment instance
  * to Streami18n constructor, which will be then used internally (using the language locale) in components.
  *
  * 1. Via language registration
@@ -104,7 +211,7 @@ import 'moment/locale/en-gb';
  * ```
  * const i18n = new Streami18n({
  *  language: 'nl',
- *  momentLocaleConfigForLanguage: {
+ *  dayjsLocaleConfigForLanguage: {
  *    months: [...],
  *    monthsShort: [...],
  *    calendar: {
@@ -147,10 +254,25 @@ import 'moment/locale/en-gb';
  *
  * const i18n = new Streami18n({
  *  language: 'nl',
- *  Moment: Moment
+ *  DateTimeParser: Moment
  * })
  * ```
  *
+ * 3. Provide your own Dayjs object
+ *
+ * ```js
+ * import Dayjs from 'dayjs'
+ *
+ * import 'dayjs/locale/nl';
+ * import 'dayjs/locale/it';
+ * // or if you want to include all locales
+ * import 'dayjs/min/locales';
+ *
+ * const i18n = new Streami18n({
+ *  language: 'nl',
+ *  DateTimeParser: Dayjs
+ * })
+ * ```
  * If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
  *
  */
@@ -159,17 +281,21 @@ const defaultStreami18nOptions = {
   disableDateTimeTranslations: false,
   debug: false,
   logger: (msg) => console.warn(msg),
-  momentLocaleConfigForLanguage: null,
-  Moment,
+  dayjsLocaleConfigForLanguage: null,
+  DateTimeParser: Dayjs,
+  /**
+   * @deprecated Please use DateTimeParser instead
+   */
+  Moment: null,
 };
 export class Streami18n {
   i18nInstance = i18n.createInstance();
-  Moment = null;
+  Dayjs = null;
   setLanguageCallback = () => null;
   initialized = false;
 
   t = null;
-  tMoment = null;
+  tDateTimeParser = null;
   translations = {
     en: { [defaultNS]: enTranslations },
     nl: { [defaultNS]: nlTranslations },
@@ -180,12 +306,12 @@ export class Streami18n {
     it: { [defaultNS]: itTranslations },
   };
   /**
-   * moment.defineLanguage('nl') also changes the global locale. We don't want to do that
+   * dayjs.defineLanguage('nl') also changes the global locale. We don't want to do that
    * when user calls registerTranslation() function. So intead we will store the locale configs
-   * given to registerTranslation() function in `momentLocales` object, and register the required locale
+   * given to registerTranslation() function in `dayjsLocales` object, and register the required locale
    * with moment, when setLanguage is called.
    * */
-  momentLocales = {};
+  dayjsLocales = {};
   /**
    * Contructor accepts following options:
    *  - language (String) default: 'en'
@@ -203,12 +329,12 @@ export class Streami18n {
    *  - logger (function) default: () => {}
    *    Logger function to log warnings/errors from this class
    *
-   *  - momentLocaleConfigForLanguage (object) default: 'enConfig'
+   *  - dayjsLocaleConfigForLanguage (object) default: 'enConfig'
    *    [Config object](https://momentjs.com/docs/#/i18n/changing-locale/) for internal moment object,
    *    corresponding to language (param)
    *
-   *  - Moment (function) Moment instance. e.g. import Moment from 'moment';
-   *    Make sure to load all the required locales in this Moment instance that you will be provide to Streami18n
+   *  - DateTimeParser (function) Moment or Dayjs instance/function.
+   *    Make sure to load all the required locales in this Moment or Dayjs instance that you will be provide to Streami18n
    *
    * @param {*} options
    */
@@ -217,9 +343,35 @@ export class Streami18n {
       ...defaultStreami18nOptions,
       ...options,
     };
+    // Prepare the i18next configuration.
+    this.logger = finalOptions.logger;
 
     this.currentLanguage = finalOptions.language;
-    this.Moment = finalOptions.Moment;
+    this.DateTimeParser = finalOptions.Moment || finalOptions.DateTimeParser;
+
+    if (options.Moment) {
+      this.logger(
+        '"Moment" option has been deprecated from Streami18n options. Please use DateTimeParser instead.',
+      );
+    }
+
+    try {
+      // This is a shallow check to see if given parser is instance of Dayjs.
+      // For some reason Dayjs.isDayjs(this.DateTimeParser()) doesn't work.
+      if (this.DateTimeParser && this.DateTimeParser.extend) {
+        this.DateTimeParser.extend(LocalizedFormat);
+        this.DateTimeParser.extend(calendar);
+        this.DateTimeParser.extend(localeData);
+        this.DateTimeParser.extend(relativeTime);
+      }
+    } catch (error) {
+      throw Error(
+        `Streami18n: Looks like you wanted to provide Dayjs instance, but something went wrong while adding plugins`,
+        error,
+      );
+    }
+
+    this.isCustomDateTimeParser = !!(options.Moment || options.DateTimeParser);
     const translationsForLanguage = finalOptions.translationsForLanguage;
 
     if (translationsForLanguage) {
@@ -235,8 +387,6 @@ export class Streami18n {
       };
     }
 
-    // Prepare the i18next configuration.
-    this.logger = finalOptions.logger;
     this.i18nextConfig = {
       nsSeparator: false,
       keySeparator: false,
@@ -254,29 +404,29 @@ export class Streami18n {
 
     this.validateCurrentLanguage(this.currentLanguage);
 
-    const momentLocaleConfigForLanguage =
-      finalOptions.momentLocaleConfigForLanguage;
+    const dayjsLocaleConfigForLanguage =
+      finalOptions.dayjsLocaleConfigForLanguage;
 
-    if (momentLocaleConfigForLanguage) {
-      this.addOrUpdateMomentLocaleConfig(this.currentLanguage, {
-        ...momentLocaleConfigForLanguage,
+    if (dayjsLocaleConfigForLanguage) {
+      this.addOrUpdateLocale(this.currentLanguage, {
+        ...dayjsLocaleConfigForLanguage,
       });
-    } else if (!this.momentLocaleExists(this.currentLanguage)) {
+    } else if (!this.localeExists(this.currentLanguage)) {
       this.logger(
         `Streami18n: Streami18n(...) - Locale config for ${this.currentLanguage} does not exist in momentjs.` +
           `Please import the locale file using "import 'moment/locale/${this.currentLanguage}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
+          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
       );
     }
 
-    this.tMoment = (timestamp) => {
+    this.tDateTimeParser = (timestamp) => {
       if (
         finalOptions.disableDateTimeTranslations ||
-        !this.momentLocaleExists(this.currentLanguage)
+        !this.localeExists(this.currentLanguage)
       ) {
-        return this.Moment(timestamp).locale(defaultLng);
+        return this.DateTimeParser(timestamp).locale(defaultLng);
       }
-      return this.Moment(timestamp).locale(this.currentLanguage);
+      return this.DateTimeParser(timestamp).locale(this.currentLanguage);
     };
   }
 
@@ -295,16 +445,17 @@ export class Streami18n {
 
       return {
         t: this.t,
-        moment: this.tMoment,
+        tDateTimeParser: this.tDateTimeParser,
       };
     } catch (e) {
       this.logger(`Something went wrong with init:`, e);
     }
   }
 
-  momentLocaleExists = (language) => {
-    const locales = this.Moment.locales();
-    return locales.indexOf(language) > -1;
+  localeExists = (language) => {
+    if (this.isCustomDateTimeParser) return true;
+
+    return Object.keys(Dayjs.Ls).indexOf(language) > -1;
   };
 
   validateCurrentLanguage = () => {
@@ -334,11 +485,17 @@ export class Streami18n {
    */
   async getTranslators() {
     if (!this.initialized) {
+      if (this.dayjsLocales[this.currentLanguage]) {
+        this.addOrUpdateLocale(
+          this.currentLanguage,
+          this.dayjsLocales[this.currentLanguage],
+        );
+      }
       return await this.init();
     } else {
       return {
         t: this.t,
-        moment: this.tMoment,
+        tDateTimeParser: this.tDateTimeParser,
       };
     }
   }
@@ -348,12 +505,12 @@ export class Streami18n {
    *
    * @param {*} language
    * @param {*} translation
-   * @param {*} customMomentLocale
+   * @param {*} customDayjsLocale
    */
-  registerTranslation(language, translation, customMomentLocale) {
+  registerTranslation(language, translation, customDayjsLocale) {
     if (!translation) {
       this.logger(
-        `Streami18n: registerTranslation(language, translation, customMomentLocale) called without translation`,
+        `Streami18n: registerTranslation(language, translation, customDayjsLocale) called without translation`,
       );
       return;
     }
@@ -364,14 +521,14 @@ export class Streami18n {
       this.translations[language][defaultNS] = translation;
     }
 
-    if (customMomentLocale) {
-      this.momentLocales[language] = { ...customMomentLocale };
-    } else if (!this.momentLocaleExists(language)) {
+    if (customDayjsLocale) {
+      this.dayjsLocales[language] = { ...customDayjsLocale };
+    } else if (!this.localeExists(language)) {
       this.logger(
-        `Streami18n: registerTranslation(language, translation, customMomentLocale) - ` +
-          `Locale config for ${language} does not exist in momentjs.` +
-          `Please import the locale file using "import 'moment/locale/${language}';" in your app or ` +
-          `register the locale config with Streami18n using registerTranslation(language, translation, customMomentLocale)`,
+        `Streami18n: registerTranslation(language, translation, customDayjsLocale) - ` +
+          `Locale config for ${language} does not exist in Dayjs.` +
+          `Please import the locale file using "import 'dayjs/locale/${language}';" in your app or ` +
+          `register the locale config with Streami18n using registerTranslation(language, translation, customDayjsLocale)`,
       );
     }
 
@@ -380,11 +537,12 @@ export class Streami18n {
     }
   }
 
-  addOrUpdateMomentLocaleConfig(language, config) {
-    if (this.momentLocaleExists(language)) {
-      Moment.updateLocale(language, config);
+  addOrUpdateLocale(key, config) {
+    if (this.localeExists(key)) {
+      Dayjs.updateLocale(key, { ...config });
     } else {
-      Moment.defineLocale(language, config);
+      // Merging the custom locale config with en config, so missing keys can default to english.
+      Dayjs.locale({ name: key, ...{ ...en_locale, ...config } }, null, true);
     }
   }
 
@@ -399,10 +557,10 @@ export class Streami18n {
 
     try {
       const t = await this.i18nInstance.changeLanguage(language);
-      if (this.momentLocales[language]) {
-        this.addOrUpdateMomentLocaleConfig(
-          language,
-          this.momentLocales[language],
+      if (this.dayjsLocales[language]) {
+        this.addOrUpdateLocale(
+          this.currentLanguage,
+          this.dayjsLocales[this.currentLanguage],
         );
       }
 

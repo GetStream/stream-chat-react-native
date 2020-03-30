@@ -1,4 +1,6 @@
 ```js
 const data = require('./data');
-<MessageInput {...data.channelContext} {...data.suggestionsContext} />;
+<Chat client={data.client}>
+    <MessageInput {...data.channelContext} {...data.suggestionsContext} {...data.translationContext} />
+</Chat>
 ```

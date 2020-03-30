@@ -143,8 +143,8 @@ export const Chat = themed(
         this.setState({ t });
       });
 
-      const { t, moment } = await streami18n.getTranslators();
-      this.setState({ t, moment });
+      const { t, tDateTimeParser } = await streami18n.getTranslators();
+      this.setState({ t, tDateTimeParser });
     }
 
     componentDidUpdate() {
@@ -225,7 +225,10 @@ export const Chat = themed(
       return (
         <ChatContext.Provider value={this.getContext()}>
           <TranslationContext.Provider
-            value={{ t: this.state.t, moment: this.state.moment }}
+            value={{
+              t: this.state.t,
+              tDateTimeParser: this.state.tDateTimeParser,
+            }}
           >
             {this.props.children}
           </TranslationContext.Provider>
