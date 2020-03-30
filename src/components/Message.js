@@ -172,8 +172,70 @@ const Message = withKeyboardContext(
       this.props.updateMessage(data.message);
     };
 
-    handleReaction = (reactionType) =>
-      this.props.handleReaction(this.props.message, reactionType);
+    handleReaction = async (reactionType, event) => {
+      if (event !== undefined && event.preventDefault) {
+        event.preventDefault();
+      }
+
+      let userExistingReaction = null;
+
+      const currentUser = this.props.client.userID;
+      for (const reaction of this.props.message.own_reactions) {
+        // own user should only ever contain the current user id
+        // just in case we check to prevent bugs with message updates from breaking reactions
+        if (
+          currentUser === reaction.user.id &&
+          reaction.type === reactionType
+        ) {
+          userExistingReaction = reaction;
+        } else if (currentUser !== reaction.user.id) {
+          console.warn(
+            `message.own_reactions contained reactions from a different user, this indicates a bug`,
+          );
+        }
+      }
+
+      const originalMessage = this.props.message;
+      let reactionChangePromise;
+
+      /*
+    - Add the reaction to the local state
+    - Make the API call in the background
+    - If it fails, revert to the old message...
+    */
+      if (userExistingReaction) {
+        this.props.channel.state.removeReaction(userExistingReaction);
+
+        reactionChangePromise = this.props.channel.deleteReaction(
+          this.props.message.id,
+          userExistingReaction.type,
+        );
+      } else {
+        // add the reaction
+        const messageID = this.props.message.id;
+        const tmpReaction = {
+          message_id: messageID,
+          user: this.props.client.user,
+          type: reactionType,
+          created_at: new Date(),
+        };
+        const reaction = { type: reactionType };
+
+        this.props.channel.state.addReaction(tmpReaction);
+        reactionChangePromise = this.props.channel.sendReaction(
+          messageID,
+          reaction,
+        );
+      }
+
+      try {
+        // only wait for the API call after the state is updated
+        await reactionChangePromise;
+      } catch (e) {
+        // revert to the original message if the API call fails
+        this.props.updateMessage(originalMessage);
+      }
+    };
 
     handleAction = async (name, value, event) => {
       event.preventDefault();
