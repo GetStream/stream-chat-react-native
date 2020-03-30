@@ -5,7 +5,7 @@ import { Text, GestureResponderEvent } from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 import * as i18next from 'i18next';
-import * as moment from 'moment';
+
 //================================================================================================
 //================================================================================================
 //
@@ -35,7 +35,7 @@ export interface TranslationContext
   extends React.Context<TranslationContextValue> {}
 export interface TranslationContextValue {
   t?: i18next.TFunction;
-  moment?(datetime: moment.MomentInput): moment.Moment;
+  tDateTimeParser?(datetime: string | number): object;
 }
 
 declare function withSuggestionsContext<T>(
@@ -963,35 +963,33 @@ export interface Streami18nOptions {
   translationsForLanguage?: object;
   debug?: boolean;
   logger?(msg: string): any;
-  momentLocaleConfigForLanguage?: object;
-  Moment?(): moment.Moment;
+  dayjsLocaleConfigForLanguage?: object;
+  DateTimeParser?(): object;
+  Moment?(): Object;
 }
 
 export interface Streami18nTranslators {
   t: i18next.TFunction;
-  moment?(datetime: moment.MomentInput): moment.Moment;
+  tDateTimeParser?(datetime?: string | number): object;
 }
 
 export class Streami18n {
   constructor(options?: Streami18nOptions);
 
   init(): Promise<Streami18nTranslators>;
-  momentLocaleExists(language: String): boolean;
   validateCurrentLanguage(): void;
   geti18Instance(): i18next.i18n;
-  getAvailableLanguages(): Array<String>;
-  getTranslations(): Array<Object>;
+  getAvailableLanguages(): Array<string>;
+  getTranslations(): Array<string>;
   getTranslators(): Promise<Streami18nTranslators>;
   registerTranslation(
-    key: String,
-    translation: Object,
-    customMomentLocale?: moment.LocaleSpecification,
+    key: string,
+    translation: object,
+    customDayjsLocale?: Partial<ILocale>,
   ): void;
-  addOrUpdateMomentLocaleConfig(
-    key: String,
-    customMomentLocale: moment.LocaleSpecification,
-  ): void;
-  setLanguage(language: String): Promise<void>;
+  addOrUpdateLocale(key: string, config: Partial<ILocale>): void;
+  setLanguage(language: string): Promise<void>;
+  localeExists(language: string): boolean;
   registerSetLanguageCallback(callback: (t: i18next.TFunction) => void): void;
 }
 
