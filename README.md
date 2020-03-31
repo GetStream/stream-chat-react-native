@@ -31,7 +31,7 @@
   - [Native package](#native-package)
 - [Upgrade](#upgrade)
 - [Common Issues](#common-issues)
-- [Knowledge articles based on frequently asked questions](#knowledge-articles-based-on-frequently-asked-questions)
+- [Cookbook](docs/cookbook.md)
 
 ## React Native Chat Tutorial
 

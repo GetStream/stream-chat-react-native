@@ -151,7 +151,7 @@ const theme = {
 
 ## Custom/different style for received and sent messages
 
-**NOTE:** Please read [Message bubble with custom text styles/font](custom-text-style-font.md) before proceeding.
+**NOTE:** Please read [Message bubble with custom text styles/font](#message-bubble-with-custom-text-stylesfont) before proceeding.
 
 Global style will apply to both received and sent message. So in this case, we will provide styles to MessageSimple component separately, depending on whether the message belongs to current user or not.
 
@@ -232,7 +232,7 @@ This case has two aspects:
 2. Remove `Add Reaction` option from actionsheet, which is shown when message is long pressed.
    `MessageSimple` accepts a array prop - `messageActions`. You can use this prop to remove `Add Reaction` option from actionsheet.
 
-3. Limit the reactions to only `love` - [EXAMPLE 4 - Message with custom reactions](custom-reactions.md)
+3. Limit the reactions to only `love` - [Message with custom reactions](#message-with-custom-reactions)
 
 ```js
 import { MessageSimple } from 'stream-chat-react-native';
@@ -364,7 +364,7 @@ I can foresee different types of designs for this:
   In this case, we are going to override `MessageContent` component via prop to add
   the name of sender, right before MessageContent (which includes attachments and message text)
   For the sake of simplicity, I am going to disable reaction selector (using `ReactionList={null}`), since it will create conflict
-  in design. Check the [example](reactions-at-bottom-of-message.md) for moving reactions at bottom of the bubble.
+  in design. Check the [example](#message-bubble-with-reactions-at-bottom-of-message) for moving reactions at bottom of the bubble.
 
 ```js static
 
