@@ -3080,6 +3080,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+dayjs@^1.8.23:
+  version "1.8.23"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.8.23.tgz#07b5a8e759c4d75ae07bdd0ad6977f851c01e510"
+  integrity sha512-NmYHMFONftoZbeOhVz6jfiXI4zSiPN6NoVWJgC0aZQfYVwzy/ZpESPHuCcI0B8BUMpSJQ08zenHDbofOLKq8hQ==
+
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0, debug@^2.6.8, debug@^2.6.9:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
@@ -6550,11 +6555,6 @@ moment-timezone@^0.5.23:
   dependencies:
     moment ">= 2.9.0"
 
-moment@2.23.0:
-  version "2.23.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.23.0.tgz#759ea491ac97d54bac5ad776996e2a58cc1bc225"
-  integrity sha512-3IE39bHVqFbWWaPOMHZF98Q9c3LDKGTmypMiTM2QygGXXElkFWIH7GxfmlwmY2vwa+wmNsoYZmG2iusf1ZjJoA==
-
 "moment@>= 2.9.0", moment@^2.22.2:
   version "2.24.0"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
@@ -8827,16 +8827,17 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.7.2:
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.7.2.tgz#b09017346a1227961a3c82ba123baa923d109026"
-  integrity sha512-XtCcRfeKF4lr0S/ZVw5GWoH6F8ns1DNoB6RmLKHr7UcDXj0+EkSv1ekN9k+tPXRoy2qWPQjylZi37aTiqQYzmg==
+stream-chat-react-native-core@v0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.8.0.tgz#3819bf1f501305d2d04fde6796fdfede50bf56dc"
+  integrity sha512-wzWCT2UTf38X0Dd5GNQhZ21nSacSj+TBYEhr2D9mvU6MqoaPUe4QdPFfJFp65evRw6mUDQC+L6Tmu/46vo7i4w==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"
     "@stream-io/styled-components" "^4.2.1"
     anchorme "^1.1.2"
     babel-plugin-macros "^2.5.1"
+    dayjs "^1.8.23"
     deep-equal "^1.0.1"
     deepmerge "^3.2.0"
     file-loader "^3.0.1"
@@ -8844,19 +8845,18 @@ stream-chat-react-native-core@v0.7.2:
     lodash-es "^4.17.11"
     metro-react-native-babel-preset "^0.53.1"
     mime-types "^2.1.24"
-    moment "2.23.0"
     path "^0.12.7"
     react-art "^16.8.6"
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^1.5.1"
+    stream-chat "^1.6.0"
     uuid "^3.3.2"
 
-stream-chat@^1.5.1:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.6.0.tgz#7756285e9a9c2e3e2c0b47ed65885c29c547b6a0"
-  integrity sha512-f1Yrc56/fJMRO2Nv1GYxtj+mMh3rofslViuoirOyjcj9uUoV6iLNdHOZxs3HE1EDp5jbaMIqTxT6w8Tz1gqJHA==
+stream-chat@^1.6.0:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.6.1.tgz#616ab9266ae15fa61fb9f99be5f3867c456d9e90"
+  integrity sha512-KFo9VUhWevC99G6Ec8YWsserevpgnB5wdTR8mdKhV4ogazUcrSGyeQ13yLENLCvAIeOfRJ/Ps5im25d2tN/9Tw==
   dependencies:
     "@babel/runtime" "^7.3.1"
     axios "^0.18.1"
