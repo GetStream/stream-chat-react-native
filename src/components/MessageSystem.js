@@ -45,13 +45,13 @@ const DateText = styled.Text`
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = ({ message, moment }) => (
+const MessageSystem = ({ message, tDateTimeParser }) => (
   <Container>
     <Line />
     <TextContainer>
       <Text>{message.text.toUpperCase()}</Text>
       <DateText>
-        {moment(message.created_at)
+        {tDateTimeParser(message.created_at)
           .calendar()
           .toUpperCase()}
       </DateText>

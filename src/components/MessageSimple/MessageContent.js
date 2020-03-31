@@ -16,7 +16,7 @@ import { ReactionPickerWrapper } from '../ReactionPickerWrapper';
 import { emojiData } from '../../utils';
 
 // Border radii are useful for the case of error message types only.
-// Otherwise background is transperant, so border radius is not really visible.
+// Otherwise background is transparent, so border radius is not really visible.
 const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
@@ -405,7 +405,7 @@ class MessageContent extends React.PureComponent {
       channel,
       MessageReplies,
       t,
-      moment,
+      tDateTimeParser,
     } = this.props;
 
     const Attachment = this.props.Attachment;
@@ -610,7 +610,7 @@ class MessageContent extends React.PureComponent {
               <MetaText alignment={alignment}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
-                  : moment(message.created_at).format('hh:mmA')}
+                  : tDateTimeParser(message.created_at).format('hh:mmA')}
               </MetaText>
             </MetaContainer>
           ) : null}

@@ -1,10 +1,12 @@
 import { Streami18n } from '../Streami18n';
 import uuidv4 from 'uuid/v4';
-import { default as originalMoment } from 'moment';
+import { default as Dayjs } from 'dayjs';
 import { nlTranslations, frTranslations } from '../../i18n';
-import 'moment/locale/nl';
+import 'dayjs/locale/nl';
+import localeData from 'dayjs/plugin/localeData';
+Dayjs.extend(localeData);
 
-const customMomentLocaleConfig = {
+const customDayjsLocaleConfig = {
   months: 'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split(
     '_',
   ),
@@ -14,7 +16,7 @@ const customMomentLocaleConfig = {
   ),
   weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
   weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
-  longDateFormat: {
+  formats: {
     LT: 'HH:mm',
     LTS: 'HH:mm:ss',
     L: 'DD/MM/YYYY',
@@ -65,10 +67,10 @@ describe('Streami18n instance - default', () => {
     expect(_t(text)).toBe(text);
   });
 
-  it('should provide moment with default en locale', async () => {
-    const { moment } = await streami18n.getTranslators();
-    expect(moment() instanceof originalMoment).toBe(true);
-    expect(moment().locale()).toBe('en');
+  it('should provide dayjs with default en locale', async () => {
+    const { tDateTimeParser } = await streami18n.getTranslators();
+    expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+    expect(tDateTimeParser().locale()).toBe('en');
   });
 });
 
@@ -84,10 +86,10 @@ describe('Streami18n instance - with built-in langauge', () => {
         expect(_t(key)).toBe(nlTranslations[key]);
       }
     });
-    it('should provide moment with `nl` locale', async () => {
-      const { moment } = await streami18n.getTranslators();
-      expect(moment() instanceof originalMoment).toBe(true);
-      expect(moment().locale()).toBe('nl');
+    it('should provide dayjs with `nl` locale', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      expect(tDateTimeParser().locale()).toBe('nl');
     });
   });
 
@@ -107,29 +109,30 @@ describe('Streami18n instance - with built-in langauge', () => {
       }
     });
 
-    it('should provide moment with default `en` locale', async () => {
-      const { moment } = await streami18n.getTranslators();
-      expect(moment() instanceof originalMoment).toBe(true);
-      expect(moment().locale()).toBe('en');
+    it('should provide dayjs with default `en` locale', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      expect(tDateTimeParser().locale()).toBe('en');
     });
   });
 
-  describe('custom momentjs locale config', () => {
+  describe('custom dayjs locale config', () => {
     const streami18nOptions = {
       language: 'nl',
-      momentLocaleConfigForLanguage: customMomentLocaleConfig,
+      dayjsLocaleConfigForLanguage: customDayjsLocaleConfig,
     };
     const streami18n = new Streami18n(streami18nOptions);
 
-    it('should provide moment with given custom locale config', async () => {
-      const { moment } = await streami18n.getTranslators();
-      expect(moment() instanceof originalMoment).toBe(true);
-      const localeConfig = moment().localeData()['_config'];
-      // console.log(streami18nOptions.momentLocaleConfigForLanguage);
-      for (const key in streami18nOptions.momentLocaleConfigForLanguage) {
-        expect(localeConfig[key]).toStrictEqual(
-          streami18nOptions.momentLocaleConfigForLanguage[key],
-        );
+    it('should provide dayjs with given custom locale config', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      const localeConfig = tDateTimeParser().localeData();
+      for (const key in streami18nOptions.dayjsLocaleConfigForLanguage) {
+        if (localeConfig[key]) {
+          expect(localeConfig[key]()).toStrictEqual(
+            streami18nOptions.dayjsLocaleConfigForLanguage[key],
+          );
+        }
       }
     });
   });
@@ -159,17 +162,17 @@ describe('Streami18n instance - with custom translations', () => {
       expect(_t(textKey2)).toBe(textValue2);
     });
 
-    it('should provide moment with default `en` locale', async () => {
-      const { moment } = await streami18n.getTranslators();
-      expect(moment() instanceof originalMoment).toBe(true);
-      expect(moment().locale()).toBe('en');
+    it('should provide dayjs with default `en` locale', async () => {
+      const { tDateTimeParser } = await streami18n.getTranslators();
+      expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+      expect(tDateTimeParser().locale()).toBe('en');
     });
   });
 });
 
 describe('registerTranslation - register new language `mr` (Marathi) ', () => {
   const streami18nOptions = {
-    language: 'nl',
+    language: 'en',
     disableDateTimeTranslations: false,
   };
   const streami18n = new Streami18n(streami18nOptions);
@@ -181,8 +184,10 @@ describe('registerTranslation - register new language `mr` (Marathi) ', () => {
   streami18n.registerTranslation(
     languageCode,
     translations,
-    customMomentLocaleConfig,
+    customDayjsLocaleConfig,
   );
+
+  streami18n.setLanguage('mr');
 
   it('should add Marathi translations object to list of translations', () => {
     expect(streami18n.getTranslations()).toHaveProperty(languageCode, {
@@ -190,12 +195,15 @@ describe('registerTranslation - register new language `mr` (Marathi) ', () => {
     });
   });
 
-  it('should register moment locale config for Marathi translations', async () => {
-    const { moment } = await streami18n.getTranslators();
-    expect(moment() instanceof originalMoment).toBe(true);
-    const localeConfig = moment().localeData()['_config'];
-    for (const key in customMomentLocaleConfig) {
-      expect(customMomentLocaleConfig[key]).toStrictEqual(localeConfig[key]);
+  it('should register dayjs locale config for Marathi translations', async () => {
+    const { tDateTimeParser } = await streami18n.getTranslators();
+    expect(tDateTimeParser() instanceof Dayjs).toBe(true);
+
+    const localeConfig = tDateTimeParser().localeData();
+    for (const key in customDayjsLocaleConfig) {
+      if (localeConfig[key]) {
+        expect(customDayjsLocaleConfig[key]).toStrictEqual(localeConfig[key]());
+      }
     }
   });
 });

@@ -11,7 +11,7 @@ export const EmptyStateIndicator = ({ listType }) => {
       Indicator = null;
       break;
     default:
-      Indicator = <Text>No itens exist</Text>;
+      Indicator = <Text>No items exist</Text>;
       break;
   }
 

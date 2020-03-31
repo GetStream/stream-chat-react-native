@@ -59,7 +59,7 @@ class DateSeparator extends React.PureComponent {
   static themePath = 'messageList.dateSeparator';
 
   render() {
-    const { message, formatDate, moment } = this.props;
+    const { message, formatDate, tDateTimeParser } = this.props;
 
     return (
       <Container>
@@ -69,7 +69,7 @@ class DateSeparator extends React.PureComponent {
             formatDate(message.date)
           ) : (
             <React.Fragment>
-              <Date>{moment(message.date).calendar()}</Date>
+              <Date>{tDateTimeParser(message.date).calendar()}</Date>
             </React.Fragment>
           )}
         </DateText>

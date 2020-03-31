@@ -334,7 +334,7 @@ const ChannelList = withChatContext(
     }
 
     handleEvent = async (e) => {
-      if (e.type === 'user.presence.changed') {
+      if (e.type === 'user.presence.changed' || e.type === 'user.updated') {
         let newChannels = this.state.channels;
 
         newChannels = newChannels.map((channel) => {
@@ -432,10 +432,13 @@ const ChannelList = withChatContext(
         const channelIndex = channels.findIndex(
           (channel) => channel.cid === e.channel.cid,
         );
-        channels[channelIndex].data = Immutable(e.channel);
-        this.setState({
-          channels: [...channels],
-        });
+
+        if (channelIndex > -1) {
+          channels[channelIndex].data = Immutable(e.channel);
+          this.setState({
+            channels: [...channels],
+          });
+        }
 
         if (
           this.props.onChannelUpdated &&
@@ -456,6 +459,9 @@ const ChannelList = withChatContext(
           const channelIndex = channels.findIndex(
             (channel) => channel.cid === e.channel.cid,
           );
+
+          if (channelIndex < 0) return;
+
           // Remove the deleted channel from the list.
           channels.splice(channelIndex, 1);
           this.setState({
