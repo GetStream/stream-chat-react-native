@@ -31,11 +31,18 @@ export const SendButton = themed(
       editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       /** Function that sends message */
       sendMessage: PropTypes.func.isRequired,
+      /** Disables the button */
+      disabled: PropTypes.bool,
     };
+
+    static defaultProps = {
+      disabled: false,
+    };
+
     render() {
-      const { sendMessage, editing, title } = this.props;
+      const { sendMessage, editing, title, disabled } = this.props;
       return (
-        <Container title={title} onPress={sendMessage}>
+        <Container title={title} onPress={sendMessage} disabled={disabled}>
           {editing ? (
             <SendButtonIcon source={iconEdit} />
           ) : (

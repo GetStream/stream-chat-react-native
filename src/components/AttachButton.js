@@ -26,12 +26,16 @@ export const AttachButton = themed(
     static themePath = 'messageInput';
     static propTypes = {
       handleOnPress: PropTypes.func,
+      disabled: PropTypes.bool,
+    };
+    static defaultProps = {
+      disabled: false,
     };
 
     render() {
-      const { handleOnPress } = this.props;
+      const { handleOnPress, disabled } = this.props;
       return (
-        <Container onPress={handleOnPress}>
+        <Container onPress={handleOnPress} disabled={disabled}>
           <AttachButtonIcon source={iconAddAttachment} />
         </Container>
       );

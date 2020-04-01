@@ -121,6 +121,7 @@ export interface ChannelContextValue {
   loadMoreThread?(): void;
   closeThread?(): void;
   clearEditingState?(): void;
+  disabled?: boolean;
 }
 
 export interface KeyboardContext extends React.Context<KeyboardContextValue> {}
@@ -141,7 +142,7 @@ export interface MessageContentContextValue {
 //
 //================================================================================================
 //================================================================================================
-export interface ChatProps {
+export interface ChatProps extends StyledComponentProps {
   /** The StreamChat client object */
   client: Client.StreamChat;
   /**
@@ -204,32 +205,41 @@ export interface ChannelProps
    * />
    */
   KeyboardCompatibleView?: React.ElementType<KeyboardCompatibleViewProps>;
+  disableIfFrozenChannel?: boolean;
 }
 
 export type listType = 'channel' | 'message' | 'default';
 
-export interface LoadingErrorIndicatorProps {
+export interface StyledComponentProps {
+  style?: object;
+}
+
+export interface LoadingErrorIndicatorProps extends StyledComponentProps {
   listType?: listType;
 }
-export interface EmptyStateIndicatorProps {
+export interface EmptyStateIndicatorProps extends StyledComponentProps {
   listType?: listType;
 }
 
-export interface LoadingIndicatorProps {
+export interface LoadingIndicatorProps extends StyledComponentProps {
   listType?: listType;
 }
-export interface DateSeparatorProps extends TranslationContextValue {
+export interface DateSeparatorProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   message: Client.MessageResponse;
   formatDate(date: string): string;
 }
 
-export interface EventIndicatorProps extends TranslationContextValue {
+export interface EventIndicatorProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   event:
     | Client.Event<Client.MemberAddedEvent>
     | Client.Event<Client.MemberRemovedEvent>;
 }
 
-export interface AvatarProps {
+export interface AvatarProps extends StyledComponentProps {
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
@@ -251,7 +261,8 @@ export interface MessageInputProps
   extends KeyboardContextValue,
     ChannelContextValue,
     SuggestionsContextValue,
-    TranslationContextValue {
+    TranslationContextValue,
+    StyledComponentProps {
   /** The parent message object when replying on a thread */
   parent?: Client.Message | null;
 
@@ -274,7 +285,9 @@ export interface MessageInputProps
   SendButton: React.ElementType<SendButtonProps>;
 }
 
-export interface AttachmentProps extends MessageContentContextValue {
+export interface AttachmentProps
+  extends StyledComponentProps,
+    MessageContentContextValue {
   /** The attachment to render */
   attachment: Client.Attachment;
   /**
@@ -285,7 +298,9 @@ export interface AttachmentProps extends MessageContentContextValue {
   groupStyle: 'single' | 'top' | 'middle' | 'bottom';
 }
 
-export interface ChannelListProps extends ChatContextValue {
+export interface ChannelListProps
+  extends StyledComponentProps,
+    ChatContextValue {
   /** The Preview to use, defaults to ChannelPreviewLastMessage */
   Preview?: React.ElementType<ChannelPreviewUIComponentProps>;
 
@@ -358,7 +373,8 @@ export interface ChannelListState {
 
 export interface ChannelListUIComponentProps
   extends ChannelListProps,
-    ChannelListState {
+    ChannelListState,
+    StyledComponentProps {
   loadNextPage(): void;
 }
 
@@ -377,7 +393,8 @@ export interface ChannelPreviewState {
 
 export interface ChannelPreviewUIComponentProps
   extends ChannelPreviewProps,
-    ChannelPreviewState {
+    ChannelPreviewState,
+    StyledComponentProps {
   latestMessage: {
     text: string;
     created_at: string;
@@ -389,7 +406,8 @@ export interface ChannelPreviewUIComponentProps
 
 export interface MessageListProps
   extends ChannelContextValue,
-    TranslationContextValue {
+    TranslationContextValue,
+    StyledComponentProps {
   /** Turn off grouping of messages by user */
   messageActions?: Array<MessageAction>;
   noGroupByUser?: boolean;
@@ -474,11 +492,13 @@ export interface MessageProps extends KeyboardContextValue {
     message: Client.MessageResponse,
   ): void;
   dismissKeyboardOnMessageTouch: boolean;
+  disabled?: boolean;
 }
 
 export interface MessageUIComponentProps
   extends MessageProps,
-    KeyboardContextValue {
+    KeyboardContextValue,
+    StyledComponentProps {
   reactionsEnabled: boolean;
   repliesEnabled: boolean;
   onMessageTouch?(
@@ -534,7 +554,8 @@ export interface MessageUIComponentProps
 }
 
 export interface MessageRepliesUIComponentProps
-  extends TranslationContextValue {
+  extends TranslationContextValue,
+    StyledComponentProps {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: Client.MessageResponse;
   /** Boolean if current message is part of thread */
@@ -545,7 +566,7 @@ export interface MessageRepliesUIComponentProps
   pos: string;
 }
 
-export interface MessageStatusUIComponentProps {
+export interface MessageStatusUIComponentProps extends StyledComponentProps {
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   client: Client.StreamChat;
   /** A list of users who have read the message */
@@ -558,7 +579,7 @@ export interface MessageStatusUIComponentProps {
   isThreadList: boolean;
 }
 
-export interface MessageAvatarUIComponentProps {
+export interface MessageAvatarUIComponentProps extends StyledComponentProps {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: Client.MessageResponse;
   /**
@@ -582,7 +603,8 @@ export interface MessageContentUIComponentProps
   alignment: string;
 }
 
-export interface MessageTextContainerUIComponentProps {
+export interface MessageTextContainerUIComponentProps
+  extends StyledComponentProps {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: Client.MessageResponse;
   /**
@@ -604,13 +626,14 @@ export interface MessageTextContainerUIComponentProps {
   theme?: object;
 }
 
-export interface MessageTextProps {
+export interface MessageTextProps extends StyledComponentProps {
   message: Client.MessageResponse;
 }
 
 export interface ThreadProps
   extends ChannelContextValue,
-    TranslationContextValue {
+    TranslationContextValue,
+    StyledComponentProps {
   /** the thread (the parent message object) */
   thread: SeamlessImmutable.Immutable<Client.MessageResponse>;
   /** The list of messages to render, state is handled by the parent channel component */
@@ -622,18 +645,22 @@ export interface ThreadProps
   additionalMessageInputProps?: object;
 }
 
-export interface TypingIndicatorProps extends TranslationContextValue {
+export interface TypingIndicatorProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   typing: [];
   client: Client.StreamChat;
   Avatar?: React.ElementType<AvatarProps>;
 }
 
-export interface FileIconUIComponentProps {
+export interface FileIconUIComponentProps extends StyledComponentProps {
   size: number;
   mimeType?: string;
 }
 
-export interface AutoCompleteInputProps extends TranslationContextValue {
+export interface AutoCompleteInputProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   value: string;
   openSuggestions?(title: string, component: React.ElementType<any>): void;
   closeSuggestions?(): void;
@@ -644,7 +671,7 @@ export interface AutoCompleteInputProps extends TranslationContextValue {
   additionalTextInputProps: object;
 }
 
-export interface CardProps {
+export interface CardProps extends StyledComponentProps {
   title?: string;
   title_link?: string;
   og_scrape_url?: string;
@@ -656,35 +683,37 @@ export interface CardProps {
   onLongPress?: (event: GestureResponderEvent) => void;
 }
 
-export interface CommandsItemProps {
+export interface CommandsItemProps extends StyledComponentProps {
   name: string;
   args: string;
   description: string;
 }
 
-export interface FileAttachmentGroupProps {
+export interface FileAttachmentGroupProps extends StyledComponentProps {
   messageId: string;
   files: [];
   handleAction?(): void;
   alignment: 'right' | 'left';
   AttachmentFileIcon: React.ElementType<any>;
 }
-export interface FileUploadPreviewProps {
+export interface FileUploadPreviewProps extends StyledComponentProps {
   fileUploads: [];
   removeFile?(id: string): void;
   retryUpload?(id: string): Promise<any>;
   AttachmentFileIcon: React.ElementType<any>;
 }
-export interface GalleryProps extends TranslationContextValue {
+export interface GalleryProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   images: Client.Attachment[];
   onLongPress: (event: GestureResponderEvent) => void;
   alignment: 'right' | 'left';
 }
-export interface IconSquareProps {
+export interface IconSquareProps extends StyledComponentProps {
   icon: string;
   onPress?(event: GestureResponderEvent): void;
 }
-export interface ImageUploadPreviewProps {
+export interface ImageUploadPreviewProps extends StyledComponentProps {
   imageUploads: Array<{
     [id: string]: {
       id: string;
@@ -695,7 +724,7 @@ export interface ImageUploadPreviewProps {
   removeImage?(id: string): void;
   retryUpload?(id: string): Promise<any>;
 }
-export interface KeyboardCompatibleViewProps {
+export interface KeyboardCompatibleViewProps extends StyledComponentProps {
   // Default: 500
   keyboardDismissAnimationDuration?: number;
   // Default: 500
@@ -703,24 +732,30 @@ export interface KeyboardCompatibleViewProps {
   enabled?: boolean;
 }
 
-export interface EmptyStateIndicatorProps {
+export interface EmptyStateIndicatorProps extends StyledComponentProps {
   listType?: listType;
 }
-export interface EventIndicatorProps {
+export interface EventIndicatorProps extends StyledComponentProps {
   event:
     | Client.Event<Client.MemberAddedEvent>
     | Client.Event<Client.MemberRemovedEvent>
     | null;
 }
 
-export interface LoadingErrorIndicatorProps extends TranslationContextValue {
+export interface LoadingErrorIndicatorProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   listType?: listType;
 }
-export interface LoadingIndicatorProps extends TranslationContextValue {
+export interface LoadingIndicatorProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   listType?: listType;
   loadingText?: string;
 }
-export interface MentionsItemProps extends TranslationContextValue {
+export interface MentionsItemProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   item: {
     name?: string;
     image?: string;
@@ -728,16 +763,20 @@ export interface MentionsItemProps extends TranslationContextValue {
   };
 }
 
-export interface MessageNotificationProps extends TranslationContextValue {
+export interface MessageNotificationProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   showNotification: boolean;
   onPress?(event: GestureResponderEvent): void;
 }
 
-export interface MessageSystemProps extends TranslationContextValue {
+export interface MessageSystemProps
+  extends StyledComponentProps,
+    TranslationContextValue {
   message: Client.MessageResponse;
 }
 
-export interface ReactionListProps {
+export interface ReactionListProps extends StyledComponentProps {
   latestReactions: Client.ReactionResponse[];
   openReactionSelector?(event: GestureResponderEvent): void;
   getTotalReactionCount?(): string | number;
@@ -745,7 +784,7 @@ export interface ReactionListProps {
   position: string;
 }
 
-export interface ReactionPickerProps {
+export interface ReactionPickerProps extends StyledComponentProps {
   hideReactionCount?: boolean;
   hideReactionOwners: boolean;
   reactionPickerVisible: boolean;
@@ -762,7 +801,7 @@ export interface ReactionPickerProps {
   }>;
 }
 
-export interface ReactionPickerWrapperProps {
+export interface ReactionPickerWrapperProps extends StyledComponentProps {
   isMyMessage?(message: Client.MessageResponse): boolean;
   message: Client.MessageResponse;
   offset: string | number;
@@ -774,9 +813,9 @@ export interface ReactionPickerWrapperProps {
   style: object;
 }
 
-export interface SpinnerProps {}
+export interface SpinnerProps extends StyledComponentProps {}
 
-export interface SuggestionsProviderProps {
+export interface SuggestionsProviderProps extends StyledComponentProps {
   active: boolean;
   marginLeft: string | number;
   width: string | number;
@@ -785,23 +824,23 @@ export interface SuggestionsProviderProps {
   handleDismiss?(event: GestureResponderEvent): void;
   suggestionsTitle: string;
 }
-export interface UploadProgressIndicatorProps {
+export interface UploadProgressIndicatorProps extends StyledComponentProps {
   active: boolean;
   type: 'in_progress' | 'retry';
   action?(event: GestureResponderEvent): void;
 }
 
-export interface AttachmentActionsProps {
+export interface AttachmentActionsProps extends StyledComponentProps {
   text: string;
   actions: Client.Action[];
   actionHandler?(name: string, value: string): any;
 }
 
-export interface AttachButtonProps {
+export interface AttachButtonProps extends StyledComponentProps {
   handleOnPress(): void;
 }
 
-export interface SendButtonProps {
+export interface SendButtonProps extends StyledComponentProps {
   title: string;
   editing: Client.MessageResponse | boolean;
   sendMessage(): void;

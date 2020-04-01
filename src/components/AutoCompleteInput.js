@@ -34,7 +34,7 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   static defaultProps = {
-    value: '',
+    value: undefined,
   };
 
   constructor(props) {

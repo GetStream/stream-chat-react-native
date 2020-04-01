@@ -252,6 +252,14 @@ class MessageContent extends React.PureComponent {
       PropTypes.elementType,
     ]),
     formatDate: PropTypes.func,
+    /**
+     * @deprecated Please use `disabled` instead.
+     *
+     * Disables the message UI. Which means, message actions, reactions won't work.
+     */
+    readOnly: PropTypes.bool,
+    /** Disables the message UI. Which means, message actions, reactions won't work. */
+    disabled: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -303,9 +311,9 @@ class MessageContent extends React.PureComponent {
   };
 
   openReactionSelector = async () => {
-    const { readOnly } = this.props;
+    const { disabled, readOnly } = this.props;
 
-    if (readOnly) return;
+    if (disabled || readOnly) return;
 
     // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
     // So we need to postpone the calculation for reaction picker position
@@ -339,6 +347,7 @@ class MessageContent extends React.PureComponent {
       message,
       isMyMessage,
       readOnly,
+      disabled,
       Message,
       handleReaction,
       hideReactionCount,
@@ -441,9 +450,9 @@ class MessageContent extends React.PureComponent {
         ? onLongPress.bind(this, this, message)
         : options.length > 1
         ? this.showActionSheet
-        : null,
+        : () => null,
       activeOpacity: 0.7,
-      disabled: readOnly,
+      disabled: disabled || readOnly,
       hasReactions,
     };
 
@@ -452,6 +461,7 @@ class MessageContent extends React.PureComponent {
 
     const context = {
       onLongPress: contentProps.onLongPress,
+      disabled: disabled || readOnly,
     };
 
     return (

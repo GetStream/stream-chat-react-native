@@ -125,10 +125,13 @@ class Channel extends PureComponent {
      * @param updatedMessage UpdatedMessage object
      * */
     doUpdateMessageRequest: PropTypes.func,
+    /** Disables the channel UI if channel is frozen */
+    disableIfFrozenChannel: PropTypes.bool,
   };
 
   static defaultProps = {
     disableKeyboardCompatibleView: false,
+    disableIfFrozenChannel: true,
     KeyboardCompatibleView,
   };
 
