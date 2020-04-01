@@ -216,6 +216,8 @@ class MessageList extends PureComponent {
      * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
      */
     actionSheetStyles: PropTypes.object,
+    /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+    disabled: PropTypes.bool,
     /**
      * Besides existing (default) UX behaviour of underlying flatlist of MessageList component, if you want
      * to attach some additional props to un derlying flatlist, you can add it to following prop.
@@ -510,6 +512,7 @@ class MessageList extends PureComponent {
           Message={this.props.Message}
           Attachment={this.props.Attachment}
           readBy={readBy}
+          disabled={this.props.disabled}
           lastReceivedId={
             this.state.lastReceivedId === message.id
               ? this.state.lastReceivedId
@@ -632,6 +635,8 @@ class MessageList extends PureComponent {
             renderItem={({ item: message }) =>
               this.renderItem(message, messageGroupStyles[message.id])
             }
+            /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+            extraData={this.props.disabled}
             maintainVisibleContentPosition={{
               minIndexForVisible: 1,
               autoscrollToTopThreshold: 10,

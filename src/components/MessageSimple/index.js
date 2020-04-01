@@ -207,6 +207,14 @@ export const MessageSimple = themed(
         PropTypes.elementType,
       ]),
       formatDate: PropTypes.func,
+      /**
+       * @deprecated Please use `disabled` instead.
+       *
+       * Disables the message UI. Which means, message actions, reactions won't work.
+       */
+      readOnly: PropTypes.bool,
+      /** Disables the message UI. Which means, message actions, reactions won't work. */
+      disabled: PropTypes.bool,
     };
 
     static defaultProps = {

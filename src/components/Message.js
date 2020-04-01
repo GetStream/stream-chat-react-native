@@ -77,6 +77,14 @@ const Message = withKeyboardContext(
       onMessageTouch: PropTypes.func,
       /** Should keyboard be dismissed when messaged is touched */
       dismissKeyboardOnMessageTouch: PropTypes.bool,
+      /**
+       * @deprecated Please use `disabled` instead.
+       *
+       * Disables the message UI. Which means, message actions, reactions won't work.
+       */
+      readOnly: PropTypes.bool,
+      /** Disables the message UI. Which means, message actions, reactions won't work. */
+      disabled: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -114,6 +122,11 @@ const Message = withKeyboardContext(
 
       // editing is the last one which can trigger a change..
       if (!shouldUpdate && nextProps.editing !== this.props.editing) {
+        shouldUpdate = true;
+      }
+
+      // editing is the last one which can trigger a change..
+      if (!shouldUpdate && nextProps.disabled !== this.props.disabled) {
         shouldUpdate = true;
       }
 

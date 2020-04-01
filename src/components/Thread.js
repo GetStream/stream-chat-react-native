@@ -83,6 +83,8 @@ class Thread extends React.PureComponent {
      * **Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)**
      * If the thread is currently loading more messages. This is helpful to display a loading indicator on threadlist */
     threadLoadingMore: PropTypes.bool,
+    /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
+    disabled: PropTypes.bool,
     /**
      * Additional props for underlying Message component of parent message at the top.
      * Available props - https://getstream.github.io/stream-chat-react-native/#message
@@ -157,6 +159,7 @@ class ThreadInner extends React.PureComponent {
       additionalMessageInputProps,
       MessageList: MessageListComponent,
       MessageInput: MessageInputComponent,
+      disabled,
     } = this.props;
     if (!thread) {
       return null;
@@ -198,6 +201,7 @@ class ThreadInner extends React.PureComponent {
         <MessageInputComponent
           parent={thread}
           focus={autoFocus}
+          disabled={disabled}
           {...additionalMessageInputProps}
         />
       </React.Fragment>

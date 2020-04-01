@@ -121,6 +121,7 @@ export interface ChannelContextValue {
   loadMoreThread?(): void;
   closeThread?(): void;
   clearEditingState?(): void;
+  disabled: boolean;
 }
 
 export interface KeyboardContext extends React.Context<KeyboardContextValue> {}
@@ -204,6 +205,7 @@ export interface ChannelProps
    * />
    */
   KeyboardCompatibleView?: React.ElementType<KeyboardCompatibleViewProps>;
+  disableIfFrozenChannel: boolean;
 }
 
 export type listType = 'channel' | 'message' | 'default';
@@ -474,6 +476,7 @@ export interface MessageProps extends KeyboardContextValue {
     message: Client.MessageResponse,
   ): void;
   dismissKeyboardOnMessageTouch: boolean;
+  disabled: boolean;
 }
 
 export interface MessageUIComponentProps
