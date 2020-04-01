@@ -230,7 +230,7 @@ class MessageInput extends PureComponent {
     const fileUploads = {};
     const attachments = [];
     let mentioned_users = [];
-    let text = '';
+    let text = undefined;
 
     if (message) {
       text = message.text;
