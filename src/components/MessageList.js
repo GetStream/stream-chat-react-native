@@ -245,6 +245,10 @@ class MessageList extends PureComponent {
     TypingIndicator,
   };
 
+  componentDidMount() {
+    this.setLastReceived(this.props.messages);
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.online !== prevProps.online) {
       this.setState({ online: this.props.online });
@@ -291,7 +295,7 @@ class MessageList extends PureComponent {
       this.setState({ newMessagesNotification: false });
     }
 
-    this.getLastReceived(this.props.messages);
+    this.setLastReceived(this.props.messages);
   }
 
   insertDates = (messages) => {
@@ -443,7 +447,7 @@ class MessageList extends PureComponent {
     if (!this.props.threadList) this.props.markRead();
   };
 
-  getLastReceived = (messages) => {
+  setLastReceived = (messages) => {
     const l = messages.length;
     let lastReceivedId = null;
 
