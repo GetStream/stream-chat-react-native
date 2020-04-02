@@ -1,5 +1,77 @@
 # Changelog
 
+## [0.9.0-rc.1] 2020-04-02
+
+- Disabling (disabling `TouchableOpacity` wrapper) `SendButton` if message is not valid (empty text and no attachments)
+- Syncing this `rc` with latest master (0.8.1)
+
+## [0.8.1] 2020-04-01
+
+- Disabling interactions with MessageList and MessageInput if channel is frozen. [2c4e1a2](https://github.com/GetStream/stream-chat-react-native/commit/2c4e1a2713825b861717e002da483c182e80213c)
+- Adding missing `style` to all our component in typescript [a2ac0b4](https://github.com/GetStream/stream-chat-react-native/commit/a2ac0b44882913db065e8099bd03a7b286255d47)
+
+## [0.9.0-rc.0] 2020-03-31
+
+### Non-breaking changes
+
+- MessagaSimple
+
+  **new props**
+
+  - `MessageReplies` UI component to override default `2 replies` text/component
+  - `MessageHeader` UI component to add some content on top of message content (text, attachments)
+  - `ReactionList` UI component to override default ReactionList component
+  - `supportedReactions` Array of reactions which should be available or supported in reaction picker. [Example](https://github.com/GetStream/stream-chat-react-native/blob/vishal/docs-improvement/docs/cookbook.md#message-with-custom-reactions)
+
+  **deprecated props**
+
+  - `emojiDate` Please use supportedReactions instead
+
+- MessageAvatar
+
+  **new props**
+
+  - `alignment` ('right' | 'left')
+
+- MessageContent
+
+  **new props**
+
+  - All the new props to MessageSimple are available in MessageContent
+  - `alignment` ('right' | 'left')
+
+- ReactionPickerWrapper
+
+  In previous version, you could open reaction picker only after clicking/pressing `ReactionList`, which made it hard to change the
+  functionality of `ReactionList` without copy pasting lots of code regarding opening of `ReactionPicker`. And also ReactionPicker
+  logic was tightly coupled with MessageContent component (which meant added complexity)
+  With ReactionPickerWrapper, we are taking out all the ReactionPicker related logic (setting the position of reaction picker
+  at message which was touched) from MessageContent. So you can now add _open reaction picker on press_ functionality
+  on any component that you wish. You just need to wrap your component with `ReactionPickerWrapper` component.
+
+  You can also adjust the relative position at which ReactionPicker opens up or shows up by altering `offset`
+  prop on ReactionPickerWrapper.
+
+  Default value is:
+
+  ```
+  {
+      top: 40,
+      left: 30,
+      right: 10,
+  }
+  ```
+
+  NOTE: This component was present in repository in previous versions as well, but it was super buggy.
+
+  **TL;DR** Enables you to build custom ReactionList, on touch of which, ReactionPicker will open up
+
+  Please check this example from cookbook for details - https://github.com/GetStream/stream-chat-react-native/blob/vishal/docs-improvement/docs/cookbook.md#message-bubble-with-reactions-at-bottom-of-message
+
+- Channel
+
+  - Update the component, when `channel` prop changes.
+
 ## [0.8.0] 2020-03-30
 
 - Replacing momentjs with dayjs
