@@ -579,7 +579,7 @@ export interface MessageRepliesUIComponentProps
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   openThread?(message: Client.Message, event: React.SyntheticEvent): void;
   /** right | left */
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
 }
 
 export interface MessageStatusUIComponentProps extends StyledComponentProps {
@@ -616,7 +616,7 @@ export interface MessageAvatarUIComponentProps extends StyledComponentProps {
 export interface MessageContentUIComponentProps
   extends MessageUIComponentProps,
     TranslationContextValue {
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
   /** Open the reaction picker */
   openReactionPicker?(): void;
   /** Dismiss the reaction picker */
@@ -715,7 +715,7 @@ export interface FileAttachmentGroupProps extends StyledComponentProps {
   messageId: string;
   files: [];
   handleAction?(): void;
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
   AttachmentFileIcon: React.ElementType<any>;
 }
 export interface FileUploadPreviewProps extends StyledComponentProps {
@@ -729,7 +729,7 @@ export interface GalleryProps
     TranslationContextValue {
   images: Client.Attachment[];
   onLongPress: (event: GestureResponderEvent) => void;
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
 }
 export interface IconSquareProps extends StyledComponentProps {
   icon: string;
@@ -830,9 +830,9 @@ export interface ReactionPickerProps extends StyledComponentProps {
 export interface ReactionPickerWrapperProps extends StyledComponentProps {
   isMyMessage?(message: Client.MessageResponse): boolean;
   message: Client.MessageResponse;
-  hideReactionCount: boolean;
-  hideReactionOwners: boolean;
-  offset: {
+  hideReactionCount?: boolean;
+  hideReactionOwners?: boolean;
+  offset?: {
     top: string | number;
     left: string | number;
     right: string | number;
@@ -853,9 +853,8 @@ export interface ReactionPickerWrapperProps extends StyledComponentProps {
     id: string;
   }>;
   dismissReactionPicker?(): void;
-  reactionPickerVisible: boolean;
+  reactionPickerVisible?: boolean;
   openReactionPicker?(): void;
-  style: object;
 }
 
 export interface SpinnerProps extends StyledComponentProps {}
