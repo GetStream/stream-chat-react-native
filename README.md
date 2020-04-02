@@ -17,6 +17,7 @@
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
 - [Internationalisation (i18n)](#internationalisation)
+- [Cookbook](docs/cookbook.md)
 
 ## Contents
 
@@ -31,7 +32,6 @@
   - [Native package](#native-package)
 - [Upgrade](#upgrade)
 - [Common Issues](#common-issues)
-- [Cookbook](docs/cookbook.md)
 
 ## React Native Chat Tutorial
 
