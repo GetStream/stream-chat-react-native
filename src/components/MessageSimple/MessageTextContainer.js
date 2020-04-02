@@ -21,9 +21,9 @@ const TextContainer = styled.View`
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  margin-top: 2;
   padding: 5px;
   padding-left: 8;
+  margin-top: 2;
   padding-right: 8;
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
@@ -46,15 +46,13 @@ export const MessageTextContainer = withTheme((props) => {
   const {
     message,
     groupStyles = ['bottom'],
-    isMyMessage = () => false,
+    alignment,
     MessageText = false,
   } = props;
-  const pos = isMyMessage(message) ? 'right' : 'left';
 
   const hasAttachment = message.attachments.length > 0 ? true : false;
   const groupStyle =
-    (isMyMessage(message) ? 'right' : 'left') +
-    capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
+    alignment + capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
 
   if (!message.text) return false;
   const markdownStyles = props.theme
@@ -63,7 +61,7 @@ export const MessageTextContainer = withTheme((props) => {
   return (
     <React.Fragment>
       <TextContainer
-        alignment={pos}
+        alignment={alignment}
         groupStyle={groupStyle}
         status={message.status}
         type={message.type}

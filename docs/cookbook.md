@@ -1,0 +1,979 @@
+# Cookbook
+
+- [How to customize message component](#how-to-customize-message-component)
+
+    - [Show alert box with confirm/cancel buttons when message is deleted](#show-alert-box-with-confirmcancel-buttons-when-message-is-deleted)
+
+    - [Message bubble with custom text styles/font](#message-bubble-with-custom-text-stylesfont)
+
+    - [Custom/different style for received and sent messages](#customdifferent-style-for-received-and-sent-messages)
+
+    - [Message with custom reactions](#message-with-custom-reactions)
+
+    - [Instagram style double-tap reaction](#instagram-style-double-tap-reaction)
+
+    - [Message bubble with reactions at bottom of message](#message-bubble-with-reactions-at-bottom-of-message)
+
+    - [Slack style - all the messages on left side ](#slack-style---all-the-messages-on-left-side)
+
+    - [Message bubble with name of sender ](#message-bubble-with-name-of-sender)
+
+    - [Swipe message left to delete and right to reply](#swipe-message-left-to-delete-and-right-to-reply-message-example-9)
+
+- [How to customize actionsheet styles](#actionsheet-styling)
+- [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
+
+# How to customize message component
+
+`MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
+You can use built-in component as it is, but every product requires its own functionality/behaviour and styles.
+For this you can either build your own component or you can also use in-built components with some modifications.
+
+Here I am going to build some custom components, which use in-built components underneath with some modifications to its props.
+All the props accepted by MessageSimple component are mentioned here - https://getstream.github.io/stream-chat-react-native/#messagesimple
+
+Then all you need to do is to pass this component to MessageList component:
+
+e.g.,
+
+```js
+<Chat client={chatClient}>
+  <Channel>
+    <MessageList Message={MessageSimpleModified} />
+    <MessageInput />
+  </Channel>
+</Chat>
+```
+
+## Show alert box with confirm/cancel buttons when message is deleted
+
+`MessageSimple` accepts a prop function - `handleDelete`. Default value (function) is provided by HOC Message component - https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message.js#L150
+
+So in this example we will override `handleDelete` prop:
+
+```js
+import { Alert } from 'react-native';
+import { MessageSimple } from 'stream-chat-react-native';
+
+const MessageSimpleModified = (props) => {
+  const onDelete = () => {
+    // Custom behaviour
+    // If you face the issue of Alert disappearing instantly, then refer to this answer:
+    // https://stackoverflow.com/a/40041564/1460210
+    Alert.alert(
+      'Deleting message',
+      'Are you sure you want to delete the message?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log(`Message won't be deleted`),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            // If user says ok, then go ahead with deleting the message.
+            props.handleDelete();
+          },
+        },
+      ],
+      { cancelable: false },
+    );
+    // Continue with original handler.
+  };
+
+  return <MessageSimple {...props} handleDelete={onDelete} />;
+};
+```
+
+## Message bubble with custom text styles/font
+
+We use `react-native-simple-markdown` library internally in `MessageSimple` component, to render markdown
+content of the text. Styling text in MessageSimple component needs a little different approach than styling
+rest of the Stream chat components.
+
+As you have already read in tutorial, to style any other component, you simply pass the theme object to Chat component, which forwards and applies styles to all the its children.
+
+e.g.,
+
+```js
+
+const theme = {
+  avatar: {
+    image: {
+      size: 32,
+    },
+  },
+  colors: {
+    primary: 'green',
+  },
+  // Following styles can also be provided as string directly to spinner:
+  // spinner: `
+  //    width: 15px;
+  //    height: 15px;
+  //  `
+  spinner: {
+    css: `
+      width: 15px;
+      height: 15px;
+    `,
+  },
+  'messageInput.sendButton': 'padding: 20px',
+};
+
+<Chat client={chatClient} style={theme}>
+...
+</Chat>
+```
+
+To customize the styles of text, all you need to do is to add [markdown styles](https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1) to the key `message.content.markdown` of this theme object. The provided markdown styles will be forwarded to internal Markdown component
+
+e.g.
+```js
+const theme = {
+    'message.content.markdown': {
+        // list of all avaliable options are here: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
+        text: {
+            color: 'pink',
+            fontFamily: 'AppleSDGothicNeo-Bold'
+        },
+        url: {
+            color: 'red'
+        }
+    }
+}
+
+<Chat client={chatClient} style={theme}>
+...
+</Chat>
+
+```
+
+## Custom/different style for received and sent messages
+
+**NOTE:** Please read [Message bubble with custom text styles/font](#message-bubble-with-custom-text-stylesfont) before proceeding.
+
+Global style will apply to both received and sent message. So in this case, we will provide styles to MessageSimple component separately, depending on whether the message belongs to current user or not.
+
+Here I am aiming for following styles:
+
+- If message belongs to me
+
+  - White background
+  - Black colored text
+
+- If message doesn't belong to me
+  - Blue background
+  - white colored text
+
+```js
+const MessageSimpleStyled = (props) => {
+  const { isMyMessage, message } = props;
+
+  const sentMessageStyles = {
+    'message.content.markdown': {
+      text: {
+        color: 'black',
+      },
+    },
+    'message.content.textContainer':
+      'background-color: white; border-color: black; border-width: 1',
+  };
+
+  const receivedMessageStyles = {
+    'message.content.markdown': {
+      text: {
+        color: 'white',
+      },
+    },
+    'message.content.textContainer': 'background-color: #9999FF;',
+  };
+
+  if (isMyMessage(message)) {
+    return <MessageSimple {...props} style={sentMessageStyles} />;
+  } else {
+    return <MessageSimple {...props} style={receivedMessageStyles} />;
+  }
+};
+```
+
+## Message with custom reactions
+
+`MessageSimple` accepts a prop - `supportedReactions`. You can pass your emoji data to this prop to set your own reactions.
+
+In this example I will support only two reactions - Monkey face (🐵) and Lion (🦁)
+
+```js
+const MessageSimpleWithCustomReactions = (props) => (
+    <MessageSimple
+      {...props}
+      supportedReactions={[
+        {
+          id: 'monkey',
+          icon: '🐵',
+        },
+        {
+          id: 'lion',
+          icon: '🦁',
+        },
+      ]}
+    />
+  );
+```
+
+## Instagram style double-tap reaction
+
+This case has two aspects:
+
+1. Handle double tap and send `love` reaction
+
+  There is no built-in way of handling double-taps in react-native. So we will implement it on our own (thanks to this blog - https://medium.com/handlebar-labs/instagram-style-double-tap-with-react-native-49e757f68de)
+
+2. Remove `Add Reaction` option from actionsheet, which is shown when message is long pressed.
+   `MessageSimple` accepts a array prop - `messageActions`. You can use this prop to remove `Add Reaction` option from actionsheet.
+
+3. Limit the reactions to only `love` - [Message with custom reactions](#message-with-custom-reactions)
+
+```js
+import { MessageSimple } from 'stream-chat-react-native';
+
+const MessageSimpleIgReaction = (props) => {
+  let lastTap = null;
+  const handleDoubleTap = () => {
+    const now = Date.now();
+    if (lastTap && now - lastTap < 300) {
+      props.handleReaction('love');
+    } else {
+      lastTap = now;
+    }
+  };
+
+  return (
+    <MessageSimple
+      {...props}
+      onPress={handleDoubleTap}
+      supportedReactions={[
+        {
+          id: 'love',
+          icon: '❤️️',
+        },
+      ]}
+      messageActions={['edit', 'delete', 'reply']} // not including `reactions` here.
+    />
+  );
+};
+```
+
+## Message bubble with reactions at bottom of message
+
+By default we show reactions on message on top of message. But in some designs, you may want
+to show it at bottom of message.
+
+First you want to disable/hide the original reaction selector. `MessageSimple` component accepts a custom
+UI component as prop - `ReactionList`. If you set this prop to null, then original reaction list and thus reaction selector
+will be hidden/disabled
+
+```js static
+const MessageWithoutReactionPicker = props => {
+  return (
+    <MessageSimple
+      {...props}
+      ReactionList={null}
+    />
+  );
+};
+
+```
+
+Next, you want to introduce your own reaction selector or reaction picker. For this purpose, you can use
+`ReactionPickerWrapper` HOC (higher order component). `ReactionPickerWrapper` component simply wraps its children
+wtih `TouchableOpacity`, which when pressed/touched - opens the reaction picker.
+
+In following example, I am going to build my own reaction list component. And and add the wrapper `ReactionPickerWrapper`
+around it, so that when user touches/presses on reaction list, it opens reaction picker.
+
+```js
+import { renderReactions, MessageSimple } from 'stream-chat-react-native';
+
+const reactionListStyles = StyleSheet.create({
+  container: {
+    backgroundColor: 'black',
+    flexDirection: 'row',
+    borderColor: 'gray',
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 10,
+  },
+});
+
+const CustomReactionList = props => (
+    <View style={reactionListStyles.container}>
+      {renderReactions(
+        props.message.latest_reactions,
+        props.supportedReactions,
+      )}
+    </View>
+)
+
+const MessageFooterWithReactionList = props => {
+  return (
+    <ReactionPickerWrapper {...props}>
+      {props.message.latest_reactions.length > 0 && <CustomReactionList {...props} />}
+    </ReactionPickerWrapper>
+  );
+};
+
+const MessageWithReactionsAtBottom = props => {
+  return (
+    <MessageSimple
+      {...props}
+      ReactionList={null}
+      MessageFooter={MessageFooterWithReactionList}
+    />
+  );
+};
+```
+
+And thats it, you have reactions at bottom of the message.
+
+## Slack style - all the messages on left side
+
+By default, received messages are shown on left side of MessageList and sent messages are shown on right side of the message list. 
+
+`MessageSimple` component accepts the boolean prop - `forceAlign`, which can be used to override the alignment of message bubble relative to MessageList component.
+Its value could be either `left` or `right`.
+
+```js
+
+const MessageSimpleLeftAligned = props => {
+  return <MessageSimple {...props} forceAlign="left" />;
+};
+
+```
+
+## Message bubble with name of sender
+
+
+In group messaging, its important to show the name of the sender with message bubble - similar to
+slack or whatsapp. In this example we are going to add name of the sender on top of message content.
+
+I can foresee different types of designs for this:
+
+## Sender's name on the very top of message bubble (above text container, attachments)
+
+  In this case, we are going to override `MessageContent` component via prop to add
+  the name of sender, right before MessageContent (which includes attachments and message text)
+  For the sake of simplicity, I am going to disable reaction selector (using `ReactionList={null}`), since it will create conflict
+  in design. Check the [example](#message-bubble-with-reactions-at-bottom-of-message) for moving reactions at bottom of the bubble.
+
+```js static
+
+class MessageContentWithName extends React.PureComponent {
+  render() {
+    return (
+      <View style={{flexDirection: 'column', padding: 5}}>
+        <Text style={{fontWeight: 'bold'}}>{this.props.message.user.name}</Text>
+        <MessageContent {...this.props} />
+      </View>
+    );
+  }
+}
+
+const MessageWithSenderName = props => {
+  return (
+    <MessageSimple
+      {...props}
+      ReactionList={null}
+      MessageContent={MessageContentWithName}
+    />
+  );
+};
+```
+
+### Sender's name inside text bubble/container
+
+In this case, you want to override the `MessageText` component.
+
+```js static
+
+const MessageTextWithName = props => {
+  const markdownStyles = props.theme
+    ? props.theme.message.content.markdown
+    : {};
+
+  return (
+    <View style={{flexDirection: 'column', padding: 5}}>
+      <Text style={{fontWeight: 'bold'}}>{props.message.user.name}</Text>
+      {props.renderText(props.message, markdownStyles)}
+    </View>
+  );
+};
+
+const MessageWithSenderNameInTextContainer = props => {
+  return <MessageSimple {...props} MessageText={MessageTextWithName} />;
+};
+```
+
+_**TIP** you can also mix above two cases. If there is an attachment to message, then show the name on top of everything, and if there is no attachment, then show the name inside text container/bubble. You can
+conditionally render sender's name both in MessageText and MessageContent based on - `message.attachments.length > 0`_
+
+### Sender's name at bottom of the message
+
+In this case, we can use `MessageFooter` UI component prop to add name of the sender.
+
+
+```js static
+const MessageWithSenderNameAtBottom = props => {
+  return (
+    <MessageSimple
+      {...props}
+      MessageFooter={props => <Text>{props.message.user.name}</Text>}
+    />
+  );
+};
+```
+
+## Swipe message left to delete and right to reply {#message-example-9}
+
+Some messaging apps usually show extra options such as delete or reply when you swipe the message.
+In this example we will build a message which opens `delete` opion when swiped left, and will reply
+to the message when swiped to left.
+
+For swiping gesture, we are going to use external library called [react-native-swipe-list-view](https://github.com/jemise111/react-native-swipe-list-view)
+
+Also I am going to use following styles for this example:
+
+```js static
+const messageSwipableStyles = StyleSheet.create({
+  row: {
+    flex: 1,
+    backgroundColor: 'blue',
+  },
+  messageActionsContainer: {
+    backgroundColor: '#F8F8F8',
+  },
+  deletebutton: {
+    alignSelf: 'flex-end',
+    width: 50,
+    height: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderLeftColor: '#A8A8A8',
+    borderLeftWidth: 1,
+  },
+  deleteIcon: {
+    width: 30,
+    height: 30,
+    alignSelf: 'center',
+  },
+  messageContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  messageContainerSelected: {
+    backgroundColor: '#F8F8F8',
+  },
+});
+```
+
+First lets just build a simple swipable message component, which when swiped left, opens the delete button.
+We will use `SwipeRow` as wrapper around our MessageSimple component.
+
+```js
+import {SwipeRow} from 'react-native-swipe-list-view';
+...
+
+class MessageSwipable extends React.Component {
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
+        recalculateHiddenLayout>
+        <View>
+            <TouchableOpacity style={messageSwipableStyles.deletebutton}>
+              <Image source={deleteIcon} styles={messageSwipableStyles.deleteIcon} />
+            </TouchableOpacity>
+        </View>
+        <View>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+```
+
+You will see some really distorted UI at this point. Don't worry, we just need to add some nice styles to fix it:
+
+```diff
+class MessageSwipable extends React.Component {
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
++       style={messageSwipableStyles.row}
+        recalculateHiddenLayout>
+-        <View>
++        <View style={messageSwipableStyles.messageActionsContainer}>
+-          <TouchableOpacity>
++          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
+            <Image
+              source={deleteIcon}
++             style={messageSwipableStyles.deleteIcon}
+            />
+          </TouchableOpacity>
+        </View>
+-        <View>
++        <View style={messageSwipableStyles.messageContainer}>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+```
+
+You will see a nice button appearing on right on the message, when message is swiped left.
+
+Next, we want to open a thread or reply screen when message is swiped right. For this we are going to use `onRowOpen`
+callback prop function on `SwipeRow`. This callback gets the swipe offset as parameter. When this offset is positive,
+that means its a right swipe, otherwise left.
+
+So when user swipes right on message, we want to call the function `onThreadSelect()`, which is available
+in props of message component. 
+
+Also we are going to add some different styles when delete button/option is visible on message. For this we add a state variable
+`menuOpen` to keep track of whether delete button is visible or not.
+
+```diff
+class MessageSwipable extends React.Component {
++  rowRef = null;
++  state = {menuOpen: false};
+
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
+        style={messageSwipableStyles.row}
+        recalculateHiddenLayout
++        onRowOpen={value => {
++          if (value > 0) {
++            this.props.onThreadSelect(this.props.message);
++            this.rowRef.closeRow();
++          } else {
++            this.setState({menuOpen: true});
++          }
++        }}
++        ref={ref => {
++          this.rowRef = ref;
++        }}>
+        <View style={messageSwipableStyles.messageActionsContainer}>
+          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
+            <Image
+              source={deleteIcon}
+              style={messageSwipableStyles.deleteIcon}
+            />
+          </TouchableOpacity>
+        </View>
+-        <View style={messageSwipableStyles.messageContainer}>
++        <View
++          style={
++            this.state.menuOpen
++              ? {
++                  ...messageSwipableStyles.messageContainer,
++                  ...messageSwipableStyles.messageContainerSelected,
++                }
++              : {...messageSwipableStyles.messageContainer}
++          }>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+```
+
+Next, when delete button gets pressed, we want to delete the message and close the row.
+
+```diff
+class MessageSwipable extends React.Component {
+  rowRef = null;
+  state = {menuOpen: false};
+
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
+        recalculateHiddenLayout
+        onRowOpen={value => {
+          if (value > 0) {
+            this.props.onThreadSelect(this.props.message);
+            this.rowRef.closeRow();
+          } else {
+            this.setState({menuOpen: true});
+          }
+        }}
+        ref={ref => {
+          this.rowRef = ref;
+        }}>
+        <View style={messageSwipableStyles.messageActionsContainer}>
+-          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
++          <TouchableOpacity
++            style={messageSwipableStyles.deletebutton}
++            onPress={() => {
++              this.props.handleDelete();
++              this.rowRef.closeRow();
++            }}>
++            <Image
++              source={deleteIcon}
++              style={messageSwipableStyles.deleteIcon}
++            />
+          </TouchableOpacity>
+        </View>
+        <View
+          style={
+            this.state.menuOpen
+              ? {
+                  ...messageSwipableStyles.messageContainer,
+                  ...messageSwipableStyles.messageContainerSelected,
+                }
+              : {...messageSwipableStyles.messageContainer}
+          }>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+```
+
+Next, we to restrict swipable functionality only for non-deleted messages.
+
+```diff
+class MessageSwipable extends React.Component {
+  rowRef = null;
+  state = {menuOpen: false};
+
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
+        recalculateHiddenLayout
++        disableLeftSwipe={!!this.props.message.deleted_at}
++        disableRightSwipe={!!this.props.message.deleted_at}
+        onRowOpen={value => {
+          if (value > 0) {
+            this.props.onThreadSelect(this.props.message);
+            this.rowRef.closeRow();
+          } else {
+            this.setState({menuOpen: true});
+          }
+        }}
+        ref={ref => {
+          this.rowRef = ref;
+        }}>
+-        <View style={messageSwipableStyles.messageActionsContainer}>
++        <View
++          style={
++            !this.props.message.deleted_at
++              ? messageSwipableStyles.messageActionsContainer
++              : null
++          }>
++          {!this.props.message.deleted_at ? (
++            <TouchableOpacity
++              style={messageSwipableStyles.deletebutton}
++              onPress={() => {
++                this.props.handleDelete();
++                this.rowRef.closeRow();
++              }}>
++              <Image
++                source={deleteIcon}
++                style={messageSwipableStyles.deleteIcon}
++              />
++            </TouchableOpacity>
++          ) : null}
+        </View>
+        <View
+          style={
+            this.state.menuOpen
+              ? {
+                  ...messageSwipableStyles.messageContainer,
+                  ...messageSwipableStyles.messageContainerSelected,
+                }
+              : {...messageSwipableStyles.messageContainer}
+          }>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+```
+
+And we are done. Soon we will publish the running example of this on our repo!
+
+_**in progress ...**_
+
+## Final result:
+
+```js
+class MessageSwipable extends React.Component {
+  rowRef = null;
+  state = {menuOpen: false};
+  render() {
+    return (
+      <SwipeRow
+        rightOpenValue={-55}
+        leftOpenValue={30}
+        disableLeftSwipe={!!this.props.message.deleted_at}
+        disableRightSwipe={!!this.props.message.deleted_at}
+        style={messageSwipableStyles.row}
+        recalculateHiddenLayout
+        onRowClose={() => {
+          this.setState({menuOpen: false});
+        }}
+        onRowOpen={value => {
+          if (value > 0) {
+            this.props.onThreadSelect(this.props.message);
+            this.rowRef.closeRow();
+          } else {
+            this.setState({menuOpen: true});
+          }
+        }}
+        ref={ref => {
+          this.rowRef = ref;
+        }}>
+        <View
+          style={
+            !this.props.message.deleted_at
+              ? messageSwipableStyles.messageActionsContainer
+              : null
+          }>
+          {!this.props.message.deleted_at ? (
+            <TouchableOpacity
+              style={messageSwipableStyles.deletebutton}
+              onPress={() => {
+                this.props.handleDelete();
+                this.rowRef.closeRow();
+              }}>
+              <Image
+                source={deleteIcon}
+                style={messageSwipableStyles.deleteIcon}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        <View
+          style={
+            this.state.menuOpen
+              ? {
+                  ...messageSwipableStyles.messageContainer,
+                  ...messageSwipableStyles.messageContainerSelected,
+                }
+              : {...messageSwipableStyles.messageContainer}
+          }>
+          <MessageSimple {...this.props} />
+        </View>
+      </SwipeRow>
+    );
+  }
+}
+
+const messageSwipableStyles = StyleSheet.create({
+  row: {
+    flex: 1,
+    backgroundColor: 'blue',
+  },
+  messageActionsContainer: {
+    backgroundColor: '#F8F8F8',
+  },
+  deletebutton: {
+    alignSelf: 'flex-end',
+    width: 50,
+    height: '100%',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderLeftColor: '#A8A8A8',
+    borderLeftWidth: 1,
+  },
+  deleteIcon: {
+    width: 30,
+    height: 30,
+    alignSelf: 'center',
+  },
+  messageContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  messageContainerSelected: {
+    backgroundColor: '#F8F8F8',
+  },
+});
+```
+
+
+_**in progress ...**_
+
+## Actionsheet Styling
+
+Internally we use [react-native-actionsheet](https://github.com/beefe/react-native-actionsheet) library. This library supports style customizations.
+But used our own components for header and actionsheet. So some basic styling could be done using theme object (provided to Chat component)
+
+We use actionsheet at two places in our library.
+
+### Message actions
+_(to display list of message options, when message is long pressed - in `MessageContent` component inside `MessageSimple`)_
+
+Basic styling can be achieved by providing styles for keys given in following example, in theme object.
+
+```js
+const theme = {
+  'messageInput.actionSheet.titleContainer': `background-color: 'black', padding: 10px`,
+  'messageInput.actionSheet.titleText': `color: 'white'`
+  'messageInput.actionSheet.buttonContainer': `background-color: 'black', padding: 5px`,
+  'messageInput.actionSheet.buttonText': `color: 'white', margin-left: 20px`
+}
+
+<Chat client={chatClient} style={theme}></Chat>
+```
+If you want to customize further, e.g., container of the whole actionsheet or backdrop, then you need to add styles directly for
+internal react-native-actionsheet component. You can do that by passing prop `actionSheetStyles` to MessageInput component.
+
+_Full list of options: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js_
+
+```js
+import { Chat, Channel, MessageList, MessageInput, MessageSimple } from 'stream-chat-react-native';
+
+const actionsheetStyles = {
+  overlay: {
+    backgroundColor: 'grey',
+    opacity: 0.6
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+};
+
+<Chat client={chatClient}>
+  <Channel>
+    <MessageList />
+    <MessageInput actionsheetStyles={actionsheetStyles} />
+  </Channel>
+</Chat>
+```
+
+**Note** `titleBox`, `titleText`, `buttonBox` and `buttonText` won't work in above styles, since we have overriden those components with our own components.
+
+### MessageInput attachments
+_(attachment options, when `+` icon is pressed in MessageInput component.)_
+
+Basic styling can be achieved by providing styles for keys given in following example, in theme object.
+
+```js
+const theme = {
+  'message.actionSheet.titleContainer': `background-color: 'black', padding: 10px`,
+  'message.actionSheet.titleText': `color: 'white'`,
+  'message.actionSheet.buttonContainer': `background-color: 'black', padding: 10px`,
+  'message.actionSheet.buttonText': `color: 'white'`,
+  'message.actionSheet.cancelButtonContainer': `background-color: 'red', padding: 10px`,
+  'message.actionSheet.cancelButtonText': `color: 'white'`,
+};
+
+<Chat client={chatClient} style={theme}></Chat>
+```
+If you want to customize further, e.g., container of the whole actionsheet or backdrop, then you need to add styles directly for
+internal react-native-actionsheet component. You can do that by passing prop `actionSheetStyles` to `MessageSimple` component.
+
+_Full list of options: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js_
+
+```js
+import { Chat, Channel, MessageList, MessageInput, MessageSimple } from 'stream-chat-react-native';
+
+const actionsheetStyles = {
+  overlay: {
+    backgroundColor: 'grey',
+    opacity: 0.6
+  },
+  wrapper: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+};
+
+const MessageSimpleWithCustomActionsheet = props => (
+  <MessageSimple
+    {...props}
+    actionsheetStyles={actionsheetStyles} />
+  )}
+);
+
+// When you render chat components ...
+<Chat client={chatClient}>
+  <Channel>
+    <MessageList Message={MessageSimpleWithCustomActionsheet} />
+    <MessageInput/>
+  </Channel>
+</Chat>
+
+```
+
+## Keyboard
+
+React native provides an in built component called `KeyboardAvoidingView`. This component works well for most of the cases where height of the component is 100% relative to screen. If you have some fixed height then it may create some issue (it depends on your case - how you use wrappers around chat components).
+
+To avoid this issue we built our own component - `KeyboardCompatibleView`. It contains simple logic - when keyboard is opened (which we can know from events of `Keyboard` module), adjust the height of Channel component and when keyboard is dismissed, then again adjust the height of Channel component accordingly. While building this component, we realized that it has certain limitations. e.g., Keyboard module on emits the event keyboardDidHide, which means we can only adjust the height of Channel component after dismissal of keyboard has already started (which results in white gap between keyboard and Channel component during keyboard dismissal)
+
+There are few customizations you can do regarding the keyboard behaviour (min required sdk version - `0.6.6`)
+
+### Changing the animation duration/time of height adjustment of MessageList
+
+You can pass the custom component as prop - `KeyboardCompatibleView` to channel component. Add the custom animation duration
+to `KeyboardCompatibleView` using props `keyboardDismissAnimationDuration` and `keyboardOpenAnimationDuration`, and pass it to `Channel` component (as done in following example):
+
+```js
+import { KeyboardCompatibleView } from 'stream-chat-react-native';
+
+const CustomizedKeyboardView = props => (
+  <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
+    {props.children}
+  </KeyboardCompatibleView>
+)
+
+// When you render the chat component
+<Chat client={chatClient}>
+  <Channel
+    KeyboardCompatibleView={CustomizedKeyboardView}
+    ...
+  />
+</Chat>
+```
+
+### Disable KeyboardCompatibleView and use KeyboardAvoidingView from react-native
+
+You can disable `KeyboardCompatibleView` by using prop `disableKeyboardCompatibleView` on `Channel` component.
+
+Following example shows how to use `KeyboardAvoidingView` instead:
+
+```js static
+<SafeAreaView>
+  <Chat client={chatClient}>
+    // Note: Android and iOS both interact with `padding` prop differently.
+    // Android may behave better when given no behavior prop at all, whereas iOS is the opposite.
+    // reference - https://reactnative.dev/docs/keyboardavoidingview#behavior
+    <KeyboardAvoidingView behavior="padding">
+      <View style={{display: 'flex', height: '100%'}}>
+        <Channel channel={channel} disableKeyboardCompatibleView>
+          <MessageList />
+          <MessageInput />
+        </Channel>
+      </View>
+    </KeyboardAvoidingView>
+  </Chat>
+</SafeAreaView>
+```

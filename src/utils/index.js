@@ -2,6 +2,8 @@ import { MentionsItem } from '../components/MentionsItem';
 import { CommandsItem } from '../components/CommandsItem';
 
 export { renderText } from './renderText';
+export { renderReactions } from './renderReactions';
+
 export { Streami18n } from './Streami18n';
 export const emojiData = [
   {

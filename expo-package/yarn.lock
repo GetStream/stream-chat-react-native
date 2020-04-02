@@ -3768,13 +3768,6 @@ expo-core@~2.0.0:
   resolved "https://registry.yarnpkg.com/expo-core/-/expo-core-2.0.2.tgz#61e1e5cc6c4341a834a0d7f37c68887cee8d971f"
   integrity sha512-QKkICJ06m/J1PxTJqtVu03+fUXwjLqb2YPF5J9DT7W4EknPq1sHY3ZKJgAr1PhK24fzvVoxWOKqiIstliZdBOA==
 
-expo-document-picker@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-6.0.0.tgz#6dcf592a21224e8381c00372bf46bb1d3bdd397b"
-  integrity sha512-P/RZDULmvEA3OMor3VjmCTIy5Dud4cb8rOah1qMLqnVZKTCwoXq6jr/p103/PlNbluQQSBYq7QkOA9IkylmGJg==
-  dependencies:
-    uuid "^3.3.2"
-
 expo-errors@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/expo-errors/-/expo-errors-1.0.0.tgz#0e212e6e10eb7e8c01eb59d79560ed2cdaaadd95"
@@ -3864,11 +3857,6 @@ expo-image-loader-interface@~2.0.0:
   dependencies:
     expo-core "~2.0.0"
 
-expo-image-picker@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-6.0.0.tgz#776f4487d986ba9cc82169a47445e8c13ca3108b"
-  integrity sha512-7IW4WxDe0xQclGhTnX3DOgTkMvt2kF/MNOPbk2y9fS5k/8am9I8jErjURPxRUGH7+TvYLEWPy63DRAJP7TYyEg==
-
 expo-local-authentication@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-local-authentication/-/expo-local-authentication-2.0.0.tgz#b16763242ab0ebff902e4c4545052d114ecf3d4a"
@@ -3917,11 +3905,6 @@ expo-permissions-interface@~2.0.0:
   dependencies:
     expo-core "~2.0.0"
 
-expo-permissions@^6.0.0, expo-permissions@~6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-6.0.0.tgz#2943f1aa98de833b88cea73cf03d18d08957cb68"
-  integrity sha512-O+RdyfGiq7i+5Vi9fE38DgKn436lNWiqhnS5/Z7CC00bmKahhjVMNDbZvNn/nrdRGyaPneJk1Co1s1sexSnv0A==
-
 expo-permissions@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-2.0.0.tgz#31421819a2e6ee44ed9161387a7bf4259c73426f"
@@ -3929,6 +3912,11 @@ expo-permissions@~2.0.0:
   dependencies:
     expo-core "~2.0.0"
     expo-permissions-interface "~2.0.0"
+
+expo-permissions@~6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/expo-permissions/-/expo-permissions-6.0.0.tgz#2943f1aa98de833b88cea73cf03d18d08957cb68"
+  integrity sha512-O+RdyfGiq7i+5Vi9fE38DgKn436lNWiqhnS5/Z7CC00bmKahhjVMNDbZvNn/nrdRGyaPneJk1Co1s1sexSnv0A==
 
 expo-print@~2.0.0:
   version "2.0.0"
@@ -8827,10 +8815,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.8.0.tgz#3819bf1f501305d2d04fde6796fdfede50bf56dc"
-  integrity sha512-wzWCT2UTf38X0Dd5GNQhZ21nSacSj+TBYEhr2D9mvU6MqoaPUe4QdPFfJFp65evRw6mUDQC+L6Tmu/46vo7i4w==
+stream-chat-react-native-core@v0.9.0-rc.2:
+  version "0.9.0-rc.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.9.0-rc.2.tgz#30f6c43b886dbb828aba8e928aef60bc2cfa4b5b"
+  integrity sha512-tahYVykZBqkYBOsFQmpA872yoTEtbDdK5rGegoFUraXlV7bp3bHs2hFCJKLsPn1P5X30cA+gDHvZtFAkkg1dCw==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.1.1"

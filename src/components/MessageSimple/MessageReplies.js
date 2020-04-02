@@ -20,26 +20,32 @@ const MessageRepliesText = styled.Text`
 `;
 
 const MessageRepliesImage = styled.Image`
-  transform: ${({ pos }) =>
-    pos === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
+  transform: ${({ alignment }) =>
+    alignment === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
   ${({ theme }) => theme.message.replies.image.css}
 `;
 
-const MessageReplies = ({ message, isThreadList, openThread, pos, t }) => {
+const MessageReplies = ({
+  message,
+  isThreadList,
+  openThread,
+  alignment,
+  t,
+}) => {
   if (isThreadList || !message.reply_count) return null;
 
   return (
     <Container onPress={openThread}>
-      {pos === 'left' ? (
-        <MessageRepliesImage source={iconPath} pos={pos} />
+      {alignment === 'left' ? (
+        <MessageRepliesImage source={iconPath} alignment={alignment} />
       ) : null}
       <MessageRepliesText>
         {message.reply_count === 1
           ? t('1 reply')
           : t('{{ replyCount }} replies', { replyCount: message.reply_count })}
       </MessageRepliesText>
-      {pos === 'right' ? (
-        <MessageRepliesImage source={iconPath} pos={pos} />
+      {alignment === 'right' ? (
+        <MessageRepliesImage source={iconPath} alignment={alignment} />
       ) : null}
     </Container>
   );
@@ -53,7 +59,7 @@ MessageReplies.propTypes = {
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   openThread: PropTypes.func,
   /** right | left */
-  pos: PropTypes.string,
+  alignment: PropTypes.oneOf(['right', 'left']),
 };
 
 const MessageRepliesWithContext = withTranslationContext(MessageReplies);

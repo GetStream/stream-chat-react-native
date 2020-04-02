@@ -49,7 +49,7 @@ const Message = withKeyboardContext(
        * */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
-       * Array of allowed actions on message. e.g. ['edit', 'delete', 'mute', 'flag']
+       * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
        * If all the actions need to be disabled, empty array or false should be provided as value of prop.
        * */
       messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),

@@ -18,7 +18,22 @@
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
 - [Internationalisation (i18n)](#internationalisation)
 
-## React Chat Tutorial
+## Contents
+
+- [React Native Chat Tutorial](#react-native-chat-tutorial)
+- [Example Apps](#example-apps)
+  - [Expo Example](#expo-example)
+  - [Native Example](#native-example)
+- [Docs](#docs)
+- [Keep in mind](#keep-in-mind)
+- [Setup](#setup)
+  - [Expo package](#expo-package)
+  - [Native package](#native-package)
+- [Upgrade](#upgrade)
+- [Common Issues](#common-issues)
+- [Cookbook](docs/cookbook.md)
+
+## React Native Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make common changes.
 
@@ -96,7 +111,7 @@ Library currently exposes following components:
 
 You can see detailed documentation about the components at https://getstream.github.io/stream-chat-react-native
 
-## Usage (creating an example app)
+## Setup (Seting up an chat app)
 
 ### Expo package
 
@@ -113,7 +128,7 @@ cd StreamChatExpoExample
 yarn add stream-chat-expo
 
 # If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency. Since previously we used use NetInfo from react-native package.
-expo install @react-native-community/netinfo
+expo install @react-native-community/netinfo expo-document-picker expo-image-picker expo-permissions
 ```
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) to see usage of the components.

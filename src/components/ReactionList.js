@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
-import { emojiData } from '../utils';
 import PropTypes from 'prop-types';
 import { themed } from '../styles/theme';
+import { renderReactions } from '../utils/renderReactions';
 
 import leftTail from '../images/reactionlist/left-tail.png';
 import leftCenter from '../images/reactionlist/left-center.png';
@@ -13,11 +13,13 @@ import rightTail from '../images/reactionlist/right-tail.png';
 import rightCenter from '../images/reactionlist/right-center.png';
 import rightEnd from '../images/reactionlist/right-end.png';
 
-const TouchableWrapper = styled.TouchableOpacity`
+const TouchableWrapper = styled.View`
   position: relative;
-  ${(props) => (props.position === 'left' ? 'left: -10px;' : 'right: -10px;')}
+  ${(props) => (props.alignment === 'left' ? 'left: -10px;' : 'right: -10px;')}
   height: 28px;
   z-index: 10;
+  align-self: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
 `;
 
 const Container = styled.View`
@@ -101,54 +103,50 @@ export const ReactionList = themed(
       getTotalReactionCount: PropTypes.func,
       visible: PropTypes.bool,
       position: PropTypes.string,
-    };
-
-    _renderReactions = (reactions) => {
-      const reactionsByType = {};
-      reactions.map((item) => {
-        if (reactions[item.type] === undefined) {
-          return (reactionsByType[item.type] = [item]);
-        } else {
-          return (reactionsByType[item.type] = [
-            ...reactionsByType[item.type],
-            item,
-          ]);
-        }
-      });
-
-      const emojiDataByType = {};
-      emojiData.forEach((e) => (emojiDataByType[e.id] = e));
-
-      const reactionTypes = emojiData.map((e) => e.id);
-      return Object.keys(reactionsByType).map((type) =>
-        reactionTypes.indexOf(type) > -1 ? (
-          <Text key={type}>{emojiDataByType[type].icon}</Text>
-        ) : null,
-      );
+      /**
+       * e.g.,
+       * [
+       *  {
+       *    id: 'like',
+       *    icon: '👍',
+       *  },
+       *  {
+       *    id: 'love',
+       *    icon: '❤️️',
+       *  },
+       *  {
+       *    id: 'haha',
+       *    icon: '😂',
+       *  },
+       *  {
+       *    id: 'wow',
+       *    icon: '😮',
+       *  },
+       * ]
+       */
+      supportedReactions: PropTypes.array,
     };
 
     render() {
       const {
         latestReactions,
-        openReactionSelector,
         getTotalReactionCount,
         visible,
-        position,
+        alignment,
+        supportedReactions,
       } = this.props;
       return (
-        <TouchableWrapper
-          position={position}
-          onPress={openReactionSelector}
-          activeOpacity={1}
-        >
+        <TouchableWrapper alignment={alignment} activeOpacity={1}>
           <Container visible={visible}>
-            <Reactions>{this._renderReactions(latestReactions)}</Reactions>
+            <Reactions>
+              {renderReactions(latestReactions, supportedReactions)}
+            </Reactions>
             <ReactionCount reactionCounts={getTotalReactionCount()}>
               {getTotalReactionCount()}
             </ReactionCount>
           </Container>
           <ImageWrapper visible={visible}>
-            {position === 'left' ? (
+            {alignment === 'left' ? (
               <React.Fragment>
                 <LeftTail source={leftTail} />
                 <LeftCenter source={leftCenter} resizeMode="stretch" />

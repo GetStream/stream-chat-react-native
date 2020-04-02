@@ -1,12 +1,10 @@
 import React from 'react';
-import { Dimensions } from 'react-native';
 import { MessageContentContext, withTranslationContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
 import { Attachment } from '../Attachment';
-import { ReactionList } from '../ReactionList';
-import { ReactionPicker } from '../ReactionPicker';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
+import { ReactionList } from '../ReactionList';
 import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
 import { Gallery } from '../Gallery';
@@ -14,6 +12,8 @@ import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
+import { ReactionPickerWrapper } from '../ReactionPickerWrapper';
+import { emojiData } from '../../utils';
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transparent, so border radius is not really visible.
@@ -230,7 +230,7 @@ class MessageContent extends React.PureComponent {
     /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
     handleAction: PropTypes.func,
     /** Position of message. 'right' | 'left' */
-    alignment: PropTypes.string,
+    alignment: PropTypes.oneOf(['right', 'left']),
     /**
      * Position of message in group - top, bottom, middle, single.
      *
@@ -251,6 +251,47 @@ class MessageContent extends React.PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    MessageReplies: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    MessageHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    MessageFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display reaction list.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+     */
+    ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * e.g.,
+     * [
+     *  {
+     *    id: 'like',
+     *    icon: '👍',
+     *  },
+     *  {
+     *    id: 'love',
+     *    icon: '❤️️',
+     *  },
+     *  {
+     *    id: 'haha',
+     *    icon: '😂',
+     *  },
+     *  {
+     *    id: 'wow',
+     *    icon: '😮',
+     *  },
+     * ]
+     */
+    supportedReactions: PropTypes.array,
+    /** Open the reaction picker */
+    openReactionPicker: PropTypes.func,
+    /** Dismiss the reaction picker */
+    dismissReactionPicker: PropTypes.func,
+    /** Boolean - if reaction picker is visible. Hides the reaction list in that case */
+    reactionPickerVisible: PropTypes.bool,
+    /** Custom UI component for message text */
+    MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     formatDate: PropTypes.func,
     /**
      * @deprecated Please use `disabled` instead.
@@ -267,13 +308,18 @@ class MessageContent extends React.PureComponent {
     reactionsEnabled: true,
     repliesEnabled: true,
     MessageText: false,
+    ReactionList,
+    MessageReplies,
+    supportedReactions: emojiData,
+    hideReactionCount: false,
+    hideReactionOwners: false,
   };
 
   constructor(props) {
     super(props);
 
     this.ActionSheet = false;
-    this.state = { reactionPickerVisible: false };
+    this.state = {};
   }
 
   openThread = () => {
@@ -294,33 +340,26 @@ class MessageContent extends React.PureComponent {
     this.props.handleEdit();
   };
 
-  _setReactionPickerPosition = () => {
-    const { isMyMessage, message } = this.props;
-    const pos = isMyMessage(message) ? 'right' : 'left';
-    this.messageContainer.measureInWindow((x, y, width) => {
-      this.setState({
-        reactionPickerVisible: true,
-        rpTop: y - 60,
-        rpLeft: pos === 'left' ? x - 10 : null,
-        rpRight:
-          pos === 'right'
-            ? Math.round(Dimensions.get('window').width) - (x + width + 10)
-            : null,
-      });
-    });
+  /**
+   * @todo: Remove the method in future 1.0.0.
+   * This method has been moved to `ReactionPickerWrapper`.
+   *
+   * @deprecated
+   */
+  _setReactionPickerPosition = async () => {
+    console.warn(
+      'openReactionSelector has been deprecared and will be removed in next major release.' +
+        'Please use this.props.openReactionPicker instead.',
+    );
+
+    await this.props.openReactionPicker();
   };
 
-  openReactionSelector = async () => {
-    const { disabled, readOnly } = this.props;
-
-    if (disabled || readOnly) return;
-
-    // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
-    // So we need to postpone the calculation for reaction picker position
-    // until after keyboard is closed completely. To achieve this, we close
-    // the keyboard forcefully and then calculate position of picker in callback.
-    await this.props.dismissKeyboard();
-    this._setReactionPickerPosition();
+  openReactionSelector = () => {
+    console.warn(
+      'openReactionSelector has been deprecared and will be removed in next major release.' +
+        'Please use this.props.openReactionPicker instead.',
+    );
   };
 
   onActionPress = (action) => {
@@ -335,7 +374,7 @@ class MessageContent extends React.PureComponent {
         this.openThread();
         break;
       case MESSAGE_ACTIONS.reactions:
-        this.openReactionSelector();
+        this.props.openReactionPicker();
         break;
       default:
         break;
@@ -344,11 +383,13 @@ class MessageContent extends React.PureComponent {
 
   render() {
     const {
+      alignment,
       message,
       isMyMessage,
       readOnly,
       disabled,
       Message,
+      ReactionList,
       handleReaction,
       hideReactionCount,
       hideReactionOwners,
@@ -361,7 +402,17 @@ class MessageContent extends React.PureComponent {
       repliesEnabled,
       canEditMessage,
       canDeleteMessage,
+      MessageHeader,
       MessageFooter,
+      supportedReactions,
+      openReactionPicker,
+      dismissReactionPicker,
+      reactionPickerVisible,
+      handleAction,
+      AttachmentFileIcon,
+      MessageText,
+      channel,
+      MessageReplies,
       t,
       tDateTimeParser,
     } = this.props;
@@ -370,8 +421,6 @@ class MessageContent extends React.PureComponent {
     const hasAttachment = Boolean(
       message && message.attachments && message.attachments.length,
     );
-
-    const pos = isMyMessage(message) ? 'right' : 'left';
 
     const showTime =
       groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
@@ -434,23 +483,24 @@ class MessageContent extends React.PureComponent {
 
     if (message.deleted_at)
       return (
-        <DeletedContainer alignment={pos}>
+        <DeletedContainer alignment={alignment}>
           <DeletedText>{t('This message was deleted ...')}</DeletedText>
         </DeletedContainer>
       );
 
     const onLongPress = this.props.onLongPress;
     const contentProps = {
-      alignment: pos,
+      alignment,
       status: message.status,
       onPress: this.props.onPress
         ? this.props.onPress.bind(this, this, message)
         : this.props.onMessageTouch,
-      onLongPress: onLongPress
-        ? onLongPress.bind(this, this, message)
-        : options.length > 1
-        ? this.showActionSheet
-        : () => null,
+      onLongPress:
+        onLongPress && !(disabled || readOnly)
+          ? onLongPress.bind(this, this, message)
+          : options.length > 1 && !(disabled || readOnly)
+          ? this.showActionSheet
+          : () => null,
       activeOpacity: 0.7,
       disabled: disabled || readOnly,
       hasReactions,
@@ -476,21 +526,40 @@ class MessageContent extends React.PureComponent {
           {message.status === 'failed' ? (
             <FailedText>{t('Message failed - try again')}</FailedText>
           ) : null}
-          {reactionsEnabled &&
-            message.latest_reactions &&
-            message.latest_reactions.length > 0 && (
-              <ReactionList
-                position={pos}
-                visible={!this.state.reactionPickerVisible}
-                latestReactions={message.latest_reactions}
-                getTotalReactionCount={getTotalReactionCount}
-                openReactionSelector={this.openReactionSelector}
-                reactionCounts={message.reaction_counts}
-              />
-            )}
+          {reactionsEnabled && ReactionList && (
+            <ReactionPickerWrapper
+              reactionPickerVisible={reactionPickerVisible}
+              handleReaction={handleReaction}
+              hideReactionCount={hideReactionCount}
+              hideReactionOwners={hideReactionOwners}
+              openReactionPicker={openReactionPicker}
+              dismissReactionPicker={dismissReactionPicker}
+              message={message}
+              alignment={alignment}
+              offset={{
+                top: 25,
+                left: 10,
+                right: 10,
+              }}
+              supportedReactions={supportedReactions}
+            >
+              {message.latest_reactions &&
+                message.latest_reactions.length > 0 && (
+                  <ReactionList
+                    alignment={alignment}
+                    visible={!reactionPickerVisible}
+                    latestReactions={message.latest_reactions}
+                    getTotalReactionCount={getTotalReactionCount}
+                    reactionCounts={message.reaction_counts}
+                    supportedReactions={supportedReactions}
+                  />
+                )}
+            </ReactionPickerWrapper>
+          )}
+          {MessageHeader && <MessageHeader {...this.props} />}
           {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
           <ContainerInner
-            alignment={pos}
+            alignment={alignment}
             ref={(o) => (this.messageContainer = o)}
             collapsable={false}
           >
@@ -508,8 +577,8 @@ class MessageContent extends React.PureComponent {
                   <Attachment
                     key={`${message.id}-${index}`}
                     attachment={attachment}
-                    actionHandler={this.props.handleAction}
-                    alignment={this.props.alignment}
+                    actionHandler={handleAction}
+                    alignment={alignment}
                   />
                 );
               })}
@@ -517,20 +586,21 @@ class MessageContent extends React.PureComponent {
               <FileAttachmentGroup
                 messageId={message.id}
                 files={files}
-                handleAction={this.props.handleAction}
-                alignment={this.props.alignment}
-                AttachmentFileIcon={this.props.AttachmentFileIcon}
+                handleAction={handleAction}
+                alignment={alignment}
+                AttachmentFileIcon={AttachmentFileIcon}
               />
             )}
             {images && images.length > 0 && (
-              <Gallery alignment={this.props.alignment} images={images} />
+              <Gallery alignment={alignment} images={images} />
             )}
             <MessageTextContainer
               message={message}
-              groupStyles={hasReactions ? ['top'] : groupStyles}
+              groupStyles={groupStyles}
               isMyMessage={isMyMessage}
-              MessageText={this.props.MessageText}
+              MessageText={MessageText}
               disabled={message.status === 'failed' || message.type === 'error'}
+              alignment={alignment}
               Message={Message}
               openThread={this.openThread}
               handleReaction={handleReaction}
@@ -541,36 +611,19 @@ class MessageContent extends React.PureComponent {
               message={message}
               isThreadList={!!threadList}
               openThread={this.openThread}
-              pos={pos}
+              alignment={alignment}
+              channel={channel}
             />
           ) : null}
           {MessageFooter && <MessageFooter {...this.props} />}
           {!MessageFooter && showTime ? (
             <MetaContainer>
-              <MetaText alignment={pos}>
+              <MetaText alignment={alignment}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
                   : tDateTimeParser(message.created_at).format('hh:mmA')}
               </MetaText>
             </MetaContainer>
-          ) : null}
-
-          {reactionsEnabled ? (
-            <ReactionPicker
-              reactionPickerVisible={this.state.reactionPickerVisible}
-              handleReaction={handleReaction}
-              hideReactionCount={hideReactionCount}
-              hideReactionOwners={hideReactionOwners}
-              latestReactions={message.latest_reactions}
-              reactionCounts={message.reaction_counts}
-              handleDismiss={() => {
-                this.setState({ reactionPickerVisible: false });
-              }}
-              rpLeft={this.state.rpLeft}
-              rpRight={this.state.rpRight}
-              rpTop={this.state.rpTop}
-              emojiData={this.props.emojiData}
-            />
           ) : null}
           <ActionSheet
             ref={(o) => {

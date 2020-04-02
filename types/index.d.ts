@@ -547,11 +547,27 @@ export interface MessageUIComponentProps
   MessageSystem?: React.ElementType<MessageSystemProps>;
   /** Custom UI component for message text */
   MessageText?: React.ElementType<MessageTextProps>;
+  /** Custom UI component for message footer */
+  MessageHeader?: React.ElementType<MessageHeaderUIComponentProps>;
+  /** Custom UI component for message footer */
+  MessageFooter?: React.ElementType<MessageFooterUIComponentProps>;
+  /** Custom UI component for reaction list */
+  ReactionList?: React.ElementType<ReactionListProps>;
+  supportedReactions?: Array<{
+    icon: string;
+    id: string;
+  }>;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
 }
+
+export interface MessageHeaderUIComponentProps
+  extends MessageContentUIComponentProps {}
+
+export interface MessageFooterUIComponentProps
+  extends MessageContentUIComponentProps {}
 
 export interface MessageRepliesUIComponentProps
   extends TranslationContextValue,
@@ -563,7 +579,7 @@ export interface MessageRepliesUIComponentProps
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   openThread?(message: Client.Message, event: React.SyntheticEvent): void;
   /** right | left */
-  pos: string;
+  alignment?: 'right' | 'left';
 }
 
 export interface MessageStatusUIComponentProps extends StyledComponentProps {
@@ -600,7 +616,13 @@ export interface MessageAvatarUIComponentProps extends StyledComponentProps {
 export interface MessageContentUIComponentProps
   extends MessageUIComponentProps,
     TranslationContextValue {
-  alignment: string;
+  alignment?: 'right' | 'left';
+  /** Open the reaction picker */
+  openReactionPicker?(): void;
+  /** Dismiss the reaction picker */
+  dismissReactionPicker?(): void;
+  /** Boolean - if reaction picker is visible. Hides the reaction list in that case */
+  reactionPickerVisible?: boolean;
 }
 
 export interface MessageTextContainerUIComponentProps
@@ -693,7 +715,7 @@ export interface FileAttachmentGroupProps extends StyledComponentProps {
   messageId: string;
   files: [];
   handleAction?(): void;
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
   AttachmentFileIcon: React.ElementType<any>;
 }
 export interface FileUploadPreviewProps extends StyledComponentProps {
@@ -707,7 +729,7 @@ export interface GalleryProps
     TranslationContextValue {
   images: Client.Attachment[];
   onLongPress: (event: GestureResponderEvent) => void;
-  alignment: 'right' | 'left';
+  alignment?: 'right' | 'left';
 }
 export interface IconSquareProps extends StyledComponentProps {
   icon: string;
@@ -782,6 +804,10 @@ export interface ReactionListProps extends StyledComponentProps {
   getTotalReactionCount?(): string | number;
   visible: boolean;
   position: string;
+  supportedReactions?: Array<{
+    icon: string;
+    id: string;
+  }>;
 }
 
 export interface ReactionPickerProps extends StyledComponentProps {
@@ -795,7 +821,7 @@ export interface ReactionPickerProps extends StyledComponentProps {
   rpLeft: string | number;
   rpTop: string | number;
   rpRight: string | number;
-  emojiData: Array<{
+  supportedReactions?: Array<{
     icon: string;
     id: string;
   }>;
@@ -804,13 +830,31 @@ export interface ReactionPickerProps extends StyledComponentProps {
 export interface ReactionPickerWrapperProps extends StyledComponentProps {
   isMyMessage?(message: Client.MessageResponse): boolean;
   message: Client.MessageResponse;
-  offset: string | number;
+  hideReactionCount?: boolean;
+  hideReactionOwners?: boolean;
+  offset?: {
+    top: string | number;
+    left: string | number;
+    right: string | number;
+  };
   handleReaction?(id: string): void;
-  emojiData: Array<{
+  supportedReactions?: Array<{
     icon: string;
     id: string;
   }>;
-  style: object;
+  /**
+   * @deprecated
+   * emojiData is deprecated. But going to keep it for now
+   * to have backward compatibility. Please use supportedReactions instead.
+   * TODO: Remove following prop in 1.x.x
+   */
+  emojiData?: Array<{
+    icon: string;
+    id: string;
+  }>;
+  dismissReactionPicker?(): void;
+  reactionPickerVisible?: boolean;
+  openReactionPicker?(): void;
 }
 
 export interface SpinnerProps extends StyledComponentProps {}

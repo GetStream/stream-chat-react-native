@@ -52,4 +52,14 @@ const defaultMarkdownStyles = {
     color: 'blue',
     textDecorationLine: 'underline',
   },
+  inlineCode: {
+    backgroundColor: '#eeeeee',
+    borderColor: '#dddddd',
+    borderRadius: 3,
+    borderWidth: 1,
+    fontFamily: 'Courier',
+    fontWeight: '300',
+    fontSize: 10,
+    padding: 4,
+  },
 };

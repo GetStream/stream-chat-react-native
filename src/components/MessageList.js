@@ -70,7 +70,7 @@ class MessageList extends PureComponent {
     /** Turn off grouping of messages by user */
     noGroupByUser: PropTypes.bool,
     /**
-     * Array of allowed actions on message. e.g. ['edit', 'delete', 'mute', 'flag']
+     * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
      * If all the actions need to be disabled, empty array or false should be provided as value of prop.
      * */
     messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
@@ -245,6 +245,10 @@ class MessageList extends PureComponent {
     TypingIndicator,
   };
 
+  componentDidMount() {
+    this.setLastReceived(this.props.messages);
+  }
+
   componentDidUpdate(prevProps) {
     if (this.props.online !== prevProps.online) {
       this.setState({ online: this.props.online });
@@ -291,7 +295,7 @@ class MessageList extends PureComponent {
       this.setState({ newMessagesNotification: false });
     }
 
-    this.getLastReceived(this.props.messages);
+    this.setLastReceived(this.props.messages);
   }
 
   insertDates = (messages) => {
@@ -443,7 +447,7 @@ class MessageList extends PureComponent {
     if (!this.props.threadList) this.props.markRead();
   };
 
-  getLastReceived = (messages) => {
+  setLastReceived = (messages) => {
     const l = messages.length;
     let lastReceivedId = null;
 
