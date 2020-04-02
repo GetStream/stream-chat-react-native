@@ -338,6 +338,39 @@ class MessageInput extends PureComponent {
     }));
   };
 
+  /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
+  isValidMessage = () => {
+    if (this.state.text && this.state.text !== '') return true;
+
+    for (const id of this.state.imageOrder) {
+      const image = this.state.imageUploads[id];
+      if (!image || image.state === FileState.UPLOAD_FAILED) {
+        continue;
+      }
+      if (image.state === FileState.UPLOADING) {
+        // TODO: show error to user that they should wait until image is uploaded
+        return false;
+      }
+
+      return true;
+    }
+
+    for (const id of this.state.fileOrder) {
+      const upload = this.state.fileUploads[id];
+      if (!upload || upload.state === FileState.UPLOAD_FAILED) {
+        continue;
+      }
+      if (upload.state === FileState.UPLOADING) {
+        // TODO: show error to user that they should wait until image is uploaded
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  };
+
   sendMessage = () => {
     const attachments = [];
     for (const id of this.state.imageOrder) {
@@ -788,7 +821,7 @@ class MessageInput extends PureComponent {
             title={t('Send message')}
             sendMessage={this.sendMessage}
             editing={this.props.editing}
-            disabled={disabled}
+            disabled={disabled || !this.isValidMessage()}
           />
         </InputBoxContainer>
       </Container>
