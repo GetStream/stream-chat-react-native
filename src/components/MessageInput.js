@@ -125,12 +125,23 @@ const ActionSheetButtonText = styled.Text`
 class MessageInput extends PureComponent {
   constructor(props) {
     super(props);
-    const state = this.getMessageDetailsForState(props.editing);
+    const state = this.getMessageDetailsForState(
+      props.editing,
+      props.initialValue,
+    );
     this.state = { ...state };
   }
 
   static themePath = 'messageInput';
   static propTypes = {
+    /** Initial value to set on input */
+    initialValue: PropTypes.string,
+    /**
+     * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
+     *
+     * @param newText
+     */
+    onChangeText: PropTypes.func,
     /**
      * Override image upload request
      *
@@ -223,14 +234,14 @@ class MessageInput extends PureComponent {
     AttachButton,
   };
 
-  getMessageDetailsForState = (message) => {
+  getMessageDetailsForState = (message, initialValue) => {
     const imageOrder = [];
     const imageUploads = {};
     const fileOrder = [];
     const fileUploads = {};
     const attachments = [];
     let mentioned_users = [];
-    let text = undefined;
+    let text = initialValue || '';
 
     if (message) {
       text = message.text;
@@ -316,7 +327,12 @@ class MessageInput extends PureComponent {
     }
 
     if (this.props.editing && !prevProps.editing) {
-      this.setState(this.getMessageDetailsForState(this.props.editing));
+      this.setState(
+        this.getMessageDetailsForState(
+          this.props.editing,
+          this.props.initialValue,
+        ),
+      );
     }
 
     if (
@@ -324,11 +340,18 @@ class MessageInput extends PureComponent {
       prevProps.editing &&
       this.props.editing.id !== prevProps.editing.id
     ) {
-      this.setState(this.getMessageDetailsForState(this.props.editing));
+      this.setState(
+        this.getMessageDetailsForState(
+          this.props.editing,
+          this.props.initialValue,
+        ),
+      );
     }
 
     if (!this.props.editing && prevProps.editing) {
-      this.setState(this.getMessageDetailsForState());
+      this.setState(
+        this.getMessageDetailsForState(null, this.props.initialValue),
+      );
     }
   }
 
@@ -689,6 +712,8 @@ class MessageInput extends PureComponent {
         'start typing event',
       );
     }
+
+    this.props.onChangeText && this.props.onChangeText(text);
   };
 
   setInputBoxRef = (o) => (this.inputBox = o);

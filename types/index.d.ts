@@ -263,6 +263,10 @@ export interface MessageInputProps
     SuggestionsContextValue,
     TranslationContextValue,
     StyledComponentProps {
+  /** Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler. */
+  onChangeText?(newText: string): void;
+  /** Initial value to set on input */
+  initialValue?: string;
   /** The parent message object when replying on a thread */
   parent?: Client.Message | null;
 
