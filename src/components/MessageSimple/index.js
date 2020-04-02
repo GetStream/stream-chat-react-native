@@ -244,6 +244,14 @@ export const MessageSimple = themed(
        * ]
        */
       supportedReactions: PropTypes.array,
+      /*
+       * @deprecated Please use `disabled` instead.
+       *
+       * Disables the message UI. Which means, message actions, reactions won't work.
+       */
+      readOnly: PropTypes.bool,
+      /** Disables the message UI. Which means, message actions, reactions won't work. */
+      disabled: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -271,8 +279,8 @@ export const MessageSimple = themed(
     }
 
     openReactionPicker = async () => {
-      const { readOnly } = this.props;
-      if (readOnly) return;
+      const { disabled, readOnly } = this.props;
+      if (disabled || readOnly) return;
       // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
       // So we need to postpone the calculation for reaction picker position
       // until after keyboard is closed completely. To achieve this, we close

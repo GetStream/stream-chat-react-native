@@ -106,6 +106,8 @@ class ChannelInner extends PureComponent {
      * @param updatedMessage UpdatedMessage object
      * */
     doUpdateMessageRequest: PropTypes.func,
+    /** Disables the channel UI if channel is frozen */
+    disableIfFrozenChannel: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -639,6 +641,10 @@ class ChannelInner extends PureComponent {
     closeThread: this.closeThread,
     loadMoreThread: this.loadMoreThread,
     emojiData: this.props.emojiData,
+    disabled:
+      this.props.channel.data &&
+      this.props.channel.data.frozen &&
+      this.props.disableIfFrozenChannel,
   });
 
   renderComponent = () => this.props.children;

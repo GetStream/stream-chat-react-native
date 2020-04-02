@@ -211,11 +211,14 @@ class MessageInput extends PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    /** Disables the child MessageInput component */
+    disabled: PropTypes.bool,
   };
 
   static defaultProps = {
     hasImagePicker: true,
     hasFilePicker: true,
+    disabled: false,
     SendButton,
     AttachButton,
   };
@@ -227,7 +230,7 @@ class MessageInput extends PureComponent {
     const fileUploads = {};
     const attachments = [];
     let mentioned_users = [];
-    let text = '';
+    let text = undefined;
 
     if (message) {
       text = message.text;
@@ -676,8 +679,18 @@ class MessageInput extends PureComponent {
       hasFilePicker,
       SendButton,
       AttachButton,
+      disabled,
       t,
     } = this.props;
+
+    let additionalTextInputProps = this.props.additionalTextInputProps || {};
+
+    if (disabled) {
+      additionalTextInputProps = {
+        editable: false,
+        ...additionalTextInputProps,
+      };
+    }
 
     return (
       <Container padding={this.state.imageUploads.length > 0}>
@@ -702,6 +715,7 @@ class MessageInput extends PureComponent {
         )}
         <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
           <AttachButton
+            disabled={disabled}
             handleOnPress={async () => {
               if (hasImagePicker && hasFilePicker) {
                 await this.props.dismissKeyboard();
@@ -768,12 +782,13 @@ class MessageInput extends PureComponent {
               onMentionSelectItem: this.onSelectItem,
               t,
             })}
-            additionalTextInputProps={this.props.additionalTextInputProps}
+            additionalTextInputProps={additionalTextInputProps}
           />
           <SendButton
             title={t('Send message')}
             sendMessage={this.sendMessage}
             editing={this.props.editing}
+            disabled={disabled}
           />
         </InputBoxContainer>
       </Container>
@@ -782,6 +797,7 @@ class MessageInput extends PureComponent {
 
   render() {
     const { t } = this.props;
+
     if (this.props.editing) {
       return (
         <React.Fragment>

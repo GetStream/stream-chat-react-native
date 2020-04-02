@@ -293,6 +293,14 @@ class MessageContent extends React.PureComponent {
     /** Custom UI component for message text */
     MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     formatDate: PropTypes.func,
+    /**
+     * @deprecated Please use `disabled` instead.
+     *
+     * Disables the message UI. Which means, message actions, reactions won't work.
+     */
+    readOnly: PropTypes.bool,
+    /** Disables the message UI. Which means, message actions, reactions won't work. */
+    disabled: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -379,6 +387,7 @@ class MessageContent extends React.PureComponent {
       message,
       isMyMessage,
       readOnly,
+      disabled,
       Message,
       ReactionList,
       handleReaction,
@@ -486,13 +495,14 @@ class MessageContent extends React.PureComponent {
       onPress: this.props.onPress
         ? this.props.onPress.bind(this, this, message)
         : this.props.onMessageTouch,
-      onLongPress: onLongPress
-        ? onLongPress.bind(this, this, message)
-        : options.length > 1
-        ? this.showActionSheet
-        : null,
+      onLongPress:
+        onLongPress && !(disabled || readOnly)
+          ? onLongPress.bind(this, this, message)
+          : options.length > 1 && !(disabled || readOnly)
+          ? this.showActionSheet
+          : () => null,
       activeOpacity: 0.7,
-      disabled: readOnly,
+      disabled: disabled || readOnly,
       hasReactions,
     };
 
@@ -501,6 +511,7 @@ class MessageContent extends React.PureComponent {
 
     const context = {
       onLongPress: contentProps.onLongPress,
+      disabled: disabled || readOnly,
     };
 
     return (
