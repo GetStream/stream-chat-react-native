@@ -128,7 +128,7 @@ cd StreamChatExpoExample
 yarn add stream-chat-expo
 
 # If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency. Since previously we used use NetInfo from react-native package.
-expo install @react-native-community/netinfo
+expo install @react-native-community/netinfo expo-document-picker expo-image-picker expo-permissions
 ```
 
 Please check [Example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) to see usage of the components.
