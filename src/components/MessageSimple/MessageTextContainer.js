@@ -22,6 +22,7 @@ const TextContainer = styled.View`
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
   padding: 5px;
+  padding-left: 8;
   margin-top: 2;
   padding-right: 8;
   align-self: ${({ alignment }) =>
