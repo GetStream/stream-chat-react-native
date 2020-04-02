@@ -1,7 +1,13 @@
 # Changelog
 
-## [0.9.0] 2020-04-02
+## [0.9.1] 2020-04-02
 
+- Adding support for following props on MessageInput component [c5ada59](https://github.com/GetStream/stream-chat-react-native/commit/c5ada5951a9528eaab7945bf4ed2e74b4c9724f2)
+
+  - onChangeText
+  - initialValue
+
+## [0.9.0] 2020-04-02
 
 - Disabling (disabling `TouchableOpacity` wrapper) `SendButton` if message is not valid (empty text and no attachments)
 - Syncing this `rc` with latest master (0.8.1)
