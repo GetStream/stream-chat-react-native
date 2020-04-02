@@ -22,6 +22,7 @@
 
 - [How to customize actionsheet styles](#actionsheet-styling)
 - [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
+- [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
 
 # How to customize message component
 
@@ -977,3 +978,20 @@ Following example shows how to use `KeyboardAvoidingView` instead:
   </Chat>
 </SafeAreaView>
 ```
+
+## How to customize/modify underlying `FlatList` of `MessageList` or `ChannelList`?
+
+  You can pass aditional any number of props to underlying FlatList using `additionalFlatListProps` prop:
+
+ ```js static
+  <ChannelList
+    filters={filters}
+    sort={sort}
+    additionalFlatListProps={{ bounces: true }}
+  />
+ ```
+
+  ```js static
+    <MessageList additionalFlatListProps={{ bounces: true }} />
+  ```
+Please find list of all available FlatList props here - https://reactnative.dev/docs/flatlist#props
