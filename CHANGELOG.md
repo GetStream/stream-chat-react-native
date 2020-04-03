@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.2] 2020-04-04
+
+**NOTE** Please make sure to use `stream-chat@^1.7.0`
+
+- Fixing moderator, owner, admin checks for message actions [80dfb86](https://github.com/GetStream/stream-chat-react-native/commit/80dfb86ff7f07d1eb223be0c766eef991fb438db)
+
 ## [0.9.1] 2020-04-02
 
 - Adding support for following props on MessageInput component [c5ada59](https://github.com/GetStream/stream-chat-react-native/commit/c5ada5951a9528eaab7945bf4ed2e74b4c9724f2)
