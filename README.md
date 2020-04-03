@@ -363,6 +363,4 @@ import {
 } from 'stream-chat-react-native'; // or 'stream-chat-expo'
 ```
 
-UI will be automatically updated in this case.
-
 Please read this docs on i18n for more details and further customizations - https://getstream.github.io/stream-chat-react-native/#streami18n
