@@ -134,24 +134,20 @@ const Message = withKeyboardContext(
     }
 
     isMyMessage = (message) => this.props.client.user.id === message.user.id;
-    isAdmin = () => this.props.client.user.role === 'admin';
-    isOwner = () => {
-      const { channel, client } = this.props;
-      return (
-        channel.state.members &&
-        channel.state.members[client.user.id] &&
-        channel.state.members[client.user.id].role === 'owner'
-      );
-    };
-
-    isModerator = () => {
-      const { channel, client } = this.props;
-      return (
-        channel.state.members &&
-        channel.state.members[client.user.id] &&
-        channel.state.members[client.user.id].is_moderator
-      );
-    };
+    isAdmin = () =>
+      this.props.client.user.role === 'admin' ||
+      (this.props.channel.state &&
+        this.props.channel.state.membership &&
+        this.props.channel.state.membership.role === 'admin');
+    isOwner = () =>
+      this.props.channel.state &&
+      this.props.channel.state.membership &&
+      this.props.channel.state.membership.role === 'owner';
+    isModerator = () =>
+      this.props.channel.state &&
+      this.props.channel.state.membership &&
+      (this.props.channel.state.membership.role === 'channel_moderator' ||
+        this.props.channel.state.membership.role === 'moderator');
 
     canEditMessage = () =>
       this.isMyMessage(this.props.message) ||
