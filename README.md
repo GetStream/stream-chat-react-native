@@ -17,7 +17,8 @@
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
 - [Internationalisation (i18n)](#internationalisation)
-- [Cookbook](docs/cookbook.md)
+- [Cookbook](docs/cookbook.md)  :rocket:
+
 
 ## Contents
 
