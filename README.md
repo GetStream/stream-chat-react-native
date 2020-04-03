@@ -15,7 +15,7 @@
 - [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
-- [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases/)
+- [Release Notes](https://github.com/GetStream/stream-chat-react-native/blob/master/CHANGELOG.md)
 - [Internationalisation (i18n)](#internationalisation)
 - [Cookbook](docs/cookbook.md)  :rocket:
 
