@@ -37,4 +37,5 @@ export { IconBadge } from './IconBadge';
 export { ReactionPicker } from './ReactionPicker';
 export { ReactionPickerWrapper } from './ReactionPickerWrapper';
 export { SendButton } from './SendButton';
+export { AttachButton } from './AttachButton';
 export { FileIcon } from './FileIcon';

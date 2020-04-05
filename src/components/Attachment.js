@@ -89,9 +89,21 @@ export const Attachment = withMessageContentContext(
           PropTypes.node,
           PropTypes.elementType,
         ]),
+        UrlPreview: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        AttachmentActions: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
       };
       static defaultProps = {
         AttachmentFileIcon: FileIcon,
+        UrlPreview: Card,
+        Giphy: Card,
+        AttachmentActions,
       };
 
       constructor(props) {
@@ -109,7 +121,12 @@ export const Attachment = withMessageContentContext(
       };
 
       render() {
-        const { attachment: a } = this.props;
+        const {
+          attachment: a,
+          Giphy,
+          UrlPreview,
+          AttachmentActions,
+        } = this.props;
         if (!a) {
           return null;
         }
@@ -117,9 +134,12 @@ export const Attachment = withMessageContentContext(
         let type;
 
         if (a.type === 'giphy' || a.type === 'imgur') {
-          type = 'card';
-        } else if (a.type === 'image' && (a.title_link || a.og_scrape_url)) {
-          type = 'card';
+          type = 'giphy';
+        } else if (
+          (a.title_link || a.og_scrape_url) &&
+          (a.image_url || a.thumb_url)
+        ) {
+          type = 'previewUrl';
         } else if (a.type === 'image') {
           type = 'image';
         } else if (a.type === 'file') {
@@ -150,7 +170,25 @@ export const Attachment = withMessageContentContext(
             </React.Fragment>
           );
         }
-        if (a.type === 'giphy' || type === 'card') {
+        if (type === 'giphy') {
+          if (a.actions && a.actions.length) {
+            return (
+              <View>
+                <Giphy {...a} alignment={this.props.alignment} />
+                {a.actions && a.actions.length > 0 && (
+                  <AttachmentActions
+                    key={'key-actions-' + a.id}
+                    {...a}
+                    actionHandler={this.props.actionHandler}
+                  />
+                )}
+              </View>
+            );
+          } else {
+            return <Giphy alignment={this.props.alignment} {...a} />;
+          }
+        }
+        if (type === 'card') {
           if (a.actions && a.actions.length) {
             return (
               <View>
@@ -169,7 +207,11 @@ export const Attachment = withMessageContentContext(
           }
         }
 
-        if (a.type === 'file') {
+        if (type === 'previewUrl') {
+          return <UrlPreview alignment={this.props.alignment} {...a} />;
+        }
+
+        if (type === 'file') {
           return (
             <TouchableOpacity
               onPress={() => {
@@ -204,7 +246,7 @@ export const Attachment = withMessageContentContext(
           );
         }
 
-        if (a.type === 'video' && a.asset_url && a.image_url) {
+        if (type === 'media' && a.asset_url && a.image_url) {
           return (
             // TODO: Put in video component
             <Card alignment={this.props.alignment} {...a} />

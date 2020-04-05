@@ -252,7 +252,7 @@ class AutoCompleteInput extends React.PureComponent {
       if (!this.isTrackingStarted) this.startTracking();
       // console.log('from handle suggestions: ' + currentTrigger);
       this.updateSuggestions(actualToken);
-    });
+    }, 100);
   };
 
   render() {

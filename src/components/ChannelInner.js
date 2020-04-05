@@ -184,7 +184,6 @@ class ChannelInner extends PureComponent {
         await channel.watch();
       } catch (e) {
         if (this._unmounted) return;
-        console.warn('errored');
         this.setState({ error: e });
         errored = true;
       }

@@ -5,7 +5,7 @@ import { Spinner } from './Spinner';
 import { withTranslationContext } from '../context';
 
 const Container = styled.View`
-  flex: 1;
+  height: 100%;
   justify-content: center;
   align-items: center;
   ${({ theme }) => theme.loadingIndicator.container.css}

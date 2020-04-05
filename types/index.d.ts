@@ -299,6 +299,9 @@ export interface AttachmentProps
     Examples include canceling a \/giphy command or shuffling the results.
     */
   actionHandler?(name: string, value: string): any;
+  UrlPreview?: React.ElementType<CardProps>;
+  Giphy?: React.ElementType<CardProps>;
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
   groupStyle: 'single' | 'top' | 'middle' | 'bottom';
 }
 
@@ -557,6 +560,9 @@ export interface MessageUIComponentProps
   MessageFooter?: React.ElementType<MessageFooterUIComponentProps>;
   /** Custom UI component for reaction list */
   ReactionList?: React.ElementType<ReactionListProps>;
+  UrlPreview?: React.ElementType<CardProps>;
+  Giphy?: React.ElementType<CardProps>;
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
   supportedReactions?: Array<{
     icon: string;
     id: string;

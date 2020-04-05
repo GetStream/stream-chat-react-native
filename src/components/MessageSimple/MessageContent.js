@@ -292,6 +292,12 @@ class MessageContent extends React.PureComponent {
     reactionPickerVisible: PropTypes.bool,
     /** Custom UI component for message text */
     MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    AttachmentActions: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     formatDate: PropTypes.func,
     /**
      * @deprecated Please use `disabled` instead.
@@ -413,6 +419,9 @@ class MessageContent extends React.PureComponent {
       MessageText,
       channel,
       MessageReplies,
+      AttachmentActions,
+      UrlPreview,
+      Giphy,
       t,
       tDateTimeParser,
     } = this.props;
@@ -579,6 +588,9 @@ class MessageContent extends React.PureComponent {
                     attachment={attachment}
                     actionHandler={handleAction}
                     alignment={alignment}
+                    UrlPreview={UrlPreview}
+                    AttachmentActions={AttachmentActions}
+                    Giphy={Giphy}
                   />
                 );
               })}
