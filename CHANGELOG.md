@@ -22,7 +22,7 @@
 
 ### Prop changes to components (non-breaking)
 
-- MessagaSimple
+- MessageSimple
 
   **new props**
 
@@ -103,7 +103,7 @@
 
 ### Non-breaking changes
 
-- MessagaSimple
+- MessageSimple
 
   **new props**
 
@@ -362,7 +362,7 @@
 ## [0.3.4] 2019-10-03
 
 - Avoiding query channel api call when there are no more messages to render
-- Making mardRead api call only if unread count is > 0
+- Making markRead api call only if unread count is > 0
 
 ## [0.3.3] 2019-10-02
 
@@ -416,7 +416,7 @@
 
 ## [0.1.19] 2019-08-26
 
-- Updating ChannePreviewMessanger component to show other member's name as channel title if channel has no explicate name in channel.data
+- Updating ChannelPreviewMessenger component to show other member's name as channel title if channel has no explicate name in channel.data
 
 ## [0.1.18] 2019-08-12
 
