@@ -333,11 +333,11 @@ class MessageContent extends React.PureComponent {
   };
 
   handleDelete = async () => {
-    await this.props.handleDelete();
+    await this.props.handleDelete(this);
   };
 
   handleEdit = () => {
-    this.props.handleEdit();
+    this.props.handleEdit(this);
   };
 
   /**
@@ -352,12 +352,12 @@ class MessageContent extends React.PureComponent {
         'Please use this.props.openReactionPicker instead.',
     );
 
-    await this.props.openReactionPicker();
+    await this.props.openReactionPicker(this);
   };
 
   openReactionSelector = () => {
     console.warn(
-      'openReactionSelector has been deprecared and will be removed in next major release.' +
+      'openReactionSelector has been deprecated and will be removed in next major release.' +
         'Please use this.props.openReactionPicker instead.',
     );
   };
@@ -365,16 +365,16 @@ class MessageContent extends React.PureComponent {
   onActionPress = (action) => {
     switch (action) {
       case MESSAGE_ACTIONS.edit:
-        this.handleEdit();
+        this.handleEdit(this);
         break;
       case MESSAGE_ACTIONS.delete:
-        this.handleDelete();
+        this.handleDelete(this);
         break;
       case MESSAGE_ACTIONS.reply:
         this.openThread();
         break;
       case MESSAGE_ACTIONS.reactions:
-        this.props.openReactionPicker();
+        this.props.openReactionPicker(this);
         break;
       default:
         break;
