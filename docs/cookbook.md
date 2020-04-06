@@ -133,7 +133,7 @@ e.g.
 ```js
 const theme = {
     'message.content.markdown': {
-        // list of all avaliable options are here: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
+        // list of all available options are here: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
         text: {
             color: 'pink',
             fontFamily: 'AppleSDGothicNeo-Bold'
@@ -437,7 +437,7 @@ const MessageWithSenderNameAtBottom = props => {
 ## Swipe message left to delete and right to reply {#message-example-9}
 
 Some messaging apps usually show extra options such as delete or reply when you swipe the message.
-In this example we will build a message which opens `delete` opion when swiped left, and will reply
+In this example we will build a message which opens `delete` option when swiped left, and will reply
 to the message when swiped to left.
 
 For swiping gesture, we are going to use external library called [react-native-swipe-list-view](https://github.com/jemise111/react-native-swipe-list-view)
@@ -445,7 +445,7 @@ For swiping gesture, we are going to use external library called [react-native-s
 Also I am going to use following styles for this example:
 
 ```js static
-const messageSwipableStyles = StyleSheet.create({
+const messageSwipeableStyles = StyleSheet.create({
   row: {
     flex: 1,
     backgroundColor: 'blue',
@@ -453,7 +453,7 @@ const messageSwipableStyles = StyleSheet.create({
   messageActionsContainer: {
     backgroundColor: '#F8F8F8',
   },
-  deletebutton: {
+  deleteButton: {
     alignSelf: 'flex-end',
     width: 50,
     height: '100%',
@@ -477,14 +477,14 @@ const messageSwipableStyles = StyleSheet.create({
 });
 ```
 
-First lets just build a simple swipable message component, which when swiped left, opens the delete button.
+First lets just build a simple swipeable message component, which when swiped left, opens the delete button.
 We will use `SwipeRow` as wrapper around our MessageSimple component.
 
 ```js
 import {SwipeRow} from 'react-native-swipe-list-view';
 ...
 
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
   render() {
     return (
       <SwipeRow
@@ -492,8 +492,8 @@ class MessageSwipable extends React.Component {
         leftOpenValue={30}
         recalculateHiddenLayout>
         <View>
-            <TouchableOpacity style={messageSwipableStyles.deletebutton}>
-              <Image source={deleteIcon} styles={messageSwipableStyles.deleteIcon} />
+            <TouchableOpacity style={messageSwipeableStyles.deleteButton}>
+              <Image source={deleteIcon} styles={messageSwipeableStyles.deleteIcon} />
             </TouchableOpacity>
         </View>
         <View>
@@ -508,26 +508,26 @@ class MessageSwipable extends React.Component {
 You will see some really distorted UI at this point. Don't worry, we just need to add some nice styles to fix it:
 
 ```diff
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
   render() {
     return (
       <SwipeRow
         rightOpenValue={-55}
         leftOpenValue={30}
-+       style={messageSwipableStyles.row}
++       style={messageSwipeableStyles.row}
         recalculateHiddenLayout>
 -        <View>
-+        <View style={messageSwipableStyles.messageActionsContainer}>
++        <View style={messageSwipeableStyles.messageActionsContainer}>
 -          <TouchableOpacity>
-+          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
++          <TouchableOpacity style={messageSwipeableStyles.deleteButton}>
             <Image
               source={deleteIcon}
-+             style={messageSwipableStyles.deleteIcon}
++             style={messageSwipeableStyles.deleteIcon}
             />
           </TouchableOpacity>
         </View>
 -        <View>
-+        <View style={messageSwipableStyles.messageContainer}>
++        <View style={messageSwipeableStyles.messageContainer}>
           <MessageSimple {...this.props} />
         </View>
       </SwipeRow>
@@ -549,7 +549,7 @@ Also we are going to add some different styles when delete button/option is visi
 `menuOpen` to keep track of whether delete button is visible or not.
 
 ```diff
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
 +  rowRef = null;
 +  state = {menuOpen: false};
 
@@ -558,7 +558,7 @@ class MessageSwipable extends React.Component {
       <SwipeRow
         rightOpenValue={-55}
         leftOpenValue={30}
-        style={messageSwipableStyles.row}
+        style={messageSwipeableStyles.row}
         recalculateHiddenLayout
 +        onRowOpen={value => {
 +          if (value > 0) {
@@ -571,23 +571,23 @@ class MessageSwipable extends React.Component {
 +        ref={ref => {
 +          this.rowRef = ref;
 +        }}>
-        <View style={messageSwipableStyles.messageActionsContainer}>
-          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
+        <View style={messageSwipeableStyles.messageActionsContainer}>
+          <TouchableOpacity style={messageSwipeableStyles.deleteButton}>
             <Image
               source={deleteIcon}
-              style={messageSwipableStyles.deleteIcon}
+              style={messageSwipeableStyles.deleteIcon}
             />
           </TouchableOpacity>
         </View>
--        <View style={messageSwipableStyles.messageContainer}>
+-        <View style={messageSwipeableStyles.messageContainer}>
 +        <View
 +          style={
 +            this.state.menuOpen
 +              ? {
-+                  ...messageSwipableStyles.messageContainer,
-+                  ...messageSwipableStyles.messageContainerSelected,
++                  ...messageSwipeableStyles.messageContainer,
++                  ...messageSwipeableStyles.messageContainerSelected,
 +                }
-+              : {...messageSwipableStyles.messageContainer}
++              : {...messageSwipeableStyles.messageContainer}
 +          }>
           <MessageSimple {...this.props} />
         </View>
@@ -600,7 +600,7 @@ class MessageSwipable extends React.Component {
 Next, when delete button gets pressed, we want to delete the message and close the row.
 
 ```diff
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
   rowRef = null;
   state = {menuOpen: false};
 
@@ -621,17 +621,17 @@ class MessageSwipable extends React.Component {
         ref={ref => {
           this.rowRef = ref;
         }}>
-        <View style={messageSwipableStyles.messageActionsContainer}>
--          <TouchableOpacity style={messageSwipableStyles.deletebutton}>
+        <View style={messageSwipeableStyles.messageActionsContainer}>
+-          <TouchableOpacity style={messageSwipeableStyles.deleteButton}>
 +          <TouchableOpacity
-+            style={messageSwipableStyles.deletebutton}
++            style={messageSwipeableStyles.deleteButton}
 +            onPress={() => {
 +              this.props.handleDelete();
 +              this.rowRef.closeRow();
 +            }}>
 +            <Image
 +              source={deleteIcon}
-+              style={messageSwipableStyles.deleteIcon}
++              style={messageSwipeableStyles.deleteIcon}
 +            />
           </TouchableOpacity>
         </View>
@@ -639,10 +639,10 @@ class MessageSwipable extends React.Component {
           style={
             this.state.menuOpen
               ? {
-                  ...messageSwipableStyles.messageContainer,
-                  ...messageSwipableStyles.messageContainerSelected,
+                  ...messageSwipeableStyles.messageContainer,
+                  ...messageSwipeableStyles.messageContainerSelected,
                 }
-              : {...messageSwipableStyles.messageContainer}
+              : {...messageSwipeableStyles.messageContainer}
           }>
           <MessageSimple {...this.props} />
         </View>
@@ -652,10 +652,10 @@ class MessageSwipable extends React.Component {
 }
 ```
 
-Next, we to restrict swipable functionality only for non-deleted messages.
+Next, we to restrict swipeable functionality only for non-deleted messages.
 
 ```diff
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
   rowRef = null;
   state = {menuOpen: false};
 
@@ -678,23 +678,23 @@ class MessageSwipable extends React.Component {
         ref={ref => {
           this.rowRef = ref;
         }}>
--        <View style={messageSwipableStyles.messageActionsContainer}>
+-        <View style={messageSwipeableStyles.messageActionsContainer}>
 +        <View
 +          style={
 +            !this.props.message.deleted_at
-+              ? messageSwipableStyles.messageActionsContainer
++              ? messageSwipeableStyles.messageActionsContainer
 +              : null
 +          }>
 +          {!this.props.message.deleted_at ? (
 +            <TouchableOpacity
-+              style={messageSwipableStyles.deletebutton}
++              style={messageSwipeableStyles.deleteButton}
 +              onPress={() => {
 +                this.props.handleDelete();
 +                this.rowRef.closeRow();
 +              }}>
 +              <Image
 +                source={deleteIcon}
-+                style={messageSwipableStyles.deleteIcon}
++                style={messageSwipeableStyles.deleteIcon}
 +              />
 +            </TouchableOpacity>
 +          ) : null}
@@ -703,10 +703,10 @@ class MessageSwipable extends React.Component {
           style={
             this.state.menuOpen
               ? {
-                  ...messageSwipableStyles.messageContainer,
-                  ...messageSwipableStyles.messageContainerSelected,
+                  ...messageSwipeableStyles.messageContainer,
+                  ...messageSwipeableStyles.messageContainerSelected,
                 }
-              : {...messageSwipableStyles.messageContainer}
+              : {...messageSwipeableStyles.messageContainer}
           }>
           <MessageSimple {...this.props} />
         </View>
@@ -723,7 +723,7 @@ _**in progress ...**_
 ## Final result:
 
 ```js
-class MessageSwipable extends React.Component {
+class MessageSwipeable extends React.Component {
   rowRef = null;
   state = {menuOpen: false};
   render() {
@@ -733,7 +733,7 @@ class MessageSwipable extends React.Component {
         leftOpenValue={30}
         disableLeftSwipe={!!this.props.message.deleted_at}
         disableRightSwipe={!!this.props.message.deleted_at}
-        style={messageSwipableStyles.row}
+        style={messageSwipeableStyles.row}
         recalculateHiddenLayout
         onRowClose={() => {
           this.setState({menuOpen: false});
@@ -752,19 +752,19 @@ class MessageSwipable extends React.Component {
         <View
           style={
             !this.props.message.deleted_at
-              ? messageSwipableStyles.messageActionsContainer
+              ? messageSwipeableStyles.messageActionsContainer
               : null
           }>
           {!this.props.message.deleted_at ? (
             <TouchableOpacity
-              style={messageSwipableStyles.deletebutton}
+              style={messageSwipeableStyles.deleteButton}
               onPress={() => {
                 this.props.handleDelete();
                 this.rowRef.closeRow();
               }}>
               <Image
                 source={deleteIcon}
-                style={messageSwipableStyles.deleteIcon}
+                style={messageSwipeableStyles.deleteIcon}
               />
             </TouchableOpacity>
           ) : null}
@@ -773,10 +773,10 @@ class MessageSwipable extends React.Component {
           style={
             this.state.menuOpen
               ? {
-                  ...messageSwipableStyles.messageContainer,
-                  ...messageSwipableStyles.messageContainerSelected,
+                  ...messageSwipeableStyles.messageContainer,
+                  ...messageSwipeableStyles.messageContainerSelected,
                 }
-              : {...messageSwipableStyles.messageContainer}
+              : {...messageSwipeableStyles.messageContainer}
           }>
           <MessageSimple {...this.props} />
         </View>
@@ -785,7 +785,7 @@ class MessageSwipable extends React.Component {
   }
 }
 
-const messageSwipableStyles = StyleSheet.create({
+const messageSwipeableStyles = StyleSheet.create({
   row: {
     flex: 1,
     backgroundColor: 'blue',
@@ -793,7 +793,7 @@ const messageSwipableStyles = StyleSheet.create({
   messageActionsContainer: {
     backgroundColor: '#F8F8F8',
   },
-  deletebutton: {
+  deleteButton: {
     alignSelf: 'flex-end',
     width: 50,
     height: '100%',
@@ -869,7 +869,7 @@ const actionsheetStyles = {
 </Chat>
 ```
 
-**Note** `titleBox`, `titleText`, `buttonBox` and `buttonText` won't work in above styles, since we have overriden those components with our own components.
+**Note** `titleBox`, `titleText`, `buttonBox` and `buttonText` won't work in above styles, since we have overridden those components with our own components.
 
 ### MessageInput attachments
 _(attachment options, when `+` icon is pressed in MessageInput component.)_
@@ -981,7 +981,7 @@ Following example shows how to use `KeyboardAvoidingView` instead:
 
 ## How to customize/modify underlying `FlatList` of `MessageList` or `ChannelList`?
 
-  You can pass aditional any number of props to underlying FlatList using `additionalFlatListProps` prop:
+  You can pass additional any number of props to underlying FlatList using `additionalFlatListProps` prop:
 
  ```js static
   <ChannelList
