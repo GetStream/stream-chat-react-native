@@ -67,6 +67,12 @@ export const MessageSimple = themed(
       ]),
       /** Custom UI component for message text */
       MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      AttachmentActions: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** enabled reactions, this is usually set by the parent component based on channel configs */
       reactionsEnabled: PropTypes.bool.isRequired,
       /** enabled replies, this is usually set by the parent component based on channel configs */

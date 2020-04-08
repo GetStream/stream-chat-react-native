@@ -271,7 +271,7 @@ export interface MessageInputProps
   parent?: Client.Message | null;
 
   /** The component handling how the input is rendered */
-  Input?: React.ElementType;
+  Input?: React.ElementType<InputUIComponentProps>;
 
   /** Override image upload request */
   doImageUploadRequest?(file: File): Promise<FileUploadResponse>;
@@ -289,6 +289,55 @@ export interface MessageInputProps
   SendButton: React.ElementType<SendButtonProps>;
 }
 
+export interface DocumentPickerFile {
+  cancelled: boolean;
+  uri?: string;
+  name?: string;
+}
+
+export interface ImagePickerFile {
+  cancelled: boolean;
+  uri?: string;
+}
+export interface InputUIComponentProps {
+  /** Returns list of users. This is used suggestions list for mentions feature (when user types '@') */
+  getUsers?(): Client.UserResponse[];
+  /** When item from mention's suggestion list is selected. This callback handler adds it to `mentioned_users` list of message */
+  onSelectItem?(): void;
+  /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
+  isValidMessage?(): boolean;
+  /** Sends the current message */
+  sendMessage?(): void;
+  /** Sends the current edited message */
+  updateMessage?(): Promise<void>;
+  /** Handler for attach file functionality */
+  _pickFile?(): void;
+  /** Adds selected file to state of MessageInput component (`state.fileUploads` list) and calls _uploadFile */
+  uploadNewFile?(file: DocumentPickerFile): void;
+  /** Uploads the selected file corresponding to id in fileUploads array in state of MessageInput */
+  _uploadFile?(id: string): void;
+  _removeFile?(id: string): void;
+  /** Handler for attach image functionality */
+  _pickImage?(): Promise<void>;
+  /** Adds selected file to state of MessageInput component (`state.imageUploads` list) and calls _uploadImage */
+  uploadNewImage?(file: ImagePickerFile): void;
+  /** Uploads the selected image corresponding to id in imageUploads array in state of MessageInput */
+  _uploadImage?(): void;
+  _removeImage?(id: string): void;
+  /** Callback when text in inputbox changes */
+  onChangeText?(text: string): void;
+  /** Returns all available list of commands */
+  getCommands?(): Client.CommandResponse[];
+  /** Hides the attach actionsheet */
+  closeAttachActionSheet?(): void;
+  /** Append the text to input box */
+  appendText?(text: string): void;
+  triggerSettings?(): object;
+  disabled?: boolean;
+  value?: string;
+  additionalTextInputProps?: object;
+}
+
 export interface AttachmentProps
   extends StyledComponentProps,
     MessageContentContextValue {
@@ -299,6 +348,9 @@ export interface AttachmentProps
     Examples include canceling a \/giphy command or shuffling the results.
     */
   actionHandler?(name: string, value: string): any;
+  UrlPreview?: React.ElementType<CardProps>;
+  Giphy?: React.ElementType<CardProps>;
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
   groupStyle: 'single' | 'top' | 'middle' | 'bottom';
 }
 
@@ -557,6 +609,9 @@ export interface MessageUIComponentProps
   MessageFooter?: React.ElementType<MessageFooterUIComponentProps>;
   /** Custom UI component for reaction list */
   ReactionList?: React.ElementType<ReactionListProps>;
+  UrlPreview?: React.ElementType<CardProps>;
+  Giphy?: React.ElementType<CardProps>;
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
   supportedReactions?: Array<{
     icon: string;
     id: string;
