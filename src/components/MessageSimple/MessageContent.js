@@ -633,7 +633,7 @@ class MessageContent extends React.PureComponent {
               <MetaText alignment={alignment}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
-                  : tDateTimeParser(message.created_at).format('hh:mmA')}
+                  : tDateTimeParser(message.created_at).format('LT')}
               </MetaText>
             </MetaContainer>
           ) : null}

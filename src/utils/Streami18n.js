@@ -32,6 +32,16 @@ import 'dayjs/locale/en';
 
 Dayjs.extend(updateLocale);
 
+Dayjs.updateLocale('en', {
+  format: {
+    LT: 'hh:mmA',
+    LTS: 'HH:mm:ss',
+    L: 'DD/MM/YYYY',
+    LL: 'D MMMM YYYY',
+    LLL: 'D MMMM YYYY HH:mm',
+    LLLL: 'dddd, D MMMM YYYY HH:mm',
+  },
+});
 Dayjs.updateLocale('nl', {
   calendar: {
     sameDay: '[vandaag om] LT',

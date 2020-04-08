@@ -86,11 +86,11 @@ class ChannelPreview extends PureComponent {
 
     if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
       latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'HH:mm A',
+        'LT',
       );
     else {
       latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'DD/MM/YY',
+        'L',
       );
     }
 
