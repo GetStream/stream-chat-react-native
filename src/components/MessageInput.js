@@ -703,7 +703,7 @@ class MessageInput extends PureComponent {
     }));
   };
 
-  onChange = (text) => {
+  onChangeText = (text) => {
     this.setState({ text });
 
     if (text) {
@@ -838,10 +838,9 @@ class MessageInput extends PureComponent {
               _removeImage={this._removeImage}
               _removeFile={this._removeFile}
               _uploadImage={this._uploadImage}
-              onChange={this.onChange}
+              onChange={this.onChangeText}
               getCommands={this.getCommands}
               closeAttachActionSheet={this.closeAttachActionSheet}
-              renderInputContainer={this.renderInputContainer}
               appendText={this.appendText}
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
@@ -850,7 +849,6 @@ class MessageInput extends PureComponent {
                 } else if (hasImagePicker && !hasFilePicker) this._pickImage();
                 else if (!hasImagePicker && hasFilePicker) this._pickFile();
               }}
-              onPress={this.onPress}
               triggerSettings={ACITriggerSettings({
                 users: this.getUsers(),
                 commands: this.getCommands(),
@@ -879,7 +877,7 @@ class MessageInput extends PureComponent {
                 closeSuggestions={this.props.closeSuggestions}
                 updateSuggestions={this.props.updateSuggestions}
                 value={this.state.text}
-                onChange={this.onChange}
+                onChange={this.onChangeText}
                 getCommands={this.getCommands}
                 setInputBoxRef={this.setInputBoxRef}
                 triggerSettings={ACITriggerSettings({
