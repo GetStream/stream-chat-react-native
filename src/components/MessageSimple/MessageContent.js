@@ -431,8 +431,7 @@ class MessageContent extends React.PureComponent {
       message && message.attachments && message.attachments.length,
     );
 
-    const showTime =
-      groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
+    const showTime = groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
     const hasReactions =
       reactionsEnabled &&

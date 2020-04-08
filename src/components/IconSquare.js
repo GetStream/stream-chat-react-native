@@ -1,32 +1,34 @@
 import React from 'react';
-import { View, TouchableOpacity, Image } from 'react-native';
+import { TouchableOpacity, Image } from 'react-native';
 import PropTypes from 'prop-types';
+import styled from '@stream-io/styled-components';
+
+const StyledTouchableOpacity = styled(TouchableOpacity)`
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  padding: 5px;
+  ${({ theme }) => theme.iconSquare.container.css}
+`;
+
+const StyledView = styled.View`
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  padding: 5px;
+  ${({ theme }) => theme.iconSquare.container.css}
+`;
 
 export const IconSquare = ({ icon, onPress }) => {
   if (onPress)
     return (
-      <TouchableOpacity
-        style={{
-          padding: 5,
-          backgroundColor: 'rgba(0,0,0,0.05)',
-          borderRadius: 5,
-        }}
-        onPress={onPress}
-      >
+      <StyledTouchableOpacity onPress={onPress}>
         <Image source={icon} style={{ height: 15, width: 15 }} />
-      </TouchableOpacity>
+      </StyledTouchableOpacity>
     );
   else
     return (
-      <View
-        style={{
-          padding: 5,
-          backgroundColor: 'rgba(0,0,0,0.05)',
-          borderRadius: 5,
-        }}
-      >
+      <StyledView>
         <Image source={icon} style={{ height: 15, width: 15 }} />
-      </View>
+      </StyledView>
     );
 };
 
