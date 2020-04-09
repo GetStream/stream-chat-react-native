@@ -358,17 +358,17 @@ export interface AttachmentProps
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  CardHeader: React.ElementType<CardProps>;
+  CardHeader?: React.ElementType<CardProps>;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  CardCover: React.ElementType<CardProps>;
+  CardCover?: React.ElementType<CardProps>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  CardFooter: React.ElementType<CardProps>;
+  CardFooter?: React.ElementType<CardProps>;
   FileAttachment?: React.ElementType<FileAttachmentGroup>;
   AttachmentActions?: React.ElementType<AttachmentActionsProps>;
   Gallery?: React.ElementType<GalleryProps>;
@@ -665,17 +665,17 @@ export interface MessageUIComponentProps
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  CardHeader: React.ElementType<CardProps>;
+  CardHeader?: React.ElementType<CardProps>;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  CardCover: React.ElementType<CardProps>;
+  CardCover?: React.ElementType<CardProps>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  CardFooter: React.ElementType<CardProps>;
+  CardFooter?: React.ElementType<CardProps>;
 
   /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
