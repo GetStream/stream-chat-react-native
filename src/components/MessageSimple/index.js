@@ -65,10 +65,64 @@ export const MessageSimple = themed(
         PropTypes.node,
         PropTypes.elementType,
       ]),
+      /**
+       * Custom UI component to display reaction list.
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+       */
+      ReactionList: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       /** Custom UI component for message text */
       MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to display enriched url preview.
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+       */
       UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to display Giphy image.
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+       */
       Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+       */
+      FileAttachmentGroup: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      /**
+       * Custom UI component to display File type attachment.
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+       */
+      FileAttachment: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      /**
+       * Custom UI component for attachment icon for type 'file' attachment.
+       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+       */
+      AttachmentFileIcon: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      /**
+       * Custom UI component to display image attachments.
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+       */
+      Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to display generic media type e.g. giphy, url preview etc
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+       */
+      Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+       * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+       */
       AttachmentActions: PropTypes.oneOfType([
         PropTypes.node,
         PropTypes.elementType,
@@ -211,22 +265,6 @@ export const MessageSimple = themed(
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
        */
       actionSheetStyles: PropTypes.object,
-      /**
-       * Custom UI component for attachment icon for type 'file' attachment.
-       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-       */
-      AttachmentFileIcon: PropTypes.oneOfType([
-        PropTypes.node,
-        PropTypes.elementType,
-      ]),
-      /**
-       * Custom UI component to display reaction list.
-       * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
-       */
-      ReactionList: PropTypes.oneOfType([
-        PropTypes.node,
-        PropTypes.elementType,
-      ]),
       formatDate: PropTypes.func,
       /**
        * e.g.,

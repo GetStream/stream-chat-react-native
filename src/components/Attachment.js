@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, Linking } from 'react-native';
+import { View } from 'react-native';
 
-import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';
 
 import PropTypes from 'prop-types';
@@ -11,46 +10,7 @@ import { AttachmentActions } from './AttachmentActions';
 import { Gallery } from './Gallery';
 
 import { withMessageContentContext } from '../context';
-
-const FileContainer = styled.View`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  background-color: #ebebeb;
-  padding: 10px;
-  border-radius: ${({ groupStyle }) => {
-    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
-
-    return 16;
-  }};
-  border-bottom-left-radius: ${({ alignment, groupStyle }) => {
-    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-
-    return alignment === 'right' ? 16 : 2;
-  }};
-  border-bottom-right-radius: ${({ alignment, groupStyle }) => {
-    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-
-    return alignment === 'left' ? 16 : 2;
-  }};
-  ${({ theme }) => theme.message.file.container.css}
-`;
-
-const FileDetails = styled.View`
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-  ${({ theme }) => theme.message.file.details.css}
-`;
-
-const FileTitle = styled.Text`
-  font-weight: 700;
-  ${({ theme }) => theme.message.file.title.css}
-`;
-
-const FileSize = styled.Text`
-  ${({ theme }) => theme.message.file.size.css}
-`;
+import { FileAttachment } from './FileAttachment';
 
 /**
  * Attachment - The message attachment
@@ -94,6 +54,12 @@ export const Attachment = withMessageContentContext(
           PropTypes.elementType,
         ]),
         Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        FileAttachment: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         AttachmentActions: PropTypes.oneOfType([
           PropTypes.node,
           PropTypes.elementType,
@@ -104,27 +70,23 @@ export const Attachment = withMessageContentContext(
         UrlPreview: Card,
         Giphy: Card,
         AttachmentActions,
+        Gallery,
+        Card,
+        FileAttachment,
       };
 
       constructor(props) {
         super(props);
       }
 
-      _goToURL = (url) => {
-        Linking.canOpenURL(url).then((supported) => {
-          if (supported) {
-            Linking.openURL(url);
-          } else {
-            console.log("Don't know how to open URI: " + url);
-          }
-        });
-      };
-
       render() {
         const {
           attachment: a,
           Giphy,
+          Gallery,
           UrlPreview,
+          Card,
+          FileAttachment,
           AttachmentActions,
         } = this.props;
         if (!a) {
@@ -139,7 +101,7 @@ export const Attachment = withMessageContentContext(
           (a.title_link || a.og_scrape_url) &&
           (a.image_url || a.thumb_url)
         ) {
-          type = 'previewUrl';
+          type = 'urlPreview';
         } else if (a.type === 'image') {
           type = 'image';
         } else if (a.type === 'file') {
@@ -155,7 +117,6 @@ export const Attachment = withMessageContentContext(
           // extra = 'no-image';
         }
 
-        const AttachmentFileIcon = this.props.AttachmentFileIcon;
         if (type === 'image') {
           return (
             <React.Fragment>
@@ -207,42 +168,28 @@ export const Attachment = withMessageContentContext(
           }
         }
 
-        if (type === 'previewUrl') {
+        if (type === 'urlPreview') {
           return <UrlPreview alignment={this.props.alignment} {...a} />;
         }
 
         if (type === 'file') {
+          const {
+            AttachmentFileIcon,
+            actionHandler,
+            onLongPress,
+            alignment,
+            groupStyle,
+          } = this.props;
+
           return (
-            <TouchableOpacity
-              onPress={() => {
-                this._goToURL(a.asset_url);
-              }}
-              onLongPress={this.props.onLongPress}
-            >
-              <FileContainer
-                alignment={this.props.alignment}
-                groupStyle={this.props.groupStyle}
-              >
-                <AttachmentFileIcon
-                  filename={a.title}
-                  mimeType={a.mime_type}
-                  size={50}
-                />
-                <FileDetails>
-                  <FileTitle ellipsizeMode="tail" numberOfLines={2}>
-                    {a.title}
-                  </FileTitle>
-                  <FileSize>{a.file_size} KB</FileSize>
-                </FileDetails>
-              </FileContainer>
-              {a.actions && a.actions.length > 0 && (
-                <AttachmentActions
-                  key={'key-actions-' + a.id}
-                  {...a}
-                  actionHandler={this.props.actionHandler}
-                />
-              )}
-            </TouchableOpacity>
+            <FileAttachment
+              attachment={a}
+              actionHandler={actionHandler}
+              AttachmentFileIcon={AttachmentFileIcon}
+              onLongPress={onLongPress}
+              alignment={alignment}
+              groupStyle={groupStyle}
+            />
           );
         }
 

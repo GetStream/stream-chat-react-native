@@ -109,6 +109,7 @@ export const defaultTheme = {
       details: {},
       title: {},
       size: {},
+      icon: {},
     },
     actions: {
       container: {},

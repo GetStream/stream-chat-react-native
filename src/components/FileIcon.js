@@ -1,11 +1,15 @@
 import * as React from 'react';
-import { Image } from 'react-native';
+import styled from '@stream-io/styled-components';
 
 import iconPDF from '../images/PDF.png';
 import iconDOC from '../images/DOC.png';
 import iconPPT from '../images/PPT.png';
 import iconXLS from '../images/XLS.png';
 import iconTAR from '../images/TAR.png';
+
+const Icon = styled.Image`
+  ${({ theme }) => theme.message.file.icon.css};
+`;
 
 // Partially based on:
 // https://stackoverflow.com/a/4212908/2570866
@@ -205,9 +209,9 @@ export class FileIcon extends React.Component {
   render() {
     const { mimeType, size } = this.props;
     return (
-      <Image
+      <Icon
         source={mimeTypeToIcon(mimeType)}
-        style={{ height: size, width: size }}
+        style={size ? { height: size, width: size } : {}}
       />
     );
   }
