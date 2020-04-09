@@ -326,6 +326,8 @@ export interface InputUIComponentProps {
   _removeImage?(id: string): void;
   /** Callback when text in inputbox changes */
   onChangeText?(text: string): void;
+  /** object the ref via callback - https://reactjs.org/docs/refs-and-the-dom.html#callback-refs */
+  setInputBoxRef?(ref: any): void;
   /** Returns all available list of commands */
   getCommands?(): Client.CommandResponse[];
   /** Hides the attach actionsheet */
