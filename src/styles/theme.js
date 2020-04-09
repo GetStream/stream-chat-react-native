@@ -127,7 +127,12 @@ export const defaultTheme = {
     card: {
       container: {},
       cover: {},
-      footer: {},
+      footer: {
+        title: {},
+        description: {},
+        link: {},
+        logo: {},
+      },
     },
 
     gallery: {

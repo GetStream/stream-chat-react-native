@@ -41,25 +41,79 @@ export const Attachment = withMessageContentContext(
         groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
         /** Handler for long press event on attachment */
         onLongPress: PropTypes.func,
+
+        /**
+         * Custom UI component to display enriched url preview.
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+         */
+        UrlPreview: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        /**
+         * Custom UI component to display Giphy image.
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+         */
+        Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        /**
+         * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+         */
+        FileAttachmentGroup: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        /**
+         * Custom UI component to display File type attachment.
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+         */
+        FileAttachment: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
         /**
          * Custom UI component for attachment icon for type 'file' attachment.
-         * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+         * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
          */
         AttachmentFileIcon: PropTypes.oneOfType([
           PropTypes.node,
           PropTypes.elementType,
         ]),
-        UrlPreview: PropTypes.oneOfType([
-          PropTypes.node,
-          PropTypes.elementType,
-        ]),
-        Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-        FileAttachment: PropTypes.oneOfType([
-          PropTypes.node,
-          PropTypes.elementType,
-        ]),
+        /**
+         * Custom UI component to display image attachments.
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+         */
         Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        /**
+         * Custom UI component to display generic media type e.g. giphy, url preview etc
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+         */
         Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        /**
+         * Custom UI component to override default header of Card component.
+         * Accepts the same props as Card component.
+         */
+        CardHeader: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        /**
+         * Custom UI component to override default cover (between Header and Footer) of Card component.
+         * Accepts the same props as Card component.
+         */
+        CardCover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        /**
+         * Custom UI component to override default Footer of Card component.
+         * Accepts the same props as Card component.
+         */
+        CardFooter: PropTypes.oneOfType([
+          PropTypes.node,
+          PropTypes.elementType,
+        ]),
+        /**
+         * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+         * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+         */
         AttachmentActions: PropTypes.oneOfType([
           PropTypes.node,
           PropTypes.elementType,
@@ -67,8 +121,6 @@ export const Attachment = withMessageContentContext(
       };
       static defaultProps = {
         AttachmentFileIcon: FileIcon,
-        UrlPreview: Card,
-        Giphy: Card,
         AttachmentActions,
         Gallery,
         Card,
@@ -82,10 +134,11 @@ export const Attachment = withMessageContentContext(
       render() {
         const {
           attachment: a,
-          Giphy,
           Gallery,
-          UrlPreview,
           Card,
+          CardHeader,
+          CardCover,
+          CardFooter,
           FileAttachment,
           AttachmentActions,
         } = this.props;
@@ -93,6 +146,14 @@ export const Attachment = withMessageContentContext(
           return null;
         }
 
+        const Giphy = this.props.Giphy ? this.props.Giphy : Card;
+        const UrlPreview = this.props.UrlPreview ? this.props.UrlPreview : Card;
+
+        const cardProps = {
+          Header: CardHeader ? CardHeader : undefined,
+          Cover: CardCover ? CardCover : undefined,
+          Footer: CardFooter ? CardFooter : undefined,
+        };
         let type;
 
         if (a.type === 'giphy' || a.type === 'imgur') {
@@ -135,7 +196,7 @@ export const Attachment = withMessageContentContext(
           if (a.actions && a.actions.length) {
             return (
               <View>
-                <Giphy {...a} alignment={this.props.alignment} />
+                <Giphy {...a} alignment={this.props.alignment} {...cardProps} />
                 {a.actions && a.actions.length > 0 && (
                   <AttachmentActions
                     key={'key-actions-' + a.id}
@@ -146,14 +207,16 @@ export const Attachment = withMessageContentContext(
               </View>
             );
           } else {
-            return <Giphy alignment={this.props.alignment} {...a} />;
+            return (
+              <Giphy alignment={this.props.alignment} {...a} {...cardProps} />
+            );
           }
         }
         if (type === 'card') {
           if (a.actions && a.actions.length) {
             return (
               <View>
-                <Card {...a} alignment={this.props.alignment} />
+                <Card {...a} alignment={this.props.alignment} {...cardProps} />
                 {a.actions && a.actions.length > 0 && (
                   <AttachmentActions
                     key={'key-actions-' + a.id}
@@ -169,7 +232,13 @@ export const Attachment = withMessageContentContext(
         }
 
         if (type === 'urlPreview') {
-          return <UrlPreview alignment={this.props.alignment} {...a} />;
+          return (
+            <UrlPreview
+              alignment={this.props.alignment}
+              {...a}
+              {...cardProps}
+            />
+          );
         }
 
         if (type === 'file') {
@@ -196,7 +265,7 @@ export const Attachment = withMessageContentContext(
         if (type === 'media' && a.asset_url && a.image_url) {
           return (
             // TODO: Put in video component
-            <Card alignment={this.props.alignment} {...a} />
+            <Card alignment={this.props.alignment} {...a} {...cardProps} />
           );
         }
 

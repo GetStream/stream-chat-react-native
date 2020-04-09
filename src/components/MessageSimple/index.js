@@ -120,6 +120,21 @@ export const MessageSimple = themed(
        */
       Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
+       * Custom UI component to override default header of Card component.
+       * Accepts the same props as Card component.
+       */
+      CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to override default cover (between Header and Footer) of Card component.
+       * Accepts the same props as Card component.
+       */
+      CardCover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
+       * Custom UI component to override default Footer of Card component.
+       * Accepts the same props as Card component.
+       */
+      CardFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+      /**
        * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
        * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
        */

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Text, View, Linking } from 'react-native';
+import { View, Linking } from 'react-native';
 import PropTypes from 'prop-types';
 import giphyLogo from '../assets/Poweredby_100px-White_VertText.png';
 import { themed } from '../styles/theme';
@@ -21,7 +21,13 @@ const Container = styled.TouchableOpacity`
   ${({ theme }) => theme.message.card.container.css}
 `;
 
-const Footer = styled.View`
+const CardCover = styled.Image`
+  display: flex;
+  height: 150;
+  ${({ theme }) => theme.message.card.cover.css}
+`;
+
+const CardFooter = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -29,12 +35,18 @@ const Footer = styled.View`
   ${({ theme }) => theme.message.card.footer.css}
 `;
 
-const Cover = styled.Image`
-  display: flex;
-  height: 150;
-  ${({ theme }) => theme.message.card.cover.css}
+const FooterTitle = styled.Text`
+  ${({ theme }) => theme.message.card.footer.title.css}
 `;
-
+const FooterDescription = styled.Text`
+  ${({ theme }) => theme.message.card.footer.description.css}
+`;
+const FooterLink = styled.Text`
+  ${({ theme }) => theme.message.card.footer.link.css}
+`;
+const FooterLogo = styled.Image`
+  ${({ theme }) => theme.message.card.footer.logo.css}
+`;
 /**
  * UI component for card in attachments.
  *
@@ -61,6 +73,9 @@ export const Card = withMessageContentContext(
         type: PropTypes.string,
         alignment: PropTypes.string,
         onLongPress: PropTypes.func,
+        Header: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        Cover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+        Footer: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       };
 
       constructor(props) {
@@ -98,6 +113,9 @@ export const Card = withMessageContentContext(
           type,
           alignment,
           onLongPress,
+          Header,
+          Cover,
+          Footer,
         } = this.props;
         const uri = makeImageCompatibleUrl(image_url || thumb_url);
         return (
@@ -108,21 +126,29 @@ export const Card = withMessageContentContext(
             onLongPress={onLongPress}
             alignment={alignment}
           >
-            {uri && <Cover source={{ uri }} resizeMode="cover" />}
-            <Footer>
-              <View
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundColor: 'transparent',
-                }}
-              >
-                {title && <Text>{title}</Text>}
-                {text && <Text>{text}</Text>}
-                <Text>{this.trimUrl(title_link || og_scrape_url)}</Text>
-              </View>
-              {type === 'giphy' && <Image source={giphyLogo} />}
-            </Footer>
+            {Header && <Header {...this.props} />}
+            {Cover && <Cover {...this.props} />}
+            {uri && !Cover && <CardCover source={{ uri }} resizeMode="cover" />}
+            {Footer ? (
+              <Footer {...this.props} />
+            ) : (
+              <CardFooter>
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  {title && <FooterTitle>{title}</FooterTitle>}
+                  {text && <FooterDescription>{text}</FooterDescription>}
+                  <FooterLink>
+                    {this.trimUrl(title_link || og_scrape_url)}
+                  </FooterLink>
+                </View>
+                {type === 'giphy' && <FooterLogo source={giphyLogo} />}
+              </CardFooter>
+            )}
           </Container>
         );
       }
