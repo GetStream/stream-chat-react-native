@@ -40,12 +40,12 @@ const Message = withKeyboardContext(
       editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
       /**
        * Message UI component to display a message in message list.
-       * Avaialble from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+       * Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
        * */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
        * Attachment UI component to display attachment in individual message.
-       * Avaialble from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+       * Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
        * */
       Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
@@ -112,7 +112,7 @@ const Message = withKeyboardContext(
         shouldUpdate = true;
       }
 
-      // if lastreceivedId changesm, message should update.
+      // if lastreceivedId changes, message should update.
       if (
         !shouldUpdate &&
         !deepequal(nextProps.lastReceivedId, this.props.lastReceivedId)
