@@ -4,7 +4,7 @@ Wrapper around [i18next](https://www.i18next.com/) class for Stream related tran
 
 - **constructor**(options)
 
-  Contructor accepts following options:
+  Constructor accepts following options:
 
   - **language** (String) default: 'en'
 
@@ -276,14 +276,14 @@ const i18n = new Streami18n({
 });
 ```
 
-If you would like to stick with english language for datetimes in Stream compoments, you can set `disableDateTimeTranslations` to true.
+If you would like to stick with english language for datetimes in Stream components, you can set `disableDateTimeTranslations` to true.
 
 **NOTE** Please note here that locales in `dayjs/locale/it` (and all other language locale files), does not load calendar related
 config like 'today at', 'tomorrow at' etc. You will need to manually configure calendar locale using [updateLocale](https://day.js.org/docs/en/plugin/update-locale).
 
 **TIPS**
 
-1. If you would like to stick with english language for datetimes in Stream compoments,
+1. If you would like to stick with english language for datetimes in Stream components,
    you can set `disableDateTimeTranslations` to true.
 
 ```js static
