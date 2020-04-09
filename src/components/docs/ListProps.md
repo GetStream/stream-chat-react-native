@@ -8,6 +8,6 @@ Additionally, following state properties are also provided as props to List comp
 - `channels` {array} List of channel objects.
 - `channelIds` {array} List of channel ids.
 - `loadingChannels` {boolean} Channels are being loaded via query
-- `refreshing` {boolean} List of channels is being refreshed or requeries (in case of reconnection)
+- `refreshing` {boolean} List of channels is being refreshed or requeried (in case of reconnection)
 - `offset` {number} Current offset of list of channels (for pagination)
 - `loadNextPage` {function} Handler to load next page of channels.
