@@ -55,6 +55,10 @@ export const defaultTheme = {
     unreadCount: {},
   },
 
+  iconSquare: {
+    container: {},
+  },
+
   message: {
     container: {},
     content: {

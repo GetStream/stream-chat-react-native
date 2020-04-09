@@ -842,6 +842,7 @@ class MessageInput extends PureComponent {
               getCommands={this.getCommands}
               closeAttachActionSheet={this.closeAttachActionSheet}
               appendText={this.appendText}
+              setInputBoxRef={this.setInputBoxRef}
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
                   await this.props.dismissKeyboard();

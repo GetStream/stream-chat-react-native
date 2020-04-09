@@ -15,7 +15,8 @@ import rightEnd from '../images/reactionlist/right-end.png';
 
 const TouchableWrapper = styled.View`
   position: relative;
-  ${(props) => (props.alignment === 'left' ? 'left: -10px;' : 'right: -10px;')}
+  ${({ alignment }) =>
+    alignment === 'left' ? 'left: -10px;' : 'right: -10px;'}
   height: 28px;
   z-index: 10;
   align-self: ${({ alignment }) =>
