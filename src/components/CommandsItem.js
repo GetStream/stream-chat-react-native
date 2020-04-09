@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { themed } from '../styles/theme';
