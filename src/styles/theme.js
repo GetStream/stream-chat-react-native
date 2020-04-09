@@ -207,6 +207,8 @@ export const defaultTheme = {
         container: {},
         top: {},
         title: {},
+        args: {},
+        description: {},
       },
     },
     actionSheet: {
