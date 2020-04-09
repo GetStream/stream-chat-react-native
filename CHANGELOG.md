@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.10.0] 2020-04-09
+
+**All the changes are non-breaking**
+
+- Adding support for custom UI component prop - `Input` to `MessageInput`. It allows shuffling of UI inside MessageInput
+
+- Adding support for following UI component props to `MessageSimple`
+
+  - UrlPreview
+  - Giphy
+  - FileAttachment
+  - FileAttachmentGroup
+  - Card
+  - CardHeader
+  - CardCover
+  - CardFooter
+
+- Adding support for following UI component props to `Attachment`
+
+  - UrlPreview
+  - Giphy
+  - FileAttachment
+  - FileAttachmentGroup
+  - Card
+  - CardHeader
+  - CardCover
+  - CardFooter
+
+- Adding support for following UI component props to `Card`
+
+  - Header
+  - Cover
+  - Footer
+
+- Adding following theme keys:
+
+  - `message.card.footer.title` (Text)
+  - `message.card.footer.description` (Text)
+  - `message.card.footer.link` (Text)
+  - `message.card.footer.logo` (Image)
+  - `iconSquare.container` (TouchableOpacity or View)
+
+- Fixing typos in docs
+- Updating format of message date time to `LT` from `hh:ssA`, to allow i18n
+- Fixing pagination logic for ChannelList in case of duplicates
+
 ## [0.9.2] 2020-04-04
 
 **NOTE** Please make sure to use `stream-chat@^1.7.0`
