@@ -7,10 +7,11 @@ import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import { ReactionList } from '../ReactionList';
 import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';
-import { Gallery } from '../Gallery';
 import { MESSAGE_ACTIONS } from '../../utils';
 import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
+import { Gallery } from '../Gallery';
+import { FileAttachment } from '../FileAttachment';
 import { FileAttachmentGroup } from '../FileAttachmentGroup';
 import { ReactionPickerWrapper } from '../ReactionPickerWrapper';
 import { emojiData } from '../../utils';
@@ -243,14 +244,6 @@ class MessageContent extends React.PureComponent {
      * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
      */
     actionSheetStyles: PropTypes.object,
-    /**
-     * Custom UI component for attachment icon for type 'file' attachment.
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-     */
-    AttachmentFileIcon: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
     MessageReplies: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.elementType,
@@ -292,6 +285,58 @@ class MessageContent extends React.PureComponent {
     reactionPickerVisible: PropTypes.bool,
     /** Custom UI component for message text */
     MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display enriched url preview.
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display Giphy image.
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+     */
+    FileAttachmentGroup: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    /**
+     * Custom UI component to display File type attachment.
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+     */
+    FileAttachment: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    /**
+     * Custom UI component for attachment icon for type 'file' attachment.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+     */
+    AttachmentFileIcon: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    /**
+     * Custom UI component to display image attachments.
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+     */
+    Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display generic media type e.g. giphy, url preview etc
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
+     * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+     */
+    AttachmentActions: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     formatDate: PropTypes.func,
     /**
      * @deprecated Please use `disabled` instead.
@@ -310,6 +355,9 @@ class MessageContent extends React.PureComponent {
     MessageText: false,
     ReactionList,
     MessageReplies,
+    Gallery,
+    FileAttachment,
+    FileAttachmentGroup,
     supportedReactions: emojiData,
     hideReactionCount: false,
     hideReactionOwners: false,
@@ -413,6 +461,13 @@ class MessageContent extends React.PureComponent {
       MessageText,
       channel,
       MessageReplies,
+      AttachmentActions,
+      Card,
+      UrlPreview,
+      Giphy,
+      Gallery,
+      FileAttachment,
+      FileAttachmentGroup,
       t,
       tDateTimeParser,
     } = this.props;
@@ -422,8 +477,7 @@ class MessageContent extends React.PureComponent {
       message && message.attachments && message.attachments.length,
     );
 
-    const showTime =
-      groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
+    const showTime = groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
     const hasReactions =
       reactionsEnabled &&
@@ -579,6 +633,11 @@ class MessageContent extends React.PureComponent {
                     attachment={attachment}
                     actionHandler={handleAction}
                     alignment={alignment}
+                    UrlPreview={UrlPreview}
+                    Giphy={Giphy}
+                    Card={Card}
+                    FileAttachment={FileAttachment}
+                    AttachmentActions={AttachmentActions}
                   />
                 );
               })}
@@ -589,6 +648,8 @@ class MessageContent extends React.PureComponent {
                 handleAction={handleAction}
                 alignment={alignment}
                 AttachmentFileIcon={AttachmentFileIcon}
+                FileAttachment={FileAttachment}
+                AttachmentActions={AttachmentActions}
               />
             )}
             {images && images.length > 0 && (
@@ -621,7 +682,7 @@ class MessageContent extends React.PureComponent {
               <MetaText alignment={alignment}>
                 {this.props.formatDate
                   ? this.props.formatDate(message.created_at)
-                  : tDateTimeParser(message.created_at).format('hh:mmA')}
+                  : tDateTimeParser(message.created_at).format('LT')}
               </MetaText>
             </MetaContainer>
           ) : null}

@@ -703,7 +703,7 @@ class MessageInput extends PureComponent {
     }));
   };
 
-  onChange = (text) => {
+  onChangeText = (text) => {
     this.setState({ text });
 
     if (text) {
@@ -716,6 +716,11 @@ class MessageInput extends PureComponent {
     this.props.onChangeText && this.props.onChangeText(text);
   };
 
+  appendText = (text) => {
+    this.setState({
+      text: this.state.text + text,
+    });
+  };
   setInputBoxRef = (o) => (this.inputBox = o);
 
   getCommands = () => {
@@ -738,6 +743,7 @@ class MessageInput extends PureComponent {
       SendButton,
       AttachButton,
       disabled,
+      Input,
       t,
     } = this.props;
 
@@ -771,83 +777,126 @@ class MessageInput extends PureComponent {
             )}
           />
         )}
-        <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
-          <AttachButton
-            disabled={disabled}
-            handleOnPress={async () => {
-              if (hasImagePicker && hasFilePicker) {
-                await this.props.dismissKeyboard();
-                this.attachActionSheet.show();
-              } else if (hasImagePicker && !hasFilePicker) this._pickImage();
-              else if (!hasImagePicker && hasFilePicker) this._pickFile();
-            }}
-          />
-          {/**
+        {/**
             TODO: Use custom action sheet to show icon with titles of button. But it doesn't
             work well with async onPress operations. So find a solution.
           */}
 
-          <ActionSheet
-            ref={(o) => (this.attachActionSheet = o)}
-            title={
-              <ActionSheetTitleContainer>
-                <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
-                <IconSquare
-                  icon={iconClose}
-                  onPress={this.closeAttachActionSheet}
-                />
-              </ActionSheetTitleContainer>
-            }
-            options={[
-              /* eslint-disable */
-              <AttachmentActionSheetItem
-                icon={iconGallery}
-                text={t('Upload a photo')}
-              />,
-              <AttachmentActionSheetItem
-                icon={iconFolder}
-                text={t('Upload a file')}
-              />,
-              /* eslint-enable */
-            ]}
-            onPress={(index) => {
-              // https://github.com/beefe/react-native-actionsheet/issues/36
-              setTimeout(() => {
-                switch (index) {
-                  case 0:
+        <ActionSheet
+          ref={(o) => (this.attachActionSheet = o)}
+          title={
+            <ActionSheetTitleContainer>
+              <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
+              <IconSquare
+                icon={iconClose}
+                onPress={this.closeAttachActionSheet}
+              />
+            </ActionSheetTitleContainer>
+          }
+          options={[
+            /* eslint-disable */
+            <AttachmentActionSheetItem
+              icon={iconGallery}
+              text={t('Upload a photo')}
+            />,
+            <AttachmentActionSheetItem
+              icon={iconFolder}
+              text={t('Upload a file')}
+            />,
+            /* eslint-enable */
+          ]}
+          onPress={(index) => {
+            // https://github.com/beefe/react-native-actionsheet/issues/36
+            setTimeout(() => {
+              switch (index) {
+                case 0:
+                  this._pickImage();
+                  break;
+                case 1:
+                  this._pickFile();
+                  break;
+                default:
+              }
+            }, 1);
+          }}
+          styles={this.props.actionSheetStyles}
+        />
+        <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
+          {Input ? (
+            <Input
+              {...this.props}
+              getUsers={this.getUsers}
+              onSelectItem={this.onSelectItem}
+              isValidMessage={this.isValidMessage}
+              sendMessage={this.sendMessage}
+              updateMessage={this.updateMessage}
+              _pickFile={this._pickFile}
+              uploadNewFile={this.uploadNewFile}
+              _uploadFile={this._uploadFile}
+              _pickImage={this._pickImage}
+              uploadNewImage={this.uploadNewImage}
+              _removeImage={this._removeImage}
+              _removeFile={this._removeFile}
+              _uploadImage={this._uploadImage}
+              onChange={this.onChangeText}
+              getCommands={this.getCommands}
+              closeAttachActionSheet={this.closeAttachActionSheet}
+              appendText={this.appendText}
+              setInputBoxRef={this.setInputBoxRef}
+              handleOnPress={async () => {
+                if (hasImagePicker && hasFilePicker) {
+                  await this.props.dismissKeyboard();
+                  this.attachActionSheet.show();
+                } else if (hasImagePicker && !hasFilePicker) this._pickImage();
+                else if (!hasImagePicker && hasFilePicker) this._pickFile();
+              }}
+              triggerSettings={ACITriggerSettings({
+                users: this.getUsers(),
+                commands: this.getCommands(),
+                onMentionSelectItem: this.onSelectItem,
+                t,
+              })}
+              disabled={disabled}
+              value={this.state.text}
+              additionalTextInputProps={additionalTextInputProps}
+            />
+          ) : (
+            <>
+              <AttachButton
+                disabled={disabled}
+                handleOnPress={async () => {
+                  if (hasImagePicker && hasFilePicker) {
+                    await this.props.dismissKeyboard();
+                    this.attachActionSheet.show();
+                  } else if (hasImagePicker && !hasFilePicker)
                     this._pickImage();
-                    break;
-                  case 1:
-                    this._pickFile();
-                    break;
-                  default:
-                }
-              }, 1);
-            }}
-            styles={this.props.actionSheetStyles}
-          />
-          <AutoCompleteInput
-            openSuggestions={this.props.openSuggestions}
-            closeSuggestions={this.props.closeSuggestions}
-            updateSuggestions={this.props.updateSuggestions}
-            value={this.state.text}
-            onChange={this.onChange}
-            getCommands={this.getCommands}
-            setInputBoxRef={this.setInputBoxRef}
-            triggerSettings={ACITriggerSettings({
-              users: this.getUsers(),
-              commands: this.getCommands(),
-              onMentionSelectItem: this.onSelectItem,
-              t,
-            })}
-            additionalTextInputProps={additionalTextInputProps}
-          />
-          <SendButton
-            title={t('Send message')}
-            sendMessage={this.sendMessage}
-            editing={this.props.editing}
-            disabled={disabled || !this.isValidMessage()}
-          />
+                  else if (!hasImagePicker && hasFilePicker) this._pickFile();
+                }}
+              />
+              <AutoCompleteInput
+                openSuggestions={this.props.openSuggestions}
+                closeSuggestions={this.props.closeSuggestions}
+                updateSuggestions={this.props.updateSuggestions}
+                value={this.state.text}
+                onChange={this.onChangeText}
+                getCommands={this.getCommands}
+                setInputBoxRef={this.setInputBoxRef}
+                triggerSettings={ACITriggerSettings({
+                  users: this.getUsers(),
+                  commands: this.getCommands(),
+                  onMentionSelectItem: this.onSelectItem,
+                  t,
+                })}
+                additionalTextInputProps={additionalTextInputProps}
+              />
+              <SendButton
+                title={t('Send message')}
+                sendMessage={this.sendMessage}
+                editing={this.props.editing}
+                disabled={disabled || !this.isValidMessage()}
+              />
+            </>
+          )}
         </InputBoxContainer>
       </Container>
     );

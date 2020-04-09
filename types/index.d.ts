@@ -271,7 +271,7 @@ export interface MessageInputProps
   parent?: Client.Message | null;
 
   /** The component handling how the input is rendered */
-  Input?: React.ElementType;
+  Input?: React.ElementType<InputUIComponentProps>;
 
   /** Override image upload request */
   doImageUploadRequest?(file: File): Promise<FileUploadResponse>;
@@ -289,6 +289,55 @@ export interface MessageInputProps
   SendButton: React.ElementType<SendButtonProps>;
 }
 
+export interface DocumentPickerFile {
+  cancelled: boolean;
+  uri?: string;
+  name?: string;
+}
+
+export interface ImagePickerFile {
+  cancelled: boolean;
+  uri?: string;
+}
+export interface InputUIComponentProps {
+  /** Returns list of users. This is used suggestions list for mentions feature (when user types '@') */
+  getUsers?(): Client.UserResponse[];
+  /** When item from mention's suggestion list is selected. This callback handler adds it to `mentioned_users` list of message */
+  onSelectItem?(): void;
+  /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
+  isValidMessage?(): boolean;
+  /** Sends the current message */
+  sendMessage?(): void;
+  /** Sends the current edited message */
+  updateMessage?(): Promise<void>;
+  /** Handler for attach file functionality */
+  _pickFile?(): void;
+  /** Adds selected file to state of MessageInput component (`state.fileUploads` list) and calls _uploadFile */
+  uploadNewFile?(file: DocumentPickerFile): void;
+  /** Uploads the selected file corresponding to id in fileUploads array in state of MessageInput */
+  _uploadFile?(id: string): void;
+  _removeFile?(id: string): void;
+  /** Handler for attach image functionality */
+  _pickImage?(): Promise<void>;
+  /** Adds selected file to state of MessageInput component (`state.imageUploads` list) and calls _uploadImage */
+  uploadNewImage?(file: ImagePickerFile): void;
+  /** Uploads the selected image corresponding to id in imageUploads array in state of MessageInput */
+  _uploadImage?(): void;
+  _removeImage?(id: string): void;
+  /** Callback when text in inputbox changes */
+  onChangeText?(text: string): void;
+  /** Returns all available list of commands */
+  getCommands?(): Client.CommandResponse[];
+  /** Hides the attach actionsheet */
+  closeAttachActionSheet?(): void;
+  /** Append the text to input box */
+  appendText?(text: string): void;
+  triggerSettings?(): object;
+  disabled?: boolean;
+  value?: string;
+  additionalTextInputProps?: object;
+}
+
 export interface AttachmentProps
   extends StyledComponentProps,
     MessageContentContextValue {
@@ -299,6 +348,14 @@ export interface AttachmentProps
     Examples include canceling a \/giphy command or shuffling the results.
     */
   actionHandler?(name: string, value: string): any;
+
+  UrlPreview?: React.ElementType<CardProps>;
+  Giphy?: React.ElementType<CardProps>;
+  Card?: React.ElementType<CardProps>;
+  FileAttachment?: React.ElementType<FileAttachmentGroup>;
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
+  Gallery?: React.ElementType<GalleryProps>;
+
   groupStyle: 'single' | 'top' | 'middle' | 'bottom';
 }
 
@@ -557,6 +614,63 @@ export interface MessageUIComponentProps
   MessageFooter?: React.ElementType<MessageFooterUIComponentProps>;
   /** Custom UI component for reaction list */
   ReactionList?: React.ElementType<ReactionListProps>;
+  /**
+   * Custom UI component to display enriched url preview.
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  UrlPreview?: React.ElementType<CardProps>;
+  /**
+   * Custom UI component to display Giphy image.
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  Giphy?: React.ElementType<CardProps>;
+  /**
+   * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+   */
+  FileAttachmentGroup?: React.ElementType<FileAttachmentGroupProps>;
+  /**
+   * Custom UI component to display File type attachment.
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   */
+  FileAttachment?: React.ElementType<FileAttachmentProps>;
+  /**
+   * Custom UI component to display image attachments.
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+   */
+  Gallery?: React.ElementType<GalleryProps>;
+  /**
+   * Custom UI component to display generic media type e.g. giphy, url preview etc
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  Card?: React.ElementType<CardProps>;
+  /**
+   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+   * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   */
+  AttachmentActions?: React.ElementType<AttachmentActionsProps>;
+  /**
+   * List of supported/allowed reactions.
+   * e.g.,
+   * [
+   *  {
+   *    id: 'like',
+   *    icon: '👍',
+   *  },
+   *  {
+   *    id: 'love',
+   *    icon: '❤️️',
+   *  },
+   *  {
+   *    id: 'haha',
+   *    icon: '😂',
+   *  },
+   *  {
+   *    id: 'wow',
+   *    icon: '😮',
+   *  },
+   * ]
+   */
   supportedReactions?: Array<{
     icon: string;
     id: string;
@@ -714,12 +828,26 @@ export interface CommandsItemProps extends StyledComponentProps {
   args: string;
   description: string;
 }
+export interface FileAttachmentProps extends StyledComponentProps {
+  /** The attachment to render */
+  attachment: Client.Attachment;
+  /**
+      The handler function to call when an action is selected on an attachment.
+      Examples include canceling a \/giphy command or shuffling the results.
+      */
+  actionHandler?(name: string, value: string): any;
+  groupStyle: 'single' | 'top' | 'middle' | 'bottom';
+  AttachmentFileIcon: React.ElementType<any>;
+  alignment?: 'right' | 'left';
+  onLongPress?: (event: GestureResponderEvent) => void;
+}
 
 export interface FileAttachmentGroupProps extends StyledComponentProps {
   messageId: string;
   files: [];
   handleAction?(): void;
   alignment?: 'right' | 'left';
+  FileAttachment: React.ElementType<FileAttachmentProps>;
   AttachmentFileIcon: React.ElementType<any>;
 }
 export interface FileUploadPreviewProps extends StyledComponentProps {
@@ -906,6 +1034,10 @@ export class AutoCompleteInput extends React.PureComponent<
   any
 > {}
 export class Card extends React.PureComponent<CardProps, any> {}
+export class FileAttachment extends React.PureComponent<
+  FileAttachmentProps,
+  any
+> {}
 export class CommandsItem extends React.PureComponent<CommandsItemProps, any> {}
 export class DateSeparator extends React.PureComponent<
   DateSeparatorProps,

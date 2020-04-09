@@ -53,7 +53,7 @@ const EventIndicator = ({ event, t, tDateTimeParser }) => {
                   username: event.user.name,
                 })}
           </MemberUpdateText>
-          <Date>{tDateTimeParser(event.received_at).format('hh:mm A')}</Date>
+          <Date>{tDateTimeParser(event.received_at).format('LT')}</Date>
         </MemberUpdateTextContainer>
       </MemberUpdateContainer>
     );

@@ -112,7 +112,7 @@ Library currently exposes following components:
 
 You can see detailed documentation about the components at https://getstream.github.io/stream-chat-react-native
 
-## Setup (Setting up an chat app)
+## Setup (Seting up an chat app)
 
 ### Expo package
 
@@ -166,7 +166,7 @@ yarn add react-native-document-picker
 
 react-native link @react-native-community/netinfo
 
-# if you are planning to use image picker or file picker or both
+# if you are plannign to use image picker or file picker or both
 react-native link react-native-image-picker
 react-native link react-native-document-picker
 
@@ -240,7 +240,7 @@ If you are using androidx app:
 
 (reference: https://facebook.github.io/react-native/blog/2019/07/03/version-60#androidx-support)
 
-In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with androidx support.
+In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite usefull to patch these dependencies with androidx support.
 
 **NOTE** If you are planning to use file picker functionality, make sure you enable iCloud capability in your app
 
@@ -251,7 +251,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 - Upgrade from 0.1.x to 0.2.x:
 
   - 0.2.x added support for react native 0.60. Dependencies like `react-native-image-picker`, `react-native-document-picker` and `netinfo` have been taken out of hard dependencies and moved to peer dependencies and thus will have to be installed manually on consumer end ([Reference](https://github.com/GetStream/stream-chat-react-native/pull/52/files#diff-83a54d8caab0ea9fcdd5f832b03a5d83))
-  - React native 0.60 came with autolinking functionality, that means if some native libraries are linked manually before upgrade, they will have to be unlinked so that react native can autolink them ([Reference](https://facebook.github.io/react-native/blog/2019/07/03/version-60#native-modules-are-now-autolinked))
+  - React native 0.60 came with autolinking functionality, that means if some native libraries are linked manually before upgrade, they will have to be unliked so that react native can autolink them ([Reference](https://facebook.github.io/react-native/blog/2019/07/03/version-60#native-modules-are-now-autolinked))
 
     ```
     react-native unlink react-native-image-picker
@@ -259,7 +259,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
     react-native unlink @react-native-community/netinfo
     ```
 
-  - React native 0.60 has been migrated over to AndroidX. In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with androidx support.
+  - React native 0.60 has been migrated over to AndroidX. In current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have androidx support. But awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite usefull to patch these dependencies with androidx support.
 
   - CocoaPods are not part of React Native's iOS project ([ref](https://facebook.github.io/react-native/blog/2019/07/03/version-60#cocoapods-by-default)). Thus make sure to install all the pod dependencies.
 

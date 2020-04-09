@@ -290,11 +290,14 @@ const ChannelList = withChatContext(
         await this.setState((prevState) => {
           let channels;
           let channelIds;
-
+          let hasNextPage;
           if (resync) {
             channels = [...channelQueryResponse];
             channelIds = [...channelQueryResponse.map((c) => c.id)];
           } else {
+            hasNextPage =
+              channelQueryResponse.length >=
+              (options.limit || DEFAULT_QUERY_CHANNELS_LIMIT);
             // Remove duplicate channels in worse case we get repeted channel from backend.
             channelQueryResponse = channelQueryResponse.filter(
               (c) => this.state.channelIds.indexOf(c.id) === -1,
@@ -312,11 +315,7 @@ const ChannelList = withChatContext(
             channelIds,
             loadingChannels: false,
             offset: channels.length,
-            hasNextPage:
-              channelQueryResponse.length >=
-              (options.limit || DEFAULT_QUERY_CHANNELS_LIMIT)
-                ? true
-                : false,
+            hasNextPage,
             refreshing: false,
           };
         });
