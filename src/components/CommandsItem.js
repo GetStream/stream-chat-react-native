@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { themed } from '../styles/theme';
@@ -19,6 +18,14 @@ const Top = styled.View`
 const Title = styled.Text`
   font-weight: bold;
   ${({ theme }) => theme.messageInput.suggestions.command.title.css}
+`;
+
+const CommandArgs = styled.Text`
+  ${({ theme }) => theme.messageInput.suggestions.command.args.css}
+`;
+
+const CommandDescription = styled.Text`
+  ${({ theme }) => theme.messageInput.suggestions.command.description.css}
 `;
 
 /**
@@ -43,9 +50,9 @@ export const CommandsItem = themed(
         <Container>
           <Top>
             <Title>/{name} </Title>
-            <Text>{args}</Text>
+            <CommandArgs>{args}</CommandArgs>
           </Top>
-          <Text>{description}</Text>
+          <CommandDescription>{description}</CommandDescription>
         </Container>
       );
     }
