@@ -25,6 +25,7 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
+    "react-native-actionsheet": "^2.4.2",
     "babel-plugin-react-native-web": "^0.11.2",
     "babel-preset-expo": "^5.0.0",
     "expo": "^32.0.0",
@@ -57,6 +58,7 @@
   },
   "dependencies": {
     "react-native-unimodules": "^0.5.4",
+    "react-native-image-zoom-viewer": "^2.2.25",
     "stream-chat-react-native-core": "v0.10.0"
   },
   "peerDependencies": {

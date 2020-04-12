@@ -3,7 +3,7 @@ import { MessageContentContext, withTranslationContext } from '../../context';
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
 import { Attachment } from '../Attachment';
-import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
+import { ActionSheet } from '../../native';
 import { ReactionList } from '../ReactionList';
 import { MessageTextContainer } from './MessageTextContainer';
 import { MessageReplies } from './MessageReplies';

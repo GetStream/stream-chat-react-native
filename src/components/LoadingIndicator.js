@@ -1,21 +1,12 @@
 import React from 'react';
+import { View, Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { Spinner } from './Spinner';
 import { withTranslationContext } from '../context';
 
-const Container = styled.View`
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  ${({ theme }) => theme.loadingIndicator.container.css}
-`;
-const LoadingText = styled.Text`
-  margin-top: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  ${({ theme }) => theme.loadingIndicator.loadingText.css}
-`;
+const Container = styled(View)``;
+const LoadingText = styled(Text)``;
 
 class LoadingIndicator extends React.PureComponent {
   static propTypes = {

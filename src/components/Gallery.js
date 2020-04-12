@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import { ImageViewer } from '../native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { themed } from '../styles/theme';

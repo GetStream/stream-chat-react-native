@@ -40,6 +40,8 @@ const normalBundle = {
     'expo-document-picker',
     'expo-permissions',
     'react-native-unimodules',
+    'react-native-image-zoom-viewer',
+    'react-native-actionsheet',
     '@react-native-community/netinfo',
   ],
   plugins: [

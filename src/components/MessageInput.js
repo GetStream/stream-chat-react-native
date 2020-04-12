@@ -10,7 +10,7 @@ import { logChatPromiseExecution } from 'stream-chat';
 import { ImageUploadPreview } from './ImageUploadPreview';
 import { FileUploadPreview } from './FileUploadPreview';
 import { IconSquare } from './IconSquare';
-import { pickImage, pickDocument } from '../native';
+import { ActionSheet, pickImage, pickDocument } from '../native';
 import { lookup } from 'mime-types';
 import Immutable from 'seamless-immutable';
 import { FileState, ACITriggerSettings } from '../utils';
@@ -21,7 +21,6 @@ import { themed } from '../styles/theme';
 import { SendButton } from './SendButton';
 import { AttachButton } from './AttachButton';
 
-import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 // import iconMedia from '../images/icons/icon_attach-media.png';
 
 import iconGallery from '../images/icons/icon_attach-media.png';

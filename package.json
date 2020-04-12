@@ -33,11 +33,11 @@
     "build-translations": "yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --quiet && yarn lint-fix",
     "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
+    "eslint": "eslint '**/*.{js,md}' --max-warnings 100",
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "validate-translations": "node bin/validate-translations.js",
-    "lint": "prettier --list-different 'src/**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,md}' --max-warnings 0 && stylelint 'src/**/*.js' && yarn run validate-translations",
-    "lint-fix": "prettier --write 'src/**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,md}' --max-warnings 0 && stylelint --fix 'src/**/*.js'",
+    "lint": "prettier --list-different 'src/**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,md}' --max-warnings 100 && stylelint 'src/**/*.js' && yarn run validate-translations",
+    "lint-fix": "prettier --write 'src/**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,md}' --max-warnings 100 && stylelint --fix 'src/**/*.js'",
     "prepare": "yarn run build"
   },
   "husky": {
@@ -82,8 +82,6 @@
     "mime-types": "^2.1.24",
     "path": "^0.12.7",
     "react-art": "^16.8.6",
-    "react-native-actionsheet": "^2.4.2",
-    "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^1.7.0",
     "uuid": "^3.3.2"

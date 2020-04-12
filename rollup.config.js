@@ -71,6 +71,7 @@ const normalBundle = {
     'prop-types',
     'react-native',
     '@stream-io/react-native-simple-markdown',
+    '@stream-io/styled-components',
     'react-native-image-zoom-viewer',
     'react-native-actionsheet',
     'uuid/v4',

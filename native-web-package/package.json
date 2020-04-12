@@ -1,5 +1,5 @@
 {
-  "name": "stream-chat-react-native",
+  "name": "stream-chat-react-native-web",
   "version": "0.10.0",
   "author": {
     "company": "Stream.io Inc"
@@ -25,7 +25,6 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
-    "babel-plugin-react-native-web": "^0.11.2",
     "prettier": "^1.16.4",
     "react": "^16.5.0",
     "react-dom": "^16.8.6",
@@ -54,9 +53,7 @@
   },
   "dependencies": {
     "es6-symbol": "^3.1.1",
-    "stream-chat-react-native-core": "v0.10.0",
-    "react-native-image-zoom-viewer": "^2.2.25",
-    "react-native-actionsheet": "^2.4.2"
+    "stream-chat-react-native-core": "v0.10.0"
   },
   "peerDependencies": {
     "@react-native-community/netinfo": ">=2.0.7",

@@ -37,10 +37,9 @@ const normalBundle = {
     'react-native',
     'stream-chat-react-native-core',
     '@react-native-community/netinfo',
+    '@stream-io/styled-components',
     'react-native-document-picker',
     'react-native-image-picker',
-    'react-native-image-zoom-viewer',
-    'react-native-actionsheet',
     'es6-symbol',
   ],
   plugins: [
