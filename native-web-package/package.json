@@ -47,9 +47,7 @@
     "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0",
     "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0",
     "preversion": "yarn",
-    "prepare": "yarn run build",
-    "prepack": " cp ../README.md .",
-    "postpack": "rm README.md"
+    "prepare": "yarn run build"
   },
   "dependencies": {
     "es6-symbol": "^3.1.1",
