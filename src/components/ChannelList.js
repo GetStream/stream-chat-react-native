@@ -333,6 +333,28 @@ const ChannelList = withChatContext(
     }
 
     handleEvent = async (e) => {
+      if (e.type === 'channel.hidden') {
+        if (
+          this.props.onChannelHidden &&
+          typeof this.props.onChannelHidden === 'function'
+        ) {
+          this.props.onChannelHidden(this, e);
+        } else {
+          const channels = this.state.channels;
+          const channelIndex = channels.findIndex(
+            (channel) => channel.cid === e.channel.cid,
+          );
+
+          if (channelIndex < 0) return;
+
+          // Remove the deleted channel from the list.
+          channels.splice(channelIndex, 1);
+          this.setState({
+            channels: [...channels],
+          });
+        }
+      }
+
       if (e.type === 'user.presence.changed' || e.type === 'user.updated') {
         let newChannels = this.state.channels;
 
