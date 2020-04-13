@@ -151,7 +151,10 @@ export class SuggestionsProvider extends React.PureComponent {
         <View
           ref={this.setRootView}
           collapsable={false}
-          style={{ height: '100%' }}
+          style={{
+            height: '100%',
+            flexGrow: 1,
+          }}
         >
           {this.props.children}
         </View>
