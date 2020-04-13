@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native",
-  "version": "0.11.0-rnw.dev.0",
+  "version": "0.11.0-rnw.dev.1",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -54,7 +54,7 @@
   },
   "dependencies": {
     "es6-symbol": "^3.1.1",
-    "stream-chat-react-native-core": "v0.11.0-rnw.dev.0",
+    "stream-chat-react-native-core": "v0.11.0-rnw.dev.1",
     "react-native-image-zoom-viewer": "^2.2.25",
     "react-native-actionsheet": "^2.4.2"
   },
