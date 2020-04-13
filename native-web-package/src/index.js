@@ -1,6 +1,13 @@
+import React from 'react';
 import { Platform } from 'react-native';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import Modal from 'modal-react-native-web';
+
+class ActionSheet extends React.Component {
+  render() {
+    return null;
+  }
+}
 
 registerNativeHandlers({
   NetInfo: {
@@ -13,7 +20,7 @@ registerNativeHandlers({
 
   pickImage: null,
   pickDocument: null,
-  ActionSheet: () => null,
+  ActionSheet,
   ImageViewer: () => null,
   isNativeWeb: true,
   Modal

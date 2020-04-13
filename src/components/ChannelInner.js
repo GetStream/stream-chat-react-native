@@ -118,7 +118,7 @@ class ChannelInner extends PureComponent {
     logger: () => {},
   };
 
-  async componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps) {
     this.props.logger('Channel component', 'componentDidUpdate', {
       tags: ['lifecycle', 'channel'],
       props: this.props,
@@ -131,9 +131,13 @@ class ChannelInner extends PureComponent {
     }
 
     if (this.props.channel.id !== prevProps.channel.id) {
-      const resetState = this.getInitialStateFromProps(this.props);
-      this.setState(resetState);
-      await this.initChannel();
+      this.setState({ loading: true });
+
+      setTimeout(async () => {
+        const resetState = this.getInitialStateFromProps(this.props);
+        this.setState(resetState);
+        await this.initChannel();
+      }, 100);
     }
   }
 

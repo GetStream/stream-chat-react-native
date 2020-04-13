@@ -600,7 +600,6 @@ class MessageList extends PureComponent {
     } else {
       showTypingIndicator = true;
     }
-    console.log(this.props.messages);
     return (
       <React.Fragment>
         {// Mask for edit state

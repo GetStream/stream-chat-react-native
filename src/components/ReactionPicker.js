@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { themed } from '../styles/theme';
 import PropTypes from 'prop-types';
 
-import { isNativeWeb, Modal } from '../native';
+import { Modal } from '../native';
 import styled from '@stream-io/styled-components';
 import { Avatar } from './Avatar';
 import { emojiData } from '../utils';
