@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native-web",
-  "version": "0.11.0-rnw.beta.0",
+  "version": "0.11.0-rnw.dev.0",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -53,7 +53,7 @@
     "@babel/runtime": "^7.1.2",
     "es6-symbol": "^3.1.1",
     "modal-react-native-web": "^0.2.0",
-    "stream-chat-react-native-core": "v0.11.0-rnw.beta.1"
+    "stream-chat-react-native-core": "v0.11.0-rnw.dev.0"
   },
   "peerDependencies": {
     "@react-native-community/netinfo": ">=2.0.7",
