@@ -144,6 +144,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
       Animated.timing(this.state.channelHeight, {
         toValue: finalHeight,
         duration: this.props.keyboardOpenAnimationDuration,
+        useNativeDriver: false,
       }).start(() => {
         // Force the final value, in case animation halted in between.
         this.state.channelHeight.setValue(finalHeight);
@@ -160,6 +161,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
     Animated.timing(this.state.channelHeight, {
       toValue: this.initialHeight,
       duration: this.props.keyboardDismissAnimationDuration,
+      useNativeDriver: false,
     }).start(() => {
       // Force the final value, in case animation halted in between.
       this.state.channelHeight.setValue(this.initialHeight);
@@ -187,6 +189,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
       Animated.timing(this.state.channelHeight, {
         toValue: this.initialHeight,
         duration: this.props.keyboardDismissAnimationDuration,
+        useNativeDriver: false,
       }).start((response) => {
         this.state.channelHeight.setValue(this.initialHeight);
         if (response && !response.finished) {

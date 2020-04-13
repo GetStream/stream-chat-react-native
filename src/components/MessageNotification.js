@@ -53,6 +53,7 @@ class MessageNotification extends PureComponent {
     Animated.timing(this.state.notificationOpacity, {
       toValue: this.props.showNotification ? 1 : 0,
       duration: 500,
+      useNativeDriver: true,
     }).start();
   }
 
@@ -61,6 +62,7 @@ class MessageNotification extends PureComponent {
       Animated.timing(this.state.notificationOpacity, {
         toValue: this.props.showNotification ? 1 : 0,
         duration: 500,
+        useNativeDriver: true,
       }).start();
     }
   }
