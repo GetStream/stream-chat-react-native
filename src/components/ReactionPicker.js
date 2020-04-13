@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Modal } from 'react-native';
+import { View, Text } from 'react-native';
 import { themed } from '../styles/theme';
 import PropTypes from 'prop-types';
 
+import { isNativeWeb, Modal } from '../native';
 import styled from '@stream-io/styled-components';
 import { Avatar } from './Avatar';
 import { emojiData } from '../utils';
@@ -14,6 +15,7 @@ const Container = styled.TouchableOpacity`
 `;
 
 const ContainerView = styled.View`
+  position: absolute;
   display: flex;
   flex-direction: row;
   background-color: black;
@@ -35,6 +37,7 @@ const Emoji = styled.Text`
   font-size: 20;
   margin-bottom: 5;
   margin-top: 5;
+  z-index: 10000;
   ${({ theme }) => theme.message.reactionPicker.emoji.css}
 `;
 
@@ -109,12 +112,12 @@ export const ReactionPicker = themed(
       if (!reactionPickerVisible) return null;
 
       const position = {
-        marginTop: rpTop,
+        top: rpTop,
       };
 
-      if (rpLeft) position.marginLeft = rpLeft;
+      if (rpLeft) position.left = rpLeft;
 
-      if (rpRight) position.marginRight = rpRight;
+      if (rpRight) position.right = rpRight;
 
       return (
         <Modal
@@ -122,14 +125,17 @@ export const ReactionPicker = themed(
           transparent
           animationType="fade"
           onShow={() => {}}
+          onDismiss={handleDismiss}
           onRequestClose={handleDismiss}
         >
           {reactionPickerVisible && (
-            <Container
-              onPress={handleDismiss}
-              leftAlign={Boolean(rpLeft)}
-              activeOpacity={1}
-            >
+            <>
+              <Container
+                onPress={handleDismiss}
+                leftAlign={Boolean(rpLeft)}
+                activeOpacity={1}
+              />
+
               <ContainerView
                 style={{
                   ...position,
@@ -172,7 +178,7 @@ export const ReactionPicker = themed(
                   );
                 })}
               </ContainerView>
-            </Container>
+            </>
           )}
         </Modal>
       );

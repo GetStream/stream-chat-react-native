@@ -701,7 +701,7 @@ class ChannelInner extends PureComponent {
       );
     }
 
-    return <View>{core}</View>;
+    return <View style={{ flexGrow: 1 }}>{core}</View>;
   }
 }
 

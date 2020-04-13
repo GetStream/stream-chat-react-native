@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import Modal from 'modal-react-native-web';
 
 registerNativeHandlers({
   NetInfo: {
@@ -14,6 +15,8 @@ registerNativeHandlers({
   pickDocument: null,
   ActionSheet: () => null,
   ImageViewer: () => null,
+  isNativeWeb: true,
+  Modal
 });
 
 if (Platform.OS === 'android') {

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { KeyboardContext } from '../context';
 import PropTypes from 'prop-types';
+import { isNativeWeb } from '../native';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
@@ -234,13 +235,25 @@ export class KeyboardCompatibleView extends React.PureComponent {
       ? { height: this.state.channelHeight }
       : {};
 
+    let containerStyles = {};
+
+    if (isNativeWeb) {
+      containerStyles = {
+        flexGrow: 1,
+      };
+    }
+
     return (
       <Animated.View
-        style={{ display: 'flex', ...height }}
+        style={[{ display: 'flex', ...height }, containerStyles]}
         onLayout={this.onLayout}
       >
         <KeyboardContext.Provider value={this.getContext()}>
-          <View ref={this.setRootChannelView} collapsable={false}>
+          <View
+            ref={this.setRootChannelView}
+            collapsable={false}
+            style={{ flexGrow: 1 }}
+          >
             {this.props.children}
           </View>
         </KeyboardContext.Provider>

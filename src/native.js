@@ -11,6 +11,8 @@ export let pickImage = fail;
 export let pickDocument = fail;
 export let ActionSheet = fail;
 export let ImageViewer = fail;
+export let isNativeWeb = false;
+export let Modal = fail;
 
 export const registerNativeHandlers = (handlers) => {
   if (handlers.NetInfo) {
@@ -29,5 +31,11 @@ export const registerNativeHandlers = (handlers) => {
   }
   if (handlers.ImageViewer) {
     ImageViewer = handlers.ImageViewer;
+  }
+  if (handlers.isNativeWeb) {
+    isNativeWeb = handlers.isNativeWeb;
+  }
+  if (handlers.Modal) {
+    Modal = handlers.Modal;
   }
 };
