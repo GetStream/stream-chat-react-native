@@ -592,10 +592,10 @@ class MessageInput extends PureComponent {
     this.uploadNewImage(result);
   };
 
-  uploadNewImage = (image) => {
+  uploadNewImage = async (image) => {
     const id = generateRandomId();
     /* eslint-disable */
-    this.setState((prevState) => {
+    await this.setState((prevState) => {
       return {
         numberOfUploads: prevState.numberOfUploads + 1,
         imageOrder: prevState.imageOrder.concat([id]),
