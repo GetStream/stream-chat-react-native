@@ -8,6 +8,14 @@ if ! git diff --exit-code || ! git diff --cached --exit-code; then
     exit 1
 fi
 
+echo "Mention the tag. Default - latest"
+read tag
+
+if [ -z "$tag" ]
+then
+      tag="latest"
+fi
+
 cd native-package
 npm version --no-git-tag-version "$1"
 sed -e 's|"stream-chat-react-native-core": "[^"]*"|"stream-chat-react-native-core": "'"$1"'"|g' -i.bak package.json
@@ -32,16 +40,16 @@ git add native-web-package/yarn.lock
 
 npm version "$1" --force
 
-npm publish
+npm publish --tag="$tag"
 
 cd native-web-package
-npm publish
+npm publish --tag="$tag"
 
 cd ../native-package
-npm publish
+npm publish --tag="$tag"
 
 
 cd ../expo-package
-npm publish
+npm publish --tag="$tag"
 
 git push --follow-tags
