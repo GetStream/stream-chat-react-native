@@ -6,6 +6,8 @@ import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import NetInfo from '@react-native-community/netinfo';
 import { Constants } from 'react-native-unimodules';
 import * as Expo from 'expo';
+import { Modal } from 'react-native';
+import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 let ImagePicker;
 let DocumentPicker;
@@ -76,6 +78,8 @@ registerNativeHandlers({
     });
   },
   pickDocument: async () => await DocumentPicker.getDocumentAsync(),
+  Modal,
+  ActionSheet
 });
 
 export * from 'stream-chat-react-native-core';
