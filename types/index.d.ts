@@ -425,7 +425,7 @@ export interface ChannelListProps
   ): void;
   onChannelHidden?(
     thisArg: React.Component<ChannelListProps>,
-    e: Client.Event<Client.ChannelTruncatedEvent>,
+    e: Client.Event<Client.ChannelHiddenEvent>,
   ): void;
   // TODO: Create proper interface for followings in chat js client.
   /** Object containing query filters */
