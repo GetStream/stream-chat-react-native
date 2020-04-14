@@ -94,6 +94,13 @@ const ChannelList = withChatContext(
        * */
       onChannelDeleted: PropTypes.func,
       /**
+       * Function that overrides default behaviour when channel gets hidden. In absence of this prop, channel will be removed from the list.
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.hidden` event
+       * */
+      onChannelHidden: PropTypes.func,
+      /**
        * Object containing query filters
        * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for filter.
        * */
@@ -347,7 +354,7 @@ const ChannelList = withChatContext(
 
           if (channelIndex < 0) return;
 
-          // Remove the deleted channel from the list.
+          // Remove the hidden channel from the list.
           channels.splice(channelIndex, 1);
           this.setState({
             channels: [...channels],
