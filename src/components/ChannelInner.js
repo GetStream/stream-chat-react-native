@@ -239,7 +239,10 @@ class ChannelInner extends PureComponent {
   }
 
   markRead = () => {
-    if (!this.props.channel.getConfig().read_events) {
+    if (
+      this.props.channel.disconnected ||
+      !this.props.channel.getConfig().read_events
+    ) {
       return;
     }
 
