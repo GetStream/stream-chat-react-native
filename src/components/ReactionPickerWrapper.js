@@ -83,17 +83,19 @@ export class ReactionPickerWrapper extends React.PureComponent {
 
   _setReactionPickerPosition = () => {
     const { alignment, offset } = this.props;
-    this.messageContainer.measureInWindow((x, y, width) => {
-      this.setState({
-        rpTop: y - 60 + offset.top,
-        rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
-        rpRight:
-          alignment === 'right'
-            ? Math.round(Dimensions.get('window').width) -
-              (x + width + offset.right)
-            : null,
+    if (this.messageContainer) {
+      this.messageContainer.measureInWindow((x, y, width) => {
+        this.setState({
+          rpTop: y - 60 + offset.top,
+          rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
+          rpRight:
+            alignment === 'right'
+              ? Math.round(Dimensions.get('window').width) -
+                (x + width + offset.right)
+              : null,
+        });
       });
-    });
+    }
   };
 
   render() {
