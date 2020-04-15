@@ -55,57 +55,64 @@ const ChannelList = withChatContext(
        * Function that overrides default behaviour when new message is received on channel that is not being watched
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.message_new` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
        * */
       onMessageNew: PropTypes.func,
       /**
        * Function that overrides default behaviour when users gets added to a channel
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.added_to_channel` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
        * */
       onAddedToChannel: PropTypes.func,
       /**
        * Function that overrides default behaviour when users gets removed from a channel
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `notification.removed_from_channel` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
        * */
       onRemovedFromChannel: PropTypes.func,
       /**
        * Function that overrides default behaviour when channel gets updated
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.updated` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
        * */
       onChannelUpdated: PropTypes.func,
       /**
        * Function to customize behaviour when channel gets truncated
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.truncated` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
        * */
       onChannelTruncated: PropTypes.func,
       /**
        * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
        *
        * @param {Component} thisArg Reference to ChannelList component
-       * @param {Event} event       [Event object](https://getstream.io/chat/docs/#event_object) corresponding to `channel.deleted` event
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
        * */
       onChannelDeleted: PropTypes.func,
       /**
+       * Function that overrides default behaviour when channel gets hidden. In absence of this prop, channel will be removed from the list.
+       *
+       * @param {Component} thisArg Reference to ChannelList component
+       * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+       * */
+      onChannelHidden: PropTypes.func,
+      /**
        * Object containing query filters
-       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for filter.
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for filter.
        * */
       filters: PropTypes.object,
       /**
        * Object containing query options
-       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for options.
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for options.
        * */
       options: PropTypes.object,
       /**
        * Object containing sort parameters
-       * @see See [Channel query documentation](https://getstream.io/chat/docs/#query_channels) for a list of available fields for sort.
+       * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for sort.
        * */
       sort: PropTypes.object,
       /** For flatlist  */
@@ -333,6 +340,28 @@ const ChannelList = withChatContext(
     }
 
     handleEvent = async (e) => {
+      if (e.type === 'channel.hidden') {
+        if (
+          this.props.onChannelHidden &&
+          typeof this.props.onChannelHidden === 'function'
+        ) {
+          this.props.onChannelHidden(this, e);
+        } else {
+          const channels = this.state.channels;
+          const channelIndex = channels.findIndex(
+            (channel) => channel.cid === e.channel.cid,
+          );
+
+          if (channelIndex < 0) return;
+
+          // Remove the hidden channel from the list.
+          channels.splice(channelIndex, 1);
+          this.setState({
+            channels: [...channels],
+          });
+        }
+      }
+
       if (e.type === 'user.presence.changed' || e.type === 'user.updated') {
         let newChannels = this.state.channels;
 
