@@ -57,7 +57,7 @@ const defaultMarkdownStyles = {
     borderColor: '#dddddd',
     color: 'red',
     fontSize: 13,
-    fontFamily: 'Lato-Regular',
+    padding: 3,
     paddingLeft: 5,
     paddingRight: 5,
   },
