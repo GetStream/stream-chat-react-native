@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.1] 2020-04-15
+
+- Adding following theme keys [7ae43d4](https://github.com/GetStream/stream-chat-react-native/commit/7ae43d4d1788b14ee9cd7c6d0f3d6d49ac5ebdf5)
+  - messageInput.suggestions.command.args
+  - messageInput.suggestions.command.description
+
+- Handling `channel.hidden` event in  `ChannelList` component
+- Adding support for function prop `onChannelHidde` on `ChannelList`
+- Avoid breaking markRead api call if channel is disconnected [a1cfd96](https://github.com/GetStream/stream-chat-react-native/commit/a1cfd96ebfcd2859164c60a0535abe8791f826ac)
+- Updating `stream-chat` version to `1.7.3`
+- Fixing the error: `[Unhandled promise rejection: TypeError: mimeType.startsWith is not a function. (In 'mimeType.startsWith('image/')', 'mimeType.startsWith' is undefined)]` [451b2a4](https://github.com/GetStream/stream-chat-react-native/commit/451b2a4e19ad202f5c5f428b369301ee312e0c3f)
+
 ## [0.10.0] 2020-04-09
 
 **All the changes are non-breaking**
