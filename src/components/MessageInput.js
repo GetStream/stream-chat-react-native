@@ -497,7 +497,7 @@ class MessageInput extends PureComponent {
     }
     const mimeType = lookup(result.name);
 
-    if (mimeType.startsWith('image/')) {
+    if (mimeType && mimeType.startsWith('image/')) {
       this.uploadNewImage(result);
     } else {
       this.uploadNewFile(result);
