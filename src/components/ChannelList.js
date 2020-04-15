@@ -349,7 +349,7 @@ const ChannelList = withChatContext(
         } else {
           const channels = this.state.channels;
           const channelIndex = channels.findIndex(
-            (channel) => channel.cid === e.channel.cid,
+            (channel) => channel.cid === e.cid,
           );
 
           if (channelIndex < 0) return;
