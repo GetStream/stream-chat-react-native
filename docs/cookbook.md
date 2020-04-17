@@ -24,6 +24,7 @@
 - [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
+- [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
 
 # How to customize message component
 
@@ -1049,3 +1050,62 @@ You can provide your compression config to `ImagePicker.openPicker({ ... })`  fu
 
 And you are good to go :)
 
+
+## How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics
+
+By default our library uses MessageSimple as UI component for message. It accepts following props:
+
+  - handleEdit
+  - handleDelete
+  - handleReaction
+  - handleAction
+  - handleRetry
+
+Please find entire list of props here - https://getstream.github.io/stream-chat-react-native/#messagesimple
+
+So lets take an example of tracking these function calls for analytics. We want to retain the original functionality,
+but just want to introduce a custom tracking call right before original call gets gets executed:
+
+So in this case, create a UI component, which uses MessageSimple underneath and intercept functions such as handleDelete, handleEdit etc.
+
+```js
+const CustomMessageComponent = (props) => {
+
+    const handleEdit = () => {
+        // This is call to your analytics related function.
+        handleEditAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleEdit();
+    }
+
+    const handleDelete = () => {
+        // This is call to your analytics related function.
+        handleDeleteAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleDelete();
+    }
+
+    const handleReaction = (type) => {
+        // This is call to your analytics related function.
+        handleReactionAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleReaction(type);
+    }
+
+    return (
+        <MessageSimple
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            handleReaction={handleReaction}
+        />
+    )
+}
+
+// Use the custom message component in MessageList
+<MessageList
+  Message={CustomMessageComponent}
+/>
+```
