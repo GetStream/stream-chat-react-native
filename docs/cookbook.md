@@ -23,6 +23,7 @@
 - [How to customize actionsheet styles](#actionsheet-styling)
 - [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
+- [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
 
 # How to customize message component
 
@@ -995,3 +996,56 @@ Following example shows how to use `KeyboardAvoidingView` instead:
     <MessageList additionalFlatListProps={{ bounces: true }} />
   ```
 Please find list of all available FlatList props here - https://reactnative.dev/docs/flatlist#props
+
+## Image upload takes too long. How can I fix it?
+
+For image picker in our library, we use lightweight third party [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) library. It works perfectly for basic image picking functionality. Although if the image is heavy in size (e.g., photo taken by iPhone XS camera can be between 8-12 MB), it takes long to upload a picture on stream server. Thats when you will see ever-lasting loader on image being uploaded (as shown in following screenshot).
+
+<div style="display: inline">
+<img src="./images/1.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="margin-right: 30px" />
+</div>
+
+Image compression is the solution here. But react-native-image-picker doesn't offer compression option. So we need to instead use [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) _(or you can implement your own functionality as well ofcourse)_
+
+1. Install  `react-native-image-crop-picker` in your app/project. Please pay attention to the version that you are installing. If you are using  RN 0.61+, then may use latest version of image-crop picker, otherwise use 0.25.3 - [reference](https://github.com/ivpusic/react-native-image-crop-picker/issues/1143)
+
+`yarn add react-native-image-crop-picker`
+
+2. Follow the steps mentioned here along with post installation steps  - https://github.com/ivpusic/react-native-image-crop-picker#react-native--060-with-cocoapods
+
+3. In your app, on chat screen - register the pickImage handler as follow:
+
+```js
+import ImagePicker from 'react-native-image-crop-picker';
+import {registerNativeHandlers} from 'stream-chat-react-native-core';
+
+registerNativeHandlers({
+  pickImage: () =>
+    new Promise((resolve, reject) => {
+      ImagePicker.openPicker({
+       // Add your compression related config here.
+        height: 400,
+        width: 400,
+        cropping: false,
+      }).then(
+        image => {
+          resolve({
+            cancelled: false,
+            uri: `${image.path}`,
+          });
+        },
+        () => {
+          resolve({
+            cancelled: true,
+          });
+        },
+      );
+    }),
+});
+
+```
+
+You can provide your compression config to `ImagePicker.openPicker({ ... })`  function. This library provides plenty of options for cropping or compression - https://github.com/ivpusic/react-native-image-crop-picker#request-object
+
+And you are good to go :)
+
