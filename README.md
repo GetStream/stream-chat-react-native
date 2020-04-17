@@ -33,6 +33,7 @@
   - [Native package](#native-package)
 - [Upgrade](#upgrade)
 - [Common Issues](#common-issues)
+- [Contributing](#contributing)
 
 ## React Native Chat Tutorial
 
@@ -365,3 +366,8 @@ import {
 ```
 
 Please read this docs on i18n for more details and further customizations - https://getstream.github.io/stream-chat-react-native/#streami18n
+
+## Contributing
+
+We welcome code changes that improve this library or fix a problem, please make sure to follow all best practices and test all the changes. Please check our [dev setup docs](https://github.com/GetStream/stream-chat-react-native/wiki/Dev-setup-for-contributing-to-the-library) to get you started. We are very happy to merge your code in the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
+
