@@ -25,7 +25,7 @@
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
 - [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
-
+- [How to change layout of MessageInput (message text input box) component]()
 # How to customize message component
 
 `MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
@@ -54,6 +54,9 @@ e.g.,
 
 So in this example we will override `handleDelete` prop:
 
+
+<img align="right" src="./images/2.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
+
 ```js
 import { Alert } from 'react-native';
 import { MessageSimple } from 'stream-chat-react-native';
@@ -61,7 +64,8 @@ import { MessageSimple } from 'stream-chat-react-native';
 const MessageSimpleModified = (props) => {
   const onDelete = () => {
     // Custom behaviour
-    // If you face the issue of Alert disappearing instantly, then refer to this answer:
+    // If you face the issue of Alert disappearing instantly,
+    // then refer to this answer:
     // https://stackoverflow.com/a/40041564/1460210
     Alert.alert(
       'Deleting message',
@@ -75,7 +79,8 @@ const MessageSimpleModified = (props) => {
         {
           text: 'OK',
           onPress: () => {
-            // If user says ok, then go ahead with deleting the message.
+            // If user says ok, then go ahead with
+            // deleting the message.
             props.handleDelete();
           },
         },
@@ -88,6 +93,7 @@ const MessageSimpleModified = (props) => {
   return <MessageSimple {...props} handleDelete={onDelete} />;
 };
 ```
+
 
 ## Message bubble with custom text styles/font
 
@@ -1109,3 +1115,5 @@ const CustomMessageComponent = (props) => {
   Message={CustomMessageComponent}
 />
 ```
+
+## How to change layout of MessageInput (message text input box) component
