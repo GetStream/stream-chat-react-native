@@ -137,5 +137,5 @@ export const makeImageCompatibleUrl = (url) => {
   let newUrl = url;
   if (url.indexOf('//') === 0) newUrl = 'https:' + url;
 
-  return newUrl;
+  return newUrl.trim();
 };
