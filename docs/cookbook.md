@@ -177,6 +177,8 @@ Here I am aiming for following styles:
   - Blue background
   - white colored text
 
+<img align="right" src="./images/6.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
+
 ```js
 const MessageSimpleStyled = (props) => {
   const { isMyMessage, message } = props;
@@ -213,6 +215,8 @@ const MessageSimpleStyled = (props) => {
 `MessageSimple` accepts a prop - `supportedReactions`. You can pass your emoji data to this prop to set your own reactions.
 
 In this example I will support only two reactions - Monkey face (🐵) and Lion (🦁)
+
+<img align="right" src="./images/7.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
 
 ```js
 const MessageSimpleWithCustomReactions = (props) => (
@@ -283,6 +287,8 @@ to show it at bottom of message.
 First you want to disable/hide the original reaction selector. `MessageSimple` component accepts a custom
 UI component as prop - `ReactionList`. If you set this prop to null, then original reaction list and thus reaction selector
 will be hidden/disabled
+
+<img align="right" src="./images/8.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
 
 ```js static
 const MessageWithoutReactionPicker = props => {
