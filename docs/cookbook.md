@@ -26,6 +26,8 @@
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
 - [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
 - [How to change layout of MessageInput (message text input box) component]()
+
+
 # How to customize message component
 
 `MessageList` component accepts `Message` prop, where you can mention or provide custom message (UI) component.
@@ -1117,3 +1119,91 @@ const CustomMessageComponent = (props) => {
 ```
 
 ## How to change layout of MessageInput (message text input box) component
+
+We provide MessageInput component OOTB which looks something like this:
+
+<img src="./images/3.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" />
+
+
+But your design may require a bit different layout or positioning of inner components, such as send button, attachment button or inputbox inself. One use case could be Slack (workplace chat application) style - where all the buttons are bellow the inputbox.
+
+<img src="./images/5.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" />
+
+Here I will show you how you can build above design with some small modifications to `MessageInput`
+
+MessageInput component accepts Input as a UI component prop. Library also exports all the inner components of MessageInput.
+So all you need to do is build a UI component which arranges those inner child components in whatever layout you prefer and pass it to MessageInput.
+
+```js
+import React from 'react';
+import {TouchableOpacity, View, Text, StyleSheet} from 'react-native';
+import {
+  AutoCompleteInput,
+  AttachButton,
+  SendButton,
+} from 'stream-chat-react-native';
+
+const InputBox = props => {
+  return (
+    <View style={inputBoxStyles.container}>
+      <AutoCompleteInput {...props} />
+      <View style={inputBoxStyles.actionsContainer}>
+        <View style={inputBoxStyles.row}>
+          <TouchableOpacity
+            onPress={() => {
+              props.appendText('@');
+            }}>
+            <Text style={inputBoxStyles.textActionLabel}>@</Text>
+          </TouchableOpacity>
+          {/* Text editor is not functional yet. We will cover it in some future tutorials */}
+          <TouchableOpacity style={inputBoxStyles.textEditorContainer}>
+            <Text style={inputBoxStyles.textActionLabel}>Aa</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={inputBoxStyles.row}>
+          <AttachButton {...props} />
+          <SendButton {...props} />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const inputBoxStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    flex: 1,
+    height: 60,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    height: 30,
+  },
+  row: {flexDirection: 'row'},
+  textActionLabel: {
+    color: '#787878',
+    fontSize: 18,
+  },
+  textEditorContainer: {
+    marginLeft: 10,
+  },
+});
+```
+
+And then pass this InputBox component to `MessageInput`. I am adding some additional styles in theme to make it look more like Slack's input box.
+
+```js
+const theme = {
+  'messageInput.container':
+    'border-top-color: #979A9A;border-top-width: 0.4; background-color: white; margin: 0; border-radius: 0;',
+}
+
+<Chat client={chatClient} style={theme}>
+  <Channel>
+    <MessageList />
+    <MessageInput Input={InputBox} />
+  </Channel>
+</Chat>
+```
