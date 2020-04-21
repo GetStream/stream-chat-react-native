@@ -25,7 +25,7 @@
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
 - [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
-- [How to change layout of MessageInput (message text input box) component]()
+- [How to change layout of MessageInput (message text input box) component](#how-to-change-layout-of-messageinput-message-text-input-box-component)
 
 
 # How to customize message component
