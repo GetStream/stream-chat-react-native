@@ -280,6 +280,11 @@ export const MessageSimple = themed(
        * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
        */
       actionSheetStyles: PropTypes.object,
+      /**
+       * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
+       * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+       */
+      additionalTouchableProps: PropTypes.object,
       formatDate: PropTypes.func,
       /**
        * e.g.,

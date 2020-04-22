@@ -70,6 +70,11 @@ class Gallery extends React.PureComponent {
       }),
     ),
     onLongPress: PropTypes.func,
+    /**
+     * Provide any additional props for child `TouchableOpacity`.
+     * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+     */
+    additionalTouchableProps: PropTypes.object,
     alignment: PropTypes.string,
   };
 
@@ -82,7 +87,7 @@ class Gallery extends React.PureComponent {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, additionalTouchableProps } = this.props;
     if (!this.props.images || this.props.images.length === 0) return null;
 
     const images = [...this.props.images].map((i) => ({
@@ -100,6 +105,7 @@ class Gallery extends React.PureComponent {
               this.props.onLongPress();
             }}
             alignment={this.props.alignment}
+            {...additionalTouchableProps}
           >
             <Image
               style={{
@@ -160,6 +166,7 @@ class Gallery extends React.PureComponent {
                 });
               }}
               onLongPress={this.props.onLongPress}
+              {...additionalTouchableProps}
             >
               {i === 3 && images.length > 4 ? (
                 <View

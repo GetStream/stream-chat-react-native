@@ -133,6 +133,8 @@ export interface MessageContentContext
   extends React.Context<MessageContentContextValue> {}
 export interface MessageContentContextValue {
   onLongPress?: (event: GestureResponderEvent) => void;
+  disabled?: boolean;
+  additionalTouchableProps?: object;
 }
 
 //================================================================================================
@@ -716,6 +718,7 @@ export interface MessageUIComponentProps
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
+  additionalTouchableProps?: object;
 }
 
 export interface MessageHeaderUIComponentProps
@@ -868,7 +871,9 @@ export interface CommandsItemProps extends StyledComponentProps {
   args: string;
   description: string;
 }
-export interface FileAttachmentProps extends StyledComponentProps {
+export interface FileAttachmentProps
+  extends MessageContentContextValue,
+    StyledComponentProps {
   /** The attachment to render */
   attachment: Client.Attachment;
   /**

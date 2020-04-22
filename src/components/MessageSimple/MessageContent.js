@@ -167,7 +167,9 @@ class MessageContent extends React.PureComponent {
      *    <MessageSimple
      *      {...props}
      *      onPress={(thisArg, message, e) => {
-     *        thisArg.openReactionSelector();
+     *        props.openReactionPicker();
+     *        // Or if you want to open actionsheet
+     *        // thisArg.showActionSheet();
      *      }}
      *  )
      * }
@@ -185,7 +187,9 @@ class MessageContent extends React.PureComponent {
     onPress: PropTypes.func,
     /**
      * Function that overrides default behaviour when message is long pressed
-     * e.g. if you would like to open reaction picker on message long press:
+     * e.g.
+     *
+     * if you would like to open reaction picker on message long press:
      *
      * ```
      * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
@@ -195,7 +199,9 @@ class MessageContent extends React.PureComponent {
      *    <MessageSimple
      *      {...props}
      *      onLongPress={(thisArg, message, e) => {
-     *        thisArg.openReactionSelector();
+     *        props.openReactionPicker();
+     *        // Or if you want to open actionsheet
+     *        // thisArg.showActionSheet();
      *      }}
      *  )
      * }
@@ -239,6 +245,11 @@ class MessageContent extends React.PureComponent {
      * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
      */
     groupStyles: PropTypes.array,
+    /**
+     * Provide any additional props for `TouchableOpacity` which wraps `MessageContent` component here.
+     * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+     */
+    additionalTouchableProps: PropTypes.object,
     /**
      * Style object for actionsheet (used to message actions).
      * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
@@ -418,11 +429,13 @@ class MessageContent extends React.PureComponent {
     await this.props.openReactionPicker();
   };
 
-  openReactionSelector = () => {
+  openReactionSelector = async () => {
     console.warn(
       'openReactionSelector has been deprecared and will be removed in next major release.' +
         'Please use this.props.openReactionPicker instead.',
     );
+
+    await this.props.openReactionPicker();
   };
 
   onActionPress = (action) => {
@@ -460,6 +473,7 @@ class MessageContent extends React.PureComponent {
       retrySendMessage,
       messageActions,
       groupStyles,
+      additionalTouchableProps,
       reactionsEnabled,
       getTotalReactionCount,
       repliesEnabled,
@@ -576,6 +590,7 @@ class MessageContent extends React.PureComponent {
       activeOpacity: 0.7,
       disabled: disabled || readOnly,
       hasReactions,
+      ...additionalTouchableProps,
     };
 
     if (message.status === 'failed')
@@ -584,6 +599,7 @@ class MessageContent extends React.PureComponent {
     const context = {
       onLongPress: contentProps.onLongPress,
       disabled: disabled || readOnly,
+      additionalTouchableProps,
     };
 
     return (

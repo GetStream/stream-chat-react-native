@@ -41,7 +41,11 @@ export const Attachment = withMessageContentContext(
         groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
         /** Handler for long press event on attachment */
         onLongPress: PropTypes.func,
-
+        /**
+         * Provide any additional props for child `TouchableOpacity`.
+         * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+         */
+        additionalTouchableProps: PropTypes.object,
         /**
          * Custom UI component to display enriched url preview.
          * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js

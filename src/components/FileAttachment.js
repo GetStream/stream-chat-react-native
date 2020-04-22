@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
 import { AttachmentActions } from './AttachmentActions';
+import { withMessageContentContext } from '../context';
 
 const FileContainer = styled.View`
   display: flex;
@@ -56,40 +57,44 @@ const goToURL = (url) => {
   });
 };
 
-export const FileAttachment = ({
-  attachment,
-  actionHandler,
-  AttachmentFileIcon,
-  onLongPress,
-  alignment,
-  groupStyle,
-}) => (
-  <TouchableOpacity
-    onPress={() => {
-      goToURL(attachment.asset_url);
-    }}
-    onLongPress={onLongPress}
-  >
-    <FileContainer alignment={alignment} groupStyle={groupStyle}>
-      <AttachmentFileIcon
-        filename={attachment.title}
-        mimeType={attachment.mime_type}
-      />
-      <FileDetails>
-        <FileTitle ellipsizeMode="tail" numberOfLines={2}>
-          {attachment.title}
-        </FileTitle>
-        <FileSize>{attachment.file_size} KB</FileSize>
-      </FileDetails>
-    </FileContainer>
-    {attachment.actions && attachment.actions.length > 0 && (
-      <AttachmentActions
-        key={'key-actions-' + attachment.id}
-        {...attachment}
-        actionHandler={actionHandler}
-      />
-    )}
-  </TouchableOpacity>
+export const FileAttachment = withMessageContentContext(
+  ({
+    attachment,
+    actionHandler,
+    AttachmentFileIcon,
+    onLongPress,
+    alignment,
+    groupStyle,
+    additionalTouchableProps,
+  }) => (
+    <TouchableOpacity
+      onPress={() => {
+        goToURL(attachment.asset_url);
+      }}
+      onLongPress={onLongPress}
+      {...additionalTouchableProps}
+    >
+      <FileContainer alignment={alignment} groupStyle={groupStyle}>
+        <AttachmentFileIcon
+          filename={attachment.title}
+          mimeType={attachment.mime_type}
+        />
+        <FileDetails>
+          <FileTitle ellipsizeMode="tail" numberOfLines={2}>
+            {attachment.title}
+          </FileTitle>
+          <FileSize>{attachment.file_size} KB</FileSize>
+        </FileDetails>
+      </FileContainer>
+      {attachment.actions && attachment.actions.length > 0 && (
+        <AttachmentActions
+          key={'key-actions-' + attachment.id}
+          {...attachment}
+          actionHandler={actionHandler}
+        />
+      )}
+    </TouchableOpacity>
+  ),
 );
 
 FileAttachment.propTypes = {
@@ -111,6 +116,11 @@ FileAttachment.propTypes = {
   groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
   /** Handler for long press event on attachment */
   onLongPress: PropTypes.func,
+  /**
+   * Provide any additional props for child `TouchableOpacity`.
+   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   */
+  additionalTouchableProps: PropTypes.object,
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
