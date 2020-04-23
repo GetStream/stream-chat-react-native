@@ -42,7 +42,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
     super(props);
 
     this.state = {
-      channelHeight: new Animated.Value('100%'),
+      channelHeight: new Animated.Value(0),
       // For some reason UI doesn't update sometimes, when state is updated using setValue.
       // So to force update the component, I am using following key, which will be incremented
       // for every keyboard slide up and down.
