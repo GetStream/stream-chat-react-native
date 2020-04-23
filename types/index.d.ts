@@ -1,7 +1,7 @@
 // TypeScript Version: 2.8
 
 import * as React from 'react';
-import { Text, GestureResponderEvent } from 'react-native';
+import { Text, GestureResponderEvent, FlatList } from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 import * as i18next from 'i18next';
@@ -435,7 +435,34 @@ export interface ChannelListProps
   /** Object containing sort parameters */
   sort?: object;
   loadMoreThreshold?: number;
+  /**
+   * Besides existing (default) UX behaviour of underlying flatlist of ChannelList component, if you want
+   * to attach some additional props to un derlying flatlist, you can add it to following prop.
+   *
+   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+   *
+   * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+   * e.g.
+   * ```
+   * <MessageList
+   *  filters={filters}
+   *  sort={sort}
+   *  additionalFlatListProps={{ bounces: true }} />
+   * ```
+   */
   additionalFlatListProps?: object;
+  /**
+   * Use `setFlatListRef` to get access to ref to inner FlatList.
+   *
+   * e.g.
+   * <MessageList
+   *  setFlatListRef={(ref) => {
+   *    // Use ref for your own good
+   *  }}
+   */
+  setFlatListRef?(
+    ref: React.RefObject<FlatList<Client.Channel>>,
+  ): PropTypes.func;
 }
 
 export interface ChannelListState {
@@ -530,7 +557,32 @@ export interface MessageListProps
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
+  /**
+   * Besides existing (default) UX behaviour of underlying flatlist of ChannelList component, if you want
+   * to attach some additional props to un derlying flatlist, you can add it to following prop.
+   *
+   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+   *
+   * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+   * e.g.
+   * ```
+   * <MessageList
+   *  filters={filters}
+   *  sort={sort}
+   *  additionalFlatListProps={{ bounces: true }} />
+   * ```
+   */
   additionalFlatListProps?: object;
+  /**
+   * Use `setFlatListRef` to get access to ref to inner FlatList.
+   *
+   * e.g.
+   * <MessageList
+   *  setFlatListRef={(ref) => {
+   *    // Use ref for your own custom functionality
+   *  }}
+   */
+  setFlatListRef?(ref: React.RefObject<FlatList<object>>): void;
 }
 
 declare type MessageAction = 'edit' | 'delete' | 'reactions' | 'reply';
