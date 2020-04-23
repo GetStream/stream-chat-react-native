@@ -973,7 +973,12 @@ export interface MessageSystemProps
 export interface ReactionListProps extends StyledComponentProps {
   latestReactions: Client.ReactionResponse[];
   openReactionSelector?(event: GestureResponderEvent): void;
-  getTotalReactionCount?(): string | number;
+  getTotalReactionCount?(
+    supportedReacions?: Array<{
+      icon: string;
+      id: string;
+    }>,
+  ): string | number;
   visible: boolean;
   position: string;
   supportedReactions?: Array<{

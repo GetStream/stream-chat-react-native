@@ -276,9 +276,13 @@ const Message = withKeyboardContext(
       if (dismissKeyboardOnMessageTouch) dismissKeyboard();
     };
 
-    getTotalReactionCount = () => {
+    getTotalReactionCount = (supportedReactions) => {
       const { emojiData } = this.props;
       let count = null;
+      if (!supportedReactions) {
+        supportedReactions = emojiData;
+      }
+
       const reactionCounts = this.props.message.reaction_counts;
 
       if (
@@ -288,7 +292,7 @@ const Message = withKeyboardContext(
       ) {
         count = 0;
         Object.keys(reactionCounts).map((key) => {
-          if (emojiData.find((e) => e.id === key)) {
+          if (supportedReactions.find((e) => e.id === key)) {
             count += reactionCounts[key];
           }
 

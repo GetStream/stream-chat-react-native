@@ -142,8 +142,10 @@ export const ReactionList = themed(
             <Reactions>
               {renderReactions(latestReactions, supportedReactions)}
             </Reactions>
-            <ReactionCount reactionCounts={getTotalReactionCount()}>
-              {getTotalReactionCount()}
+            <ReactionCount
+              reactionCounts={getTotalReactionCount(supportedReactions)}
+            >
+              {getTotalReactionCount(supportedReactions)}
             </ReactionCount>
           </Container>
           <ImageWrapper visible={visible}>

@@ -23,6 +23,10 @@
 - [How to customize actionsheet styles](#actionsheet-styling)
 - [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
+- [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
+- [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
+- [How to change layout of MessageInput (message text input box) component](#how-to-change-layout-of-messageinput-message-text-input-box-component)
+
 
 # How to customize message component
 
@@ -52,6 +56,9 @@ e.g.,
 
 So in this example we will override `handleDelete` prop:
 
+
+<img align="right" src="./images/2.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
+
 ```js
 import { Alert } from 'react-native';
 import { MessageSimple } from 'stream-chat-react-native';
@@ -59,7 +66,8 @@ import { MessageSimple } from 'stream-chat-react-native';
 const MessageSimpleModified = (props) => {
   const onDelete = () => {
     // Custom behaviour
-    // If you face the issue of Alert disappearing instantly, then refer to this answer:
+    // If you face the issue of Alert disappearing instantly,
+    // then refer to this answer:
     // https://stackoverflow.com/a/40041564/1460210
     Alert.alert(
       'Deleting message',
@@ -73,7 +81,8 @@ const MessageSimpleModified = (props) => {
         {
           text: 'OK',
           onPress: () => {
-            // If user says ok, then go ahead with deleting the message.
+            // If user says ok, then go ahead with
+            // deleting the message.
             props.handleDelete();
           },
         },
@@ -86,6 +95,7 @@ const MessageSimpleModified = (props) => {
   return <MessageSimple {...props} handleDelete={onDelete} />;
 };
 ```
+
 
 ## Message bubble with custom text styles/font
 
@@ -167,6 +177,8 @@ Here I am aiming for following styles:
   - Blue background
   - white colored text
 
+<img align="right" src="./images/6.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
+
 ```js
 const MessageSimpleStyled = (props) => {
   const { isMyMessage, message } = props;
@@ -203,6 +215,8 @@ const MessageSimpleStyled = (props) => {
 `MessageSimple` accepts a prop - `supportedReactions`. You can pass your emoji data to this prop to set your own reactions.
 
 In this example I will support only two reactions - Monkey face (🐵) and Lion (🦁)
+
+<img align="right" src="./images/7.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
 
 ```js
 const MessageSimpleWithCustomReactions = (props) => (
@@ -273,6 +287,8 @@ to show it at bottom of message.
 First you want to disable/hide the original reaction selector. `MessageSimple` component accepts a custom
 UI component as prop - `ReactionList`. If you set this prop to null, then original reaction list and thus reaction selector
 will be hidden/disabled
+
+<img align="right" src="./images/8.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="float: right;" />
 
 ```js static
 const MessageWithoutReactionPicker = props => {
@@ -995,3 +1011,205 @@ Following example shows how to use `KeyboardAvoidingView` instead:
     <MessageList additionalFlatListProps={{ bounces: true }} />
   ```
 Please find list of all available FlatList props here - https://reactnative.dev/docs/flatlist#props
+
+## Image upload takes too long. How can I fix it?
+
+For image picker in our library, we use lightweight third party [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) library. It works perfectly for basic image picking functionality. Although if the image is heavy in size (e.g., photo taken by iPhone XS camera can be between 8-12 MB), it takes long to upload a picture on stream server. Thats when you will see ever-lasting loader on image being uploaded (as shown in following screenshot).
+
+<div style="display: inline">
+<img src="./images/1.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" style="margin-right: 30px" />
+</div>
+
+Image compression is the solution here. But react-native-image-picker doesn't offer compression option. So we need to instead use [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) _(or you can implement your own functionality as well ofcourse)_
+
+1. Install  `react-native-image-crop-picker` in your app/project. Please pay attention to the version that you are installing. If you are using  RN 0.61+, then may use latest version of image-crop picker, otherwise use 0.25.3 - [reference](https://github.com/ivpusic/react-native-image-crop-picker/issues/1143)
+
+`yarn add react-native-image-crop-picker`
+
+2. Follow the steps mentioned here along with post installation steps  - https://github.com/ivpusic/react-native-image-crop-picker#react-native--060-with-cocoapods
+
+3. In your app, on chat screen - register the pickImage handler as follow:
+
+```js
+import ImagePicker from 'react-native-image-crop-picker';
+import {registerNativeHandlers} from 'stream-chat-react-native-core';
+
+registerNativeHandlers({
+  pickImage: () =>
+    new Promise((resolve, reject) => {
+      ImagePicker.openPicker({
+       // Add your compression related config here.
+        height: 400,
+        width: 400,
+        cropping: false,
+      }).then(
+        image => {
+          resolve({
+            cancelled: false,
+            uri: `${image.path}`,
+          });
+        },
+        () => {
+          resolve({
+            cancelled: true,
+          });
+        },
+      );
+    }),
+});
+
+```
+
+You can provide your compression config to `ImagePicker.openPicker({ ... })`  function. This library provides plenty of options for cropping or compression - https://github.com/ivpusic/react-native-image-crop-picker#request-object
+
+And you are good to go :)
+
+
+## How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics
+
+By default our library uses MessageSimple as UI component for message. It accepts following props:
+
+  - handleEdit
+  - handleDelete
+  - handleReaction
+  - handleAction
+  - handleRetry
+
+Please find entire list of props here - https://getstream.github.io/stream-chat-react-native/#messagesimple
+
+So lets take an example of tracking these function calls for analytics. We want to retain the original functionality,
+but just want to introduce a custom tracking call right before original call gets gets executed:
+
+So in this case, create a UI component, which uses MessageSimple underneath and intercept functions such as handleDelete, handleEdit etc.
+
+```js
+const CustomMessageComponent = (props) => {
+
+    const handleEdit = () => {
+        // This is call to your analytics related function.
+        handleEditAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleEdit();
+    }
+
+    const handleDelete = () => {
+        // This is call to your analytics related function.
+        handleDeleteAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleDelete();
+    }
+
+    const handleReaction = (type) => {
+        // This is call to your analytics related function.
+        handleReactionAnalyticsCall(props.message);
+
+        // continue with original call
+        props.handleReaction(type);
+    }
+
+    return (
+        <MessageSimple
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            handleReaction={handleReaction}
+        />
+    )
+}
+
+// Use the custom message component in MessageList
+<MessageList
+  Message={CustomMessageComponent}
+/>
+```
+
+## How to change layout of MessageInput (message text input box) component
+
+We provide MessageInput component OOTB which looks something like this:
+
+<img src="./images/3.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" />
+
+
+But your design may require a bit different layout or positioning of inner components, such as send button, attachment button or inputbox inself. One use case could be Slack (workplace chat application) style - where all the buttons are bellow the inputbox.
+
+<img src="./images/5.png" alt="IMAGE ALT TEXT HERE" width="280" border="1" />
+
+Here I will show you how you can build above design with some small modifications to `MessageInput`
+
+MessageInput component accepts Input as a UI component prop. Library also exports all the inner components of MessageInput.
+So all you need to do is build a UI component which arranges those inner child components in whatever layout you prefer and pass it to MessageInput.
+
+```js
+import React from 'react';
+import {TouchableOpacity, View, Text, StyleSheet} from 'react-native';
+import {
+  AutoCompleteInput,
+  AttachButton,
+  SendButton,
+} from 'stream-chat-react-native';
+
+const InputBox = props => {
+  return (
+    <View style={inputBoxStyles.container}>
+      <AutoCompleteInput {...props} />
+      <View style={inputBoxStyles.actionsContainer}>
+        <View style={inputBoxStyles.row}>
+          <TouchableOpacity
+            onPress={() => {
+              props.appendText('@');
+            }}>
+            <Text style={inputBoxStyles.textActionLabel}>@</Text>
+          </TouchableOpacity>
+          {/* Text editor is not functional yet. We will cover it in some future tutorials */}
+          <TouchableOpacity style={inputBoxStyles.textEditorContainer}>
+            <Text style={inputBoxStyles.textActionLabel}>Aa</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={inputBoxStyles.row}>
+          <AttachButton {...props} />
+          <SendButton {...props} />
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const inputBoxStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    flex: 1,
+    height: 60,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    height: 30,
+  },
+  row: {flexDirection: 'row'},
+  textActionLabel: {
+    color: '#787878',
+    fontSize: 18,
+  },
+  textEditorContainer: {
+    marginLeft: 10,
+  },
+});
+```
+
+And then pass this InputBox component to `MessageInput`. I am adding some additional styles in theme to make it look more like Slack's input box.
+
+```js
+const theme = {
+  'messageInput.container':
+    'border-top-color: #979A9A;border-top-width: 0.4; background-color: white; margin: 0; border-radius: 0;',
+}
+
+<Chat client={chatClient} style={theme}>
+  <Channel>
+    <MessageList />
+    <MessageInput Input={InputBox} />
+  </Channel>
+</Chat>
+```

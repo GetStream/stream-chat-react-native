@@ -502,7 +502,9 @@ class ChannelInner extends PureComponent {
     let threadMessages = [];
     const threadState = {};
     if (this.state.thread) {
-      threadMessages = channel.state.threads[this.state.thread.id] || [];
+      threadMessages =
+        channel.state.threads[this.state.thread.id] ||
+        this.state.threadMessages;
       threadState['threadMessages'] = threadMessages;
     }
 
