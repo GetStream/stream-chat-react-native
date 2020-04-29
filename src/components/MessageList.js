@@ -472,6 +472,10 @@ class MessageList extends PureComponent {
     const readData = {};
 
     for (const message of messages) {
+      // Filter out date seperators
+      if (!message || !message.id) {
+        continue;
+      }
       readData[message.id] = [];
     }
 
@@ -485,13 +489,14 @@ class MessageList extends PureComponent {
           userLastReadMsgId = msg.id;
         }
       }
-      if (userLastReadMsgId != null) {
+      if (userLastReadMsgId) {
         readData[userLastReadMsgId] = [
           ...readData[userLastReadMsgId],
           readState.user,
         ];
       }
     }
+
     return readData;
   };
 

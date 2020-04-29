@@ -66,7 +66,8 @@ export const MessageStatus = ({
   threadList,
 }) => {
   const renderStatus = () => {
-    const justReadByMe = readBy.length === 1 && readBy[0].id === client.user.id;
+    const justReadByMe =
+      readBy.length === 1 && readBy[0] && readBy[0].id === client.user.id;
 
     if (message.status === 'sending') {
       return (
