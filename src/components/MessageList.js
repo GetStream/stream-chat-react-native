@@ -224,6 +224,8 @@ class MessageList extends PureComponent {
      *
      * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
      *
+     * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+     *
      * e.g.
      * ```
      * <MessageList
@@ -231,6 +233,16 @@ class MessageList extends PureComponent {
      * ```
      */
     additionalFlatListProps: PropTypes.object,
+    /**
+     * Use `setFlatListRef` to get access to ref to inner FlatList.
+     *
+     * e.g.
+     * <MessageList
+     *  setFlatListRef={(ref) => {
+     *    // Use ref for your own good
+     *  }}
+     */
+    setFlatListRef: PropTypes.func,
   };
 
   static defaultProps = {
@@ -628,7 +640,10 @@ class MessageList extends PureComponent {
           style={{ flex: 1, alignItems: 'center', width: '100%' }}
         >
           <ListContainer
-            ref={(fl) => (this.flatList = fl)}
+            ref={(fl) => {
+              this.flatList = fl;
+              this.props.setFlatListRef && this.props.setFlatListRef(fl);
+            }}
             data={messagesWithDates}
             onScroll={this.handleScroll}
             ListFooterComponent={HeaderComponent}

@@ -135,6 +135,8 @@ const ChannelList = withChatContext(
        *
        * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
        *
+       * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+       *
        * e.g.
        * ```
        * <ChannelList
@@ -144,6 +146,16 @@ const ChannelList = withChatContext(
        * ```
        */
       additionalFlatListProps: PropTypes.object,
+      /**
+       * Use `setFlatListRef` to get access to ref to inner FlatList.
+       *
+       * e.g.
+       * <ChannelList
+       *  setFlatListRef={(ref) => {
+       *    // Use ref for your own good
+       *  }}
+       */
+      setFlatListRef: PropTypes.func,
     };
 
     static defaultProps = {

@@ -61,6 +61,8 @@ const ChannelListMessenger = withChatContext(
        *
        * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
        *
+       * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+       *
        * e.g.
        * ```
        * <ChannelListMessenger
@@ -69,6 +71,16 @@ const ChannelListMessenger = withChatContext(
        * ```
        */
       additionalFlatListProps: PropTypes.object,
+      /**
+       * Use `setFlatListRef` to get access to ref to inner FlatList.
+       *
+       * e.g.
+       * <ChannelListMessenger
+       *  setFlatListRef={(ref) => {
+       *    // Use ref for your own good
+       *  }}
+       */
+      setFlatListRef: PropTypes.func,
     };
 
     static defaultProps = {
@@ -98,6 +110,9 @@ const ChannelListMessenger = withChatContext(
 
     renderChannels = () => (
       <FlatList
+        ref={(flRef) => {
+          this.props.setFlatListRef && this.props.setFlatListRef(flRef);
+        }}
         data={this.props.channels}
         onEndReached={this.props.loadNextPage}
         onEndReachedThreshold={this.props.loadMoreThreshold}
