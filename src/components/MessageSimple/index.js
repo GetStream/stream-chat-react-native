@@ -391,8 +391,16 @@ export const MessageSimple = themed(
           : false;
 
       if (message.type === 'system') {
-        return <MessageSystem message={message} />;
+        return (
+          <Container
+            hasMarginBottom={hasMarginBottom}
+            isVeryLastMessage={isVeryLastMessage}
+          >
+            <MessageSystem message={message} />
+          </Container>
+        );
       }
+
       const hasReactions =
         reactionsEnabled &&
         message.latest_reactions &&
