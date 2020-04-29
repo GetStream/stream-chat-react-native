@@ -73,6 +73,11 @@ export const Card = withMessageContentContext(
         type: PropTypes.string,
         alignment: PropTypes.string,
         onLongPress: PropTypes.func,
+        /**
+         * Provide any additional props for child `TouchableOpacity`.
+         * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+         */
+        additionalTouchableProps: PropTypes.object,
         Header: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         Cover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
         Footer: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
@@ -113,6 +118,7 @@ export const Card = withMessageContentContext(
           type,
           alignment,
           onLongPress,
+          additionalTouchableProps,
           Header,
           Cover,
           Footer,
@@ -125,6 +131,7 @@ export const Card = withMessageContentContext(
             }}
             onLongPress={onLongPress}
             alignment={alignment}
+            {...additionalTouchableProps}
           >
             {Header && <Header {...this.props} />}
             {Cover && <Cover {...this.props} />}

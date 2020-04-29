@@ -376,7 +376,7 @@ slack or whatsapp. In this example we are going to add name of the sender on top
 
 I can foresee different types of designs for this:
 
-## Sender's name on the very top of message bubble (above text container, attachments)
+### Sender's name on the very top of message bubble (above text container, attachments)
 
   In this case, we are going to override `MessageContent` component via prop to add
   the name of sender, right before MessageContent (which includes attachments and message text)
