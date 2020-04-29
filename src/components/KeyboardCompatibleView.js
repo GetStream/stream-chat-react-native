@@ -50,8 +50,6 @@ export class KeyboardCompatibleView extends React.PureComponent {
       appState: AppState.currentState,
     };
 
-    this.setupListeners();
-
     this._keyboardOpen = false;
     // Following variable takes care of race condition between keyboardDidHide and keyboardDidShow.
     this._hidingKeyboardInProgress = false;
@@ -60,16 +58,23 @@ export class KeyboardCompatibleView extends React.PureComponent {
   }
   componentDidMount() {
     AppState.addEventListener('change', this._handleAppStateChange);
+    this.setupListeners();
     this.unmounted = false;
   }
 
-  _handleAppStateChange = async (nextAppState) => {
+  _handleAppStateChange = (nextAppState) => {
     if (
       this.state.appState.match(/inactive|background/) &&
       nextAppState === 'active'
     ) {
       this.setupListeners();
-    } else {
+      this.setState({ appState: nextAppState });
+    }
+
+    if (
+      this.state.appState === 'active' &&
+      nextAppState.match(/inactive|background/)
+    ) {
       /**
        * When leaving an active app state but still mounted we want to reset
        * animated height values so when active again, animations will properly
@@ -77,11 +82,10 @@ export class KeyboardCompatibleView extends React.PureComponent {
        */
       this.setState({ channelHeight: new Animated.Value(this.initialHeight) });
       this.initialHeight = undefined;
-      await this.dismissKeyboard();
+      this.dismissKeyboard();
       this.removeListeners();
+      this.setState({ appState: nextAppState });
     }
-
-    this.setState({ appState: nextAppState });
   };
 
   setupListeners = () => {
@@ -148,7 +152,6 @@ export class KeyboardCompatibleView extends React.PureComponent {
         } else {
           finalHeight = windowHeight - y - keyboardHeight;
         }
-
         Animated.timing(this.state.channelHeight, {
           toValue: finalHeight,
           duration: this.props.keyboardOpenAnimationDuration,
