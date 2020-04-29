@@ -862,17 +862,19 @@ class MessageInput extends PureComponent {
             />
           ) : (
             <>
-              <AttachButton
-                disabled={disabled}
-                handleOnPress={async () => {
-                  if (hasImagePicker && hasFilePicker) {
-                    await this.props.dismissKeyboard();
-                    this.attachActionSheet.show();
-                  } else if (hasImagePicker && !hasFilePicker)
-                    this._pickImage();
-                  else if (!hasImagePicker && hasFilePicker) this._pickFile();
-                }}
-              />
+              {(hasImagePicker || hasFilePicker) && (
+                <AttachButton
+                  disabled={disabled}
+                  handleOnPress={async () => {
+                    if (hasImagePicker && hasFilePicker) {
+                      await this.props.dismissKeyboard();
+                      this.attachActionSheet.show();
+                    } else if (hasImagePicker && !hasFilePicker)
+                      this._pickImage();
+                    else if (!hasImagePicker && hasFilePicker) this._pickFile();
+                  }}
+                />
+              )}
               <AutoCompleteInput
                 openSuggestions={this.props.openSuggestions}
                 closeSuggestions={this.props.closeSuggestions}
