@@ -25,8 +25,16 @@
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
 - [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
-- [How to change layout of MessageInput (message text input box) component](#how-to-change-layout-of-messageinput-message-text-input-box-component)
 
+- MessageInput customizations
+
+    - [How to change layout of MessageInput (message text input box) component](#how-to-change-layout-of-messageinput-message-text-input-box-component)
+
+    - [Separate buttons for file picker and image picker](#separate-buttons-for-file-picker-and-image-picker)
+
+    - [Add some extra props to inner `TextInput` of `MessageInput` component](#adding-extra-props-to-inner-textinput-of-messageinput-component)
+
+    - [Growing input box with content](#growing-input-box-with-content)
 
 # How to customize message component
 
@@ -1212,4 +1220,82 @@ const theme = {
     <MessageInput Input={InputBox} />
   </Channel>
 </Chat>
+```
+
+## Separate buttons for file picker and image picker
+
+Additionally if you want separate buttons for file picker and image picker or just want to open either one of them on some action, you can use _pickImage() and _pickFile() functions available on props of `InputBox` component (in above example)
+
+So basically you can add some button in `InputBox` component following way
+
+```js
+const InputBox = props => {
+  return (
+    <View style={inputBoxStyles.container}>
+        {/** Here you will put all the other components such as AutoCompleteInput */}
+        {/** Following button will only open filePicker */}
+        <Button onPress={props._pickFile()} />
+        {/** Following button will only open image picker */}
+        <Button onPress={props._pickImage()} />
+    </View>
+  );
+};
+
+// And then pass this InputBox to MessageInput
+
+<MessageInput Input={InputBox} />
+```
+
+## Adding extra props to inner `TextInput` of `MessageInput` component
+
+`MessageInput` internally uses [TextInput](https://reactnative.dev/docs/textinput.html) component from react-native. We attach some default props to it internally. But if you want to add some additional props, you can do it via `additionalTextInputProps`
+
+```js
+<MessageInput
+  additionalTextInputProps={{
+    allowFontScaling: true,
+    clearTextOnFocus: true
+  }}
+/>
+```
+
+## Growing input box with content
+
+For general idea, you may want to read this post first (thanks to [@manojsinghnegi](https://medium.com/@manojsinghnegi)) - https://medium.com/@manojsinghnegi/react-native-auto-growing-text-input-8638ac0931c8
+
+```js
+// Override the default max-height on inner TextInput
+const theme = {
+  'messageInput.inputBox': 'max-height: 250px',
+}
+
+class ChannelScreen extends React.Component {
+  constructor(props) {
+    this.state = {
+      height: 40,
+    }
+  }
+
+  updateSize = (height) => {
+    this.setState({
+      height
+    });
+  }
+
+  render() {
+    return (
+      <Chat>
+        <Channel>
+          <MessageInput
+            additionalTextInputProps={{
+              onContentSizeChange: e =>
+                this.updateSize(e.nativeEvent.contentSize.height),
+              style: {height: this.state.height},
+            }}
+          />
+        </Channel>
+      </Chat>
+    )
+  }
+}
 ```
