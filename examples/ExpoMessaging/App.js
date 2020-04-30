@@ -16,15 +16,19 @@ import {
 
 import { createAppContainer, createStackNavigator } from 'react-navigation';
 
-const chatClient = new StreamChat('qk4nn7rpcn75');
+const chatClient = new StreamChat('q95x9hkbyd6p');
 const userToken =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
-const user = {
-  id: 'billowing-firefly-8',
-  name: 'Billowing firefly',
-  image:
-    'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
-};
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
+  const user = {
+    id: 'ron',
+  };
+  
+const filters = { type: 'messaging', example: 'example-apps', members: { '$in': ['ron'] } };
+const sort = { last_message_at: -1 };
+const options = {
+  state: true,
+  watch: true
+}
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
 const theme = {
   avatar: {
@@ -33,7 +37,7 @@ const theme = {
     },
   },
   colors: {
-    primary: 'magenta',
+    primary: 'blue',
   },
   spinner: {
     css: `
@@ -43,21 +47,12 @@ const theme = {
   },
 };
 
-
-const filters = { type: 'messaging' };
-const sort = { last_message_at: -1 };
-const options = {
-  state: true,
-  watch: true,
-  limit: 30,
-};
-
 /**
  * Start playing with streami18n instance here:
  * Please refer to description of this PR for details: https://github.com/GetStream/stream-chat-react-native/pull/150
  */
 const streami18n = new Streami18n({
-  language: 'nl'
+  language: 'en'
 });
 
 class ChannelListScreen extends PureComponent {

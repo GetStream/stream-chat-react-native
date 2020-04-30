@@ -23,7 +23,7 @@ const theme = {
     },
   },
   colors: {
-    primary: 'magenta',
+    primary: 'blue',
   },
   spinner: {
     css: `
@@ -33,17 +33,14 @@ const theme = {
   },
 };
 
-const chatClient = new StreamChat('qk4nn7rpcn75');
+const chatClient = new StreamChat('q95x9hkbyd6p');
 const userToken =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiYmlsbG93aW5nLWZpcmVmbHktOCJ9.CQTVyJ6INIM8u28BxkneY2gdYpamjLzSVUOTZKzfQlg';
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
   const user = {
-    id: 'billowing-firefly-8',
-    name: 'Billowing firefly',
-    image:
-      'https://stepupandlive.files.wordpress.com/2014/09/3d-animated-frog-image.jpg',
+    id: 'ron',
   };
   
-const filters = { type: 'messaging' };
+const filters = { type: 'messaging', example: 'example-apps', members: { '$in': ['ron'] } };
 const sort = { last_message_at: -1 };
 const options = {
   state: true,
