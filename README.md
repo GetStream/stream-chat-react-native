@@ -26,6 +26,7 @@
 - [Example Apps](#example-apps)
   - [Expo Example](#expo-example)
   - [Native Example](#native-example)
+  - [Slack clone](#slack-clone)
 - [Docs](#docs)
 - [Keep in mind](#keep-in-mind)
 - [Setup](#setup)
@@ -42,6 +43,12 @@ The best place to start is the [React Native Chat Tutorial](https://getstream.io
 ## Example Apps
 
 This repo includes 2 example apps. One that's used with Expo, and one for native.
+
+<div style="display: inline">
+  <img src="./screenshots/1.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+  <img src="./screenshots/2.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+  <img src="./screenshots/3.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" />
+</div>
 
 ### Expo example
 
@@ -82,6 +89,23 @@ This repo includes 2 example apps. One that's used with Expo, and one for native
    ```
 
    You can generate the debug keystore by running this command in the `android/app/` directory: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000` - [Reference](https://github.com/facebook/react-native/issues/25629#issuecomment-511209583)
+
+### Slack clone
+
+Checkout our tutorial on how to build a slack clone using react-native and stream-chat-react-native
+
+<div style="display: inline">
+  <img src="./screenshots/4.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+  <img src="./screenshots/5.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+  <img src="./screenshots/6.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" />
+</div>
+
+- **Tutorial** [https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f](https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f?source=friends_link&sk=b06d7cc0c49bd08bcf398df9c89d48d7)
+
+- **Source code for app**
+
+  - **react native** https://github.com/GetStream/slack-clone-react-native/
+  - **expo** https://github.com/GetStream/slack-clone-expo/
 
 ## Docs
 
