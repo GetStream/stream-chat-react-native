@@ -21,9 +21,13 @@
     - [Swipe message left to delete and right to reply](#swipe-message-left-to-delete-and-right-to-reply-message-example-9)
 
 - [How to customize actionsheet styles](#actionsheet-styling)
+
 - [What is KeyboardCompatibleView and how to customize collapsing/expanding animation](#keyboard)
+
 - [How to customize underlying `FlatList` in `MessageList` or `ChannelList`?](#how-to-customizemodify-underlying-flatlist-of-messagelist-or-channellist)
+
 - [Image upload takes too long. How can I fix it?](#image-upload-takes-too-long-how-can-i-fix-it)
+
 - [How can I override/intercept message actions such as edit, delete, reaction, reply? e.g. to track analytics](#how-can-i-overrideintercept-message-actions-such-as-edit-delete-reaction-reply-eg-to-track-analytics)
 
 - MessageInput customizations
@@ -35,6 +39,8 @@
     - [Add some extra props to inner `TextInput` of `MessageInput` component](#adding-extra-props-to-inner-textinput-of-messageinput-component)
 
     - [Growing input box with content](#growing-input-box-with-content)
+
+- [Checklist for Push notifications](#checklist-for-push-notifications)
 
 # How to customize message component
 
@@ -1299,3 +1305,138 @@ class ChannelScreen extends React.Component {
   }
 }
 ```
+
+## Checklist for Push notifications
+
+### Setup
+
+For setup regarding push notifications, first of all make sure you have followed all the steps:
+
+#### For iOS
+
+ - https://getstream.io/chat/docs/push_ios/?language=java
+ - https://getstream.io/chat/docs/rn_push_initial/?language=java
+ - https://getstream.io/chat/docs/rn_push_ios/?language=java
+
+#### For android
+
+ - https://getstream.io/chat/docs/push_android/?language=java
+ - https://getstream.io/chat/docs/rn_push_initial/?language=java
+ - https://getstream.io/chat/docs/rn_push_android/?language=java
+
+### Requirements
+
+- User must be a member of channel, if he expects a push notification for a message on that channel.
+
+- We only send a push notification, when user is **NOT** connected to chat, or in other words, if user does **NOT** have any active WS (websocket) connection. WS connection is established when you do
+
+  `await client.setUser({ id: 'user_id' })`.
+
+### Caveats
+
+Usually you want to receive push notification, when your app goes to background. When you put your app to background, WS connection stays active for approximately 15-20 seconds, after which system will break the connection automatically. But for those 15-20 seconds, you won't receive any push (since WS is still active). 
+
+- To handle this case, you will have to manually break the WS connection, when your app goes to background:
+
+  ```js
+  await client.wsConnection.disconnect();
+  ```
+
+  And when app comes to foreground, re-establish the connection:
+
+  ```js
+  await client._setupConnection();
+  ```
+
+  You can use [AppState](https://reactnative.dev/docs/appstate) module of react-native to detect weather app is on foreground or background.
+
+- If you don't like the idea of manually breaking websocket connection, but still want to receive push notification immediately when app goes to background, please use the following approach:
+
+  1. Add a listener for `message.new` (and/or `notification.message_new`) event.
+
+  2. When you receive one of these events, check if your app is in foreground or background. If the app is backgrounded, then generate a [local notification](https://github.com/zo0r/react-native-push-notification#local-notifications)
+
+
+  ```js
+    const _handleMessageNewEvent = event => {
+      // If the app is on foreground, then do nothing.
+      if (appState === 'active') return;
+
+      // If app is on background, then generate a local notification.
+      PushNotification.localNotification({
+        bigText: event.message.text
+      });
+    }
+
+    client.on('message.new', _handleMessageNewEvent)
+    client.on('notification.message_new', _handleMessageNewEvent)
+
+  ```
+
+  App example will look something like following:
+
+  ```js
+  import React, { useEffect, useState } from "react";
+  import { AppState, StyleSheet, Text, View } from "react-native";
+  import PushNotifications from 'react-native-push-notification';
+
+  const ChatExample = () => {
+    const [appState, setAppState] = useState(AppState.currentState);
+    const [client, setClient] = useState(null);
+
+    useEffect(() => {
+      const setupClient = async () => {
+        const client = new StreamChat("API_KEY");
+        await client.setUser({id: 'userId'}, 'token');
+
+        client.on('message.new', _handleMessageNewEvent)
+        client.on('notification.message_new', _handleMessageNewEvent)
+
+        setClient(client);
+      }
+
+      setupClient();
+
+      return () => {
+        client.off('message.new');
+        client.off('notification.message_new');
+      }
+    }, [])
+
+    useEffect(() => {
+      PushNotification.configure({ /** push notification config */ })
+      AppState.addEventListener("change", _handleAppStateChange);
+
+      return () => {
+        AppState.removeEventListener("change", _handleAppStateChange);
+      };
+    }, []);
+
+    const _handleAppStateChange = nextAppState => {
+      if (appState.match(/inactive|background/) && nextAppState === "active") {
+        console.log("App has come to the foreground!");
+      }
+      setAppState(nextAppState);
+    };
+
+    const _handleMessageNewEvent = event => {
+      // If the app is on foreground, then do nothing.
+      if (appState === 'active') return;
+
+      // If app is on background, then generate a local notification.
+      PushNotification.localNotification({
+        bigText: event.message.text
+      });
+    }
+
+    if (!client) return null;
+
+    return (
+      <View style={styles.container}>
+        <Chat client={client}>
+          {/** All the chat components */}
+        </Chat>
+      </View>
+    );
+  };
+  ```
