@@ -36,6 +36,7 @@
 - [Setup](#setup)
   - [Expo package](#expo-package)
   - [Native package](#native-package)
+  - Native Web package _(currently under development. Please follow progress at [#206](https://github.com/GetStream/stream-chat-react-native/issues/206))_
 - [Upgrade](#upgrade)
 - [Common Issues](#common-issues)
 - [Contributing](#contributing)
