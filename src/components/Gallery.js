@@ -232,6 +232,10 @@ class Gallery extends React.PureComponent {
           <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
             <ImageViewer
               imageUrls={images}
+              // TODO: We don't have 'save image' functionality.
+              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+              // opens up popup menu to with an option "Save to the album", which basically does nothing.
+              saveToLocalByLongPress={false}
               onCancel={() => {
                 this.setState({ viewerModalOpen: false });
               }}
