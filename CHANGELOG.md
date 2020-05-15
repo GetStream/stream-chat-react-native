@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.10.3] 2020-05-15
+
+- Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/master/docs/userToken.md)
+- Disable longPress on Image gallery [f7aacb5](https://github.com/GetStream/stream-chat-react-native/commit/f7aacb5741e85811de37d5e3b550d2be539b89a4)
+- Fixing markdown issue [ac621f0](https://github.com/GetStream/stream-chat-react-native/commit/ac621f0eb1f6be7f0496b82ee425f3bc90c10839)
+
 ## [0.10.2] 2020-04-29
 
 - Fixing crashes in KeyboardCompatibleView and better handling of AppState changes
