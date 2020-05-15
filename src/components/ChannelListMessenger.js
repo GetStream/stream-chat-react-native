@@ -75,10 +75,12 @@ const ChannelListMessenger = withChatContext(
        * Use `setFlatListRef` to get access to ref to inner FlatList.
        *
        * e.g.
+       * ```
        * <ChannelListMessenger
        *  setFlatListRef={(ref) => {
        *    // Use ref for your own good
        *  }}
+       * ```
        */
       setFlatListRef: PropTypes.func,
     };

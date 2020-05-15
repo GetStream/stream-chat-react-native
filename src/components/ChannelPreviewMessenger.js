@@ -63,7 +63,6 @@ const Message = styled.Text`
  * @example ./docs/ChannelPreviewMessenger.md
  */
 class ChannelPreviewMessenger extends PureComponent {
-  channelPreviewButton = React.createRef();
   static themePath = 'channelPreview';
 
   static propTypes = {

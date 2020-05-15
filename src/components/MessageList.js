@@ -227,7 +227,7 @@ class MessageList extends PureComponent {
      * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
      *
      * e.g.
-     * ```
+     * ```js
      * <MessageList
      *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
      * ```
@@ -237,10 +237,12 @@ class MessageList extends PureComponent {
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
      * e.g.
+     * ```js
      * <MessageList
      *  setFlatListRef={(ref) => {
      *    // Use ref for your own good
      *  }}
+     * ```
      */
     setFlatListRef: PropTypes.func,
   };

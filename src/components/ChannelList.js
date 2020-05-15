@@ -150,10 +150,12 @@ const ChannelList = withChatContext(
        * Use `setFlatListRef` to get access to ref to inner FlatList.
        *
        * e.g.
+       * ```
        * <ChannelList
        *  setFlatListRef={(ref) => {
        *    // Use ref for your own good
        *  }}
+       * ```
        */
       setFlatListRef: PropTypes.func,
     };
@@ -185,8 +187,6 @@ const ChannelList = withChatContext(
         refreshing: false,
         offset: 0,
       };
-
-      this.menuButton = React.createRef();
 
       this._queryChannelsDebounced = debounce(this.queryChannels, 1000, {
         leading: true,
