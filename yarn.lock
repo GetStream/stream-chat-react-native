@@ -1165,10 +1165,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@stream-io/react-native-simple-markdown@^1.1.1":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.1.2.tgz#d058646654f5c45455550c7f01cc9e52ba5ad969"
-  integrity sha512-n85MfsMoaPchxUFCas+48h5DxBffLRQreZZL2uawMFdf7SaBgzTmtrmLuIJOBnKI9jpsqv8GhFrl2v+lIQFnhg==
+"@stream-io/react-native-simple-markdown@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.1.3.tgz#690cac9236d28eab3b0e4b896714c81254258c2d"
+  integrity sha512-O0/v3mlTaD9+eAVxThreC0sX1eOgcJRR7N1FOZ9zpf3IFYVr4VU+S7tYZHqmNzyh1N3VUi4+Fao+ZxEb/YToXw==
   dependencies:
     lodash "^4.15.0"
     prop-types "^15.6.0"
@@ -9366,10 +9366,10 @@ stream-browserify@^2.0.1:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
 
-stream-chat@^1.7.3:
-  version "1.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.7.3.tgz#1f30f40da4cc8d582771b8f1636167e10688af53"
-  integrity sha512-kKLM+AkLqqmd9DFDtotzWieiru19JOmsWz/mo72TcX2pksduBasIIeNbGGTqNxwoJ3y55PgCvvPKzSq+duIOEg==
+stream-chat@^1.10.1:
+  version "1.10.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.10.1.tgz#fccb70f0f585265faa57219fa1c048a8cb79b02f"
+  integrity sha512-WiDFypmv8GEMlIjuwEmf98yDEwbSoEhVfJp5ZBB4iGod313dNJ4LiQONq0JgMT5bGyxGYTq80Xlv5uRnNVY5Lg==
   dependencies:
     "@babel/runtime" "^7.3.1"
     "@types/seamless-immutable" "7.1.10"
