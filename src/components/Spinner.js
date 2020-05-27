@@ -5,7 +5,7 @@ import { themed } from '../styles/theme';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
-const Circle = styled(AnimatedView)`
+export const Circle = styled(AnimatedView)`
   height: 30px;
   width: 30px;
   margin: 5px;

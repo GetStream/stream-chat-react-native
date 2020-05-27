@@ -17,7 +17,7 @@ export { Message } from './Message';
 export { MessageNotification } from './MessageNotification';
 export { MessageSystem } from './MessageSystem';
 export { ReactionList } from './ReactionList';
-export { Spinner } from './Spinner';
+export { Circle, Spinner } from './Spinner';
 export { SuggestionsProvider } from './SuggestionsProvider';
 export { UploadProgressIndicator } from './UploadProgressIndicator';
 export { Attachment } from './Attachment';

@@ -19,6 +19,8 @@ export const isPromise = (thing) => {
 };
 
 export const DEFAULT_QUERY_CHANNELS_LIMIT = 10;
+export const MAX_QUERY_CHANNELS_LIMIT = 30;
+
 /**
  * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
  * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
@@ -48,7 +50,30 @@ const ChannelList = withChatContext(
         PropTypes.node,
         PropTypes.elementType,
       ]),
-
+      /**
+       * The indicator to display network-down error at top of list, if there is connectivity issue
+       * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+       */
+      HeaderNetworkDownIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      /**
+       * The indicator to display error at top of list, if there was an error loading some page/channels after the first page.
+       * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
+       */
+      HeaderErrorIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
+      /**
+       * Loading indicator to display at bottom of the list, while loading further pages.
+       * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+       */
+      FooterLoadingIndicator: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.elementType,
+      ]),
       List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       onSelect: PropTypes.func,
       /**
@@ -182,28 +207,38 @@ const ChannelList = withChatContext(
         error: false,
         channels: Immutable([]),
         channelIds: Immutable([]),
-        loadingChannels: true,
-        hasNextPage: true,
         refreshing: false,
+        loadingChannels: true,
+        loadingNextPage: false,
+        hasNextPage: true,
         offset: 0,
       };
+      this.listRef = React.createRef();
+      this.lastRefresh = new Date();
+      this._queryChannelsDebounced = debounce(
+        async (params = {}) => {
+          await this.queryChannelsPromise;
+          if (this.state.error) {
+            return;
+          }
 
-      this._queryChannelsDebounced = debounce(this.queryChannels, 1000, {
-        leading: true,
-        trailing: true,
-      });
-      this.queryActive = false;
+          if (!this.state.hasNextPage) {
+            return;
+          }
+
+          this.queryChannels(params.queryType);
+        },
+        1000,
+        {
+          leading: true,
+          trailing: true,
+        },
+      );
       this._unmounted = false;
     }
 
     async componentDidMount() {
-      this.props.logger('ChannelList component', 'componentDidMount', {
-        tags: ['lifecycle', 'channellist'],
-        props: this.props,
-        state: this.state,
-      });
-
-      await this._queryChannelsDebounced();
+      await this.queryChannels('reload');
       this.listenToChanges();
     }
 
@@ -213,32 +248,12 @@ const ChannelList = withChatContext(
         !isEqual(prevProps.filters, this.props.filters) ||
         !isEqual(prevProps.sort, this.props.sort)
       ) {
-        await this.setState({
-          error: false,
-          channels: Immutable([]),
-          channelIds: Immutable([]),
-          loadingChannels: true,
-          hasNextPage: true,
-          refreshing: false,
-          offset: 0,
-        });
-        await this.queryChannels();
+        this._queryChannelsDebounced.cancel();
+        await this.queryChannels('reload');
       }
-
-      this.props.logger('ChannelList component', 'componentDidUpdate', {
-        tags: ['lifecycle', 'channellist'],
-        props: this.props,
-        state: this.state,
-      });
     }
 
     componentWillUnmount() {
-      this.props.logger('ChannelList component', 'componentWillUnmount', {
-        tags: ['lifecycle', 'channellist'],
-        props: this.props,
-        state: this.state,
-      });
-
       this._unmounted = true;
       this.props.client.off(this.handleEvent);
       this._queryChannelsDebounced.cancel();
@@ -249,102 +264,220 @@ const ChannelList = withChatContext(
     }
 
     componentDidCatch(error, info) {
-      console.warn(error, info);
+      console.warn(error, error.isUnmounted, info);
     }
 
-    queryChannels = async (resync = false) => {
-      // Don't query again if query is already active or there are no more results.
-      if (this.queryActive || !this.state.hasNextPage) return;
-
-      this.queryActive = true;
-
+    setStateAsync = (newState) => {
       if (this._unmounted) {
-        this.queryActive = false;
+        this._queryChannelsDebounced.cancel();
         return;
       }
+
+      return new Promise((resolve) => {
+        this.setState(newState, resolve);
+      });
+    };
+
+    wait = (ms) =>
+      new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      });
+
+    queryChannelsRequest = async (filters, sort, options, retryCount = 1) => {
+      const channelPromise = this.props.client.queryChannels(
+        filters,
+        sort,
+        options,
+      );
+
+      let channelQueryResponse;
+
+      try {
+        channelQueryResponse = await channelPromise;
+      } catch (e) {
+        // Wait for 2 seconds before making another attempt
+        await this.wait(2000);
+        // Don't try more than 3 times.
+        if (retryCount === 3) {
+          throw e;
+        }
+        return this.queryChannelsRequest(
+          filters,
+          sort,
+          options,
+          retryCount + 1,
+        );
+      }
+
+      return channelQueryResponse;
+    };
+
+    getQueryParams = (queryType) => {
       const { options, filters, sort } = this.props;
       let offset;
 
-      if (resync) {
+      if (queryType === 'refresh' || queryType === 'reload') {
         offset = 0;
-        options.limit = this.state.channels.length;
-        if (this._unmounted) return;
-        this.setState({
-          offset: 0,
-        });
+        options.limit =
+          this.state.channels.length === 0
+            ? options.limit || DEFAULT_QUERY_CHANNELS_LIMIT
+            : this.state.channels.length < MAX_QUERY_CHANNELS_LIMIT
+            ? this.state.channels.length
+            : MAX_QUERY_CHANNELS_LIMIT;
       } else {
         offset = this.state.offset;
       }
 
-      if (this._unmounted) return;
-      this.setState({ refreshing: true });
-      this.props.logger('ChannelList component', 'queryChannels', {
-        tags: ['channellist'],
-        props: this.props,
-        state: this.state,
-        query: {
-          filters,
-          sort,
-          ...options,
-          offset,
-        },
-      });
-
-      const channelPromise = this.props.client.queryChannels(filters, sort, {
+      const queryOptions = {
         ...options,
         offset,
+      };
+
+      return {
+        filters,
+        sort,
+        options: queryOptions,
+      };
+    };
+
+    setRefreshingUIState = () =>
+      this.setStateAsync({
+        refreshing: true,
+        loadingChannels: false,
+        loadingNextPage: false,
       });
 
-      try {
-        let channelQueryResponse = channelPromise;
-        if (isPromise(channelQueryResponse)) {
-          channelQueryResponse = await channelPromise;
-          if (offset === 0 && channelQueryResponse.length >= 1) {
-            if (this._unmounted) return;
+    setReloadingUIState = () =>
+      this.setStateAsync({
+        refreshing: false,
+        loadingChannels: true,
+        loadingNextPage: false,
+        error: false,
+        channels: Immutable([]),
+        channelIds: Immutable([]),
+      });
+
+    setLoadingNextPageUIState = () =>
+      this.setStateAsync({
+        refreshing: false,
+        loadingChannels: false,
+        loadingNextPage: true,
+      });
+
+    // Sets the loading UI state before the star
+    startQueryLoadingUIState = async (queryType) => {
+      switch (queryType) {
+        case 'refresh':
+          await this.setRefreshingUIState();
+          break;
+        case 'reload':
+          await this.setReloadingUIState();
+          break;
+        default:
+          await this.setLoadingNextPageUIState();
+          break;
+      }
+    };
+
+    finishQueryLoadingUIState = () =>
+      this.setStateAsync({
+        refreshing: false,
+        loadingChannels: false,
+        loadingNextPage: false,
+      });
+
+    /**
+     * queryType - 'refresh' | 'reload'
+     *
+     * refresh - Refresh the channel list. You will see the existing channels during refreshing.a
+     *  Mainly used for pull to refresh or resyning upong network recovery.
+     *
+     * reload  - Reload the channel list from begining. You won't see existing channels during reload.
+     */
+    queryChannels = (queryType) => {
+      // Don't query again if query is already active or there are no more results.
+      this.queryChannelsPromise = new Promise(async (resolve) => {
+        try {
+          await this.startQueryLoadingUIState(queryType);
+
+          const { filters, sort, options } = this.getQueryParams(queryType);
+          const channelQueryResponse = await this.queryChannelsRequest(
+            filters,
+            sort,
+            options,
+          );
+
+          if (options.offset === 0 && channelQueryResponse.length >= 1) {
             this.props.setActiveChannel(channelQueryResponse[0]);
           }
-        }
 
-        if (this._unmounted) return;
-        await this.setState((prevState) => {
-          let channels;
-          let channelIds;
-          let hasNextPage;
-          if (resync) {
-            channels = [...channelQueryResponse];
-            channelIds = [...channelQueryResponse.map((c) => c.id)];
+          this.finishQueryLoadingUIState();
+          const hasNextPage =
+            channelQueryResponse.length >=
+            (options.limit || DEFAULT_QUERY_CHANNELS_LIMIT);
+
+          if (queryType === 'refresh' || queryType === 'reload') {
+            await this.setChannels(channelQueryResponse, {
+              hasNextPage,
+              error: false,
+            });
           } else {
-            hasNextPage =
-              channelQueryResponse.length >=
-              (options.limit || DEFAULT_QUERY_CHANNELS_LIMIT);
-            // Remove duplicate channels in worse case we get repeted channel from backend.
-            channelQueryResponse = channelQueryResponse.filter(
-              (c) => this.state.channelIds.indexOf(c.id) === -1,
-            );
-
-            channels = [...prevState.channels, ...channelQueryResponse];
-            channelIds = [
-              ...prevState.channelIds,
-              ...channelQueryResponse.map((c) => c.id),
-            ];
+            await this.appendChannels(channelQueryResponse, {
+              hasNextPage,
+              error: false,
+            });
           }
 
-          return {
-            channels, // not unique somehow needs more checking
-            channelIds,
-            loadingChannels: false,
-            offset: channels.length,
-            hasNextPage,
-            refreshing: false,
-          };
-        });
-      } catch (e) {
-        console.warn(e);
+          resolve(true);
+        } catch (e) {
+          await this.handleError(e);
 
-        if (this._unmounted) return;
-        this.setState({ error: e, refreshing: false });
-      }
-      this.queryActive = false;
+          resolve(false);
+          return;
+        }
+      });
+
+      return this.queryChannelsPromise;
+    };
+
+    handleError = () => {
+      this._queryChannelsDebounced.cancel();
+      this.finishQueryLoadingUIState();
+      return this.setStateAsync({
+        error: true,
+      });
+    };
+
+    appendChannels = (channels = [], additionalState = {}) => {
+      // Remove duplicate channels in worse case we get repeted channel from backend.
+      let distinctChannels = channels.filter(
+        (c) => this.state.channelIds.indexOf(c.id) === -1,
+      );
+
+      distinctChannels = [...this.state.channels, ...distinctChannels];
+      const channelIds = [
+        ...this.state.channelIds,
+        ...distinctChannels.map((c) => c.id),
+      ];
+
+      return this.setStateAsync({
+        channels: distinctChannels,
+        channelIds,
+        offset: distinctChannels.length,
+        ...additionalState,
+      });
+    };
+
+    setChannels = (channels = [], additionalState = {}) => {
+      const distinctChannels = [...channels];
+      const channelIds = [...channels.map((c) => c.id)];
+
+      return this.setStateAsync({
+        channels: distinctChannels,
+        channelIds,
+        offset: distinctChannels.length,
+        ...additionalState,
+      });
     };
 
     listenToChanges() {
@@ -368,7 +501,7 @@ const ChannelList = withChatContext(
 
           // Remove the hidden channel from the list.
           channels.splice(channelIndex, 1);
-          this.setState({
+          this.setStateAsync({
             channels: [...channels],
           });
         }
@@ -385,7 +518,7 @@ const ChannelList = withChatContext(
           return channel;
         });
 
-        this.setState({ channels: [...newChannels] });
+        this.setStateAsync({ channels: [...newChannels] });
       }
 
       if (e.type === 'message.new') {
@@ -394,7 +527,8 @@ const ChannelList = withChatContext(
 
       // make sure to re-render the channel list after connection is recovered
       if (e.type === 'connection.recovered') {
-        this.queryChannels(true);
+        this._queryChannelsDebounced.cancel();
+        this.queryChannels('refresh');
       }
 
       // move channel to start
@@ -475,7 +609,7 @@ const ChannelList = withChatContext(
 
         if (channelIndex > -1) {
           channels[channelIndex].data = Immutable(e.channel);
-          this.setState({
+          this.setStateAsync({
             channels: [...channels],
           });
         }
@@ -504,7 +638,7 @@ const ChannelList = withChatContext(
 
           // Remove the deleted channel from the list.
           channels.splice(channelIndex, 1);
-          this.setState({
+          this.setStateAsync({
             channels: [...channels],
           });
         }
@@ -551,9 +685,32 @@ const ChannelList = withChatContext(
 
       // set new channel state
       if (this._unmounted) return;
-      this.setState({
+      this.setStateAsync({
         channels: [...channels],
       });
+    };
+
+    // Refreshes the list. Existing list of channels will still be visible on UI while refreshing.
+    refreshList = async () => {
+      const now = new Date();
+      // Only allow pull-to-refresh 10 seconds after last successful refresh.
+      if (now - this.lastRefresh < 10000 && !this.state.error) {
+        return;
+      }
+
+      // if (!this.state.error) return;
+      this.listRef.scrollToIndex({ index: 0 });
+      this._queryChannelsDebounced.cancel();
+      const success = await this.queryChannels('refresh');
+
+      if (success) this.lastRefresh = new Date();
+    };
+
+    // Reloads the channel list. All the existing channels will be wiped out first from UI, and then
+    // queryChannels api will be called to fetch new channels.
+    reloadList = () => {
+      this._queryChannelsDebounced.cancel();
+      this.queryChannels('reload');
     };
 
     loadNextPage = () => {
@@ -563,13 +720,23 @@ const ChannelList = withChatContext(
     render() {
       const context = {
         loadNextPage: this.loadNextPage,
+        refreshList: this.refreshList,
+        reloadList: this.reloadList,
       };
       const List = this.props.List;
       const props = { ...this.props, setActiveChannel: this.props.onSelect };
 
       return (
         <React.Fragment>
-          <List {...props} {...this.state} {...context} />
+          <List
+            {...props}
+            {...this.state}
+            {...context}
+            setFlatListRef={(ref) => {
+              this.listRef = ref;
+              this.props.setFlatListRef && this.props.setFlatListRef(ref);
+            }}
+          />
         </React.Fragment>
       );
     }

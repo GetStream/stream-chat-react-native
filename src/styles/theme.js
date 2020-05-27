@@ -29,7 +29,22 @@ export const defaultTheme = {
     text: {},
     fallback: {},
   },
-
+  channelListHeaderErrorIndicator: {
+    container: {},
+    errorText: {},
+  },
+  channelListHeaderNetworkDownIndicator: {
+    container: {},
+    errorText: {},
+  },
+  channelListFooterLoadingIndicator: {
+    container: {},
+  },
+  loadingErrorIndicator: {
+    container: {},
+    errorText: {},
+    retryText: {},
+  },
   channelPreview: {
     container: {},
     details: {},
