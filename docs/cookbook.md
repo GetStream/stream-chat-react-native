@@ -1326,11 +1326,14 @@ For setup regarding push notifications, first of all make sure you have followed
 
 ### Requirements
 
-- User must be a member of channel, if he expects a push notification for a message on that channel.
+- User must be a member of channel if they expect a push notification for a message on that channel.
 
 - We only send a push notification, when user is **NOT** connected to chat, or in other words, if user does **NOT** have any active WS (websocket) connection. WS connection is established when you do
 
-  `await client.setUser({ id: 'user_id' })`.
+  ```js
+  await client.setUser({ id: 'user_id' })
+  await client.addDevice(token.token, token.os === 'ios' ? 'apn' : 'firebase')
+  ```
 
 ### Caveats
 
