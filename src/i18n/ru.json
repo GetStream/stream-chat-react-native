@@ -15,6 +15,7 @@
   "Error loading": "Ошибка при загрузке",
   "Error loading channel list ...": "Ошибка загрузки списка каналов ...",
   "Error loading messages for this channel ...": "Ошибка загрузки сообщений для этого канала ...",
+  "Error while loading, please reload/refresh": "Ошибка загрузки, пожалуйста перезагрузите или обновите",
   "Loading ...": "Загружаю...",
   "Loading channels ...": "Загружаю каналы ...",
   "Loading messages ...": "Загружаю сообщения ...",

@@ -15,6 +15,7 @@
   "Error loading": "Yükleme hatası",
   "Error loading channel list ...": "Kanal listesi yüklenirken hata oluştu ...",
   "Error loading messages for this channel ...": "Bu kanal için mesajlar yüklenirken hata oluştu ...",
+  "Error while loading, please reload/refresh": "Yüklenirken hata oluştu, lütfen tekrar deneyin",
   "Loading ...": "Yükleniyor ...",
   "Loading channels ...": "Kanallar yükleniyor ...",
   "Loading messages ...": "Mesajlar yükleniyor ...",

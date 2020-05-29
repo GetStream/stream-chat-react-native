@@ -15,6 +15,7 @@
   "Error loading": "Erreur lors du chargement",
   "Error loading channel list ...": "Erreur lors du chargement de la liste de canaux",
   "Error loading messages for this channel ...": "Erreur lors du chargement des messages de ce canal",
+  "Error while loading, please reload/refresh": "Erreur lors du chargement, veuillez recharger/rafraîchir",
   "Loading ...": "Chargement ...",
   "Loading channels ...": "Chargement des canaux ...",
   "Loading messages ...": "Chargement des messages ...",

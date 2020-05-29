@@ -30,7 +30,7 @@
     "docs": "styleguidist build",
     "test": "jest",
     "docs-server": "styleguidist server",
-    "build-translations": "yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --quiet && yarn lint-fix",
+    "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
     "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
