@@ -42,7 +42,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
     super(props);
 
     this.state = {
-      channelHeight: new Animated.Value('100%'),
+      channelHeight: new Animated.Value(Dimensions.get('window').height),
       // For some reason UI doesn't update sometimes, when state is updated using setValue.
       // So to force update the component, I am using following key, which will be incremented
       // for every keyboard slide up and down.
@@ -228,8 +228,12 @@ export class KeyboardCompatibleView extends React.PureComponent {
       layout: { height },
     },
   }) => {
-    // Not to set initial height again.
-    if (!this.initialHeight) {
+    // Don't set initial height again if the keyboard is open or initialHeight and layout height are equal
+    // Helps with issues related to bottom tab bar animations occurring after this initial onLayout call
+    if (
+      !this.initialHeight ||
+      (!this._keyboardOpen && this.initialHeight !== height)
+    ) {
       this.initialHeight = height;
       this.state.channelHeight.setValue(this.initialHeight);
     }

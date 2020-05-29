@@ -155,7 +155,6 @@ class ChannelInner extends PureComponent {
       threadMessages: [],
       threadLoadingMore: false,
       threadHasMore: true,
-      kavEnabled: true,
       /** We save the events in state so that we can display event message
        * next to the message after which it was received, in MessageList.
        *
@@ -651,8 +650,6 @@ class ChannelInner extends PureComponent {
       this.props.disableIfFrozenChannel,
   });
 
-  renderComponent = () => this.props.children;
-
   renderLoading = () => {
     const Indicator = this.props.LoadingIndicator;
     return <Indicator listType="message" />;
@@ -665,7 +662,7 @@ class ChannelInner extends PureComponent {
 
   render() {
     let core;
-    const { KeyboardCompatibleView, t } = this.props;
+    const { children, KeyboardCompatibleView, t } = this.props;
     if (this.state.error) {
       this.props.logger(
         'Channel component',
@@ -693,14 +690,7 @@ class ChannelInner extends PureComponent {
           enabled={!this.props.disableKeyboardCompatibleView}
         >
           <ChannelContext.Provider value={this.getContext()}>
-            <SuggestionsProvider
-              handleKeyboardAvoidingViewEnabled={(trueOrFalse) => {
-                if (this._unmounted) return;
-                this.setState({ kavEnabled: trueOrFalse });
-              }}
-            >
-              {this.renderComponent()}
-            </SuggestionsProvider>
+            <SuggestionsProvider>{children}</SuggestionsProvider>
           </ChannelContext.Provider>
         </KeyboardCompatibleView>
       );
