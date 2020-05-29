@@ -8,6 +8,7 @@ const Container = styled.TouchableOpacity`
   align-items: center;
   justify-content: center;
   background-color: #fae6e8;
+  padding: 3px;
   ${({ theme }) => theme.channelListHeaderErrorIndicator.container.css}
 `;
 
