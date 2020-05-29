@@ -390,6 +390,27 @@ export interface ChannelListProps
   LoadingErrorIndicator?: React.ElementType<LoadingErrorIndicatorProps>;
   /** The indicator to use when channel list is empty */
   EmptyStateIndicator?: React.ElementType<EmptyStateIndicatorProps>;
+  /**
+   * The indicator to display network-down error at top of list, if there is connectivity issue
+   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+   */
+  HeaderNetworkDownIndicator?: React.ElementType<
+    ChannelListHeaderNetworkDownIndicatorProps
+  >;
+  /**
+   * The indicator to display error at top of list, if there was an error loading some page/channels after the first page.
+   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
+   */
+  HeaderErrorIndicator?: React.ElementType<
+    ChannelListHeaderErrorIndicatorProps
+  >;
+  /**
+   * Loading indicator to display at bottom of the list, while loading further pages.
+   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+   */
+  FooterLoadingIndicator?: React.ElementType<
+    ChannelListFooterLoadingIndicatorProps
+  >;
 
   List?: React.ElementType<ChannelListUIComponentProps>;
 
@@ -486,8 +507,18 @@ export interface ChannelListUIComponentProps
   extends ChannelListProps,
     ChannelListState,
     StyledComponentProps {
+  reloadList(): void;
   loadNextPage(): void;
+  refreshList(): void;
 }
+
+export interface ChannelListHeaderNetworkDownIndicatorProps
+  extends TranslationContextValue {}
+export interface ChannelListHeaderErrorIndicatorProps
+  extends TranslationContextValue {
+  onPress?: () => void;
+}
+export interface ChannelListFooterLoadingIndicatorProps {}
 
 export interface ChannelPreviewProps
   extends ChannelListUIComponentProps,
@@ -997,6 +1028,7 @@ export interface LoadingErrorIndicatorProps
   extends StyledComponentProps,
     TranslationContextValue {
   listType?: listType;
+  retry?: () => void;
 }
 export interface LoadingIndicatorProps
   extends StyledComponentProps,
@@ -1252,6 +1284,18 @@ export class MessageTextContainer extends React.PureComponent<
 > {}
 
 export class ChannelList extends React.PureComponent<ChannelListProps, any> {}
+export class ChannelListHeaderErrorIndicator extends React.PureComponent<
+  ChannelListHeaderErrorIndicatorProps,
+  any
+> {}
+export class ChannelListHeaderNetworkDownIndicator extends React.PureComponent<
+  ChannelListHeaderNetworkDownIndicatorProps,
+  any
+> {}
+export class ChannelListFooterLoadingIndicator extends React.PureComponent<
+  ChannelListFooterLoadingIndicatorProps,
+  any
+> {}
 
 export class Thread extends React.PureComponent<ThreadProps, any> {}
 export class ChannelPreviewMessenger extends React.PureComponent<
