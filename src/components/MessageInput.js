@@ -465,7 +465,7 @@ class MessageInput extends PureComponent {
           mentioned_users: [],
         });
       } catch (err) {
-        console.log('Failed');
+        console.log('Fialed');
       }
     }
   };

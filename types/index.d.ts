@@ -1,7 +1,7 @@
 // TypeScript Version: 2.8
 
 import * as React from 'react';
-import { FlatList, GestureResponderEvent } from 'react-native';
+import { Text, GestureResponderEvent, FlatList } from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 import * as i18next from 'i18next';

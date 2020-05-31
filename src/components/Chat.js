@@ -165,6 +165,7 @@ export const Chat = themed(
       this._unmounted = true;
       this.props.client.off('connection.recovered');
       this.props.client.off('connection.changed');
+      this.props.client.off(this.handleEvent);
       this.unsubscribeNetInfo && this.unsubscribeNetInfo();
     }
 
