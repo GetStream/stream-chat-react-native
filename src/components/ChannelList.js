@@ -315,22 +315,28 @@ const ChannelList = withChatContext(
     getQueryParams = (queryType) => {
       const { options, filters, sort } = this.props;
       let offset;
+      let limit;
 
       if (queryType === 'refresh' || queryType === 'reload') {
         offset = 0;
-        options.limit =
-          this.state.channels.length === 0
-            ? options.limit || DEFAULT_QUERY_CHANNELS_LIMIT
-            : this.state.channels.length < MAX_QUERY_CHANNELS_LIMIT
-            ? this.state.channels.length
-            : MAX_QUERY_CHANNELS_LIMIT;
+        limit = MAX_QUERY_CHANNELS_LIMIT;
+        if (this.state.channels.length === 0) {
+          limit = options.limit || DEFAULT_QUERY_CHANNELS_LIMIT;
+        } else if (this.state.channels.length < MAX_QUERY_CHANNELS_LIMIT) {
+          limit = Math.max(
+            this.state.channels.length,
+            DEFAULT_QUERY_CHANNELS_LIMIT,
+          );
+        }
       } else {
+        limit = options.limit || DEFAULT_QUERY_CHANNELS_LIMIT;
         offset = this.state.offset;
       }
 
       const queryOptions = {
         ...options,
         offset,
+        limit,
       };
 
       return {
