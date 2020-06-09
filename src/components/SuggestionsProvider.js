@@ -88,6 +88,7 @@ export class SuggestionsProvider extends React.PureComponent {
   updateSuggestions = (suggestions) => {
     this.setState({
       suggestions,
+      suggestionsViewActive: this.state.component ? true : false,
     });
   };
 
@@ -96,6 +97,12 @@ export class SuggestionsProvider extends React.PureComponent {
       suggestionsViewActive: false,
       suggestionsTitle: '',
       component: null,
+    });
+  };
+
+  dismissSuggestionsList = () => {
+    this.setState({
+      suggestionsViewActive: false,
     });
   };
 
@@ -145,7 +152,7 @@ export class SuggestionsProvider extends React.PureComponent {
           marginLeft={this.state.suggestionsLeftMargin}
           width={this.state.suggestionsWidth}
           backdropHeight={this.state.suggestionsBackdropHeight}
-          handleDismiss={this.closeSuggestions}
+          handleDismiss={this.dismissSuggestionsList}
           suggestionsTitle={this.state.suggestionsTitle}
         />
         <View
