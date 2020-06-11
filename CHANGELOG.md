@@ -4,7 +4,14 @@
 
 **Non breaking changes**
 
-- UX improvements of ChannelList component
+### UX improvements of ChannelList component
+
+  <div style="display: inline">
+    <img src="./screenshots/7.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+    <img src="./screenshots/8.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
+    <img src="./screenshots/9.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" />
+  </div>
+
   - So far we only had `LoadingErrorIndicator` (which can be customized using prop `LoadingErrorIndicator`). This error indicator replaces the entire channel
   list on screen. So if your 2nd page of list results in error, we used to remove all the already fetched channels and show this full screen error indicator.
   Instead we have introduced following error indicators, which will be displayed at top of the list in case or error. Please note that if first page of
@@ -12,7 +19,7 @@
 
     - HeaderErrorIndicator
     - HeaderNetworkDownIndicator
-  
+
   - Introducing following new props to ChannelList component
 
     - `FooterLoadingIndicator` {UI Component} To override default spinner at footer of channel list (introduced in this release)
