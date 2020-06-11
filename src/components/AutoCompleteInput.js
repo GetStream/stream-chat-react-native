@@ -71,11 +71,18 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   updateSuggestions = async (q) => {
+    this.setState({
+      currentTokenForSuggestions: q,
+    });
     const triggers = this.props.triggerSettings;
     await triggers[this.state.currentTrigger].dataProvider(
       q,
       this.state.text,
-      (data) => {
+      (data, query) => {
+        // Make sure that the result is still relevant for current query
+        if (this.state.currentTokenForSuggestions !== query) {
+          return;
+        }
         this.props.updateSuggestions({
           data,
           onSelect: this.onSelectSuggestion,
@@ -171,7 +178,7 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   handleMentions = (text) => {
-    const { selectionEnd: selectionEnd } = this.state;
+    const { selectionEnd } = this.state;
     // TODO: Move these const to props
     const minChar = 0;
 

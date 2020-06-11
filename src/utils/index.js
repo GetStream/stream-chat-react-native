@@ -103,7 +103,7 @@ const queryMembers = async (channel, query, onReady) => {
   onReady && onReady(users);
 };
 
-const queryMembersdebounced = debounce(queryMembers, 200, {
+const queryMembersDebounced = debounce(queryMembers, 200, {
   trailing: true,
   leading: false,
 });
@@ -149,12 +149,14 @@ export const ACITriggerSettings = ({
         });
         const data = matchingUsers.slice(0, 10);
 
-        onReady && onReady(data);
+        onReady && onReady(data, query);
 
         return data;
       }
 
-      return queryMembersdebounced(channel, query, onReady);
+      return queryMembersDebounced(channel, query, (data) => {
+        onReady(data, query);
+      });
     },
     component: MentionsItem,
     title: t('Searching for people'),
@@ -199,7 +201,7 @@ export const ACITriggerSettings = ({
 
       const result = selectedCommands.slice(0, 10);
 
-      onReady && onReady(result);
+      onReady && onReady(result, q);
 
       return result;
     },

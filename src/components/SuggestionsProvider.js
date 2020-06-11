@@ -88,7 +88,7 @@ export class SuggestionsProvider extends React.PureComponent {
   updateSuggestions = (suggestions) => {
     this.setState({
       suggestions,
-      suggestionsViewActive: this.state.component ? true : false,
+      suggestionsViewActive: !!this.state.component,
     });
   };
 
