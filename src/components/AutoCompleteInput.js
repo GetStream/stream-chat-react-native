@@ -48,13 +48,9 @@ class AutoCompleteInput extends React.PureComponent {
     };
 
     this.isTrackingStarted = false;
-    this.previousChar = ' ';
-
-    this._createRegExp();
   }
 
   componentDidUpdate(prevProps) {
-    // console.log('in component did update: ' + prevProps.value);
     if (prevProps.value !== this.props.value) {
       this.setState({ text: this.props.value });
       this.handleChange(this.props.value, true);
@@ -67,28 +63,35 @@ class AutoCompleteInput extends React.PureComponent {
       this.state.currentTrigger
     ];
     this.props.openSuggestions(title, component);
-    // console.log('start TRACKING');
   };
 
   stopTracking = () => {
     this.isTrackingStarted = false;
-    // console.log('STOP TRACKING');
     this.props.closeSuggestions();
   };
 
-  updateSuggestions(q) {
-    const triggers = this.props.triggerSettings;
-    this.props.updateSuggestions({
-      data: triggers[this.state.currentTrigger].dataProvider(
-        q,
-        this.state.text,
-      ),
-      onSelect: this.onSelectSuggestion,
+  updateSuggestions = async (q) => {
+    this.setState({
+      currentTokenForSuggestions: q,
     });
-  }
+    const triggers = this.props.triggerSettings;
+    await triggers[this.state.currentTrigger].dataProvider(
+      q,
+      this.state.text,
+      (data, query) => {
+        // Make sure that the result is still relevant for current query
+        if (this.state.currentTokenForSuggestions !== query) {
+          return;
+        }
+        this.props.updateSuggestions({
+          data,
+          onSelect: this.onSelectSuggestion,
+        });
+      },
+    );
+  };
 
   handleChange = (text, fromUpdate = false) => {
-    // console.log('in handle change: ' + text + ' from update: ' + fromUpdate);
     if (!fromUpdate) {
       this.props.onChange(text);
       return;
@@ -102,7 +105,6 @@ class AutoCompleteInput extends React.PureComponent {
       selection: { start, end },
     },
   }) => {
-    // console.log('in handle selection: ', start, end);
     this.setState({ selectionStart: start, selectionEnd: end });
   };
 
@@ -124,11 +126,7 @@ class AutoCompleteInput extends React.PureComponent {
       /**
        * It's important to escape the currentTrigger char for chars like [, (,...
        */
-      new RegExp(
-        `\\${currentTrigger}${`[^\\${currentTrigger}${
-          triggers[currentTrigger].allowWhitespace ? '' : '\\s'
-        }]`}*$`,
-      ),
+      new RegExp(`\\${currentTrigger}${`[^\\${currentTrigger}${'\\s'}]`}*$`),
     );
 
     // we add space after emoji is selected if a caret position is next
@@ -151,18 +149,70 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   syncCaretPosition = async (position = 0) => {
-    // console.log('syncing carret position: ' + position);
     await this.setState({ selectionStart: position, selectionEnd: position });
   };
 
-  _createRegExp = () => {
-    const triggers = this.props.triggerSettings;
+  isCommand = (text) => {
+    if (text[0] !== '/') return false;
 
-    // negative lookahead to match only the trigger + the actual token = "bladhwd:adawd:word test" => ":word"
-    // https://stackoverflow.com/a/8057827/2719917
-    this.tokenRegExp = new RegExp(
-      `([${Object.keys(triggers).join('')}])(?:(?!\\1)[^\\s])*$`,
-    );
+    const tokens = text.split(' ');
+
+    if (tokens.length > 1) return false;
+
+    return true;
+  };
+
+  handleCommand = (text) => {
+    if (!this.isCommand(text)) {
+      return false;
+    }
+
+    this.setState({ currentTrigger: '/' }, () => {
+      if (!this.isTrackingStarted) this.startTracking();
+
+      const actualToken = text.trim().slice(1);
+      return this.updateSuggestions(actualToken);
+    });
+
+    return true;
+  };
+
+  handleMentions = (text) => {
+    const { selectionEnd } = this.state;
+    // TODO: Move these const to props
+    const minChar = 0;
+
+    const tokenMatch = text
+      .slice(0, selectionEnd)
+      .match(/(?!^|\W)?@\w*\s?\w*$/g);
+
+    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const triggers = this.props.triggerSettings;
+    const currentTrigger =
+      (lastToken && Object.keys(triggers).find((a) => a === lastToken[0])) ||
+      null;
+
+    /*
+      if we lost the trigger token or there is no following character we want to close
+      the autocomplete
+    */
+    if (!lastToken || lastToken.length <= minChar) {
+      this.stopTracking();
+      return;
+    }
+
+    const actualToken = lastToken.slice(1);
+
+    // if trigger is not configured step out from the function, otherwise proceed
+    if (!currentTrigger) {
+      return;
+    }
+
+    this.setState({ currentTrigger }, () => {
+      if (!this.isTrackingStarted) this.startTracking();
+    });
+
+    this.updateSuggestions(actualToken);
   };
 
   handleSuggestions = (text) => {
@@ -170,88 +220,18 @@ class AutoCompleteInput extends React.PureComponent {
     // with android and iOS. onSelectionChange gets executed first on iOS (which is ideal for our scenario)
     // Although on android, this order is reveresed. So need to add following 0 timeout to make sure that
     // onSelectionChange is executed first before we proceed with handleSuggestions.
-    setTimeout(async () => {
+    setTimeout(() => {
       const { selectionEnd: selectionEnd } = this.state;
-      // TODO: Move these const to props
-      const minChar = 0;
 
-      let tokenMatch = this.tokenRegExp.exec(text.slice(0, selectionEnd));
-      // console.log(tokenMatch);
-      let lastToken = tokenMatch && tokenMatch[0];
-      const triggers = this.props.triggerSettings;
-
-      let currentTrigger =
-        (lastToken && Object.keys(triggers).find((a) => a === lastToken[0])) ||
-        null;
-
-      /*
-        if we lost the trigger token or there is no following character we want to close
-        the autocomplete
-      */
       if (
-        (!lastToken || lastToken.length <= minChar) &&
-        // check if our current trigger disallows whitespace
-        ((this.state.currentTrigger &&
-          !triggers[this.state.currentTrigger].allowWhitespace) ||
-          !this.state.currentTrigger)
-      ) {
-        // console.log('here 1');
-        this.stopTracking();
+        text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
+        !this.state.isTrackingStarted
+      )
         return;
-      }
 
-      /**
-       * This code has to be sync that is the reason why we obtain the currentTrigger
-       * from currentTrigger not this.state.currentTrigger
-       *
-       * Check if the currently typed token has to be afterWhitespace, or not.
-       */
-      if (
-        currentTrigger &&
-        text[tokenMatch.index - 1] &&
-        triggers[currentTrigger].afterWhitespace &&
-        !text[tokenMatch.index - 1].match(/\s/)
-      ) {
-        // console.log('here 2');
-        this.stopTracking();
-        return;
-      }
+      if (this.handleCommand(text)) return;
 
-      /**
-      If our current trigger allows whitespace
-      get the correct token for DataProvider, so we need to construct new RegExp
-     */
-      if (
-        this.state.currentTrigger &&
-        triggers[this.state.currentTrigger].allowWhitespace
-      ) {
-        tokenMatch = new RegExp(
-          `\\${this.state.currentTrigger}[^${this.state.currentTrigger}]*$`,
-        ).exec(text.slice(0, selectionEnd));
-        lastToken = tokenMatch && tokenMatch[0];
-
-        if (!lastToken) {
-          // console.log('here 3');
-          this.stopTracking();
-          return;
-        }
-
-        currentTrigger =
-          Object.keys(triggers).find((a) => a === lastToken[0]) || null;
-      }
-
-      const actualToken = lastToken.slice(1);
-
-      // if trigger is not configured step out from the function, otherwise proceed
-      if (!currentTrigger) {
-        return;
-      }
-
-      await this.setState({ currentTrigger });
-
-      if (!this.isTrackingStarted) this.startTracking();
-      // console.log('from handle suggestions: ' + currentTrigger);
-      this.updateSuggestions(actualToken);
+      this.handleMentions(text);
     }, 100);
   };
 
