@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.11.0] 2020-06-01
+
+**Non breaking changes**
+
+- UX improvements of ChannelList component
+  - So far we only had `LoadingErrorIndicator` (which can be customized using prop `LoadingErrorIndicator`). This error indicator replaces the entire channel
+  list on screen. So if your 2nd page of list results in error, we used to remove all the already fetched channels and show this full screen error indicator.
+  Instead we have introduced following error indicators, which will be displayed at top of the list in case or error. Please note that if first page of
+  queryChannels api results in error, we will display LoadingErrorIndicator
+
+    - HeaderErrorIndicator
+    - HeaderNetworkDownIndicator
+  
+  - Introducing following new props to ChannelList component
+
+    - `FooterLoadingIndicator` {UI Component} To override default spinner at footer of channel list (introduced in this release)
+    - `HeaderErrorIndicator` {UI Component} To override default HeaderErrorIndicator
+    - `HeaderNetworkDownIndicator`{UI Component} To override default HeaderNetworkDownIndicator
+
+  - Introduced pull to refresh functionality, to refresh the ChannelList in case of failure.
+  - Adding following prop to `LoadingErrorIndicator`
+
+    - `retry` {func} If you are using custom `LoadingErrorIndicator` for your ChannelList component, you can attach this function to CTA button
+    to reload the ChannelList.
+
+  - Added retry mechanism to ChannelList's queryChannels api call. In case of failure, api will be retried 3 times (max) at the interval of 2 seconds.
+
 ## [0.10.3] 2020-05-15
 
 - Updating `stream-chat` to `1.10.1` in add [token refresh functionality](https://github.com/GetStream/stream-chat-js/blob/master/docs/userToken.md)
