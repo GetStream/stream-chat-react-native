@@ -56,10 +56,29 @@ export class KeyboardCompatibleView extends React.PureComponent {
     this.rootChannelView = false;
     this.initialHeight = undefined;
   }
+
   componentDidMount() {
-    AppState.addEventListener('change', this._handleAppStateChange);
+    if (!this.props.enabled) return;
+
     this.setupListeners();
     this.unmounted = false;
+  }
+
+  componentWillUnmount() {
+    if (!this.props.enabled) return;
+
+    this.removeListeners();
+    this.unmounted = true;
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.enabled !== prevProps.enabled && this.props.enabled) {
+      this.setupListeners();
+    }
+
+    if (this.props.enabled !== prevProps.enabled && !this.props.enabled) {
+      this.removeListeners();
+    }
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -67,7 +86,7 @@ export class KeyboardCompatibleView extends React.PureComponent {
       this.state.appState.match(/inactive|background/) &&
       nextAppState === 'active'
     ) {
-      this.setupListeners();
+      this.setupKeyboardListeners();
       this.setState({ appState: nextAppState });
     }
 
@@ -83,14 +102,22 @@ export class KeyboardCompatibleView extends React.PureComponent {
       this.setState({ channelHeight: new Animated.Value(this.initialHeight) });
       this.initialHeight = undefined;
       this.dismissKeyboard();
-      this.removeListeners();
+      this.removeKeyboardListeners();
       this.setState({ appState: nextAppState });
     }
   };
 
   setupListeners = () => {
-    if (!this.props.enabled) return;
+    AppState.addEventListener('change', this._handleAppStateChange);
+    this.setupKeyboardListeners();
+  };
 
+  removeListeners = () => {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+    this.removeKeyboardListeners();
+  };
+
+  setupKeyboardListeners = () => {
     if (Platform.OS === 'ios') {
       this.keyboardDidShowListener = Keyboard.addListener(
         'keyboardWillShow',
@@ -112,16 +139,10 @@ export class KeyboardCompatibleView extends React.PureComponent {
     );
   };
 
-  removeListeners = () => {
+  removeKeyboardListeners = () => {
     this.keyboardDidShowListener.remove();
     this.keyboardDidHideListener.remove();
   };
-
-  componentWillUnmount() {
-    AppState.removeEventListener('change', this._handleAppStateChange);
-    this.removeListeners();
-    this.unmounted = true;
-  }
 
   // TODO: Better to extract following functions to different HOC.
   keyboardDidShow = (e) => {
@@ -249,11 +270,16 @@ export class KeyboardCompatibleView extends React.PureComponent {
       ? { height: this.state.channelHeight }
       : {};
 
+    const animatedViewProps = {
+      style: { display: 'flex', ...height },
+    };
+
+    if (this.props.enabled) {
+      animatedViewProps.onLayout = this.onLayout;
+    }
+
     return (
-      <Animated.View
-        style={{ display: 'flex', ...height }}
-        onLayout={this.onLayout}
-      >
+      <Animated.View {...animatedViewProps}>
         <KeyboardContext.Provider value={this.getContext()}>
           <View ref={this.setRootChannelView} collapsable={false}>
             {this.props.children}
