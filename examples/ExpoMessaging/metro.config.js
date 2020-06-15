@@ -138,13 +138,11 @@ const FS = require('fs'),
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
-  new RegExp(repoDir + '/projects/stream-chat-react-native/examples/two/.*'),
-  new RegExp(repoDir + '/projects/stream-chat-react-native/examples/one/.*'),
-  new RegExp(repoDir + '/projects/stream-chat-react-native/examples/three/.*'),
+  new RegExp(repoDir + '/examples/NativeMessaging/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
-  new RegExp(repoDir + '/projects/stream-chat-react-native/native-package/.*'),
-  new RegExp(repoDir + '/projects/stream-chat-react-native/expo-package/node_modules/.*'),
-  new RegExp(repoDir + '/projects/stream-chat-react-native/node_modules/.*'),
+  new RegExp(repoDir + '/native-package/.*'),
+  new RegExp(repoDir + '/expo-package/node_modules/.*'),
+  new RegExp(repoDir + '/node_modules/.*'),
   ],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)
