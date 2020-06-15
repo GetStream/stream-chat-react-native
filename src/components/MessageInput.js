@@ -819,7 +819,7 @@ class MessageInput extends PureComponent {
                   break;
                 default:
               }
-            }, 0);
+            }, 10);
           }}
           styles={this.props.actionSheetStyles}
         />
