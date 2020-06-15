@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0] 2020-06-15
+
+- **Improvements to autocomplete feature in MessageInput component**.
+
+Until now if your channel had more than 100 members, then you couldn't see members (besides first 100) in mentions popup box. This was because queryChannels api only populates 100 members in channel state and mentions feature was based on searching for members in channel state.
+
+From now on, autocomplete input (specifically mentions autocomplete) will be api based search. So that mentions feature will work even for the channels with more than 100 members.
+
 ## [0.11.0] 2020-06-01
 
 **Non breaking changes**
