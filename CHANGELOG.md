@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.12.1] 2020-06-16
+
+- Allow search for special characters in mentions autocomplete [a2cb083](https://github.com/GetStream/stream-chat-react-native/commit/a2cb083a3d6657b5c3a122fcd5843d0c9f51a5a6)
+
 ## [0.12.0] 2020-06-15
 
 - **Improvements to autocomplete feature in MessageInput component**.
