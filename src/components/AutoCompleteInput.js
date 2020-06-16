@@ -184,7 +184,7 @@ class AutoCompleteInput extends React.PureComponent {
 
     const tokenMatch = text
       .slice(0, selectionEnd)
-      .match(/(?!^|\W)?@\w*\s?\w*$/g);
+      .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
 
     const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
     const triggers = this.props.triggerSettings;
