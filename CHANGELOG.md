@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.12.2] 2020-06-17
+
+- Fixing broken file upload functionality on android [2cb26e7](https://github.com/GetStream/stream-chat-react-native/commit/2cb26e7951e2030f1c319ad82c55bf0273ef6532)
+
 ## [0.12.1] 2020-06-16
 
 - Allow search for special characters in mentions autocomplete [a2cb083](https://github.com/GetStream/stream-chat-react-native/commit/a2cb083a3d6657b5c3a122fcd5843d0c9f51a5a6)
