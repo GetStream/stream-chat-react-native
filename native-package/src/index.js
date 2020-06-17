@@ -64,10 +64,7 @@ registerNativeHandlers({
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.allFiles],
       });
-      let { uri } = res;
-      if (Platform.OS === 'android') {
-        uri = 'file://' + res.path;
-      }
+      const { uri } = res;
 
       return {
         cancelled: false,
