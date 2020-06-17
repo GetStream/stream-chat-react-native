@@ -706,7 +706,7 @@ class ChannelInner extends PureComponent {
       );
     }
 
-    return <View>{core}</View>;
+    return <View style={{ height: '100%' }}>{core}</View>;
   }
 }
 

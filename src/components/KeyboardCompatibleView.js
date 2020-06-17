@@ -278,6 +278,13 @@ export class KeyboardCompatibleView extends React.PureComponent {
       animatedViewProps.onLayout = this.onLayout;
     }
 
+    if (!this.props.enabled) {
+      return (
+        <KeyboardContext.Provider value={this.getContext()}>
+          {this.props.children}
+        </KeyboardContext.Provider>
+      );
+    }
     return (
       <Animated.View {...animatedViewProps}>
         <KeyboardContext.Provider value={this.getContext()}>

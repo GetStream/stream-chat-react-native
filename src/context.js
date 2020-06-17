@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Keyboard } from 'react-native';
 export const ChatContext = React.createContext({ client: null });
 
 export function withChatContext(OriginalComponent) {
@@ -44,7 +44,9 @@ export function withMessageContentContext(OriginalComponent) {
   return getContextAwareComponent(MessageContentContext, OriginalComponent);
 }
 
-export const KeyboardContext = React.createContext({});
+export const KeyboardContext = React.createContext({
+  dismissKeyboard: Keyboard.dismiss,
+});
 
 export function withKeyboardContext(OriginalComponent) {
   return getContextAwareComponent(KeyboardContext, OriginalComponent);
