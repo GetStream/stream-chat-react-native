@@ -128,7 +128,13 @@ class MessageInput extends PureComponent {
       props.editing,
       props.initialValue,
     );
-    this.state = { ...state };
+    this.state = { ...state, clearingText: false };
+    this.clearingText = false;
+    this.triggerSettings = ACITriggerSettings({
+      channel: props.channel,
+      onMentionSelectItem: this.onSelectItem,
+      t: props.t,
+    });
   }
 
   static themePath = 'messageInput';
@@ -226,6 +232,7 @@ class MessageInput extends PureComponent {
   };
 
   static defaultProps = {
+    additionalTextInputProps: {},
     hasImagePicker: true,
     hasFilePicker: true,
     disabled: false,
@@ -327,7 +334,7 @@ class MessageInput extends PureComponent {
     if (this.props.editing) this.inputBox.focus();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.editing) this.inputBox.focus();
     if (
       this.props.editing &&
@@ -467,14 +474,19 @@ class MessageInput extends PureComponent {
           mentioned_users: uniq(this.state.mentioned_users),
           attachments,
         });
-        this.setState({
-          text: '',
-          imageUploads: Immutable({}),
-          imageOrder: Immutable([]),
-          fileUploads: Immutable({}),
-          fileOrder: Immutable([]),
-          mentioned_users: [],
-        });
+        this.setState(
+          {
+            text: '',
+            imageUploads: Immutable({}),
+            imageOrder: Immutable([]),
+            fileUploads: Immutable({}),
+            fileOrder: Immutable([]),
+            mentioned_users: [],
+          },
+          () => {
+            this.clearingText = true;
+          },
+        );
       } catch (err) {
         console.log('Fialed');
       }
@@ -715,7 +727,12 @@ class MessageInput extends PureComponent {
   };
 
   onChangeText = (text) => {
-    this.setState({ text });
+    this.setState(() => {
+      if (this.clearingText) {
+        return null;
+      }
+      return { text };
+    });
 
     if (text) {
       logChatPromiseExecution(
@@ -749,7 +766,7 @@ class MessageInput extends PureComponent {
       t,
     } = this.props;
 
-    let additionalTextInputProps = this.props.additionalTextInputProps || {};
+    let additionalTextInputProps = this.props.additionalTextInputProps;
 
     if (disabled) {
       additionalTextInputProps = {
@@ -757,7 +774,6 @@ class MessageInput extends PureComponent {
         ...additionalTextInputProps,
       };
     }
-
     return (
       <Container padding={this.state.imageUploads.length > 0}>
         {this.state.fileUploads && (
@@ -851,11 +867,7 @@ class MessageInput extends PureComponent {
                 } else if (hasImagePicker && !hasFilePicker) this._pickImage();
                 else if (!hasImagePicker && hasFilePicker) this._pickFile();
               }}
-              triggerSettings={ACITriggerSettings({
-                channel: this.props.channel,
-                onMentionSelectItem: this.onSelectItem,
-                t,
-              })}
+              triggerSettings={this.triggerSettings}
               disabled={disabled}
               value={this.state.text}
               additionalTextInputProps={additionalTextInputProps}
@@ -883,11 +895,7 @@ class MessageInput extends PureComponent {
                 onChange={this.onChangeText}
                 getCommands={this.getCommands}
                 setInputBoxRef={this.setInputBoxRef}
-                triggerSettings={ACITriggerSettings({
-                  channel: this.props.channel,
-                  onMentionSelectItem: this.onSelectItem,
-                  t,
-                })}
+                triggerSettings={this.triggerSettings}
                 additionalTextInputProps={additionalTextInputProps}
               />
               <SendButton
@@ -905,6 +913,11 @@ class MessageInput extends PureComponent {
 
   render() {
     const { t } = this.props;
+    console.log('on render', this.clearingText);
+    if (this.clearingText) {
+      console.log('hasclearing text, turning it off');
+      this.clearingText = false;
+    }
 
     if (this.props.editing) {
       return (

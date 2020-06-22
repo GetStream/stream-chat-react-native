@@ -41,9 +41,6 @@ class AutoCompleteInput extends React.PureComponent {
     super(props);
 
     this.state = {
-      text: props.value,
-      selectionStart: 0,
-      selectionEnd: 0,
       currentTrigger: null,
     };
 
@@ -51,8 +48,8 @@ class AutoCompleteInput extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    console.log({ prev: prevProps.value, current: this.props.value });
     if (prevProps.value !== this.props.value) {
-      this.setState({ text: this.props.value });
       this.handleChange(this.props.value, true);
     }
   }
@@ -77,7 +74,7 @@ class AutoCompleteInput extends React.PureComponent {
     const triggers = this.props.triggerSettings;
     await triggers[this.state.currentTrigger].dataProvider(
       q,
-      this.state.text,
+      this.props.value,
       (data, query) => {
         // Make sure that the result is still relevant for current query
         if (this.state.currentTokenForSuggestions !== query) {
@@ -102,15 +99,15 @@ class AutoCompleteInput extends React.PureComponent {
 
   handleSelectionChange = ({
     nativeEvent: {
-      selection: { start, end },
+      selection: { end },
     },
   }) => {
-    this.setState({ selectionStart: start, selectionEnd: end });
+    this.selectionEnd = end;
   };
 
   onSelectSuggestion = (item) => {
-    const { text, currentTrigger } = this.state;
-    const { selectionEnd } = this.state;
+    const { currentTrigger } = this.state;
+    const text = this.props.value;
     const triggers = this.props.triggerSettings;
     const newToken = triggers[currentTrigger].output(item);
     // const { onChange, trigger } = this.props;
@@ -120,7 +117,7 @@ class AutoCompleteInput extends React.PureComponent {
     const computeCaretPosition = (token, startToken) =>
       startToken + token.length;
 
-    const textToModify = text.slice(0, selectionEnd);
+    const textToModify = text.slice(0, this.selectionEnd);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -148,8 +145,8 @@ class AutoCompleteInput extends React.PureComponent {
       triggers[currentTrigger].callback(item);
   };
 
-  syncCaretPosition = async (position = 0) => {
-    await this.setState({ selectionStart: position, selectionEnd: position });
+  syncCaretPosition = (position = 0) => {
+    this.selectionEnd = 0;
   };
 
   isCommand = (text) => {
@@ -178,12 +175,11 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   handleMentions = (text) => {
-    const { selectionEnd } = this.state;
     // TODO: Move these const to props
     const minChar = 0;
 
     const tokenMatch = text
-      .slice(0, selectionEnd)
+      .slice(0, this.selectionEnd)
       .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
 
     const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
@@ -221,10 +217,8 @@ class AutoCompleteInput extends React.PureComponent {
     // Although on android, this order is reveresed. So need to add following 0 timeout to make sure that
     // onSelectionChange is executed first before we proceed with handleSuggestions.
     setTimeout(() => {
-      const { selectionEnd: selectionEnd } = this.state;
-
       if (
-        text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
+        text.slice(this.selectionEnd - 1, this.selectionEnd) === ' ' &&
         !this.state.isTrackingStarted
       )
         return;
@@ -245,7 +239,7 @@ class AutoCompleteInput extends React.PureComponent {
         onChangeText={(text) => {
           this.handleChange(text);
         }}
-        value={this.state.text}
+        value={this.props.value}
         onSelectionChange={this.handleSelectionChange}
         multiline
         {...this.props.additionalTextInputProps}
