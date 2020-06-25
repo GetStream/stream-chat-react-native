@@ -128,7 +128,7 @@ class MessageInput extends PureComponent {
       props.editing,
       props.initialValue,
     );
-    this.state = { ...state };
+    this.state = { ...state, sending: false };
   }
 
   static themePath = 'messageInput';
@@ -405,7 +405,14 @@ class MessageInput extends PureComponent {
     return false;
   };
 
-  sendMessage = () => {
+  sendMessage = async () => {
+    if (this.state.sending) return;
+
+    const { text } = this.state;
+    await this.setState({ sending: true, text: '' }, () =>
+      this.inputBox.clear(),
+    );
+
     const attachments = [];
     for (const id of this.state.imageOrder) {
       const image = this.state.imageUploads[id];
@@ -414,7 +421,7 @@ class MessageInput extends PureComponent {
       }
       if (image.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
-        return;
+        return this.setState({ sending: false });
       }
       attachments.push({
         type: 'image',
@@ -430,7 +437,7 @@ class MessageInput extends PureComponent {
       }
       if (upload.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
-        return;
+        return this.setState({ sending: false });
       }
       attachments.push({
         type: 'file',
@@ -442,12 +449,14 @@ class MessageInput extends PureComponent {
     }
 
     // Disallow sending message if its empty.
-    if (!this.state.text && attachments.length === 0) return;
+    if (!text && attachments.length === 0) {
+      return this.setState({ sending: false });
+    }
 
     if (this.props.editing) {
       const updatedMessage = { ...this.props.editing };
 
-      updatedMessage.text = this.state.text;
+      updatedMessage.text = text;
       updatedMessage.attachments = attachments;
       updatedMessage.mentioned_users = this.state.mentioned_users.map(
         (mu) => mu.id,
@@ -459,14 +468,17 @@ class MessageInput extends PureComponent {
         .editMessage(updatedMessage)
         .then(this.props.clearEditingState);
       logChatPromiseExecution(updateMessagePromise, 'update message');
+
+      this.setState({ sending: false });
     } else {
       try {
-        this.props.sendMessage({
-          text: this.state.text,
+        await this.props.sendMessage({
+          text,
           parent: this.props.parent,
           mentioned_users: uniq(this.state.mentioned_users),
           attachments,
         });
+
         this.setState({
           text: '',
           imageUploads: Immutable({}),
@@ -474,9 +486,11 @@ class MessageInput extends PureComponent {
           fileUploads: Immutable({}),
           fileOrder: Immutable([]),
           mentioned_users: [],
+          sending: false,
         });
       } catch (err) {
-        console.log('Fialed');
+        this.setState({ sending: false, text });
+        console.log('Failed');
       }
     }
   };
@@ -719,6 +733,7 @@ class MessageInput extends PureComponent {
   };
 
   onChangeText = (text) => {
+    if (this.state.sending) return;
     this.setState({ text });
 
     if (text) {
@@ -898,7 +913,9 @@ class MessageInput extends PureComponent {
                 title={t('Send message')}
                 sendMessage={this.sendMessage}
                 editing={this.props.editing}
-                disabled={disabled || !this.isValidMessage()}
+                disabled={
+                  disabled || this.state.sending || !this.isValidMessage()
+                }
               />
             </>
           )}

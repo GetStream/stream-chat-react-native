@@ -41,7 +41,6 @@ class AutoCompleteInput extends React.PureComponent {
     super(props);
 
     this.state = {
-      text: props.value,
       selectionStart: 0,
       selectionEnd: 0,
       currentTrigger: null,
@@ -52,7 +51,6 @@ class AutoCompleteInput extends React.PureComponent {
 
   componentDidUpdate(prevProps) {
     if (prevProps.value !== this.props.value) {
-      this.setState({ text: this.props.value });
       this.handleChange(this.props.value, true);
     }
   }
@@ -77,7 +75,7 @@ class AutoCompleteInput extends React.PureComponent {
     const triggers = this.props.triggerSettings;
     await triggers[this.state.currentTrigger].dataProvider(
       q,
-      this.state.text,
+      this.props.value,
       (data, query) => {
         // Make sure that the result is still relevant for current query
         if (this.state.currentTokenForSuggestions !== query) {
@@ -109,8 +107,8 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   onSelectSuggestion = (item) => {
-    const { text, currentTrigger } = this.state;
-    const { selectionEnd } = this.state;
+    const { value: text } = this.props;
+    const { currentTrigger, selectionEnd } = this.state;
     const triggers = this.props.triggerSettings;
     const newToken = triggers[currentTrigger].output(item);
     // const { onChange, trigger } = this.props;
@@ -218,7 +216,7 @@ class AutoCompleteInput extends React.PureComponent {
   handleSuggestions = (text) => {
     // react native is not consistent in order of execution of onSelectionChange and onTextChange
     // with android and iOS. onSelectionChange gets executed first on iOS (which is ideal for our scenario)
-    // Although on android, this order is reveresed. So need to add following 0 timeout to make sure that
+    // Although on android, this order is reversed. So need to add following 0 timeout to make sure that
     // onSelectionChange is executed first before we proceed with handleSuggestions.
     setTimeout(() => {
       const { selectionEnd: selectionEnd } = this.state;
@@ -236,7 +234,7 @@ class AutoCompleteInput extends React.PureComponent {
   };
 
   render() {
-    const { t } = this.props;
+    const { t, value } = this.props;
 
     return (
       <InputBox
@@ -245,7 +243,7 @@ class AutoCompleteInput extends React.PureComponent {
         onChangeText={(text) => {
           this.handleChange(text);
         }}
-        value={this.state.text}
+        value={value}
         onSelectionChange={this.handleSelectionChange}
         multiline
         {...this.props.additionalTextInputProps}
