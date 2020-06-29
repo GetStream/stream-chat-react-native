@@ -128,7 +128,12 @@ class MessageInput extends PureComponent {
       props.editing,
       props.initialValue,
     );
-    this.state = { ...state, sending: false };
+    this.state = {
+      ...state,
+      asyncIds: Immutable([]),
+      asyncUploads: Immutable({}),
+      sending: false,
+    };
   }
 
   static themePath = 'messageInput';
@@ -328,6 +333,16 @@ class MessageInput extends PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    if (Object.keys(this.state.asyncUploads).length) {
+      this.setState({ sending: true });
+
+      this.state.asyncIds.forEach((id) => {
+        this.sendMessageAsync(id);
+      });
+
+      this.setState({ sending: false });
+    }
+
     if (this.props.editing) this.inputBox.focus();
     if (
       this.props.editing &&
@@ -405,6 +420,40 @@ class MessageInput extends PureComponent {
     return false;
   };
 
+  sendMessageAsync = (id) => {
+    const image = this.state.asyncUploads[id];
+    if (!image || image.state === FileState.UPLOAD_FAILED) return;
+
+    if (image.state === FileState.UPLOADED) {
+      const attachments = [
+        {
+          type: 'image',
+          image_url: image.url,
+        },
+      ];
+
+      try {
+        this.props.sendMessage({
+          text: '',
+          parent: this.props.parent,
+          mentioned_users: [],
+          attachments,
+        });
+
+        this.setState((prevState) => ({
+          numberOfUploads: prevState.numberOfUploads - 1,
+          asyncIds: prevState.asyncIds.splice(
+            prevState.asyncIds.indexOf(id),
+            1,
+          ),
+          asyncUploads: prevState.asyncUploads.without([id]),
+        }));
+      } catch (err) {
+        console.log('Failed');
+      }
+    }
+  };
+
   sendMessage = async () => {
     if (this.state.sending) return;
 
@@ -416,18 +465,25 @@ class MessageInput extends PureComponent {
     const attachments = [];
     for (const id of this.state.imageOrder) {
       const image = this.state.imageUploads[id];
+
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
       }
+
       if (image.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
-        return this.setState({ sending: false });
+        this.setState((prevState) => ({
+          asyncIds: [...prevState.asyncIds, id],
+        }));
       }
-      attachments.push({
-        type: 'image',
-        image_url: image.url,
-        fallback: image.file.name,
-      });
+
+      if (image.state === FileState.UPLOADED) {
+        attachments.push({
+          type: 'image',
+          image_url: image.url,
+          fallback: image.file.name,
+        });
+      }
     }
 
     for (const id of this.state.fileOrder) {
@@ -439,13 +495,15 @@ class MessageInput extends PureComponent {
         // TODO: show error to user that they should wait until image is uploaded
         return this.setState({ sending: false });
       }
-      attachments.push({
-        type: 'file',
-        asset_url: upload.url,
-        title: upload.file.name,
-        mime_type: upload.file.type,
-        file_size: upload.file.size,
-      });
+      if (upload.state === FileState.UPLOADED) {
+        attachments.push({
+          type: 'file',
+          asset_url: upload.url,
+          title: upload.file.name,
+          mime_type: upload.file.type,
+          file_size: upload.file.size,
+        });
+      }
     }
 
     // Disallow sending message if its empty.
@@ -479,15 +537,16 @@ class MessageInput extends PureComponent {
           attachments,
         });
 
-        this.setState({
+        this.setState((prevState) => ({
           text: '',
           imageUploads: Immutable({}),
           imageOrder: Immutable([]),
           fileUploads: Immutable({}),
           fileOrder: Immutable([]),
           mentioned_users: [],
+          numberOfUploads: prevState.numberOfUploads - attachments.length,
           sending: false,
-        });
+        }));
       } catch (err) {
         this.setState({ sending: false, text });
         console.log('Failed');
@@ -669,21 +728,10 @@ class MessageInput extends PureComponent {
   };
 
   _uploadImage = async (id) => {
-    const img = this.state.imageUploads[id];
-    if (!img) {
+    const { file } = this.state.imageUploads[id];
+    if (!file) {
       return;
     }
-    const { file } = img;
-
-    await this.setState((prevState) => ({
-      imageUploads: prevState.imageUploads.setIn(
-        [id, 'state'],
-        FileState.UPLOADING,
-      ),
-    }));
-
-    let response = {};
-    response = {};
 
     const filename = (file.name || file.uri).replace(
       /^(file:\/\/|content:\/\/)/,
@@ -693,16 +741,33 @@ class MessageInput extends PureComponent {
 
     try {
       if (this.props.doImageUploadRequest) {
-        response = await this.props.doImageUploadRequest(
+        const response = await this.props.doImageUploadRequest(
           file,
           this.props.channel,
         );
+        this.setState((prevState) => ({
+          imageUploads: prevState.imageUploads
+            .setIn([id, 'state'], FileState.UPLOADED)
+            .setIn([id, 'url'], response.file),
+        }));
       } else {
-        response = await this.props.channel.sendImage(
-          file.uri,
-          null,
-          contentType,
-        );
+        this.props.channel
+          .sendImage(file.uri, null, contentType)
+          .then((res) => {
+            if (this.state.asyncIds.includes(id)) {
+              this.setState((prevState) => ({
+                asyncUploads: prevState.asyncUploads
+                  .setIn([id, 'state'], FileState.UPLOADED)
+                  .setIn([id, 'url'], res.file),
+              }));
+            } else {
+              this.setState((prevState) => ({
+                imageUploads: prevState.imageUploads
+                  .setIn([id, 'state'], FileState.UPLOADED)
+                  .setIn([id, 'url'], res.file),
+              }));
+            }
+          });
       }
     } catch (e) {
       console.warn(e);
@@ -725,11 +790,6 @@ class MessageInput extends PureComponent {
 
       return;
     }
-    this.setState((prevState) => ({
-      imageUploads: prevState.imageUploads
-        .setIn([id, 'state'], FileState.UPLOADED)
-        .setIn([id, 'url'], response.file),
-    }));
   };
 
   onChangeText = (text) => {
