@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.12.4] 2020-06-30
+
+- Improving MessageInput component, to better handle the case of rapid typing [3fddf06](https://github.com/GetStream/stream-chat-react-native/commit/3fddf06426cce5a9cc8dad1e80f9dec1efb4751d)
+- Fixing fallback avatar for MentionsItem component [159fcb8](https://github.com/GetStream/stream-chat-react-native/commit/159fcb856171eaa1f0e2f57f5e9442177eb10b88)
+
+## [0.12.3 2020-06-17
+
+- Fixing `enabled` prop on KeyboardCompatibleView
+
 ## [0.12.2] 2020-06-17
 
 - Fixing broken file upload functionality on android [2cb26e7](https://github.com/GetStream/stream-chat-react-native/commit/2cb26e7951e2030f1c319ad82c55bf0273ef6532)
