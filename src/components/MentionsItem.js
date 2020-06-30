@@ -28,7 +28,7 @@ export const MentionsItem = themed(
       } = this.props;
       return (
         <Container>
-          <Avatar image={image} />
+          <Avatar image={image} name={name} />
           <Name>{name || id}</Name>
         </Container>
       );
