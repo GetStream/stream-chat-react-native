@@ -228,12 +228,17 @@ class MessageInput extends PureComponent {
     ]),
     /** Disables the child MessageInput component */
     disabled: PropTypes.bool,
+    /**
+     * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
+     */
+    sendImageAsync: PropTypes.bool,
   };
 
   static defaultProps = {
     hasImagePicker: true,
     hasFilePicker: true,
     disabled: false,
+    sendImageAsync: false,
     SendButton,
     AttachButton,
   };
@@ -472,9 +477,13 @@ class MessageInput extends PureComponent {
 
       if (image.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
-        this.setState((prevState) => ({
-          asyncIds: [...prevState.asyncIds, id],
-        }));
+        if (this.props.sendImageAsync) {
+          this.setState((prevState) => ({
+            asyncIds: [...prevState.asyncIds, id],
+          }));
+        } else {
+          return this.setState({ sending: false, text });
+        }
       }
 
       if (image.state === FileState.UPLOADED) {
@@ -733,6 +742,8 @@ class MessageInput extends PureComponent {
       return;
     }
 
+    let response;
+
     const filename = (file.name || file.uri).replace(
       /^(file:\/\/|content:\/\/)/,
       '',
@@ -741,16 +752,11 @@ class MessageInput extends PureComponent {
 
     try {
       if (this.props.doImageUploadRequest) {
-        const response = await this.props.doImageUploadRequest(
+        response = await this.props.doImageUploadRequest(
           file,
           this.props.channel,
         );
-        this.setState((prevState) => ({
-          imageUploads: prevState.imageUploads
-            .setIn([id, 'state'], FileState.UPLOADED)
-            .setIn([id, 'url'], response.file),
-        }));
-      } else {
+      } else if (this.props.sendImageAsync) {
         this.props.channel
           .sendImage(file.uri, null, contentType)
           .then((res) => {
@@ -768,6 +774,20 @@ class MessageInput extends PureComponent {
               }));
             }
           });
+      } else {
+        response = await this.props.channel.sendImage(
+          file.uri,
+          null,
+          contentType,
+        );
+      }
+
+      if (response) {
+        this.setState((prevState) => ({
+          imageUploads: prevState.imageUploads
+            .setIn([id, 'state'], FileState.UPLOADED)
+            .setIn([id, 'url'], response.file),
+        }));
       }
     } catch (e) {
       console.warn(e);
