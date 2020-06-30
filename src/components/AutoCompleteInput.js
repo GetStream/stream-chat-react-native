@@ -224,8 +224,10 @@ class AutoCompleteInput extends React.PureComponent {
       if (
         text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
         !this.state.isTrackingStarted
-      )
+      ) {
+        this.stopTracking();
         return;
+      }
 
       if (this.handleCommand(text)) return;
 
