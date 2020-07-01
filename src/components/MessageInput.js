@@ -472,7 +472,7 @@ class MessageInput extends PureComponent {
       this.setState({ sending: false });
     } else {
       try {
-        await this.props.sendMessage({
+        this.props.sendMessage({
           text,
           parent: this.props.parent,
           mentioned_users: uniq(this.state.mentioned_users),
