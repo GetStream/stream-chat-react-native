@@ -130,8 +130,8 @@ class MessageInput extends PureComponent {
     );
     this.state = {
       ...state,
-      asyncIds: Immutable([]),
-      asyncUploads: Immutable({}),
+      asyncIds: Immutable([]), // saves data for images that resolve after hitting send
+      asyncUploads: Immutable({}), // saves data for images that resolve after hitting send
       sending: false,
     };
   }
@@ -339,12 +339,12 @@ class MessageInput extends PureComponent {
 
   componentDidUpdate(prevProps) {
     if (Object.keys(this.state.asyncUploads).length) {
+      /**
+       * When successful image upload response occurs after hitting send,
+       * send a follow up message with the image
+       */
       this.setState({ sending: true });
-
-      this.state.asyncIds.forEach((id) => {
-        this.sendMessageAsync(id);
-      });
-
+      this.state.asyncIds.forEach((id) => this.sendMessageAsync(id));
       this.setState({ sending: false });
     }
 
@@ -478,6 +478,10 @@ class MessageInput extends PureComponent {
       if (image.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         if (this.props.sendImageAsync) {
+          /**
+           * If user hit send before image uploaded, push ID into a queue to later
+           * be matched with the successful CDN response
+           */
           this.setState((prevState) => ({
             asyncIds: [...prevState.asyncIds, id],
           }));
@@ -539,7 +543,7 @@ class MessageInput extends PureComponent {
       this.setState({ sending: false });
     } else {
       try {
-        await this.props.sendMessage({
+        this.props.sendMessage({
           text,
           parent: this.props.parent,
           mentioned_users: uniq(this.state.mentioned_users),
@@ -761,6 +765,7 @@ class MessageInput extends PureComponent {
           .sendImage(file.uri, null, contentType)
           .then((res) => {
             if (this.state.asyncIds.includes(id)) {
+              // Evaluates to true if user hit send before image successfully uploaded
               this.setState((prevState) => ({
                 asyncUploads: prevState.asyncUploads
                   .setIn([id, 'state'], FileState.UPLOADED)
