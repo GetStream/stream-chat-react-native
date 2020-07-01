@@ -100,7 +100,6 @@ export interface ChannelContextValue {
   threadMessages?: Client.MessageResponse[];
   threadLoadingMore?: boolean;
   threadHasMore?: boolean;
-  kavEnabled?: boolean;
 
   sendMessage?(message: Client.Message): void;
   /** The function to update a message, handled by the Channel component */
