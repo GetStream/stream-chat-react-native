@@ -838,7 +838,7 @@ class MessageInput extends PureComponent {
                   break;
                 default:
               }
-            }, 10);
+            }, 201); // 201ms to fire after the animation is complete https://github.com/beefe/react-native-actionsheet/blob/master/lib/ActionSheetCustom.js#L78
           }}
           styles={this.props.actionSheetStyles}
         />
