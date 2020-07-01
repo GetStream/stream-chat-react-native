@@ -372,6 +372,8 @@ class MessageContent extends React.PureComponent {
     readOnly: PropTypes.bool,
     /** Disables the message UI. Which means, message actions, reactions won't work. */
     disabled: PropTypes.bool,
+    /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
+    markdownRules: PropTypes.object,
   };
 
   static defaultProps = {
@@ -502,6 +504,7 @@ class MessageContent extends React.PureComponent {
       FileAttachmentGroup,
       t,
       tDateTimeParser,
+      markdownRules,
     } = this.props;
 
     const Attachment = this.props.Attachment;
@@ -702,6 +705,7 @@ class MessageContent extends React.PureComponent {
               Message={Message}
               openThread={this.openThread}
               handleReaction={handleReaction}
+              markdownRules={markdownRules}
             />
           </ContainerInner>
           {repliesEnabled ? (

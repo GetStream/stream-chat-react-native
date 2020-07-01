@@ -801,6 +801,7 @@ export interface MessageUIComponentProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
   additionalTouchableProps?: object;
+  markdownRules?: object; // TODO: typescript the markdown lib
 }
 
 export interface MessageHeaderUIComponentProps
