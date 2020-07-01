@@ -1,7 +1,7 @@
 // TypeScript Version: 2.8
 
 import * as React from 'react';
-import { Text, GestureResponderEvent, FlatList } from 'react-native';
+import { FlatList, GestureResponderEvent } from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 import * as i18next from 'i18next';
@@ -100,7 +100,6 @@ export interface ChannelContextValue {
   threadMessages?: Client.MessageResponse[];
   threadLoadingMore?: boolean;
   threadHasMore?: boolean;
-  kavEnabled?: boolean;
 
   sendMessage?(message: Client.Message): void;
   /** The function to update a message, handled by the Channel component */

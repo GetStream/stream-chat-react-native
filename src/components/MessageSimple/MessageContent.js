@@ -298,17 +298,17 @@ class MessageContent extends React.PureComponent {
     MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display enriched url preview.
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
     UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display Giphy image.
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
     Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
      */
     FileAttachmentGroup: PropTypes.oneOfType([
       PropTypes.node,
@@ -316,7 +316,7 @@ class MessageContent extends React.PureComponent {
     ]),
     /**
      * Custom UI component to display File type attachment.
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
      */
     FileAttachment: PropTypes.oneOfType([
       PropTypes.node,
@@ -332,12 +332,12 @@ class MessageContent extends React.PureComponent {
     ]),
     /**
      * Custom UI component to display image attachments.
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
      */
     Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display generic media type e.g. giphy, url preview etc
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
     Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
@@ -357,7 +357,7 @@ class MessageContent extends React.PureComponent {
     CardFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-     * Deaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
      */
     AttachmentActions: PropTypes.oneOfType([
       PropTypes.node,
