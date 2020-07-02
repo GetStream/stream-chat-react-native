@@ -1,9 +1,9 @@
-import Markdown from '@stream-io/react-native-simple-markdown';
-import { truncate } from 'lodash-es';
-import anchorme from 'anchorme';
 import React from 'react';
+import Markdown from '@stream-io/react-native-simple-markdown';
+import anchorme from 'anchorme';
+import { truncate } from 'lodash-es';
 
-export const renderText = (message, styles) => {
+export const renderText = (message, styles, markdownRules) => {
   // take the @ mentions and turn them into markdown?
   // translate links
   let { text } = message;
@@ -40,7 +40,11 @@ export const renderText = (message, styles) => {
     ...styles,
   };
 
-  return <Markdown styles={markdownStyles}>{newText}</Markdown>;
+  return (
+    <Markdown rules={markdownRules} styles={markdownStyles}>
+      {newText}
+    </Markdown>
+  );
 };
 
 const defaultMarkdownStyles = {
@@ -58,7 +62,6 @@ const defaultMarkdownStyles = {
     color: 'red',
     fontSize: 13,
     padding: 3,
-    paddingLeft: 5,
-    paddingRight: 5,
+    paddingHorizontal: 5,
   },
 };
