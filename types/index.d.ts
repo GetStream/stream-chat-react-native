@@ -283,6 +283,7 @@ export interface MessageInputProps
   hasImagePicker?: boolean;
   hasFilePicker?: boolean;
   focus?: boolean;
+  sendImageAsync?: boolean;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
