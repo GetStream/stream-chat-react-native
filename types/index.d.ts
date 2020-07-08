@@ -695,7 +695,7 @@ export interface MessageUIComponentProps
     event: React.BaseSyntheticEvent,
   ): void;
   handleRetry(message: Client.Message): void;
-  isMyMessage(message: Client.Message): boolean;
+  isMyMessage(message: Client.MessageResponse): boolean;
   /** Boolean if current message is part of thread */
   isThreadList: boolean;
   /**
