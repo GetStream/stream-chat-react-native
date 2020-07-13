@@ -289,6 +289,7 @@ export interface MessageInputProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   AttachButton?: React.ElementType<AttachButtonProps>;
   SendButton: React.ElementType<SendButtonProps>;
+  additionalTextInputProps?: object;
 }
 
 export interface DocumentPickerFile {
