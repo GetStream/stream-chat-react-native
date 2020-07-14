@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1] 2020-07-14
+
+- [84ded29](https://github.com/GetStream/stream-chat-react-native/commit/84ded29bf7afd9e9e5178e76e79953d8b27dc77c) Bug fix - **Only** set active channel in ChannelList component on complete reload, which happens in following cases:
+
+  - first load on chat
+  - changes in filters
+
 ## [0.13.0] 2020-07-08
 
 - Upgrading `@stream-io/react-native-simple-markdown` to 1.2.0. It fixes markdown related issues regarding line breaks
