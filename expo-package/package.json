@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-expo",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "author": {
     "company": "Stream.io Inc"
   },
@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "react-native-unimodules": "^0.5.4",
-    "stream-chat-react-native-core": "v0.13.1"
+    "stream-chat-react-native-core": "v0.14.0"
   },
   "peerDependencies": {
     "expo": "^32.0.0",
