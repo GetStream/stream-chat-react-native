@@ -1,5 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { enableScreens } from 'react-native-screens';
 import { StreamChat } from 'stream-chat';
 import {
   Chat,
@@ -13,7 +16,7 @@ import {
   Streami18n
 } from 'stream-chat-react-native';
 
-import { createAppContainer, createStackNavigator } from 'react-navigation';
+enableScreens();
 
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
 const theme = {
@@ -55,166 +58,122 @@ const streami18n = new Streami18n({
   language: 'en'
 });
 
-class ChannelListScreen extends PureComponent {
-  static navigationOptions = () => ({
-    headerTitle: <Text style={{ fontWeight: 'bold' }}>Channel List</Text>,
-  });
 
-  render() {
-    return (
-      <SafeAreaView>
-        <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
-          <View style={{ display: 'flex', height: '100%', padding: 10 }}>
-            <ChannelList
-              filters={filters}
-              sort={sort}
-              options={options}
-              Preview={ChannelPreviewMessenger}
-              onSelect={channel => {
-                this.props.navigation.navigate('Channel', {
-                  channel,
+const ChannelListScreen = React.memo(({ navigation }) => {
+  return (
+    <SafeAreaView>
+      <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
+        <View style={{ display: 'flex', height: '100%', padding: 10 }}>
+          <ChannelList
+            filters={filters}
+            sort={sort}
+            options={options}
+            Preview={ChannelPreviewMessenger}
+            onSelect={channel => {
+              navigation.navigate('Channel', {
+                channel,
+              });
+            }}
+          />
+        </View>
+      </Chat>
+    </SafeAreaView>
+  );
+});
+
+const ChannelScreen = React.memo(({ navigation, route }) => {
+  const [channel] = useState(route.params.channel);
+
+  return (
+    <SafeAreaView>
+      <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
+        <Channel client={chatClient} channel={channel}>
+          <View style={{ height: '100%' }}>
+            <MessageList
+              onThreadSelect={thread => {
+                navigation.navigate('Thread', {
+                  thread,
+                  channel: channel.id,
                 });
               }}
             />
+            <MessageInput />
           </View>
-        </Chat>
-      </SafeAreaView>
-    );
-  }
-}
+        </Channel>
+      </Chat>
+    </SafeAreaView>
+  );
+});
 
-class ChannelScreen extends PureComponent {
-  static navigationOptions = ({ navigation }) => {
-    const channel = navigation.getParam('channel');
-    return {
-      headerTitle: (
-        <Text style={{ fontWeight: 'bold' }}>{channel.data.name}</Text>
-      ),
+const ThreadScreen = React.memo(({ navigation, route }) => {
+  const [thread] = useState(route.params.thread);
+  const [channel] = useState(chatClient.channel('messaging', route.params.channel));
+
+  return (
+    <SafeAreaView>
+      <Chat client={chatClient} i18nInstance={streami18n}>
+        <Channel
+          client={chatClient}
+          channel={channel}
+          thread={thread}
+          dummyProp="DUMMY PROP">
+          <View
+            style={{
+              height: '100%',
+              justifyContent: 'flex-start',
+            }}>
+            <Thread thread={thread} />
+          </View>
+        </Channel>
+      </Chat>
+    </SafeAreaView>
+  );
+});
+
+const Stack = createStackNavigator();
+
+export default () => {
+  const [clientReady, setClientReady] = useState(false);
+
+  useEffect(() => {
+    const setupClient = async () => {
+      await chatClient.setUser(
+        user,
+        userToken,
+      );
+
+      setClientReady(true);
     };
-  };
 
-  render() {
-    const { navigation } = this.props;
-    const channel = navigation.getParam('channel');
+    setupClient();
+  }, []);
 
-    return (
-      <SafeAreaView>
-        <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
-          <Channel client={chatClient} channel={channel}>
-            <View style={{ display: 'flex', height: '100%' }}>
-              <MessageList
-                onThreadSelect={thread => {
-                  this.props.navigation.navigate('Thread', {
-                    thread,
-                    channel: channel.id,
-                  });
-                }}
-              />
-              <MessageInput />
-            </View>
-          </Channel>
-        </Chat>
-      </SafeAreaView>
-    );
-  }
-}
-
-class ThreadScreen extends PureComponent {
-  static navigationOptions = ({ navigation }) => ({
-    headerTitle: <Text style={{ fontWeight: 'bold' }}>Thread</Text>,
-    headerLeft: null,
-    headerRight: (
+  return (
+    <NavigationContainer>
+      {
+        clientReady &&
+          <Stack.Navigator initialRouteName='ChannelList' screenOptions={{ cardStyle: { backgroundColor: 'white' }, headerTitleStyle: { fontWeight: 'bold' }, }}>
+            <Stack.Screen component={ChannelScreen} name='Channel' options={({ route }) => ({ headerBackTitle: 'Back', headerTitle: route.params.channel.data.name })} />
+            <Stack.Screen component={ChannelListScreen} name='ChannelList' options={{ headerTitle: 'Channel List' }} />
+            <Stack.Screen component={ThreadScreen} name='Thread' options={({ navigation }) => ({ headerLeft: null, headerRight: () => (
       <TouchableOpacity
         onPress={() => {
           navigation.goBack();
         }}
         style={{
-          backgroundColor: '#ebebeb',
-          width: 30,
-          height: 30,
-          marginRight: 20,
-          display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          backgroundColor: '#ebebeb',
           borderRadius: 20,
+          height: 30,
+          justifyContent: 'center',
+          marginRight: 20,
+          width: 30,
         }}>
         <CloseButton />
       </TouchableOpacity>
-    ),
-  });
-
-  render() {
-    const { navigation } = this.props;
-    const thread = navigation.getParam('thread');
-    const channel = chatClient.channel(
-      'messaging',
-      navigation.getParam('channel'),
-    );
-
-    return (
-      <SafeAreaView>
-        <Chat client={chatClient} i18nInstance={streami18n}>
-          <Channel
-            client={chatClient}
-            channel={channel}
-            thread={thread}
-            dummyProp="DUMMY PROP">
-            <View
-              style={{
-                display: 'flex',
-                height: '100%',
-                justifyContent: 'flex-start',
-              }}>
-              <Thread thread={thread} />
-            </View>
-          </Channel>
-        </Chat>
-      </SafeAreaView>
-    );
-  }
-}
-
-const RootStack = createStackNavigator(
-  {
-    ChannelList: {
-      screen: ChannelListScreen,
-    },
-    Channel: {
-      screen: ChannelScreen,
-    },
-    Thread: {
-      screen: ThreadScreen,
-    },
-  },
-  {
-    initialRouteName: 'ChannelList',
-  },
-);
-
-const AppContainer = createAppContainer(RootStack);
-
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      clientReady: false
-    }
-  }
-
-  async componentDidMount() {
-
-    await chatClient.setUser(
-      user,
-      userToken,
-    );
-
-    this.setState({
-      clientReady: true
-    })
-  }
-  render() {
-    if (this.state.clientReady)
-      return <AppContainer />;
-    else return null;
-  }
-}
+    ) })} />
+          </Stack.Navigator>
+      }
+    </NavigationContainer>
+  );
+};

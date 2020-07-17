@@ -83,7 +83,7 @@ class ChannelPreviewMessenger extends PureComponent {
      *
      * By default today's date is shown in 'HH:mm A' format and other dates
      * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
-     * default formated date. This default logic is part of ChannelPreview component.
+     * default formatted date. This default logic is part of ChannelPreview component.
      */
     formatLatestMessageDate: PropTypes.func,
   };

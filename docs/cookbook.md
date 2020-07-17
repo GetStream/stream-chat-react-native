@@ -1443,3 +1443,85 @@ Usually you want to receive push notification, when your app goes to background.
     );
   };
   ```
+
+  ### FAQ
+
+  #### Customizing Message markdown rendering
+
+  You can override the default render rules or add your own by passing in a `markdownRules` prop to the `Message` component.
+
+  ```js
+  import React, { useState } from 'react';
+  import { SafeAreaView, Text, View } from 'react-native';
+  import { StreamChat } from 'stream-chat';
+  import {
+    Chat,
+    Channel,
+    Message,
+    MessageList,
+    MessageInput,
+    ChannelList,
+    Thread,
+    CloseButton,
+    ChannelPreviewMessenger,
+    Streami18n
+  } from 'stream-chat-react-native';
+
+  const chatClient = new StreamChat('API_KEY');
+
+  const markdownRules = {
+    hashtag: {
+      order: defaultRules.heading.order - 0.5,
+      match: anyScopeRegex(/^ *#\w+/),
+      parse: (capture, parse, state) => {
+        return {
+          level: capture[1].length,
+          content: parseInline(parse, capture[2].trim(), state),
+        };
+      },
+      // eslint-disable-next-line react/display-name
+      react: (node, output, state) => {
+        state.withinText = true;
+        return (
+          <Text
+            key={state.key}
+            style={{
+              fontWeight: 'bold',
+            }}
+          >
+            {output(node.content, state)}
+          </Text>
+        );
+      },
+    },
+  };
+
+  const Thread = ({ navigation }) => {
+    const [thread] = useState(navigation.getParam('thread'));
+    const [channel] = useState(chatClient.channel(
+        'messaging',
+        navigation.getParam('channel'),
+      ));
+
+      return (
+        <SafeAreaView>
+          <Chat client={chatClient}>
+            <Channel
+              client={chatClient}
+              channel={channel}
+              thread={thread}
+              Message={Message}>
+              <View
+                style={{
+                  display: 'flex',
+                  height: '100%',
+                  justifyContent: 'flex-start',
+                }}>
+                <Thread thread={thread} />
+              </View>
+            </Channel>
+          </Chat>
+        </SafeAreaView>
+      );
+  }
+  ```

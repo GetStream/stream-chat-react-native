@@ -3,30 +3,36 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "react-native start",
-    "test": "jest",
-    "lint": "eslint ."
+    "android": "npx react-native run-android",
+    "ios": "npx react-native run-ios",
+    "lint": "eslint .",
+    "start": "npx react-native start",
+    "test": "jest"
   },
   "dependencies": {
-    "@react-native-community/netinfo": "^4.6.1",
-    "react": "16.8.6",
-    "react-native": "0.60.5",
-    "react-native-document-picker": "^3.4.0",
-    "react-native-gesture-handler": "^1.5.2",
-    "react-native-image-picker": "^1.1.0",
-    "react-native-reanimated": "^1.4.0",
-    "react-navigation": "3.11.0",
+    "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/netinfo": "5.9.5",
+    "@react-navigation/native": "5.7.0",
+    "@react-navigation/stack": "5.7.0",
+    "react": "16.13.1",
+    "react-native": "0.63.1",
+    "react-native-document-picker": "3.5.3",
+    "react-native-gesture-handler": "1.6.1",
+    "react-native-image-picker": "2.3.3",
+    "react-native-reanimated": "1.9.0",
+    "react-native-safe-area-context": "3.1.1",
+    "react-native-screens": "2.9.0",
     "stream-chat-react-native": "^"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.4",
-    "@babel/runtime": "^7.7.4",
-    "@react-native-community/eslint-config": "^0.0.5",
-    "babel-jest": "^24.9.0",
-    "eslint": "^6.7.1",
-    "jest": "^24.9.0",
-    "metro-react-native-babel-preset": "^0.57.0",
-    "react-test-renderer": "16.8.6"
+    "@babel/core": "7.8.4",
+    "@babel/runtime": "7.8.4",
+    "@react-native-community/eslint-config": "1.1.0",
+    "babel-jest": "25.1.0",
+    "eslint": "6.7.1",
+    "jest": "25.1.0",
+    "metro-react-native-babel-preset": "0.59.0",
+    "react-test-renderer": "16.13.1"
   },
   "jest": {
     "preset": "react-native"
