@@ -116,7 +116,7 @@ const ThreadScreen = React.memo(({ navigation, route }) => {
           client={chatClient}
           channel={channel}
           thread={thread}
-          dummyProp="DUMMY PROP">
+          dummyProp='DUMMY PROP'>
           <View
             style={{
               height: '100%',
@@ -152,26 +152,50 @@ export default () => {
     <NavigationContainer>
       {
         clientReady &&
-          <Stack.Navigator initialRouteName='ChannelList' screenOptions={{ cardStyle: { backgroundColor: 'white' }, headerTitleStyle: { fontWeight: 'bold' }, }}>
-            <Stack.Screen component={ChannelScreen} name='Channel' options={({ route }) => ({ headerBackTitle: 'Back', headerTitle: route.params.channel.data.name })} />
-            <Stack.Screen component={ChannelListScreen} name='ChannelList' options={{ headerTitle: 'Channel List' }} />
-            <Stack.Screen component={ThreadScreen} name='Thread' options={({ navigation }) => ({ headerLeft: null, headerRight: () => (
-      <TouchableOpacity
-        onPress={() => {
-          navigation.goBack();
-        }}
-        style={{
-          alignItems: 'center',
-          backgroundColor: '#ebebeb',
-          borderRadius: 20,
-          height: 30,
-          justifyContent: 'center',
-          marginRight: 20,
-          width: 30,
-        }}>
-        <CloseButton />
-      </TouchableOpacity>
-    ) })} />
+          <Stack.Navigator
+            initialRouteName='ChannelList'
+            screenOptions={{
+              cardStyle: { backgroundColor: 'white' },
+              headerTitleStyle: { fontWeight: 'bold' },
+            }}
+          >
+            <Stack.Screen
+              component={ChannelScreen}
+              name='Channel'
+              options={({ route }) => ({
+                headerBackTitle: 'Back',
+                headerTitle: route.params.channel.data.name
+              })}
+            />
+            <Stack.Screen
+              component={ChannelListScreen}
+              name='ChannelList'
+              options={{ headerTitle: 'Channel List' }}
+            />
+            <Stack.Screen
+              component={ThreadScreen}
+              name='Thread'
+              options={({ navigation }) => ({
+                headerLeft: null,
+                headerRight: () => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.goBack();
+                    }}
+                    style={{
+                      alignItems: 'center',
+                      backgroundColor: '#ebebeb',
+                      borderRadius: 20,
+                      height: 30,
+                      justifyContent: 'center',
+                      marginRight: 20,
+                      width: 30,
+                    }}>
+                    <CloseButton />
+                  </TouchableOpacity>
+                )
+              })}
+            />
           </Stack.Navigator>
       }
     </NavigationContainer>
