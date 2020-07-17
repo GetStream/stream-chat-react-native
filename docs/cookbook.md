@@ -1289,15 +1289,15 @@ class ChannelScreen extends React.Component {
   }
 
   render() {
+    const additionalTextInputProps = {
+      onContentSizeChange: (e) => this.updateSize(e.nativeEvent.contentSize.height),
+      style: {height: this.state.height},
+    };
     return (
       <Chat>
         <Channel>
           <MessageInput
-            additionalTextInputProps={{
-              onContentSizeChange: e =>
-                this.updateSize(e.nativeEvent.contentSize.height),
-              style: {height: this.state.height},
-            }}
+            additionalTextInputProps={additionalTextInputProps}
           />
         </Channel>
       </Chat>

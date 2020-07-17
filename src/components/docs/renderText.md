@@ -8,3 +8,4 @@ It accepts following params:
 
 - message { object } Message object
 - style { object } - https://github.com/GetStream/react-native-simple-markdown#styles-1
+- markdownRules { object } - https://github.com/GetStream/react-native-simple-markdown#rules

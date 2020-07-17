@@ -284,16 +284,13 @@ const ChannelList = withChatContext(
       });
 
     queryChannelsRequest = async (filters, sort, options, retryCount = 1) => {
-      const channelPromise = this.props.client.queryChannels(
-        filters,
-        sort,
-        options,
-      );
-
       let channelQueryResponse;
-
       try {
-        channelQueryResponse = await channelPromise;
+        channelQueryResponse = await this.props.client.queryChannels(
+          filters,
+          sort,
+          options,
+        );
       } catch (e) {
         // Wait for 2 seconds before making another attempt
         await this.wait(2000);
@@ -413,7 +410,8 @@ const ChannelList = withChatContext(
             options,
           );
 
-          if (options.offset === 0 && channelQueryResponse.length >= 1) {
+          // Set the active channel only in case of reload.
+          if (queryType === 'reload' && channelQueryResponse.length >= 1) {
             this.props.setActiveChannel(channelQueryResponse[0]);
           }
 

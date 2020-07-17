@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
 import { StreamChat } from 'stream-chat';
 import {
-  Chat,
   Channel,
-  MessageList,
-  MessageInput,
   ChannelList,
-  Thread,
-  CloseButton,
   ChannelPreviewMessenger,
-  Streami18n
+  Chat,
+  CloseButton,
+  MessageInput,
+  MessageList,
+  Streami18n,
+  Thread
 } from 'stream-chat-react-native';
 
 enableScreens();
@@ -86,14 +86,14 @@ const ChannelScreen = React.memo(({ navigation, route }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
-        <Channel client={chatClient} channel={channel}>
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+        <Channel channel={channel} client={chatClient}>
           <View style={{ height: '100%' }}>
             <MessageList
               onThreadSelect={thread => {
                 navigation.navigate('Thread', {
-                  thread,
                   channel: channel.id,
+                  thread,
                 });
               }}
             />
@@ -113,10 +113,10 @@ const ThreadScreen = React.memo(({ navigation, route }) => {
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel
-          client={chatClient}
           channel={channel}
-          thread={thread}
-          dummyProp='DUMMY PROP'>
+          client={chatClient}
+          dummyProp='DUMMY PROP'
+          thread={thread}>
           <View
             style={{
               height: '100%',

@@ -58,6 +58,7 @@ export const MessageTextContainer = withTheme((props) => {
   const markdownStyles = props.theme
     ? props.theme.message.content.markdown
     : {};
+  const markdownRules = props.markdownRules || {};
   return (
     <React.Fragment>
       <TextContainer
@@ -67,7 +68,7 @@ export const MessageTextContainer = withTheme((props) => {
         type={message.type}
       >
         {!MessageText ? (
-          renderText(message, markdownStyles)
+          renderText(message, markdownStyles, markdownRules)
         ) : (
           <MessageText {...props} renderText={renderText} />
         )}
@@ -96,4 +97,6 @@ MessageTextContainer.propTypes = {
   MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
   theme: PropTypes.object,
+  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
+  markdownRules: PropTypes.object,
 };

@@ -283,11 +283,13 @@ export interface MessageInputProps
   hasImagePicker?: boolean;
   hasFilePicker?: boolean;
   focus?: boolean;
+  sendImageAsync?: boolean;
   /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   AttachButton?: React.ElementType<AttachButtonProps>;
   SendButton: React.ElementType<SendButtonProps>;
+  additionalTextInputProps?: object;
 }
 
 export interface DocumentPickerFile {
@@ -694,7 +696,7 @@ export interface MessageUIComponentProps
     event: React.BaseSyntheticEvent,
   ): void;
   handleRetry(message: Client.Message): void;
-  isMyMessage(message: Client.Message): boolean;
+  isMyMessage(message: Client.MessageResponse): boolean;
   /** Boolean if current message is part of thread */
   isThreadList: boolean;
   /**
@@ -801,6 +803,7 @@ export interface MessageUIComponentProps
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   formatDate(date: string): string;
   additionalTouchableProps?: object;
+  markdownRules?: object; // TODO: typescript the markdown lib
 }
 
 export interface MessageHeaderUIComponentProps
