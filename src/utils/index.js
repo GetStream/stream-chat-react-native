@@ -1,5 +1,4 @@
-import { MentionsItem } from '../components/MentionsItem';
-import { CommandsItem } from '../components/CommandsItem';
+import { MentionsItem, CommandsItem } from '../components/AutoCompleteInput';
 import debounce from 'lodash/debounce';
 
 export { renderText } from './renderText';
