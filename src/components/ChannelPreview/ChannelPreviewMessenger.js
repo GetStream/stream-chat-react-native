@@ -117,7 +117,7 @@ class ChannelPreviewMessenger extends PureComponent {
   };
 
   render() {
-    const { channel, t } = this.props;
+    const { channel } = this.props;
     let otherMembers = [];
     let name = channel.data.name;
     const isValidName = name && typeof name === 'string';
@@ -133,7 +133,7 @@ class ChannelPreviewMessenger extends PureComponent {
     }
     const formatLatestMessageDate = this.props.formatLatestMessageDate;
     return (
-      <Container onPress={this.onSelectChannel}>
+      <Container onPress={this.onSelectChannel} testID="channel-preview-button">
         {this.renderAvatar(otherMembers)}
         <Details>
           <DetailsTop>
@@ -151,11 +151,10 @@ class ChannelPreviewMessenger extends PureComponent {
           <Message
             unread={this.props.unread > 0 ? this.props.unread : undefined}
           >
-            {!this.props.latestMessage
-              ? t('Nothing yet...')
-              : truncate(this.props.latestMessage.text.replace(/\n/g, ' '), {
-                  length: this.props.latestMessageLength,
-                })}
+            {this.props.latestMessage &&
+              truncate(this.props.latestMessage.text.replace(/\n/g, ' '), {
+                length: this.props.latestMessageLength,
+              })}
           </Message>
         </Details>
       </Container>
