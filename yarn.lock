@@ -1260,10 +1260,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@stream-io/react-native-simple-markdown@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.2.0.tgz#f1ea7db1e16712a3428b79fdd522464ae2caccdb"
-  integrity sha512-rqs625+3v+Nz4yUocmMr/Ar6Jb31HZWXDOqEi4MjU3IDLCRi9XaIeH7FlCD4GrabqUEYjq8EY709fxpVBjaSxw==
+"@stream-io/react-native-simple-markdown@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.2.1.tgz#ce3c909fda4e087f77a68ab051c3a8f034bc9adb"
+  integrity sha512-Yj1IxO+Y632DHqSrUfUkMGlEi7qD30Qi2+7etVxaZb/7hr++VFoU9BQdyKPCarRJfIzFMvVZ/DJFvz8JhybfUQ==
   dependencies:
     lodash "^4.17.15"
     simple-markdown "^0.7.2"

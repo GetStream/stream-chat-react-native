@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@stream-io/react-native-simple-markdown": "^1.2.0",
+    "@stream-io/react-native-simple-markdown": "^1.2.1",
     "@stream-io/styled-components": "^4.2.1",
     "anchorme": "^1.1.2",
     "babel-plugin-macros": "^2.5.1",
