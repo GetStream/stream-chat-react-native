@@ -88,7 +88,7 @@ const Reactions = styled.View`
 `;
 
 /**
- * @example ./docs/ReactionList.md
+ * @example ../docs/ReactionList.md
  * @extends PureComponent
  */
 

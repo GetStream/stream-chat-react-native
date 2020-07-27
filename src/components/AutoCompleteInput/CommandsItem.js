@@ -30,7 +30,7 @@ const CommandDescription = styled.Text`
 `;
 
 /**
- * @example ./docs/CommandsItem.md
+ * @example ../docs/CommandsItem.md
  * @extends PureComponent
  */
 class CommandsItem extends React.Component {

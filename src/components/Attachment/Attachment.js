@@ -16,7 +16,7 @@ import { withMessageContentContext } from '../../context';
 /**
  * Attachment - The message attachment
  *
- * @example ./docs/Attachment.md
+ * @example ../docs/Attachment.md
  * @extends PureComponent
  */
 class Attachment extends React.PureComponent {

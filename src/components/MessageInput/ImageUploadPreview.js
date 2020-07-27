@@ -55,7 +55,7 @@ const DismissImage = styled.Image`
 /**
  * UI Component to preview the images set for upload
  *
- * @example ./docs/ImageUploadPreview.md
+ * @example ../docs/ImageUploadPreview.md
  * @extends PureComponent
  */
 class ImageUploadPreview extends React.PureComponent {

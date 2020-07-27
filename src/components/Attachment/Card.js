@@ -50,7 +50,7 @@ const FooterLogo = styled.Image`
 /**
  * UI component for card in attachments.
  *
- * @example ./docs/Card.md
+ * @example ../docs/Card.md
  * @extends PureComponent
  */
 class Card extends React.Component {

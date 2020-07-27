@@ -121,7 +121,7 @@ const ActionSheetButtonText = styled.Text`
  * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
  * and [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
  *
- * @example ./docs/MessageInput.md
+ * @example ../docs/MessageInput.md
  * @extends PureComponent
  */
 class MessageInput extends PureComponent {

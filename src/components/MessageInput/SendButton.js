@@ -22,7 +22,7 @@ const SendButtonIcon = styled.Image`
  * UI Component for send button in MessageInput component.
  *
  * @extends PureComponent
- * @example ./docs/SendButton.md
+ * @example ../docs/SendButton.md
  */
 class SendButton extends React.PureComponent {
   static themePath = 'messageInput';

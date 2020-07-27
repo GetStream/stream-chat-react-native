@@ -42,7 +42,7 @@ const Date = styled.Text`
 
 /**
  * @extends PureComponent
- * @example ./docs/DateSeparator.md
+ * @example ../docs/DateSeparator.md
  */
 
 class DateSeparator extends React.PureComponent {

@@ -15,7 +15,7 @@ import { withChatContext, withTranslationContext } from '../../context';
  * Channel - Wrapper component for a channel. It needs to be place inside of the Chat component.
  * ChannelHeader, MessageList, Thread and MessageInput should be used as children of the Channel component.
  *
- * @example ./docs/Channel.md
+ * @example ../docs/Channel.md
  * @extends PureComponent
  */
 class Channel extends PureComponent {

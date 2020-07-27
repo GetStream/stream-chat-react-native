@@ -28,7 +28,7 @@ const MessageNotificationText = styled.Text`
   ${({ theme }) => theme.messageList.messageNotification.text.css}
 `;
 /**
- * @example ./docs/MessageNotification.md
+ * @example ../docs/MessageNotification.md
  * @extends PureComponent
  */
 class MessageNotification extends PureComponent {

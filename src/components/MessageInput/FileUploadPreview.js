@@ -8,7 +8,7 @@ import { FileState, ProgressIndicatorTypes } from '../../utils';
 /**
  * FileUploadPreview
  *
- * @example ./docs/FileUploadPreview.md
+ * @example ../docs/FileUploadPreview.md
  * @extends PureComponent
  */
 const FILE_PREVIEW_HEIGHT = 50;
@@ -17,7 +17,7 @@ const FILE_PREVIEW_PADDING = 10;
 /**
  * UI Component to preview the files set for upload
  *
- * @example ./docs/FileUploadPreview.md
+ * @example ../docs/FileUploadPreview.md
  * @extends PureComponent
  */
 class FileUploadPreview extends React.PureComponent {
