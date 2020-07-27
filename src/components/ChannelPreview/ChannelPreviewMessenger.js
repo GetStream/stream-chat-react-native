@@ -71,7 +71,10 @@ class ChannelPreviewMessenger extends PureComponent {
     setActiveChannel: PropTypes.func,
     /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
     channel: PropTypes.object,
-    /** Latest message (object) on channel */
+    /**
+     * Display preview for latest message on channel.
+     * e.g. { text: 'Nothing yet ...', created_at: 'Yesterday' }
+     */
     latestMessage: PropTypes.object,
     /** Number of unread messages on channel */
     unread: PropTypes.number,
@@ -97,8 +100,12 @@ class ChannelPreviewMessenger extends PureComponent {
     this.props.setActiveChannel(this.props.channel);
   };
 
-  renderAvatar = (otherMembers) => {
-    const { channel } = this.props;
+  renderAvatar = () => {
+    const { channel, client } = this.props;
+    const members = channel.state ? Object.values(channel.state.members) : [];
+    const otherMembers = members.filter(
+      (member) => member.user.id !== client.userID,
+    );
     if (channel.data.image)
       return (
         <Avatar image={channel.data.image} size={40} name={channel.data.name} />
@@ -116,7 +123,7 @@ class ChannelPreviewMessenger extends PureComponent {
     return <Avatar size={40} name={channel.data.name} />;
   };
 
-  render() {
+  getDisplayName = () => {
     const { channel } = this.props;
     let otherMembers = [];
     let name = channel.data.name;
@@ -131,28 +138,36 @@ class ChannelPreviewMessenger extends PureComponent {
         .map((member) => member.user.name || member.user.id || 'Unnamed User')
         .join(', ');
     }
-    const formatLatestMessageDate = this.props.formatLatestMessageDate;
+
+    return name;
+  };
+
+  getLatestMessageDisplayDate = () => {
+    const { formatLatestMessageDate, latestMessage, lastMessage } = this.props;
+
+    if (formatLatestMessageDate) {
+      return formatLatestMessageDate(lastMessage.created_at);
+    }
+
+    return latestMessage.created_at;
+  };
+
+  render() {
+    const { latestMessage, unread } = this.props;
+
     return (
       <Container onPress={this.onSelectChannel} testID="channel-preview-button">
-        {this.renderAvatar(otherMembers)}
+        {this.renderAvatar()}
         <Details>
           <DetailsTop>
             <Title ellipsizeMode="tail" numberOfLines={1}>
-              {name}
+              {this.getDisplayName()}
             </Title>
-            <Date>
-              {formatLatestMessageDate
-                ? formatLatestMessageDate(
-                    this.props.latestMessage.messageObject.created_at,
-                  )
-                : this.props.latestMessage.created_at}
-            </Date>
+            <Date>{this.getLatestMessageDisplayDate()}</Date>
           </DetailsTop>
-          <Message
-            unread={this.props.unread > 0 ? this.props.unread : undefined}
-          >
-            {this.props.latestMessage &&
-              truncate(this.props.latestMessage.text.replace(/\n/g, ' '), {
+          <Message unread={unread > 0 ? unread : undefined}>
+            {latestMessage &&
+              truncate(latestMessage.text.replace(/\n/g, ' '), {
                 length: this.props.latestMessageLength,
               })}
           </Message>

@@ -10,7 +10,6 @@ class ChannelPreview extends PureComponent {
     this.state = {
       unread: 0,
       lastMessage: {},
-      lastRead: new Date(),
     };
   }
 
@@ -41,7 +40,7 @@ class ChannelPreview extends PureComponent {
 
   handleReadEvent = (event) => {
     if (event.user.id === this.props.client.userID) {
-      this.setState({ unread: this.props.channel.countUnread() });
+      this.setState({ unread: 0 });
     }
   };
 
@@ -53,54 +52,62 @@ class ChannelPreview extends PureComponent {
     });
   };
 
-  getLatestMessage = () => {
-    const { channel, t, tDateTimeParser } = this.props;
-    const message = channel.state.messages[channel.state.messages.length - 1];
-
-    const latestMessage = {
-      text: '',
-      created_at: '',
-      messageObject: { ...message },
-    };
+  getLatestMessageDisplayText = (message) => {
+    const { t } = this.props;
 
     if (!message) {
-      latestMessage.text = t('Nothing yet...');
-      return latestMessage;
+      return t('Nothing yet...');
     }
+
     if (message.deleted_at) {
-      latestMessage.text = t('Message deleted');
-      return latestMessage;
+      return t('Message deleted');
     }
 
     if (message.text) {
-      latestMessage.text = message.text;
-    } else {
-      if (message.command) {
-        latestMessage.text = '/' + message.command;
-      } else if (message.attachments.length) {
-        latestMessage.text = t('🏙 Attachment...');
-      } else {
-        latestMessage.text = t('Empty message...');
-      }
+      return message.text;
     }
+
+    if (message.command) {
+      return '/' + message.command;
+    }
+
+    if (message.attachments.length) {
+      return t('🏙 Attachment...');
+    }
+
+    return t('Empty message...');
+  };
+
+  getLatestMessageDisplayDate = (message) => {
+    const { tDateTimeParser } = this.props;
 
     if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
-      latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'LT',
-      );
+      return tDateTimeParser(message.created_at).format('LT');
     else {
-      latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'L',
-      );
+      return tDateTimeParser(message.created_at).format('L');
     }
+  };
 
-    return latestMessage;
+  getLatestMessage = () => {
+    const { channel } = this.props;
+    const message = channel.state.messages[channel.state.messages.length - 1];
+
+    return {
+      text: this.getLatestMessageDisplayText(message),
+      created_at: this.getLatestMessageDisplayDate(message),
+    };
   };
 
   render() {
-    const props = { ...this.state, ...this.props };
     const { Preview } = this.props;
-    return <Preview {...props} latestMessage={this.getLatestMessage()} />;
+    return (
+      <Preview
+        {...this.props}
+        lastMessage={this.state.lastMessage}
+        unread={this.state.unread}
+        latestMessage={this.getLatestMessage()}
+      />
+    );
   }
 }
 
