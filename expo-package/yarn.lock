@@ -8838,10 +8838,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.13.1.tgz#918bdd4e02db05e1819f86628e8c00c946e3ae4f"
-  integrity sha512-J4kAxWiwkIdHvi6gaWUSd1MPQTcDS3Rs+BoDRHQZUTVEQmLgBNlFNnd0ij/IAO9Df4ST54/aFRW01GMk0U3KIw==
+stream-chat-react-native-core@v0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-0.14.0.tgz#f4f406b056e3cbbeb9219a342170e044d3f0a609"
+  integrity sha512-LtEu7iUi4El4FSczrs+yhMddVF4lsII6DCuuk8dKTk4BPxW2ItGmNeZ1bOMa30YClj0DuDRnSiMEbJTnXMdLbQ==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@stream-io/react-native-simple-markdown" "^1.2.0"
@@ -8861,13 +8861,13 @@ stream-chat-react-native-core@v0.13.1:
     react-native-actionsheet "^2.4.2"
     react-native-image-zoom-viewer "^2.2.25"
     seamless-immutable "^7.1.4"
-    stream-chat "^1.12.1"
+    stream-chat "^1.13.1"
     uuid "^3.3.2"
 
-stream-chat@^1.12.1:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.13.0.tgz#36f6ffce47675ba88cefff173b1762827c16d330"
-  integrity sha512-5lWNG5zJU17vyAznTEcz2CSRq3PM85jh8QuqOoKflx6Izgc1mDC817x8JBAqx+9rNMJclkiW9+qdHFVlKLN6hg==
+stream-chat@^1.13.1:
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-1.14.0.tgz#bed3cbaef8183de52c22a06cd879b04246663d73"
+  integrity sha512-ZKKZavNjxFlTWfeHJ7BrePj6lc1FVOMHc1eF0xLGK6Jehx9i/zHlYJb7NlhvrRXu7hBOdrLyzh2wQIwgpB21rA==
   dependencies:
     "@babel/runtime" "^7.3.1"
     "@types/seamless-immutable" "7.1.12"
