@@ -1,114 +1,60 @@
-import React, { PureComponent } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 
-import { withTranslationContext } from '../../context';
+import { ChatContext } from '../../context';
+import useLatestMessagePreview from './hooks/useLatestMessagePreview';
 
-class ChannelPreview extends PureComponent {
-  constructor(props) {
-    super(props);
+const ChannelPreview = (props) => {
+  const { client } = useContext(ChatContext);
+  const { channel } = props;
 
-    this.state = {
-      unread: 0,
-      lastMessage: {},
+  const [unread, setUnread] = useState(channel.countUnread());
+  const [lastMessage, setLastMessage] = useState({});
+  const latestMessagePreview = useLatestMessagePreview(channel);
+
+  useEffect(() => {
+    const handleNewMessageEvent = (e) => {
+      setLastMessage(e.message);
+      setUnread(channel.countUnread());
     };
-  }
 
-  static propTypes = {
-    channel: PropTypes.object.isRequired,
-    client: PropTypes.object.isRequired,
-    setActiveChannel: PropTypes.func,
-    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  };
+    channel.on('message.new', handleNewMessageEvent);
 
-  static defaultProps = {
-    // Preview: ChannelPreviewCountOnly,
-  };
-
-  componentDidMount() {
-    // listen to change...
-    const channel = this.props.channel;
-    this.setState({ unread: channel.countUnread() });
-    channel.on('message.new', this.handleNewMessageEvent);
-    channel.on('message.read', this.handleReadEvent);
-  }
-
-  componentWillUnmount() {
-    const channel = this.props.channel;
-    channel.off('message.new', this.handleNewMessageEvent);
-    channel.off('message.read', this.handleReadEvent);
-  }
-
-  handleReadEvent = (event) => {
-    if (event.user.id === this.props.client.userID) {
-      this.setState({ unread: 0 });
-    }
-  };
-
-  handleNewMessageEvent = (event) => {
-    const channel = this.props.channel;
-    this.setState({
-      lastMessage: event.message,
-      unread: channel.countUnread(),
-    });
-  };
-
-  getLatestMessageDisplayText = (message) => {
-    const { t } = this.props;
-
-    if (!message) {
-      return t('Nothing yet...');
-    }
-
-    if (message.deleted_at) {
-      return t('Message deleted');
-    }
-
-    if (message.text) {
-      return message.text;
-    }
-
-    if (message.command) {
-      return '/' + message.command;
-    }
-
-    if (message.attachments.length) {
-      return t('🏙 Attachment...');
-    }
-
-    return t('Empty message...');
-  };
-
-  getLatestMessageDisplayDate = (message) => {
-    const { tDateTimeParser } = this.props;
-
-    if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
-      return tDateTimeParser(message.created_at).format('LT');
-    else {
-      return tDateTimeParser(message.created_at).format('L');
-    }
-  };
-
-  getLatestMessage = () => {
-    const { channel } = this.props;
-    const message = channel.state.messages[channel.state.messages.length - 1];
-
-    return {
-      text: this.getLatestMessageDisplayText(message),
-      created_at: this.getLatestMessageDisplayDate(message),
+    return () => {
+      channel.off('message.new', handleNewMessageEvent);
     };
-  };
+  });
 
-  render() {
-    const { Preview } = this.props;
-    return (
-      <Preview
-        {...this.props}
-        lastMessage={this.state.lastMessage}
-        unread={this.state.unread}
-        latestMessage={this.getLatestMessage()}
-      />
-    );
-  }
-}
+  useEffect(() => {
+    const handleReadEvent = (e) => {
+      if (e.user.id === client.userID) {
+        setUnread(0);
+      }
+    };
 
-export default withTranslationContext(ChannelPreview);
+    channel.on('message.read', handleReadEvent);
+
+    return () => {
+      channel.off('message.read', handleReadEvent);
+    };
+  });
+
+  const { Preview } = props;
+  return (
+    <Preview
+      {...props}
+      lastMessage={lastMessage}
+      unread={unread}
+      latestMessage={latestMessagePreview}
+    />
+  );
+};
+
+ChannelPreview.propTypes = {
+  channel: PropTypes.object.isRequired,
+  client: PropTypes.object.isRequired,
+  setActiveChannel: PropTypes.func,
+  Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+};
+
+export default ChannelPreview;

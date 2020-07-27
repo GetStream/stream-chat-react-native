@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
 import { Avatar } from '../Avatar';
 import { themed } from '../../styles/theme';
-import { withTranslationContext } from '../../context';
+import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
+import useChannelPreviewDisplayAvatar from './hooks/useChannelPreviewDisplayAvatar';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -63,118 +64,68 @@ const Message = styled.Text`
  *
  * @example ../docs/ChannelPreviewMessenger.md
  */
-class ChannelPreviewMessenger extends PureComponent {
-  static themePath = 'channelPreview';
+const ChannelPreviewMessenger = ({
+  channel,
+  latestMessage,
+  unread,
+  latestMessageLength = 30,
+  formatLatestMessageDate,
+  setActiveChannel,
+}) => {
+  const displayName = useChannelPreviewDisplayName(channel);
+  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
 
-  static propTypes = {
-    /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
-    setActiveChannel: PropTypes.func,
-    /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
-    channel: PropTypes.object,
-    /**
-     * Display preview for latest message on channel.
-     * e.g. { text: 'Nothing yet ...', created_at: 'Yesterday' }
-     */
-    latestMessage: PropTypes.object,
-    /** Number of unread messages on channel */
-    unread: PropTypes.number,
-    /** Length at which latest message should be truncated */
-    latestMessageLength: PropTypes.number,
-    /**
-     * Formatter function for date of latest message.
-     * @param date Message date
-     * @returns Formatted date string
-     *
-     * By default today's date is shown in 'HH:mm A' format and other dates
-     * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
-     * default formated date. This default logic is part of ChannelPreview component.
-     */
-    formatLatestMessageDate: PropTypes.func,
-  };
+  return (
+    <Container
+      onPress={setActiveChannel.bind(null, channel)}
+      testID="channel-preview-button"
+    >
+      <Avatar size={40} image={displayAvatar.image} name={displayAvatar.name} />
+      <Details>
+        <DetailsTop>
+          <Title ellipsizeMode="tail" numberOfLines={1}>
+            {displayName}
+          </Title>
+          <Date>
+            {formatLatestMessageDate
+              ? formatLatestMessageDate(latestMessage.messageObject.created_at)
+              : latestMessage.created_at}
+          </Date>
+        </DetailsTop>
+        <Message unread={unread > 0 ? unread : undefined}>
+          {latestMessage?.text &&
+            truncate(latestMessage.text.replace(/\n/g, ' '), {
+              length: latestMessageLength,
+            })}
+        </Message>
+      </Details>
+    </Container>
+  );
+};
 
-  static defaultProps = {
-    latestMessageLength: 30,
-  };
+ChannelPreviewMessenger.propTypes = {
+  /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
+  setActiveChannel: PropTypes.func,
+  /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
+  channel: PropTypes.object,
+  /** Latest message (object) on channel */
+  latestMessage: PropTypes.object,
+  /** Number of unread messages on channel */
+  unread: PropTypes.number,
+  /** Length at which latest message should be truncated */
+  latestMessageLength: PropTypes.number,
+  /**
+   * Formatter function for date of latest message.
+   * @param date Message date
+   * @returns Formatted date string
+   *
+   * By default today's date is shown in 'HH:mm A' format and other dates
+   * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
+   * default formated date. This default logic is part of ChannelPreview component.
+   */
+  formatLatestMessageDate: PropTypes.func,
+};
 
-  onSelectChannel = () => {
-    this.props.setActiveChannel(this.props.channel);
-  };
+ChannelPreviewMessenger.themePath = 'channelPreview';
 
-  renderAvatar = () => {
-    const { channel, client } = this.props;
-    const members = channel.state ? Object.values(channel.state.members) : [];
-    const otherMembers = members.filter(
-      (member) => member.user.id !== client.userID,
-    );
-    if (channel.data.image)
-      return (
-        <Avatar image={channel.data.image} size={40} name={channel.data.name} />
-      );
-
-    if (otherMembers.length === 1)
-      return (
-        <Avatar
-          image={otherMembers[0].user.image}
-          size={40}
-          name={channel.data.name || otherMembers[0].user.name}
-        />
-      );
-
-    return <Avatar size={40} name={channel.data.name} />;
-  };
-
-  getDisplayName = () => {
-    const { channel } = this.props;
-    let otherMembers = [];
-    let name = channel.data.name;
-    const isValidName = name && typeof name === 'string';
-
-    if (!isValidName) {
-      const members = channel.state ? Object.values(channel.state.members) : [];
-      otherMembers = members.filter(
-        (member) => member.user.id !== this.props.client.userID,
-      );
-      name = otherMembers
-        .map((member) => member.user.name || member.user.id || 'Unnamed User')
-        .join(', ');
-    }
-
-    return name;
-  };
-
-  getLatestMessageDisplayDate = () => {
-    const { formatLatestMessageDate, latestMessage, lastMessage } = this.props;
-
-    if (formatLatestMessageDate) {
-      return formatLatestMessageDate(lastMessage.created_at);
-    }
-
-    return latestMessage.created_at;
-  };
-
-  render() {
-    const { latestMessage, unread } = this.props;
-
-    return (
-      <Container onPress={this.onSelectChannel} testID="channel-preview-button">
-        {this.renderAvatar()}
-        <Details>
-          <DetailsTop>
-            <Title ellipsizeMode="tail" numberOfLines={1}>
-              {this.getDisplayName()}
-            </Title>
-            <Date>{this.getLatestMessageDisplayDate()}</Date>
-          </DetailsTop>
-          <Message unread={unread > 0 ? unread : undefined}>
-            {latestMessage &&
-              truncate(latestMessage.text.replace(/\n/g, ' '), {
-                length: this.props.latestMessageLength,
-              })}
-          </Message>
-        </Details>
-      </Container>
-    );
-  }
-}
-
-export default withTranslationContext(themed(ChannelPreviewMessenger));
+export default themed(ChannelPreviewMessenger);

@@ -1,5 +1,6 @@
 export { default as dispatchMessageNewEvent } from './messageNew';
 export { default as dispatchMessageUpdatedEvent } from './messageUpdated';
+export { default as dispatchMessageReadEvent } from './messageRead';
 export { default as dispatchMessageDeletedEvent } from './messageDeleted';
 export { default as dispatchChannelUpdatedEvent } from './channelUpdated';
 export { default as dispatchChannelDeletedEvent } from './channelDeleted';

@@ -19,6 +19,7 @@ import {
 } from 'mock-builders';
 
 import ChannelPreviewMessenger from '../ChannelPreviewMessenger';
+import { Chat } from '../../Chat';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();
@@ -26,12 +27,15 @@ describe('ChannelPreviewMessenger', () => {
   let channel;
 
   const getComponent = (props = {}) => (
-    <ChannelPreviewMessenger
-      client={chatClient}
-      channel={channel}
-      latestMessage={generateMessage()}
-      {...props}
-    />
+    <Chat client={chatClient}>
+      <ChannelPreviewMessenger
+        client={chatClient}
+        channel={channel}
+        latestMessage={generateMessage()}
+        setActiveChannel={jest.fn()}
+        {...props}
+      />
+    </Chat>
   );
 
   const initializeChannel = async (c) => {
@@ -45,6 +49,10 @@ describe('ChannelPreviewMessenger', () => {
 
   beforeEach(async () => {
     chatClient = await getTestClientWithUser(clientUser);
+  });
+
+  afterEach(() => {
+    channel = null;
   });
 
   it('should call setActiveChannel on click', async () => {
@@ -99,6 +107,8 @@ describe('ChannelPreviewMessenger', () => {
 
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
     const message = generateMessage();
+    await initializeChannel(generateChannel());
+
     const { queryByText } = render(
       getComponent({
         latestMessage: message,

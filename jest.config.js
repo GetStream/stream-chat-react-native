@@ -15,4 +15,5 @@ module.exports = Object.assign(jestPreset, {
     '@stream-io/styled-components':
       '<rootDir>/node_modules/@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
   },
+  setupFiles: [...jestPreset.setupFiles, require.resolve('./jest-setup.js')],
 });
