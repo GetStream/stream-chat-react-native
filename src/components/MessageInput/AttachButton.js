@@ -21,7 +21,7 @@ const AttachButtonIcon = styled.Image`
  * UI Component for attach button in MessageInput component.
  *
  * @extends PureComponent
- * @example ./docs/AttachButton.md
+ * @example ../docs/AttachButton.md
  */
 class AttachButton extends React.PureComponent {
   static themePath = 'messageInput';

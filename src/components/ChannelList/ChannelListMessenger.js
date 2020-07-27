@@ -18,7 +18,7 @@ import {
 /**
  * ChannelListMessenger - UI component for list of channels, allowing you to select the channel you want to open
  *
- * @example ./docs/ChannelListMessenger.md
+ * @example ../docs/ChannelListMessenger.md
  */
 class ChannelListMessenger extends PureComponent {
   static propTypes = {

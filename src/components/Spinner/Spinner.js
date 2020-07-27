@@ -17,7 +17,7 @@ export const Circle = styled(AnimatedView)`
   ${({ theme }) => theme.spinner.css}
 `;
 /**
- * @example ./docs/Spinner.md
+ * @example ../docs/Spinner.md
  * @extends PureComponent
  */
 class Spinner extends React.PureComponent {

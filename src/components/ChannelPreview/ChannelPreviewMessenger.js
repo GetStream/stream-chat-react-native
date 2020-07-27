@@ -61,7 +61,7 @@ const Message = styled.Text`
 /**
  * ChannelPreviewMessenger - UI component for individual item in list of channels.
  *
- * @example ./docs/ChannelPreviewMessenger.md
+ * @example ../docs/ChannelPreviewMessenger.md
  */
 class ChannelPreviewMessenger extends PureComponent {
   static themePath = 'channelPreview';

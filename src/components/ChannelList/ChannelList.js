@@ -32,7 +32,7 @@ export const MAX_QUERY_CHANNELS_LIMIT = 30;
  * provided to this component as prop. By default ChannelListMessenger is used a list UI.
  *
  * @extends PureComponent
- * @example ./docs/ChannelList.md
+ * @example ../docs/ChannelList.md
  */
 class ChannelList extends PureComponent {
   static propTypes = {

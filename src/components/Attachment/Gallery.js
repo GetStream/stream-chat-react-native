@@ -59,7 +59,7 @@ const ImageContainer = styled.TouchableOpacity`
 /**
  * UI component for card in attachments.
  *
- * @example ./docs/Gallery.md
+ * @example ../docs/Gallery.md
  */
 
 class Gallery extends React.PureComponent {

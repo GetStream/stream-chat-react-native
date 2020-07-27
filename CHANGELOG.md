@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0] 2020-07-27
+
+- Upgrading @stream-io/react-native-simple-markdown to 1.2.1 [d89f012](https://github.com/GetStream/react-native-simple-markdown/commit/d89f0128e6c4f179f2afe9f9a896b289288e2afd)
+
+  It fixes the issue with markdown where text like "#stream" was treated as heading, thus disallowing anyone to use hashtags in chat.
+  
+- Internal directory restructuring of components 
+
 ## [0.14.0] 2020-07-16
 
 - Fixing compatibility issues with react-native 0.63 [88721a0](https://github.com/GetStream/stream-chat-react-native/commit/88721a077b3bb3369c3d8dbde9451d84f6761d87)

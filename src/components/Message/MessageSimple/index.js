@@ -25,7 +25,7 @@ const Container = styled.View`
  *
  * Message UI component
  *
- * @example ../docs/MessageSimple.md
+ * @example ../../docs/MessageSimple.md
  * @extends Component
  */
 

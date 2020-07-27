@@ -41,7 +41,7 @@ const AvatarText = styled.Text`
 /**
  * Avatar - A round avatar image with fallback to user's initials
  *
- * @example ./docs/Avatar.md
+ * @example ../docs/Avatar.md
  * @extends PureComponent
  */
 class Avatar extends React.PureComponent {

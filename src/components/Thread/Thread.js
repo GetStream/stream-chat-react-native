@@ -34,7 +34,7 @@ const NewThreadText = styled.Text`
  * - additionalMessageListProps
  * - additionalMessageInputProps
  *
- * @example ./docs/Thread.md
+ * @example ../docs/Thread.md
  * @extends Component
  */
 class Thread extends React.PureComponent {

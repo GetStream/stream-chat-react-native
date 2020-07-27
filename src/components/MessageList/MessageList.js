@@ -54,7 +54,7 @@ const TypingIndicatorContainer = styled.View`
  * MessageList - The message list component renders a list of messages.
  * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
  *
- * @example ./docs/MessageList.md
+ * @example ../docs/MessageList.md
  * @extends PureComponent
  */
 class MessageList extends PureComponent {
@@ -518,8 +518,7 @@ class MessageList extends PureComponent {
 
   renderItem = (message, groupStyles) => {
     if (message.type === 'message.date') {
-      const DateSeparator =
-        this.props.dateSeparator || this.props.DateSeparator;
+      this.props.dateSeparator || this.props.DateSeparator;
       return <DateSeparator message={message} />;
     } else if (message.type === 'channel.event') {
       const EventIndicator =
