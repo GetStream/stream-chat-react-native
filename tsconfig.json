@@ -4,11 +4,12 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "jsx": "react-native",
     "lib": ["DOM", "ES6"],
     "noEmitOnError": false,
     "noImplicitAny": true,
     "outDir": "types",
+    "resolveJsonModule": true,
     "strict": true,
     "target": "ES5"
   },
