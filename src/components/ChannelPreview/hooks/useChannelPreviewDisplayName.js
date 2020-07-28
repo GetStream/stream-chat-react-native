@@ -6,7 +6,7 @@ export const useChannelPreviewDisplayName = (channel) => {
   const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
-    if (channel.data.name && typeof channel.data.name === 'string') {
+    if (typeof channel?.data?.name === 'string') {
       setDisplayName(channel.data.name);
       return;
     }
