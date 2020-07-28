@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-
+import { generateUser } from './user';
 export const generateMessage = (options) => ({
   id: uuidv4(),
   text: uuidv4(),
@@ -8,6 +8,6 @@ export const generateMessage = (options) => ({
   attachments: [],
   created_at: new Date().toString(),
   updated_at: new Date().toString(),
-  user: null,
+  user: generateUser(),
   ...options,
 });
