@@ -26,7 +26,7 @@ import {
 
 const ChannelPreviewUIComponent = (props) => (
   <>
-    <Text testID="channel-id">{props.channel.id}</Text>
+    <Text testID='channel-id'>{props.channel.id}</Text>
     <Text testID="unread-count">{props.unread}</Text>
     <Text testID="last-event-message">
       {props?.lastMessage?.text}
