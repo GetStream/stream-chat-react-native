@@ -46,8 +46,8 @@ describe('ChannelPreview', () => {
     <Chat client={chatClient}>
       <ChannelPreview
         {...props}
-        client={chatClient}
         channel={channel}
+        client={chatClient}
         Preview={ChannelPreviewUIComponent}
       />
     </Chat>
