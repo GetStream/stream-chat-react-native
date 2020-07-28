@@ -1,15 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { ChatContext } from '../../context';
 import useLatestMessagePreview from './hooks/useLatestMessagePreview';
 
-const ChannelPreview = (props) => {
-  const { client } = useContext(ChatContext);
-  const { channel } = props;
-
-  const [unread, setUnread] = useState(channel.countUnread());
+const ChannelPreviewWithContext = React.memo((props) => {
+  const { channel, client } = props;
   const [lastMessage, setLastMessage] = useState({});
+  const [unread, setUnread] = useState(channel.countUnread());
   const latestMessagePreview = useLatestMessagePreview(channel);
 
   useEffect(() => {
@@ -44,10 +42,15 @@ const ChannelPreview = (props) => {
     <Preview
       {...props}
       lastMessage={lastMessage}
-      unread={unread}
       latestMessage={latestMessagePreview}
+      unread={unread}
     />
   );
+});
+
+const ChannelPreview = (props) => {
+  const { client } = useContext(ChatContext);
+  return <ChannelPreviewWithContext {...props} {...{ client }} />;
 };
 
 ChannelPreview.propTypes = {

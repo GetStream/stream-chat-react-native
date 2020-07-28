@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { TranslationContext } from '../../../context';
 
 /**
@@ -44,7 +44,7 @@ const useLatestMessagePreview = (channel) => {
   };
 
   useEffect(() => {
-    if (!channel.state.messages || channel.state.messages.length === 0) {
+    if (!channel.state.messages || !channel.state.messages.length) {
       setLatestMessagePreview({
         text: '',
         created_at: '',
