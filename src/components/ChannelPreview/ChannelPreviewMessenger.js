@@ -80,7 +80,7 @@ const ChannelPreviewMessenger = ({
       onPress={setActiveChannel.bind(null, channel)}
       testID='channel-preview-button'
     >
-      <Avatar size={40} image={displayAvatar.image} name={displayAvatar.name} />
+      <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
       <Details>
         <DetailsTop>
           <Title ellipsizeMode='tail' numberOfLines={1}>
