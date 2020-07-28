@@ -78,7 +78,7 @@ const ChannelPreviewMessenger = ({
   return (
     <Container
       onPress={setActiveChannel.bind(null, channel)}
-      testID="channel-preview-button"
+      testID='channel-preview-button'
     >
       <Avatar size={40} image={displayAvatar.image} name={displayAvatar.name} />
       <Details>
