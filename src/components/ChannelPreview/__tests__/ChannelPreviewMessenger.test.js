@@ -9,13 +9,13 @@ import { v4 as uuidv4 } from 'uuid';
 import truncate from 'lodash/truncate';
 
 import {
-  useMockedApis,
-  generateUser,
   generateChannel,
-  getTestClientWithUser,
-  getOrCreateChannelApi,
-  generateMessage,
   generateMember,
+  generateMessage,
+  generateUser,
+  getOrCreateChannelApi,
+  getTestClientWithUser,
+  useMockedApis,
 } from 'mock-builders';
 
 import ChannelPreviewMessenger from '../ChannelPreviewMessenger';
@@ -29,8 +29,8 @@ describe('ChannelPreviewMessenger', () => {
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
       <ChannelPreviewMessenger
-        client={chatClient}
         channel={channel}
+        client={chatClient}
         latestMessage={generateMessage()}
         setActiveChannel={jest.fn()}
         {...props}

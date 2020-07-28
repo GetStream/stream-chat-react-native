@@ -20,7 +20,7 @@ const useChannelPreviewDisplayAvatar = (channel) => {
       return;
     }
 
-    const members = channel.state ? Object.values(channel.state.members) : [];
+    const members = Object.values(channel?.state?.members || {});
     const otherMembers = members.filter(
       (member) => member.user.id !== client.user.id,
     );

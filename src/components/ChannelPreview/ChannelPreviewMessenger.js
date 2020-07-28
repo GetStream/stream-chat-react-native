@@ -66,24 +66,24 @@ const Message = styled.Text`
  */
 const ChannelPreviewMessenger = ({
   channel,
-  latestMessage,
-  unread,
-  latestMessageLength = 30,
   formatLatestMessageDate,
+  latestMessage,
+  latestMessageLength = 30,
   setActiveChannel,
+  unread,
 }) => {
-  const displayName = useChannelPreviewDisplayName(channel);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayName = useChannelPreviewDisplayName(channel);
 
   return (
     <Container
       onPress={setActiveChannel.bind(null, channel)}
-      testID="channel-preview-button"
+      testID='channel-preview-button'
     >
-      <Avatar size={40} image={displayAvatar.image} name={displayAvatar.name} />
+      <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
       <Details>
         <DetailsTop>
-          <Title ellipsizeMode="tail" numberOfLines={1}>
+          <Title ellipsizeMode='tail' numberOfLines={1}>
             {displayName}
           </Title>
           <Date>

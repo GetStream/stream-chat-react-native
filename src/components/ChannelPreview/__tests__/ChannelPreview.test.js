@@ -1,19 +1,19 @@
 import React from 'react';
 import {
-  render,
   act,
+  getNodeText,
+  render,
   wait,
   waitForElement,
-  getNodeText,
 } from '@testing-library/react-native';
 
 import {
-  useMockedApis,
-  generateUser,
   generateChannel,
-  getTestClientWithUser,
-  getOrCreateChannelApi,
   generateMessage,
+  generateUser,
+  getOrCreateChannelApi,
+  getTestClientWithUser,
+  useMockedApis,
 } from 'mock-builders';
 
 import ChannelPreview from '../ChannelPreview';
@@ -26,12 +26,12 @@ import {
 
 const ChannelPreviewUIComponent = (props) => (
   <>
-    <Text testID="channel-id">{props.channel.id}</Text>
-    <Text testID="unread-count">{props.unread}</Text>
-    <Text testID="last-event-message">
-      {props.lastMessage && props.lastMessage.text}
+    <Text testID='channel-id'>{props.channel.id}</Text>
+    <Text testID='unread-count'>{props.unread}</Text>
+    <Text testID='last-event-message'>
+      {props?.lastMessage?.text}
     </Text>
-    <Text testID="latest-message">
+    <Text testID='latest-message'>
       {props.latestMessage && props.latestMessage.text}
     </Text>
   </>
@@ -46,8 +46,8 @@ describe('ChannelPreview', () => {
     <Chat client={chatClient}>
       <ChannelPreview
         {...props}
-        client={chatClient}
         channel={channel}
+        client={chatClient}
         Preview={ChannelPreviewUIComponent}
       />
     </Chat>
