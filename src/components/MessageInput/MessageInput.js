@@ -5,7 +5,6 @@ import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import uniq from 'lodash/uniq';
 import styled from '@stream-io/styled-components';
-import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import { logChatPromiseExecution } from 'stream-chat';
 
@@ -21,14 +20,13 @@ import { pickImage, pickDocument } from '../../native';
 import { FileState, ACITriggerSettings } from '../../utils';
 import { themed } from '../../styles/theme';
 
+import ActionSheet from './ActionSheet';
 import SendButton from './SendButton';
 import AttachButton from './AttachButton';
 import ImageUploadPreview from './ImageUploadPreview';
 import FileUploadPreview from './FileUploadPreview';
 import { AutoCompleteInput } from '../AutoCompleteInput';
 
-import iconGallery from '../../images/icons/icon_attach-media.png';
-import iconFolder from '../../images/icons/icon_folder.png';
 import iconClose from '../../images/icons/icon_close.png';
 
 // https://stackoverflow.com/a/6860916/2570866
@@ -85,35 +83,6 @@ const InputBoxContainer = styled.View`
   margin: 10px;
   align-items: center;
   ${({ theme }) => theme.messageInput.inputBoxContainer.css}
-`;
-
-const ActionSheetTitleContainer = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding-left: 20;
-  padding-right: 20;
-  ${({ theme }) => theme.messageInput.actionSheet.titleContainer.css};
-`;
-
-const ActionSheetTitleText = styled.Text`
-  font-weight: bold;
-  ${({ theme }) => theme.messageInput.actionSheet.titleText.css};
-`;
-
-const ActionSheetButtonContainer = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-  padding-left: 20;
-  ${({ theme }) => theme.messageInput.actionSheet.buttonContainer.css};
-`;
-
-const ActionSheetButtonText = styled.Text`
-  ${({ theme }) => theme.messageInput.actionSheet.buttonText.css};
 `;
 
 /**
@@ -211,6 +180,12 @@ class MessageInput extends PureComponent {
      * */
     AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
+     * Custom UI component for ActionSheet.
+     *
+     * Defaults to and accepts same props as: [ActionSheet](https://getstream.github.io/stream-chat-react-native/#actionsheet)
+     * */
+    ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    /**
      * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
      *
      * @see See https://facebook.github.io/react-native/docs/textinput#reference
@@ -238,12 +213,13 @@ class MessageInput extends PureComponent {
   };
 
   static defaultProps = {
-    hasImagePicker: true,
-    hasFilePicker: true,
-    disabled: false,
-    sendImageAsync: false,
-    SendButton,
+    ActionSheet,
     AttachButton,
+    disabled: false,
+    hasFilePicker: true,
+    hasImagePicker: true,
+    SendButton,
+    sendImageAsync: false,
   };
 
   getMessageDetailsForState = (message, initialValue) => {
@@ -840,7 +816,8 @@ class MessageInput extends PureComponent {
       text: this.state.text + text,
     });
   };
-  setInputBoxRef = (o) => (this.inputBox = o);
+
+  setInputBoxRef = (o) => (this.attachActionSheet = o);
 
   closeAttachActionSheet = () => {
     this.attachActionSheet.hide();
@@ -893,42 +870,10 @@ class MessageInput extends PureComponent {
           */}
 
         <ActionSheet
-          ref={(o) => (this.attachActionSheet = o)}
-          title={
-            <ActionSheetTitleContainer>
-              <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
-              <IconSquare
-                icon={iconClose}
-                onPress={this.closeAttachActionSheet}
-              />
-            </ActionSheetTitleContainer>
-          }
-          options={[
-            /* eslint-disable */
-            <AttachmentActionSheetItem
-              icon={iconGallery}
-              text={t('Upload a photo')}
-            />,
-            <AttachmentActionSheetItem
-              icon={iconFolder}
-              text={t('Upload a file')}
-            />,
-            /* eslint-enable */
-          ]}
-          onPress={(index) => {
-            // https://github.com/beefe/react-native-actionsheet/issues/36
-            setTimeout(() => {
-              switch (index) {
-                case 0:
-                  this._pickImage();
-                  break;
-                case 1:
-                  this._pickFile();
-                  break;
-                default:
-              }
-            }, 201); // 201ms to fire after the animation is complete https://github.com/beefe/react-native-actionsheet/blob/master/lib/ActionSheetCustom.js#L78
-          }}
+          setAttachActionSheetRef={this.setInputBoxRef}
+          closeAttachActionSheet={this.closeAttachActionSheet}
+          pickFile={this._pickFile}
+          pickImage={this._pickImage}
           styles={this.props.actionSheetStyles}
         />
         <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
@@ -1043,11 +988,4 @@ export default withTranslationContext(
   withKeyboardContext(
     withSuggestionsContext(withChannelContext(themed(MessageInput))),
   ),
-);
-
-const AttachmentActionSheetItem = ({ icon, text }) => (
-  <ActionSheetButtonContainer>
-    <IconSquare icon={icon} />
-    <ActionSheetButtonText>{text}</ActionSheetButtonText>
-  </ActionSheetButtonContainer>
 );
