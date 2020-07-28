@@ -21,7 +21,7 @@ const ChannelPreviewWithContext = React.memo((props) => {
     return () => {
       channel.off('message.new', handleNewMessageEvent);
     };
-  });
+  }, []);
 
   useEffect(() => {
     const handleReadEvent = (e) => {
@@ -35,7 +35,7 @@ const ChannelPreviewWithContext = React.memo((props) => {
     return () => {
       channel.off('message.read', handleReadEvent);
     };
-  });
+  }, []);
 
   const { Preview } = props;
   return <Preview {...props} latestMessage={latestMessage} unread={unread} />;
