@@ -31,7 +31,7 @@ const ChannelPreviewUIComponent = (props) => (
     <Text testID="last-event-message">
       {props.lastMessage && props.lastMessage.text}
     </Text>
-    <Text testID="latest-message">
+    <Text testID='latest-message'>
       {props.latestMessage && props.latestMessage.text}
     </Text>
   </>
