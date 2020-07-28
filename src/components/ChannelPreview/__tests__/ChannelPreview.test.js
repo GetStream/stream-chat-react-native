@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  render,
   act,
+  getNodeText,
+  render,
   wait,
   waitForElement,
-  getNodeText,
 } from '@testing-library/react-native';
 
 import {
