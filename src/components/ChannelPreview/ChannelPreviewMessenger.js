@@ -72,8 +72,8 @@ const ChannelPreviewMessenger = ({
   setActiveChannel,
   unread,
 }) => {
-  const displayName = useChannelPreviewDisplayName(channel);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
+  const displayName = useChannelPreviewDisplayName(channel);
 
   return (
     <Container
