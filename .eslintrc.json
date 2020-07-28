@@ -1,9 +1,17 @@
 {
-  "plugins": ["babel", "markdown"],
+  "plugins": [
+    "babel",
+    "markdown",
+    "prettier",
+    "@typescript-eslint",
+    "typescript-sort-keys"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
-    "plugin:jest/recommended"
+    "plugin:jest/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint"
   ],
   "rules": {
     "no-console": 0,
@@ -25,18 +33,30 @@
     "react/prop-types": 0,
     "no-var": 2,
     "linebreak-style": [2, "unix"],
-    "semi": [1, "always"]
+    "semi": [1, "always"],
+    "@typescript-eslint/ban-ts-comment": 0,
+    "typescript-sort-keys/interface": [
+      "error",
+      "asc",
+      { "caseSensitive": false, "natural": true, "requiredFirst": true }
+    ],
+    "typescript-sort-keys/string-enum": [
+      "error",
+      "asc",
+      { "caseSensitive": false, "natural": true }
+    ]
   },
   "env": {
     "es6": true,
     "browser": true
   },
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2018,
     "ecmaFeatures": {
-      "modules": true
+      "modules": true,
+      "jsx": true
     }
   },
   "overrides": [

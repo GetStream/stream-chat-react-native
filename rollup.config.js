@@ -4,6 +4,7 @@ import external from 'rollup-plugin-peer-deps-external';
 import commonjs from 'rollup-plugin-commonjs';
 import copy from 'rollup-plugin-copy';
 import json from 'rollup-plugin-json';
+import typescript from 'rollup-plugin-typescript2';
 import images from './rollup-react-native-image.js';
 import path from 'path';
 
@@ -100,6 +101,7 @@ const normalBundle = {
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
     external(),
+    typescript(),
     babel({
       runtimeHelpers: true,
       exclude: 'node_modules/**',

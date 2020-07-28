@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "lib": ["DOM", "ES6"],
+    "noEmitOnError": false,
+    "noImplicitAny": true,
+    "outDir": "types",
+    "strict": true,
+    "target": "ES5"
+  },
+  "include": ["./src/**/*"]
+}
