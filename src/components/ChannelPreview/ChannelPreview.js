@@ -8,7 +8,7 @@ const ChannelPreviewWithContext = React.memo((props) => {
   const { channel, client } = props;
   const [lastMessage, setLastMessage] = useState({});
   const [unread, setUnread] = useState(channel.countUnread());
-  const latestMessagePreview = useLatestMessagePreview(channel);
+  const latestMessage = useLatestMessagePreview(channel, lastMessage);
 
   useEffect(() => {
     const handleNewMessageEvent = (e) => {
@@ -38,14 +38,7 @@ const ChannelPreviewWithContext = React.memo((props) => {
   });
 
   const { Preview } = props;
-  return (
-    <Preview
-      {...props}
-      lastMessage={lastMessage}
-      latestMessage={latestMessagePreview}
-      unread={unread}
-    />
-  );
+  return <Preview {...props} latestMessage={latestMessage} unread={unread} />;
 });
 
 const ChannelPreview = (props) => {

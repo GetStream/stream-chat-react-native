@@ -35,7 +35,7 @@ const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
  *
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
  */
-export const useLatestMessagePreview = (channel) => {
+export const useLatestMessagePreview = (channel, lastMessage) => {
   const { t, tDateTimeParser } = useContext(TranslationContext);
   const [latestMessagePreview, setLatestMessagePreview] = useState({});
 
@@ -55,7 +55,7 @@ export const useLatestMessagePreview = (channel) => {
         text: getLatestMessageDisplayText(message, t),
       });
     }
-  }, [channel]);
+  }, [lastMessage]);
 
   return latestMessagePreview;
 };

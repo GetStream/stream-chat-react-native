@@ -128,4 +128,5 @@ ChannelPreviewMessenger.propTypes = {
 
 ChannelPreviewMessenger.themePath = 'channelPreview';
 
+// TODO: remove HOC and use a theme context provider
 export default themed(ChannelPreviewMessenger);
