@@ -4,6 +4,10 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../../context';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
+/**
+ * NOTE: We created an inner component which only receives `client` from the ChatContext. This
+ * practice will prevent unnecessary renders of the component when items in ChatContext change
+ */
 const ChannelPreviewWithContext = React.memo((props) => {
   const { channel, client } = props;
   const [lastMessage, setLastMessage] = useState({});
