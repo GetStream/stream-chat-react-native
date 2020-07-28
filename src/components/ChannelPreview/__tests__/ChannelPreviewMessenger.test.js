@@ -29,8 +29,8 @@ describe('ChannelPreviewMessenger', () => {
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
       <ChannelPreviewMessenger
-        client={chatClient}
         channel={channel}
+        client={chatClient}
         latestMessage={generateMessage()}
         setActiveChannel={jest.fn()}
         {...props}
