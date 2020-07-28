@@ -44,8 +44,8 @@ const ChannelPreview = (props) => {
     <Preview
       {...props}
       lastMessage={lastMessage}
-      unread={unread}
       latestMessage={latestMessagePreview}
+      unread={unread}
     />
   );
 };
