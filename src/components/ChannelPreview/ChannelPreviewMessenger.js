@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { Avatar } from '../Avatar';
 import { themed } from '../../styles/theme';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
-import useChannelPreviewDisplayAvatar from './hooks/useChannelPreviewDisplayAvatar';
+import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -78,12 +78,12 @@ const ChannelPreviewMessenger = ({
   return (
     <Container
       onPress={setActiveChannel.bind(null, channel)}
-      testID='channel-preview-button'
+      testID="channel-preview-button"
     >
       <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
       <Details>
         <DetailsTop>
-          <Title ellipsizeMode='tail' numberOfLines={1}>
+          <Title ellipsizeMode="tail" numberOfLines={1}>
             {displayName}
           </Title>
           <Date>

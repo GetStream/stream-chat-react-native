@@ -7,7 +7,7 @@ import { ChatContext } from '../../../context';
  *
  * @returns {object} e.g., { image: 'http://dummyurl.com/test.png', name: 'Uhtred Bebbanburg' }
  */
-const useChannelPreviewDisplayAvatar = (channel) => {
+export const useChannelPreviewDisplayAvatar = (channel) => {
   const { client } = useContext(ChatContext);
   const [displayAvatar, setDisplayAvatar] = useState({});
 
@@ -17,28 +17,24 @@ const useChannelPreviewDisplayAvatar = (channel) => {
         image: channel.data.image,
         name: channel.data.name,
       });
-      return;
+    } else {
+      const members = Object.values(channel?.state?.members || {});
+      const otherMembers = members.filter(
+        (member) => member.user.id !== client.user.id,
+      );
+
+      if (otherMembers.length === 1) {
+        setDisplayAvatar({
+          image: otherMembers[0].user.image,
+          name: channel.data.name || otherMembers[0].user.name,
+        });
+      } else {
+        setDisplayAvatar({
+          name: channel.data.name,
+        });
+      }
     }
-
-    const members = Object.values(channel?.state?.members || {});
-    const otherMembers = members.filter(
-      (member) => member.user.id !== client.user.id,
-    );
-
-    if (otherMembers.length === 1) {
-      setDisplayAvatar({
-        image: otherMembers[0].user.image,
-        name: channel.data.name || otherMembers[0].user.name,
-      });
-      return;
-    }
-
-    setDisplayAvatar({
-      name: channel.data.name,
-    });
   }, [channel]);
 
   return displayAvatar;
 };
-
-export default useChannelPreviewDisplayAvatar;

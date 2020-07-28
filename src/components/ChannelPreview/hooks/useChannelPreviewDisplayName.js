@@ -8,18 +8,17 @@ export const useChannelPreviewDisplayName = (channel) => {
   useEffect(() => {
     if (typeof channel?.data?.name === 'string') {
       setDisplayName(channel.data.name);
-      return;
+    } else {
+      const members = Object.values(channel?.state?.members || {});
+      const otherMembers = members.filter(
+        (member) => member.user.id !== client.user.id,
+      );
+      const name = otherMembers
+        .map((member) => member.user.name || member.user.id || 'Unnamed User')
+        .join(', ');
+
+      setDisplayName(name);
     }
-
-    const members = Object.values(channel?.state?.members || {});
-    const otherMembers = members.filter(
-      (member) => member.user.id !== client.user.id,
-    );
-    const name = otherMembers
-      .map((member) => member.user.name || member.user.id || 'Unnamed User')
-      .join(', ');
-
-    setDisplayName(name);
   }, [channel]);
 
   return displayName;

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { ChatContext } from '../../context';
-import useLatestMessagePreview from './hooks/useLatestMessagePreview';
+import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 const ChannelPreviewWithContext = React.memo((props) => {
   const { channel, client } = props;
