@@ -66,11 +66,11 @@ const Message = styled.Text`
  */
 const ChannelPreviewMessenger = ({
   channel,
-  latestMessage,
-  unread,
-  latestMessageLength = 30,
   formatLatestMessageDate,
+  latestMessage,
+  latestMessageLength = 30,
   setActiveChannel,
+  unread,
 }) => {
   const displayName = useChannelPreviewDisplayName(channel);
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
