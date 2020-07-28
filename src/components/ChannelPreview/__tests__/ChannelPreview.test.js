@@ -8,12 +8,12 @@ import {
 } from '@testing-library/react-native';
 
 import {
-  useMockedApis,
-  generateUser,
   generateChannel,
-  getTestClientWithUser,
-  getOrCreateChannelApi,
   generateMessage,
+  generateUser,
+  getOrCreateChannelApi,
+  getTestClientWithUser,
+  useMockedApis,
 } from 'mock-builders';
 
 import ChannelPreview from '../ChannelPreview';
