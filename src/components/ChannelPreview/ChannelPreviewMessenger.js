@@ -83,7 +83,7 @@ const ChannelPreviewMessenger = ({
       <Avatar size={40} image={displayAvatar.image} name={displayAvatar.name} />
       <Details>
         <DetailsTop>
-          <Title ellipsizeMode="tail" numberOfLines={1}>
+          <Title ellipsizeMode='tail' numberOfLines={1}>
             {displayName}
           </Title>
           <Date>
