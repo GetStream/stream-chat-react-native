@@ -79,7 +79,7 @@ const FileAttachment = ({
         mimeType={attachment.mime_type}
       />
       <FileDetails>
-        <FileTitle ellipsizeMode="tail" numberOfLines={2}>
+        <FileTitle ellipsizeMode='tail' numberOfLines={2}>
           {attachment.title}
         </FileTitle>
         <FileSize>{attachment.file_size} KB</FileSize>
@@ -100,7 +100,7 @@ FileAttachment.propTypes = {
   attachment: PropTypes.object.isRequired,
   /**
    * Position of message. 'right' | 'left'
-   * 'right' message belongs with current user while 'left' message belonds to other users.
+   * 'right' message belongs with current user while 'left' message belongs to other users.
    * */
   alignment: PropTypes.string,
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
