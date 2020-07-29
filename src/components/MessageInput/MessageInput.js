@@ -20,7 +20,7 @@ import { pickImage, pickDocument } from '../../native';
 import { FileState, ACITriggerSettings } from '../../utils';
 import { themed } from '../../styles/theme';
 
-import ActionSheet from './ActionSheet';
+import ActionSheetAttachment from './ActionSheetAttachment';
 import SendButton from './SendButton';
 import AttachButton from './AttachButton';
 import ImageUploadPreview from './ImageUploadPreview';
@@ -180,11 +180,14 @@ class MessageInput extends PureComponent {
      * */
     AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
-     * Custom UI component for ActionSheet.
+     * Custom UI component for ActionSheetAttachment.
      *
-     * Defaults to and accepts same props as: [ActionSheet](https://getstream.github.io/stream-chat-react-native/#actionsheet)
+     * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
      * */
-    ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+    ActionSheetAttachment: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
     /**
      * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
      *
@@ -213,7 +216,7 @@ class MessageInput extends PureComponent {
   };
 
   static defaultProps = {
-    ActionSheet,
+    ActionSheetAttachment,
     AttachButton,
     disabled: false,
     hasFilePicker: true,
@@ -869,7 +872,7 @@ class MessageInput extends PureComponent {
             work well with async onPress operations. So find a solution.
           */}
 
-        <ActionSheet
+        <ActionSheetAttachment
           setAttachActionSheetRef={this.setInputBoxRef}
           closeAttachActionSheet={this.closeAttachActionSheet}
           pickFile={this._pickFile}
