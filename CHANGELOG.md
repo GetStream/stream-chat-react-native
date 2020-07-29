@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.0] 2020-07-29
+
+We've already been on a v1 release for a while but never updated our versioning. Right now we're in the process of rewriting our components to be more future proof and we started using hooks, hence the v1.0.0 today.
+
+Breaking change: stream-chat-react-native now relies on hooks and will need react-native >= 0.59.0 to work
+
+Rewrite will involve following changes:
+
+1. Functional compoenents instead of class based components
+2. Static typing using typescript
+3. UI tests
+
+We are going to increamentally implement these changes and will try to keep everything backwards compatible unless really necessary.
+
+## [0.15.2] 2020-07-29
+
+- Exporting `AutoCompleteInput` component [d41d0d5](https://github.com/GetStream/stream-chat-react-native/commit/d41d0d58ce02556cedf1825a2adb6a5c366a770c)
+
+## [0.15.1] 2020-07-29 (Bad release)
+
 ## [0.15.0] 2020-07-27
 
 - Upgrading @stream-io/react-native-simple-markdown to 1.2.1 [d89f012](https://github.com/GetStream/react-native-simple-markdown/commit/d89f0128e6c4f179f2afe9f9a896b289288e2afd)
