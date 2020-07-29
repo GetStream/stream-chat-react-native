@@ -8,10 +8,10 @@ import {
 } from '@testing-library/react-native';
 
 import {
-  dispatchMessageReadEvent,
-  dispatchMessageNewEvent,
-  dispatchMessageUpdatedEvent,
   dispatchMessageDeletedEvent,
+  dispatchMessageNewEvent,
+  dispatchMessageReadEvent,
+  dispatchMessageUpdatedEvent,
   generateChannel,
   generateMessage,
   generateUser,
