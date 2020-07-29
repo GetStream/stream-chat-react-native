@@ -1,65 +1,55 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+
+import { TranslationContext } from '../../context';
 import { Spinner } from '../Spinner';
-import { withTranslationContext } from '../../context';
 
 const Container = styled.View`
+  align-items: center;
   height: 100%;
   justify-content: center;
-  align-items: center;
   ${({ theme }) => theme.loadingIndicator.container.css}
 `;
 const LoadingText = styled.Text`
-  margin-top: 20px;
   font-size: 14px;
   font-weight: 600;
+  margin-top: 20px;
   ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
-class LoadingIndicator extends React.PureComponent {
-  static propTypes = {
-    listType: PropTypes.oneOf(['channel', 'message', 'default']),
-    loadingText: PropTypes.string,
-  };
+const LoadingIndicator = (props) => {
+  const { listType, loadingText } = props;
+  const { t } = useContext(TranslationContext);
+  let indicatorText = '';
 
-  static defaultProps = {
-    listType: 'default',
-  };
-
-  render() {
-    const { t, listType, loadingText } = this.props;
-    switch (listType) {
-      case 'channel':
-        return (
-          <Container>
-            <Spinner />
-            <LoadingText>
-              {loadingText ? loadingText : t('Loading channels ...')}
-            </LoadingText>
-          </Container>
-        );
-      case 'message':
-        return (
-          <Container>
-            <Spinner />
-            <LoadingText>
-              {loadingText ? loadingText : t('Loading messages ...')}
-            </LoadingText>
-          </Container>
-        );
-      case 'default':
-      default:
-        return (
-          <Container>
-            <Spinner />
-            <LoadingText>
-              {loadingText ? loadingText : t('Loading ...')}
-            </LoadingText>
-          </Container>
-        );
-    }
+  switch (listType) {
+    case 'channel':
+      indicatorText = loadingText ? loadingText : t('Loading channels ...');
+      break;
+    case 'message':
+      indicatorText = loadingText ? loadingText : t('Loading messages ...');
+      break;
+    case 'default':
+    default:
+      indicatorText = loadingText ? loadingText : t('Loading ...');
   }
-}
 
-export default withTranslationContext(LoadingIndicator);
+  return (
+    <Container>
+      <Spinner />
+      <LoadingText>{indicatorText}</LoadingText>
+    </Container>
+  );
+};
+
+LoadingIndicator.propTypes = {
+  listType: PropTypes.oneOf(['channel', 'message', 'default']),
+  loadingText: PropTypes.string,
+};
+
+LoadingIndicator.defaultProps = {
+  listType: 'default',
+};
+
+export default LoadingIndicator;
