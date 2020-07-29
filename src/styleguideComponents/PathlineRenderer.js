@@ -26,8 +26,8 @@ export function PathlineRenderer({ classes, children }) {
           'https://github.com/GetStream/stream-chat-react-native/blob/master/' +
           source
         }
-        target="blank"
-        rel="noopener"
+        target='blank'
+        rel='noopener'
       >
         {source}
       </Link>

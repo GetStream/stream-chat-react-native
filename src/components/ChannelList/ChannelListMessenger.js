@@ -140,7 +140,7 @@ class ChannelListMessenger extends PureComponent {
 
   renderLoading = () => {
     const Indicator = this.props.LoadingIndicator;
-    return <Indicator listType="channel" />;
+    return <Indicator listType='channel' />;
   };
 
   renderLoadingError = () => {
@@ -149,7 +149,7 @@ class ChannelListMessenger extends PureComponent {
       <Indicator
         error={this.props.error}
         retry={this.props.reloadList}
-        listType="channel"
+        listType='channel'
         loadNextPage={this.props.loadNextPage}
       />
     );
@@ -157,7 +157,7 @@ class ChannelListMessenger extends PureComponent {
 
   renderEmptyState = () => {
     const Indicator = this.props.EmptyStateIndicator;
-    return <Indicator listType="channel" />;
+    return <Indicator listType='channel' />;
   };
 
   renderHeaderIndicator = () => {

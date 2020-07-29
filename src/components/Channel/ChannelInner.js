@@ -655,12 +655,12 @@ class ChannelInner extends PureComponent {
 
   renderLoading = () => {
     const Indicator = this.props.LoadingIndicator;
-    return <Indicator listType="message" />;
+    return <Indicator listType='message' />;
   };
 
   renderLoadingError = () => {
     const Indicator = this.props.LoadingErrorIndicator;
-    return <Indicator error={this.state.error} listType="message" />;
+    return <Indicator error={this.state.error} listType='message' />;
   };
 
   render() {

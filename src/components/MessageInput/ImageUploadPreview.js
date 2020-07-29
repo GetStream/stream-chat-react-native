@@ -113,7 +113,7 @@ class ImageUploadPreview extends React.PureComponent {
             action={retryUpload && retryUpload.bind(this, item.id)}
           >
             <Upload
-              resizeMode="cover"
+              resizeMode='cover'
               source={{ uri: item.url || item.file.uri }}
             />
           </UploadProgressIndicator>
