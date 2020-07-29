@@ -4,24 +4,29 @@ import PropTypes from 'prop-types';
 import { ChatContext } from '../../context';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-const ChannelPreviewWithContext = React.memo((props) => {
-  const { channel, client } = props;
+const ChannelPreview = (props) => {
+  const { channel } = props;
+  const { client } = useContext(ChatContext);
   const [lastMessage, setLastMessage] = useState({});
   const [unread, setUnread] = useState(channel.countUnread());
   const latestMessage = useLatestMessagePreview(channel, lastMessage);
 
   useEffect(() => {
-    const handleNewMessageEvent = (e) => {
+    const handleEvent = (e) => {
       setLastMessage(e.message);
       setUnread(channel.countUnread());
     };
 
-    channel.on('message.new', handleNewMessageEvent);
+    channel.on('message.new', handleEvent);
+    channel.on('message.updated', handleEvent);
+    channel.on('message.deleted', handleEvent);
 
     return () => {
-      channel.off('message.new', handleNewMessageEvent);
+      channel.off('message.new', handleEvent);
+      channel.off('message.updated', handleEvent);
+      channel.off('message.deleted', handleEvent);
     };
-  });
+  }, []);
 
   useEffect(() => {
     const handleReadEvent = (e) => {
@@ -35,15 +40,17 @@ const ChannelPreviewWithContext = React.memo((props) => {
     return () => {
       channel.off('message.read', handleReadEvent);
     };
-  });
+  }, []);
 
   const { Preview } = props;
-  return <Preview {...props} latestMessage={latestMessage} unread={unread} />;
-});
-
-const ChannelPreview = (props) => {
-  const { client } = useContext(ChatContext);
-  return <ChannelPreviewWithContext {...props} {...{ client }} />;
+  return (
+    <Preview
+      {...props}
+      latestMessage={latestMessage}
+      unread={unread}
+      lastMessage={lastMessage}
+    />
+  );
 };
 
 ChannelPreview.propTypes = {
@@ -53,4 +60,4 @@ ChannelPreview.propTypes = {
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
 
-export default ChannelPreview;
+export default React.memo(ChannelPreview);

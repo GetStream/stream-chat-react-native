@@ -55,7 +55,7 @@ export const useLatestMessagePreview = (channel, lastMessage) => {
         text: getLatestMessageDisplayText(message, t),
       });
     }
-  }, [lastMessage]);
+  }, [channel, lastMessage]);
 
   return latestMessagePreview;
 };

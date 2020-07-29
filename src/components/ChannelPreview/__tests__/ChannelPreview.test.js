@@ -14,15 +14,16 @@ import {
   getOrCreateChannelApi,
   getTestClientWithUser,
   useMockedApis,
+  dispatchMessageReadEvent,
+  dispatchMessageNewEvent,
+  dispatchMessageUpdatedEvent,
+  dispatchMessageDeletedEvent,
 } from 'mock-builders';
 
 import ChannelPreview from '../ChannelPreview';
 import { Chat } from '../../Chat';
 import { Text } from 'react-native';
-import {
-  dispatchMessageReadEvent,
-  dispatchMessageNewEvent,
-} from 'mock-builders';
+import {} from 'mock-builders';
 
 const ChannelPreviewUIComponent = (props) => (
   <>
@@ -97,28 +98,38 @@ describe('ChannelPreview', () => {
       expect(getNodeText(getByTestId('unread-count'))).toBe('0');
     });
   });
+  const eventCases = [
+    ['message.new', dispatchMessageNewEvent],
+    ['message.updated', dispatchMessageUpdatedEvent],
+    ['message.deleted', dispatchMessageDeletedEvent],
+  ];
 
-  it('should update the last event message & unreadCount, when message.new event is received', async () => {
-    const c = generateChannel();
-    await initializeChannel(c);
+  it.each(eventCases)(
+    'should update the last event message & unreadCount on %s event',
+    async (eventType, dispatcher) => {
+      const c = generateChannel();
+      await initializeChannel(c);
 
-    const { getByTestId } = render(getComponent());
+      const { getByTestId } = render(getComponent());
 
-    await waitForElement(() => getByTestId('channel-id'));
+      await waitForElement(() => getByTestId('channel-id'));
 
-    const message = generateMessage({
-      user: clientUser,
-    });
+      const message = generateMessage({
+        user: clientUser,
+      });
 
-    channel.countUnread = () => 10;
+      channel.countUnread = () => 10;
 
-    act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel);
-    });
+      act(() => {
+        dispatcher(chatClient, message, channel);
+      });
 
-    await wait(() => {
-      expect(getNodeText(getByTestId('last-event-message'))).toBe(message.text);
-      expect(getNodeText(getByTestId('unread-count'))).toBe('10');
-    });
-  });
+      await wait(() => {
+        expect(getNodeText(getByTestId('last-event-message'))).toBe(
+          message.text,
+        );
+        expect(getNodeText(getByTestId('unread-count'))).toBe('10');
+      });
+    },
+  );
 });
