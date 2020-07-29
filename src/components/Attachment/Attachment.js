@@ -16,7 +16,7 @@ import Gallery from './Gallery';
  *
  * @example ../docs/Attachment.md
  */
-const AttachmentWithContext = (props) => {
+const Attachment = (props) => {
   const {
     actionHandler,
     alignment,
@@ -120,7 +120,8 @@ const AttachmentWithContext = (props) => {
   }
 
   if (type === 'file') {
-    const { AttachmentFileIcon, groupStyle, onLongPress } = props;
+    const { AttachmentFileIcon, groupStyle } = props;
+    const { onLongPress } = useContext(MessageContentContext);
 
     return (
       <FileAttachment
@@ -142,11 +143,6 @@ const AttachmentWithContext = (props) => {
   }
 
   return false;
-};
-
-const Attachment = (props) => {
-  const { onLongPress } = useContext(MessageContentContext);
-  return <AttachmentWithContext {...props} {...{ onLongPress }} />;
 };
 
 Attachment.propTypes = {
