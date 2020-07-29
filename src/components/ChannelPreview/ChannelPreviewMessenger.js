@@ -71,7 +71,6 @@ const ChannelPreviewMessenger = ({
 }) => {
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-
   return (
     <Container
       onPress={setActiveChannel.bind(null, channel)}

@@ -8,6 +8,10 @@ import {
 } from '@testing-library/react-native';
 
 import {
+  dispatchMessageDeletedEvent,
+  dispatchMessageNewEvent,
+  dispatchMessageReadEvent,
+  dispatchMessageUpdatedEvent,
   generateChannel,
   generateMessage,
   generateUser,
@@ -19,10 +23,6 @@ import {
 import ChannelPreview from '../ChannelPreview';
 import { Chat } from '../../Chat';
 import { Text } from 'react-native';
-import {
-  dispatchMessageReadEvent,
-  dispatchMessageNewEvent,
-} from 'mock-builders';
 
 const ChannelPreviewUIComponent = (props) => (
   <>
@@ -98,7 +98,39 @@ describe('ChannelPreview', () => {
     });
   });
 
-  it('should update the last event message & unreadCount, when message.new event is received', async () => {
+  const eventCases = [
+    ['message.new', dispatchMessageNewEvent],
+    ['message.updated', dispatchMessageUpdatedEvent],
+    ['message.deleted', dispatchMessageDeletedEvent],
+  ];
+
+  it.each(eventCases)(
+    'should update the last event message',
+    async (eventType, dispatcher) => {
+      const c = generateChannel();
+      await initializeChannel(c);
+
+      const { getByTestId } = render(getComponent());
+
+      await waitForElement(() => getByTestId('channel-id'));
+
+      const message = generateMessage({
+        user: clientUser,
+      });
+
+      act(() => {
+        dispatcher(chatClient, message, channel);
+      });
+
+      await wait(() => {
+        expect(getNodeText(getByTestId('last-event-message'))).toBe(
+          message.text,
+        );
+      });
+    },
+  );
+
+  it('should update the unread count on "message.new" event', async () => {
     const c = generateChannel();
     await initializeChannel(c);
 
@@ -117,7 +149,6 @@ describe('ChannelPreview', () => {
     });
 
     await wait(() => {
-      expect(getNodeText(getByTestId('last-event-message'))).toBe(message.text);
       expect(getNodeText(getByTestId('unread-count'))).toBe('10');
     });
   });
