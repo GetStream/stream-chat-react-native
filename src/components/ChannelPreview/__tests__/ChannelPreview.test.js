@@ -8,22 +8,21 @@ import {
 } from '@testing-library/react-native';
 
 import {
+  dispatchMessageReadEvent,
+  dispatchMessageNewEvent,
+  dispatchMessageUpdatedEvent,
+  dispatchMessageDeletedEvent,
   generateChannel,
   generateMessage,
   generateUser,
   getOrCreateChannelApi,
   getTestClientWithUser,
   useMockedApis,
-  dispatchMessageReadEvent,
-  dispatchMessageNewEvent,
-  dispatchMessageUpdatedEvent,
-  dispatchMessageDeletedEvent,
 } from 'mock-builders';
 
 import ChannelPreview from '../ChannelPreview';
 import { Chat } from '../../Chat';
 import { Text } from 'react-native';
-import {} from 'mock-builders';
 
 const ChannelPreviewUIComponent = (props) => (
   <>
