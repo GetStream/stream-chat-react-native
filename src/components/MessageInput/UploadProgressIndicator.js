@@ -68,7 +68,7 @@ class UploadProgressIndicator extends React.PureComponent {
                 alignItems: 'center',
               }}
             >
-              <ActivityIndicator style={{}} color="white" />
+              <ActivityIndicator style={{}} color='white' />
             </View>
           )}
           {type === ProgressIndicatorTypes.RETRY && (

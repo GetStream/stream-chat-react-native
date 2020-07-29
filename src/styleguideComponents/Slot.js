@@ -92,7 +92,7 @@ const themeToReact = (v, k, prefix = '') => {
     children.push(themeToReact(v[k], k, prefix + '  '));
   }
   return (
-    <div className="str-chat-style-row">
+    <div className='str-chat-style-row'>
       {k ? `${prefix}${k}: ` : null}
       {children}
     </div>

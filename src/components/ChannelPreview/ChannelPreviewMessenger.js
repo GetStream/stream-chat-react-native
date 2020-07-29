@@ -9,16 +9,14 @@ import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayNa
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
 
 const Container = styled.TouchableOpacity`
-  display: flex;
   flex-direction: row;
   border-bottom-color: #ebebeb;
-  border-bottom-width: 1;
+  border-bottom-width: 1px;
   padding: 10px;
   ${({ theme }) => theme.channelPreview.container.css}
 `;
 
 const Details = styled.View`
-  display: flex;
   flex-direction: column;
   flex: 1;
   padding-left: 10px;
@@ -26,7 +24,6 @@ const Details = styled.View`
 `;
 
 const DetailsTop = styled.View`
-  display: flex;
   flex-direction: row;
   justify-content: space-between;
   ${({ theme }) => theme.channelPreview.detailsTop.css}
@@ -34,14 +31,14 @@ const DetailsTop = styled.View`
 
 const Title = styled.Text`
   font-weight: bold;
-  font-size: 14;
+  font-size: 14px;
   flex: 1;
   ${({ theme }) => theme.channelPreview.title.css}
 `;
 
 const Date = styled.Text`
   color: #767676;
-  font-size: 11;
+  font-size: 11px;
   text-align: right;
   ${({ theme }) => theme.channelPreview.date.css}
 `;
@@ -51,7 +48,7 @@ const Message = styled.Text`
     unread
       ? theme.channelPreview.message.unreadColor
       : theme.channelPreview.message.color};
-  font-size: 13;
+  font-size: 13px;
   font-weight: ${({ theme, unread }) =>
     unread
       ? theme.channelPreview.message.unreadFontWeight
@@ -77,12 +74,12 @@ const ChannelPreviewMessenger = ({
   return (
     <Container
       onPress={setActiveChannel.bind(null, channel)}
-      testID="channel-preview-button"
+      testID='channel-preview-button'
     >
       <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
       <Details>
         <DetailsTop>
-          <Title ellipsizeMode="tail" numberOfLines={1}>
+          <Title ellipsizeMode='tail' numberOfLines={1}>
             {displayName}
           </Title>
           <Date>
@@ -120,7 +117,7 @@ ChannelPreviewMessenger.propTypes = {
    *
    * By default today's date is shown in 'HH:mm A' format and other dates
    * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
-   * default formated date. This default logic is part of ChannelPreview component.
+   * default formatted date. This default logic is part of ChannelPreview component.
    */
   formatLatestMessageDate: PropTypes.func,
 };
