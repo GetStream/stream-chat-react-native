@@ -11,6 +11,11 @@ import FileAttachment from './FileAttachment';
 import FileIcon from './FileIcon';
 import Gallery from './Gallery';
 
+/**
+ * Attachment - The message attachment
+ *
+ * @example ../docs/Attachment.md
+ */
 const AttachmentWithContext = (props) => {
   const {
     actionHandler,

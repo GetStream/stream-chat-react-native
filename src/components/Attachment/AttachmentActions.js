@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Text, TouchableOpacity } from 'react-native';
-
+import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
@@ -12,7 +12,7 @@ const Container = styled.View`
   ${({ theme }) => theme.message.actions.container.css}
 `;
 
-const Button = styled(({ buttonStyle, ...rest }) => (
+const ActionButton = styled(({ buttonStyle, ...rest }) => (
   <TouchableOpacity {...rest} />
 ))`
   background-color: ${({ theme, buttonStyle }) =>
@@ -23,16 +23,18 @@ const Button = styled(({ buttonStyle, ...rest }) => (
     buttonStyle === 'primary'
       ? theme.message.actions.button.primaryBorderColor
       : theme.message.actions.button.defaultBorderColor};
-  border-width: 1;
   border-radius: 20;
-  padding-top: 5px;
+  border-width: 1;
   padding-bottom: 5px;
   padding-left: 10px;
   padding-right: 10px;
+  padding-top: 5px;
   ${({ theme }) => theme.message.actions.button.css}
 `;
 
-const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
+const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
+  <Text {...rest} />
+))`
   color: ${({ theme, buttonStyle }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.buttonText.primaryColor
@@ -45,37 +47,34 @@ const ButtonText = styled(({ buttonStyle, ...rest }) => <Text {...rest} />)`
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  *
  * @example ../docs/AttachmentActions.md
- * @extends PureComponent
  */
-class AttachmentActions extends React.PureComponent {
-  static themePath = 'message.actions';
-  static propTypes = {
-    // /** The id of the form input */
-    // id: PropTypes.string.isRequired,
-    /** The text for the form input */
-    text: PropTypes.string,
-    /** A list of actions */
-    actions: PropTypes.array.isRequired,
-    /** The handler to execute after selecting an action */
-    actionHandler: PropTypes.func.isRequired,
-  };
+const AttachmentActions = ({ actions, actionHandler, id }) => (
+  <Container>
+    {actions.map((action) => (
+      <ActionButton
+        buttonStyle={action.style}
+        key={`${id}-${action.value}`}
+        onPress={() => actionHandler(action.name, action.value)}
+      >
+        <ActionButtonText buttonStyle={action.style}>
+          {action.text}
+        </ActionButtonText>
+      </ActionButton>
+    ))}
+  </Container>
+);
 
-  render() {
-    const { id, actions, actionHandler } = this.props;
-    return (
-      <Container>
-        {actions.map((action) => (
-          <Button
-            key={`${id}-${action.value}`}
-            buttonStyle={action.style}
-            onPress={actionHandler.bind(this, action.name, action.value)}
-          >
-            <ButtonText buttonStyle={action.style}>{action.text}</ButtonText>
-          </Button>
-        ))}
-      </Container>
-    );
-  }
-}
+AttachmentActions.propTypes = {
+  // /** The id of the form input */
+  id: PropTypes.string,
+  /** The text for the form input */
+  text: PropTypes.string,
+  /** A list of actions */
+  actions: PropTypes.array.isRequired,
+  /** The handler to execute after selecting an action */
+  actionHandler: PropTypes.func.isRequired,
+};
+
+AttachmentActions.themePath = 'message.actions';
 
 export default themed(AttachmentActions);
