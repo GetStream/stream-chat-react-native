@@ -1,107 +1,66 @@
-import React, { PureComponent } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { withTranslationContext } from '../../context';
+import { ChatContext } from '../../context';
+import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-class ChannelPreview extends PureComponent {
-  constructor(props) {
-    super(props);
+const ChannelPreview = (props) => {
+  const { channel } = props;
+  const { client } = useContext(ChatContext);
+  const [lastMessage, setLastMessage] = useState({});
+  const [unread, setUnread] = useState(channel.countUnread());
+  const latestMessage = useLatestMessagePreview(channel, lastMessage);
 
-    this.state = {
-      unread: 0,
-      lastMessage: {},
-      lastRead: new Date(),
-    };
-  }
+  useEffect(() => {
+    const handleEvent = (e) => {
+      setLastMessage(e.message);
 
-  static propTypes = {
-    channel: PropTypes.object.isRequired,
-    client: PropTypes.object.isRequired,
-    setActiveChannel: PropTypes.func,
-    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  };
-
-  static defaultProps = {
-    // Preview: ChannelPreviewCountOnly,
-  };
-
-  componentDidMount() {
-    // listen to change...
-    const channel = this.props.channel;
-    this.setState({ unread: channel.countUnread() });
-    channel.on('message.new', this.handleNewMessageEvent);
-    channel.on('message.read', this.handleReadEvent);
-  }
-
-  componentWillUnmount() {
-    const channel = this.props.channel;
-    channel.off('message.new', this.handleNewMessageEvent);
-    channel.off('message.read', this.handleReadEvent);
-  }
-
-  handleReadEvent = (event) => {
-    if (event.user.id === this.props.client.userID) {
-      this.setState({ unread: this.props.channel.countUnread() });
-    }
-  };
-
-  handleNewMessageEvent = (event) => {
-    const channel = this.props.channel;
-    this.setState({
-      lastMessage: event.message,
-      unread: channel.countUnread(),
-    });
-  };
-
-  getLatestMessage = () => {
-    const { channel, t, tDateTimeParser } = this.props;
-    const message = channel.state.messages[channel.state.messages.length - 1];
-
-    const latestMessage = {
-      text: '',
-      created_at: '',
-      messageObject: { ...message },
-    };
-
-    if (!message) {
-      latestMessage.text = t('Nothing yet...');
-      return latestMessage;
-    }
-    if (message.deleted_at) {
-      latestMessage.text = t('Message deleted');
-      return latestMessage;
-    }
-
-    if (message.text) {
-      latestMessage.text = message.text;
-    } else {
-      if (message.command) {
-        latestMessage.text = '/' + message.command;
-      } else if (message.attachments.length) {
-        latestMessage.text = t('🏙 Attachment...');
-      } else {
-        latestMessage.text = t('Empty message...');
+      if (e.type === 'message.new') {
+        setUnread(channel.countUnread());
       }
-    }
+    };
 
-    if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
-      latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'LT',
-      );
-    else {
-      latestMessage.created_at = tDateTimeParser(message.created_at).format(
-        'L',
-      );
-    }
+    channel.on('message.new', handleEvent);
+    channel.on('message.updated', handleEvent);
+    channel.on('message.deleted', handleEvent);
 
-    return latestMessage;
-  };
+    return () => {
+      channel.off('message.new', handleEvent);
+      channel.off('message.updated', handleEvent);
+      channel.off('message.deleted', handleEvent);
+    };
+  }, []);
 
-  render() {
-    const props = { ...this.state, ...this.props };
-    const { Preview } = this.props;
-    return <Preview {...props} latestMessage={this.getLatestMessage()} />;
-  }
-}
+  useEffect(() => {
+    const handleReadEvent = (e) => {
+      if (e.user.id === client.userID) {
+        setUnread(0);
+      }
+    };
 
-export default withTranslationContext(ChannelPreview);
+    channel.on('message.read', handleReadEvent);
+
+    return () => {
+      channel.off('message.read', handleReadEvent);
+    };
+  }, []);
+
+  const { Preview } = props;
+  return (
+    <Preview
+      {...props}
+      lastMessage={lastMessage}
+      latestMessage={latestMessage}
+      unread={unread}
+    />
+  );
+};
+
+ChannelPreview.propTypes = {
+  channel: PropTypes.object.isRequired,
+  client: PropTypes.object.isRequired,
+  setActiveChannel: PropTypes.func,
+  Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+};
+
+export default React.memo(ChannelPreview);

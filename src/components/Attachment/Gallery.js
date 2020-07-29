@@ -115,7 +115,7 @@ class Gallery extends React.PureComponent {
                 width: 100 + '%',
                 height: 100 + '%',
               }}
-              resizeMode="cover"
+              resizeMode='cover'
               source={{ uri: images[0].url }}
             />
           </Single>
@@ -183,7 +183,7 @@ class Gallery extends React.PureComponent {
                       width: 100 + '%',
                       height: 100 + '%',
                     }}
-                    resizeMode="cover"
+                    resizeMode='cover'
                     source={{ uri: images[3].url }}
                   />
                   <View
@@ -218,7 +218,7 @@ class Gallery extends React.PureComponent {
                     width: 100 + '%',
                     height: 100 + '%',
                   }}
-                  resizeMode="cover"
+                  resizeMode='cover'
                   source={{ uri: image.url }}
                 />
               )}

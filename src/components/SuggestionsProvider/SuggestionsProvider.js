@@ -223,7 +223,7 @@ class SuggestionsView extends React.PureComponent {
             ListHeaderComponent={<SuggestionsHeader title={suggestionsTitle} />}
             ItemSeparatorComponent={SuggestionsSeparator}
             data={data}
-            keyboardShouldPersistTaps="always"
+            keyboardShouldPersistTaps='always'
             renderItem={this.renderItem}
             keyExtractor={(item, index) => (item.name || item.id) + index}
           />

@@ -157,13 +157,13 @@ class ReactionList extends React.PureComponent {
           {alignment === 'left' ? (
             <React.Fragment>
               <LeftTail source={leftTail} />
-              <LeftCenter source={leftCenter} resizeMode="stretch" />
+              <LeftCenter source={leftCenter} resizeMode='stretch' />
               <LeftEnd source={leftEnd} />
             </React.Fragment>
           ) : (
             <React.Fragment>
               <RightEnd source={rightEnd} />
-              <RightCenter source={rightCenter} resizeMode="stretch" />
+              <RightCenter source={rightCenter} resizeMode='stretch' />
               <RightTail source={rightTail} />
             </React.Fragment>
           )}

@@ -584,7 +584,7 @@ class MessageList extends PureComponent {
 
   renderEmptyState = () => {
     const Indicator = this.props.EmptyStateIndicator;
-    return <Indicator listType="message" />;
+    return <Indicator listType='message' />;
   };
 
   render() {
@@ -654,7 +654,7 @@ class MessageList extends PureComponent {
             ListFooterComponent={HeaderComponent}
             onEndReached={this.props.loadMore}
             inverted
-            keyboardShouldPersistTaps="always"
+            keyboardShouldPersistTaps='always'
             keyExtractor={(item) =>
               item.id ||
               item.created_at ||
