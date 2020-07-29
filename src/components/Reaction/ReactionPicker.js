@@ -120,7 +120,7 @@ class ReactionPicker extends React.PureComponent {
       <Modal
         visible={reactionPickerVisible}
         transparent
-        animationType="fade"
+        animationType='fade'
         onShow={() => {}}
         onRequestClose={handleDismiss}
       >

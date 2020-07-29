@@ -133,7 +133,7 @@ class Card extends React.Component {
       >
         {Header && <Header {...this.props} />}
         {Cover && <Cover {...this.props} />}
-        {uri && !Cover && <CardCover source={{ uri }} resizeMode="cover" />}
+        {uri && !Cover && <CardCover source={{ uri }} resizeMode='cover' />}
         {Footer ? (
           <Footer {...this.props} />
         ) : (

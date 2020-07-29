@@ -44,7 +44,8 @@
       "error",
       "asc",
       { "caseSensitive": false, "natural": true }
-    ]
+    ],
+    "jsx-quotes": ["error", "prefer-single"]
   },
   "env": {
     "es6": true,
