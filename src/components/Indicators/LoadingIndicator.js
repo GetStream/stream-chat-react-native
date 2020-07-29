@@ -18,8 +18,7 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
-const LoadingIndicator = (props) => {
-  const { listType, loadingText } = props;
+const LoadingIndicator = ({ listType = 'default', loadingText }) => {
   const { t } = useContext(TranslationContext);
   let indicatorText = '';
 
@@ -46,10 +45,6 @@ const LoadingIndicator = (props) => {
 LoadingIndicator.propTypes = {
   listType: PropTypes.oneOf(['channel', 'message', 'default']),
   loadingText: PropTypes.string,
-};
-
-LoadingIndicator.defaultProps = {
-  listType: 'default',
 };
 
 export default LoadingIndicator;
