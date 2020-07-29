@@ -97,6 +97,7 @@ describe('ChannelPreview', () => {
       expect(getNodeText(getByTestId('unread-count'))).toBe('0');
     });
   });
+
   const eventCases = [
     ['message.new', dispatchMessageNewEvent],
     ['message.updated', dispatchMessageUpdatedEvent],
@@ -104,7 +105,7 @@ describe('ChannelPreview', () => {
   ];
 
   it.each(eventCases)(
-    'should update the last event message & unreadCount on %s event',
+    'should update the last event message',
     async (eventType, dispatcher) => {
       const c = generateChannel();
       await initializeChannel(c);
@@ -117,8 +118,6 @@ describe('ChannelPreview', () => {
         user: clientUser,
       });
 
-      channel.countUnread = () => 10;
-
       act(() => {
         dispatcher(chatClient, message, channel);
       });
@@ -127,8 +126,30 @@ describe('ChannelPreview', () => {
         expect(getNodeText(getByTestId('last-event-message'))).toBe(
           message.text,
         );
-        expect(getNodeText(getByTestId('unread-count'))).toBe('10');
       });
     },
   );
+
+  it('should update the unread count on "message.new" event', async () => {
+    const c = generateChannel();
+    await initializeChannel(c);
+
+    const { getByTestId } = render(getComponent());
+
+    await waitForElement(() => getByTestId('channel-id'));
+
+    const message = generateMessage({
+      user: clientUser,
+    });
+
+    channel.countUnread = () => 10;
+
+    act(() => {
+      dispatchMessageNewEvent(chatClient, message, channel);
+    });
+
+    await wait(() => {
+      expect(getNodeText(getByTestId('unread-count'))).toBe('10');
+    });
+  });
 });

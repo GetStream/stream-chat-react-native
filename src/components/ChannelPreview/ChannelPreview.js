@@ -14,7 +14,10 @@ const ChannelPreview = (props) => {
   useEffect(() => {
     const handleEvent = (e) => {
       setLastMessage(e.message);
-      setUnread(channel.countUnread());
+
+      if (e.type === 'message.new') {
+        setUnread(channel.countUnread());
+      }
     };
 
     channel.on('message.new', handleEvent);
