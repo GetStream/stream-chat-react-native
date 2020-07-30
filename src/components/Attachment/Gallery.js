@@ -105,6 +105,7 @@ const Gallery = ({ alignment, images }) => {
           alignment={alignment}
           onLongPress={onLongPress}
           onPress={() => setViewerModalOpen(true)}
+          testID='image-attachment-single'
           {...additionalTouchableProps}
         >
           <Image

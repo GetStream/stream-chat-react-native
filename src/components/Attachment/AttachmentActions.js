@@ -49,12 +49,13 @@ const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
  * @example ../docs/AttachmentActions.md
  */
 const AttachmentActions = ({ actions, actionHandler, id }) => (
-  <Container>
+  <Container testID='attachment-actions'>
     {actions.map((action) => (
       <ActionButton
         buttonStyle={action.style}
         key={`${id}-${action.value}`}
         onPress={() => actionHandler(action.name, action.value)}
+        testID='attachment-actions-button'
       >
         <ActionButtonText buttonStyle={action.style}>
           {action.text}

@@ -68,6 +68,7 @@ const FileAttachment = ({
       onPress={() => {
         goToURL(attachment.asset_url);
       }}
+      testID='file-attachment'
       {...additionalTouchableProps}
     >
       <FileContainer alignment={alignment} groupStyle={groupStyle}>

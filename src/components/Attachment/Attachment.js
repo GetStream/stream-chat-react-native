@@ -53,14 +53,10 @@ const Attachment = (props) => {
     type = 'urlPreview';
   } else if (attachment.type === 'image') {
     type = 'image';
-  } else if (attachment.type === 'file') {
+  } else if (attachment.type === 'file' || attachment.type === 'audio') {
     type = 'file';
-  } else if (attachment.type === 'audio') {
-    type = 'audio';
   } else if (attachment.type === 'video') {
     type = 'media';
-  } else if (attachment.type === 'product') {
-    type = 'product';
   } else {
     type = 'card';
     // extra = 'no-image';
@@ -150,7 +146,7 @@ Attachment.propTypes = {
   attachment: PropTypes.object.isRequired,
   /**
    * Position of message. 'right' | 'left'
-   * 'right' message belongs with current user while 'left' message belonds to other users.
+   * 'right' message belongs with current user while 'left' message belongs to other users.
    * */
   alignment: PropTypes.string,
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */

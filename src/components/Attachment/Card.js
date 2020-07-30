@@ -9,26 +9,24 @@ import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils';
 
 const Container = styled.TouchableOpacity`
-  border-top-left-radius: 16;
-  border-top-right-radius: 16;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   overflow: hidden;
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2};
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2};
   background-color: ${({ theme }) => theme.colors.light};
-  width: 250;
+  width: 250px;
   ${({ theme }) => theme.message.card.container.css}
 `;
 
 const CardCover = styled.Image`
-  display: flex;
-  height: 150;
+  height: 150px;
   ${({ theme }) => theme.message.card.cover.css}
 `;
 
 const CardFooter = styled.View`
-  display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 10px;
@@ -102,6 +100,7 @@ const Card = (props) => {
       onPress={() => {
         goToURL(og_scrape_url || image_url || thumb_url);
       }}
+      testID='card-attachment'
       {...additionalTouchableProps}
     >
       {Header && <Header {...props} />}
@@ -114,7 +113,6 @@ const Card = (props) => {
           <View
             style={{
               backgroundColor: 'transparent',
-              display: 'flex',
               flexDirection: 'column',
             }}
           >

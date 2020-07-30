@@ -1,7 +1,7 @@
 import React from 'react';
 import Markdown from '@stream-io/react-native-simple-markdown';
 import anchorme from 'anchorme';
-import { truncate } from 'lodash-es';
+import truncate from 'lodash/truncate';
 
 export const renderText = (message, styles, markdownRules) => {
   // take the @ mentions and turn them into markdown?
