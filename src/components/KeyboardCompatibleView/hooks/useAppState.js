@@ -1,22 +1,20 @@
-import { useRef, useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
 export const useAppState = () => {
-  const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (appState !== nextAppState) {
+        setAppState(nextAppState);
+      }
+    };
+
     AppState.addEventListener('change', handleAppStateChange);
 
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-    };
-  }, []);
+    return () => AppState.removeEventListener('change', handleAppStateChange);
+  }, [appState, setAppState]);
 
-  const handleAppStateChange = (nextAppState) => {
-    appState.current = nextAppState;
-    setAppStateVisible(appState.current);
-  };
-
-  return appStateVisible;
+  return appState;
 };

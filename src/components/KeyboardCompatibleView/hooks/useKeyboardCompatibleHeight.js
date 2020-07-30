@@ -1,57 +1,68 @@
-import { useEffect, useState } from 'react';
-import { Keyboard, Platform, Dimensions, StatusBar } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Dimensions, Keyboard, Platform, StatusBar } from 'react-native';
+
 import { useAppState } from './useAppState';
 
-export const useKeyboardCompatibleHeight = (
-  rootChannelView,
-  initialHeight,
+export const useKeyboardCompatibleHeight = ({
   enabled,
-) => {
-  const appStateVisible = useAppState();
-  let hidingKeyboardInProgress = false;
+  initialHeight,
+  rootChannelView,
+}) => {
+  const appState = useAppState();
+
+  const hidingKeyboardInProgress = useRef(false);
+
   const [height, setHeight] = useState(initialHeight);
-  const keyboardDidShow = (e) => {
-    if (!enabled) return;
-    const keyboardHidingInProgressBeforeMeasure = hidingKeyboardInProgress;
-    const keyboardHeight = e.endCoordinates.height;
 
-    if (rootChannelView) {
-      rootChannelView.current.measureInWindow((x, y) => {
-        // In case if keyboard was closed in meanwhile while
-        // this measure function was being executed, then we
-        // should abort further execution and let the event callback
-        // keyboardDidHide proceed.
-        if (
-          !keyboardHidingInProgressBeforeMeasure &&
-          hidingKeyboardInProgress
-        ) {
-          return;
-        }
+  const keyboardDidShow = useCallback(
+    (e) => {
+      if (!enabled) {
+        return;
+      }
 
-        const { height: windowHeight } = Dimensions.get('window');
-        let finalHeight;
+      const keyboardHidingInProgressBeforeMeasure =
+        hidingKeyboardInProgress.current;
+      const keyboardHeight = e.endCoordinates.height;
 
-        if (Platform.OS === 'android') {
-          finalHeight =
-            windowHeight - y - keyboardHeight - StatusBar.currentHeight;
-        } else {
-          finalHeight = windowHeight - y - keyboardHeight;
-          console.r.log(windowHeight, y, keyboardHeight);
-        }
+      if (rootChannelView) {
+        rootChannelView.current.measureInWindow((x, y) => {
+          // In case if keyboard was closed in meanwhile while
+          // this measure function was being executed, then we
+          // should abort further execution and let the event callback
+          // keyboardDidHide proceed.
+          if (
+            !keyboardHidingInProgressBeforeMeasure &&
+            hidingKeyboardInProgress.current
+          ) {
+            return;
+          }
 
-        console.r.log('keyboardDidShow - ', finalHeight);
-        setHeight(finalHeight);
-      });
-    }
-  };
+          const { height: windowHeight } = Dimensions.get('window');
+          let finalHeight;
 
-  const keyboardDidHide = () => {
-    hidingKeyboardInProgress = true;
+          if (Platform.OS === 'android') {
+            finalHeight =
+              windowHeight - y - keyboardHeight - StatusBar.currentHeight;
+          } else {
+            finalHeight = windowHeight - y - keyboardHeight;
+            console.r.log(windowHeight, y, keyboardHeight);
+          }
+
+          console.r.log('keyboardDidShow - ', finalHeight);
+          setHeight(finalHeight);
+        });
+      }
+    },
+    [enabled, hidingKeyboardInProgress, rootChannelView, setHeight],
+  );
+
+  const keyboardDidHide = useCallback(() => {
+    hidingKeyboardInProgress.current = true;
     setHeight(initialHeight);
-  };
+  }, [hidingKeyboardInProgress, initialHeight, setHeight]);
 
   useEffect(() => {
-    if (appStateVisible) {
+    if (appState) {
       if (Platform.OS === 'ios') {
         Keyboard.addListener('keyboardWillShow', keyboardDidShow);
       } else {
@@ -64,12 +75,15 @@ export const useKeyboardCompatibleHeight = (
       Keyboard.addListener('keyboardDidHide', keyboardDidHide);
 
       return () => {
-        Keyboard.removeListener('keyboardWillShow', keyboardDidShow);
-        Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+        if (Platform.OS === 'ios') {
+          Keyboard.removeListener('keyboardWillShow', keyboardDidShow);
+        } else {
+          Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+        }
         Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
       };
     }
-  }, [initialHeight, appStateVisible]);
+  }, [appState, initialHeight, keyboardDidHide, keyboardDidShow]);
 
   return height;
 };

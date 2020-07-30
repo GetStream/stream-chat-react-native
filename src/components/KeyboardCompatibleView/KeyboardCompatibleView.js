@@ -1,8 +1,9 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Keyboard, Animated } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, Keyboard, View } from 'react-native';
+
+import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
 
 import { KeyboardContext } from '../../context';
-import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
@@ -21,13 +22,15 @@ import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight
  */
 export const KeyboardCompatibleView = (props) => {
   const heightAnim = useRef(new Animated.Value(0)).current;
-  const rootChannelView = useRef(null);
+  const rootChannelView = useRef();
+
   const [initialHeight, setInitialHeight] = useState(0);
-  const channelHeight = useKeyboardCompatibleHeight(
-    rootChannelView,
+
+  const channelHeight = useKeyboardCompatibleHeight({
+    enabled: props.enabled,
     initialHeight,
-    props.enabled,
-  );
+    rootChannelView,
+  });
 
   const dismissKeyboard = useCallback(() => {
     Keyboard.dismiss();
@@ -36,14 +39,7 @@ export const KeyboardCompatibleView = (props) => {
       duration: props.keyboardOpenAnimationDuration,
       useNativeDriver: false,
     }).start();
-  }, [initialHeight]);
-
-  const getContext = useCallback(
-    () => ({
-      dismissKeyboard,
-    }),
-    [initialHeight],
-  );
+  }, [heightAnim, initialHeight, props.keyboardOpenAnimationDuration]);
 
   useEffect(() => {
     Animated.timing(heightAnim, {
@@ -51,25 +47,30 @@ export const KeyboardCompatibleView = (props) => {
       duration: props.keyboardOpenAnimationDuration,
       useNativeDriver: false,
     }).start();
-  }, [channelHeight]);
+  }, [heightAnim, channelHeight, props.keyboardOpenAnimationDuration]);
 
-  const onLayout = ({
-    nativeEvent: {
-      layout: { height },
+  const onLayout = useCallback(
+    ({
+      nativeEvent: {
+        layout: { height },
+      },
+    }) => {
+      if (!props.enabled) {
+        return;
+      }
+
+      // Not to set initial height again.
+      if (!initialHeight) {
+        setInitialHeight(height);
+        Animated.timing(heightAnim, {
+          toValue: height,
+          duration: 10,
+          useNativeDriver: false,
+        }).start();
+      }
     },
-  }) => {
-    if (!props.enabled) return;
-
-    // Not to set initial height again.
-    if (!initialHeight) {
-      setInitialHeight(height);
-      Animated.timing(heightAnim, {
-        toValue: height,
-        duration: 10,
-        useNativeDriver: false,
-      }).start();
-    }
-  };
+    [heightAnim, initialHeight, props.enabled],
+  );
 
   if (!props.enabled) {
     return (
@@ -87,12 +88,11 @@ export const KeyboardCompatibleView = (props) => {
     <Animated.View
       onLayout={onLayout}
       style={{
-        display: 'flex',
         height: initialHeight ? heightAnim : undefined,
       }}
     >
-      <KeyboardContext.Provider value={getContext()}>
-        <View ref={rootChannelView} collapsable={false}>
+      <KeyboardContext.Provider value={{ dismissKeyboard }}>
+        <View collapsable={false} ref={rootChannelView}>
           {props.children}
         </View>
       </KeyboardContext.Provider>
