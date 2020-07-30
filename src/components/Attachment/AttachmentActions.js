@@ -23,8 +23,8 @@ const ActionButton = styled(({ buttonStyle, ...rest }) => (
     buttonStyle === 'primary'
       ? theme.message.actions.button.primaryBorderColor
       : theme.message.actions.button.defaultBorderColor};
-  border-radius: 20;
-  border-width: 1;
+  border-radius: 20px;
+  border-width: 1px;
   padding-bottom: 5px;
   padding-left: 10px;
   padding-right: 10px;
