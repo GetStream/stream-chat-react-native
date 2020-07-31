@@ -84,7 +84,7 @@ const Attachment = (props) => {
           <Giphy alignment={alignment} {...attachment} {...cardProps} />
           <AttachmentActions
             actionHandler={actionHandler}
-            key={'key-actions-' + attachment.id}
+            key={`key-actions-${attachment.id}`}
             {...attachment}
           />
         </View>
