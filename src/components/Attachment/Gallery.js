@@ -1,283 +1,75 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+
+import { MessageContentContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
-import {
-  withMessageContentContext,
-  withTranslationContext,
-} from '../../context';
 import { makeImageCompatibleUrl } from '../../utils';
 
 import { CloseButton } from '../CloseButton';
 
 const Single = styled.TouchableOpacity`
-  display: flex;
-  height: 200px;
-  width: ${({ theme }) => theme.message.gallery.width};
-  border-top-left-radius: 16;
-  border-top-right-radius: 16;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
+    alignment === 'right' ? 16 : 2}px;
   border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
+    alignment === 'left' ? 16 : 2}px;
+  height: 200px;
   overflow: hidden;
+  width: ${({ theme }) => theme.message.gallery.width}px;
   ${({ theme }) => theme.message.gallery.single.css}
 `;
 
 const GalleryContainer = styled.View`
-  display: flex;
+  border-radius: 16px;
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2}px;
+  border-bottom-left-radius: ${({ alignment }) =>
+    alignment === 'right' ? 16 : 2}px;
   flex-direction: row;
   flex-wrap: wrap;
-  width: ${({ theme }) => theme.message.gallery.width};
-
   height: ${({ theme, length }) =>
     length >= 4
       ? theme.message.gallery.doubleSize
       : length === 3
       ? theme.message.gallery.halfSize
-      : theme.message.gallery.size};
-
+      : theme.message.gallery.size}px;
   overflow: hidden;
-  border-radius: 16;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
+  width: ${({ theme }) => theme.message.gallery.width}px;
   ${({ theme }) => theme.message.gallery.galleryContainer.css}
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  display: flex;
   height: ${({ theme, length }) =>
-    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
+    length !== 3
+      ? theme.message.gallery.size
+      : theme.message.gallery.halfSize}px;
   width: ${({ theme, length }) =>
-    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
+    length !== 3
+      ? theme.message.gallery.size
+      : theme.message.gallery.halfSize}px;
   ${({ theme }) => theme.message.gallery.imageContainer.css}
 `;
-/**
- * UI component for card in attachments.
- *
- * @example ../docs/Gallery.md
- */
-
-class Gallery extends React.PureComponent {
-  static themePath = 'message.gallery';
-  static propTypes = {
-    /** The images to render */
-    images: PropTypes.arrayOf(
-      PropTypes.shape({
-        image_url: PropTypes.string,
-        thumb_url: PropTypes.string,
-      }),
-    ),
-    onLongPress: PropTypes.func,
-    /**
-     * Provide any additional props for child `TouchableOpacity`.
-     * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-     */
-    additionalTouchableProps: PropTypes.object,
-    alignment: PropTypes.string,
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      viewerModalOpen: false,
-      viewerModalImageIndex: 0,
-    };
-  }
-
-  render() {
-    const { t, additionalTouchableProps } = this.props;
-    if (!this.props.images || this.props.images.length === 0) return null;
-
-    const images = [...this.props.images].map((i) => ({
-      url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
-    }));
-
-    if (images.length === 1) {
-      return (
-        <React.Fragment>
-          <Single
-            onPress={() => {
-              this.setState({ viewerModalOpen: true });
-            }}
-            onLongPress={() => {
-              this.props.onLongPress();
-            }}
-            alignment={this.props.alignment}
-            {...additionalTouchableProps}
-          >
-            <Image
-              style={{
-                width: 100 + '%',
-                height: 100 + '%',
-              }}
-              resizeMode='cover'
-              source={{ uri: images[0].url }}
-            />
-          </Single>
-          <Modal
-            visible={this.state.viewerModalOpen}
-            transparent={true}
-            onRequestClose={() => {
-              this.setState({ viewerModalOpen: false });
-            }}
-          >
-            <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-              <ImageViewer
-                imageUrls={images}
-                // TODO: We don't have 'save image' functionality.
-                // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-                // opens up popup menu to with an option "Save to the album", which basically does nothing.
-                saveToLocalByLongPress={false}
-                onCancel={() => {
-                  this.setState({ viewerModalOpen: false });
-                }}
-                enableSwipeDown
-                renderHeader={() => (
-                  <GalleryHeader
-                    handleDismiss={() => {
-                      this.setState({ viewerModalOpen: false });
-                    }}
-                  />
-                )}
-              />
-            </SafeAreaView>
-          </Modal>
-        </React.Fragment>
-      );
-    }
-
-    return (
-      <React.Fragment>
-        <GalleryContainer
-          length={images.length}
-          alignment={this.props.alignment}
-        >
-          {images.slice(0, 4).map((image, i) => (
-            <ImageContainer
-              key={`gallery-item-${i}`}
-              length={images.length}
-              activeOpacity={0.8}
-              onPress={() => {
-                this.setState({
-                  viewerModalOpen: true,
-                  viewerModalImageIndex: i,
-                });
-              }}
-              onLongPress={this.props.onLongPress}
-              {...additionalTouchableProps}
-            >
-              {i === 3 && images.length > 4 ? (
-                <View
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                >
-                  <Image
-                    style={{
-                      width: 100 + '%',
-                      height: 100 + '%',
-                    }}
-                    resizeMode='cover'
-                    source={{ uri: images[3].url }}
-                  />
-                  <View
-                    style={{
-                      position: 'absolute',
-                      height: '100%',
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: 'rgba(0,0,0,0.69)',
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontWeight: '700',
-                        fontSize: 22,
-                      }}
-                    >
-                      {' '}
-                      +{' '}
-                      {t('{{ imageCount }} more', {
-                        imageCount: images.length - 3,
-                      })}
-                    </Text>
-                  </View>
-                </View>
-              ) : (
-                <Image
-                  style={{
-                    width: 100 + '%',
-                    height: 100 + '%',
-                  }}
-                  resizeMode='cover'
-                  source={{ uri: image.url }}
-                />
-              )}
-            </ImageContainer>
-          ))}
-        </GalleryContainer>
-        <Modal
-          onRequestClose={() => {
-            this.setState({ viewerModalOpen: false });
-          }}
-          visible={this.state.viewerModalOpen}
-          transparent={true}
-        >
-          <SafeAreaView style={{ flex: 1, backgroundColor: 'transparent' }}>
-            <ImageViewer
-              imageUrls={images}
-              // TODO: We don't have 'save image' functionality.
-              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-              // opens up popup menu to with an option "Save to the album", which basically does nothing.
-              saveToLocalByLongPress={false}
-              onCancel={() => {
-                this.setState({ viewerModalOpen: false });
-              }}
-              index={this.state.viewerModalImageIndex}
-              enableSwipeDown
-              renderHeader={() => (
-                <GalleryHeader
-                  handleDismiss={() => {
-                    this.setState({ viewerModalOpen: false });
-                  }}
-                />
-              )}
-            />
-          </SafeAreaView>
-        </Modal>
-      </React.Fragment>
-    );
-  }
-}
 
 const HeaderContainer = styled.View`
-  display: flex;
+  flex: 1;
   flex-direction: row;
   justify-content: flex-end;
-  position: absolute;
-  width: 100%;
   z-index: 1000;
   ${({ theme }) => theme.message.gallery.header.container.css}
 `;
 
 const HeaderButton = styled.TouchableOpacity`
-  width: 30;
-  height: 30;
-  margin-right: 20;
-  margin-top: 20;
-  display: flex;
   align-items: center;
+  border-radius: 20px;
+  height: 30px;
   justify-content: center;
-  border-radius: 20;
+  margin-right: 20px;
+  margin-top: 20px;
+  width: 30px;
   ${({ theme }) => theme.message.gallery.header.button.css}
 `;
 
@@ -289,6 +81,161 @@ const GalleryHeader = ({ handleDismiss }) => (
   </HeaderContainer>
 );
 
-export default withTranslationContext(
-  withMessageContentContext(themed(Gallery)),
-);
+/**
+ * UI component for card in attachments.
+ *
+ * @example ../docs/Gallery.md
+ */
+const Gallery = ({ alignment, images }) => {
+  const { additionalTouchableProps, onLongPress } = useContext(
+    MessageContentContext,
+  );
+  const { t } = useContext(TranslationContext);
+
+  const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
+  const [viewerModalOpen, setViewerModalOpen] = useState(false);
+
+  if (!images?.length) return null;
+
+  const galleryImages = [...images].map((image) => ({
+    url: makeImageCompatibleUrl(image.image_url || image.thumb_url),
+  }));
+
+  if (galleryImages.length === 1) {
+    return (
+      <>
+        <Single
+          alignment={alignment}
+          onLongPress={onLongPress}
+          onPress={() => setViewerModalOpen(true)}
+          testID='image-attachment-single'
+          {...additionalTouchableProps}
+        >
+          <Image
+            resizeMode='cover'
+            source={{ uri: galleryImages[0].url }}
+            style={{ flex: 1 }}
+          />
+        </Single>
+        <Modal
+          onRequestClose={() => setViewerModalOpen(false)}
+          transparent={true}
+          visible={viewerModalOpen}
+        >
+          <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
+            <ImageViewer
+              // TODO: We don't have 'save image' functionality.
+              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+              // opens up popup menu to with an option "Save to the album", which basically does nothing.
+              enableSwipeDown
+              imageUrls={galleryImages}
+              onCancel={() => setViewerModalOpen(false)}
+              renderHeader={() => (
+                <GalleryHeader
+                  handleDismiss={() => setViewerModalOpen(false)}
+                />
+              )}
+              saveToLocalByLongPress={false}
+            />
+          </SafeAreaView>
+        </Modal>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <GalleryContainer alignment={alignment} length={galleryImages.length}>
+        {galleryImages.slice(0, 4).map((image, i) => (
+          <ImageContainer
+            activeOpacity={0.8}
+            key={`gallery-item-${i}`}
+            length={galleryImages.length}
+            onLongPress={onLongPress}
+            onPress={() => {
+              setViewerModalOpen(true);
+              setViewerModalImageIndex(i);
+            }}
+            {...additionalTouchableProps}
+          >
+            {i === 3 && galleryImages.length > 4 ? (
+              <View style={{ flex: 1 }}>
+                <Image
+                  resizeMode='cover'
+                  source={{ uri: galleryImages[3].url }}
+                  style={{ flex: 1 }}
+                />
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(0,0,0,0.69)',
+                    flex: 1,
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Text
+                    style={{ color: 'white', fontWeight: '700', fontSize: 22 }}
+                  >
+                    {' '}
+                    +{' '}
+                    {t('{{ imageCount }} more', {
+                      imageCount: galleryImages.length - 3,
+                    })}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Image
+                resizeMode='cover'
+                source={{ uri: image.url }}
+                style={{ flex: 1 }}
+              />
+            )}
+          </ImageContainer>
+        ))}
+      </GalleryContainer>
+      <Modal
+        onRequestClose={() => setViewerModalOpen(false)}
+        transparent={true}
+        visible={viewerModalOpen}
+      >
+        <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
+          <ImageViewer
+            // TODO: We don't have 'save image' functionality.
+            // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+            // opens up popup menu to with an option "Save to the album", which basically does nothing.
+            enableSwipeDown
+            imageUrls={galleryImages}
+            index={viewerModalImageIndex}
+            onCancel={() => setViewerModalOpen(false)}
+            renderHeader={() => (
+              <GalleryHeader handleDismiss={() => setViewerModalOpen(false)} />
+            )}
+            saveToLocalByLongPress={false}
+          />
+        </SafeAreaView>
+      </Modal>
+    </>
+  );
+};
+
+Gallery.propTypes = {
+  /** The images to render */
+  images: PropTypes.arrayOf(
+    PropTypes.shape({
+      image_url: PropTypes.string,
+      thumb_url: PropTypes.string,
+    }),
+  ),
+  onLongPress: PropTypes.func,
+  /**
+   * Provide any additional props for child `TouchableOpacity`.
+   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   */
+  additionalTouchableProps: PropTypes.object,
+  alignment: PropTypes.string,
+};
+
+Gallery.themePath = 'message.gallery';
+
+export default themed(Gallery);
