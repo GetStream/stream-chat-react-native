@@ -28,6 +28,24 @@ const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
   }
 };
 
+const getLatestMessagePreview = (channel, t, tDateTimeParser) => {
+  if (!channel.state.messages || !channel.state.messages.length) {
+    return {
+      created_at: '',
+      messageObject: {},
+      text: '',
+    };
+  } else {
+    const message = channel.state.messages[channel.state.messages.length - 1];
+
+    return {
+      created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
+      messageObject: { ...message },
+      text: getLatestMessageDisplayText(message, t),
+    };
+  }
+};
+
 /**
  * Hook to set the display preview for latest message on channel.
  *
@@ -37,24 +55,14 @@ const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
  */
 export const useLatestMessagePreview = (channel, lastMessage) => {
   const { t, tDateTimeParser } = useContext(TranslationContext);
-  const [latestMessagePreview, setLatestMessagePreview] = useState({});
+  const [latestMessagePreview, setLatestMessagePreview] = useState(
+    getLatestMessagePreview(channel, t, tDateTimeParser),
+  );
 
   useEffect(() => {
-    if (!channel.state.messages || !channel.state.messages.length) {
-      setLatestMessagePreview({
-        created_at: '',
-        messageObject: {},
-        text: '',
-      });
-    } else {
-      const message = channel.state.messages[channel.state.messages.length - 1];
-
-      setLatestMessagePreview({
-        created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
-        messageObject: { ...message },
-        text: getLatestMessageDisplayText(message, t),
-      });
-    }
+    setLatestMessagePreview(
+      getLatestMessagePreview(channel, t, tDateTimeParser),
+    );
   }, [channel, lastMessage]);
 
   return latestMessagePreview;
