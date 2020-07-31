@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.0] 2020-07-31
+
+- Fixed exports of MessageStatus, MessageContent, MessageAvatar, MessageTextContainer components [#268](https://github.com/GetStream/stream-chat-react-native/pull/268)
+
+- Moving following components to functional components
+
+  - ChannelPreview
+  - ChannelPreviewMessenger
+  - Attachment
+  - Card
+  - FileAttachment
+  - EmptyStateIndicator, LoadingIndicator, LoadingErrorIndicator
+
+- Decoupled actionsheet from MessageInput component [59618ad](https://github.com/GetStream/stream-chat-react-native/commit/59618adbc238763cf7fd3d5ba3dd0304012877de)
+
 ## [1.0.0] 2020-07-29
 
 We've already been on a v1 release for a while but never updated our versioning. Right now we're in the process of rewriting our components to be more future proof and we started using hooks, hence the v1.0.0 today.
