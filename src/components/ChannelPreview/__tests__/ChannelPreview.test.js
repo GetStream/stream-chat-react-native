@@ -3,8 +3,7 @@ import {
   act,
   getNodeText,
   render,
-  wait,
-  waitForElement,
+  waitFor,
 } from '@testing-library/react-native';
 
 import {
@@ -77,7 +76,7 @@ describe('ChannelPreview', () => {
     });
     await initializeChannel(c);
     const { queryByText } = render(getComponent());
-    await waitForElement(() => queryByText(message.text));
+    await waitFor(() => queryByText(message.text));
   });
 
   it('should mark channel as read, when message.read event is received for current user', async () => {
@@ -87,13 +86,13 @@ describe('ChannelPreview', () => {
 
     const { getByTestId } = render(getComponent());
 
-    await waitForElement(() => getByTestId('channel-id'));
+    await waitFor(() => getByTestId('channel-id'));
     expect(getNodeText(getByTestId('unread-count'))).toBe('20');
-    act(() => {
-      dispatchMessageReadEvent(chatClient, clientUser, channel);
+    await act(async () => {
+      await dispatchMessageReadEvent(chatClient, clientUser, channel);
     });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getNodeText(getByTestId('unread-count'))).toBe('0');
     });
   });
@@ -112,17 +111,17 @@ describe('ChannelPreview', () => {
 
       const { getByTestId } = render(getComponent());
 
-      await waitForElement(() => getByTestId('channel-id'));
+      await waitFor(() => getByTestId('channel-id'));
 
       const message = generateMessage({
         user: clientUser,
       });
 
-      act(() => {
-        dispatcher(chatClient, message, channel);
+      await act(async () => {
+        await dispatcher(chatClient, message, channel);
       });
 
-      await wait(() => {
+      await waitFor(() => {
         expect(getNodeText(getByTestId('last-event-message'))).toBe(
           message.text,
         );
@@ -136,7 +135,7 @@ describe('ChannelPreview', () => {
 
     const { getByTestId } = render(getComponent());
 
-    await waitForElement(() => getByTestId('channel-id'));
+    await waitFor(() => getByTestId('channel-id'));
 
     const message = generateMessage({
       user: clientUser,
@@ -144,11 +143,11 @@ describe('ChannelPreview', () => {
 
     channel.countUnread = () => 10;
 
-    act(() => {
-      dispatchMessageNewEvent(chatClient, message, channel);
+    await act(async () => {
+      await dispatchMessageNewEvent(chatClient, message, channel);
     });
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getNodeText(getByTestId('unread-count'))).toBe('10');
     });
   });

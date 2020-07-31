@@ -1,5 +1,5 @@
 import React from 'react';
-import { getNodeText, render, wait } from '@testing-library/react-native';
+import { getNodeText, render, waitFor } from '@testing-library/react-native';
 
 import Avatar from '../Avatar';
 
@@ -9,7 +9,7 @@ describe('Avatar', () => {
       <Avatar image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg' />,
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
       expect(queryByTestId('avatar-text')).toBeFalsy();
     });
@@ -23,7 +23,7 @@ describe('Avatar', () => {
       />,
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
       expect(queryByTestId('avatar-text')).toBeFalsy();
     });
@@ -37,7 +37,7 @@ describe('Avatar', () => {
       />,
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeTruthy();
       expect(queryByTestId('avatar-text')).toBeFalsy();
     });
@@ -46,7 +46,7 @@ describe('Avatar', () => {
   it('should render an avatar with no image but a name and default size', async () => {
     const { getByTestId, queryByTestId } = render(<Avatar name='Test User' />);
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeFalsy();
       expect(queryByTestId('avatar-text')).toBeTruthy();
       expect(getNodeText(getByTestId('avatar-text'))).toBe('TU');
@@ -58,7 +58,7 @@ describe('Avatar', () => {
       <Avatar name='Test User' size={20} />,
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeFalsy();
       expect(queryByTestId('avatar-text')).toBeTruthy();
       expect(getNodeText(getByTestId('avatar-text'))).toBe('TU');
