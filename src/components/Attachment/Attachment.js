@@ -68,7 +68,7 @@ const Attachment = (props) => {
         {attachment.actions?.length && (
           <AttachmentActions
             actionHandler={actionHandler}
-            key={'key-actions-' + attachment.id}
+            key={`key-actions-${attachment.id}`}
             {...attachment}
           />
         )}
@@ -83,7 +83,7 @@ const Attachment = (props) => {
           <Giphy alignment={alignment} {...attachment} {...cardProps} />
           <AttachmentActions
             actionHandler={actionHandler}
-            key={'key-actions-' + attachment.id}
+            key={`key-actions-${attachment.id}`}
             {...attachment}
           />
         </View>
@@ -100,7 +100,7 @@ const Attachment = (props) => {
           <Card alignment={alignment} {...attachment} {...cardProps} />
           <AttachmentActions
             actionHandler={actionHandler}
-            key={'key-actions-' + attachment.id}
+            key={`key-actions-${attachment.id}`}
             {...attachment}
           />
         </View>

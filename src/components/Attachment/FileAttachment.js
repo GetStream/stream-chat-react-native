@@ -84,7 +84,7 @@ const FileAttachment = ({
       {attachment.actions?.length && (
         <AttachmentActions
           actionHandler={actionHandler}
-          key={'key-actions-' + attachment.id}
+          key={`key-actions-${attachment.id}`}
           {...attachment}
         />
       )}
