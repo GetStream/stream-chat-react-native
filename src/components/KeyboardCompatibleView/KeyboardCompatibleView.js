@@ -34,12 +34,26 @@ export const KeyboardCompatibleView = (props) => {
 
   const dismissKeyboard = useCallback(() => {
     Keyboard.dismiss();
-    Animated.timing(heightAnim, {
-      toValue: initialHeight,
-      duration: props.keyboardOpenAnimationDuration,
-      useNativeDriver: false,
-    }).start();
-  }, [heightAnim, initialHeight, props.keyboardOpenAnimationDuration]);
+
+    return new Promise((resolve) => {
+      if (channelHeight === initialHeight) {
+        // If channel height is already at full length, then don't do anything.
+        resolve();
+      } else {
+        // Bring the channel height to its full length state.
+        Animated.timing(heightAnim, {
+          toValue: initialHeight,
+          duration: props.keyboardOpenAnimationDuration,
+          useNativeDriver: false,
+        }).start(resolve);
+      }
+    });
+  }, [
+    heightAnim,
+    initialHeight,
+    channelHeight,
+    props.keyboardOpenAnimationDuration,
+  ]);
 
   useEffect(() => {
     Animated.timing(heightAnim, {

@@ -132,6 +132,13 @@ const Message = withKeyboardContext(
         shouldUpdate = true;
       }
 
+      if (
+        !shouldUpdate &&
+        nextProps.dismissKeyboard !== this.props.dismissKeyboard
+      ) {
+        shouldUpdate = true;
+      }
+
       return shouldUpdate;
     }
 
