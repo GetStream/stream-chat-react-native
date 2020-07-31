@@ -420,7 +420,7 @@ export const MessageSimple = themed(
   },
 );
 
-export * from './MessageStatus';
-export * from './MessageContent';
-export * from './MessageAvatar';
-export * from './MessageTextContainer';
+export { default as MessageStatus } from './MessageStatus';
+export { default as MessageContent } from './MessageContent';
+export { default as MessageAvatar } from './MessageAvatar';
+export { default as MessageTextContainer } from './MessageTextContainer';
