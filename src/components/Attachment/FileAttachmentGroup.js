@@ -13,8 +13,8 @@ const FileAttachmentGroup = (props) => {
     alignment,
     AttachmentActions,
     AttachmentFileIcon,
-    files,
     FileAttachment,
+    files,
     handleAction,
     messageId,
   } = props;

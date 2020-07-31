@@ -14,21 +14,21 @@ const Single = styled.TouchableOpacity`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
+    alignment === 'right' ? 16 : 2}px;
   border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
+    alignment === 'left' ? 16 : 2}px;
   height: 200px;
   overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width};
+  width: ${({ theme }) => theme.message.gallery.width}px;
   ${({ theme }) => theme.message.gallery.single.css}
 `;
 
 const GalleryContainer = styled.View`
   border-radius: 16px;
   border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
+    alignment === 'left' ? 16 : 2}px;
   border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
+    alignment === 'right' ? 16 : 2}px;
   flex-direction: row;
   flex-wrap: wrap;
   height: ${({ theme, length }) =>
@@ -36,25 +36,28 @@ const GalleryContainer = styled.View`
       ? theme.message.gallery.doubleSize
       : length === 3
       ? theme.message.gallery.halfSize
-      : theme.message.gallery.size};
+      : theme.message.gallery.size}px;
   overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width};
+  width: ${({ theme }) => theme.message.gallery.width}px;
   ${({ theme }) => theme.message.gallery.galleryContainer.css}
 `;
 
 const ImageContainer = styled.TouchableOpacity`
   height: ${({ theme, length }) =>
-    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
+    length !== 3
+      ? theme.message.gallery.size
+      : theme.message.gallery.halfSize}px;
   width: ${({ theme, length }) =>
-    length !== 3 ? theme.message.gallery.size : theme.message.gallery.halfSize};
+    length !== 3
+      ? theme.message.gallery.size
+      : theme.message.gallery.halfSize}px;
   ${({ theme }) => theme.message.gallery.imageContainer.css}
 `;
 
 const HeaderContainer = styled.View`
+  flex: 1;
   flex-direction: row;
   justify-content: flex-end;
-  position: absolute;
-  width: 100%;
   z-index: 1000;
   ${({ theme }) => theme.message.gallery.header.container.css}
 `;
@@ -92,10 +95,10 @@ const Gallery = ({ alignment, images }) => {
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
 
-  if (!images || !images.length) return null;
+  if (!images?.length) return null;
 
-  const galleryImages = [...images].map((i) => ({
-    url: makeImageCompatibleUrl(i.image_url || i.thumb_url),
+  const galleryImages = [...images].map((image) => ({
+    url: makeImageCompatibleUrl(image.image_url || image.thumb_url),
   }));
 
   if (galleryImages.length === 1) {
@@ -111,7 +114,7 @@ const Gallery = ({ alignment, images }) => {
           <Image
             resizeMode='cover'
             source={{ uri: galleryImages[0].url }}
-            style={{ height: '100%', width: '100%' }}
+            style={{ flex: 1 }}
           />
         </Single>
         <Modal
@@ -156,20 +159,18 @@ const Gallery = ({ alignment, images }) => {
             {...additionalTouchableProps}
           >
             {i === 3 && galleryImages.length > 4 ? (
-              <View style={{ width: '100%', height: '100%' }}>
+              <View style={{ flex: 1 }}>
                 <Image
                   resizeMode='cover'
                   source={{ uri: galleryImages[3].url }}
-                  style={{ width: '100%', height: '100%' }}
+                  style={{ flex: 1 }}
                 />
                 <View
                   style={{
                     alignItems: 'center',
                     backgroundColor: 'rgba(0,0,0,0.69)',
-                    height: '100%',
+                    flex: 1,
                     justifyContent: 'center',
-                    position: 'absolute',
-                    width: '100%',
                   }}
                 >
                   <Text
@@ -187,7 +188,7 @@ const Gallery = ({ alignment, images }) => {
               <Image
                 resizeMode='cover'
                 source={{ uri: image.url }}
-                style={{ width: '100%', height: '100%' }}
+                style={{ flex: 1 }}
               />
             )}
           </ImageContainer>

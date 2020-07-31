@@ -77,9 +77,7 @@ const FileAttachment = ({
           mimeType={attachment.mime_type}
         />
         <FileDetails>
-          <FileTitle ellipsizeMode='tail' numberOfLines={2}>
-            {attachment.title}
-          </FileTitle>
+          <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
           <FileSize>{attachment.file_size} KB</FileSize>
         </FileDetails>
       </FileContainer>

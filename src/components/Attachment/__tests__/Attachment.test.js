@@ -72,8 +72,8 @@ describe('Attachment', () => {
 
   it('should render Gallery component if image does not have title_link or og_scrape_url', async () => {
     const attachment = generateImageAttachment({
-      title_link: undefined,
       og_scrape_url: undefined,
+      title_link: undefined,
     });
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
@@ -98,16 +98,24 @@ describe('Attachment', () => {
 
   it('should call actionHandler on click', async () => {
     const actionHandler = jest.fn();
+    const action = generateAttachmentAction();
     const { getByTestId } = render(
       getActionComponent({
-        actions: [generateAttachmentAction()],
+        actions: [action],
         actionHandler,
       }),
     );
 
-    await waitForElement(() => getByTestId('attachment-actions-button'));
-    fireEvent.press(getByTestId('attachment-actions-button'));
-    fireEvent.press(getByTestId('attachment-actions-button'));
+    await waitForElement(() =>
+      getByTestId(`attachment-actions-button-${action.name}`),
+    );
+
+    expect(getByTestId('attachment-actions')).toContainElement(
+      getByTestId(`attachment-actions-button-${action.name}`),
+    );
+
+    fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
+    fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
 
     await wait(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2);

@@ -9,14 +9,14 @@ import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils';
 
 const Container = styled.TouchableOpacity`
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  overflow: hidden;
+  background-color: ${({ theme }) => theme.colors.light};
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2};
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2};
-  background-color: ${({ theme }) => theme.colors.light};
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
   width: 250px;
   ${({ theme }) => theme.message.card.container.css}
 `;
@@ -110,12 +110,7 @@ const Card = (props) => {
         <Footer {...props} />
       ) : (
         <CardFooter>
-          <View
-            style={{
-              backgroundColor: 'transparent',
-              flexDirection: 'column',
-            }}
-          >
+          <View style={{ backgroundColor: 'transparent' }}>
             {title && <FooterTitle>{title}</FooterTitle>}
             {text && <FooterDescription>{text}</FooterDescription>}
             <FooterLink>{trimUrl(title_link || og_scrape_url)}</FooterLink>

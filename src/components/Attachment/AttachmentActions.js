@@ -55,7 +55,7 @@ const AttachmentActions = ({ actions, actionHandler, id }) => (
         buttonStyle={action.style}
         key={`${id}-${action.value}`}
         onPress={() => actionHandler(action.name, action.value)}
-        testID='attachment-actions-button'
+        testID={`attachment-actions-button-${action.name}`}
       >
         <ActionButtonText buttonStyle={action.style}>
           {action.text}

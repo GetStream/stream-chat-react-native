@@ -34,8 +34,8 @@ const Attachment = (props) => {
     return null;
   }
 
-  const Giphy = props.Giphy ? props.Giphy : Card;
-  const UrlPreview = props.UrlPreview ? props.UrlPreview : Card;
+  const Giphy = props?.Giphy || Card;
+  const UrlPreview = props?.UrlPreview || Card;
   const cardProps = {
     Header: CardHeader ? CardHeader : undefined,
     Cover: CardCover ? CardCover : undefined,
@@ -59,7 +59,6 @@ const Attachment = (props) => {
     type = 'media';
   } else {
     type = 'card';
-    // extra = 'no-image';
   }
 
   if (type === 'image') {
