@@ -29,14 +29,16 @@ const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
 };
 
 const getLatestMessagePreview = (channel, t, tDateTimeParser) => {
-  if (!channel.state.messages || !channel.state.messages.length) {
+  const messages = channel?.state?.messages;
+
+  if (!messages || !messages.length) {
     return {
       created_at: '',
       messageObject: {},
       text: '',
     };
   } else {
-    const message = channel.state.messages[channel.state.messages.length - 1];
+    const message = messages[messages.length - 1];
 
     return {
       created_at: getLatestMessageDisplayDate(message, tDateTimeParser),

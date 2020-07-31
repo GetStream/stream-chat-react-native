@@ -4,19 +4,22 @@ import { ChatContext } from '../../../context';
 export const useChannelPreviewDisplayName = (channel) => {
   const { client } = useContext(ChatContext);
   const [displayName, setDisplayName] = useState(
-    getChannelPreviewDisplayName(channel, client.user.id),
+    getChannelPreviewDisplayName(channel, client),
   );
 
   useEffect(() => {
-    setDisplayName(getChannelPreviewDisplayName(channel, client.user.id));
+    setDisplayName(getChannelPreviewDisplayName(channel, client));
   }, [channel]);
 
   return displayName;
 };
 
-const getChannelPreviewDisplayName = (channel, currentUserId) => {
-  if (typeof channel?.data?.name === 'string') {
-    return channel.data.name;
+const getChannelPreviewDisplayName = (channel, client) => {
+  const currentUserId = client?.user?.id;
+  const channelName = channel?.data?.name;
+
+  if (typeof channelName === 'string') {
+    return channelName;
   } else {
     const members = Object.values(channel?.state?.members || {});
     const otherMembers = members.filter(

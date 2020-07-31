@@ -10,23 +10,27 @@ import { ChatContext } from '../../../context';
 export const useChannelPreviewDisplayAvatar = (channel) => {
   const { client } = useContext(ChatContext);
   const [displayAvatar, setDisplayAvatar] = useState(
-    getChannelPreviewDisplayAvatar(channel, client.user.id),
+    getChannelPreviewDisplayAvatar(channel, client),
   );
 
   useEffect(() => {
-    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client.user.id));
+    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
   }, [channel]);
 
   return displayAvatar;
 };
 
-const getChannelPreviewDisplayAvatar = (channel, currentUserId) => {
-  if (channel.data.image) {
+const getChannelPreviewDisplayAvatar = (channel, client) => {
+  const currentUserId = client?.user?.id;
+  const channelName = channel?.data?.name;
+  const channelImage = channel?.data?.image;
+
+  if (channelImage) {
     return {
-      image: channel.data.image,
-      name: channel.data.name,
+      image: channelImage,
+      name: channelName,
     };
-  } else {
+  } else if (currentUserId) {
     const members = Object.values(channel?.state?.members || {});
     const otherMembers = members.filter(
       (member) => member.user.id !== currentUserId,
@@ -35,12 +39,11 @@ const getChannelPreviewDisplayAvatar = (channel, currentUserId) => {
     if (otherMembers.length === 1) {
       return {
         image: otherMembers[0].user.image,
-        name: channel.data.name || otherMembers[0].user.name,
-      };
-    } else {
-      return {
-        name: channel.data.name,
+        name: channelName || otherMembers[0].user.name,
       };
     }
   }
+  return {
+    name: channelName,
+  };
 };
