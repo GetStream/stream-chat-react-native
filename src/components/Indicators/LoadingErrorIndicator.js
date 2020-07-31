@@ -24,17 +24,13 @@ const RetryText = styled.Text`
   ${({ theme }) => theme.loadingErrorIndicator.retryText.css}
 `;
 
-const LoadingErrorIndicator = ({ listType, retry }) => {
+const LoadingErrorIndicator = ({ listType, retry = () => {} }) => {
   const { t } = useContext(TranslationContext);
 
   switch (listType) {
     case 'channel':
       return (
-        <Container
-          onPress={() => {
-            retry && retry();
-          }}
-        >
+        <Container onPress={retry}>
           <ErrorText>{t('Error loading channel list ...')}</ErrorText>
           <RetryText>⟳</RetryText>
         </Container>
