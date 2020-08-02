@@ -820,7 +820,9 @@ class MessageInput extends PureComponent {
     });
   };
 
-  setInputBoxRef = (o) => (this.attachActionSheet = o);
+  setAttachActionSheetRef = (o) => (this.attachActionSheet = o);
+
+  setInputBoxRef = (o) => (this.inputBox = o);
 
   closeAttachActionSheet = () => {
     this.attachActionSheet.hide();
@@ -873,7 +875,7 @@ class MessageInput extends PureComponent {
           */}
 
         <ActionSheetAttachment
-          setAttachActionSheetRef={this.setInputBoxRef}
+          setInputBoxRef={this.setAttachActionSheetRef}
           closeAttachActionSheet={this.closeAttachActionSheet}
           pickFile={this._pickFile}
           pickImage={this._pickImage}
