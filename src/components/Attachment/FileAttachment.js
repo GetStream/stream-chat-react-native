@@ -1,50 +1,44 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { TouchableOpacity, Linking } from 'react-native';
 import PropTypes from 'prop-types';
-
 import styled from '@stream-io/styled-components';
 
 import AttachmentActions from './AttachmentActions';
-import { withMessageContentContext } from '../../context';
+import { MessageContentContext } from '../../context';
 
 const FileContainer = styled.View`
-  display: flex;
-  flex-direction: row;
   align-items: center;
   background-color: #ebebeb;
-  padding: 10px;
   border-radius: ${({ groupStyle }) => {
     if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
-
     return 16;
   }};
   border-bottom-left-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-
     return alignment === 'right' ? 16 : 2;
   }};
   border-bottom-right-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-
     return alignment === 'left' ? 16 : 2;
   }};
+  flex-direction: row;
+  padding: 10px;
   ${({ theme }) => theme.message.file.container.css}
 `;
 
 const FileDetails = styled.View`
-  display: flex;
   flex-direction: column;
   padding-left: 10px;
   ${({ theme }) => theme.message.file.details.css}
 `;
 
+const FileSize = styled.Text`
+  ${({ theme }) => theme.message.file.size.css}
+`;
+
 const FileTitle = styled.Text`
   font-weight: 700;
   ${({ theme }) => theme.message.file.title.css}
-`;
-
-const FileSize = styled.Text`
-  ${({ theme }) => theme.message.file.size.css}
 `;
 
 const goToURL = (url) => {
@@ -58,42 +52,45 @@ const goToURL = (url) => {
 };
 
 const FileAttachment = ({
-  attachment,
   actionHandler,
-  AttachmentFileIcon,
-  onLongPress,
   alignment,
+  attachment,
+  AttachmentFileIcon,
   groupStyle,
-  additionalTouchableProps,
-}) => (
-  <TouchableOpacity
-    onPress={() => {
-      goToURL(attachment.asset_url);
-    }}
-    onLongPress={onLongPress}
-    {...additionalTouchableProps}
-  >
-    <FileContainer alignment={alignment} groupStyle={groupStyle}>
-      <AttachmentFileIcon
-        filename={attachment.title}
-        mimeType={attachment.mime_type}
-      />
-      <FileDetails>
-        <FileTitle ellipsizeMode='tail' numberOfLines={2}>
-          {attachment.title}
-        </FileTitle>
-        <FileSize>{attachment.file_size} KB</FileSize>
-      </FileDetails>
-    </FileContainer>
-    {attachment.actions && attachment.actions.length > 0 && (
-      <AttachmentActions
-        key={'key-actions-' + attachment.id}
-        {...attachment}
-        actionHandler={actionHandler}
-      />
-    )}
-  </TouchableOpacity>
-);
+}) => {
+  const { additionalTouchableProps, onLongPress } = useContext(
+    MessageContentContext,
+  );
+
+  return (
+    <TouchableOpacity
+      onLongPress={onLongPress}
+      onPress={() => {
+        goToURL(attachment.asset_url);
+      }}
+      testID='file-attachment'
+      {...additionalTouchableProps}
+    >
+      <FileContainer alignment={alignment} groupStyle={groupStyle}>
+        <AttachmentFileIcon
+          filename={attachment.title}
+          mimeType={attachment.mime_type}
+        />
+        <FileDetails>
+          <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
+          <FileSize>{attachment.file_size} KB</FileSize>
+        </FileDetails>
+      </FileContainer>
+      {attachment.actions?.length && (
+        <AttachmentActions
+          actionHandler={actionHandler}
+          key={`key-actions-${attachment.id}`}
+          {...attachment}
+        />
+      )}
+    </TouchableOpacity>
+  );
+};
 
 FileAttachment.propTypes = {
   /** The attachment to render */
@@ -133,4 +130,4 @@ FileAttachment.propTypes = {
   ]),
 };
 
-export default withMessageContentContext(FileAttachment);
+export default FileAttachment;
