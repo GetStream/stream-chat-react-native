@@ -11,6 +11,7 @@ export const useKeyboardCompatibleHeight = ({
   const appState = useAppState();
 
   const hidingKeyboardInProgress = useRef(false);
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const [height, setHeight] = useState(initialHeight);
 
@@ -48,8 +49,8 @@ export const useKeyboardCompatibleHeight = ({
             console.r.log(windowHeight, y, keyboardHeight);
           }
 
-          console.r.log('keyboardDidShow - ', finalHeight);
           setHeight(finalHeight);
+          setKeyboardOpen(true);
         });
       }
     },
@@ -59,6 +60,7 @@ export const useKeyboardCompatibleHeight = ({
   const keyboardDidHide = useCallback(() => {
     hidingKeyboardInProgress.current = true;
     setHeight(initialHeight);
+    setKeyboardOpen(false);
   }, [hidingKeyboardInProgress, initialHeight, setHeight]);
 
   useEffect(() => {
@@ -85,5 +87,5 @@ export const useKeyboardCompatibleHeight = ({
     }
   }, [appState, initialHeight, keyboardDidHide, keyboardDidShow]);
 
-  return height;
+  return [height, keyboardOpen];
 };
