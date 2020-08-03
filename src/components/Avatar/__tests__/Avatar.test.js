@@ -1,5 +1,5 @@
 import React from 'react';
-import { getNodeText, render, waitFor } from '@testing-library/react-native';
+import { render, waitFor } from '@testing-library/react-native';
 
 import Avatar from '../Avatar';
 
@@ -49,7 +49,7 @@ describe('Avatar', () => {
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeFalsy();
       expect(queryByTestId('avatar-text')).toBeTruthy();
-      expect(getNodeText(getByTestId('avatar-text'))).toBe('TU');
+      expect(getByTestId('avatar-text')).toHaveTextContent('TU');
     });
   });
 
@@ -61,7 +61,7 @@ describe('Avatar', () => {
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeFalsy();
       expect(queryByTestId('avatar-text')).toBeTruthy();
-      expect(getNodeText(getByTestId('avatar-text'))).toBe('TU');
+      expect(getByTestId('avatar-text')).toHaveTextContent('TU');
     });
   });
 });

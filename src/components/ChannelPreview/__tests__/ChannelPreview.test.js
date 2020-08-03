@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  act,
-  getNodeText,
-  render,
-  waitFor,
-} from '@testing-library/react-native';
+import { act, render, waitFor } from '@testing-library/react-native';
 
 import {
   dispatchMessageDeletedEvent,
@@ -87,13 +82,15 @@ describe('ChannelPreview', () => {
     const { getByTestId } = render(getComponent());
 
     await waitFor(() => getByTestId('channel-id'));
-    expect(getNodeText(getByTestId('unread-count'))).toBe('20');
-    await act(async () => {
-      await dispatchMessageReadEvent(chatClient, clientUser, channel);
+
+    expect(getByTestId('unread-count')).toHaveTextContent('20');
+
+    act(() => {
+      dispatchMessageReadEvent(chatClient, clientUser, channel);
     });
 
     await waitFor(() => {
-      expect(getNodeText(getByTestId('unread-count'))).toBe('0');
+      expect(getByTestId('unread-count')).toHaveTextContent('0');
     });
   });
 
@@ -117,12 +114,12 @@ describe('ChannelPreview', () => {
         user: clientUser,
       });
 
-      await act(async () => {
-        await dispatcher(chatClient, message, channel);
+      act(() => {
+        dispatcher(chatClient, message, channel);
       });
 
       await waitFor(() => {
-        expect(getNodeText(getByTestId('last-event-message'))).toBe(
+        expect(getByTestId('last-event-message')).toHaveTextContent(
           message.text,
         );
       });
@@ -143,12 +140,12 @@ describe('ChannelPreview', () => {
 
     channel.countUnread = () => 10;
 
-    await act(async () => {
-      await dispatchMessageNewEvent(chatClient, message, channel);
+    act(() => {
+      dispatchMessageNewEvent(chatClient, message, channel);
     });
 
     await waitFor(() => {
-      expect(getNodeText(getByTestId('unread-count'))).toBe('10');
+      expect(getByTestId('unread-count')).toHaveTextContent('10');
     });
   });
 });
