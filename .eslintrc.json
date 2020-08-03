@@ -26,6 +26,7 @@
     "no-var": 2,
     "linebreak-style": [2, "unix"],
     "semi": [1, "always"],
+    "jest/expect-expect": 0,
     "jsx-quotes": ["error", "prefer-single"]
   },
   "env": {
