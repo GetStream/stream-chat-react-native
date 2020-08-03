@@ -36,7 +36,7 @@ npm version "$1" --force
 
 npm publish --tag="$tag"
 
-cd ../native-package
+cd native-package
 npm publish --tag="$tag"
 
 
