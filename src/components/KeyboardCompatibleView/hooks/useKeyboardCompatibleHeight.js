@@ -64,7 +64,7 @@ export const useKeyboardCompatibleHeight = ({
   }, [hidingKeyboardInProgress, initialHeight, setHeight]);
 
   useEffect(() => {
-    if (appState) {
+    if (appState === 'active') {
       if (Platform.OS === 'ios') {
         Keyboard.addListener('keyboardWillShow', keyboardDidShow);
       } else {
@@ -75,16 +75,16 @@ export const useKeyboardCompatibleHeight = ({
       // We dismiss the keyboard manually (along with keyboardWillHide function) when message is touched.
       // Following listener is just for a case when keyboard gets dismissed due to something besides message touch.
       Keyboard.addListener('keyboardDidHide', keyboardDidHide);
-
-      return () => {
-        if (Platform.OS === 'ios') {
-          Keyboard.removeListener('keyboardWillShow', keyboardDidShow);
-        } else {
-          Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
-        }
-        Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
-      };
     }
+
+    return () => {
+      if (Platform.OS === 'ios') {
+        Keyboard.removeListener('keyboardWillShow', keyboardDidShow);
+      } else {
+        Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      }
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
   }, [appState, initialHeight, keyboardDidHide, keyboardDidShow]);
 
   return [height, keyboardOpen];
