@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] 2020-08-03
+
+- Fixed [#270](https://github.com/GetStream/stream-chat-react-native/issues/270) - [8ec70bd](https://github.com/GetStream/stream-chat-react-native/pull/273/commits/8ec70bdd2bae4f03c595466ba60d247c44f4c474)
+
+- Upgraded `@testing-library/react-native` to v7 [4c687b4](https://github.com/GetStream/stream-chat-react-native/commit/4c687b48d689abb97ba00228224169d70c245076)
+
 ## [1.1.0] 2020-07-31
 
 - Fixed exports of MessageStatus, MessageContent, MessageAvatar, MessageTextContainer components [#268](https://github.com/GetStream/stream-chat-react-native/pull/268)
