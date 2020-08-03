@@ -46,7 +46,6 @@ export const useKeyboardCompatibleHeight = ({
               windowHeight - y - keyboardHeight - StatusBar.currentHeight;
           } else {
             finalHeight = windowHeight - y - keyboardHeight;
-            console.r.log(windowHeight, y, keyboardHeight);
           }
 
           setHeight(finalHeight);
