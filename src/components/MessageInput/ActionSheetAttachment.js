@@ -43,12 +43,12 @@ const ActionSheet = ({
   closeAttachActionSheet,
   pickFile,
   pickImage,
-  setInputBoxRef,
+  setAttachActionSheetRef,
   styles,
   t,
 }) => (
   <ActionSheetCustom
-    ref={setInputBoxRef}
+    ref={setAttachActionSheetRef}
     title={
       <ActionSheetTitleContainer>
         <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
