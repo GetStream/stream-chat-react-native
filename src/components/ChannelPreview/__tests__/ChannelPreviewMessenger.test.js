@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  fireEvent,
-  render,
-  wait,
-  waitForElement,
-} from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 import truncate from 'lodash/truncate';
 
@@ -66,10 +61,10 @@ describe('ChannelPreviewMessenger', () => {
       }),
     );
 
-    await waitForElement(() => getByTestId('channel-preview-button'));
+    await waitFor(() => getByTestId('channel-preview-button'));
     fireEvent.press(getByTestId('channel-preview-button'));
 
-    await wait(() => {
+    await waitFor(() => {
       // eslint-disable-next-line jest/prefer-called-with
       expect(setActiveChannel).toHaveBeenCalledTimes(1);
     });
@@ -85,7 +80,7 @@ describe('ChannelPreviewMessenger', () => {
       }),
     );
     const { queryByText } = render(getComponent());
-    await waitForElement(() => queryByText(channelName));
+    await waitFor(() => queryByText(channelName));
   });
 
   it('should render comma separated names of other members, if channel has no name', async () => {
@@ -102,7 +97,7 @@ describe('ChannelPreviewMessenger', () => {
     const { queryByText } = render(getComponent());
     const expectedDisplayName = `${m1.user.name}, ${m2.user.name}, ${m3.user.name}`;
 
-    await waitForElement(() => queryByText(expectedDisplayName));
+    await waitFor(() => queryByText(expectedDisplayName));
   });
 
   it('should render latest message, truncated to length given by latestMessageLength', async () => {
@@ -117,6 +112,6 @@ describe('ChannelPreviewMessenger', () => {
     );
 
     const expectedMessagePreview = truncate(message.text, { length: 6 });
-    await waitForElement(() => queryByText(expectedMessagePreview));
+    await waitFor(() => queryByText(expectedMessagePreview));
   });
 });

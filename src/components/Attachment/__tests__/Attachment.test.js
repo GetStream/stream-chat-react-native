@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  fireEvent,
-  render,
-  wait,
-  waitForElement,
-} from '@testing-library/react-native';
-import '@testing-library/jest-native/extend-expect';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
 import {
@@ -29,7 +23,7 @@ describe('Attachment', () => {
     const attachment = generateAudioAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('file-attachment')).toBeTruthy();
     });
   });
@@ -38,7 +32,7 @@ describe('Attachment', () => {
     const attachment = generateFileAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('file-attachment')).toBeTruthy();
     });
   });
@@ -47,7 +41,7 @@ describe('Attachment', () => {
     const attachment = generateImgurAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('card-attachment')).toBeTruthy();
     });
   });
@@ -56,7 +50,7 @@ describe('Attachment', () => {
     const attachment = generateGiphyAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('card-attachment')).toBeTruthy();
     });
   });
@@ -65,7 +59,7 @@ describe('Attachment', () => {
     const attachment = generateImageAttachment();
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('card-attachment')).toBeTruthy();
     });
   });
@@ -77,7 +71,7 @@ describe('Attachment', () => {
     });
     const { getByTestId } = render(getAttachmentComponent({ attachment }));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('image-attachment-single')).toBeTruthy();
     });
   });
@@ -91,7 +85,7 @@ describe('Attachment', () => {
       getAttachmentComponent({ attachment, actionHandler: () => {} }),
     );
 
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('attachment-actions')).toBeTruthy();
     });
   });
@@ -106,7 +100,7 @@ describe('Attachment', () => {
       }),
     );
 
-    await waitForElement(() =>
+    await waitFor(() =>
       getByTestId(`attachment-actions-button-${action.name}`),
     );
 
@@ -117,7 +111,7 @@ describe('Attachment', () => {
     fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
     fireEvent.press(getByTestId(`attachment-actions-button-${action.name}`));
 
-    await wait(() => {
+    await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledTimes(2);
     });
   });
@@ -128,7 +122,7 @@ describe('Attachment', () => {
         attachment: generateCardAttachment({ type: uuidv4() }),
       }),
     );
-    await wait(() => {
+    await waitFor(() => {
       expect(getByTestId('card-attachment')).toBeTruthy();
     });
   });
