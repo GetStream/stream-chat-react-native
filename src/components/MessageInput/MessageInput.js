@@ -938,7 +938,6 @@ class MessageInput extends PureComponent {
                 updateSuggestions={this.props.updateSuggestions}
                 value={this.state.text}
                 onChange={this.onChangeText}
-                getCommands={this.getCommands}
                 setInputBoxRef={this.setInputBoxRef}
                 triggerSettings={ACITriggerSettings({
                   channel: this.props.channel,

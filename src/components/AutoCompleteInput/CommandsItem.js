@@ -4,23 +4,6 @@ import PropTypes from 'prop-types';
 
 import { themed } from '../../styles/theme';
 
-const Container = styled.View`
-  flex-direction: column;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.command.container.css}
-`;
-
-const Top = styled.View`
-  flex-direction: row;
-  align-items: center;
-  ${({ theme }) => theme.messageInput.suggestions.command.top.css}
-`;
-
-const Title = styled.Text`
-  font-weight: bold;
-  ${({ theme }) => theme.messageInput.suggestions.command.title.css}
-`;
-
 const CommandArgs = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.command.args.css}
 `;
@@ -29,33 +12,44 @@ const CommandDescription = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.command.description.css}
 `;
 
+const Container = styled.View`
+  flex-direction: column;
+  padding: 10px;
+  ${({ theme }) => theme.messageInput.suggestions.command.container.css}
+`;
+
+const Title = styled.Text`
+  font-weight: bold;
+  ${({ theme }) => theme.messageInput.suggestions.command.title.css}
+`;
+
+const Top = styled.View`
+  align-items: center;
+  flex-direction: row;
+  ${({ theme }) => theme.messageInput.suggestions.command.top.css}
+`;
+
 /**
  * @example ../docs/CommandsItem.md
- * @extends PureComponent
  */
-class CommandsItem extends React.Component {
-  static themePath = 'messageInput.suggestions.command';
-  static propTypes = {
-    name: PropTypes.string,
-    args: PropTypes.string,
-    description: PropTypes.string,
-  };
+const CommandsItem = ({ args, description, name }) => (
+  <Container>
+    <Top>
+      <Title testID='commands-item-title'>/{name} </Title>
+      <CommandArgs testID='commands-item-args'>{args}</CommandArgs>
+    </Top>
+    <CommandDescription testID='commands-item-description'>
+      {description}
+    </CommandDescription>
+  </Container>
+);
 
-  render() {
-    const {
-      item: { name, args, description },
-    } = this.props;
+CommandsItem.propTypes = {
+  args: PropTypes.string,
+  description: PropTypes.string,
+  name: PropTypes.string,
+};
 
-    return (
-      <Container>
-        <Top>
-          <Title>/{name} </Title>
-          <CommandArgs>{args}</CommandArgs>
-        </Top>
-        <CommandDescription>{description}</CommandDescription>
-      </Container>
-    );
-  }
-}
+CommandsItem.themePath = 'messageInput.suggestions.command';
 
 export default themed(CommandsItem);
