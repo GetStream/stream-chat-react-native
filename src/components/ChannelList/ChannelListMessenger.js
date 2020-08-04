@@ -4,14 +4,17 @@ import PropTypes from 'prop-types';
 
 import { ChatContext } from '../../context';
 
-import { ChannelPreview, ChannelPreviewMessenger } from '../ChannelPreview';
-import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
-import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
-import ChannelListHeaderNetworkDownIndicator from './ChannelListHeaderNetworkDownIndicator';
 import {
-  EmptyStateIndicator,
-  LoadingErrorIndicator,
-  LoadingIndicator,
+  ChannelPreview,
+  ChannelPreviewMessenger as PreviewMessengerDefault,
+} from '../ChannelPreview';
+import FooterLoadingIndicatorDefault from './ChannelListFooterLoadingIndicator';
+import HeaderErrorIndicatorDefault from './ChannelListHeaderErrorIndicator';
+import HeaderNetworkDownIndicatorDefault from './ChannelListHeaderNetworkDownIndicator';
+import {
+  EmptyStateIndicator as EmptyStateIndicatorDefault,
+  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
+  LoadingIndicator as LoadingIndicatorDefault,
 } from '../Indicators';
 
 /**
@@ -21,27 +24,31 @@ import {
  */
 const ChannelListMessenger = (props) => {
   const {
-    additionalFlatListProps,
+    additionalFlatListProps = {},
     channels,
     error,
+    forceUpdate,
     loadingChannels,
     loadingNextPage,
-    loadMoreThreshold,
+    // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
+    loadMoreThreshold = 2,
     loadNextPage,
     refreshing,
     refreshList,
     reloadList,
+    setActiveChannel,
     setFlatListRef,
   } = props;
+
   const { isOnline } = useContext(ChatContext);
 
   const renderLoading = () => {
-    const { LoadingIndicator } = props;
+    const { LoadingIndicator = LoadingIndicatorDefault } = props;
     return <LoadingIndicator listType='channel' />;
   };
 
   const renderLoadingError = () => {
-    const { LoadingErrorIndicator } = props;
+    const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
     return (
       <LoadingErrorIndicator
         error={error}
@@ -53,14 +60,14 @@ const ChannelListMessenger = (props) => {
   };
 
   const renderEmptyState = () => {
-    const { EmptyStateIndicator } = props;
+    const { EmptyStateIndicator = EmptyStateIndicatorDefault } = props;
     return <EmptyStateIndicator listType='channel' />;
   };
 
   const renderHeaderIndicator = () => {
     const {
-      ChannelListHeaderErrorIndicator,
-      ChannelListHeaderNetworkDownIndicator,
+      ChannelListHeaderErrorIndicator = HeaderErrorIndicatorDefault,
+      ChannelListHeaderNetworkDownIndicator = HeaderNetworkDownIndicatorDefault,
     } = props;
     if (!isOnline) {
       return <ChannelListHeaderNetworkDownIndicator />;
@@ -71,14 +78,15 @@ const ChannelListMessenger = (props) => {
 
   const renderChannels = () => {
     const {
-      ChannelListFooterLoadingIndicator,
-      ChannelPreviewMessenger,
+      ChannelListFooterLoadingIndicator = FooterLoadingIndicatorDefault,
+      ChannelPreviewMessenger = PreviewMessengerDefault,
     } = props;
     return (
       <>
         {renderHeaderIndicator()}
         <FlatList
           data={channels}
+          extraData={forceUpdate}
           keyExtractor={(item) => item.cid}
           ListEmptyComponent={renderEmptyState}
           ListFooterComponent={() => {
@@ -87,9 +95,9 @@ const ChannelListMessenger = (props) => {
             }
             return null;
           }}
-          onEndReached={() => loadNextPage(false)}
+          onEndReached={loadNextPage}
           onEndReachedThreshold={loadMoreThreshold}
-          onRefresh={() => refreshList()}
+          onRefresh={refreshList}
           ref={(flRef) => {
             setFlatListRef && setFlatListRef(flRef);
           }}
@@ -100,6 +108,7 @@ const ChannelListMessenger = (props) => {
               channel={channel}
               key={channel.cid}
               Preview={ChannelPreviewMessenger}
+              setActiveChannel={setActiveChannel}
             />
           )}
           {...additionalFlatListProps}
@@ -108,7 +117,7 @@ const ChannelListMessenger = (props) => {
     );
   };
 
-  if (error && channels.length === 0) {
+  if (error && !refreshing && channels.length === 0) {
     return renderLoadingError();
   } else if (loadingChannels) {
     return renderLoading();
@@ -222,19 +231,6 @@ ChannelListMessenger.propTypes = {
    * ```
    */
   setFlatListRef: PropTypes.func,
-};
-
-ChannelListMessenger.defaultProps = {
-  ChannelPreviewMessenger,
-  LoadingIndicator,
-  LoadingErrorIndicator,
-  ChannelListHeaderNetworkDownIndicator,
-  ChannelListHeaderErrorIndicator,
-  ChannelListFooterLoadingIndicator,
-  EmptyStateIndicator,
-  // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
-  loadMoreThreshold: 2,
-  additionalFlatListProps: {},
 };
 
 export default ChannelListMessenger;
