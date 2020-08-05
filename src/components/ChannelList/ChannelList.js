@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ChatContext } from '../../context';
 
-import ChannelListMessengerDefault from './ChannelListMessenger';
+import ChannelListMessenger from './ChannelListMessenger';
 
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
@@ -26,7 +26,7 @@ import { useUserPresence } from './hooks/listeners/useUserPresence';
  */
 const ChannelList = (props) => {
   const {
-    ChannelListMessenger = ChannelListMessengerDefault,
+    List = ChannelListMessenger,
     filters = {},
     lockChannelOrder = false,
     onAddedToChannel,
@@ -74,7 +74,7 @@ const ChannelList = (props) => {
   useUserPresence({ setChannels });
 
   return (
-    <ChannelListMessenger
+    <List
       {...props}
       channels={channels}
       error={status.error}
