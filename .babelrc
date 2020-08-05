@@ -2,7 +2,7 @@
   "presets": ["@babel/env", "@babel/react"],
   "plugins": [
     "macros",
-    "@babel/proposal-class-properties",
+    // "@babel/proposal-class-properties",
     "@babel/transform-runtime",
     "babel-plugin-styled-components"
   ],

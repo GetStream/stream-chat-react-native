@@ -192,7 +192,7 @@ ChannelListMessenger.propTypes = {
   refreshList: PropTypes.func,
   /**
    * For flatlist
-   * @see See loeadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
+   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
    * */
   loadMoreThreshold: PropTypes.number,
   /** If there is error in querying channels */
@@ -201,11 +201,11 @@ ChannelListMessenger.propTypes = {
   loadingChannels: PropTypes.bool,
   /** If channel list is being refreshed. Loader at top of the list will be displayed if true. */
   refreshing: PropTypes.bool,
-  /** If further channels are being loadded. Loader will be shown at bottom of the list */
+  /** If further channels are being loaded. Loader will be shown at bottom of the list */
   loadingNextPage: PropTypes.bool,
   /**
    * Besides existing (default) UX behaviour of underlying flatlist of ChannelListMessenger component, if you want
-   * to attach some additional props to un derlying flatlist, you can add it to following prop.
+   * to attach some additional props to underlying flatlist, you can add it to following prop.
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
    *

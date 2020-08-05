@@ -43,8 +43,8 @@ const ChannelList = (props) => {
   } = props;
 
   const { client } = useContext(ChatContext);
-  const [forceUpdate, setForceUpdate] = useState(0);
   const listRef = useRef(null);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const {
     channels,
