@@ -202,7 +202,7 @@ ChannelList.propTypes = {
   sort: PropTypes.object,
   /** For flatlist  */
   loadMoreThreshold: PropTypes.number,
-  /** Client object. Available from [Chat context](#chatcontext) */
+  /** Client object. Available from [Chat context](#ChatContext) */
   client: PropTypes.object,
   /**
    * Function to set change active channel. This function acts as bridge between channel list and currently active channel component.
