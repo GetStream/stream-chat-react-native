@@ -29,5 +29,6 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["./src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["**/__tests__/*.test.js"]
 }
