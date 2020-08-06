@@ -5,10 +5,8 @@ import renderer from 'react-test-renderer';
 import { ThemeProvider } from '@stream-io/styled-components';
 
 import ChannelListMessenger from '../ChannelListMessenger';
-import { Chat } from '../../Chat';
 
 import { TranslationContext } from '../../../context';
-import { getTestClient } from '../../../mock-builders';
 import { defaultTheme } from '../../../styles/theme';
 
 const channels = [
@@ -16,31 +14,28 @@ const channels = [
   { cid: '2', name: 'neil', on: () => null },
 ];
 
-const client = getTestClient();
 const t = jest.fn((key) => key);
 
 const Component = ({ error = false, loadingChannels = false }) => (
-  <Chat client={client}>
-    <ThemeProvider theme={defaultTheme}>
-      <TranslationContext.Provider value={{ t }}>
-        <ChannelListMessenger
-          channels={channels}
-          error={error}
-          loadingChannels={loadingChannels}
-          LoadingErrorIndicator={() => (
-            <View>
-              <Text>Loading Error Indicator</Text>
-            </View>
-          )}
-          LoadingIndicator={() => (
-            <View>
-              <Text>Loading Indicator</Text>
-            </View>
-          )}
-        />
-      </TranslationContext.Provider>
-    </ThemeProvider>
-  </Chat>
+  <ThemeProvider theme={defaultTheme}>
+    <TranslationContext.Provider value={{ t }}>
+      <ChannelListMessenger
+        channels={channels}
+        error={error}
+        loadingChannels={loadingChannels}
+        LoadingErrorIndicator={() => (
+          <View>
+            <Text>Loading Error Indicator</Text>
+          </View>
+        )}
+        LoadingIndicator={() => (
+          <View>
+            <Text>Loading Indicator</Text>
+          </View>
+        )}
+      />
+    </TranslationContext.Provider>
+  </ThemeProvider>
 );
 
 describe('ChannelListMessenger', () => {
