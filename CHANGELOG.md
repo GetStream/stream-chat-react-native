@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.1.1] 2020-08-03
+
+- Fixed [#270](https://github.com/GetStream/stream-chat-react-native/issues/270) - [8ec70bd](https://github.com/GetStream/stream-chat-react-native/pull/273/commits/8ec70bdd2bae4f03c595466ba60d247c44f4c474)
+
+- Upgraded `@testing-library/react-native` to v7 [4c687b4](https://github.com/GetStream/stream-chat-react-native/commit/4c687b48d689abb97ba00228224169d70c245076)
+
+## [1.1.0] 2020-07-31
+
+- Fixed exports of MessageStatus, MessageContent, MessageAvatar, MessageTextContainer components [#268](https://github.com/GetStream/stream-chat-react-native/pull/268)
+
+- Moving following components to functional components
+
+  - ChannelPreview
+  - ChannelPreviewMessenger
+  - Attachment
+  - Card
+  - FileAttachment
+  - EmptyStateIndicator, LoadingIndicator, LoadingErrorIndicator
+
+- Decoupled actionsheet from MessageInput component [59618ad](https://github.com/GetStream/stream-chat-react-native/commit/59618adbc238763cf7fd3d5ba3dd0304012877de)
+
+## [1.0.0] 2020-07-29
+
+We've already been on a v1 release for a while but never updated our versioning. Right now we're in the process of rewriting our components to be more future proof and we started using hooks, hence the v1.0.0 today.
+
+Breaking change: stream-chat-react-native now relies on hooks and will need react-native >= 0.59.0 to work
+
+Rewrite will involve following changes:
+
+1. Functional compoenents instead of class based components
+2. Static typing using typescript
+3. UI tests
+
+We are going to increamentally implement these changes and will try to keep everything backwards compatible unless really necessary.
+
+## [0.15.2] 2020-07-29
+
+- Exporting `AutoCompleteInput` component [d41d0d5](https://github.com/GetStream/stream-chat-react-native/commit/d41d0d58ce02556cedf1825a2adb6a5c366a770c)
+
+## [0.15.1] 2020-07-29 (Bad release)
+
 ## [0.15.0] 2020-07-27
 
 - Upgrading @stream-io/react-native-simple-markdown to 1.2.1 [d89f012](https://github.com/GetStream/react-native-simple-markdown/commit/d89f0128e6c4f179f2afe9f9a896b289288e2afd)

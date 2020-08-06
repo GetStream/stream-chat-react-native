@@ -1,4 +1,5 @@
 export * from './Attachment';
+export * from './AutoCompleteInput';
 export * from './Avatar';
 export * from './Channel';
 export * from './ChannelList';

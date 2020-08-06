@@ -1,19 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
-import { withTranslationContext } from '../../context';
+
+import { TranslationContext } from '../../context';
 
 const Container = styled.TouchableOpacity`
+  align-items: center;
   height: 100%;
   justify-content: center;
-  align-items: center;
   ${({ theme }) => theme.loadingErrorIndicator.container.css}
 `;
 
 const ErrorText = styled.Text`
-  margin-top: 20px;
   font-size: 14px;
   font-weight: 600;
+  margin-top: 20px;
   ${({ theme }) => theme.loadingErrorIndicator.errorText.css}
 `;
 
@@ -23,11 +24,12 @@ const RetryText = styled.Text`
   ${({ theme }) => theme.loadingErrorIndicator.retryText.css}
 `;
 
-const LoadingErrorIndicator = ({ listType, retry, t }) => {
-  let Loader;
+const LoadingErrorIndicator = ({ listType, retry }) => {
+  const { t } = useContext(TranslationContext);
+
   switch (listType) {
     case 'channel':
-      Loader = (
+      return (
         <Container
           onPress={() => {
             retry && retry();
@@ -37,26 +39,21 @@ const LoadingErrorIndicator = ({ listType, retry, t }) => {
           <RetryText>⟳</RetryText>
         </Container>
       );
-      break;
     case 'message':
-      Loader = (
+      return (
         <Container>
           <ErrorText>
             {t('Error loading messages for this channel ...')}
           </ErrorText>
         </Container>
       );
-      break;
     default:
-      Loader = (
+      return (
         <Container>
           <ErrorText>{t('Error loading')}</ErrorText>
         </Container>
       );
-      break;
   }
-
-  return Loader;
 };
 
 LoadingErrorIndicator.propTypes = {
@@ -65,4 +62,4 @@ LoadingErrorIndicator.propTypes = {
   retry: PropTypes.func,
 };
 
-export default withTranslationContext(LoadingErrorIndicator);
+export default LoadingErrorIndicator;

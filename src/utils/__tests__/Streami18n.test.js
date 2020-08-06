@@ -57,7 +57,7 @@ const customDayjsLocaleConfig = {
 };
 
 describe('Streami18n instance - default', () => {
-  const streami18nOptions = {};
+  const streami18nOptions = { logger: () => {} };
   const streami18n = new Streami18n(streami18nOptions);
 
   it('should provide default english translator', async () => {

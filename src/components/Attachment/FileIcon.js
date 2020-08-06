@@ -193,26 +193,19 @@ for (const type of codeFileTypes) {
 }
 
 function mimeTypeToIcon(mimeType) {
-  if (mimeType == null) {
-    return iconDOC;
-  }
+  if (mimeType == null) return iconDOC;
 
   const icon = mimeTypeToIconMap[mimeType];
-  if (icon) {
-    return icon;
-  }
+  if (icon) return icon;
 
   return iconDOC;
 }
 
-export default class FileIcon extends React.Component {
-  render() {
-    const { mimeType, size } = this.props;
-    return (
-      <Icon
-        source={mimeTypeToIcon(mimeType)}
-        style={size ? { height: size, width: size } : {}}
-      />
-    );
-  }
-}
+const FileIcon = ({ mimeType, size }) => (
+  <Icon
+    source={mimeTypeToIcon(mimeType)}
+    style={size ? { height: size, width: size } : {}}
+  />
+);
+
+export default FileIcon;

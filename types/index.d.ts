@@ -288,6 +288,7 @@ export interface MessageInputProps
   actionSheetStyles?: object;
   AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
   AttachButton?: React.ElementType<AttachButtonProps>;
+  ActionSheetAttachment?: React.ElementType<ActionSheetAttachmentProps>;
   SendButton: React.ElementType<SendButtonProps>;
   additionalTextInputProps?: object;
 }
@@ -1152,6 +1153,17 @@ export interface AttachButtonProps extends StyledComponentProps {
   handleOnPress(): void;
 }
 
+export interface ActionSheetAttachmentProps extends StyledComponentProps {
+  /** Hides the attach actionsheet */
+  closeAttachActionSheet?(): void;
+  /** Handler for attach file functionality */
+  pickFile?(): void;
+  /** Handler for attach image functionality */
+  pickImage?(): Promise<void>;
+  /** object the ref via callback - https://reactjs.org/docs/refs-and-the-dom.html#callback-refs */
+  setAttachActionSheetRef?(ref: any): void;
+}
+
 export interface SendButtonProps extends StyledComponentProps {
   title: string;
   editing: Client.MessageResponse | boolean;
@@ -1258,6 +1270,10 @@ export class TypingIndicator extends React.PureComponent<
 export class MessageInput extends React.PureComponent<MessageInputProps, any> {}
 
 export class AttachButton extends React.PureComponent<AttachButtonProps, any> {}
+export class ActionSheetAttachment extends React.PureComponent<
+  ActionSheetAttachmentProps,
+  any
+> {}
 export class SendButton extends React.PureComponent<SendButtonProps> {}
 export class MessageSimple extends React.PureComponent<
   MessageUIComponentProps,

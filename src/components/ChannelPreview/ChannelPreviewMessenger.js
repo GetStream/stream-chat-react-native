@@ -73,7 +73,7 @@ const ChannelPreviewMessenger = ({
   const displayName = useChannelPreviewDisplayName(channel);
   return (
     <Container
-      onPress={setActiveChannel.bind(null, channel)}
+      onPress={setActiveChannel && setActiveChannel.bind(null, channel)}
       testID='channel-preview-button'
     >
       <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />

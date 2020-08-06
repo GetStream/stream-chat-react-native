@@ -2,20 +2,14 @@ import React from 'react';
 import { Text } from 'react-native';
 
 const EmptyStateIndicator = ({ listType }) => {
-  let Indicator;
   switch (listType) {
     case 'channel':
-      Indicator = <Text>You have no channels currently</Text>;
-      break;
+      return <Text>You have no channels currently</Text>;
     case 'message':
-      Indicator = null;
-      break;
+      return null;
     default:
-      Indicator = <Text>No items exist</Text>;
-      break;
+      return <Text>No items exist</Text>;
   }
-
-  return Indicator;
 };
 
 export default EmptyStateIndicator;
