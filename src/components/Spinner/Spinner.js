@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 import styled from '@stream-io/styled-components';
 
@@ -22,11 +22,11 @@ export const Circle = styled(AnimatedView)`
  * @example ../docs/Spinner.md
  */
 const Spinner = () => {
-  const rotateValue = new Animated.Value(0);
+  const rotateValue = useRef(new Animated.Value(0));
 
   const startSpinning = () => {
     Animated.loop(
-      Animated.timing(rotateValue, {
+      Animated.timing(rotateValue.current, {
         duration: 800,
         easing: Easing.linear,
         toValue: 1,
@@ -42,7 +42,7 @@ const Spinner = () => {
       style={{
         transform: [
           {
-            rotate: rotateValue.interpolate({
+            rotate: rotateValue.current.interpolate({
               inputRange: [0, 1],
               outputRange: ['0deg', '360deg'],
             }),
