@@ -1,17 +1,33 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "baseUrl": "./src",
+    "paths": {
+      "stream-chat-react-native": ["./src/index"]
+    },
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
     "esModuleInterop": true,
+    "importsNotUsedAsValues": "error",
+    "forceConsistentCasingInFileNames": true,
     "jsx": "react-native",
-    "lib": ["DOM", "ES6"],
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noImplicitUseStrict": false,
+    "noStrictGenericChecks": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "esnext",
+    "allowSyntheticDefaultImports": true,
     "noEmitOnError": false,
     "noImplicitAny": true,
-    "outDir": "types",
-    "resolveJsonModule": true,
-    "strict": true,
-    "target": "ES5"
+    "allowJs": true,
+    "checkJs": false
   },
   "include": ["./src/**/*"]
 }

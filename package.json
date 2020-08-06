@@ -4,12 +4,13 @@
   "author": {
     "company": "Stream.io Inc"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "src/index.js",
   "types": "types/index.d.ts",
   "files": [
-    "dist",
+    "src",
+    "lib",
     "README.md",
     "/types"
   ],
@@ -25,8 +26,7 @@
     ]
   },
   "scripts": {
-    "start": "rm -rf dist && yarn build-translations && rollup -c -w",
-    "build": "rm -rf dist && yarn build-translations && rollup -c",
+    "build": "rm -rf dist && yarn build-translations && bob build",
     "docs": "styleguidist build",
     "test": "jest",
     "docs-server": "styleguidist server",
@@ -39,6 +39,15 @@
     "lint": "prettier --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint 'src/**/*.{js,ts,tsx}' && yarn run validate-translations",
     "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint --fix 'src/**/*.{js,ts,tsx}'",
     "prepare": "yarn run build"
+  },
+  "@react-native-community/bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   },
   "husky": {
     "hooks": {
@@ -67,12 +76,12 @@
     }
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.2",
+    "@babel/runtime": "^7.11.2",
     "@stream-io/react-native-simple-markdown": "^1.2.1",
     "@stream-io/styled-components": "^4.2.1",
     "anchorme": "^1.1.2",
-    "babel-plugin-macros": "^2.5.1",
-    "dayjs": "^1.8.23",
+    "babel-plugin-macros": "^2.8.0",
+    "dayjs": "^1.8.32",
     "deep-equal": "^1.0.1",
     "deepmerge": "^3.2.0",
     "file-loader": "^3.0.1",
@@ -85,7 +94,7 @@
     "react-native-actionsheet": "^2.4.2",
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
-    "stream-chat": "^1.13.1",
+    "stream-chat": "^1.14.0",
     "uuid": "^3.3.2"
   },
   "peerDependencies": {
@@ -96,15 +105,10 @@
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
-    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
     "@babel/polyfill": "^7.4.4",
-    "@babel/preset-env": "^7.4.3",
-    "@babel/preset-flow": "^7.10.4",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "^7.10.4",
-    "@testing-library/react-native": "^5.0.3",
+    "@react-native-community/bob": "^0.16.2",
+    "@testing-library/react-native": "^7.0.1",
     "@types/eslint": "^7.2.0",
     "@types/react": "^16.8.23",
     "@types/react-native": "^0.57.0",
@@ -114,7 +118,6 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-i18next-extract": "^0.6.1",
-    "babel-plugin-preval": "^3.0.1",
     "babel-plugin-react-native-web": "^0.11.2",
     "babel-preset-expo": "^5.0.0",
     "eslint": "^7.5.0",
@@ -134,14 +137,6 @@
     "react-native-web": "^0.11.4",
     "react-styleguidist": "^8.0.6",
     "react-test-renderer": "^16.13.1",
-    "rollup": "^0.68.2",
-    "rollup-plugin-babel": "^4.0.3",
-    "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-copy": "^3.3.0",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-replace": "^2.1.0",
-    "rollup-plugin-typescript2": "^0.27.1",
     "stylelint": "^10.0.1",
     "stylelint-config-standard": "^18.3.0",
     "stylelint-config-styled-components": "^0.1.1",

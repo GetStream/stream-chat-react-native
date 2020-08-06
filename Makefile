@@ -35,6 +35,5 @@ dist/built: $(LIB_SOURCES) node_modules/installed_dependencies
 clean:
 	rm -rf $(addsuffix /node_modules,$(EXAMPLES_APPS)) || true
 	rm -rf $(addsuffix /node_modules,$(WRAPPER_PACKAGES)) || true
-	rm -rf $(addsuffix /dist,$(WRAPPER_PACKAGES)) || true
 	rm -rf dist || true
 	rm -rf node_modules || true

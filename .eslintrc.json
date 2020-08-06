@@ -69,6 +69,51 @@
         "semi": 0,
         "no-undef": 0
       }
+    },
+    {
+      "files": ["**/*.js", "**/*.jsx"],
+      "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:jest/recommended"
+      ],
+      "parser": "babel-eslint",
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2018,
+        "ecmaFeatures": {
+          "modules": true
+        }
+      },
+      "plugins": ["babel", "markdown"],
+      "rules": {
+        "no-console": 0,
+        "no-mixed-spaces-and-tabs": 1,
+        "comma-dangle": 0,
+        "no-unused-vars": [1, { "ignoreRestSiblings": true }],
+        "eqeqeq": [2, "smart"],
+        "no-useless-concat": 2,
+        "default-case": 2,
+        "no-self-compare": 2,
+        "prefer-const": 1,
+        "no-underscore-dangle": [2, { "allowAfterThis": true }],
+        "object-shorthand": 1,
+        "babel/no-invalid-this": 2,
+        "array-callback-return": 2,
+        "valid-typeof": 2,
+        "arrow-body-style": 2,
+        "require-await": 2,
+        "react/prop-types": 0,
+        "no-var": 2,
+        "linebreak-style": [2, "unix"],
+        "semi": [1, "always"],
+        "jest/expect-expect": 0,
+        "jsx-quotes": ["error", "prefer-single"]
+      },
+      "env": {
+        "es6": true,
+        "browser": true
+      }
     }
   ]
 }
