@@ -66,15 +66,15 @@
     },
     {
       "files": ["**/*.ts", "**/*.tsx"],
-      // "extends": [
-      //   "plugin:react/recommended",
-      //   "plugin:@typescript-eslint/recommended",
-      //   "prettier/@typescript-eslint",
-      //   "@react-native-community",
-      //   "eslint:recommended",
-      //   "plugin:prettier/recommended",
-      //   "plugin:jest/recommended"
-      // ],
+      "extends": [
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier/@typescript-eslint",
+        "@react-native-community",
+        "eslint:recommended",
+        "plugin:prettier/recommended",
+        "plugin:jest/recommended"
+      ],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "sourceType": "module",
