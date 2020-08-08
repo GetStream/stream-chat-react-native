@@ -16,7 +16,7 @@ import * as i18next from 'i18next';
 declare function withChatContext<T>(
   OriginalComponent: React.ElementType<T>,
 ): React.ElementType<T>;
-export interface ChatContext extends React.Context<ChatContextValue> {}
+export const ChatContext: React.Context<ChatContextValue>
 export interface ChatContextValue {
   client?: Client.StreamChat;
   channel?: Client.Channel;
@@ -31,8 +31,7 @@ export interface ChatContextValue {
 declare function withTranslationContext<T>(
   OriginalComponent: React.ElementType<T>,
 ): React.ElementType<T>;
-export interface TranslationContext
-  extends React.Context<TranslationContextValue> {}
+export const TranslationContext: React.Context<TranslationContextValue>;
 export interface TranslationContextValue {
   t?: i18next.TFunction;
   tDateTimeParser?(datetime: string | number): object;
@@ -41,8 +40,7 @@ export interface TranslationContextValue {
 declare function withSuggestionsContext<T>(
   OriginalComponent: React.ElementType<T>,
 ): React.ElementType<T>;
-export interface SuggestionsContext
-  extends React.Context<SuggestionsContextValue> {}
+export const SuggestionsContext: React.Context<SuggestionsContextValue>;
 export interface SuggestionsContextValue {
   setInputBoxContainerRef?(ref: any): void;
   openSuggestions?(title: string, component: React.ElementType): void;
@@ -65,7 +63,7 @@ export interface SuggestionsContextValue {
 declare function withChannelContext<T>(
   OriginalComponent: React.ElementType<T>,
 ): React.ElementType<T>;
-export interface ChannelContext extends React.Context<ChannelContextValue> {}
+export const ChannelContext: React.Context<ChannelContextValue>;
 export interface ChannelContextValue {
   Message?: React.ElementType<MessageUIComponentProps>;
   Attachment?: React.ElementType<AttachmentProps>;
@@ -123,13 +121,12 @@ export interface ChannelContextValue {
   disabled?: boolean;
 }
 
-export interface KeyboardContext extends React.Context<KeyboardContextValue> {}
+export const KeyboardContext: React.Context<KeyboardContextValue>;
 export interface KeyboardContextValue {
   dismissKeyboard?(): void;
 }
 
-export interface MessageContentContext
-  extends React.Context<MessageContentContextValue> {}
+export const MessageContentContext: React.Context<MessageContentContextValue>;
 export interface MessageContentContextValue {
   onLongPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean;
