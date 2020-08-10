@@ -95,7 +95,7 @@
     "react-native-image-zoom-viewer": "^2.2.25",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^1.14.0",
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.0"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",

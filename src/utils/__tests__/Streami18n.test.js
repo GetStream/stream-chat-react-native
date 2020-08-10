@@ -1,5 +1,5 @@
 import { Streami18n } from '../Streami18n';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import { default as Dayjs } from 'dayjs';
 import { nlTranslations, frTranslations } from '../../i18n';
 import 'dayjs/locale/nl';

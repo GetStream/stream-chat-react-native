@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { withChannelContext, withTranslationContext } from '../../context';
 import { Message } from '../Message';
@@ -359,7 +359,7 @@ class MessageList extends PureComponent {
         newMessages.push(message);
       }
 
-      const eventsNextToMessage = this.props.eventHistory[message.id];
+      const eventsNextToMessage = this.props.eventHistory?.[message.id];
       if (eventsNextToMessage && eventsNextToMessage.length > 0) {
         eventsNextToMessage.forEach((e) => {
           newMessages.push({
