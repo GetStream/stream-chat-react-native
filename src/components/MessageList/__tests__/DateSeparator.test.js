@@ -9,17 +9,20 @@ import {
   generateStaticUser,
 } from '../../../mock-builders';
 import { Streami18n } from '../../../utils';
+import { TranslationContext } from '../../../context';
 
 afterEach(cleanup);
 
 describe('DateSeparator', () => {
   it('should render date separator', async () => {
     const i18nInstance = new Streami18n();
-    const { tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const user = generateUser();
     const message = generateMessage({ user });
     const { queryByTestId } = render(
-      <DateSeparator message={message} tDateTimeParser={tDateTimeParser} />,
+      <TranslationContext.Provider value={translators}>
+        <DateSeparator message={message} />
+      </TranslationContext.Provider>,
     );
 
     await waitFor(() => {
@@ -29,15 +32,16 @@ describe('DateSeparator', () => {
 
   it('should render date separator with custom date format', async () => {
     const i18nInstance = new Streami18n();
-    const { tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const user = generateUser();
     const message = generateMessage({ user });
     const { getByText } = render(
-      <DateSeparator
-        message={{ ...message, date: 'Hello World' }}
-        tDateTimeParser={tDateTimeParser}
-        formatDate={(date) => date}
-      />,
+      <TranslationContext.Provider value={translators}>
+        <DateSeparator
+          message={{ ...message, date: 'Hello World' }}
+          formatDate={(date) => date}
+        />
+      </TranslationContext.Provider>,
     );
 
     await waitFor(() => {
@@ -47,14 +51,13 @@ describe('DateSeparator', () => {
 
   it('should match date separator snapshot', async () => {
     const i18nInstance = new Streami18n();
-    const { tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
     const { toJSON } = render(
-      <DateSeparator
-        message={{ ...message, date: message.created_at }}
-        tDateTimeParser={tDateTimeParser}
-      />,
+      <TranslationContext.Provider value={translators}>
+        <DateSeparator message={{ ...message, date: message.created_at }} />
+      </TranslationContext.Provider>,
     );
 
     await waitFor(() => {
