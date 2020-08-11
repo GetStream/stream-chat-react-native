@@ -6,6 +6,7 @@ import { generateStaticUser } from '../../../mock-builders';
 import { Streami18n } from '../../../utils';
 import { ThemeProvider } from '@stream-io/styled-components';
 import { defaultTheme } from '../../../styles/theme';
+import { TranslationContext } from '../../../context';
 
 afterEach(cleanup);
 
@@ -13,7 +14,7 @@ describe('EventIndicator', () => {
   it('should render event indicator', async () => {
     const t = jest.fn((key) => key);
     const i18nInstance = new Streami18n();
-    const { tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const event = {
       user: generateStaticUser(0),
       type: 'member.added',
@@ -21,7 +22,9 @@ describe('EventIndicator', () => {
     };
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <EventIndicator t={t} tDateTimeParser={tDateTimeParser} event={event} />
+        <TranslationContext.Provider value={{ ...translators, t }}>
+          <EventIndicator event={event} />
+        </TranslationContext.Provider>
       </ThemeProvider>,
     );
 
@@ -35,7 +38,7 @@ describe('EventIndicator', () => {
 
   it('should not render', async () => {
     const i18nInstance = new Streami18n();
-    const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const event = {
       user: generateStaticUser(0),
       type: 'member.whatever',
@@ -43,7 +46,9 @@ describe('EventIndicator', () => {
     };
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <EventIndicator t={t} tDateTimeParser={tDateTimeParser} event={event} />
+        <TranslationContext.Provider value={translators}>
+          <EventIndicator event={event} />
+        </TranslationContext.Provider>
       </ThemeProvider>,
     );
 
@@ -54,7 +59,7 @@ describe('EventIndicator', () => {
 
   it('should match the snapshot for member removed', async () => {
     const i18nInstance = new Streami18n();
-    const { t, tDateTimeParser } = await i18nInstance.getTranslators();
+    const translators = await i18nInstance.getTranslators();
     const event = {
       user: generateStaticUser(1),
       type: 'member.removed',
@@ -62,7 +67,9 @@ describe('EventIndicator', () => {
     };
     const { toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
-        <EventIndicator t={t} tDateTimeParser={tDateTimeParser} event={event} />
+        <TranslationContext.Provider value={translators}>
+          <EventIndicator event={event} />
+        </TranslationContext.Provider>
       </ThemeProvider>,
     );
 

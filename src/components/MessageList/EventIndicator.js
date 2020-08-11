@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { withTranslationContext } from '../../context';
+import { TranslationContext } from '../../context';
 import { Avatar } from '../Avatar';
 
 const Date = styled.Text`
@@ -39,32 +39,34 @@ const MemberUpdateText = styled.Text`
  * A component to display a message regarding channel notifications such as
  * 'member.added', 'member.removed' etc.
  */
-const EventIndicator = ({ event, t, tDateTimeParser }) => {
-  if (event.type === 'member.added' || event.type === 'member.removed') {
-    return (
-      <MemberUpdateContainer testID={'event-indicator'}>
-        <Avatar name={event.user.name} image={event.user.image} />
-        <MemberUpdateTextContainer>
-          <MemberUpdateText>
-            {event.type === 'member.added'
-              ? t('{{ username }} joined the chat', {
-                  username: event.user.name,
-                })
-              : t('{{ username }} was removed from the chat', {
-                  username: event.user.name,
-                })}
-          </MemberUpdateText>
-          <Date>{tDateTimeParser(event.received_at).format('LT')}</Date>
-        </MemberUpdateTextContainer>
-      </MemberUpdateContainer>
-    );
+const EventIndicator = ({ event }) => {
+  const { t, tDateTimeParser } = useContext(TranslationContext);
+
+  if (event.type !== 'member.added' && event.type !== 'member.removed') {
+    return null;
   }
 
-  return null;
+  return (
+    <MemberUpdateContainer testID={'event-indicator'}>
+      <Avatar name={event.user.name} image={event.user.image} />
+      <MemberUpdateTextContainer>
+        <MemberUpdateText>
+          {event.type === 'member.added'
+            ? t('{{ username }} joined the chat', {
+                username: event.user.name,
+              })
+            : t('{{ username }} was removed from the chat', {
+                username: event.user.name,
+              })}
+        </MemberUpdateText>
+        <Date>{tDateTimeParser(event.received_at).format('LT')}</Date>
+      </MemberUpdateTextContainer>
+    </MemberUpdateContainer>
+  );
 };
 
 EventIndicator.propTypes = {
   event: PropTypes.object,
 };
 
-export default withTranslationContext(EventIndicator);
+export default EventIndicator;
