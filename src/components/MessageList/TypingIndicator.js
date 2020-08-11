@@ -5,7 +5,7 @@ import styled from '@stream-io/styled-components';
 
 import { Avatar as DefaultAvatar } from '../Avatar';
 import { themed } from '../../styles/theme';
-import { TranslationContext, ChatContext } from '../../context';
+import { TranslationContext, ChatContext, ChannelContext } from '../../context';
 
 const TypingText = styled.Text`
   margin-left: 10px;
@@ -58,8 +58,9 @@ const constructTypingString = (typingUsers, client, t) => {
 };
 
 const TypingIndicator = (props) => {
-  const { typing, Avatar = DefaultAvatar } = props;
+  const { Avatar = DefaultAvatar } = props;
   const { client } = useContext(ChatContext);
+  const { typing } = useContext(ChannelContext);
   const { t } = useContext(TranslationContext);
   const typingUsers = Object.values(typing);
 
@@ -83,7 +84,6 @@ const TypingIndicator = (props) => {
 
 TypingIndicator.themePath = 'typingIndicator';
 TypingIndicator.propTypes = {
-  typing: PropTypes.object,
   /**
    * Defaults to and accepts same props as: [Avatar](https://getstream.github.io/stream-chat-react-native/#avatar)
    */
