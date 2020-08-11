@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 
-import { withTranslationContext } from '../../context';
+import { TranslationContext } from '../../context';
 
 const Container = styled.View`
   display: flex;
@@ -46,19 +46,22 @@ const DateText = styled.Text`
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = ({ message, tDateTimeParser }) => (
-  <Container testID={'message-system'}>
-    <Line />
-    <TextContainer>
-      <Text>{message.text.toUpperCase()}</Text>
-      <DateText>
-        {tDateTimeParser(message.created_at)
-          .calendar()
-          .toUpperCase()}
-      </DateText>
-    </TextContainer>
-    <Line />
-  </Container>
-);
+const MessageSystem = ({ message }) => {
+  const { tDateTimeParser } = useContext(TranslationContext);
+  return (
+    <Container testID={'message-system'}>
+      <Line />
+      <TextContainer>
+        <Text>{message.text.toUpperCase()}</Text>
+        <DateText>
+          {tDateTimeParser(message.created_at)
+            .calendar()
+            .toUpperCase()}
+        </DateText>
+      </TextContainer>
+      <Line />
+    </Container>
+  );
+};
 
-export default withTranslationContext(MessageSystem);
+export default MessageSystem;
