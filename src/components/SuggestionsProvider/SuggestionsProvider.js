@@ -67,9 +67,9 @@ const SuggestionsProvider = ({ children }) => {
     });
 
   const suggestionsContext = {
-    setInputBoxContainerRef,
-    openSuggestions,
     closeSuggestions,
+    openSuggestions,
+    setInputBoxContainerRef,
     updateSuggestions,
   };
 
