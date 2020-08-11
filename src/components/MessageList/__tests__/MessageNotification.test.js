@@ -7,13 +7,19 @@ import {
 } from '@testing-library/react-native';
 
 import MessageNotification from '../MessageNotification';
+import { TranslationContext } from '../../../context';
+import { Streami18n } from '../../../utils';
 
 afterEach(cleanup);
 
 describe('MessageNotification', () => {
   it('should render nothing if showNotification is false', async () => {
+    const i18nInstance = new Streami18n();
+    const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
-      <MessageNotification showNotification={false} onPress={() => null} />,
+      <TranslationContext.Provider value={translators}>
+        <MessageNotification showNotification={false} onPress={() => null} />
+      </TranslationContext.Provider>,
     );
 
     await waitFor(() => {
@@ -22,8 +28,12 @@ describe('MessageNotification', () => {
   });
 
   it('should render if showNotification is true', async () => {
+    const i18nInstance = new Streami18n();
+    const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
-      <MessageNotification showNotification={true} onPress={() => null} />,
+      <TranslationContext.Provider value={translators}>
+        <MessageNotification showNotification={true} onPress={() => null} />
+      </TranslationContext.Provider>,
     );
 
     await waitFor(() => {
@@ -31,10 +41,14 @@ describe('MessageNotification', () => {
     });
   });
 
-  it('should trigger onPress when pressed', () => {
+  it('should trigger onPress when pressed', async () => {
+    const i18nInstance = new Streami18n();
+    const translators = await i18nInstance.getTranslators();
     const onPress = jest.fn();
     const { getByTestId } = render(
-      <MessageNotification showNotification={true} onPress={onPress} />,
+      <TranslationContext.Provider value={translators}>
+        <MessageNotification showNotification={true} onPress={onPress} />
+      </TranslationContext.Provider>,
     );
     fireEvent.press(getByTestId('message-notification'));
     expect(onPress).toHaveBeenCalledTimes(1);
@@ -42,12 +56,16 @@ describe('MessageNotification', () => {
 
   it('should display the text New Messages', async () => {
     const t = jest.fn((key) => key);
+    const i18nInstance = new Streami18n();
+    const translators = await i18nInstance.getTranslators();
     const { getByText } = render(
-      <MessageNotification
-        showNotification={true}
-        onPress={() => null}
-        t={t}
-      />,
+      <TranslationContext.Provider value={{ ...translators, t }}>
+        <MessageNotification
+          showNotification={true}
+          onPress={() => null}
+          t={t}
+        />
+      </TranslationContext.Provider>,
     );
     expect(t).toHaveBeenCalledWith('New Messages');
     await waitFor(() => {
@@ -56,8 +74,12 @@ describe('MessageNotification', () => {
   });
 
   it('should render the message notification and match snapshot', async () => {
+    const i18nInstance = new Streami18n();
+    const translators = await i18nInstance.getTranslators();
     const { toJSON } = render(
-      <MessageNotification showNotification={true} onPress={() => null} />,
+      <TranslationContext.Provider value={translators}>
+        <MessageNotification showNotification={true} onPress={() => null} />
+      </TranslationContext.Provider>,
     );
 
     /**

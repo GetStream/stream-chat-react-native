@@ -54,7 +54,7 @@ exports[`MessageNotification should render the message notification and match sn
         ]
       }
     >
-      Value not found
+      New Messages
     </Text>
   </View>
 </View>
