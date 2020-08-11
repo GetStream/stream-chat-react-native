@@ -30,7 +30,7 @@ import { Streami18n } from '../../utils/Streami18n';
 const Chat = (props) => {
   const { children, client, i18nInstance, logger = () => {} } = props;
 
-  const [channel, setChannel] = useState(undefined);
+  const [channel, setChannel] = useState();
   const [connectionRecovering, setConnectionRecovering] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
   const [translators, setTranslators] = useState({
