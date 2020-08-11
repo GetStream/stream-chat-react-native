@@ -8,7 +8,9 @@ import {
   generateUser,
   getTestClientWithUser,
 } from '../../../mock-builders';
+import { Chat } from '../../Chat';
 import { Streami18n } from '../../../utils';
+import { TranslationContext } from '../../../context';
 
 afterEach(cleanup);
 
@@ -26,7 +28,11 @@ describe('TypingIndicator', () => {
     const typing = { user1: { user: user1 }, user2: { user: user2 } };
 
     const { getByTestId } = render(
-      <TypingIndicator client={chatClient} typing={typing} t={t} />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
     expect(t).toHaveBeenCalledWith(
       '{{ firstUser }} and {{ secondUser }} are typing...',
@@ -50,7 +56,11 @@ describe('TypingIndicator', () => {
     const typing = { user1: { user: user1 } };
 
     const { getByTestId } = render(
-      <TypingIndicator client={chatClient} typing={typing} t={t} />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
     expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
       user: user1.name,
@@ -70,12 +80,11 @@ describe('TypingIndicator', () => {
     const typing = { user1: { user: user1 } };
 
     const { getByTestId, queryByTestId } = render(
-      <TypingIndicator
-        client={chatClient}
-        typing={typing}
-        t={t}
-        Avatar={View}
-      />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} Avatar={View} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
     expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
       user: user1.name,
@@ -99,12 +108,11 @@ describe('TypingIndicator', () => {
     const typing = { user1: { user: user1 }, user2: { user: user2 } };
 
     const { getByTestId } = render(
-      <TypingIndicator
-        client={chatClient}
-        typing={typing}
-        t={t}
-        Avatar={View}
-      />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} Avatar={View} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -123,12 +131,11 @@ describe('TypingIndicator', () => {
     const typing = {};
 
     const { getByTestId, queryByTestId } = render(
-      <TypingIndicator
-        client={chatClient}
-        typing={typing}
-        t={t}
-        Avatar={View}
-      />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} Avatar={View} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
 
     await waitFor(() => {
@@ -150,7 +157,11 @@ describe('TypingIndicator', () => {
     const typing = { user1: { user: user1 }, user2: { user: user2 } };
 
     const { toJSON } = render(
-      <TypingIndicator client={chatClient} typing={typing} t={t} />,
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ t }}>
+          <TypingIndicator typing={typing} />
+        </TranslationContext.Provider>
+      </Chat>,
     );
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
