@@ -42,7 +42,7 @@ const MemberUpdateText = styled.Text`
 const EventIndicator = ({ event, t, tDateTimeParser }) => {
   if (event.type === 'member.added' || event.type === 'member.removed') {
     return (
-      <MemberUpdateContainer>
+      <MemberUpdateContainer testID={'event-indicator'}>
         <Avatar name={event.user.name} image={event.user.image} />
         <MemberUpdateTextContainer>
           <MemberUpdateText>

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MessageList should render the message list 1`] = `
+exports[`MessageList should render the message list and match snapshot 1`] = `
 <View
   style={
     Object {
@@ -1629,6 +1629,7 @@ exports[`MessageList should render the message list 1`] = `
                       },
                     ]
                   }
+                  testID="date-separator"
                 >
                   <View
                     style={

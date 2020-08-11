@@ -77,11 +77,12 @@ class TypingIndicator extends React.PureComponent {
     const typingUsers = Object.values(typing);
 
     return (
-      <Container>
+      <Container testID={'typing-indicator'}>
         {typingUsers
           .filter(({ user }) => user.id !== client.user.id)
           .map(({ user }, idx) => (
             <Avatar
+              testID={'typing-avatar-' + idx}
               image={user.image}
               size={24}
               name={user.name || user.id}

@@ -58,7 +58,7 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render the message list', async () => {
+  it('should render the message list and match snapshot', async () => {
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(2);
     const mockedChannel = generateChannel({

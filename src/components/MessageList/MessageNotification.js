@@ -81,6 +81,7 @@ class MessageNotification extends PureComponent {
             bottom: 0,
             opacity: this.state.notificationOpacity,
           }}
+          testID={'message-notification'}
         >
           <Container onPress={this.props.onPress}>
             <MessageNotificationText>

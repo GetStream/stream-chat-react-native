@@ -47,7 +47,7 @@ const DateText = styled.Text`
  * in message list as (type) system message.
  */
 const MessageSystem = ({ message, tDateTimeParser }) => (
-  <Container>
+  <Container testID={'message-system'}>
     <Line />
     <TextContainer>
       <Text>{message.text.toUpperCase()}</Text>

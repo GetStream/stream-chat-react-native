@@ -63,7 +63,7 @@ class DateSeparator extends React.PureComponent {
     const { message, formatDate, tDateTimeParser } = this.props;
 
     return (
-      <Container>
+      <Container testID={'date-separator'}>
         <Line />
         <DateText>
           {formatDate ? (
