@@ -10,7 +10,7 @@ const name = 'giphy';
 describe('CommandsItem', () => {
   it('should render CommandsItem with no avatar image but a name', async () => {
     const { getByTestId, queryByTestId } = render(
-      <CommandsItem args={args} description={description} name={name} />,
+      <CommandsItem item={{ args, description, name }} />,
     );
 
     await waitFor(() => {

@@ -17,7 +17,8 @@ const InputBox = styled.TextInput`
   ${({ theme }) => theme.messageInput.inputBox.css}
 `;
 
-const computeCaretPosition = (token, startToken) => startToken + token.length;
+const computeCaretPosition = (token, startOfTokenPosition) =>
+  startOfTokenPosition + token.length;
 
 const isCommand = (text) => {
   if (text[0] !== '/') {
@@ -94,10 +95,9 @@ const AutoCompleteInput = ({
   const handleChange = (text, fromUpdate = false) => {
     if (!fromUpdate) {
       onChange(text);
-      return;
+    } else {
+      handleSuggestions(text);
     }
-
-    handleSuggestions(text);
   };
 
   const handleSelectionChange = useCallback(
@@ -186,11 +186,11 @@ const AutoCompleteInput = ({
   );
 
   const handleMentions = useCallback(
-    (text) => {
+    (text, selectionEndProp) => {
       const minChar = 0;
 
       const tokenMatch = text
-        .slice(0, selectionEnd)
+        .slice(0, selectionEndProp)
         .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
 
       const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
@@ -226,7 +226,6 @@ const AutoCompleteInput = ({
     },
     [
       isTrackingStarted,
-      selectionEnd,
       setCurrentTrigger,
       startTracking,
       stopTracking,
@@ -243,14 +242,9 @@ const AutoCompleteInput = ({
           !isTrackingStarted.current
         ) {
           stopTracking();
-          return;
+        } else if (!(await handleCommand(text))) {
+          handleMentions(text, selectionEnd);
         }
-
-        if (await handleCommand(text)) {
-          return;
-        }
-
-        handleMentions(text);
       }, 100);
     },
     [
@@ -271,6 +265,7 @@ const AutoCompleteInput = ({
       onSelectionChange={handleSelectionChange}
       placeholder={t('Write your message')}
       ref={setInputBoxRef}
+      testID='auto-complete-text-input'
       value={value}
       {...additionalTextInputProps}
     />

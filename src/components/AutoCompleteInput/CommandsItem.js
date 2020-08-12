@@ -32,7 +32,7 @@ const Top = styled.View`
 /**
  * @example ../docs/CommandsItem.md
  */
-const CommandsItem = ({ args, description, name }) => (
+const CommandsItem = ({ item: { args, description, name } }) => (
   <Container>
     <Top>
       <Title testID='commands-item-title'>/{name} </Title>
@@ -45,9 +45,11 @@ const CommandsItem = ({ args, description, name }) => (
 );
 
 CommandsItem.propTypes = {
-  args: PropTypes.string,
-  description: PropTypes.string,
-  name: PropTypes.string,
+  item: PropTypes.shape({
+    args: PropTypes.string,
+    description: PropTypes.string,
+    name: PropTypes.string,
+  }),
 };
 
 CommandsItem.themePath = 'messageInput.suggestions.command';
