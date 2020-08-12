@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { NetInfo } from '../../../native';
 
 export const useConnectionListener = ({ client }) => {
-  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState(() => null);
+  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState(null);
 
   const notifyChatClient = (isConnected) => {
     if (client?.wsConnection) {
