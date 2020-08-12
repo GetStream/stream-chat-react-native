@@ -44,8 +44,12 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
                   "created_at": 2020-05-05T20:50:00.000Z,
+                  "groupStyles": Array [
+                    "bottom",
+                  ],
                   "html": "<p>regular</p>",
                   "id": "b4612a73-fa2b-5787-bf71-1adc8f291a04",
+                  "readBy": Array [],
                   "status": "received",
                   "text": "Message3",
                   "type": "regular",
@@ -65,8 +69,17 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
                   "created_at": 2020-05-05T20:49:00.000Z,
+                  "groupStyles": Array [
+                    "top",
+                  ],
                   "html": "<p>regular</p>",
                   "id": "b7e00d73-82c4-59b6-a465-0785af2bc6d9",
+                  "readBy": Array [
+                    Object {
+                      "id": "testID2",
+                      "mutes": Array [],
+                    },
+                  ],
                   "status": "received",
                   "text": "Message2",
                   "type": "regular",
@@ -86,8 +99,12 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
                   "created_at": 2020-05-05T20:48:00.000Z,
+                  "groupStyles": Array [
+                    "single",
+                  ],
                   "html": "<p>regular</p>",
                   "id": "e06aaa16-3deb-5d91-bca5-50efc733c183",
+                  "readBy": Array [],
                   "status": "received",
                   "text": "Message1",
                   "type": "regular",
@@ -105,6 +122,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 },
                 Object {
                   "date": 2020-05-05T20:48:00.000Z,
+                  "groupStyles": undefined,
+                  "readBy": Array [],
                   "type": "message.date",
                 },
               ]
