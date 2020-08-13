@@ -1,15 +1,6 @@
-export const insertDates = (messages, eventHistory) => {
+export const insertDates = (messages) => {
   const newMessages = [];
   if (messages.length === 0) {
-    eventHistory &&
-      eventHistory.none &&
-      eventHistory.none.forEach((e) => {
-        newMessages.push({
-          type: 'channel.event',
-          event: e,
-        });
-      });
-
     return newMessages;
   }
 
@@ -41,16 +32,6 @@ export const insertDates = (messages, eventHistory) => {
       });
     } else {
       newMessages.push(message);
-    }
-
-    const eventsNextToMessage = eventHistory?.[message.id];
-    if (eventsNextToMessage && eventsNextToMessage.length > 0) {
-      eventsNextToMessage.forEach((e) => {
-        newMessages.push({
-          type: 'channel.event',
-          event: e,
-        });
-      });
     }
   }
 

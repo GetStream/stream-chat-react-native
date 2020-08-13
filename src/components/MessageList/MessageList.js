@@ -73,7 +73,6 @@ const MessageList = (props) => {
     Message,
     messages,
     read,
-    eventHistory,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
   const yOffset = useRef(0);
@@ -194,11 +193,9 @@ const MessageList = (props) => {
     if (!threadList) markRead();
   };
 
-  const hasEventHistory = eventHistory && Object.keys(eventHistory).length > 0;
-
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messages && messages.length === 0 && !hasEventHistory && !threadList) {
+  if (messages && messages.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
@@ -206,7 +203,7 @@ const MessageList = (props) => {
     );
   }
 
-  const messagesWithDates = insertDates(messages, eventHistory);
+  const messagesWithDates = insertDates(messages);
   const messageGroupStyles = getGroupStyles(messagesWithDates, noGroupByUser);
   const readData = getReadStates(messagesWithDates, read);
 
