@@ -19,10 +19,10 @@ export const generateStaticMessage = (seed, options, date) =>
     id: uuidv5(seed, StreamReactNativeNamespace),
     text: seed,
     created_at: date
-      ? new Date(date).toString()
+      ? new Date(date).toISOString()
       : '2020-04-27T13:39:49.331742Z',
     updated_at: date
-      ? new Date(date).toString()
+      ? new Date(date).toISOString()
       : '2020-04-27T13:39:49.331742Z',
     ...options,
   });
