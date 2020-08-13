@@ -100,7 +100,7 @@ class ChannelScreen extends PureComponent {
     return (
       <SafeAreaView>
         <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
-          <Channel client={chatClient} channel={channel}>
+          <Channel channel={channel}>
             <View style={{ display: 'flex', height: '100%' }}>
               <MessageList
                 onThreadSelect={thread => {
