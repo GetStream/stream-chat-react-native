@@ -51,7 +51,6 @@ const Title = styled.Text`
 `;
 
 const SuggestionsHeader = ({ title }) => <Title>{title}</Title>;
-const SuggestionsSeparator = () => <Separator />;
 
 const SuggestionsList = (props) => {
   const {
@@ -66,26 +65,29 @@ const SuggestionsList = (props) => {
 
   const renderItem = ({ item }) => {
     const {
-      componentType,
+      componentType: Component,
       suggestions: { onSelect },
     } = props;
+    let render;
 
-    switch (componentType) {
-      case 'MentionsItem':
-        return (
-          <SuggestionsItem onPress={() => onSelect(item)}>
-            <MentionsItem item={item} />
-          </SuggestionsItem>
-        );
-      case 'CommandsItem':
-        return (
-          <SuggestionsItem onPress={() => onSelect(item)}>
-            <CommandsItem item={item} />
-          </SuggestionsItem>
-        );
-      default:
-        return null;
+    if (typeof Component === 'string') {
+      switch (Component) {
+        case 'MentionsItem':
+          render = <MentionsItem item={item} />;
+          break;
+        case 'CommandsItem':
+          render = <CommandsItem item={item} />;
+          break;
+        default:
+          return null;
+      }
+    } else {
+      render = <Component item={item} />;
     }
+
+    return (
+      <SuggestionsItem onPress={() => onSelect(item)}>{render}</SuggestionsItem>
+    );
   };
 
   if (!active || !data || data.length === 0) return null;
@@ -95,7 +97,7 @@ const SuggestionsList = (props) => {
       <Container length={data.length + 1} marginLeft={marginLeft} width={width}>
         <FlatList
           data={data}
-          ItemSeparatorComponent={SuggestionsSeparator}
+          ItemSeparatorComponent={Separator}
           keyboardShouldPersistTaps='always'
           keyExtractor={(item, index) => (item.name || item.id) + index}
           ListHeaderComponent={<SuggestionsHeader title={suggestionsTitle} />}
