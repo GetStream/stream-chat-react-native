@@ -43,7 +43,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 Object {
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
-                  "created_at": 2020-05-05T20:50:00.000Z,
+                  "created_at": 2020-05-05T14:50:00.000Z,
                   "groupStyles": Array [
                     "bottom",
                   ],
@@ -53,7 +53,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "status": "received",
                   "text": "Message3",
                   "type": "regular",
-                  "updated_at": 2020-05-05T20:50:00.000Z,
+                  "updated_at": 2020-05-05T14:50:00.000Z,
                   "user": Object {
                     "banned": false,
                     "created_at": "2020-04-27T13:39:49.331742Z",
@@ -68,7 +68,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 Object {
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
-                  "created_at": 2020-05-05T20:49:00.000Z,
+                  "created_at": 2020-05-05T14:49:00.000Z,
                   "groupStyles": Array [
                     "top",
                   ],
@@ -83,7 +83,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "status": "received",
                   "text": "Message2",
                   "type": "regular",
-                  "updated_at": 2020-05-05T20:49:00.000Z,
+                  "updated_at": 2020-05-05T14:49:00.000Z,
                   "user": Object {
                     "banned": false,
                     "created_at": "2020-04-27T13:39:49.331742Z",
@@ -98,7 +98,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 Object {
                   "__html": "<p>regular</p>",
                   "attachments": Array [],
-                  "created_at": 2020-05-05T20:48:00.000Z,
+                  "created_at": 2020-05-05T14:48:00.000Z,
                   "groupStyles": Array [
                     "single",
                   ],
@@ -108,7 +108,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   "status": "received",
                   "text": "Message1",
                   "type": "regular",
-                  "updated_at": 2020-05-05T20:48:00.000Z,
+                  "updated_at": 2020-05-05T14:48:00.000Z,
                   "user": Object {
                     "banned": false,
                     "created_at": "2020-04-27T13:39:49.331742Z",
@@ -121,7 +121,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   },
                 },
                 Object {
-                  "date": 2020-05-05T20:48:00.000Z,
+                  "date": 2020-05-05T14:48:00.000Z,
                   "groupStyles": undefined,
                   "readBy": Array [],
                   "type": "message.date",
@@ -419,7 +419,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                             ]
                           }
                         >
-                          2:50 PM
+                          8:50 AM
                         </Text>
                       </View>
                       <Modal
@@ -1360,7 +1360,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                             ]
                           }
                         >
-                          2:48 PM
+                          8:48 AM
                         </Text>
                       </View>
                       <Modal
