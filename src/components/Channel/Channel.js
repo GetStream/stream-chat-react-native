@@ -7,7 +7,13 @@ import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
-import { ChannelContext, ChatContext, TranslationContext } from '../../context';
+import {
+  ChannelContext,
+  ChatContext,
+  MessagesContext,
+  ThreadContext,
+  TranslationContext,
+} from '../../context';
 import {
   LoadingIndicator as LoadingIndicatorDefault,
   LoadingErrorIndicator as LoadingErrorIndicatorDefault,
@@ -486,17 +492,10 @@ const Channel = (props) => {
     loadMoreThreadFinishedDebounced(updatedHasMore, updatedThreadMessages);
   };
 
-  // TODO: split this up to prevent excessive renders
   const channelContext = {
-    Attachment: props.Attachment,
     channel,
-    clearEditingState,
     client,
-    closeThread,
     disabled: channel.data?.frozen && disableIfFrozenChannel,
-    editing,
-    editMessage,
-    emojiData,
     EmptyStateIndicator:
       props.EmptyStateIndicator || EmptyStateIndicatorDefault,
     error,
@@ -505,28 +504,40 @@ const Channel = (props) => {
     lastRead,
     loading,
     loadingMore,
-    loadMore: loadMoreThrottled,
-    loadMoreThread,
     markRead: markReadThrottled,
     members,
+    online,
+    read,
+    typing,
+    unmounted,
+    watcherCount,
+    watchers,
+  };
+
+  const messagesContext = {
+    Attachment: props.Attachment,
+    clearEditingState,
+    editing,
+    editMessage,
+    emojiData,
+    loadMore: loadMoreThrottled,
     Message: props.Message,
     messages,
-    online,
-    openThread,
-    read,
     removeMessage,
     retrySendMessage,
     sendMessage,
     setEditingState,
+    updateMessage,
+  };
+
+  const threadContext = {
+    closeThread,
+    openThread,
+    loadMoreThread,
     thread,
     threadHasMore,
     threadLoadingMore,
     threadMessages,
-    typing,
-    updateMessage,
-    unmounted,
-    watcherCount,
-    watchers,
   };
 
   if (!channel?.cid || !channel.watch) {
@@ -560,7 +571,11 @@ const Channel = (props) => {
   return (
     <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
       <ChannelContext.Provider value={channelContext}>
-        <SuggestionsProvider>{children}</SuggestionsProvider>
+        <MessagesContext.Provider value={messagesContext}>
+          <ThreadContext.Provider value={threadContext}>
+            <SuggestionsProvider>{children}</SuggestionsProvider>
+          </ThreadContext.Provider>
+        </MessagesContext.Provider>
       </ChannelContext.Provider>
     </KeyboardCompatibleView>
   );
