@@ -22,7 +22,7 @@ const Container = styled.View`
       length * theme.messageInput.suggestions.container.itemHeight,
       theme.messageInput.suggestions.container.maxHeight,
     )}px;
-  margin-left: ${({ marginLeft }) => marginLeft};
+  margin-left: ${({ marginLeft }) => marginLeft}px;
   position: absolute;
   shadow-color: #000;
   shadow-offset: 0px -3px;
