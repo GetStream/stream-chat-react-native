@@ -17,7 +17,7 @@ const Container = styled.View`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   bottom: 10px;
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     Math.min(
       length * theme.messageInput.suggestions.container.itemHeight,
       theme.messageInput.suggestions.container.maxHeight,
