@@ -21,7 +21,7 @@ const Container = styled.View`
     Math.min(
       length * theme.messageInput.suggestions.container.itemHeight,
       theme.messageInput.suggestions.container.maxHeight,
-    )};
+    )}px;
   margin-left: ${({ marginLeft }) => marginLeft};
   position: absolute;
   shadow-color: #000;
