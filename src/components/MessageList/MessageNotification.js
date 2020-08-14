@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
