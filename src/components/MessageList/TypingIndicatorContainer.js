@@ -28,7 +28,7 @@ const TypingIndicatorContainer = ({ children }) => {
   }
 
   return (
-    <Container testID={'typing-indicator-container'}>{children}</Container>
+    <Container testID='typing-indicator-container'>{children}</Container>
   );
 };
 
