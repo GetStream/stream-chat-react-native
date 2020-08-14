@@ -49,9 +49,9 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
   return (
     <Animated.View
       style={{
-        position: 'absolute',
         bottom: 0,
         opacity,
+        position: 'absolute',
       }}
       testID='message-notification'
     >
