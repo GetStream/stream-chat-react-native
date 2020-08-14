@@ -27,7 +27,7 @@ const Container = styled.View`
   shadow-color: #000;
   shadow-offset: 0px -3px;
   shadow-opacity: 0.05;
-  width: ${({ width }) => width};
+  width: ${({ width }) => width}px;
   z-index: 100;
   ${({ theme }) => theme.messageInput.suggestions.container.css};
 `;
