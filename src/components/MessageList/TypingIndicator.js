@@ -65,7 +65,7 @@ const TypingIndicator = (props) => {
   const typingUsers = Object.values(typing);
 
   return (
-    <Container testID={'typing-indicator'}>
+    <Container testID='typing-indicator'>
       {typingUsers
         .filter(({ user }) => user.id !== client.user.id)
         .map(({ user }, idx) => (
@@ -74,7 +74,7 @@ const TypingIndicator = (props) => {
             key={user.id + idx}
             name={user.name || user.id}
             size={24}
-            testID={'typing-avatar-' + idx}
+            testID={`typing-avatar-${idx}`}
           />
         ))}
       <TypingText>{constructTypingString(typing, client, t)}</TypingText>

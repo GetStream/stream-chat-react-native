@@ -48,7 +48,7 @@ const DateSeparator = (props) => {
   const { tDateTimeParser } = useContext(TranslationContext);
 
   return (
-    <Container testID={'date-separator'}>
+    <Container testID='date-separator'>
       <Line />
       <DateText>
         {formatDate ? (

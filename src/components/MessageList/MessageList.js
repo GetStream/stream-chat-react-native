@@ -55,48 +55,48 @@ const MessageList = (props) => {
   const { t } = useContext(TranslationContext);
   const { client } = useContext(ChatContext);
   const {
-    editing,
-    online,
-    channel,
-    disabled,
-    emojiData,
-    openThread,
-    loadMore: mainLoadMore,
-    markRead,
-    EmptyStateIndicator,
-    clearEditingState,
-    setEditingState,
-    retrySendMessage,
-    removeMessage,
-    updateMessage,
     Attachment,
-    Message,
-    messages: mainMessages,
-    threadMessages,
+    channel,
+    clearEditingState,
+    disabled,
+    editing,
+    emojiData,
+    EmptyStateIndicator,
+    loadMore: mainLoadMore,
     loadMoreThread,
+    markRead,
+    messages: mainMessages,
+    Message,
+    online,
+    openThread,
     read: mainRead,
+    removeMessage,
+    retrySendMessage,
+    setEditingState,
+    threadMessages,
+    updateMessage,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
   const yOffset = useRef(0);
 
   const {
-    threadList,
+    actionSheetStyles,
+    additionalFlatListProps = {},
+    AttachmentFileIcon,
+    dateSeparator,
+    DateSeparator = DefaultDateSeparator,
+    disableWhileEditing = true,
+    dismissKeyboardOnMessageTouch = true,
+    eventIndicator,
+    EventIndicator = DefaultEventIndicator,
     headerComponent,
     HeaderComponent,
-    noGroupByUser,
-    dateSeparator,
-    eventIndicator,
-    onThreadSelect,
-    onMessageTouch,
     messageActions,
-    actionSheetStyles,
-    AttachmentFileIcon,
+    noGroupByUser,
+    onMessageTouch,
+    onThreadSelect,
     setFlatListRef,
-    DateSeparator = DefaultDateSeparator,
-    EventIndicator = DefaultEventIndicator,
-    disableWhileEditing = true,
-    additionalFlatListProps = {},
-    dismissKeyboardOnMessageTouch = true,
+    threadList,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
@@ -201,7 +201,7 @@ const MessageList = (props) => {
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messages && messages.length === 0 && !threadList) {
+  if (messages?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
