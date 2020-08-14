@@ -1,22 +1,21 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-
 import {
-  useMockedApis,
-  getOrCreateChannelApi,
+  dispatchMessageNewEvent,
   generateChannel,
+  generateMember,
   generateMessage,
   generateStaticMessage,
-  generateMember,
   generateStaticUser,
   generateUser,
-  dispatchMessageNewEvent,
+  getOrCreateChannelApi,
   getTestClientWithUser,
+  useMockedApis,
 } from 'mock-builders';
 
+import { Channel } from '../../Channel';
 import { Chat } from '../../Chat';
 import MessageList from '../MessageList';
-import { Channel } from '../../Channel';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -27,13 +26,13 @@ describe('MessageList', () => {
     const user1 = generateUser();
     const user2 = generateUser();
     const mockedChannel = generateChannel({
-      messages: [
-        generateMessage({ user: user1 }),
-        generateMessage({ user: user1 }),
-      ],
       members: [
         generateMember({ user: user1 }),
         generateMember({ user: user1 }),
+      ],
+      messages: [
+        generateMessage({ user: user1 }),
+        generateMessage({ user: user1 }),
       ],
     });
 
@@ -62,6 +61,10 @@ describe('MessageList', () => {
     const user1 = generateStaticUser(1);
     const user2 = generateStaticUser(2);
     const mockedChannel = generateChannel({
+      members: [
+        generateMember({ user: user1 }),
+        generateMember({ user: user1 }),
+      ],
       messages: [
         generateStaticMessage(
           'Message1',
@@ -78,10 +81,6 @@ describe('MessageList', () => {
           { user: user2 },
           '2020-05-05T14:50:00.000Z',
         ),
-      ],
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user1 }),
       ],
     });
 

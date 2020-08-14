@@ -1,8 +1,8 @@
 import React from 'react';
 import {
   cleanup,
-  render,
   fireEvent,
+  render,
   waitFor,
 } from '@testing-library/react-native';
 
@@ -18,7 +18,7 @@ describe('MessageNotification', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <TranslationContext.Provider value={translators}>
-        <MessageNotification showNotification={false} onPress={() => null} />
+        <MessageNotification onPress={() => null} showNotification={false} />
       </TranslationContext.Provider>,
     );
 
@@ -32,7 +32,7 @@ describe('MessageNotification', () => {
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <TranslationContext.Provider value={translators}>
-        <MessageNotification showNotification={true} onPress={() => null} />
+        <MessageNotification onPress={() => null} showNotification={true} />
       </TranslationContext.Provider>,
     );
 
@@ -47,7 +47,7 @@ describe('MessageNotification', () => {
     const onPress = jest.fn();
     const { getByTestId } = render(
       <TranslationContext.Provider value={translators}>
-        <MessageNotification showNotification={true} onPress={onPress} />
+        <MessageNotification onPress={onPress} showNotification={true} />
       </TranslationContext.Provider>,
     );
     fireEvent.press(getByTestId('message-notification'));
@@ -61,8 +61,8 @@ describe('MessageNotification', () => {
     const { getByText } = render(
       <TranslationContext.Provider value={{ ...translators, t }}>
         <MessageNotification
-          showNotification={true}
           onPress={() => null}
+          showNotification={true}
           t={t}
         />
       </TranslationContext.Provider>,
@@ -78,7 +78,7 @@ describe('MessageNotification', () => {
     const translators = await i18nInstance.getTranslators();
     const { toJSON } = render(
       <TranslationContext.Provider value={translators}>
-        <MessageNotification showNotification={true} onPress={() => null} />
+        <MessageNotification onPress={() => null} showNotification={true} />
       </TranslationContext.Provider>,
     );
 

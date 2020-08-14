@@ -1,10 +1,10 @@
-import React, { useContext, useRef, useEffect } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
-import { themed } from '../../styles/theme';
 import { TranslationContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -36,8 +36,8 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
   const opacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(opacity, {
-      toValue: showNotification ? 1 : 0,
       duration: 500,
+      toValue: showNotification ? 1 : 0,
       useNativeDriver: true,
     }).start();
   }, [showNotification]);
@@ -49,11 +49,11 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
   return (
     <Animated.View
       style={{
-        position: 'absolute',
         bottom: 0,
         opacity,
+        position: 'absolute',
       }}
-      testID={'message-notification'}
+      testID='message-notification'
     >
       <Container onPress={onPress}>
         <MessageNotificationText>{t('New Messages')}</MessageNotificationText>
@@ -65,10 +65,10 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
 MessageNotification.themePath = 'messageList.messageNotification';
 
 MessageNotification.propTypes = {
-  /** If we should show the notification or not */
-  showNotification: PropTypes.bool,
   /** Onclick handler */
   onPress: PropTypes.func.isRequired,
+  /** If we should show the notification or not */
+  showNotification: PropTypes.bool,
 };
 
 export default themed(MessageNotification);

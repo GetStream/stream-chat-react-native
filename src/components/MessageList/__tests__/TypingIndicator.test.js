@@ -1,16 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-
-import TypingIndicator from '../TypingIndicator';
 import {
   generateStaticUser,
   generateUser,
   getTestClientWithUser,
-} from '../../../mock-builders';
+} from 'mock-builders';
+
 import { Chat } from '../../Chat';
+import { ChannelContext, TranslationContext } from '../../../context';
+import TypingIndicator from '../TypingIndicator';
 import { Streami18n } from '../../../utils';
-import { TranslationContext, ChannelContext } from '../../../context';
 
 afterEach(cleanup);
 

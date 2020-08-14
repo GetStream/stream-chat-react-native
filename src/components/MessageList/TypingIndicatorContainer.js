@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-
 import styled from '@stream-io/styled-components';
 
-import { ChatContext, ChannelContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
 
 const Container = styled.View`
   position: absolute;
@@ -27,9 +26,7 @@ const TypingIndicatorContainer = ({ children }) => {
     return null;
   }
 
-  return (
-    <Container testID={'typing-indicator-container'}>{children}</Container>
-  );
+  return <Container testID='typing-indicator-container'>{children}</Container>;
 };
 
 export default TypingIndicatorContainer;

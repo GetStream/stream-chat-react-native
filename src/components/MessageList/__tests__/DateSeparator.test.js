@@ -1,15 +1,15 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-
-import DateSeparator from '../DateSeparator';
 import {
-  generateUser,
   generateMessage,
   generateStaticMessage,
   generateStaticUser,
-} from '../../../mock-builders';
-import { Streami18n } from '../../../utils';
+  generateUser,
+} from 'mock-builders';
+
 import { TranslationContext } from '../../../context';
+import DateSeparator from '../DateSeparator';
+import { Streami18n } from '../../../utils';
 
 afterEach(cleanup);
 
@@ -38,8 +38,8 @@ describe('DateSeparator', () => {
     const { getByText } = render(
       <TranslationContext.Provider value={translators}>
         <DateSeparator
-          message={{ ...message, date: 'Hello World' }}
           formatDate={(date) => date}
+          message={{ ...message, date: 'Hello World' }}
         />
       </TranslationContext.Provider>,
     );
