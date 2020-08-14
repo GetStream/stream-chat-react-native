@@ -53,7 +53,7 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
         bottom: 0,
         opacity,
       }}
-      testID={'message-notification'}
+      testID='message-notification'
     >
       <Container onPress={onPress}>
         <MessageNotificationText>{t('New Messages')}</MessageNotificationText>
