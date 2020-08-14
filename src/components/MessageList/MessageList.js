@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 import { v4 as uuidv4 } from 'uuid';
 
-import { TranslationContext, ChatContext, ChannelContext } from '../../context';
+import { ChannelContext, ChatContext, TranslationContext } from '../../context';
 import DefaultDateSeparator from './DateSeparator';
 import DefaultEventIndicator from './EventIndicator';
 import { Message as DefaultMessage } from '../Message';
