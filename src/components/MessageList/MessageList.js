@@ -195,7 +195,7 @@ const MessageList = (props) => {
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messages && messages.length === 0 && !threadList) {
+  if (messages?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
