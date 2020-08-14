@@ -49,7 +49,7 @@ const DateText = styled.Text`
 const MessageSystem = ({ message }) => {
   const { tDateTimeParser } = useContext(TranslationContext);
   return (
-    <Container testID={'message-system'}>
+    <Container testID='message-system'>
       <Line />
       <TextContainer>
         <Text>{message.text.toUpperCase()}</Text>
