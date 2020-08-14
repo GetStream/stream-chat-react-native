@@ -13,10 +13,10 @@ import MessageSystem from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
 import {
-  getLastReceivedId,
-  insertDates,
   getGroupStyles,
+  getLastReceivedId,
   getReadStates,
+  insertDates,
 } from './utils';
 
 const ListContainer = styled.FlatList`
