@@ -68,7 +68,9 @@ const Channel = (props) => {
   const [thread, setThread] = useState(props.thread);
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
-  const [threadMessages, setThreadMessages] = useState([]);
+  const [threadMessages, setThreadMessages] = useState(
+    channel.state.threads?.[props.thread?.id] || [],
+  );
   const [typing, setTyping] = useState(Immutable({}));
   const [unmounted, setUnmounted] = useState(false);
   const [watcherCount, setWatcherCount] = useState();
