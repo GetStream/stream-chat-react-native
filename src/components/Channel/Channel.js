@@ -15,9 +15,9 @@ import {
   TranslationContext,
 } from '../../context';
 import {
-  LoadingIndicator as LoadingIndicatorDefault,
-  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
   EmptyStateIndicator as EmptyStateIndicatorDefault,
+  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
+  LoadingIndicator as LoadingIndicatorDefault,
 } from '../Indicators';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView';
 import { SuggestionsProvider } from '../SuggestionsProvider';
@@ -104,6 +104,13 @@ const Channel = (props) => {
       setUnmounted(true);
     };
   }, [channel]);
+
+  useEffect(() => {
+    if (props.thread) {
+      setThread(props.thread);
+      setThreadMessages(channel.state.threads?.[props.thread?.id] || []);
+    }
+  }, [props.thread]);
 
   useEffect(() => {
     logger('Channel component', 'component update', {
