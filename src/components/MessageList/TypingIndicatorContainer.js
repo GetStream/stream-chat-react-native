@@ -26,9 +26,7 @@ const TypingIndicatorContainer = ({ children }) => {
     return null;
   }
 
-  return (
-    <Container testID='typing-indicator-container'>{children}</Container>
-  );
+  return <Container testID='typing-indicator-container'>{children}</Container>;
 };
 
 export default TypingIndicatorContainer;
