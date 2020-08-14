@@ -55,24 +55,24 @@ const MessageList = (props) => {
   const { t } = useContext(TranslationContext);
   const { client } = useContext(ChatContext);
   const {
-    editing,
-    online,
+    Attachment,
     channel,
+    clearEditingState,
     disabled,
+    editing,
     emojiData,
-    openThread,
+    EmptyStateIndicator,
     loadMore,
     markRead,
-    EmptyStateIndicator,
-    clearEditingState,
-    setEditingState,
-    retrySendMessage,
-    removeMessage,
-    updateMessage,
-    Attachment,
     Message,
-    messages,
+    messages
+    online,
+    openThread,
     read,
+    removeMessage,
+    retrySendMessage,
+    setEditingState,
+    updateMessage,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
   const yOffset = useRef(0);
