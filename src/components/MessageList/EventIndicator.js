@@ -47,7 +47,7 @@ const EventIndicator = ({ event }) => {
   }
 
   return (
-    <MemberUpdateContainer testID={'event-indicator'}>
+    <MemberUpdateContainer testID='event-indicator'>
       <Avatar name={event.user.name} image={event.user.image} />
       <MemberUpdateTextContainer>
         <MemberUpdateText>
