@@ -1,11 +1,6 @@
 module.exports = {
-  presets: ['@babel/env', '@babel/react', '@babel/preset-flow'],
-  plugins: [
-    'macros',
-    '@babel/proposal-class-properties',
-    '@babel/transform-runtime',
-    'babel-plugin-styled-components',
-  ],
+  presets: ['@babel/env', 'module:metro-react-native-babel-preset'],
+  plugins: ['macros', 'babel-plugin-styled-components'],
   env: {
     production: {
       presets: [

@@ -398,6 +398,7 @@ class ChannelList extends PureComponent {
    */
   queryChannels = (queryType) => {
     // Don't query again if query is already active or there are no more results.
+    // eslint-disable-next-line no-async-promise-executor
     this.queryChannelsPromise = new Promise(async (resolve) => {
       try {
         await this.startQueryLoadingUIState(queryType);
