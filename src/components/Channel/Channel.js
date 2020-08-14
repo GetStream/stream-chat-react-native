@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   ChannelContext,
