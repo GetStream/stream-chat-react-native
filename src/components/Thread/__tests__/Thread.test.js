@@ -1,22 +1,23 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import { v5 as uuidv5 } from 'uuid';
-
-import Thread from '../Thread';
 import {
-  generateStaticMessage,
-  generateStaticUser,
   generateChannel,
   generateMember,
+  generateMessage,
+  generateStaticMessage,
+  generateStaticUser,
+  getOrCreateChannelApi,
   getTestClientWithUser,
   useMockedApis,
-  getOrCreateChannelApi,
-  generateMessage,
-} from '../../../mock-builders';
-import { Streami18n } from '../../../utils';
-import { Chat } from '../../Chat';
+} from 'mock-builders';
+import { v5 as uuidv5 } from 'uuid';
+
 import { Channel } from '../../Channel';
-import { TranslationContext } from '../../../context';
+import { Chat } from '../../Chat';
+import { ChannelContext, TranslationContext } from '../../../context';
+import Thread from '../Thread';
+import { Streami18n } from '../../../utils';
+
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 
 afterEach(cleanup);
@@ -29,6 +30,7 @@ describe('Thread', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const thread = generateMessage({ text: 'Thread Message Text' });
+    const thread2 = generateMessage({ text: 'Thread2 Message Text' });
     const parent_id = thread.id;
     const mockedChannel = generateChannel({
       messages: [
@@ -36,6 +38,11 @@ describe('Thread', () => {
         generateMessage({ parent_id, text: 'Response Message Text' }),
         generateMessage({ parent_id }),
         generateMessage({ parent_id }),
+        thread2,
+        generateMessage({
+          parent_id: thread2.id,
+          text: 'Response Message Text2',
+        }),
       ],
     });
 
@@ -43,12 +50,18 @@ describe('Thread', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
+    let openThread;
 
-    const { getByText, getAllByText } = render(
+    const { getByText, getAllByText, rerender, queryByText } = render(
       <Chat client={chatClient}>
         <TranslationContext.Provider value={{ ...translators, t }}>
-          <Channel client={chatClient} channel={channel} thread={thread}>
-            <Thread thread={thread} />
+          <Channel channel={channel} client={chatClient} thread={thread}>
+            <ChannelContext.Consumer>
+              {(c) => {
+                openThread = c.openThread;
+                return <Thread thread={thread} />;
+              }}
+            </ChannelContext.Consumer>
           </Channel>
         </TranslationContext.Provider>
       </Chat>,
@@ -58,7 +71,27 @@ describe('Thread', () => {
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Start of a new thread');
       expect(getByText('Start of a new thread')).toBeTruthy();
-      expect(getAllByText('Thread Message Text')).toHaveLength(4);
+      expect(getAllByText('Thread Message Text')).toHaveLength(2);
+      expect(getAllByText('Response Message Text')).toHaveLength(2);
+      expect(queryByText('Thread2 Message Text')).toBeFalsy();
+    });
+
+    openThread(thread2);
+    rerender(
+      <Chat client={chatClient}>
+        <TranslationContext.Provider value={{ ...translators, t }}>
+          <Channel channel={channel} client={chatClient} thread={thread2}>
+            <Thread thread={thread2} />
+          </Channel>
+        </TranslationContext.Provider>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(getAllByText('Thread2 Message Text')).toHaveLength(2);
+      expect(queryByText('Thread Message Text')).toBeFalsy();
+      expect(queryByText('Response Message Text')).toBeFalsy();
+      expect(getAllByText('Response Message Text2')).toHaveLength(2);
     });
   });
 
@@ -73,6 +106,13 @@ describe('Thread', () => {
     );
     const parent_id = thread.id;
     const mockedChannel = generateChannel({
+      channel: {
+        id: uuidv5('Channel', StreamReactNativeNamespace),
+      },
+      members: [
+        generateMember({ user: user1 }),
+        generateMember({ user: user1 }),
+      ],
       messages: [
         generateStaticMessage(
           'Message1',
@@ -87,27 +127,20 @@ describe('Thread', () => {
         thread,
         generateStaticMessage(
           'Message4',
-          { user: user1, parent_id },
+          { parent_id, user: user1 },
           '2020-05-05T14:50:00.000Z',
         ),
         generateStaticMessage(
           'Message5',
-          { user: user2, parent_id },
+          { parent_id, user: user2 },
           '2020-05-05T14:50:00.000Z',
         ),
         generateStaticMessage(
           'Message6',
-          { user: user1, parent_id },
+          { parent_id, user: user1 },
           '2020-05-05T14:50:00.000Z',
         ),
       ],
-      members: [
-        generateMember({ user: user1 }),
-        generateMember({ user: user1 }),
-      ],
-      channel: {
-        id: uuidv5('Channel', StreamReactNativeNamespace),
-      },
     });
 
     chatClient = await getTestClientWithUser({ id: 'testID2' });
@@ -117,7 +150,7 @@ describe('Thread', () => {
 
     const { toJSON } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <Channel client={chatClient} channel={channel} thread={thread}>
+        <Channel channel={channel} client={chatClient} thread={thread}>
           <Thread thread={thread} />
         </Channel>
       </Chat>,
