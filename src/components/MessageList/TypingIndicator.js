@@ -65,7 +65,7 @@ const TypingIndicator = (props) => {
   const typingUsers = Object.values(typing);
 
   return (
-    <Container testID={'typing-indicator'}>
+    <Container testID='typing-indicator'>
       {typingUsers
         .filter(({ user }) => user.id !== client.user.id)
         .map(({ user }, idx) => (
