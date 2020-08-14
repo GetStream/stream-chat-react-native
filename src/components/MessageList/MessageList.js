@@ -210,8 +210,8 @@ const MessageList = (props) => {
   const messageList = messagesWithDates
     .map((msg) => ({
       ...msg,
-      readBy: readData[msg.id] || [],
       groupStyles: messageGroupStyles[msg.id],
+      readBy: readData[msg.id] || [],
     }))
     .reverse();
 
