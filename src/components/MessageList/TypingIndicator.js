@@ -70,7 +70,7 @@ const TypingIndicator = (props) => {
         .filter(({ user }) => user.id !== client.user.id)
         .map(({ user }, idx) => (
           <Avatar
-            testID={'typing-avatar-' + idx}
+            testID={`typing-avatar-${idx}`}
             image={user.image}
             size={24}
             name={user.name || user.id}
