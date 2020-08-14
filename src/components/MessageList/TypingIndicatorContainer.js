@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-
 import styled from '@stream-io/styled-components';
 
-import { ChatContext, ChannelContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
 
 const Container = styled.View`
   position: absolute;

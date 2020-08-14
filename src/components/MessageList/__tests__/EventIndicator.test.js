@@ -1,12 +1,12 @@
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
-
-import EventIndicator from '../EventIndicator';
-import { generateStaticUser } from '../../../mock-builders';
-import { Streami18n } from '../../../utils';
 import { ThemeProvider } from '@stream-io/styled-components';
-import { defaultTheme } from '../../../styles/theme';
+import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { generateStaticUser } from 'mock-builders';
+
 import { TranslationContext } from '../../../context';
+import EventIndicator from '../EventIndicator';
+import { defaultTheme } from '../../../styles/theme';
+import { Streami18n } from '../../../utils';
 
 afterEach(cleanup);
 
@@ -16,9 +16,9 @@ describe('EventIndicator', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const event = {
-      user: generateStaticUser(0),
-      type: 'member.added',
       received_at: new Date().toString(),
+      type: 'member.added',
+      user: generateStaticUser(0),
     };
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
@@ -40,9 +40,9 @@ describe('EventIndicator', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const event = {
-      user: generateStaticUser(0),
-      type: 'member.whatever',
       received_at: new Date().toString(),
+      type: 'member.whatever',
+      user: generateStaticUser(0),
     };
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
@@ -61,9 +61,9 @@ describe('EventIndicator', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const event = {
-      user: generateStaticUser(1),
-      type: 'member.removed',
       received_at: '2020-05-05T14:50:00',
+      type: 'member.removed',
+      user: generateStaticUser(1),
     };
     const { toJSON } = render(
       <ThemeProvider theme={defaultTheme}>

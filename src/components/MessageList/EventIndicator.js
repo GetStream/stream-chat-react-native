@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { TranslationContext } from '../../context';
 import { Avatar } from '../Avatar';
+import { TranslationContext } from '../../context';
 
 const Date = styled.Text`
   font-size: 10;
@@ -48,7 +48,7 @@ const EventIndicator = ({ event }) => {
 
   return (
     <MemberUpdateContainer testID={'event-indicator'}>
-      <Avatar name={event.user.name} image={event.user.image} />
+      <Avatar image={event.user.image} name={event.user.name} />
       <MemberUpdateTextContainer>
         <MemberUpdateText>
           {event.type === 'member.added'

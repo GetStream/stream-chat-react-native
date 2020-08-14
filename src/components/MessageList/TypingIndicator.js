@@ -5,7 +5,7 @@ import styled from '@stream-io/styled-components';
 
 import { Avatar as DefaultAvatar } from '../Avatar';
 import { themed } from '../../styles/theme';
-import { TranslationContext, ChatContext, ChannelContext } from '../../context';
+import { ChannelContext, ChatContext, TranslationContext } from '../../context';
 
 const TypingText = styled.Text`
   margin-left: 10px;
@@ -70,11 +70,11 @@ const TypingIndicator = (props) => {
         .filter(({ user }) => user.id !== client.user.id)
         .map(({ user }, idx) => (
           <Avatar
-            testID={'typing-avatar-' + idx}
             image={user.image}
-            size={24}
-            name={user.name || user.id}
             key={user.id + idx}
+            name={user.name || user.id}
+            size={24}
+            testID={'typing-avatar-' + idx}
           />
         ))}
       <TypingText>{constructTypingString(typing, client, t)}</TypingText>

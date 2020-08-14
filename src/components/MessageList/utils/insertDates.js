@@ -20,15 +20,15 @@ export const insertDates = (messages) => {
     if (i === 0) {
       newMessages.push(
         {
-          type: 'message.date',
           date: message.created_at,
+          type: 'message.date',
         },
         message,
       );
     } else if (messageDate !== prevMessageDate) {
       newMessages.push(message, {
-        type: 'message.date',
         date: messages[i + 1].created_at,
+        type: 'message.date',
       });
     } else {
       newMessages.push(message);

@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { themed } from '../../styles/theme';
 import { TranslationContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 const Container = styled.View`
   display: flex;
@@ -67,7 +67,6 @@ const DateSeparator = (props) => {
 DateSeparator.themePath = 'messageList.dateSeparator';
 
 DateSeparator.propTypes = {
-  message: PropTypes.object.isRequired,
   /**
    * Formatter function for date object.
    *
@@ -75,6 +74,7 @@ DateSeparator.propTypes = {
    * @returns string
    */
   formatDate: PropTypes.func,
+  message: PropTypes.object.isRequired,
 };
 
 export default themed(DateSeparator);
