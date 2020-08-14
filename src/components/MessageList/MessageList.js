@@ -61,7 +61,7 @@ const MessageList = (props) => {
     disabled,
     emojiData,
     openThread,
-    loadMore,
+    loadMore: mainLoadMore,
     markRead,
     EmptyStateIndicator,
     clearEditingState,
@@ -71,8 +71,10 @@ const MessageList = (props) => {
     updateMessage,
     Attachment,
     Message,
-    messages,
-    read,
+    messages: mainMessages,
+    threadMessages,
+    loadMoreThread,
+    read: mainRead,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
   const yOffset = useRef(0);
@@ -97,6 +99,10 @@ const MessageList = (props) => {
     dismissKeyboardOnMessageTouch = true,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
+
+  const messages = threadList ? threadMessages : mainMessages;
+  const loadMore = threadList ? mainLoadMore : loadMoreThread;
+  const read = threadList ? {} : mainRead;
 
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
