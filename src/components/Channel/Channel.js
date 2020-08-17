@@ -75,7 +75,7 @@ const Channel = (props) => {
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState(
-    channel.state.threads?.[props.thread?.id] || [],
+    channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
   const [unmounted, setUnmounted] = useState(false);
@@ -97,7 +97,7 @@ const Channel = (props) => {
       });
 
       client.off('connection.recovered', handleEvent);
-      channel.off(handleEvent);
+      channel.off?.(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
@@ -224,6 +224,7 @@ const Channel = (props) => {
       } catch (e) {
         if (unmounted) return;
         setError(e);
+        setLoading(false);
         initError = true;
       }
     }
@@ -507,10 +508,8 @@ const Channel = (props) => {
       props.EmptyStateIndicator || EmptyStateIndicatorDefault,
     error,
     eventHistory,
-    hasMore,
     lastRead,
     loading,
-    loadingMore,
     markRead: markReadThrottled,
     members,
     online,
@@ -528,6 +527,8 @@ const Channel = (props) => {
     editing,
     editMessage,
     emojiData,
+    hasMore,
+    loadingMore,
     loadMore: loadMoreThrottled,
     Message: props.Message,
     messages,
@@ -550,7 +551,7 @@ const Channel = (props) => {
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={{ fontWeight: 'bold', padding: 16 }}>
+      <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
         {t('Please select a channel first')}
       </Text>
     );
