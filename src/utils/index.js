@@ -1,4 +1,3 @@
-import { MentionsItem, CommandsItem } from '../components/AutoCompleteInput';
 import debounce from 'lodash/debounce';
 
 export { renderText } from './renderText';
@@ -157,7 +156,7 @@ export const ACITriggerSettings = ({
         onReady(data, query);
       });
     },
-    component: MentionsItem,
+    component: 'MentionsItem',
     title: t('Searching for people'),
     output: (entity) => ({
       key: entity.id,
@@ -205,7 +204,7 @@ export const ACITriggerSettings = ({
       return result;
     },
     title: t('Commands'),
-    component: CommandsItem,
+    component: 'CommandsItem',
     output: (entity) => ({
       key: entity.id,
       text: `/${entity.name}`,
