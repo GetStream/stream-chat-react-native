@@ -30,7 +30,7 @@ const CallbackEffectWithContext = ({ callback, context }) => {
     callback(ctx);
   }, [callback, ctx]);
 
-  return null;
+  return <View />;
 };
 
 const ContextConsumer = ({ context, fn }) => {
@@ -75,11 +75,11 @@ describe('Channel', () => {
     cleanup();
   });
 
-  it('should render simple text if the channel prop is not provided', () => {
+  it('should render simple text if the channel prop is not provided', async () => {
     const nullChannel = { ...channel, cid: null };
     const { getByTestId } = renderComponent({ channel: nullChannel });
 
-    expect(getByTestId('no-channel')).toBeTruthy();
+    await waitFor(() => expect(getByTestId('no-channel')).toBeTruthy());
   });
 
   it('should watch the current channel on mount', async () => {
@@ -219,6 +219,7 @@ describe('Channel', () => {
           channelHasMore = hasMore;
         }
       },
+      MessagesContext,
     );
     await waitFor(() => expect(channelHasMore).toBe(false));
   });
@@ -316,36 +317,6 @@ describe('Channel', () => {
       expect(removeSpy).toHaveBeenCalledWith(messages[0]);
       expect(allMessagesRemoved).toBe(true);
     });
-  });
-
-  // note: these tests rely on Client.dispatchEvent, which eventually propagates to the channel component.
-  const createOneTimeEventDispatcher = (event) => {
-    let hasDispatchedEvent = false;
-    return () => {
-      if (!hasDispatchedEvent)
-        chatClient.dispatchEvent({
-          ...event,
-          cid: channel.cid,
-        });
-      hasDispatchedEvent = true;
-    };
-  };
-  const createChannelEventDispatcher = (body, type = 'message.new') =>
-    createOneTimeEventDispatcher({
-      type,
-      ...body,
-    });
-
-  it('should mark the channel as read if a new message comes in and the receiver is active in the channel', async () => {
-    const markReadSpy = jest.spyOn(channel, 'markRead');
-    const message = generateMessage({ user: generateUser() });
-    const dispatchMessageEvent = createChannelEventDispatcher({ message });
-
-    renderComponent({ channel }, () => {
-      dispatchMessageEvent();
-    });
-
-    await waitFor(() => expect(markReadSpy).toHaveBeenCalledWith());
   });
 
   describe('ChannelContext', () => {
