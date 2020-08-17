@@ -172,8 +172,11 @@ describe('Thread', () => {
 
     act(() => setLastRead(new Date('2020-08-17T18:08:03.196Z')));
 
+    const snapshot = toJSON();
+    snapshot.children[0].children[0].children[0].children[0].props.ListFooterComponent = null;
+
     await waitFor(() => {
-      expect(toJSON()).toMatchSnapshot();
+      expect(snapshot).toMatchSnapshot();
     });
   });
 });
