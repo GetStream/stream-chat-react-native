@@ -111,6 +111,7 @@ const SuggestionsList = (props) => {
 SuggestionsList.propTypes = {
   active: PropTypes.bool,
   backdropHeight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  componentType: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   handleDismiss: PropTypes.func,
   marginLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   suggestions: PropTypes.object,
