@@ -27,8 +27,6 @@ const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 afterEach(cleanup);
 
 describe('Thread', () => {
-  let chatClient;
-
   it('should render a new thread', async () => {
     const t = jest.fn((key) => key);
     const i18nInstance = new Streami18n();
@@ -50,7 +48,7 @@ describe('Thread', () => {
       ],
     });
 
-    chatClient = await getTestClientWithUser({ id: 'Neil' });
+    const chatClient = await getTestClientWithUser({ id: 'Neil' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
@@ -147,7 +145,7 @@ describe('Thread', () => {
       ],
     });
 
-    chatClient = await getTestClientWithUser({ id: 'testID2' });
+    const chatClient = await getTestClientWithUser({ id: 'testID2' });
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
