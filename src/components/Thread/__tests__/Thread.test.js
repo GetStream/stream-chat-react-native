@@ -15,9 +15,9 @@ import { v5 as uuidv5 } from 'uuid';
 import { Channel } from '../../Channel';
 import { Chat } from '../../Chat';
 import {
+  ChannelContext,
   ThreadContext,
   TranslationContext,
-  ChannelContext,
 } from '../../../context';
 import Thread from '../Thread';
 import { Streami18n } from '../../../utils';
