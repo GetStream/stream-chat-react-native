@@ -2,7 +2,13 @@ import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
-import { ChannelContext, ChatContext, TranslationContext } from '../../context';
+import {
+  ChannelContext,
+  ChatContext,
+  MessagesContext,
+  ThreadContext,
+  TranslationContext,
+} from '../../context';
 import { Message as DefaultMessage } from '../Message';
 import { MessageInput as DefaultMessageInput } from '../MessageInput';
 import { MessageList as DefaultMessageList } from '../MessageList';
@@ -38,15 +44,15 @@ const Thread = (props) => {
   const translationContext = useContext(TranslationContext);
   const { t } = translationContext;
   const channelContext = useContext(ChannelContext);
+  const { channel } = channelContext;
+  const { Message } = useContext(MessagesContext);
   const {
-    channel,
-    Message,
-    thread,
-    threadMessages,
     loadMoreThread,
+    thread,
     threadHasMore = true,
     threadLoadingMore,
-  } = channelContext;
+    threadMessages,
+  } = useContext(ThreadContext);
   const chatContext = useContext(ChatContext);
   const {
     autoFocus = true,

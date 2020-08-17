@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 import {
   generateChannel,
   generateMember,
@@ -14,7 +14,11 @@ import { v5 as uuidv5 } from 'uuid';
 
 import { Channel } from '../../Channel';
 import { Chat } from '../../Chat';
-import { ChannelContext, TranslationContext } from '../../../context';
+import {
+  ThreadContext,
+  TranslationContext,
+  ChannelContext,
+} from '../../../context';
 import Thread from '../Thread';
 import { Streami18n } from '../../../utils';
 
@@ -56,12 +60,12 @@ describe('Thread', () => {
       <Chat client={chatClient}>
         <TranslationContext.Provider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread}>
-            <ChannelContext.Consumer>
+            <ThreadContext.Consumer>
               {(c) => {
                 openThread = c.openThread;
                 return <Thread thread={thread} />;
               }}
-            </ChannelContext.Consumer>
+            </ThreadContext.Consumer>
           </Channel>
         </TranslationContext.Provider>
       </Chat>,
@@ -76,7 +80,7 @@ describe('Thread', () => {
       expect(queryByText('Thread2 Message Text')).toBeFalsy();
     });
 
-    openThread(thread2);
+    act(() => openThread(thread2));
     rerender(
       <Chat client={chatClient}>
         <TranslationContext.Provider value={{ ...translators, t }}>
@@ -147,14 +151,28 @@ describe('Thread', () => {
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
+    let setLastRead;
 
-    const { toJSON } = render(
+    const { getByText, toJSON } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
         <Channel channel={channel} client={chatClient} thread={thread}>
-          <Thread thread={thread} />
+          <ChannelContext.Consumer>
+            {(c) => {
+              setLastRead = c.setLastRead;
+              return <Thread thread={thread} />;
+            }}
+          </ChannelContext.Consumer>
         </Channel>
       </Chat>,
     );
+
+    await waitFor(() => {
+      expect(getByText('Message4')).toBeTruthy();
+      expect(getByText('Message5')).toBeTruthy();
+      expect(getByText('Message6')).toBeTruthy();
+    });
+
+    act(() => setLastRead(new Date('2020-08-17T18:08:03.196Z')));
 
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();

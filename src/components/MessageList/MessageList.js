@@ -4,7 +4,13 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ChannelContext, ChatContext, TranslationContext } from '../../context';
+import {
+  ChannelContext,
+  ChatContext,
+  TranslationContext,
+  MessagesContext,
+  ThreadContext,
+} from '../../context';
 import DefaultDateSeparator from './DateSeparator';
 import DefaultEventIndicator from './EventIndicator';
 import { Message as DefaultMessage } from '../Message';
@@ -56,25 +62,27 @@ const MessageList = (props) => {
   const { client } = useContext(ChatContext);
   const {
     Attachment,
-    channel,
     clearEditingState,
-    disabled,
     editing,
     emojiData,
-    EmptyStateIndicator,
     loadMore: mainLoadMore,
-    loadMoreThread,
-    markRead,
-    messages: mainMessages,
     Message,
-    online,
-    openThread,
-    read: mainRead,
+    messages: mainMessages,
     removeMessage,
     retrySendMessage,
     setEditingState,
-    threadMessages,
     updateMessage,
+  } = useContext(MessagesContext);
+  const { loadMoreThread, openThread, threadMessages } = useContext(
+    ThreadContext,
+  );
+  const {
+    channel,
+    disabled,
+    EmptyStateIndicator,
+    markRead,
+    online,
+    read: mainRead,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
   const yOffset = useRef(0);
