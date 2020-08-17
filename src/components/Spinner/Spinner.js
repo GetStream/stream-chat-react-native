@@ -29,7 +29,6 @@ const Spinner = () => {
       duration: 800,
       easing: Easing.linear,
       toValue: 1,
-      useNativeDriver: true,
     }),
   );
 

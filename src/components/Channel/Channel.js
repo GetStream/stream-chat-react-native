@@ -5,7 +5,7 @@ import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   ChannelContext,
@@ -75,7 +75,7 @@ const Channel = (props) => {
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState(
-    channel.state.threads?.[props.thread?.id] || [],
+    channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
   const [unmounted, setUnmounted] = useState(false);
@@ -97,7 +97,7 @@ const Channel = (props) => {
       });
 
       client.off('connection.recovered', handleEvent);
-      channel.off(handleEvent);
+      channel.off?.(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
@@ -549,7 +549,7 @@ const Channel = (props) => {
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={{ fontWeight: 'bold', padding: 16 }}>
+      <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
         {t('Please select a channel first')}
       </Text>
     );
@@ -567,12 +567,18 @@ const Channel = (props) => {
     );
 
     const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
-    return <LoadingErrorIndicator error={error} listType='message' />;
+    return (
+      <LoadingErrorIndicator
+        error={error}
+        listType='message'
+        testID='loading-error'
+      />
+    );
   }
 
   if (loading) {
     const { LoadingIndicator = LoadingIndicatorDefault } = props;
-    return <LoadingIndicator listType='message' />;
+    return <LoadingIndicator listType='message' testID='loading' />;
   }
 
   return (
