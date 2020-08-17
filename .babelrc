@@ -1,8 +1,7 @@
 {
-  "presets": ["@babel/env", "@babel/react"],
+  "presets": ["@babel/env", "module:metro-react-native-babel-preset"],
   "plugins": [
     "macros",
-    "@babel/proposal-class-properties",
     "@babel/transform-runtime",
     "babel-plugin-styled-components"
   ],

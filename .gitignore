@@ -9,6 +9,7 @@ report.*.json
 yarn-error.log
 .DS_Store
 dist/
+lib/
 .env*
 
 .tern-port
