@@ -37,7 +37,7 @@ const LoadingIndicator = ({ listType = 'default', loadingText }) => {
   return (
     <Container>
       <Spinner />
-      <LoadingText>{indicatorText}</LoadingText>
+      <LoadingText testID='loading'>{indicatorText}</LoadingText>
     </Container>
   );
 };

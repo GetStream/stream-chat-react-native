@@ -224,6 +224,7 @@ const Channel = (props) => {
       } catch (e) {
         if (unmounted) return;
         setError(e);
+        setLoading(false);
         initError = true;
       }
     }
@@ -510,7 +511,6 @@ const Channel = (props) => {
     hasMore,
     lastRead,
     loading,
-    loadingMore,
     markRead: markReadThrottled,
     members,
     online,
@@ -527,6 +527,7 @@ const Channel = (props) => {
     editing,
     editMessage,
     emojiData,
+    loadingMore,
     loadMore: loadMoreThrottled,
     Message: props.Message,
     messages,
@@ -567,18 +568,12 @@ const Channel = (props) => {
     );
 
     const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
-    return (
-      <LoadingErrorIndicator
-        error={error}
-        listType='message'
-        testID='loading-error'
-      />
-    );
+    return <LoadingErrorIndicator error={error} listType='message' />;
   }
 
   if (loading) {
     const { LoadingIndicator = LoadingIndicatorDefault } = props;
-    return <LoadingIndicator listType='message' testID='loading' />;
+    return <LoadingIndicator listType='message' />;
   }
 
   return (
