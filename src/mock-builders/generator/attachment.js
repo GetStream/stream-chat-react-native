@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
+const image_url = 'http://www.jackblack.com/tenac_iousd.bmp';
+
 export const generateAttachmentAction = (a) => ({
   value: uuidv4(),
   name: uuidv4(),
@@ -32,7 +34,7 @@ export const generateAudioAttachment = (a) => ({
   text: uuidv4(),
   description: uuidv4(),
   asset_url: 'http://www.jackblack.com/tribute.mp3',
-  image_url: 'http://www.jackblack.com/tenac_iousd.bmp',
+  image_url,
   ...a,
 });
 
@@ -52,8 +54,8 @@ export const generateCardAttachment = (a) => ({
   title: uuidv4(),
   title_link: uuidv4(),
   og_scrape_url: uuidv4(),
-  image_url: 'http://www.jackblack.com/tenac_iousd.bmp',
-  thumb_url: 'http://www.jackblack.com/tenac_iousd.bmp',
+  image_url,
+  thumb_url: image_url,
   text: uuidv4(),
   ...a,
 });

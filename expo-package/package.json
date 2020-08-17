@@ -1,63 +1,14 @@
 {
   "name": "stream-chat-expo",
-  "version": "1.1.1",
+  "version": "1.2.0-rollupless.0",
   "author": {
     "company": "Stream.io Inc"
   },
-  "keywords": [
-    "chat",
-    "messaging",
-    "expo"
-  ],
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "typings": "types/index.d.ts",
-  "jsnext:main": "dist/index.es.js",
-  "files": [
-    "dist",
-    "README.md",
-    "/types"
-  ],
-  "devDependencies": {
-    "@babel/core": "^7.4.3",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.4.3",
-    "@babel/preset-env": "^7.4.3",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.5",
-    "babel-plugin-react-native-web": "^0.11.2",
-    "babel-preset-expo": "^5.0.0",
-    "expo": "^32.0.0",
-    "prettier": "^1.16.4",
-    "react": "^16.5.0",
-    "react-dom": "^16.8.6",
-    "react-native": "0.57.1",
-    "react-styleguidist": "^9.0.7",
-    "rollup": "^0.68.2",
-    "rollup-plugin-babel": "^4.0.3",
-    "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.0",
-    "rollup-plugin-replace": "^2.1.0",
-    "webpack": "^4.29.6"
-  },
-  "scripts": {
-    "start": "rm -rf dist && rollup -c -w",
-    "build": "rm -rf dist && rollup -c",
-    "prettier": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "prettier-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc",
-    "eslint": "eslint '**/*.{js,md}' --max-warnings 0",
-    "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
-    "lint": "prettier --list-different '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint '**/*.{js,md}' --max-warnings 0",
-    "lint-fix": "prettier --write '**/*.{js,ts,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix '**/*.{js,md}' --max-warnings 0'",
-    "preversion": "yarn",
-    "prepare": "yarn run build",
-    "prepack": " cp ../README.md .",
-    "postpack": "rm README.md"
-  },
+  "main": "src/index.js",
+  "types": "types/index.d.ts",
   "dependencies": {
     "react-native-unimodules": "^0.5.4",
-    "stream-chat-react-native-core": "v1.1.1"
+    "stream-chat-react-native-core": "v1.2.0-rollupless.0"
   },
   "peerDependencies": {
     "expo": "^32.0.0",

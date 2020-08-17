@@ -6,3 +6,4 @@ vendor/
 examples/
 *.md
 src/components/docs/
+lib/
