@@ -17,17 +17,17 @@ const Container = styled.View`
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   bottom: 10px;
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     Math.min(
       length * theme.messageInput.suggestions.container.itemHeight,
       theme.messageInput.suggestions.container.maxHeight,
-    )};
-  margin-left: ${({ marginLeft }) => marginLeft};
+    )}px;
+  margin-left: ${({ marginLeft }) => marginLeft}px;
   position: absolute;
   shadow-color: #000;
   shadow-offset: 0px -3px;
   shadow-opacity: 0.05;
-  width: ${({ width }) => width};
+  width: ${({ width }) => width}px;
   z-index: 100;
   ${({ theme }) => theme.messageInput.suggestions.container.css};
 `;
