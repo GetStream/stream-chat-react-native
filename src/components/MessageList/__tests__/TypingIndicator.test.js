@@ -160,7 +160,7 @@ describe('TypingIndicator', () => {
     const { t } = await i18nInstance.getTranslators();
     const user0 = generateStaticUser(0);
     const user1 = generateStaticUser(1);
-    const user2 = generateStaticUser(2);
+    const user2 = generateStaticUser(3);
 
     chatClient = await getTestClientWithUser({ id: user0.id });
     await chatClient.setUser(user0, 'testToken');

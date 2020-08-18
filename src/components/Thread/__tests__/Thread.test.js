@@ -100,7 +100,7 @@ describe('Thread', () => {
   it('should match thread snapshot', async () => {
     const i18nInstance = new Streami18n();
     const user1 = generateStaticUser(1);
-    const user2 = generateStaticUser(2);
+    const user2 = generateStaticUser(3);
     const thread = generateStaticMessage(
       'Message3',
       { user: user2 },
