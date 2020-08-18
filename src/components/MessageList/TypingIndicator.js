@@ -22,7 +22,7 @@ const Container = styled.View`
   ${({ theme }) => theme.typingIndicator.container.css};
 `;
 
-const constructTypingString = (typingUsers, client, t) => {
+const constructTypingString = ({ client, t, typingUsers }) => {
   const typingKeys = Object.keys(typingUsers);
   const nonSelfUsers = [];
   typingKeys.forEach((item, i) => {
@@ -39,15 +39,19 @@ const constructTypingString = (typingUsers, client, t) => {
   if (nonSelfUsers.length === 1) {
     outStr = t('{{ user }} is typing...', { user: nonSelfUsers[0] });
   } else if (nonSelfUsers.length === 2) {
-    //joins all with "and" but =no commas
-    //example: "bob and sam"
+    /**
+     * Joins the two names without commas
+     * example: "bob and sam"
+     */
     outStr = t('{{ firstUser }} and {{ secondUser }} are typing...', {
       firstUser: nonSelfUsers[0],
       secondUser: nonSelfUsers[1],
     });
   } else if (nonSelfUsers.length > 2) {
-    //joins all with commas, but last one gets ", and" (oxford comma!)
-    //example: "bob, joe, and sam"
+    /**
+     * Joins all names with commas, the final one gets ", and" (oxford comma!)
+     * example: "bob, joe, and sam"
+     */
     outStr = t('{{ commaSeparatedUsers }} and {{ lastUser }} are typing...', {
       commaSeparatedUsers: nonSelfUsers.slice(0, -1).join(', '),
       lastUser: nonSelfUsers.slice(-1),
@@ -77,7 +81,9 @@ const TypingIndicator = (props) => {
             testID={`typing-avatar-${idx}`}
           />
         ))}
-      <TypingText>{constructTypingString(typing, client, t)}</TypingText>
+      <TypingText>
+        {constructTypingString({ client, t, typingUsers: typing })}
+      </TypingText>
     </Container>
   );
 };
