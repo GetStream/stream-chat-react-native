@@ -387,24 +387,24 @@ const Channel = (props) => {
       return setLoadingMore(false);
     }
 
-    const oldestMessage = messages[0] ? messages[0] : null;
+    const oldestMessage = messages?.[0];
 
     if (oldestMessage?.status !== 'received') {
       return setLoadingMore(false);
     }
 
-    const oldestID = oldestMessage ? oldestMessage.id : null;
+    const oldestID = oldestMessage?.id;
     const limit = 100;
 
     try {
       logger('Channel Component', 'Re-querying the messages', {
-        props,
-        limit,
         id_lt: oldestID,
+        limit,
+        props,
       });
 
       const queryResponse = await channel.query({
-        messages: { limit, id_lt: oldestID },
+        messages: { id_lt: oldestID, limit },
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
@@ -487,7 +487,7 @@ const Channel = (props) => {
 
     const parentID = thread.id;
     const oldMessages = channel.state.threads[parentID] || [];
-    const oldestMessageID = oldMessages[0] ? oldMessages[0].id : null;
+    const oldestMessageID = oldMessages?.[0]?.id;
 
     const limit = 50;
     const queryResponse = await channel.getReplies(parentID, {
