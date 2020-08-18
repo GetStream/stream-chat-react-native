@@ -1,8 +1,7 @@
 export const getLastReceivedId = (messages) => {
-  const l = messages.length;
   let lastReceivedId = null;
 
-  for (let i = l; i > 0; i--) {
+  for (let i = messages.length; i > 0; i--) {
     if (
       messages[i] !== undefined &&
       messages[i].status !== undefined &&
