@@ -1,10 +1,18 @@
 {
-  "plugins": ["babel", "markdown"],
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest/recommended"
   ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2018,
+    "ecmaFeatures": {
+      "modules": true
+    }
+  },
+  "plugins": ["babel", "markdown"],
   "rules": {
     "no-console": 0,
     "no-mixed-spaces-and-tabs": 1,
@@ -33,12 +41,17 @@
     "es6": true,
     "browser": true
   },
-  "parser": "babel-eslint",
-  "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": 2018,
-    "ecmaFeatures": {
-      "modules": true
+  "settings": {
+    "react": {
+      "version": "detect",
+      "pragma": "React"
+    },
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      },
+      "babel-module": {}
     }
   },
   "overrides": [
@@ -49,6 +62,73 @@
         "react/react-in-jsx-scope": 0,
         "semi": 0,
         "no-undef": 0
+      }
+    },
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "extends": [
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier/@typescript-eslint",
+        "@react-native-community",
+        "eslint:recommended",
+        "plugin:prettier/recommended",
+        "plugin:jest/recommended"
+      ],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "sourceType": "module",
+        "ecmaVersion": 2018,
+        "ecmaFeatures": {
+          "modules": true,
+          "jsx": true
+        }
+      },
+      "plugins": [
+        "babel",
+        "markdown",
+        "react",
+        "prettier",
+        "@typescript-eslint",
+        "typescript-sort-keys"
+      ],
+      "rules": {
+        "no-console": 0,
+        "no-mixed-spaces-and-tabs": 1,
+        "comma-dangle": 0,
+        "no-unused-vars": [1, { "ignoreRestSiblings": true }],
+        "eqeqeq": [2, "smart"],
+        "no-useless-concat": 2,
+        "default-case": 2,
+        "no-self-compare": 2,
+        "prefer-const": 1,
+        "no-underscore-dangle": [2, { "allowAfterThis": true }],
+        "object-shorthand": 1,
+        "babel/no-invalid-this": 2,
+        "array-callback-return": 2,
+        "valid-typeof": 2,
+        "arrow-body-style": 2,
+        "require-await": 2,
+        "react/prop-types": 0,
+        "no-var": 2,
+        "linebreak-style": [2, "unix"],
+        "semi": [1, "always"],
+        "@typescript-eslint/ban-ts-comment": 0,
+        "typescript-sort-keys/interface": [
+          "error",
+          "asc",
+          { "caseSensitive": false, "natural": true, "requiredFirst": true }
+        ],
+        "typescript-sort-keys/string-enum": [
+          "error",
+          "asc",
+          { "caseSensitive": false, "natural": true }
+        ],
+        "jsx-quotes": ["error", "prefer-single"]
+      },
+      "env": {
+        "es6": true,
+        "browser": true
       }
     }
   ]
