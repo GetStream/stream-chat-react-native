@@ -1,4 +1,4 @@
-export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
+export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
   const numberOfMessages = messagesWithDates.length;
   const messageGroupStyles = {};
 
@@ -10,6 +10,9 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
     const nextMessage = messages[i + 1];
     const groupStyles = [];
 
+    /**
+     * Skip event and date messages
+     */
     if (message.type === 'channel.event') {
       continue;
     }
@@ -20,6 +23,9 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
 
     const userId = message.user ? message.user.id : null;
 
+    /**
+     * Determine top message
+     */
     const isTopMessage =
       !previousMessage ||
       previousMessage.type === 'message.date' ||
@@ -31,6 +37,9 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
       previousMessage.type === 'error' ||
       previousMessage.deleted_at;
 
+    /**
+     * Determine bottom message
+     */
     const isBottomMessage =
       !nextMessage ||
       nextMessage.type === 'message.date' ||
@@ -41,11 +50,21 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
       nextMessage.type === 'error' ||
       nextMessage.deleted_at;
 
+    /**
+     * Add group styles key for top message
+     */
     if (isTopMessage) {
       groupStyles.push('top');
     }
 
+    /**
+     * Add group styles key for bottom message
+     */
     if (isBottomMessage) {
+      /**
+       * If the bottom message is also the top, or deleted, or an error,
+       * add the key for single message instead of bottom
+       */
       if (isTopMessage || message.deleted_at || message.type === 'error') {
         groupStyles.splice(0, groupStyles.length);
         groupStyles.push('single');
@@ -54,6 +73,10 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
       }
     }
 
+    /**
+     * Add the key for all non top or bottom messages, if the message is
+     * deleted or an error add the key for single otherwise middle
+     */
     if (!isTopMessage && !isBottomMessage) {
       if (message.deleted_at || message.type === 'error') {
         groupStyles.splice(0, groupStyles.length);
@@ -64,11 +87,17 @@ export const getGroupStyles = (messagesWithDates, noGroupByUser) => {
       }
     }
 
+    /**
+     * If there are attachments add the key for single
+     */
     if (message.attachments.length !== 0) {
       groupStyles.splice(0, groupStyles.length);
       groupStyles.push('single');
     }
 
+    /**
+     * If noGroupByUser set add the key for single
+     */
     if (noGroupByUser) {
       groupStyles.splice(0, groupStyles.length);
       groupStyles.push('single');

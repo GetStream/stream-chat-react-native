@@ -218,7 +218,10 @@ const MessageList = (props) => {
   }
 
   const messagesWithDates = insertDates(messages);
-  const messageGroupStyles = getGroupStyles(messagesWithDates, noGroupByUser);
+  const messageGroupStyles = getGroupStyles({
+    messagesWithDates,
+    noGroupByUser,
+  });
   const readData = getReadStates(messagesWithDates, read);
 
   const messageList = messagesWithDates
