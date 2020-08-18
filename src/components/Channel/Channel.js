@@ -398,9 +398,9 @@ const Channel = (props) => {
 
     try {
       logger('Channel Component', 'Re-querying the messages', {
-        props,
-        limit,
         id_lt: oldestID,
+        limit,
+        props,
       });
 
       const queryResponse = await channel.query({
