@@ -74,7 +74,7 @@ const MessageStatus = ({
 
     if (message.status === 'sending') {
       return (
-        <SendingContainer>
+        <SendingContainer testID='sending-container'>
           <SendingImage source={loadingGif} />
         </SendingContainer>
       );
@@ -88,7 +88,7 @@ const MessageStatus = ({
         (item) => item.id !== client.user.id,
       )[0];
       return (
-        <ReadByContainer>
+        <ReadByContainer testID='read-by-container'>
           <Avatar
             name={lastReadUser.name || lastReadUser.id}
             image={lastReadUser.image}
@@ -103,14 +103,14 @@ const MessageStatus = ({
       !threadList
     ) {
       return (
-        <DeliveredContainer>
+        <DeliveredContainer testID='delivered-container'>
           <DeliveredCircle>
             <CheckMark source={iconDeliveredUnseen} />
           </DeliveredCircle>
         </DeliveredContainer>
       );
     } else {
-      return <Spacer />;
+      return <Spacer testID='spacer' />;
     }
   };
 
@@ -126,8 +126,6 @@ MessageStatus.propTypes = {
   message: PropTypes.object,
   /** Latest message id on current channel */
   lastReceivedId: PropTypes.string,
-  /** Boolean if current message is part of thread */
-  isThreadList: PropTypes.bool,
 };
 
 export default MessageStatus;
