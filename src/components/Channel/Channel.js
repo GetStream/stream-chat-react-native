@@ -387,7 +387,7 @@ const Channel = (props) => {
       return setLoadingMore(false);
     }
 
-    const oldestMessage = messages[0] ? messages[0] : null;
+    const oldestMessage = messages?.[0];
 
     if (oldestMessage?.status !== 'received') {
       return setLoadingMore(false);
