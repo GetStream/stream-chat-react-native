@@ -44,7 +44,7 @@ const Date = styled.Text`
  * @example ../docs/DateSeparator.md
  */
 const DateSeparator = (props) => {
-  const { message, formatDate } = props;
+  const { formatDate, message } = props;
   const { tDateTimeParser } = useContext(TranslationContext);
 
   return (
