@@ -92,8 +92,8 @@ const Channel = (props) => {
 
     return () => {
       logger('Channel component', 'component unmount', {
-        tags: ['lifecycle', 'channel'],
         props,
+        tags: ['lifecycle', 'channel'],
       });
 
       client.off('connection.recovered', handleEvent);
