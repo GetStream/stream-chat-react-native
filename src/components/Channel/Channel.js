@@ -590,16 +590,20 @@ const Channel = (props) => {
 };
 
 Channel.propTypes = {
-  /** Which channel to connect to */
+  /**
+   * The currently active channel
+   * */
   channel: PropTypes.shape({
     watch: PropTypes.func,
   }).isRequired,
   /**
-   * Attachment UI component to display attachment in individual message.
+   * Custom Attachment UI component to display attachment in individual message.
    * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
    * */
   Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Disables the channel UI if channel is frozen */
+  /**
+   * Disables the channel UI if channel is frozen
+   * */
   disableIfFrozenChannel: PropTypes.bool,
   /**
    * If true, KeyboardCompatibleView wrapper is disabled.
@@ -627,7 +631,9 @@ Channel.propTypes = {
    * @param updatedMessage UpdatedMessage object
    * */
   doUpdateMessageRequest: PropTypes.func,
-  /** The indicator to use when message list is empty */
+  /**
+   * Custom empty state indicator to override the Stream default
+   * */
   EmptyStateIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
@@ -654,18 +660,22 @@ Channel.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
-  /** The indicator to use when there is error  */
+  /**
+   * Custom loading error indicator to override the Stream default
+   * */
   LoadingErrorIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
-  /** The loading indicator to use */
+  /**
+   * Custom loading indicator to override the Stream default
+   * */
   LoadingIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
   /**
-   * Message UI component to display a message in message list.
+   * Custom Message UI component to display a message in message list.
    * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),

@@ -15,36 +15,43 @@
 ></div>
 ```
 
-**NOTE** The Channel produces the [ChannelContext](#channelcontext) and exposes a [withChannelContext](#withchannelcontext) HOC.
+**NOTE** The Channel component provides access to the [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
 
-The example below shows you how to write components that consume the channel context.
+The example below shows how to write a component that consumes a context through a higher order component.
 
 ```json
 class CustomChannelHeader extends React.PureComponent {
+  const { channel, loading } = this.props;
+
   render() {
+    if (loading) {
+      return (
+        <View>
+          <Text>Channel is loading...</Text>
+        </View>
+      );
+    }
+
     return (
-      <div>
-        There are currently {this.props.watcher_count} people online in channel
-        {this.props.channel.cid}. These users are typing:
-        <span className="str-chat__input-footer--typing">
-          {ChatComponents.formatArray(Object.keys(this.props.typing))}
-        </span>
-      </div>
+      <View>
+        <Text>Channel ID: {channel.cid}</Text>
+        <Text>
+          There are currently {channel.state.watcher_count} people online in channel
+        </Text>
+      </View>
     );
   }
-}
+};
 
-ContextAwareCustomChannelHeader = ChatComponents.withChannelContext(CustomChannelHeader);
+ContextAwareCustomChannelHeader = withChannelContext(CustomChannelHeader);
 
-<div className="str-chat" style={{ height: 'unset' }}>
-  <Chat client={data.client}>
-    <Channel channel={data.channel}>
-      <div className="str-chat__main-panel" style={{ height: '500px' }}>
-        <ContextAwareCustomChannelHeader />
-        <MessageList />
-        <MessageInput />
-      </div>
+<View>
+  <Chat client={chatClient}>
+    <Channel channel={channel}>
+      <ContextAwareCustomChannelHeader />
+      <MessageList />
+      <MessageInput />
     </Channel>
   </Chat>
-</div>;
+</View>;
 ```
