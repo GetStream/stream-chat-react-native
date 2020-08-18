@@ -78,7 +78,7 @@ const Channel = (props) => {
     channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
-  const [unmounted, setUnmounted] = useState(false);
+  const [unmounted, setUnmounted] = useState(false); // TODO: check if still needed
   const [watcherCount, setWatcherCount] = useState();
   const [watchers, setWatchers] = useState(Immutable({}));
 
