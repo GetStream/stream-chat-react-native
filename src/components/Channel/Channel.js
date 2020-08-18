@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
@@ -78,22 +78,22 @@ const Channel = (props) => {
     channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
-  const [unmounted, setUnmounted] = useState(false);
+  const [unmounted, setUnmounted] = useState(false); // TODO: check if still needed
   const [watcherCount, setWatcherCount] = useState();
   const [watchers, setWatchers] = useState(Immutable({}));
 
   useEffect(() => {
     logger('Channel component', 'component mount', {
-      tags: ['lifecycle', 'channel'],
       props,
+      tags: ['lifecycle', 'channel'],
     });
 
     if (channel) initChannel();
 
     return () => {
       logger('Channel component', 'component unmount', {
-        tags: ['lifecycle', 'channel'],
         props,
+        tags: ['lifecycle', 'channel'],
       });
 
       client.off('connection.recovered', handleEvent);
@@ -114,8 +114,8 @@ const Channel = (props) => {
 
   useEffect(() => {
     logger('Channel component', 'component update', {
-      tags: ['lifecycle', 'channel'],
       props,
+      tags: ['lifecycle', 'channel'],
     });
 
     if (unmounted || online === isOnline) return;
@@ -387,24 +387,24 @@ const Channel = (props) => {
       return setLoadingMore(false);
     }
 
-    const oldestMessage = messages[0] ? messages[0] : null;
+    const oldestMessage = messages?.[0];
 
     if (oldestMessage?.status !== 'received') {
       return setLoadingMore(false);
     }
 
-    const oldestID = oldestMessage ? oldestMessage.id : null;
+    const oldestID = oldestMessage?.id;
     const limit = 100;
 
     try {
       logger('Channel Component', 'Re-querying the messages', {
-        props,
-        limit,
         id_lt: oldestID,
+        limit,
+        props,
       });
 
       const queryResponse = await channel.query({
-        messages: { limit, id_lt: oldestID },
+        messages: { id_lt: oldestID, limit },
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
@@ -487,7 +487,7 @@ const Channel = (props) => {
 
     const parentID = thread.id;
     const oldMessages = channel.state.threads[parentID] || [];
-    const oldestMessageID = oldMessages[0] ? oldMessages[0].id : null;
+    const oldestMessageID = oldMessages?.[0]?.id;
 
     const limit = 50;
     const queryResponse = await channel.getReplies(parentID, {
@@ -562,9 +562,9 @@ const Channel = (props) => {
       'Channel component',
       'Error loading channel - rendering error indicator',
       {
-        tags: ['error', 'channelComponent'],
-        props,
         error,
+        props,
+        tags: ['error', 'channelComponent'],
       },
     );
 
