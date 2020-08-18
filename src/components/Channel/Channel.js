@@ -393,7 +393,7 @@ const Channel = (props) => {
       return setLoadingMore(false);
     }
 
-    const oldestID = oldestMessage ? oldestMessage.id : null;
+    const oldestID = oldestMessage?.id;
     const limit = 100;
 
     try {
