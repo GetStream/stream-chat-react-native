@@ -487,7 +487,7 @@ const Channel = (props) => {
 
     const parentID = thread.id;
     const oldMessages = channel.state.threads[parentID] || [];
-    const oldestMessageID = oldMessages[0] ? oldMessages[0].id : null;
+    const oldestMessageID = oldMessages?.[0]?.id;
 
     const limit = 50;
     const queryResponse = await channel.getReplies(parentID, {
