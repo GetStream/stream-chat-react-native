@@ -34,7 +34,7 @@ const Spinner = () => {
 
   useEffect(() => {
     loop.start();
-    return () => loop.stop();
+    return loop.stop;
   });
 
   return (
