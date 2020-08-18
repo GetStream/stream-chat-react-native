@@ -404,7 +404,7 @@ const Channel = (props) => {
       });
 
       const queryResponse = await channel.query({
-        messages: { limit, id_lt: oldestID },
+        messages: { id_lt: oldestID, limit },
       });
 
       const updatedHasMore = queryResponse.messages.length === limit;
