@@ -114,5 +114,8 @@ export const KeyboardCompatibleView = (props) => {
     </Animated.View>
   );
 };
+KeyboardCompatibleView.defaultProps = {
+  enabled: true,
+};
 
 export default KeyboardCompatibleView;
