@@ -1,43 +1,40 @@
 import React from 'react';
-import { Avatar } from '../Avatar';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
+import { Avatar } from '../Avatar';
+
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
-  flex-direction: row;
   align-items: center;
+  flex-direction: row;
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.mention.container.css}
 `;
 
 const Name = styled.Text`
-  padding: 10px;
   color: black;
   font-weight: bold;
+  padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
-class MentionsItem extends React.Component {
-  static themePath = 'messageInput.suggestions.mention';
-  render() {
-    const {
-      item: { name, image, id },
-    } = this.props;
-    return (
-      <Container>
-        <Avatar image={image} name={name} />
-        <Name>{name || id}</Name>
-      </Container>
-    );
-  }
-}
+const MentionsItem = ({ item: { id, image, name } }) => (
+  <Container>
+    <Avatar image={image} name={name} />
+    <Name testID='mentions-item-name'>{name || id}</Name>
+  </Container>
+);
 
 MentionsItem.propTypes = {
-  name: PropTypes.string,
-  image: PropTypes.string,
-  id: PropTypes.string,
+  item: PropTypes.shape({
+    id: PropTypes.string,
+    image: PropTypes.string,
+    name: PropTypes.string,
+  }),
 };
+
+MentionsItem.themePath = 'messageInput.suggestions.mention';
 
 export default themed(MentionsItem);
