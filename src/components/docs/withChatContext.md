@@ -8,11 +8,10 @@ const DemoComponentWithChatContext = withChatContext(DemoComponent);
 class DemoComponent extends React.Component {
   render() {
     return (
-      <div>
-        This is demo component with channel context Number of channels loaded::{' '}
-        {this.props.channels.length}
-        Id of active channel: {this.props.channel.cid}
-      </div>
+      <View>
+        <Text>ID of active channel: {this.props.channel.cid}</Text>
+        <Text>Chat user is online: {this.props.isOnline}</Text>
+      </View>
     );
   }
 }

@@ -518,7 +518,8 @@ class MessageList extends PureComponent {
 
   renderItem = (message, groupStyles) => {
     if (message.type === 'message.date') {
-      this.props.dateSeparator || this.props.DateSeparator;
+      const DateSeparator =
+        this.props.dateSeparator || this.props.DateSeparator;
       return <DateSeparator message={message} />;
     } else if (message.type === 'channel.event') {
       const EventIndicator =
