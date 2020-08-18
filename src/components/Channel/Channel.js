@@ -84,8 +84,8 @@ const Channel = (props) => {
 
   useEffect(() => {
     logger('Channel component', 'component mount', {
-      tags: ['lifecycle', 'channel'],
       props,
+      tags: ['lifecycle', 'channel'],
     });
 
     if (channel) initChannel();
@@ -114,8 +114,8 @@ const Channel = (props) => {
 
   useEffect(() => {
     logger('Channel component', 'component update', {
-      tags: ['lifecycle', 'channel'],
       props,
+      tags: ['lifecycle', 'channel'],
     });
 
     if (unmounted || online === isOnline) return;
