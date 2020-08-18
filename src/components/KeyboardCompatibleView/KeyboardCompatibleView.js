@@ -20,14 +20,19 @@ import { KeyboardContext } from '../../context';
  * </KeyboardCompatibleView>
  * ```
  */
-export const KeyboardCompatibleView = (props) => {
+export const KeyboardCompatibleView = ({
+  enabled = true,
+  keyboardDismissAnimationDuration = 500,
+  keyboardOpenAnimationDuration = 500,
+  children,
+}) => {
   const heightAnim = useRef(new Animated.Value(0)).current;
   const rootChannelView = useRef();
 
   const [initialHeight, setInitialHeight] = useState(0);
 
   const [channelHeight, isKeyboardOpen] = useKeyboardCompatibleHeight({
-    enabled: props.enabled,
+    enabled,
     initialHeight,
     rootChannelView,
   });
@@ -35,10 +40,17 @@ export const KeyboardCompatibleView = (props) => {
   useEffect(() => {
     Animated.timing(heightAnim, {
       toValue: channelHeight,
-      duration: props.keyboardOpenAnimationDuration,
+      duration: isKeyboardOpen
+        ? keyboardDismissAnimationDuration
+        : keyboardOpenAnimationDuration,
       useNativeDriver: false,
     }).start();
-  }, [heightAnim, channelHeight, props.keyboardOpenAnimationDuration]);
+  }, [
+    heightAnim,
+    channelHeight,
+    keyboardDismissAnimationDuration,
+    keyboardOpenAnimationDuration,
+  ]);
 
   const dismissKeyboard = useCallback(() => {
     Keyboard.dismiss();
@@ -51,7 +63,7 @@ export const KeyboardCompatibleView = (props) => {
         // Bring the channel height to its full length state.
         Animated.timing(heightAnim, {
           toValue: initialHeight,
-          duration: props.keyboardOpenAnimationDuration,
+          duration: keyboardDismissAnimationDuration,
           useNativeDriver: false,
         }).start(resolve);
       }
@@ -61,7 +73,7 @@ export const KeyboardCompatibleView = (props) => {
     initialHeight,
     channelHeight,
     isKeyboardOpen,
-    props.keyboardOpenAnimationDuration,
+    keyboardDismissAnimationDuration,
   ]);
 
   const onLayout = useCallback(
@@ -70,7 +82,7 @@ export const KeyboardCompatibleView = (props) => {
         layout: { height },
       },
     }) => {
-      if (!props.enabled) {
+      if (!enabled) {
         return;
       }
 
@@ -84,17 +96,17 @@ export const KeyboardCompatibleView = (props) => {
         }).start();
       }
     },
-    [heightAnim, initialHeight, props.enabled],
+    [heightAnim, initialHeight, enabled],
   );
 
-  if (!props.enabled) {
+  if (!enabled) {
     return (
       <KeyboardContext.Provider
         value={{
           dismissKeyboard,
         }}
       >
-        {props.children}
+        {children}
       </KeyboardContext.Provider>
     );
   }
@@ -108,14 +120,11 @@ export const KeyboardCompatibleView = (props) => {
     >
       <KeyboardContext.Provider value={{ dismissKeyboard }}>
         <View collapsable={false} ref={rootChannelView}>
-          {props.children}
+          {children}
         </View>
       </KeyboardContext.Provider>
     </Animated.View>
   );
-};
-KeyboardCompatibleView.defaultProps = {
-  enabled: true,
 };
 
 export default KeyboardCompatibleView;
