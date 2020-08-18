@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
