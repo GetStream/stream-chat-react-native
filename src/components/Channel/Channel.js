@@ -561,9 +561,9 @@ const Channel = (props) => {
       'Channel component',
       'Error loading channel - rendering error indicator',
       {
-        tags: ['error', 'channelComponent'],
-        props,
         error,
+        props,
+        tags: ['error', 'channelComponent'],
       },
     );
 
