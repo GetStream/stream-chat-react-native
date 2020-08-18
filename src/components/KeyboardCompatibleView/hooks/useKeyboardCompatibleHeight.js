@@ -21,23 +21,12 @@ export const useKeyboardCompatibleHeight = ({
         return;
       }
 
-      const keyboardHidingInProgressBeforeMeasure =
-        hidingKeyboardInProgress.current;
+      hidingKeyboardInProgress.current = false;
+
       const keyboardHeight = e.endCoordinates.height;
 
       if (rootChannelView) {
         rootChannelView.current.measureInWindow((x, y) => {
-          // In case if keyboard was closed in meanwhile while
-          // this measure function was being executed, then we
-          // should abort further execution and let the event callback
-          // keyboardDidHide proceed.
-          if (
-            !keyboardHidingInProgressBeforeMeasure &&
-            hidingKeyboardInProgress.current
-          ) {
-            return;
-          }
-
           const { height: windowHeight } = Dimensions.get('window');
           let finalHeight;
 
@@ -47,7 +36,13 @@ export const useKeyboardCompatibleHeight = ({
           } else {
             finalHeight = windowHeight - y - keyboardHeight;
           }
-
+          // In case if keyboard was closed in meanwhile while
+          // this measure function was being executed, then we
+          // should abort further execution and let the event callback
+          // keyboardDidHide proceed.
+          if (hidingKeyboardInProgress.current) {
+            return;
+          }
           setHeight(finalHeight);
           setKeyboardOpen(true);
         });
