@@ -123,9 +123,9 @@ MessageStatus.propTypes = {
   /** Latest message id on current channel */
   lastReceivedId: PropTypes.string,
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
+  message: PropTypes.object.isRequired,
   /** A list of users who have read the message */
-  readBy: PropTypes.array,
+  readBy: PropTypes.array.isRequired,
 };
 
 export default MessageStatus;

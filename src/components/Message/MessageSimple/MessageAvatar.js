@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
-import { Avatar } from '../../Avatar';
 import PropTypes from 'prop-types';
+
+import { Avatar } from '../../Avatar';
 
 const Container = styled.View`
   margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)};
@@ -15,21 +16,16 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-const MessageAvatar = ({
-  message,
-  alignment,
-  groupStyles,
-  showAvatar = null,
-}) => {
-  let visible = showAvatar;
-
-  if (visible === null) {
-    visible =
-      groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
-  }
+const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
+  const visible =
+    showAvatar != null
+      ? showAvatar
+      : groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
+      ? true
+      : false;
 
   return (
-    <Container alignment={alignment}>
+    <Container alignment={alignment} testID='message-avatar'>
       {visible ? (
         <Avatar
           image={message.user.image}
@@ -43,14 +39,10 @@ const MessageAvatar = ({
 };
 
 MessageAvatar.propTypes = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
   /**
-   * Returns true if message (param) belongs to current user, else false
-   *
-   * @param message
-   * */
-  isMyMessage: PropTypes.func,
+   * Avatar alignment 'left' or 'right'.
+   */
+  alignment: PropTypes.string,
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -58,6 +50,12 @@ MessageAvatar.propTypes = {
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
   groupStyles: PropTypes.array,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /**
+   * Should show avatar.
+   */
+  showAvatar: PropTypes.bool,
 };
 
 export default MessageAvatar;
