@@ -514,6 +514,7 @@ const Channel = (props) => {
     members,
     online,
     read,
+    setLastRead,
     typing,
     unmounted,
     watcherCount,

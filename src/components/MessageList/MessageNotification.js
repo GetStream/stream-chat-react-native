@@ -1,10 +1,10 @@
-import React, { PureComponent } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
+import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { withTranslationContext } from '../../context';
 
 const Container = styled.TouchableOpacity`
   display: flex;
@@ -27,70 +27,48 @@ const MessageNotificationText = styled.Text`
   font-weight: 600;
   ${({ theme }) => theme.messageList.messageNotification.text.css}
 `;
+
 /**
  * @example ../docs/MessageNotification.md
- * @extends PureComponent
  */
-class MessageNotification extends PureComponent {
-  static themePath = 'messageList.messageNotification';
-  constructor(props) {
-    super(props);
-    this.state = {
-      notificationOpacity: new Animated.Value(0),
-    };
-  }
-  static propTypes = {
-    /** If we should show the notification or not */
-    showNotification: PropTypes.bool,
-    /** Onclick handler */
-    onPress: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    showNotification: true,
-  };
-
-  componentDidMount() {
-    Animated.timing(this.state.notificationOpacity, {
-      toValue: this.props.showNotification ? 1 : 0,
+const MessageNotification = ({ onPress, showNotification = true }) => {
+  const { t } = useContext(TranslationContext);
+  const opacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(opacity, {
       duration: 500,
+      toValue: showNotification ? 1 : 0,
       useNativeDriver: true,
     }).start();
+  }, [showNotification]);
+
+  if (!showNotification) {
+    return null;
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.showNotification !== this.props.showNotification) {
-      Animated.timing(this.state.notificationOpacity, {
-        toValue: this.props.showNotification ? 1 : 0,
-        duration: 500,
-        useNativeDriver: true,
-      }).start();
-    }
-  }
+  return (
+    <Animated.View
+      style={{
+        bottom: 0,
+        opacity,
+        position: 'absolute',
+      }}
+      testID='message-notification'
+    >
+      <Container onPress={onPress}>
+        <MessageNotificationText>{t('New Messages')}</MessageNotificationText>
+      </Container>
+    </Animated.View>
+  );
+};
 
-  render() {
-    const { t } = this.props;
+MessageNotification.themePath = 'messageList.messageNotification';
 
-    if (!this.props.showNotification) {
-      return null;
-    } else {
-      return (
-        <Animated.View
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            opacity: this.state.notificationOpacity,
-          }}
-        >
-          <Container onPress={this.props.onPress}>
-            <MessageNotificationText>
-              {t('New Messages')}
-            </MessageNotificationText>
-          </Container>
-        </Animated.View>
-      );
-    }
-  }
-}
+MessageNotification.propTypes = {
+  /** Onclick handler */
+  onPress: PropTypes.func.isRequired,
+  /** If we should show the notification or not */
+  showNotification: PropTypes.bool,
+};
 
-export default withTranslationContext(themed(MessageNotification));
+export default themed(MessageNotification);

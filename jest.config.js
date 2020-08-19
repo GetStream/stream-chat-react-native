@@ -15,7 +15,10 @@ module.exports = {
       '<rootDir>/node_modules/@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
   },
   preset: 'react-native',
-  setupFiles: [require.resolve('./jest-setup.js')],
+  setupFiles: [
+    require.resolve('./jest-setup.js'),
+    './src/mock-builders/native/react-native-mock.js',
+  ],
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
   testPathIgnorePatterns: ['/node_modules/', '/examples/', '__snapshots__'],
 };
