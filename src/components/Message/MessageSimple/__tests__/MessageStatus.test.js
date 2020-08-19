@@ -2,8 +2,8 @@ import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 import {
   generateMessage,
-  generateUser,
   generateStaticUser,
+  generateUser,
   getTestClientWithUser,
 } from 'mock-builders';
 
@@ -94,8 +94,8 @@ describe('MessageStatus', () => {
             { id },
             {
               id: staticUser.id,
-              name: staticUser.name,
               image: staticUser.image,
+              name: staticUser.name,
             },
           ]}
         />

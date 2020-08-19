@@ -1,28 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
-
-import loadingGif from '../../../images/loading.gif';
-import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
-
 import { Avatar } from '../../Avatar';
+import { ChatContext } from '../../../context';
+import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
+import loadingGif from '../../../images/loading.gif';
 
-const Spacer = styled.View`
-  height: 10;
-`;
-
-const StatusContainer = styled.View`
-  width: 20;
-  flex-direction: row;
-  justify-content: center;
-`;
-
-const DeliveredContainer = styled.View`
-  display: flex;
-  align-items: center;
-  height: 20;
-  ${({ theme }) => theme.message.status.deliveredContainer.css};
+const CheckMark = styled.Image`
+  width: 8;
+  height: 6;
+  ${({ theme }) => theme.message.status.checkMark.css};
 `;
 
 const DeliveredCircle = styled.View`
@@ -36,10 +24,18 @@ const DeliveredCircle = styled.View`
   ${({ theme }) => theme.message.status.deliveredCircle.css};
 `;
 
-const CheckMark = styled.Image`
-  width: 8;
-  height: 6;
-  ${({ theme }) => theme.message.status.checkMark.css};
+const DeliveredContainer = styled.View`
+  display: flex;
+  align-items: center;
+  height: 20;
+  ${({ theme }) => theme.message.status.deliveredContainer.css};
+`;
+
+const ReadByContainer = styled.View`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  ${({ theme }) => theme.message.status.readByContainer.css};
 `;
 
 const SendingContainer = styled.View`
@@ -54,31 +50,31 @@ const SendingImage = styled.View`
   ${({ theme }) => theme.message.status.sendingImage.css};
 `;
 
-const ReadByContainer = styled.View`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  ${({ theme }) => theme.message.status.readByContainer.css};
+const Spacer = styled.View`
+  height: 10;
 `;
 
-const MessageStatus = ({
-  client,
-  readBy,
-  message,
-  lastReceivedId,
-  threadList,
-}) => {
-  const renderStatus = () => {
-    const justReadByMe =
-      readBy.length === 1 && readBy[0] && readBy[0].id === client.user.id;
+const StatusContainer = styled.View`
+  width: 20;
+  flex-direction: row;
+  justify-content: center;
+`;
 
+const MessageStatus = ({ readBy, message, lastReceivedId, threadList }) => {
+  const { client } = useContext(ChatContext);
+  const justReadByMe =
+    readBy.length === 1 && readBy[0] && readBy[0].id === client.user.id;
+
+  const Status = () => {
     if (message.status === 'sending') {
       return (
         <SendingContainer testID='sending-container'>
           <SendingImage source={loadingGif} />
         </SendingContainer>
       );
-    } else if (
+    }
+
+    if (
       readBy.length !== 0 &&
       !threadList &&
       message.id === lastReceivedId &&
@@ -90,13 +86,15 @@ const MessageStatus = ({
       return (
         <ReadByContainer testID='read-by-container'>
           <Avatar
-            name={lastReadUser.name || lastReadUser.id}
             image={lastReadUser.image}
+            name={lastReadUser.name || lastReadUser.id}
             size={16}
           />
         </ReadByContainer>
       );
-    } else if (
+    }
+
+    if (
       message.status === 'received' &&
       message.type !== 'ephemeral' &&
       message.id === lastReceivedId &&
@@ -109,23 +107,25 @@ const MessageStatus = ({
           </DeliveredCircle>
         </DeliveredContainer>
       );
-    } else {
-      return <Spacer testID='spacer' />;
     }
+
+    return <Spacer testID='spacer' />;
   };
 
-  return <StatusContainer>{renderStatus()}</StatusContainer>;
+  return (
+    <StatusContainer>
+      <Status />
+    </StatusContainer>
+  );
 };
 
 MessageStatus.propTypes = {
-  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-  client: PropTypes.object,
-  /** A list of users who have read the message */
-  readBy: PropTypes.array,
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
   /** Latest message id on current channel */
   lastReceivedId: PropTypes.string,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /** A list of users who have read the message */
+  readBy: PropTypes.array,
 };
 
 export default MessageStatus;
