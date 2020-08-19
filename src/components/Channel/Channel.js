@@ -40,7 +40,7 @@ const Channel = (props) => {
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
   } = props;
 
-  const { client, isOnline, logger = () => {} } = useContext(ChatContext);
+  const { client, isOnline } = useContext(ChatContext);
   const { t } = useContext(TranslationContext);
 
   const [editing, setEditing] = useState(null);
@@ -78,30 +78,18 @@ const Channel = (props) => {
     channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
-  const [unmounted, setUnmounted] = useState(false); // TODO: check if still needed
   const [watcherCount, setWatcherCount] = useState();
   const [watchers, setWatchers] = useState(Immutable({}));
 
   useEffect(() => {
-    logger('Channel component', 'component mount', {
-      props,
-      tags: ['lifecycle', 'channel'],
-    });
-
     if (channel) initChannel();
 
     return () => {
-      logger('Channel component', 'component unmount', {
-        props,
-        tags: ['lifecycle', 'channel'],
-      });
-
       client.off('connection.recovered', handleEvent);
       channel.off?.(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
-      setUnmounted(true);
     };
   }, [channel]);
 
@@ -113,12 +101,7 @@ const Channel = (props) => {
   }, [props.thread]);
 
   useEffect(() => {
-    logger('Channel component', 'component update', {
-      props,
-      tags: ['lifecycle', 'channel'],
-    });
-
-    if (unmounted || online === isOnline) return;
+    if (online === isOnline) return;
     setOnline(isOnline);
   }, [isOnline]);
 
@@ -144,7 +127,6 @@ const Channel = (props) => {
   });
 
   const copyChannelState = () => {
-    if (unmounted) return;
     setLoading(false);
     setMembers(channel.state.members);
     setMessages(channel.state.messages);
@@ -189,8 +171,6 @@ const Channel = (props) => {
   });
 
   const handleEvent = (e) => {
-    if (unmounted) return;
-
     if (thread) {
       const updatedThreadMessages =
         channel.state.threads[thread.id] || threadMessages;
@@ -222,7 +202,6 @@ const Channel = (props) => {
       try {
         await channel.watch();
       } catch (e) {
-        if (unmounted) return;
         setError(e);
         setLoading(false);
         initError = true;
@@ -249,7 +228,6 @@ const Channel = (props) => {
       setThreadMessages(extraState.threadMessages);
     }
 
-    if (unmounted) return;
     setMessages(channel.state.messages);
   };
 
@@ -367,7 +345,6 @@ const Channel = (props) => {
   };
 
   const loadMoreFinished = (updatedHasMore, messages) => {
-    if (unmounted) return;
     setLoadingMore(false);
     setHasMore(updatedHasMore);
     setMessages(messages);
@@ -380,7 +357,7 @@ const Channel = (props) => {
   });
 
   const loadMore = async () => {
-    if (loadingMore || hasMore === false || unmounted) return;
+    if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -397,12 +374,6 @@ const Channel = (props) => {
     const limit = 100;
 
     try {
-      logger('Channel Component', 'Re-querying the messages', {
-        id_lt: oldestID,
-        limit,
-        props,
-      });
-
       const queryResponse = await channel.query({
         messages: { id_lt: oldestID, limit },
       });
@@ -411,7 +382,6 @@ const Channel = (props) => {
       loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
     } catch (e) {
       console.warn('Message pagination request failed with error', e);
-      if (unmounted) return;
       return setLoadingMore(false);
     }
   };
@@ -431,19 +401,12 @@ const Channel = (props) => {
     return client.updateMessage(updatedMessage);
   };
 
-  const setEditingState = (message) => {
-    if (unmounted) return;
-    setEditing(message);
-  };
+  const setEditingState = (message) => setEditing(message);
 
-  const clearEditingState = () => {
-    if (unmounted) return;
-    setEditing(false);
-  };
+  const clearEditingState = () => setEditing(false);
 
   const removeMessage = (message) => {
     channel.state.removeMessage(message);
-    if (unmounted) return;
     setMessages(channel.state.messages);
   };
 
@@ -453,19 +416,16 @@ const Channel = (props) => {
 
   const openThread = (message) => {
     const threadMessages = channel.state.threads[message.id] || [];
-    if (unmounted) return;
     setThread(message);
     setThreadMessages(threadMessages);
   };
 
   const closeThread = () => {
-    if (unmounted) return;
     setThread(null);
     setThreadMessages([]);
   };
 
   const loadMoreThreadFinished = (threadHasMore, updatedThreadMessages) => {
-    if (unmounted) return;
     setThreadHasMore(threadHasMore);
     setThreadLoadingMore(false);
     setThreadMessages(updatedThreadMessages);
@@ -482,7 +442,7 @@ const Channel = (props) => {
   );
 
   const loadMoreThread = async () => {
-    if (threadLoadingMore || unmounted) return;
+    if (threadLoadingMore) return;
     setThreadLoadingMore(true);
 
     const parentID = thread.id;
@@ -515,7 +475,6 @@ const Channel = (props) => {
     online,
     read,
     typing,
-    unmounted,
     watcherCount,
     watchers,
   };
@@ -557,16 +516,6 @@ const Channel = (props) => {
   }
 
   if (error) {
-    logger(
-      'Channel component',
-      'Error loading channel - rendering error indicator',
-      {
-        error,
-        props,
-        tags: ['error', 'channelComponent'],
-      },
-    );
-
     const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
     return <LoadingErrorIndicator error={error} listType='message' />;
   }
