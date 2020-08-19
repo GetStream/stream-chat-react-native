@@ -18,9 +18,9 @@ import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedF
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
 /**
- * ChannelList - A preview list of channels, allowing you to select the channel you want to open.
- * This components doesn't provide any UI for the list. UI is provided by component `List` which should be
- * provided to this component as prop. By default ChannelListMessenger is used a list UI.
+ * This component fetches a list of channels, allowing you to select the channel you want to open.
+ * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is provided by the `List` component which is
+ * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
  *
  * @example ../docs/ChannelList.md
  */
@@ -90,43 +90,137 @@ const ChannelList = (props) => {
       setFlatListRef={(ref) => {
         listRef.current = ref; // TODO: see if this is correct!
         setFlatListRef && setFlatListRef(ref);
+        // setFlatListRef?.(ref);
       }}
     />
   );
 };
 
 ChannelList.propTypes = {
-  /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
-  ChannelPreviewMessenger: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-
-  /** The loading indicator to use */
-  LoadingIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /** The indicator to use when there is error in fetching channels */
-  LoadingErrorIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /** The indicator to use when channel list is empty */
+  /**
+   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
+   * additional props to the underlying React Native FlatList.
+   *
+   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+   *
+   * **EXAMPLE:**
+   *
+   * ```
+   * <ChannelListMessenger
+   *  channels={channels}
+   *  additionalFlatListProps={{ bounces: true }}
+   * />
+   * ```
+   *
+   * **NOTE:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
+   */
+  additionalFlatListProps: PropTypes.object,
+  /**
+   * Object containing channel query filters
+   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields
+   * */
+  filters: PropTypes.object,
+  /**
+   * The React Native FlatList threshold to fetch more data
+   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
+   * */
+  loadMoreThreshold: PropTypes.number,
+  /**
+   * If set to true, channels won't dynamically sort by most recent message, defaults to false
+   */
+  lockChannelOrder: PropTypes.bool,
+  /**
+   * Function that overrides default behavior when a user gets added to a channel
+   *
+   * @param {Event} event [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * */
+  onAddedToChannel: PropTypes.func,
+  /**
+   * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   * */
+  onChannelDeleted: PropTypes.func,
+  /**
+   * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   * */
+  onChannelHidden: PropTypes.func,
+  /**
+   * Function to customize behavior when a channel gets truncated
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   * */
+  onChannelTruncated: PropTypes.func,
+  /**
+   * Function that overrides default behavior when a channel gets updated
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   * */
+  onChannelUpdated: PropTypes.func,
+  /**
+   * Function that overrides default behavior when new message is received on channel not currently being watched
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   * */
+  onMessageNew: PropTypes.func,
+  /**
+   * Function that overrides default behavior when a user gets removed from a channel
+   *
+   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   * */
+  onRemovedFromChannel: PropTypes.func,
+  /**
+   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
+   *
+   * @param channel A channel object
+   * */
+  onSelect: PropTypes.func,
+  /**
+   * Object containing channel query options
+   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available option fields
+   * */
+  options: PropTypes.object,
+  /**
+   * Function to gain access to the inner FlatList ref
+   *
+   * **EXAMPLE:**
+   *
+   * ```
+   * <ChannelListMessenger
+   *  setFlatListRef={(ref) => {
+   *    // Use ref for your own good
+   *  }}
+   * ```
+   */
+  setFlatListRef: PropTypes.func,
+  /**
+   * Object containing channel sort parameters
+   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available sorting fields
+   * */
+  sort: PropTypes.object,
+  /**
+   * Custom indicator to use when channel list is empty
+   *
+   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
+   * */
   EmptyStateIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
   /**
-   * The indicator to display network-down error at top of list, if there is connectivity issue
-   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+   * Custom loading indicator to display at bottom of the list, while loading further pages
+   *
+   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
    */
-  HeaderNetworkDownIndicator: PropTypes.oneOfType([
+  FooterLoadingIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
   /**
-   * The indicator to display error at top of list, if there was an error loading some page/channels after the first page.
+   * Custom indicator to display error at top of list, if loading/pagination error occurs
+   *
    * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
    */
   HeaderErrorIndicator: PropTypes.oneOfType([
@@ -134,115 +228,44 @@ ChannelList.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Loading indicator to display at bottom of the list, while loading further pages.
-   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+   * Custom indicator to display network-down error at top of list, if there is connectivity issue
+   *
+   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
    */
-  FooterLoadingIndicator: PropTypes.oneOfType([
+  HeaderNetworkDownIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
+  /**
+   * Custom UI component to display the list of channels
+   *
+   * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/#channellistmessenger)
+   */
   List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  onSelect: PropTypes.func,
   /**
-   * Function that overrides default behaviour when new message is received on channel that is not being watched
+   * Custom indicator to use when there is error in fetching channels
    *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
    * */
-  onMessageNew: PropTypes.func,
+  LoadingErrorIndicator: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
   /**
-   * Function that overrides default behaviour when users gets added to a channel
+   * Custom loading indicator to use
    *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
    * */
-  onAddedToChannel: PropTypes.func,
+  LoadingIndicator: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
   /**
-   * Function that overrides default behaviour when users gets removed from a channel
+   * Custom UI component to display individual channel list items
    *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
    * */
-  onRemovedFromChannel: PropTypes.func,
-  /**
-   * Function that overrides default behaviour when channel gets updated
-   *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
-   * */
-  onChannelUpdated: PropTypes.func,
-  /**
-   * Function to customize behaviour when channel gets truncated
-   *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
-   * */
-  onChannelTruncated: PropTypes.func,
-  /**
-   * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
-   *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
-   * */
-  onChannelDeleted: PropTypes.func,
-  /**
-   * Function that overrides default behaviour when channel gets hidden. In absence of this prop, channel will be removed from the list.
-   *
-   * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
-   * */
-  onChannelHidden: PropTypes.func,
-  /**
-   * Object containing query filters
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for filter.
-   * */
-  filters: PropTypes.object,
-  /**
-   * Object containing query options
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for options.
-   * */
-  options: PropTypes.object,
-  /**
-   * Object containing sort parameters
-   * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for sort.
-   * */
-  sort: PropTypes.object,
-  /** For flatlist  */
-  loadMoreThreshold: PropTypes.number,
-  /** Client object. Available from [Chat context](#ChatContext) */
-  client: PropTypes.object,
-  /**
-   * Function to set change active channel. This function acts as bridge between channel list and currently active channel component.
-   *
-   * @param channel A Channel object
-   */
-  setActiveChannel: PropTypes.func,
-  /**
-   * If true, channels won't be dynamically sorted by most recent message.
-   */
-  lockChannelOrder: PropTypes.bool,
-  /**
-   * Besides existing (default) UX behaviour of underlying flatlist of ChannelList component, if you want
-   * to attach some additional props to underlying flatlist, you can add it to following prop.
-   *
-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-   *
-   * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
-   *
-   * e.g.
-   * ```
-   * <ChannelList
-   *  filters={filters}
-   *  sort={sort}
-   *  additionalFlatListProps={{ bounces: true }} />
-   * ```
-   */
-  additionalFlatListProps: PropTypes.object,
-  /**
-   * Use `setFlatListRef` to get access to ref to inner FlatList.
-   *
-   * e.g.
-   * ```
-   * <ChannelList
-   *  setFlatListRef={(ref) => {
-   *    // Use ref for your own good
-   *  }}
-   * ```
-   */
-  setFlatListRef: PropTypes.func,
+  Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
 
 export default ChannelList;
