@@ -4,6 +4,10 @@ import { findNodeHandle, View } from 'react-native';
 import { SuggestionsContext } from '../../context';
 import SuggestionsList from './SuggestionsList';
 
+/**
+ *
+ * This provider component exposes the properties stored within the SuggestionsContext.
+ */
 const SuggestionsProvider = ({ children }) => {
   const [componentType, setComponentType] = useState('');
   const [suggestions, setSuggestions] = useState({});
