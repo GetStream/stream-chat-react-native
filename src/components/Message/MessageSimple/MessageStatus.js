@@ -8,39 +8,39 @@ import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
 import loadingGif from '../../../images/loading.gif';
 
 const CheckMark = styled.Image`
-  width: 8;
   height: 6;
+  width: 8;
   ${({ theme }) => theme.message.status.checkMark.css};
 `;
 
 const DeliveredCircle = styled.View`
-  width: 16;
-  height: 16;
-  border-radius: 16;
-  background-color: ${({ theme }) => theme.colors.primary};
   align-items: center;
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 16;
+  height: 16;
   justify-content: center;
   padding: 6px;
+  width: 16;
   ${({ theme }) => theme.message.status.deliveredCircle.css};
 `;
 
 const DeliveredContainer = styled.View`
-  display: flex;
   align-items: center;
+  display: flex;
   height: 20;
   ${({ theme }) => theme.message.status.deliveredContainer.css};
 `;
 
 const ReadByContainer = styled.View`
+  align-items: center;
   display: flex;
   flex-direction: row;
-  align-items: center;
   ${({ theme }) => theme.message.status.readByContainer.css};
 `;
 
 const SendingContainer = styled.View`
-  display: flex;
   align-items: center;
+  display: flex;
   ${({ theme }) => theme.message.status.sendingContainer.css};
 `;
 
@@ -55,9 +55,9 @@ const Spacer = styled.View`
 `;
 
 const StatusContainer = styled.View`
-  width: 20;
   flex-direction: row;
   justify-content: center;
+  width: 20;
 `;
 
 const MessageStatus = ({ readBy, message, lastReceivedId, threadList }) => {

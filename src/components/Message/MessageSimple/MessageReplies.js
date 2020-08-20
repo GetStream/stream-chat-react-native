@@ -6,9 +6,9 @@ import { TranslationContext } from '../../../context';
 import iconPath from '../../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
-  padding: 5px;
-  flex-direction: row;
   align-items: center;
+  flex-direction: row;
+  padding: 5px;
   ${({ theme }) => theme.message.replies.container.css}
 `;
 
@@ -20,8 +20,8 @@ const MessageRepliesImage = styled.Image`
 
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
-  font-weight: 700;
   font-size: 12;
+  font-weight: 700;
   ${({ theme }) => theme.message.replies.messageRepliesText.css}
 `;
 
