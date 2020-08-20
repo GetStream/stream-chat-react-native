@@ -1,14 +1,8 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { TranslationContext } from '../../context';
+import { SuggestionsContext, TranslationContext } from '../../context';
 
 const InputBox = styled.TextInput`
   flex: 1;
@@ -36,61 +30,53 @@ const isCommand = (text) => {
 
 const AutoCompleteInput = ({
   additionalTextInputProps,
-  closeSuggestions,
   onChange,
-  openSuggestions,
   setInputBoxRef,
   triggerSettings,
-  updateSuggestions: updateSuggestionsProp,
   value,
 }) => {
+  const {
+    closeSuggestions,
+    openSuggestions,
+    updateSuggestions: updateSuggestionsContext,
+  } = useContext(SuggestionsContext);
   const { t } = useContext(TranslationContext);
 
   const isTrackingStarted = useRef(false);
 
-  const [currentTrigger, setCurrentTrigger] = useState(null);
   const [selectionEnd, setSelectionEnd] = useState(0);
 
   useEffect(() => {
     handleChange(value, true);
   }, [handleChange, value]);
 
-  const startTracking = useCallback(
-    (trigger) => {
-      isTrackingStarted.current = true;
-      const { component, title } = triggerSettings[trigger || currentTrigger];
-      openSuggestions(title, component);
-    },
-    [currentTrigger, isTrackingStarted, openSuggestions],
-  );
+  const startTracking = (trigger) => {
+    isTrackingStarted.current = true;
+    const { component, title } = triggerSettings[trigger];
+    openSuggestions(title, component);
+  };
 
-  const stopTracking = useCallback(() => {
+  const stopTracking = () => {
     isTrackingStarted.current = false;
     closeSuggestions();
-  }, [closeSuggestions, isTrackingStarted]);
+  };
 
-  const updateSuggestions = useCallback(
-    async (query, trigger) => {
-      await triggerSettings[trigger || currentTrigger].dataProvider(
-        query,
-        value,
-        (data, queryCallback) => {
-          if (query !== queryCallback) {
-            return;
-          }
-
-          updateSuggestionsProp({ data, onSelect: onSelectSuggestion });
-        },
-      );
-    },
-    [
-      currentTrigger,
-      onSelectSuggestion,
-      triggerSettings,
-      updateSuggestionsProp,
+  const updateSuggestions = async ({ query, trigger }) => {
+    await triggerSettings[trigger].dataProvider(
+      query,
       value,
-    ],
-  );
+      (data, queryCallback) => {
+        if (query !== queryCallback) {
+          return;
+        }
+
+        updateSuggestionsContext({
+          data,
+          onSelect: (item) => onSelectSuggestion({ item, trigger }),
+        });
+      },
+    );
+  };
 
   const handleChange = (text, fromUpdate = false) => {
     if (!fromUpdate) {
@@ -100,161 +86,116 @@ const AutoCompleteInput = ({
     }
   };
 
-  const handleSelectionChange = useCallback(
-    ({
-      nativeEvent: {
-        selection: { end },
-      },
-    }) => {
-      setSelectionEnd(end);
+  const handleSelectionChange = ({
+    nativeEvent: {
+      selection: { end },
     },
-    [setSelectionEnd],
-  );
+  }) => {
+    setSelectionEnd(end);
+  };
 
-  const onSelectSuggestion = useCallback(
-    (item) => {
-      const newToken = triggerSettings[currentTrigger].output(item);
+  const onSelectSuggestion = ({ item, trigger }) => {
+    const newToken = triggerSettings[trigger].output(item);
 
-      if (!currentTrigger) {
-        return;
-      }
+    if (!trigger) {
+      return;
+    }
 
-      const textToModify = value.slice(0, selectionEnd);
+    const textToModify = value.slice(0, selectionEnd);
 
-      const startOfTokenPosition = textToModify.search(
-        /**
-         * It's important to escape the currentTrigger char for chars like [, (,...
-         */
-        new RegExp(`\\${currentTrigger}${`[^\\${currentTrigger}${'\\s'}]`}*$`),
-      );
+    const startOfTokenPosition = textToModify.search(
+      /**
+       * It's important to escape the trigger char for chars like [, (,...
+       */
+      new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
+    );
 
-      const newTokenString = `${newToken.text} `;
+    const newTokenString = `${newToken.text} `;
 
-      const newCaretPosition = computeCaretPosition(
-        newTokenString,
-        startOfTokenPosition,
-      );
+    const newCaretPosition = computeCaretPosition(
+      newTokenString,
+      startOfTokenPosition,
+    );
 
-      const modifiedText = `${textToModify.substring(
-        0,
-        startOfTokenPosition,
-      )}${newTokenString}`;
+    const modifiedText = `${textToModify.substring(
+      0,
+      startOfTokenPosition,
+    )}${newTokenString}`;
 
+    stopTracking();
+    onChange(value.replace(textToModify, modifiedText));
+
+    setSelectionEnd(newCaretPosition || 0);
+
+    if (triggerSettings[trigger].callback) {
+      triggerSettings[trigger].callback(item);
+    }
+  };
+
+  const handleCommand = async (text) => {
+    if (!isCommand(text)) {
+      return false;
+    }
+
+    if (!isTrackingStarted.current) {
+      startTracking('/');
+    }
+    const actualToken = text.trim().slice(1);
+    await updateSuggestions({ query: actualToken, trigger: '/' });
+
+    return true;
+  };
+
+  const handleMentions = ({ selectionEnd: selectionEndProp, text }) => {
+    const minChar = 0;
+
+    const tokenMatch = text
+      .slice(0, selectionEndProp)
+      .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
+
+    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const handleMentionsTrigger =
+      (lastToken &&
+        Object.keys(triggerSettings).find(
+          (trigger) => trigger === lastToken[0],
+        )) ||
+      null;
+
+    /*
+      if we lost the trigger token or there is no following character we want to close
+      the autocomplete
+    */
+    if (!lastToken || lastToken.length <= minChar) {
       stopTracking();
-      onChange(value.replace(textToModify, modifiedText));
+      return;
+    }
 
-      setSelectionEnd(newCaretPosition || 0);
+    const actualToken = lastToken.slice(1);
 
-      if (triggerSettings[currentTrigger].callback) {
-        triggerSettings[currentTrigger].callback(item);
-      }
-    },
-    [
-      computeCaretPosition,
-      currentTrigger,
-      onChange,
-      selectionEnd,
-      setSelectionEnd,
-      stopTracking,
-      triggerSettings,
-      value,
-    ],
-  );
+    // if trigger is not configured step out from the function, otherwise proceed
+    if (!handleMentionsTrigger) {
+      return;
+    }
 
-  const handleCommand = useCallback(
-    async (text) => {
-      if (!isCommand(text)) {
-        return false;
-      }
+    if (!isTrackingStarted.current) {
+      startTracking('@');
+    }
 
-      await setCurrentTrigger('/');
-      if (!isTrackingStarted.current) {
-        await startTracking('/');
-      }
-      const actualToken = text.trim().slice(1);
-      await updateSuggestions(actualToken, '/');
+    updateSuggestions({ query: actualToken, trigger: '@' });
+  };
 
-      return true;
-    },
-    [
-      isCommand,
-      isTrackingStarted,
-      setCurrentTrigger,
-      startTracking,
-      updateSuggestions,
-    ],
-  );
-
-  const handleMentions = useCallback(
-    (text, selectionEndProp) => {
-      const minChar = 0;
-
-      const tokenMatch = text
-        .slice(0, selectionEndProp)
-        .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
-
-      const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
-      const handleMentionsTrigger =
-        (lastToken &&
-          Object.keys(triggerSettings).find(
-            (trigger) => trigger === lastToken[0],
-          )) ||
-        null;
-
-      /*
-        if we lost the trigger token or there is no following character we want to close
-        the autocomplete
-      */
-      if (!lastToken || lastToken.length <= minChar) {
+  const handleSuggestions = (text) => {
+    setTimeout(async () => {
+      if (
+        text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
+        !isTrackingStarted.current
+      ) {
         stopTracking();
-        return;
+      } else if (!(await handleCommand(text))) {
+        handleMentions({ selectionEnd, text });
       }
-
-      const actualToken = lastToken.slice(1);
-
-      // if trigger is not configured step out from the function, otherwise proceed
-      if (!handleMentionsTrigger) {
-        return;
-      }
-
-      setCurrentTrigger(handleMentionsTrigger);
-      if (!isTrackingStarted.current) {
-        startTracking(handleMentionsTrigger);
-      }
-
-      updateSuggestions(actualToken, handleMentionsTrigger);
-    },
-    [
-      isTrackingStarted,
-      setCurrentTrigger,
-      startTracking,
-      stopTracking,
-      triggerSettings,
-      updateSuggestions,
-    ],
-  );
-
-  const handleSuggestions = useCallback(
-    (text) => {
-      setTimeout(async () => {
-        if (
-          text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
-          !isTrackingStarted.current
-        ) {
-          stopTracking();
-        } else if (!(await handleCommand(text))) {
-          handleMentions(text, selectionEnd);
-        }
-      }, 100);
-    },
-    [
-      handleCommand,
-      handleMentions,
-      isTrackingStarted,
-      selectionEnd,
-      stopTracking,
-    ],
-  );
+    }, 100);
+  };
 
   return (
     <InputBox
@@ -279,18 +220,12 @@ AutoCompleteInput.propTypes = {
    * @see See https://facebook.github.io/react-native/docs/textinput#reference
    */
   additionalTextInputProps: PropTypes.object,
-  /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-  closeSuggestions: PropTypes.func,
   /**
    * @param text string
    */
   onChange: PropTypes.func,
-  /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-  openSuggestions: PropTypes.func,
   setInputBoxRef: PropTypes.func,
   triggerSettings: PropTypes.object,
-  /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-  updateSuggestions: PropTypes.func,
   value: PropTypes.string,
 };
 

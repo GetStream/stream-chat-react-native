@@ -933,9 +933,6 @@ class MessageInput extends PureComponent {
                 />
               )}
               <AutoCompleteInput
-                openSuggestions={this.props.openSuggestions}
-                closeSuggestions={this.props.closeSuggestions}
-                updateSuggestions={this.props.updateSuggestions}
                 value={this.state.text}
                 onChange={this.onChangeText}
                 setInputBoxRef={this.setInputBoxRef}

@@ -12,6 +12,7 @@ import {
 import AutoCompleteInput from '../AutoCompleteInput';
 
 import { Chat } from '../../Chat';
+import { SuggestionsContext } from '../../../context';
 
 import { ACITriggerSettings } from '../../../utils';
 
@@ -22,15 +23,17 @@ describe('AutoCompleteInput', () => {
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
-      <AutoCompleteInput
-        onChange={jest.fn}
-        triggerSettings={ACITriggerSettings({
-          channel,
-          onMentionSelectItem: jest.fn(),
-          t: jest.fn(),
-        })}
-        {...props}
-      />
+      <SuggestionsContext.Provider value={props}>
+        <AutoCompleteInput
+          onChange={jest.fn}
+          triggerSettings={ACITriggerSettings({
+            channel,
+            onMentionSelectItem: jest.fn(),
+            t: jest.fn(),
+          })}
+          value={props.value}
+        />
+      </SuggestionsContext.Provider>
     </Chat>
   );
 
@@ -52,44 +55,38 @@ describe('AutoCompleteInput', () => {
   });
 
   it('should render AutoCompleteInput and trigger open/close suggestions with / commands', async () => {
-    const closeSuggestions = jest.fn();
-    const openSuggestions = jest.fn();
+    const props = {
+      closeSuggestions: jest.fn(),
+      openSuggestions: jest.fn(),
+    };
 
     await initializeChannel(generateChannel());
 
-    const { getByTestId, rerender } = render(
-      getComponent({
-        closeSuggestions,
-        openSuggestions,
-        value: '',
-      }),
-    );
+    const { queryByTestId, rerender } = render(getComponent(props));
 
     await waitFor(() => {
-      expect(getByTestId('auto-complete-text-input')).toBeTruthy();
-      expect(openSuggestions).toHaveBeenCalledTimes(0);
-      expect(closeSuggestions).toHaveBeenCalledTimes(0);
+      expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
+      expect(props.closeSuggestions).toHaveBeenCalledTimes(0);
+      expect(props.openSuggestions).toHaveBeenCalledTimes(0);
     });
 
-    rerender(
-      getComponent({
-        closeSuggestions,
-        openSuggestions,
-        value: '/',
-      }),
-    );
+    props.value = '/';
+    rerender(getComponent(props));
 
-    await waitFor(() => expect(openSuggestions).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
+      expect(props.closeSuggestions).toHaveBeenCalledTimes(0);
+      expect(props.openSuggestions).toHaveBeenCalledTimes(1);
+    });
 
-    rerender(
-      getComponent({
-        closeSuggestions,
-        openSuggestions,
-        value: '',
-      }),
-    );
+    props.value = '';
+    rerender(getComponent(props));
 
-    await waitFor(() => expect(closeSuggestions).toHaveBeenCalledTimes(1));
+    await waitFor(() => {
+      expect(queryByTestId('auto-complete-text-input')).toBeTruthy();
+      expect(props.closeSuggestions).toHaveBeenCalledTimes(1);
+      expect(props.openSuggestions).toHaveBeenCalledTimes(1);
+    });
   });
 
   // TODO: figure out how to make tests work for @ mentions with needing to update function state values
