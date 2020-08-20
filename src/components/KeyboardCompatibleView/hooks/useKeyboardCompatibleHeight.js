@@ -10,18 +10,23 @@ export const useKeyboardCompatibleHeight = ({
 }) => {
   const appState = useAppState();
 
+  // On iOS we use the event `keyboardWillShow` to adjust the height of channel component.
+  // We use following variable to avoid race condition between keyboardWillShow event and
+  // keyboardDidHide event. On android we use `keyboardDidShow` and `keyboardDidHide`, so
+  // there is no chance of overlap or race condition.
   const hidingKeyboardInProgress = useRef(false);
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const [height, setHeight] = useState(initialHeight);
-
   const keyboardDidShow = useCallback(
     (e) => {
       if (!enabled) {
         return;
       }
 
-      hidingKeyboardInProgress.current = false;
+      if (Platform.OS === 'ios') {
+        hidingKeyboardInProgress.current = false;
+      }
 
       const keyboardHeight = e.endCoordinates.height;
 
@@ -40,7 +45,7 @@ export const useKeyboardCompatibleHeight = ({
           // this measure function was being executed, then we
           // should abort further execution and let the event callback
           // keyboardDidHide proceed.
-          if (hidingKeyboardInProgress.current) {
+          if (Platform.OS === 'ios' && hidingKeyboardInProgress.current) {
             return;
           }
           setHeight(finalHeight);
@@ -50,9 +55,12 @@ export const useKeyboardCompatibleHeight = ({
     },
     [enabled, hidingKeyboardInProgress, rootChannelView, setHeight],
   );
+  const keyboardWillShow = keyboardDidShow;
 
   const keyboardDidHide = useCallback(() => {
-    hidingKeyboardInProgress.current = true;
+    if (Platform.OS === 'ios') {
+      hidingKeyboardInProgress.current = true;
+    }
     setHeight(initialHeight);
     setKeyboardOpen(false);
   }, [hidingKeyboardInProgress, initialHeight, setHeight]);
@@ -60,7 +68,7 @@ export const useKeyboardCompatibleHeight = ({
   useEffect(() => {
     if (appState === 'active') {
       if (Platform.OS === 'ios') {
-        Keyboard.addListener('keyboardWillShow', keyboardDidShow);
+        Keyboard.addListener('keyboardWillShow', keyboardWillShow);
       } else {
         // Android doesn't support keyboardWillShow event.
         Keyboard.addListener('keyboardDidShow', keyboardDidShow);
