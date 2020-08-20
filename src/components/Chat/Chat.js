@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
 import { ChatContext, TranslationContext } from '../../context';
-import { useConnectionChanged } from './hooks/useConnectionChanged';
-import { useConnectionListener } from './hooks/useConnectionListener';
-import { useConnectionRecovered } from './hooks/useConnectionRecovered';
+import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 import { themed } from '../../styles/theme';
 import { Streami18n } from '../../utils/Streami18n';
@@ -37,52 +35,18 @@ const Chat = (props) => {
     t: (key) => key,
     tDateTimeParser: (input) => Dayjs(input),
   });
-  const [unmounted, setUnmounted] = useState(false);
 
   // Setup translators
   useStreami18n({ i18nInstance, setTranslators });
 
-  // Setup connection listener
-  useConnectionListener({ client });
-
-  // Setup event listeners
-  useConnectionChanged({
+  // Setup connection event listeners
+  useIsOnline({
     client,
     setConnectionRecovering,
     setIsOnline,
-    unmounted,
   });
-  useConnectionRecovered({ client, setConnectionRecovering, unmounted });
 
-  useEffect(() => {
-    if (client) {
-      logger('Chat component', 'mount', {
-        props,
-        state: { channel, connectionRecovering, isOnline, translators },
-        tags: ['lifecycle', 'chat'],
-      });
-    }
-
-    return () => {
-      logger('Chat component', 'unmount', {
-        props,
-        state: { channel, connectionRecovering, isOnline, translators },
-        tags: ['lifecycle', 'chat'],
-      });
-      setUnmounted(true);
-    };
-  }, [client]);
-
-  const setActiveChannel = (channel) => {
-    logger('Chat component', 'setActiveChannel', {
-      props,
-      state: { channel, connectionRecovering, isOnline, translators },
-      tags: ['chat'],
-    });
-
-    if (unmounted) return;
-    setChannel(channel);
-  };
+  const setActiveChannel = (channel) => setChannel(channel);
 
   if (!translators.t) return null;
 
