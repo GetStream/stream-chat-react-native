@@ -1,0 +1,64 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageTextContainer should render message text container 1`] = `
+<View
+  groupStyle="undefinedBottom"
+  style={
+    Array [
+      Object {
+        "alignSelf": "flex-end",
+        "backgroundColor": "#EBEBEB",
+        "borderBottomLeftRadius": 16,
+        "borderBottomRightRadius": 16,
+        "borderColor": "transparent",
+        "borderTopLeftRadius": 16,
+        "borderTopRightRadius": 16,
+        "borderWidth": 0,
+        "marginTop": 2,
+        "paddingBottom": 5,
+        "paddingLeft": 8,
+        "paddingRight": 8,
+        "paddingTop": 5,
+      },
+    ]
+  }
+  testID="message-text-container"
+  type="regular"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "minHeight": 1,
+          "minWidth": 1,
+        },
+        undefined,
+      ]
+    }
+  >
+    <Text
+      style={
+        Object {
+          "alignItems": "flex-start",
+          "flexDirection": "row",
+          "flexWrap": "wrap",
+          "justifyContent": "flex-start",
+        }
+      }
+    >
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "#222222",
+            },
+            undefined,
+          ]
+        }
+      >
+        Hello World
+      </Text>
+    </Text>
+  </View>
+</View>
+`;

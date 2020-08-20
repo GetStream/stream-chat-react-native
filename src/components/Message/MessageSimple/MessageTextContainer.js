@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import styled, { ThemeContext } from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled, { withTheme } from '@stream-io/styled-components';
-
-import { renderText, capitalize } from '../../../utils';
+import { capitalize, renderText } from '../../../utils';
 
 const TextContainer = styled.View`
+  align-self: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  background-color: ${({ theme, alignment, type, status }) =>
+    alignment === 'left' || type === 'error' || status === 'failed'
+      ? theme.colors.transparent
+      : theme.colors.light};
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('left') !== -1
       ? theme.message.content.textContainer.borderRadiusS
@@ -14,6 +19,10 @@ const TextContainer = styled.View`
     groupStyle.indexOf('right') !== -1
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
+  border-color: ${({ theme, alignment }) =>
+    alignment === 'left'
+      ? theme.message.content.textContainer.leftBorderColor
+      : theme.message.content.textContainer.rightBorderColor};
   border-top-left-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
       ? theme.message.content.textContainer.borderRadiusS
@@ -22,65 +31,54 @@ const TextContainer = styled.View`
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  padding: 5px;
-  padding-left: 8;
-  margin-top: 2;
-  padding-right: 8;
-  align-self: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth
       : theme.message.content.textContainer.rightBorderWidth};
-  border-color: ${({ theme, alignment }) =>
-    alignment === 'left'
-      ? theme.message.content.textContainer.leftBorderColor
-      : theme.message.content.textContainer.rightBorderColor};
-  background-color: ${({ theme, alignment, type, status }) =>
-    alignment === 'left' || type === 'error' || status === 'failed'
-      ? theme.colors.transparent
-      : theme.colors.light};
+  margin-top: 2;
+  padding: 5px;
+  padding-left: 8;
+  padding-right: 8;
   ${({ theme }) => theme.message.content.textContainer.css}
 `;
 
-const MessageTextContainer = withTheme((props) => {
+const MessageTextContainer = (props) => {
   const {
-    message,
-    groupStyles = ['bottom'],
     alignment,
-    MessageText = false,
+    groupStyles = ['bottom'],
+    markdownRules = {},
+    message,
+    MessageText,
   } = props;
+  const theme = useContext(ThemeContext);
 
-  const hasAttachment = message.attachments.length > 0 ? true : false;
+  if (!message.text) return null;
+
   const groupStyle =
-    alignment + capitalize(hasAttachment ? 'bottom' : groupStyles[0]);
+    alignment +
+    capitalize(message.attachments.length > 0 ? 'bottom' : groupStyles[0]);
+  const markdownStyles = theme ? theme.message.content.markdown : {};
 
-  if (!message.text) return false;
-  const markdownStyles = props.theme
-    ? props.theme.message.content.markdown
-    : {};
-  const markdownRules = props.markdownRules || {};
   return (
-    <React.Fragment>
-      <TextContainer
-        alignment={alignment}
-        groupStyle={groupStyle}
-        status={message.status}
-        type={message.type}
-      >
-        {!MessageText ? (
-          renderText(message, markdownStyles, markdownRules)
-        ) : (
-          <MessageText {...props} renderText={renderText} />
-        )}
-      </TextContainer>
-    </React.Fragment>
+    <TextContainer
+      alignment={alignment}
+      groupStyle={groupStyle}
+      status={message.status}
+      testID='message-text-container'
+      type={message.type}
+    >
+      {MessageText ? (
+        <MessageText {...props} renderText={renderText} theme={theme} />
+      ) : (
+        renderText(message, markdownStyles, markdownRules)
+      )}
+    </TextContainer>
   );
-});
+};
 
 MessageTextContainer.propTypes = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
+  /** Position of message. 'right' | 'left' */
+  alignment: PropTypes.oneOf(['right', 'left']),
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -88,18 +86,12 @@ MessageTextContainer.propTypes = {
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
   groupStyles: PropTypes.array,
-  /**
-   * Returns true if message (param) belongs to current user, else false
-   *
-   * @param message
-   * */
-  isMyMessage: PropTypes.func,
-  /** Custom UI component for message text */
-  MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
-  theme: PropTypes.object,
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules: PropTypes.object,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object.isRequired,
+  /** Custom UI component for message text */
+  MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
 
 export default MessageTextContainer;

@@ -16,10 +16,11 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["babel", "markdown"],
+  "plugins": ["babel", "markdown", "better-styled-components"],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
+    "better-styled-components/sort-declarations-alphabetically": 0,
     "comma-dangle": 0,
     "babel/no-invalid-this": 2,
     "default-case": 2,
@@ -120,12 +121,14 @@
         "markdown",
         "prettier",
         "react",
-        "typescript-sort-keys"
+        "typescript-sort-keys",
+        "better-styled-components"
       ],
       "rules": {
         "@typescript-eslint/ban-ts-comment": 0,
         "array-callback-return": 2,
         "arrow-body-style": 2,
+        "better-styled-components/sort-declarations-alphabetically": 0,
         "comma-dangle": 0,
         "babel/no-invalid-this": 2,
         "default-case": 2,
