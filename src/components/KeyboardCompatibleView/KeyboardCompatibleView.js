@@ -21,10 +21,10 @@ import { KeyboardContext } from '../../context';
  * ```
  */
 export const KeyboardCompatibleView = ({
+  children,
   enabled = true,
   keyboardDismissAnimationDuration = 500,
   keyboardOpenAnimationDuration = 500,
-  children,
 }) => {
   const heightAnim = useRef(new Animated.Value(0)).current;
   const rootChannelView = useRef();
@@ -39,15 +39,15 @@ export const KeyboardCompatibleView = ({
 
   useEffect(() => {
     Animated.timing(heightAnim, {
-      toValue: channelHeight,
       duration: isKeyboardOpen
         ? keyboardDismissAnimationDuration
         : keyboardOpenAnimationDuration,
+      toValue: channelHeight,
       useNativeDriver: false,
     }).start();
   }, [
-    heightAnim,
     channelHeight,
+    heightAnim,
     keyboardDismissAnimationDuration,
     keyboardOpenAnimationDuration,
   ]);
@@ -62,16 +62,16 @@ export const KeyboardCompatibleView = ({
       } else {
         // Bring the channel height to its full length state.
         Animated.timing(heightAnim, {
-          toValue: initialHeight,
           duration: keyboardDismissAnimationDuration,
+          toValue: initialHeight,
           useNativeDriver: false,
         }).start(resolve);
       }
     });
   }, [
+    channelHeight,
     heightAnim,
     initialHeight,
-    channelHeight,
     isKeyboardOpen,
     keyboardDismissAnimationDuration,
   ]);
@@ -90,13 +90,13 @@ export const KeyboardCompatibleView = ({
       if (!initialHeight) {
         setInitialHeight(height);
         Animated.timing(heightAnim, {
-          toValue: height,
           duration: 10,
+          toValue: height,
           useNativeDriver: false,
         }).start();
       }
     },
-    [heightAnim, initialHeight, enabled],
+    [enabled, heightAnim, initialHeight],
   );
 
   if (!enabled) {
