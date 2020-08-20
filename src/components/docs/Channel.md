@@ -15,7 +15,7 @@
 ></div>
 ```
 
-**NOTE** The Channel component provides access to the [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
+**Note:** The Channel component provides access to the values stored in [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
 
 The example below shows how to write a component that consumes a context through a higher order component.
 
@@ -36,7 +36,7 @@ class CustomChannelHeader extends React.PureComponent {
       <View>
         <Text>Channel ID: {channel.cid}</Text>
         <Text>
-          There are currently {channel.state.watcher_count} people online in channel
+          There are currently {channel.state.watcher_count} people online
         </Text>
       </View>
     );

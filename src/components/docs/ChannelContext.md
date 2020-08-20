@@ -37,12 +37,12 @@ The channel context exposes the following properties:
 
 **Example:**
 
-  ```json
-  {
-    "user_id_1": typing_event_object_of_user_1,
-    "user_id_2": typing_event_object_of_user_2
-  }
-  ```
+```json
+{
+  "user_id_1": typing_event_object_of_user_1,
+  "user_id_2": typing_event_object_of_user_2
+}
+```
 - **watcher_count** {number} Number of members watching the channel
 - **watchers** {ImmutableObject} Map of user IDs for users currently online and watching the channel
 

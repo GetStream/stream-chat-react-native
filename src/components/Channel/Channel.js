@@ -581,17 +581,14 @@ Channel.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed.
-   * Defaults to [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
+   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
    *
-   * This prop can be used to configure default KeyboardCompatibleView component.
-   *
-   * Example:
+   * **Example:**
    *
    * ```
    * <Channel
    *  channel={channel}
-   *  ...
    *  KeyboardCompatibleView={(props) => {
    *    return (
    *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
@@ -621,8 +618,8 @@ Channel.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Custom Message UI component to display a message in message list.
-   * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
