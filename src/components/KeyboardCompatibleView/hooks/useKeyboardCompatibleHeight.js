@@ -55,7 +55,6 @@ export const useKeyboardCompatibleHeight = ({
     },
     [enabled, hidingKeyboardInProgress, rootChannelView, setHeight],
   );
-  const keyboardWillShow = keyboardDidShow;
 
   const keyboardDidHide = useCallback(() => {
     if (Platform.OS === 'ios') {
@@ -68,7 +67,7 @@ export const useKeyboardCompatibleHeight = ({
   useEffect(() => {
     if (appState === 'active') {
       if (Platform.OS === 'ios') {
-        Keyboard.addListener('keyboardWillShow', keyboardWillShow);
+        Keyboard.addListener('keyboardWillShow', keyboardDidShow);
       } else {
         // Android doesn't support keyboardWillShow event.
         Keyboard.addListener('keyboardDidShow', keyboardDidShow);
