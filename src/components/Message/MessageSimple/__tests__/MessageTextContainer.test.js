@@ -19,14 +19,7 @@ describe('MessageTextContainer', () => {
     const message = generateMessage({
       user: { ...staticUser, image: undefined },
     });
-    const {
-      getByTestId,
-      getByText,
-      rerender,
-      queryAllByTestId,
-      queryAllByText,
-      toJSON,
-    } = render(
+    const { getByTestId, getByText, rerender, toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
         <MessageTextContainer
           alignment='right'
