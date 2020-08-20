@@ -112,7 +112,7 @@ ChannelList.propTypes = {
    * />
    * ```
    *
-   * **NOTE:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
+   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
   additionalFlatListProps: PropTypes.object,
   /**
@@ -185,7 +185,7 @@ ChannelList.propTypes = {
   /**
    * Function to gain access to the inner FlatList ref
    *
-   * **EXAMPLE:**
+   * **Example:**
    *
    * ```
    * <ChannelListMessenger

@@ -138,7 +138,7 @@ ChannelListMessenger.propTypes = {
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
    *
-   * **EXAMPLE:**
+   * **Example:**
    *
    * ```
    * <ChannelListMessenger
@@ -147,7 +147,7 @@ ChannelListMessenger.propTypes = {
    * />
    * ```
    *
-   * **NOTE:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
+   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
   additionalFlatListProps: PropTypes.object,
   /**
@@ -193,7 +193,7 @@ ChannelListMessenger.propTypes = {
   /**
    * Function to gain access to the inner FlatList ref
    *
-   * **EXAMPLE:**
+   * **Example:**
    *
    * ```
    * <ChannelListMessenger
