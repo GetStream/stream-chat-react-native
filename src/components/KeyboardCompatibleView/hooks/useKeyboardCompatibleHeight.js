@@ -89,5 +89,5 @@ export const useKeyboardCompatibleHeight = ({
     };
   }, [appState, initialHeight, keyboardDidHide, keyboardDidShow]);
 
-  return [height, keyboardOpen];
+  return { height, keyboardOpen };
 };
