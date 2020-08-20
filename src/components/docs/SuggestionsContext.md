@@ -1,31 +1,28 @@
-Message input component supports suggestions feature. Suggestions are displayed using the popup which contains a list of suggestion items.
-All the functionality is abstracted out to a higher order component called [SuggestionsProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/SuggestionsProvider.js). This HOC provides a context containing following functions to underlying components which consume this context:
+The MessageInput component supports a suggestions feature. Suggestions are displayed using a popup which contains a list of the suggestion items. All functionality is saved in the SuggestionsContext and can be accessed through the [SuggestionsProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/SuggestionsProvider.js) higher order component. This HOC provides the following functions to its underlying child components:
 
-- **setInputBoxContainerRef** Function to set ref on input box container.
-- **openSuggestions** Opens the suggestions popup on input box (whose ref is set by setInputBoxContainerRef)
+- **closeSuggestions** {function} Closes the suggestions popup above the input box
+- **openSuggestions** {function} Opens the suggestions popup above the input box
 
-  **Params**
+  **Params:**
 
-  - `title` {string} Title/header for suggestions suggestions popup
-  - `component` A UI component to be used as item in suggestions list. It should be either functional component or react class component.
+  - **title:** Title for the suggestions popup
+  - **component:** UI component used to display each item in the suggestions list
+- **setInputBoxContainerRef** {function} Sets a ref on the text input box container
+- **updateSuggestions** {function} Updates the suggestions in the suggestions popup
 
-- **closeSuggestions** Closes the suggestions popup on input box (whose ref is set by setInputBoxContainerRef)
-- **updateSuggestions** Updates the suggestions in suggestions popup.
+  **Params:**
 
-  **Params**
+  - **suggestions:** Array of suggestion objects
 
-  - `suggestions` {array} Array of suggestion objects
+  **Example:**
 
-    Example of suggestion object:
-
-    ```json
-        {
-            data: [
-                'suggestion 1',
-                'suggestion 2',
-                'suggestion 3',
-                ...
-            ],
-            onSelect: (suggestionItem) => { ... },
-        }
-    ```
+  ```json
+  {
+    data: [
+      'suggestion 1',
+      'suggestion 2',
+      'suggestion 3',
+    ],
+    onSelect: (suggestionItem) => { ... }
+  }
+  ```
