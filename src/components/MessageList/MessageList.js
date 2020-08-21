@@ -116,7 +116,7 @@ const MessageList = (props) => {
   useEffect(() => {
     const currentLastReceivedId = getLastReceivedId(messages);
     const currentLastMessage = messages[messages.length - 1];
-    if (lastReceivedId && currentLastReceivedId) {
+    if (currentLastReceivedId) {
       const hasNewMessage = lastReceivedId !== currentLastReceivedId;
       const userScrolledUp = yOffset.current > 0;
       const isOwner = currentLastMessage.user.id === client.userID;
@@ -255,6 +255,7 @@ const MessageList = (props) => {
             setFlatListRef && setFlatListRef(fl);
           }}
           renderItem={renderItem}
+          testID='message-flat-list'
           {...additionalFlatListProps}
         />
         {TypingIndicator && (

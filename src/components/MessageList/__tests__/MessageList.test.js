@@ -1,5 +1,10 @@
 import React from 'react';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
+import {
+  cleanup,
+  render,
+  waitFor,
+  fireEvent,
+} from '@testing-library/react-native';
 import {
   dispatchMessageNewEvent,
   dispatchTypingEvent,
@@ -18,6 +23,7 @@ import { Channel } from '../../Channel';
 import { Chat } from '../../Chat';
 import MessageList from '../MessageList';
 import { ChatContext } from '../../../context';
+import { act } from 'react-test-renderer';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -41,7 +47,7 @@ describe('MessageList', () => {
     const channel = chatClient.channel('messaging', mockedChannel.id);
     await channel.query();
 
-    const { getByText } = render(
+    const { getByText, queryAllByTestId } = render(
       <Chat client={chatClient}>
         <Channel channel={channel}>
           <MessageList />
@@ -53,6 +59,7 @@ describe('MessageList', () => {
     dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
 
     await waitFor(() => {
+      expect(queryAllByTestId('message-notification')).toHaveLength(0);
       expect(getByText(newMessage.text)).toBeTruthy();
     });
   });
@@ -150,6 +157,88 @@ describe('MessageList', () => {
       expect(
         getByText('Connection failure, reconnecting now ...'),
       ).toBeTruthy();
+    });
+  });
+
+  it('should render MessageNotification when new message is received and user has scroll up in list, then remove MessageNotification on scroll down', async () => {
+    const user1 = generateUser();
+    const user2 = generateUser();
+    const messages = new Array(50).fill(generateMessage({ user: user1 }));
+    const mockedChannel = generateChannel({
+      members: [
+        generateMember({ user: user1 }),
+        generateMember({ user: user2 }),
+      ],
+      messages,
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId, queryAllByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <MessageList />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('message-flat-list')).toBeTruthy();
+      expect(queryAllByTestId('message-notification')).toHaveLength(0);
+    });
+
+    const eventDataUp = {
+      nativeEvent: {
+        contentOffset: {
+          y: 500,
+        },
+        contentSize: {
+          // Dimensions of the scrollable content
+          height: 500,
+          width: 100,
+        },
+        layoutMeasurement: {
+          // Dimensions of the device
+          height: 100,
+          width: 100,
+        },
+      },
+    };
+    fireEvent.scroll(getByTestId('message-flat-list'), eventDataUp);
+
+    act(() => {
+      const newMessage = generateMessage({ user: user2 });
+      dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('message-notification')).toBeTruthy();
+    });
+
+    const eventDataDown = {
+      nativeEvent: {
+        contentOffset: {
+          y: 0,
+        },
+        contentSize: {
+          // Dimensions of the scrollable content
+          height: 500,
+          width: 100,
+        },
+        layoutMeasurement: {
+          // Dimensions of the device
+          height: 100,
+          width: 100,
+        },
+      },
+    };
+    fireEvent.scroll(getByTestId('message-flat-list'), eventDataDown);
+
+    await waitFor(() => {
+      expect(queryAllByTestId('message-notification')).toHaveLength(0);
     });
   });
 
