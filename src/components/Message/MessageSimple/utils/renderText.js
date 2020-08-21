@@ -3,28 +3,29 @@ import Markdown from '@stream-io/react-native-simple-markdown';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
 
-export const renderText = (message, styles, markdownRules) => {
+export const renderText = ({ markdownRules, markdownStyles, message }) => {
   // take the @ mentions and turn them into markdown?
   // translate links
-  let { text } = message;
-  const { mentioned_users = [] } = message;
+  const { mentioned_users = [], text } = message;
 
   if (!text) {
-    return;
+    return null;
   }
-  text = text.trim();
-  const urls = anchorme(text, {
+
+  let newText = text.trim();
+  const urls = anchorme(newText, {
     list: true,
   });
+
   for (const urlInfo of urls) {
     const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
       length: 20,
       omission: '...',
     });
     const mkdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
-    text = text.replace(urlInfo.raw, mkdown);
+    newText = newText.replace(urlInfo.raw, mkdown);
   }
-  let newText = text;
+
   if (mentioned_users.length) {
     for (let i = 0; i < mentioned_users.length; i++) {
       const username = mentioned_users[i].name || mentioned_users[i].id;
@@ -35,27 +36,19 @@ export const renderText = (message, styles, markdownRules) => {
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
-  const markdownStyles = {
+  const styles = {
     ...defaultMarkdownStyles,
-    ...styles,
+    ...markdownStyles,
   };
 
   return (
-    <Markdown rules={markdownRules} styles={markdownStyles}>
+    <Markdown rules={markdownRules} styles={styles}>
       {newText}
     </Markdown>
   );
 };
 
 const defaultMarkdownStyles = {
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  url: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
   inlineCode: {
     backgroundColor: '#F3F3F3',
     borderColor: '#dddddd',
@@ -63,5 +56,13 @@ const defaultMarkdownStyles = {
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  url: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 };
