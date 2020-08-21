@@ -12,7 +12,6 @@ import {
   ThreadContext,
 } from '../../context';
 import DefaultDateSeparator from './DateSeparator';
-import DefaultEventIndicator from './EventIndicator';
 import { Message as DefaultMessage } from '../Message';
 import MessageNotification from './MessageNotification';
 import MessageSystem from './MessageSystem';
@@ -94,8 +93,6 @@ const MessageList = (props) => {
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
-    eventIndicator,
-    EventIndicator = DefaultEventIndicator,
     headerComponent,
     HeaderComponent,
     messageActions,
@@ -148,9 +145,6 @@ const MessageList = (props) => {
     if (message.type === 'message.date') {
       const DateSeparatorComponent = dateSeparator || DateSeparator;
       return <DateSeparatorComponent message={message} />;
-    } else if (message.type === 'channel.event') {
-      const EventIndicatorComponent = eventIndicator || EventIndicator;
-      return <EventIndicatorComponent event={message.event} />;
     } else if (message.type === 'system') {
       return <MessageSystem message={message} />;
     } else if (message.type !== 'message.read') {
@@ -350,26 +344,6 @@ MessageList.propTypes = {
    * */
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: PropTypes.bool,
-  /**
-   * @deprecated User EventIndicator instead.
-   *
-   * UI Component to display following events in messagelist
-   *
-   * 1. member.added
-   * 2. member.removed
-   *
-   * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
-   * */
-  eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * UI Component to display following events in messagelist
-   *
-   * 1. member.added
-   * 2. member.removed
-   *
-   * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
-   * */
-  EventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * @deprecated Use HeaderComponent instead.
    *
