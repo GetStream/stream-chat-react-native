@@ -175,12 +175,28 @@ module.exports = {
           content: 'src/components/docs/withKeyboardContext.md',
         },
         {
+          name: 'MessagesContext',
+          content: 'src/components/docs/MessagesContext.md',
+        },
+        {
+          name: 'withMessagesContext',
+          content: 'src/components/docs/withMessagesContext.md',
+        },
+        {
           name: 'SuggestionsContext',
           content: 'src/components/docs/SuggestionsContext.md',
         },
         {
           name: 'withSuggestionsContext',
           content: 'src/components/docs/withSuggestionsContext.md',
+        },
+        {
+          name: 'ThreadContext',
+          content: 'src/components/docs/ThreadContext.md',
+        },
+        {
+          name: 'withThreadContext',
+          content: 'src/components/docs/withThreadContext.md',
         },
       ],
       exampleMode: 'collapse',

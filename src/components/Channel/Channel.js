@@ -25,8 +25,9 @@ import { emojiData as emojiDataDefault } from '../../utils';
 
 /**
  *
- * Channel - Wrapper component for a channel. It needs to be place inside of the Chat component.
- * MessageList, Thread, and MessageInput should be used as children of the Channel component.
+ * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * children of the Channel component to receive the ChannelContext.
  *
  * @example ../docs/Channel.md
  */
@@ -40,7 +41,7 @@ const Channel = (props) => {
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
   } = props;
 
-  const { client, isOnline, logger = () => {} } = useContext(ChatContext);
+  const { client } = useContext(ChatContext);
   const { t } = useContext(TranslationContext);
 
   const [editing, setEditing] = useState(null);
@@ -69,7 +70,6 @@ const Channel = (props) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [members, setMembers] = useState(Immutable({}));
   const [messages, setMessages] = useState(Immutable([]));
-  const [online, setOnline] = useState(isOnline);
   const [read, setRead] = useState(Immutable({}));
   const [thread, setThread] = useState(props.thread);
   const [threadHasMore, setThreadHasMore] = useState(true);
@@ -78,30 +78,18 @@ const Channel = (props) => {
     channel.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
-  const [unmounted, setUnmounted] = useState(false); // TODO: check if still needed
   const [watcherCount, setWatcherCount] = useState();
   const [watchers, setWatchers] = useState(Immutable({}));
 
   useEffect(() => {
-    logger('Channel component', 'component mount', {
-      props,
-      tags: ['lifecycle', 'channel'],
-    });
-
     if (channel) initChannel();
 
     return () => {
-      logger('Channel component', 'component unmount', {
-        props,
-        tags: ['lifecycle', 'channel'],
-      });
-
       client.off('connection.recovered', handleEvent);
       channel.off?.(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
-      setUnmounted(true);
     };
   }, [channel]);
 
@@ -111,16 +99,6 @@ const Channel = (props) => {
       setThreadMessages(channel.state.threads?.[props.thread?.id] || []);
     }
   }, [props.thread]);
-
-  useEffect(() => {
-    logger('Channel component', 'component update', {
-      props,
-      tags: ['lifecycle', 'channel'],
-    });
-
-    if (unmounted || online === isOnline) return;
-    setOnline(isOnline);
-  }, [isOnline]);
 
   /**
    * CHANNEL METHODS
@@ -144,7 +122,6 @@ const Channel = (props) => {
   });
 
   const copyChannelState = () => {
-    if (unmounted) return;
     setLoading(false);
     setMembers(channel.state.members);
     setMessages(channel.state.messages);
@@ -189,8 +166,6 @@ const Channel = (props) => {
   });
 
   const handleEvent = (e) => {
-    if (unmounted) return;
-
     if (thread) {
       const updatedThreadMessages =
         channel.state.threads[thread.id] || threadMessages;
@@ -222,7 +197,6 @@ const Channel = (props) => {
       try {
         await channel.watch();
       } catch (e) {
-        if (unmounted) return;
         setError(e);
         setLoading(false);
         initError = true;
@@ -249,7 +223,6 @@ const Channel = (props) => {
       setThreadMessages(extraState.threadMessages);
     }
 
-    if (unmounted) return;
     setMessages(channel.state.messages);
   };
 
@@ -367,7 +340,6 @@ const Channel = (props) => {
   };
 
   const loadMoreFinished = (updatedHasMore, messages) => {
-    if (unmounted) return;
     setLoadingMore(false);
     setHasMore(updatedHasMore);
     setMessages(messages);
@@ -380,7 +352,7 @@ const Channel = (props) => {
   });
 
   const loadMore = async () => {
-    if (loadingMore || hasMore === false || unmounted) return;
+    if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -397,12 +369,6 @@ const Channel = (props) => {
     const limit = 100;
 
     try {
-      logger('Channel Component', 'Re-querying the messages', {
-        id_lt: oldestID,
-        limit,
-        props,
-      });
-
       const queryResponse = await channel.query({
         messages: { id_lt: oldestID, limit },
       });
@@ -411,7 +377,6 @@ const Channel = (props) => {
       loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
     } catch (e) {
       console.warn('Message pagination request failed with error', e);
-      if (unmounted) return;
       return setLoadingMore(false);
     }
   };
@@ -431,19 +396,12 @@ const Channel = (props) => {
     return client.updateMessage(updatedMessage);
   };
 
-  const setEditingState = (message) => {
-    if (unmounted) return;
-    setEditing(message);
-  };
+  const setEditingState = (message) => setEditing(message);
 
-  const clearEditingState = () => {
-    if (unmounted) return;
-    setEditing(false);
-  };
+  const clearEditingState = () => setEditing(false);
 
   const removeMessage = (message) => {
     channel.state.removeMessage(message);
-    if (unmounted) return;
     setMessages(channel.state.messages);
   };
 
@@ -453,19 +411,16 @@ const Channel = (props) => {
 
   const openThread = (message) => {
     const threadMessages = channel.state.threads[message.id] || [];
-    if (unmounted) return;
     setThread(message);
     setThreadMessages(threadMessages);
   };
 
   const closeThread = () => {
-    if (unmounted) return;
     setThread(null);
     setThreadMessages([]);
   };
 
   const loadMoreThreadFinished = (threadHasMore, updatedThreadMessages) => {
-    if (unmounted) return;
     setThreadHasMore(threadHasMore);
     setThreadLoadingMore(false);
     setThreadMessages(updatedThreadMessages);
@@ -482,7 +437,7 @@ const Channel = (props) => {
   );
 
   const loadMoreThread = async () => {
-    if (threadLoadingMore || unmounted) return;
+    if (threadLoadingMore) return;
     setThreadLoadingMore(true);
 
     const parentID = thread.id;
@@ -502,7 +457,6 @@ const Channel = (props) => {
 
   const channelContext = {
     channel,
-    client,
     disabled: channel.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator:
       props.EmptyStateIndicator || EmptyStateIndicatorDefault,
@@ -512,11 +466,9 @@ const Channel = (props) => {
     loading,
     markRead: markReadThrottled,
     members,
-    online,
     read,
     setLastRead,
     typing,
-    unmounted,
     watcherCount,
     watchers,
   };
@@ -558,16 +510,6 @@ const Channel = (props) => {
   }
 
   if (error) {
-    logger(
-      'Channel component',
-      'Error loading channel - rendering error indicator',
-      {
-        error,
-        props,
-        tags: ['error', 'channelComponent'],
-      },
-    );
-
     const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
     return <LoadingErrorIndicator error={error} listType='message' />;
   }
@@ -591,57 +533,63 @@ const Channel = (props) => {
 };
 
 Channel.propTypes = {
-  /** Which channel to connect to */
+  /**
+   * The currently active channel
+   * */
   channel: PropTypes.shape({
     watch: PropTypes.func,
   }).isRequired,
   /**
-   * Attachment UI component to display attachment in individual message.
-   * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+   * Disables the channel UI if the channel is frozen
    * */
-  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Disables the channel UI if channel is frozen */
   disableIfFrozenChannel: PropTypes.bool,
   /**
-   * If true, KeyboardCompatibleView wrapper is disabled.
+   * When true, disables the KeyboardCompatibleView wrapper
    *
-   * Channel component internally uses [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js) component
-   * internally to adjust the height of Channel component when keyboard is opened or dismissed. This prop gives you ability to disable this functionality, in case if you
-   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or you want to handle keyboard dismissal yourself.
+   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
+   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
    * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
    * */
   disableKeyboardCompatibleView: PropTypes.bool,
   /**
-   * Override mark channel read request (Advanced usage only)
+   * Overrides the Stream default mark channel read request (Advanced usage only)
    * @param channel Channel object
    * */
   doMarkReadRequest: PropTypes.func,
   /**
-   * Override send message request (Advanced usage only)
+   * Overrides the Stream default send message request (Advanced usage only)
    * @param channelId
    * @param messageData Message object
    * */
   doSendMessageRequest: PropTypes.func,
   /**
-   * Override update message request (Advanced usage only)
+   * Overrides the Stream default update message request (Advanced usage only)
    * @param channelId
    * @param updatedMessage UpdatedMessage object
    * */
   doUpdateMessageRequest: PropTypes.func,
-  /** The indicator to use when message list is empty */
+  /**
+   * Custom UI component to display attachments on individual messages
+   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+   * */
+  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * Custom empty state indicator to override the Stream default
+   * */
   EmptyStateIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
   /**
-   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed.
-   * Defaults to [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
+   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
    *
-   * This prop can be used to configure default KeyboardCompatibleView component.
-   * e.g.,
+   * **Example:**
+   *
+   * ```
    * <Channel
    *  channel={channel}
-   *  ...
    *  KeyboardCompatibleView={(props) => {
    *    return (
    *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
@@ -650,24 +598,29 @@ Channel.propTypes = {
    *    )
    *  }}
    * />
+   * ```
    */
   KeyboardCompatibleView: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
-  /** The indicator to use when there is error  */
+  /**
+   * Custom loading error indicator to override the Stream default
+   * */
   LoadingErrorIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
-  /** The loading indicator to use */
+  /**
+   * Custom loading indicator to override the Stream default
+   * */
   LoadingIndicator: PropTypes.oneOfType([
     PropTypes.node,
     PropTypes.elementType,
   ]),
   /**
-   * Message UI component to display a message in message list.
-   * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
