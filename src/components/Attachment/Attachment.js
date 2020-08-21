@@ -34,8 +34,8 @@ const Attachment = (props) => {
     return null;
   }
 
-  const Giphy = props.Giphy || Card;
-  const UrlPreview = props.UrlPreview || Card;
+  const Giphy = props && props.Giphy ? props.Giphy : Card;
+  const UrlPreview = props && props.UrlPreview ? props.UrlPreview : Card;
   const cardProps = {
     Header: CardHeader ? CardHeader : undefined,
     Cover: CardCover ? CardCover : undefined,
