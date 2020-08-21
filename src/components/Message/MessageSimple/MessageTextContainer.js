@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import styled, { ThemeContext } from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { capitalize, renderText } from '../../../utils';
+import { capitalize } from './utils/capitalize';
+import { renderText } from './utils/renderText';
 
 const TextContainer = styled.View`
   align-self: ${({ alignment }) =>
@@ -70,7 +71,7 @@ const MessageTextContainer = (props) => {
       {MessageText ? (
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
-        renderText(message, markdownStyles, markdownRules)
+        renderText({ markdownRules, markdownStyles, message })
       )}
     </TextContainer>
   );

@@ -1,6 +1,5 @@
 import debounce from 'lodash/debounce';
 
-export { renderText } from './renderText';
 export { renderReactions } from './renderReactions';
 
 export { Streami18n } from './Streami18n';
@@ -30,11 +29,6 @@ export const emojiData = [
     icon: '😠',
   },
 ];
-
-export const capitalize = (s) => {
-  if (typeof s !== 'string') return '';
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
 
 export const FileState = Object.freeze({
   NO_FILE: 'no_file',
