@@ -1,16 +1,735 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ChannelListMessenger renders a test component correctly 1`] = `
+exports[`ChannelListMessenger renders correctly 1`] = `
 Array [
-  <View>
-    <Text>
-      dan
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "#fae6e8",
+          "justifyContent": "center",
+          "paddingBottom": 3,
+          "paddingLeft": 3,
+          "paddingRight": 3,
+          "paddingTop": 3,
+          "width": "100%",
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "red",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "paddingBottom": 3,
+            "paddingLeft": 3,
+            "paddingRight": 3,
+            "paddingTop": 3,
+          },
+        ]
+      }
+    >
+      Connection failure, reconnecting now ...
     </Text>
   </View>,
-  <View>
-    <Text>
-      neil
-    </Text>
-  </View>,
+  <RCTScrollView
+    ListEmptyComponent={[Function]}
+    ListFooterComponent={[Function]}
+    data={
+      Array [
+        Object {
+          "cid": "1",
+          "name": "dan",
+          "on": [Function],
+        },
+        Object {
+          "cid": "2",
+          "name": "neil",
+          "on": [Function],
+        },
+      ]
+    }
+    disableVirtualization={false}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    horizontal={false}
+    initialNumToRender={10}
+    keyExtractor={[Function]}
+    maxToRenderPerBatch={10}
+    numColumns={1}
+    onContentSizeChange={[Function]}
+    onEndReachedThreshold={2}
+    onLayout={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    scrollEventThrottle={50}
+    stickyHeaderIndices={Array []}
+    updateCellsBatchingPeriod={50}
+    viewabilityConfigCallbackPairs={Array []}
+    windowSize={21}
+  >
+    <View>
+      <View
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessible={true}
+          focusable={false}
+          isTVSelectable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "borderBottomColor": "#ebebeb",
+              "borderBottomWidth": 1,
+              "flexDirection": "row",
+              "opacity": 1,
+              "paddingBottom": 10,
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+            }
+          }
+          testID="channel-preview-button"
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                },
+              ]
+            }
+          >
+            <View
+              size={40}
+              style={
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "backgroundColor": "#006cff",
+                    "borderRadius": 20,
+                    "height": 40,
+                    "justifyContent": "center",
+                    "width": 40,
+                  },
+                ]
+              }
+            >
+              <Text
+                fontSize={17.5}
+                style={
+                  Array [
+                    Object {
+                      "color": "white",
+                      "fontSize": 17.5,
+                      "fontWeight": "bold",
+                      "textTransform": "uppercase",
+                    },
+                  ]
+                }
+                testID="avatar-text"
+              />
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "flexBasis": 0,
+                  "flexDirection": "column",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "paddingLeft": 10,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                    "justifyContent": "space-between",
+                  },
+                ]
+              }
+            >
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={
+                  Array [
+                    Object {
+                      "flexBasis": 0,
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "fontSize": 14,
+                      "fontWeight": "bold",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                style={
+                  Array [
+                    Object {
+                      "color": "#767676",
+                      "fontSize": 11,
+                      "textAlign": "right",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#767676",
+                    "fontSize": 13,
+                    "fontWeight": "normal",
+                  },
+                ]
+              }
+            >
+              
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessible={true}
+          focusable={false}
+          isTVSelectable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "borderBottomColor": "#ebebeb",
+              "borderBottomWidth": 1,
+              "flexDirection": "row",
+              "opacity": 1,
+              "paddingBottom": 10,
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+            }
+          }
+          testID="channel-preview-button"
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                },
+              ]
+            }
+          >
+            <View
+              size={40}
+              style={
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "backgroundColor": "#006cff",
+                    "borderRadius": 20,
+                    "height": 40,
+                    "justifyContent": "center",
+                    "width": 40,
+                  },
+                ]
+              }
+            >
+              <Text
+                fontSize={17.5}
+                style={
+                  Array [
+                    Object {
+                      "color": "white",
+                      "fontSize": 17.5,
+                      "fontWeight": "bold",
+                      "textTransform": "uppercase",
+                    },
+                  ]
+                }
+                testID="avatar-text"
+              />
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "flexBasis": 0,
+                  "flexDirection": "column",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "paddingLeft": 10,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                    "justifyContent": "space-between",
+                  },
+                ]
+              }
+            >
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={
+                  Array [
+                    Object {
+                      "flexBasis": 0,
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "fontSize": 14,
+                      "fontWeight": "bold",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                style={
+                  Array [
+                    Object {
+                      "color": "#767676",
+                      "fontSize": 11,
+                      "textAlign": "right",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#767676",
+                    "fontSize": 13,
+                    "fontWeight": "normal",
+                  },
+                ]
+              }
+            >
+              
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        onLayout={[Function]}
+      />
+    </View>
+  </RCTScrollView>,
 ]
+`;
+
+exports[`ChannelListMessenger renders the \`LoadingErrorIndicator\` when \`error\` prop is true 1`] = `
+Array [
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+          "backgroundColor": "#fae6e8",
+          "justifyContent": "center",
+          "paddingBottom": 3,
+          "paddingLeft": 3,
+          "paddingRight": 3,
+          "paddingTop": 3,
+          "width": "100%",
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "red",
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "paddingBottom": 3,
+            "paddingLeft": 3,
+            "paddingRight": 3,
+            "paddingTop": 3,
+          },
+        ]
+      }
+    >
+      Connection failure, reconnecting now ...
+    </Text>
+  </View>,
+  <RCTScrollView
+    ListEmptyComponent={[Function]}
+    ListFooterComponent={[Function]}
+    data={
+      Array [
+        Object {
+          "cid": "1",
+          "name": "dan",
+          "on": [Function],
+        },
+        Object {
+          "cid": "2",
+          "name": "neil",
+          "on": [Function],
+        },
+      ]
+    }
+    disableVirtualization={false}
+    getItem={[Function]}
+    getItemCount={[Function]}
+    horizontal={false}
+    initialNumToRender={10}
+    keyExtractor={[Function]}
+    maxToRenderPerBatch={10}
+    numColumns={1}
+    onContentSizeChange={[Function]}
+    onEndReachedThreshold={2}
+    onLayout={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    removeClippedSubviews={false}
+    renderItem={[Function]}
+    scrollEventThrottle={50}
+    stickyHeaderIndices={Array []}
+    updateCellsBatchingPeriod={50}
+    viewabilityConfigCallbackPairs={Array []}
+    windowSize={21}
+  >
+    <View>
+      <View
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessible={true}
+          focusable={false}
+          isTVSelectable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "borderBottomColor": "#ebebeb",
+              "borderBottomWidth": 1,
+              "flexDirection": "row",
+              "opacity": 1,
+              "paddingBottom": 10,
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+            }
+          }
+          testID="channel-preview-button"
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                },
+              ]
+            }
+          >
+            <View
+              size={40}
+              style={
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "backgroundColor": "#006cff",
+                    "borderRadius": 20,
+                    "height": 40,
+                    "justifyContent": "center",
+                    "width": 40,
+                  },
+                ]
+              }
+            >
+              <Text
+                fontSize={17.5}
+                style={
+                  Array [
+                    Object {
+                      "color": "white",
+                      "fontSize": 17.5,
+                      "fontWeight": "bold",
+                      "textTransform": "uppercase",
+                    },
+                  ]
+                }
+                testID="avatar-text"
+              />
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "flexBasis": 0,
+                  "flexDirection": "column",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "paddingLeft": 10,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                    "justifyContent": "space-between",
+                  },
+                ]
+              }
+            >
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={
+                  Array [
+                    Object {
+                      "flexBasis": 0,
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "fontSize": 14,
+                      "fontWeight": "bold",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                style={
+                  Array [
+                    Object {
+                      "color": "#767676",
+                      "fontSize": 11,
+                      "textAlign": "right",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#767676",
+                    "fontSize": 13,
+                    "fontWeight": "normal",
+                  },
+                ]
+              }
+            >
+              
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        onLayout={[Function]}
+        style={null}
+      >
+        <View
+          accessible={true}
+          focusable={false}
+          isTVSelectable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "borderBottomColor": "#ebebeb",
+              "borderBottomWidth": 1,
+              "flexDirection": "row",
+              "opacity": 1,
+              "paddingBottom": 10,
+              "paddingLeft": 10,
+              "paddingRight": 10,
+              "paddingTop": 10,
+            }
+          }
+          testID="channel-preview-button"
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                },
+              ]
+            }
+          >
+            <View
+              size={40}
+              style={
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "backgroundColor": "#006cff",
+                    "borderRadius": 20,
+                    "height": 40,
+                    "justifyContent": "center",
+                    "width": 40,
+                  },
+                ]
+              }
+            >
+              <Text
+                fontSize={17.5}
+                style={
+                  Array [
+                    Object {
+                      "color": "white",
+                      "fontSize": 17.5,
+                      "fontWeight": "bold",
+                      "textTransform": "uppercase",
+                    },
+                  ]
+                }
+                testID="avatar-text"
+              />
+            </View>
+          </View>
+          <View
+            style={
+              Array [
+                Object {
+                  "flexBasis": 0,
+                  "flexDirection": "column",
+                  "flexGrow": 1,
+                  "flexShrink": 1,
+                  "paddingLeft": 10,
+                },
+              ]
+            }
+          >
+            <View
+              style={
+                Array [
+                  Object {
+                    "flexDirection": "row",
+                    "justifyContent": "space-between",
+                  },
+                ]
+              }
+            >
+              <Text
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                style={
+                  Array [
+                    Object {
+                      "flexBasis": 0,
+                      "flexGrow": 1,
+                      "flexShrink": 1,
+                      "fontSize": 14,
+                      "fontWeight": "bold",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                style={
+                  Array [
+                    Object {
+                      "color": "#767676",
+                      "fontSize": 11,
+                      "textAlign": "right",
+                    },
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text
+              style={
+                Array [
+                  Object {
+                    "color": "#767676",
+                    "fontSize": 13,
+                    "fontWeight": "normal",
+                  },
+                ]
+              }
+            >
+              
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        onLayout={[Function]}
+      />
+    </View>
+  </RCTScrollView>,
+]
+`;
+
+exports[`ChannelListMessenger renders the \`LoadingIndicator\` when \`loadingChannels\` prop is true 1`] = `
+<View>
+  <Text>
+    Loading Indicator
+  </Text>
+</View>
 `;

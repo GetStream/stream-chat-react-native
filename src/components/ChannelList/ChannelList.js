@@ -19,7 +19,7 @@ import { useUserPresence } from './hooks/listeners/useUserPresence';
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
- * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is provided by the `List` component which is
+ * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
  * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
  *
  * @example ../docs/ChannelList.md

@@ -54,6 +54,7 @@ export const usePaginatedChannels = ({
       console.warn(e);
       setError(true);
     }
+
     setLoadingChannels(false);
     setLoadingNextPage(false);
     setRefreshing(false);

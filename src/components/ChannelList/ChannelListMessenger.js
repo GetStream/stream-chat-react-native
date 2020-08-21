@@ -95,8 +95,7 @@ const ChannelListMessenger = (props) => {
           onEndReached={loadNextPage}
           onEndReachedThreshold={loadMoreThreshold}
           onRefresh={refreshList}
-          ref={(flRef) => setFlatListRef(flRef)}
-          // ref={(flRef) => setFlatListRef?.(flRef)}
+          ref={(flRef) => setFlatListRef?.(flRef)}
           refreshing={refreshing}
           renderItem={({ item: channel }) => (
             <ChannelPreview

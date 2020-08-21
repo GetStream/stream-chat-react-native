@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { cleanup } from '@testing-library/react-native';
+import { cleanup, waitFor } from '@testing-library/react-native';
 import renderer from 'react-test-renderer';
 import { ThemeProvider } from '@stream-io/styled-components';
 
@@ -41,18 +41,18 @@ const Component = ({ error = false, loadingChannels = false }) => (
 describe('ChannelListMessenger', () => {
   afterEach(cleanup);
 
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     const tree = renderer.create(<Component />).toJSON();
-    expect(tree).toMatchSnapshot();
+    await waitFor(() => expect(tree).toMatchSnapshot());
   });
 
-  it('renders the `LoadingErrorIndicator` when `error` prop is true', () => {
+  it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
     const tree = renderer.create(<Component error={true} />).toJSON();
-    expect(tree).toMatchSnapshot();
+    await waitFor(() => expect(tree).toMatchSnapshot());
   });
 
-  it('renders the `LoadingIndicator` when `loadingChannels` prop is true', () => {
+  it('renders the `LoadingIndicator` when `loadingChannels` prop is true', async () => {
     const tree = renderer.create(<Component loadingChannels={true} />).toJSON();
-    expect(tree).toMatchSnapshot();
+    await waitFor(() => expect(tree).toMatchSnapshot());
   });
 });
