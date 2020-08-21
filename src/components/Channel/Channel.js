@@ -25,8 +25,9 @@ import { emojiData as emojiDataDefault } from '../../utils';
 
 /**
  *
- * Channel - Wrapper component for a channel. It needs to be place inside of the Chat component.
- * MessageList, Thread, and MessageInput should be used as children of the Channel component.
+ * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * children of the Channel component to receive the ChannelContext.
  *
  * @example ../docs/Channel.md
  */
@@ -40,7 +41,7 @@ const Channel = (props) => {
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
   } = props;
 
-  const { client, isOnline } = useContext(ChatContext);
+  const { client } = useContext(ChatContext);
   const { t } = useContext(TranslationContext);
 
   const [editing, setEditing] = useState(null);
@@ -69,7 +70,6 @@ const Channel = (props) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [members, setMembers] = useState(Immutable({}));
   const [messages, setMessages] = useState(Immutable([]));
-  const [online, setOnline] = useState(isOnline);
   const [read, setRead] = useState(Immutable({}));
   const [thread, setThread] = useState(props.thread);
   const [threadHasMore, setThreadHasMore] = useState(true);
@@ -99,11 +99,6 @@ const Channel = (props) => {
       setThreadMessages(channel.state.threads?.[props.thread?.id] || []);
     }
   }, [props.thread]);
-
-  useEffect(() => {
-    if (online === isOnline) return;
-    setOnline(isOnline);
-  }, [isOnline]);
 
   /**
    * CHANNEL METHODS
@@ -462,7 +457,6 @@ const Channel = (props) => {
 
   const channelContext = {
     channel,
-    client,
     disabled: channel.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator:
       props.EmptyStateIndicator || EmptyStateIndicatorDefault,
@@ -472,7 +466,6 @@ const Channel = (props) => {
     loading,
     markRead: markReadThrottled,
     members,
-    online,
     read,
     setLastRead,
     typing,
@@ -547,40 +540,40 @@ Channel.propTypes = {
     watch: PropTypes.func,
   }).isRequired,
   /**
-   * Custom Attachment UI component to display attachment in individual message.
-   * Available built-in component (also accepts the same props as): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
-   * */
-  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Disables the channel UI if channel is frozen
+   * Disables the channel UI if the channel is frozen
    * */
   disableIfFrozenChannel: PropTypes.bool,
   /**
-   * If true, KeyboardCompatibleView wrapper is disabled.
+   * When true, disables the KeyboardCompatibleView wrapper
    *
-   * Channel component internally uses [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js) component
-   * internally to adjust the height of Channel component when keyboard is opened or dismissed. This prop gives you ability to disable this functionality, in case if you
-   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or you want to handle keyboard dismissal yourself.
+   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
+   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
    * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
    * */
   disableKeyboardCompatibleView: PropTypes.bool,
   /**
-   * Override mark channel read request (Advanced usage only)
+   * Overrides the Stream default mark channel read request (Advanced usage only)
    * @param channel Channel object
    * */
   doMarkReadRequest: PropTypes.func,
   /**
-   * Override send message request (Advanced usage only)
+   * Overrides the Stream default send message request (Advanced usage only)
    * @param channelId
    * @param messageData Message object
    * */
   doSendMessageRequest: PropTypes.func,
   /**
-   * Override update message request (Advanced usage only)
+   * Overrides the Stream default update message request (Advanced usage only)
    * @param channelId
    * @param updatedMessage UpdatedMessage object
    * */
   doUpdateMessageRequest: PropTypes.func,
+  /**
+   * Custom UI component to display attachments on individual messages
+   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+   * */
+  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Custom empty state indicator to override the Stream default
    * */
@@ -589,14 +582,14 @@ Channel.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed.
-   * Defaults to [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
+   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
    *
-   * This prop can be used to configure default KeyboardCompatibleView component.
-   * e.g.,
+   * **Example:**
+   *
+   * ```
    * <Channel
    *  channel={channel}
-   *  ...
    *  KeyboardCompatibleView={(props) => {
    *    return (
    *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
@@ -605,6 +598,7 @@ Channel.propTypes = {
    *    )
    *  }}
    * />
+   * ```
    */
   KeyboardCompatibleView: PropTypes.oneOfType([
     PropTypes.node,
@@ -625,8 +619,8 @@ Channel.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Custom Message UI component to display a message in message list.
-   * Available built-in component (also accepts the same props as): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
