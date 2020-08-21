@@ -26,6 +26,7 @@
 
 ## Contents
 
+- [React Native Compatibility](#react-native-compatibility)
 - [React Native Chat Tutorial](#react-native-chat-tutorial)
 - [Example Apps](#example-apps)
   - [Expo Example](#expo-example)
@@ -40,6 +41,16 @@
 - [Upgrade](#upgrade)
 - [Common Issues](#common-issues)
 - [Contributing](#contributing)
+
+
+## React Native Compatibility
+To use this library you need to ensure you match up with the correct version of React Native you are using.
+
+
+| `stream-chat-react-native` version | Required React Native Version |
+| ----------------------------------------- | --------- |
+| `1.x.x`                                   | `>= 0.59` |
+| `0.x.x`                                   | `*` |
 
 ## React Native Chat Tutorial
 
