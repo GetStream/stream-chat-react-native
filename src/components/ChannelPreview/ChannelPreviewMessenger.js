@@ -89,7 +89,8 @@ const ChannelPreviewMessenger = ({
           </Date>
         </DetailsTop>
         <Message unread={unread > 0 ? unread : undefined}>
-          {latestMessage?.text &&
+          {latestMessage &&
+            latestMessage.text &&
             truncate(latestMessage.text.replace(/\n/g, ' '), {
               length: latestMessageLength,
             })}
