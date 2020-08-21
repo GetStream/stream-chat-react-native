@@ -410,8 +410,8 @@ class MessageContent extends React.PureComponent {
       this.props.onThreadSelect(this.props.message);
   };
 
-  showActionSheet = () => {
-    this.props.dismissKeyboard();
+  showActionSheet = async () => {
+    await this.props.dismissKeyboard();
     this.ActionSheet.show();
   };
 
