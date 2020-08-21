@@ -73,8 +73,8 @@ describe('Thread', () => {
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Start of a new thread');
       expect(getByText('Start of a new thread')).toBeTruthy();
-      expect(getAllByText('Thread Message Text')).toHaveLength(2);
-      expect(getAllByText('Response Message Text')).toHaveLength(2);
+      expect(getAllByText('Thread Message Text')).toHaveLength(1);
+      expect(getAllByText('Response Message Text')).toHaveLength(1);
       expect(queryByText('Thread2 Message Text')).toBeFalsy();
     });
 
@@ -90,10 +90,10 @@ describe('Thread', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByText('Thread2 Message Text')).toHaveLength(2);
+      expect(getAllByText('Thread2 Message Text')).toHaveLength(1);
       expect(queryByText('Thread Message Text')).toBeFalsy();
       expect(queryByText('Response Message Text')).toBeFalsy();
-      expect(getAllByText('Response Message Text2')).toHaveLength(2);
+      expect(getAllByText('Response Message Text2')).toHaveLength(1);
     });
   });
 

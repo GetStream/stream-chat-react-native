@@ -5,7 +5,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
   onLayout={[Function]}
   style={
     Object {
-      "display": "flex",
+      "height": undefined,
     }
   }
 >
