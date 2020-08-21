@@ -269,7 +269,7 @@ const MessageList = (props) => {
           />
         )}
         {!isOnline && (
-          <ErrorNotification>
+          <ErrorNotification testID='error-notification'>
             <ErrorNotificationText>
               {t('Connection failure, reconnecting now ...')}
             </ErrorNotificationText>

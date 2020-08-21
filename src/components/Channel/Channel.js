@@ -126,7 +126,7 @@ const Channel = (props) => {
     setMembers(channel.state.members);
     setMessages(channel.state.messages);
     setRead(channel.state.read);
-    setTyping(Immutable({}));
+    setTyping(channel.state.typing);
     setWatcherCount(channel.state.watcher_count);
     setWatchers(channel.state.watchers);
 
@@ -153,6 +153,7 @@ const Channel = (props) => {
   };
 
   const handleEventStateChange = (channelState) => {
+    console.log('FUCK');
     setMessages(channelState.messages);
     setRead(channelState.read);
     setTyping(channelState.typing);
