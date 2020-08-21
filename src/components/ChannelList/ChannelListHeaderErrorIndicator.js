@@ -25,7 +25,9 @@ const ChannelListHeaderErrorIndicator = ({ onPress = () => {} }) => {
   const { t } = useContext(TranslationContext);
   return (
     <Container onPress={onPress}>
-      <ErrorText>{t('Error while loading, please reload/refresh')}</ErrorText>
+      <ErrorText testID='channel-loading-error'>
+        {t('Error while loading, please reload/refresh')}
+      </ErrorText>
     </Container>
   );
 };

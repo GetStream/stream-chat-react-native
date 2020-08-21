@@ -106,6 +106,7 @@ const ChannelListMessenger = (props) => {
               setActiveChannel={setActiveChannel}
             />
           )}
+          testID={'channel-list-messenger'}
           {...additionalFlatListProps}
         />
       </>
