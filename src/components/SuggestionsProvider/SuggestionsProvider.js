@@ -54,20 +54,25 @@ const SuggestionsProvider = ({ children }) => {
   const getInputBoxPosition = () =>
     new Promise((resolve) => {
       const nodeHandleRoot = findNodeHandle(rootView.current);
-      messageInputBox.current?.measureLayout(
-        nodeHandleRoot,
-        (x, y, width, height) => {
-          resolve({ x, y, height, width });
-        },
-      );
+      messageInputBox.current &&
+        messageInputBox.current.measureLayout(
+          nodeHandleRoot,
+          (x, y, width, height) => {
+            resolve({ x, y, height, width });
+          },
+        );
     });
 
   const getChatBoxPosition = () =>
     new Promise((resolve) => {
       const nodeHandleRoot = findNodeHandle(rootView.current);
-      rootView.current?.measureLayout(nodeHandleRoot, (x, y, width, height) => {
-        resolve({ x, y, height, width });
-      });
+      rootView.current &&
+        rootView.current.measureLayout(
+          nodeHandleRoot,
+          (x, y, width, height) => {
+            resolve({ x, y, height, width });
+          },
+        );
     });
 
   const suggestionsContext = {

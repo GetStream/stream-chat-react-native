@@ -95,7 +95,7 @@ const Gallery = ({ alignment, images }) => {
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
 
-  if (!images?.length) return null;
+  if (!images || !images.length) return null;
 
   const galleryImages = [...images].map((image) => ({
     url: makeImageCompatibleUrl(image.image_url || image.thumb_url),
