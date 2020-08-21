@@ -59,7 +59,7 @@ const ErrorNotification = styled.View`
  */
 const MessageList = (props) => {
   const { t } = useContext(TranslationContext);
-  const { client } = useContext(ChatContext);
+  const { client, isOnline } = useContext(ChatContext);
   const {
     Attachment,
     clearEditingState,
@@ -81,7 +81,6 @@ const MessageList = (props) => {
     disabled,
     EmptyStateIndicator,
     markRead,
-    online,
     read: mainRead,
   } = useContext(ChannelContext);
   const flatListRef = useRef();
@@ -275,7 +274,7 @@ const MessageList = (props) => {
             showNotification={newMessagesNotification}
           />
         )}
-        {!online && (
+        {!isOnline && (
           <ErrorNotification>
             <ErrorNotificationText>
               {t('Connection failure, reconnecting now ...')}
