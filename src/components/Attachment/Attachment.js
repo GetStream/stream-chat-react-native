@@ -34,8 +34,8 @@ const Attachment = (props) => {
     return null;
   }
 
-  const Giphy = props?.Giphy || Card;
-  const UrlPreview = props?.UrlPreview || Card;
+  const Giphy = props.Giphy || Card;
+  const UrlPreview = props.UrlPreview || Card;
   const cardProps = {
     Header: CardHeader ? CardHeader : undefined,
     Cover: CardCover ? CardCover : undefined,
@@ -61,11 +61,12 @@ const Attachment = (props) => {
     type = 'card';
   }
 
+  const hasAttachmentActions = attachment.actions && attachment.actions.length;
   if (type === 'image') {
     return (
       <>
         <Gallery alignment={alignment} images={[attachment]} />
-        {attachment.actions?.length && (
+        {hasAttachmentActions && (
           <AttachmentActions
             actionHandler={actionHandler}
             key={`key-actions-${attachment.id}`}
@@ -77,7 +78,7 @@ const Attachment = (props) => {
   }
 
   if (type === 'giphy') {
-    if (attachment.actions?.length) {
+    if (hasAttachmentActions) {
       return (
         <View>
           <Giphy alignment={alignment} {...attachment} {...cardProps} />
@@ -94,7 +95,7 @@ const Attachment = (props) => {
   }
 
   if (type === 'card') {
-    if (attachment.actions?.length) {
+    if (hasAttachmentActions) {
       return (
         <View>
           <Card alignment={alignment} {...attachment} {...cardProps} />
