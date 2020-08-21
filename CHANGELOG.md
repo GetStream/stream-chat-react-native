@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0] 2020-08-21
+
+**NO BREAKING CHANGES**
+
+- Following components have been converted to functional component from class based component.
+
+  - Chat
+  - KeyboardCompatibleView
+  - SuggestionsProvider
+  - AutoCompleteInput
+  - Spinner
+
+- So far we exported bundled/transpiled version of components from package as single file - dist/index.js, dist/index.es using rollup. But now we are moving away from this approach and instead distributing original source of components since react-native handles bundling/transpiling part anyways. This also makes it easy for end-users to debug components exported from stream-chat-react-native.
+
 ## [1.1.1] 2020-08-03
 
 - Fixed [#270](https://github.com/GetStream/stream-chat-react-native/issues/270) - [8ec70bd](https://github.com/GetStream/stream-chat-react-native/pull/273/commits/8ec70bdd2bae4f03c595466ba60d247c44f4c474)
