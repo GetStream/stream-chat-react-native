@@ -10,7 +10,7 @@ export const useNewMessage = ({ lockChannelOrder, setChannels }) => {
     const handleEvent = (e) => {
       setChannels((channels) => {
         if (!lockChannelOrder) return moveChannelUp(e.cid, channels);
-        return channels;
+        return [...channels];
       });
     };
 

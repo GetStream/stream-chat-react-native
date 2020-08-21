@@ -14,7 +14,8 @@ export const useRemovedFromChannelNotification = ({
         onRemovedFromChannel(setChannels, e);
       } else {
         setChannels((channels) => {
-          channels.filter((c) => c.cid !== e.channel?.cid);
+          const newChannels = channels.filter((c) => c.cid !== e.channel?.cid);
+          return [...newChannels];
         });
       }
     };
