@@ -153,7 +153,6 @@ const Channel = (props) => {
   };
 
   const handleEventStateChange = (channelState) => {
-    console.log('FUCK');
     setMessages(channelState.messages);
     setRead(channelState.read);
     setTyping(channelState.typing);
