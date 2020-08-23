@@ -2189,6 +2189,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 5,
                       }
                     }
+                    testID="icon-square"
                   >
                     <Image
                       source={
@@ -2245,6 +2246,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="upload-photo-item"
                     >
                       <View
                         style={
@@ -2259,6 +2261,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="icon-square"
                       >
                         <Image
                           source={
@@ -2320,6 +2323,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="upload-file-item"
                     >
                       <View
                         style={
@@ -2334,6 +2338,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="icon-square"
                       >
                         <Image
                           source={
@@ -2400,6 +2405,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "opacity": 1,
               }
             }
+            testID="attach-button"
           >
             <Image
               source={
@@ -2459,6 +2465,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "opacity": 1,
               }
             }
+            testID="send-button"
           >
             <Image
               source={
