@@ -2,8 +2,10 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { TranslationContext } from '../../context';
 import { Spinner } from '../Spinner';
+
+import { TranslationContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 const Container = styled.View`
   align-items: center;
@@ -18,6 +20,11 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css}
 `;
 
+/**
+ * UI Component for LoadingIndicator
+ *
+ * @example ../docs/LoadingIndicator.md
+ */
 const LoadingIndicator = ({ listType = 'default', loadingText }) => {
   const { t } = useContext(TranslationContext);
   let indicatorText = '';
@@ -43,8 +50,12 @@ const LoadingIndicator = ({ listType = 'default', loadingText }) => {
 };
 
 LoadingIndicator.propTypes = {
+  // Type of list
   listType: PropTypes.oneOf(['channel', 'message', 'default']),
+  // String text shown under spinner
   loadingText: PropTypes.string,
 };
 
-export default LoadingIndicator;
+LoadingIndicator.themePath = 'loadingIndicator';
+
+export default themed(LoadingIndicator);

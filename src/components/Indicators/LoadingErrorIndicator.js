@@ -3,6 +3,7 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -59,9 +60,12 @@ const LoadingErrorIndicator = ({ listType, retry }) => {
 };
 
 LoadingErrorIndicator.propTypes = {
+  // Type of list
   listType: PropTypes.oneOf(['channel', 'message', 'default']),
   // Calls the retry handler.
   retry: PropTypes.func,
 };
 
-export default LoadingErrorIndicator;
+LoadingErrorIndicator.themePath = 'loadingErrorIndicator';
+
+export default themed(LoadingErrorIndicator);

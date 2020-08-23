@@ -1,46 +1,38 @@
 import React from 'react';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
-
 import iconAddAttachment from '../../images/icons/plus-outline.png';
+
 import { themed } from '../../styles/theme';
 
-const Container = styled.TouchableOpacity`
-  margin-right: 8;
-  ${({ theme }) => theme.messageInput.attachButton.css}
+const AttachButtonIcon = styled.Image`
+  height: 15px;
+  width: 15px;
+  ${({ theme }) => theme.messageInput.attachButtonIcon.css}
 `;
 
-const AttachButtonIcon = styled.Image`
-  width: 15;
-  height: 15;
-  ${({ theme }) => theme.messageInput.attachButtonIcon.css}
+const Container = styled.TouchableOpacity`
+  margin-right: 8px;
+  ${({ theme }) => theme.messageInput.attachButton.css}
 `;
 
 /**
  * UI Component for attach button in MessageInput component.
  *
- * @extends PureComponent
  * @example ../docs/AttachButton.md
  */
-class AttachButton extends React.PureComponent {
-  static themePath = 'messageInput';
-  static propTypes = {
-    handleOnPress: PropTypes.func,
-    disabled: PropTypes.bool,
-  };
-  static defaultProps = {
-    disabled: false,
-  };
+const AttachButton = ({ disabled = false, handleOnPress }) => (
+  <Container disabled={disabled} onPress={handleOnPress} testID='attach-button'>
+    <AttachButtonIcon source={iconAddAttachment} />
+  </Container>
+);
 
-  render() {
-    const { handleOnPress, disabled } = this.props;
-    return (
-      <Container onPress={handleOnPress} disabled={disabled}>
-        <AttachButtonIcon source={iconAddAttachment} />
-      </Container>
-    );
-  }
-}
+AttachButton.propTypes = {
+  disabled: PropTypes.bool,
+  handleOnPress: PropTypes.func,
+};
+
+AttachButton.themePath = 'messageInput';
 
 export default themed(AttachButton);

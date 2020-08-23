@@ -1,15 +1,19 @@
 Send a new message button
 
 ```js
-<div className="str-chat">
-  <SendButton editing={false} sendMessage={() => {}} />
-</div>
+<SendButton sendMessage={() => {}} />
+```
+
+Disabled send button
+
+```js
+<SendButton disabled sendMessage={() => {}} />
 ```
 
 Send edited message button
 
 ```js
-<div className="str-chat">
-  <SendButton editing={true} sendMessage={() => {}} />
-</div>
+<MessagesContext.Provider value={{ editing: true }}>
+  <SendButton sendMessage={() => {}} />
+</MessagesContext.Provider>
 ```

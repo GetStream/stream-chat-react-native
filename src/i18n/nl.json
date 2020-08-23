@@ -25,7 +25,6 @@
   "Please select a channel first": "Selecteer eerst een kanaal",
   "Reply": "Antwoord",
   "Searching for people": "Zoeken naar gebruikers",
-  "Send message": "Verstuur bericht",
   "Start of a new thread": "Begin van een nieuwe thread",
   "This message was deleted ...": "Dit bericht is verwijderd",
   "Upload a file": "Upload een bestand",
@@ -36,7 +35,5 @@
   "{{ imageCount }} more": "+{{ imageCount }}",
   "{{ replyCount }} replies": "{{ replyCount }} antwoorden",
   "{{ user }} is typing...": "{{ user }} is aan het typen...",
-  "{{ username }} joined the chat": "{{ username }} is toegevoegd aan de chat",
-  "{{ username }} was removed from the chat": "{{ username }} is verwijderd van de chat",
   "🏙 Attachment...": "🏙 Bijlage..."
 }
