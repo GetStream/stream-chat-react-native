@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -22,56 +22,53 @@ const FileUploadPreview = ({
   removeFile,
   retryUpload,
 }) => {
-  const renderItem = useCallback(
-    ({ item }) => {
-      let type;
+  const renderItem = ({ item }) => {
+    let type;
 
-      if (item.state === FileState.UPLOADING) {
-        type = ProgressIndicatorTypes.IN_PROGRESS;
-      }
+    if (item.state === FileState.UPLOADING) {
+      type = ProgressIndicatorTypes.IN_PROGRESS;
+    }
 
-      if (item.state === FileState.UPLOAD_FAILED) {
-        type = ProgressIndicatorTypes.RETRY;
-      }
+    if (item.state === FileState.UPLOAD_FAILED) {
+      type = ProgressIndicatorTypes.RETRY;
+    }
 
-      return (
-        <UploadProgressIndicator
-          action={() => (retryUpload ? retryUpload(item.id) : null)}
-          active={item.state !== FileState.UPLOADED}
-          type={type}
+    return (
+      <UploadProgressIndicator
+        action={() => (retryUpload ? retryUpload(item.id) : null)}
+        active={item.state !== FileState.UPLOADED}
+        type={type}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            borderColor: '#EBEBEB',
+            borderWidth: 0.5,
+            flexDirection: 'row',
+            height: FILE_PREVIEW_HEIGHT,
+            justifyContent: 'space-between',
+            padding: FILE_PREVIEW_PADDING,
+            marginBottom: 5,
+          }}
         >
-          <View
-            style={{
-              alignItems: 'center',
-              borderColor: '#EBEBEB',
-              borderWidth: 0.5,
-              flexDirection: 'row',
-              height: FILE_PREVIEW_HEIGHT,
-              justifyContent: 'space-between',
-              padding: FILE_PREVIEW_PADDING,
-              marginBottom: 5,
-            }}
-          >
-            <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-              <AttachmentFileIcon mimeType={item.file.type} size={20} />
-              <Text style={{ paddingLeft: 10 }}>
-                {item.file.name.length > 35
-                  ? item.file.name.substring(0, 35).concat('...')
-                  : item.file.name}
-              </Text>
-            </View>
-            <Text
-              onPress={() => removeFile(item.id)}
-              testID='remove-file-upload-preview'
-            >
-              X
+          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+            <AttachmentFileIcon mimeType={item.file.type} size={20} />
+            <Text style={{ paddingLeft: 10 }}>
+              {item.file.name.length > 35
+                ? item.file.name.substring(0, 35).concat('...')
+                : item.file.name}
             </Text>
           </View>
-        </UploadProgressIndicator>
-      );
-    },
-    [AttachmentFileIcon, removeFile, retryUpload],
-  );
+          <Text
+            onPress={() => removeFile(item.id)}
+            testID='remove-file-upload-preview'
+          >
+            X
+          </Text>
+        </View>
+      </UploadProgressIndicator>
+    );
+  };
 
   return fileUploads && fileUploads.length ? (
     <View
