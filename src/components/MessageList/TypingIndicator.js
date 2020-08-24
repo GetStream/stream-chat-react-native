@@ -16,9 +16,9 @@ const Container = styled.View`
 `;
 
 const TypingText = styled.Text`
-  margin-left: 10px;
-  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
   color: ${({ theme }) => theme.typingIndicator.text.color};
+  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
+  margin-left: 10px;
   ${({ theme }) => theme.typingIndicator.text.css};
 `;
 
