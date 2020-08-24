@@ -11,13 +11,13 @@ const Container = styled.View`
   align-items: center;
   height: 100%;
   justify-content: center;
-  ${({ theme }) => theme.loadingIndicator.container.css}
+  ${({ theme }) => theme.loadingIndicator.container.css};
 `;
 const LoadingText = styled.Text`
   font-size: 14px;
   font-weight: 600;
   margin-top: 20px;
-  ${({ theme }) => theme.loadingIndicator.loadingText.css}
+  ${({ theme }) => theme.loadingIndicator.loadingText.css};
 `;
 
 /**

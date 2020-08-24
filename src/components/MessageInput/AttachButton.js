@@ -9,12 +9,12 @@ import { themed } from '../../styles/theme';
 const AttachButtonIcon = styled.Image`
   height: 15px;
   width: 15px;
-  ${({ theme }) => theme.messageInput.attachButtonIcon.css}
+  ${({ theme }) => theme.messageInput.attachButtonIcon.css};
 `;
 
 const Container = styled.TouchableOpacity`
   margin-right: 8px;
-  ${({ theme }) => theme.messageInput.attachButton.css}
+  ${({ theme }) => theme.messageInput.attachButton.css};
 `;
 
 /**

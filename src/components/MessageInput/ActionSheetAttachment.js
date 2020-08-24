@@ -28,8 +28,7 @@ const ActionSheetTitleContainer = styled.View`
   flex-direction: row;
   height: 100%;
   justify-content: space-between;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-horizontal: 20px;
   width: 100%;
   ${({ theme }) => theme.messageInput.actionSheet.titleContainer.css};
 `;

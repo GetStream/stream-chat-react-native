@@ -9,20 +9,20 @@ const Container = styled.TouchableOpacity`
   align-items: center;
   height: 100%;
   justify-content: center;
-  ${({ theme }) => theme.loadingErrorIndicator.container.css}
+  ${({ theme }) => theme.loadingErrorIndicator.container.css};
 `;
 
 const ErrorText = styled.Text`
   font-size: 14px;
   font-weight: 600;
   margin-top: 20px;
-  ${({ theme }) => theme.loadingErrorIndicator.errorText.css}
+  ${({ theme }) => theme.loadingErrorIndicator.errorText.css};
 `;
 
 const RetryText = styled.Text`
   font-size: 30px;
   font-weight: 600;
-  ${({ theme }) => theme.loadingErrorIndicator.retryText.css}
+  ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
 `;
 
 const LoadingErrorIndicator = ({ listType, retry }) => {

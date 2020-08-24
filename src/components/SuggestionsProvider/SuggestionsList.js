@@ -9,7 +9,7 @@ const Wrapper = styled.TouchableOpacity`
   position: absolute;
   width: 100%;
   z-index: 90;
-  ${({ theme }) => theme.messageInput.suggestions.wrapper.css}
+  ${({ theme }) => theme.messageInput.suggestions.wrapper.css};
 `;
 
 const Container = styled.View`

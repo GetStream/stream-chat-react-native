@@ -9,13 +9,13 @@ import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   margin-left: 8px;
-  ${({ theme }) => theme.messageInput.sendButton.css}
+  ${({ theme }) => theme.messageInput.sendButton.css};
 `;
 
 const SendButtonIcon = styled.Image`
   height: 15px;
   width: 15px;
-  ${({ theme }) => theme.messageInput.sendButtonIcon.css}
+  ${({ theme }) => theme.messageInput.sendButtonIcon.css};
 `;
 
 /**

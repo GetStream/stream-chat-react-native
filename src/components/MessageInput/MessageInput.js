@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { View } from 'react-native';
 import styled from '@stream-io/styled-components';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -92,26 +91,23 @@ const getMessageDetailsForState = (message, initialValue) => {
   };
 };
 
-const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
+const Container = styled.View`
   background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 10;
-  display: flex;
+  border-radius: 10px;
   flex-direction: column;
-  margin-left: 10px;
-  margin-right: 10px;
-  padding-top: ${({ theme, padding }) =>
+  margin-horizontal: 10px;
+  padding-top: ${({ padding, theme }) =>
     padding ? theme.messageInput.container.conditionalPadding : 0}px;
-  ${({ theme }) => theme.messageInput.container.css}
+  ${({ theme }) => theme.messageInput.container.css};
 `;
 
 const EditingBoxContainer = styled.View`
   background-color: white;
-  padding-left: 0px;
-  padding-right: 0px;
+  padding-horizontal: 0px;
   shadow-color: grey;
   shadow-opacity: 0.5;
   z-index: 100;
-  ${({ theme }) => theme.messageInput.editingBoxContainer.css}
+  ${({ theme }) => theme.messageInput.editingBoxContainer.css};
 `;
 
 const EditingBoxHeader = styled.View`
@@ -119,23 +115,21 @@ const EditingBoxHeader = styled.View`
   flex-direction: row;
   justify-content: space-between;
   padding: 10px;
-  ${({ theme }) => theme.messageInput.editingBoxHeader.css}
+  ${({ theme }) => theme.messageInput.editingBoxHeader.css};
 `;
 
 const EditingBoxHeaderTitle = styled.Text`
   font-weight: bold;
-  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css}
+  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css};
 `;
 
 const InputBoxContainer = styled.View`
   align-items: center;
-  display: flex;
   flex-direction: row;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-horizontal: 10px;
   margin: 10px;
   min-height: 46px;
-  ${({ theme }) => theme.messageInput.inputBoxContainer.css}
+  ${({ theme }) => theme.messageInput.inputBoxContainer.css};
 `;
 
 /**
@@ -229,7 +223,9 @@ const MessageInput = (props) => {
 
   useEffect(() => {
     if (editing) {
-      inputBox.focus();
+      if (inputBox.current) {
+        inputBox.current.focus();
+      }
       setState(editing, initialValue);
     } else {
       setState(getMessageDetailsForState(null, initialValue));
@@ -421,7 +417,7 @@ const MessageInput = (props) => {
     }
 
     return (
-      <Container padding={state.imageUploads.length > 0}>
+      <Container padding={state.imageUploads && state.imageUploads.length > 0}>
         {state.fileUploads && (
           <FileUploadPreview
             removeFile={removeFile}
@@ -857,20 +853,18 @@ const MessageInput = (props) => {
   };
 
   return editing ? (
-    <React.Fragment>
-      <EditingBoxContainer>
-        <EditingBoxHeader>
-          <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
-          <IconSquare
-            icon={iconClose}
-            onPress={() => {
-              clearEditingState();
-            }}
-          />
-        </EditingBoxHeader>
-        {renderInputContainer()}
-      </EditingBoxContainer>
-    </React.Fragment>
+    <EditingBoxContainer>
+      <EditingBoxHeader>
+        <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
+        <IconSquare
+          icon={iconClose}
+          onPress={() => {
+            clearEditingState();
+          }}
+        />
+      </EditingBoxHeader>
+      {renderInputContainer()}
+    </EditingBoxContainer>
   ) : (
     renderInputContainer()
   );

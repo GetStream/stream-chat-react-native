@@ -7,14 +7,14 @@ const StyledTouchableOpacity = styled.TouchableOpacity`
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   padding: 5px;
-  ${({ theme }) => theme.iconSquare.container.css}
+  ${({ theme }) => theme.iconSquare.container.css};
 `;
 
 const StyledView = styled.View`
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   padding: 5px;
-  ${({ theme }) => theme.iconSquare.container.css}
+  ${({ theme }) => theme.iconSquare.container.css};
 `;
 
 export const IconSquare = ({ icon, onPress }) =>
