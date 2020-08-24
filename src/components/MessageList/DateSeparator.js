@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
+import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { withTranslationContext } from '../../context';
 
 const Container = styled.View`
   display: flex;
@@ -41,43 +41,40 @@ const Date = styled.Text`
 `;
 
 /**
- * @extends PureComponent
  * @example ../docs/DateSeparator.md
  */
+const DateSeparator = (props) => {
+  const { message, formatDate } = props;
+  const { tDateTimeParser } = useContext(TranslationContext);
 
-class DateSeparator extends React.PureComponent {
-  static propTypes = {
-    message: PropTypes.object.isRequired,
-    /**
-     * Formatter function for date object.
-     *
-     * @param date Date object of message
-     * @returns string
-     */
-    formatDate: PropTypes.func,
-  };
+  return (
+    <Container testID='date-separator'>
+      <Line />
+      <DateText>
+        {formatDate ? (
+          formatDate(message.date)
+        ) : (
+          <React.Fragment>
+            <Date>{tDateTimeParser(message.date).calendar()}</Date>
+          </React.Fragment>
+        )}
+      </DateText>
+      <Line />
+    </Container>
+  );
+};
 
-  static themePath = 'messageList.dateSeparator';
+DateSeparator.themePath = 'messageList.dateSeparator';
 
-  render() {
-    const { message, formatDate, tDateTimeParser } = this.props;
+DateSeparator.propTypes = {
+  /**
+   * Formatter function for date object.
+   *
+   * @param date Date object of message
+   * @returns string
+   */
+  formatDate: PropTypes.func,
+  message: PropTypes.object.isRequired,
+};
 
-    return (
-      <Container>
-        <Line />
-        <DateText>
-          {formatDate ? (
-            formatDate(message.date)
-          ) : (
-            <React.Fragment>
-              <Date>{tDateTimeParser(message.date).calendar()}</Date>
-            </React.Fragment>
-          )}
-        </DateText>
-        <Line />
-      </Container>
-    );
-  }
-}
-
-export default withTranslationContext(themed(DateSeparator));
+export default themed(DateSeparator);

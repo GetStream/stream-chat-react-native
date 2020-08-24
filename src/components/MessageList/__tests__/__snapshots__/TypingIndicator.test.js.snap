@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TypingIndicator should match typing indicator snapshot 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "alignItems": "center",
+        "display": "flex",
+        "flexDirection": "row",
+        "justifyContent": "flex-start",
+      },
+    ]
+  }
+  testID="typing-indicator"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+        },
+      ]
+    }
+  >
+    <Image
+      accessibilityLabel="initials"
+      onError={[Function]}
+      resizeMethod="resize"
+      size={24}
+      source={
+        Object {
+          "uri": "https://i.imgur.com/SLx06PP.png",
+        }
+      }
+      style={
+        Array [
+          Object {
+            "borderRadius": 12,
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      testID="avatar-image"
+    />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+        },
+      ]
+    }
+  >
+    <Image
+      accessibilityLabel="initials"
+      onError={[Function]}
+      resizeMethod="resize"
+      size={24}
+      source={
+        Object {
+          "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
+        }
+      }
+      style={
+        Array [
+          Object {
+            "borderRadius": 12,
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      testID="avatar-image"
+    />
+  </View>
+  <Text
+    style={
+      Array [
+        Object {
+          "color": "rgba(0,0,0,0.5)",
+          "fontSize": 14,
+          "marginLeft": 10,
+        },
+      ]
+    }
+  >
+    Grant and Neil are typing...
+  </Text>
+</View>
+`;
