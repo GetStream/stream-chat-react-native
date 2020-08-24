@@ -437,7 +437,7 @@ const Channel = (props) => {
   );
 
   const loadMoreThread = async () => {
-    if (threadLoadingMore) return;
+    if (threadLoadingMore || !thread?.id) return;
     setThreadLoadingMore(true);
 
     const parentID = thread.id;

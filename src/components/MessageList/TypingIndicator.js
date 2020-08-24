@@ -3,9 +3,9 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
 import { Avatar as DefaultAvatar } from '../Avatar';
-import { ChannelContext, ChatContext, TranslationContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { constructTypingString } from './utils';
+import { useTypingString } from './hooks/useTypingString';
 
 const Container = styled.View`
   display: flex;
@@ -26,7 +26,7 @@ const TypingIndicator = (props) => {
   const { Avatar = DefaultAvatar } = props;
   const { client } = useContext(ChatContext);
   const { typing } = useContext(ChannelContext);
-  const { t } = useContext(TranslationContext);
+  const typingString = useTypingString();
   const typingUsers = Object.values(typing);
 
   return (
@@ -42,9 +42,7 @@ const TypingIndicator = (props) => {
             testID={`typing-avatar-${idx}`}
           />
         ))}
-      <TypingText>
-        {constructTypingString({ client, t, typingUsers: typing })}
-      </TypingText>
+      <TypingText>{typingString}</TypingText>
     </Container>
   );
 };

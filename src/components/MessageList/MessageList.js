@@ -17,12 +17,8 @@ import MessageNotification from './MessageNotification';
 import MessageSystem from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
-import {
-  getGroupStyles,
-  getLastReceivedId,
-  getReadStates,
-  insertDates,
-} from './utils';
+import { useMessageList } from './hooks/useMessageList';
+import { getLastReceivedMessage } from './utils';
 
 const ListContainer = styled.FlatList`
   flex: 1;
@@ -57,34 +53,6 @@ const ErrorNotification = styled.View`
  * @example ../docs/MessageList.md
  */
 const MessageList = (props) => {
-  const { t } = useContext(TranslationContext);
-  const { client, isOnline } = useContext(ChatContext);
-  const {
-    Attachment,
-    clearEditingState,
-    editing,
-    emojiData,
-    loadMore: mainLoadMore,
-    Message,
-    messages: mainMessages,
-    removeMessage,
-    retrySendMessage,
-    setEditingState,
-    updateMessage,
-  } = useContext(MessagesContext);
-  const { loadMoreThread, openThread, threadMessages } = useContext(
-    ThreadContext,
-  );
-  const {
-    channel,
-    disabled,
-    EmptyStateIndicator,
-    markRead,
-    read: mainRead,
-  } = useContext(ChannelContext);
-  const flatListRef = useRef();
-  const yOffset = useRef(0);
-
   const {
     actionSheetStyles,
     additionalFlatListProps = {},
@@ -104,18 +72,37 @@ const MessageList = (props) => {
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
-  const messages = threadList ? threadMessages : mainMessages;
-  const loadMore = threadList ? mainLoadMore : loadMoreThread;
-  const read = threadList ? {} : mainRead;
+  const { t } = useContext(TranslationContext);
+  const { client, isOnline } = useContext(ChatContext);
+  const {
+    Attachment,
+    clearEditingState,
+    editing,
+    emojiData,
+    loadMore: mainLoadMore,
+    Message,
+    removeMessage,
+    retrySendMessage,
+    setEditingState,
+    updateMessage,
+  } = useContext(MessagesContext);
+  const { loadMoreThread, openThread } = useContext(ThreadContext);
+  const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
+    ChannelContext,
+  );
+  const messageList = useMessageList(threadList, noGroupByUser);
+
+  const flatListRef = useRef();
+  const yOffset = useRef(0);
 
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedId(messages),
+    getLastReceivedMessage(messageList)?.id,
   );
 
   useEffect(() => {
-    const currentLastReceivedId = getLastReceivedId(messages);
-    const currentLastMessage = messages[messages.length - 1];
+    const currentLastMessage = getLastReceivedMessage(messageList);
+    const currentLastReceivedId = currentLastMessage?.id;
     if (currentLastReceivedId) {
       const hasNewMessage = lastReceivedId !== currentLastReceivedId;
       const userScrolledUp = yOffset.current > 0;
@@ -139,7 +126,9 @@ const MessageList = (props) => {
       }
       if (hasNewMessage) setLastReceivedId(currentLastReceivedId);
     }
-  }, [messages]);
+  }, [messageList]);
+
+  const loadMore = threadList ? mainLoadMore : loadMoreThread;
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
@@ -202,28 +191,13 @@ const MessageList = (props) => {
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messages?.length === 0 && !threadList) {
+  if (messageList?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
       </View>
     );
   }
-
-  const messagesWithDates = insertDates(messages);
-  const messageGroupStyles = getGroupStyles({
-    messagesWithDates,
-    noGroupByUser,
-  });
-  const readData = getReadStates(messagesWithDates, read);
-
-  const messageList = messagesWithDates
-    .map((msg) => ({
-      ...msg,
-      groupStyles: messageGroupStyles[msg.id],
-      readBy: readData[msg.id] || [],
-    }))
-    .reverse();
 
   return (
     <>

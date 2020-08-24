@@ -1,13 +1,24 @@
-export const constructTypingString = ({ client, t, typingUsers }) => {
-  const typingKeys = Object.keys(typingUsers);
+import { useContext } from 'react';
+
+import {
+  ChatContext,
+  ChannelContext,
+  TranslationContext,
+} from '../../../context';
+
+export const useTypingString = () => {
+  const { client } = useContext(ChatContext);
+  const { t } = useContext(TranslationContext);
+  const { typing } = useContext(ChannelContext);
+
+  const typingKeys = Object.keys(typing);
   const nonSelfUsers = [];
   typingKeys.forEach((item, i) => {
-    if (client.user.id === typingUsers[typingKeys[i]].user.id) {
+    if (client.user.id === typing[typingKeys[i]].user.id) {
       return;
     }
     nonSelfUsers.push(
-      typingUsers[typingKeys[i]].user.name ||
-        typingUsers[typingKeys[i]].user.id,
+      typing[typingKeys[i]].user.name || typing[typingKeys[i]].user.id,
     );
   });
 
