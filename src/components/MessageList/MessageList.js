@@ -90,7 +90,7 @@ const MessageList = (props) => {
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
   );
-  const messageList = useMessageList({ threadList, noGroupByUser });
+  const messageList = useMessageList({ noGroupByUser, threadList });
 
   const flatListRef = useRef();
   const yOffset = useRef(0);
