@@ -199,13 +199,13 @@ describe('ChannelList', () => {
   });
 
   describe('Event handling', () => {
-    describe('message.new', () => {
-      const props = {
-        filters: {},
-        Preview: ChannelPreviewComponent,
-        List: ChannelListComponent,
-      };
+    const props = {
+      filters: {},
+      Preview: ChannelPreviewComponent,
+      List: ChannelListComponent,
+    };
 
+    describe('message.new', () => {
       const sendNewMessageOnChannel3 = () => {
         const newMessage = generateMessage({
           user: generateUser(),
@@ -271,84 +271,67 @@ describe('ChannelList', () => {
       });
     });
 
-    //   describe('notification.message_new', () => {
-    //     it('should move channel to top of the list by default', async () => {
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1, testChannel2]),
-    //         getOrCreateChannelApi(testChannel3),
-    //       ]);
+    describe('notification.message_new', () => {
+      it('should move a channel to top of the list by default', async () => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2]),
+          getOrCreateChannelApi(testChannel3),
+        ]);
 
-    //       const { getByRole, getByTestId, getAllByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             filters={{}}
-    //             Preview={ChannelPreviewComponent}
-    //             List={ChannelListComponent}
-    //             options={{ state: true, watch: true, presence: true }}
-    //           />
-    //         </Chat>,
-    //       );
+        const { getByTestId, getAllByRole } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       act(() =>
-    //         dispatchNotificationMessageNewEvent(
-    //           chatClient,
-    //           testChannel3.channel,
-    //         ),
-    //       );
+        act(() =>
+          dispatchNotificationMessageNewEvent(chatClient, testChannel3.channel),
+        );
 
-    //       await waitFor(() => {
-    //         expect(getByTestId(testChannel3.channel.id)).toBeInTheDocument();
-    //       });
+        await waitFor(() => {
+          expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
+        });
 
-    //       const items = getAllByRole('listitem');
+        const items = getAllByRole('list-item');
 
-    //       // Get the closes listitem to the channel that received new message.
-    //       const channelPreview = getByTestId(testChannel3.channel.id);
-    //       expect(channelPreview.isEqualNode(items[0])).toBe(true);
-    //     });
+        await waitFor(() => {
+          expect(
+            within(items[0]).getByTestId(testChannel3.channel.id),
+          ).toBeTruthy();
+        });
+      });
 
-    //     it('should call `onMessageNew` function prop, if provided', async () => {
-    //       const onMessageNew = jest.fn();
+      it('should call the `onMessageNew` function if the prop is provided', async () => {
+        const onMessageNew = jest.fn();
 
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1]),
-    //         getOrCreateChannelApi(testChannel2),
-    //       ]);
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1]),
+          getOrCreateChannelApi(testChannel2),
+        ]);
 
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             filters={{}}
-    //             Preview={ChannelPreviewComponent}
-    //             List={ChannelListComponent}
-    //             onMessageNew={onMessageNew}
-    //             options={{ state: true, watch: true, presence: true }}
-    //           />
-    //         </Chat>,
-    //       );
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onMessageNew={onMessageNew} />
+          </Chat>,
+        );
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       act(() =>
-    //         dispatchNotificationMessageNewEvent(
-    //           chatClient,
-    //           testChannel2.channel,
-    //         ),
-    //       );
+        act(() =>
+          dispatchNotificationMessageNewEvent(chatClient, testChannel2.channel),
+        );
 
-    //       await waitFor(() => {
-    //         expect(onMessageNew).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+        await waitFor(() => {
+          expect(onMessageNew).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
     //   describe('notification.added_to_channel', () => {
     //     const channelListProps = {
