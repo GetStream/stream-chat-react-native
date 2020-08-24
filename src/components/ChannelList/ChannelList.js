@@ -88,9 +88,8 @@ const ChannelList = (props) => {
       reloadList={reloadList}
       setActiveChannel={onSelect}
       setFlatListRef={(ref) => {
-        listRef.current = ref; // TODO: see if this is correct!
+        listRef.current = ref;
         setFlatListRef && setFlatListRef(ref);
-        // setFlatListRef?.(ref);
       }}
     />
   );
