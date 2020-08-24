@@ -1,11 +1,29 @@
-Simple LoadingIndicator. Here's a small version
+Simple default LoadingIndicator
 
 ```js
-<LoadingIndicator size={15} />
+const { client } = require('./data');
+
+<Chat client={client}>
+    <LoadingIndicator />
+</Chat>
 ```
 
-And an example for a larger one
+Channel LoadingIndicator
 
 ```js
-<LoadingIndicator size={35} />
+const { client } = require('./data');
+
+<Chat client={client}>
+    <LoadingIndicator listType='channel' />
+</Chat>
+```
+
+Message LoadingIndicator
+
+```js
+const { client } = require('./data');
+
+<Chat client={client}>
+    <LoadingIndicator listType='message' />
+</Chat>
 ```

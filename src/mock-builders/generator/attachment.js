@@ -28,6 +28,15 @@ export const generateImageAttachment = (a) => ({
   ...a,
 });
 
+export const generateImageUploadPreview = (a) => ({
+  file: {
+    uri: image_url,
+  },
+  id: uuidv4(),
+  state: 'uploaded',
+  ...a,
+});
+
 export const generateAudioAttachment = (a) => ({
   asset_url: 'http://www.jackblack.com/tribute.mp3',
   description: uuidv4(),
@@ -47,6 +56,17 @@ export const generateFileAttachment = (a) => ({
   text: uuidv4(),
   title: uuidv4(),
   type: 'file',
+  ...a,
+});
+
+export const generateFileUploadPreview = (a) => ({
+  file: {
+    name: 'dummy.pdf',
+    type: 'file',
+    ...a,
+  },
+  id: uuidv4(),
+  state: 'uploaded',
   ...a,
 });
 

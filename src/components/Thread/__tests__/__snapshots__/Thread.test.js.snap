@@ -2063,15 +2063,14 @@ exports[`Thread should match thread snapshot 1`] = `
         </RCTScrollView>
       </View>
       <View
+        padding={false}
         style={
           Array [
             Object {
               "backgroundColor": "rgba(0, 0, 0, 0.05)",
               "borderRadius": 10,
-              "display": "flex",
               "flexDirection": "column",
-              "marginLeft": 10,
-              "marginRight": 10,
+              "marginHorizontal": 10,
               "paddingTop": 0,
             },
           ]
@@ -2149,8 +2148,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "flexDirection": "row",
                         "height": "100%",
                         "justifyContent": "space-between",
-                        "paddingLeft": 20,
-                        "paddingRight": 20,
+                        "paddingHorizontal": 20,
                         "width": "100%",
                       },
                     ]
@@ -2189,6 +2187,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 5,
                       }
                     }
+                    testID="icon-square"
                   >
                     <Image
                       source={
@@ -2245,6 +2244,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="upload-photo-item"
                     >
                       <View
                         style={
@@ -2259,6 +2259,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="icon-square"
                       >
                         <Image
                           source={
@@ -2320,6 +2321,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="upload-file-item"
                     >
                       <View
                         style={
@@ -2334,6 +2336,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="icon-square"
                       >
                         <Image
                           source={
@@ -2370,15 +2373,13 @@ exports[`Thread should match thread snapshot 1`] = `
             Array [
               Object {
                 "alignItems": "center",
-                "display": "flex",
                 "flexDirection": "row",
                 "marginBottom": 10,
                 "marginLeft": 10,
                 "marginRight": 10,
                 "marginTop": 10,
                 "minHeight": 46,
-                "paddingLeft": 10,
-                "paddingRight": 10,
+                "paddingHorizontal": 10,
               },
             ]
           }
@@ -2400,6 +2401,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "opacity": 1,
               }
             }
+            testID="attach-button"
           >
             <Image
               source={
@@ -2459,6 +2461,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "opacity": 1,
               }
             }
+            testID="send-button"
           >
             <Image
               source={
