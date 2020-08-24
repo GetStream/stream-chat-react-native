@@ -1,9 +1,9 @@
 import { useContext } from 'react';
 
 import {
-  ThreadContext,
-  MessagesContext,
   ChannelContext,
+  MessagesContext,
+  ThreadContext,
 } from '../../../context';
 import { getReadStates, getGroupStyles, insertDates } from '../utils';
 
