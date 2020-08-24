@@ -19,11 +19,11 @@ const StyledView = styled.View`
 
 export const IconSquare = ({ icon, onPress }) =>
   onPress ? (
-    <StyledTouchableOpacity onPress={onPress} testID={'icon-square'}>
+    <StyledTouchableOpacity onPress={onPress} testID='icon-square'>
       <Image source={icon} style={{ height: 15, width: 15 }} />
     </StyledTouchableOpacity>
   ) : (
-    <StyledView testID={'icon-square'}>
+    <StyledView testID='icon-square'>
       <Image source={icon} style={{ height: 15, width: 15 }} />
     </StyledView>
   );
