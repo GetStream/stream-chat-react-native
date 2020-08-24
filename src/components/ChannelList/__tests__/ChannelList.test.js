@@ -1,6 +1,3 @@
-/* eslint-disable arrow-body-style */
-/* eslint-disable no-unused-vars */
-/* eslint-disable jest/no-commented-out-tests */
 import React from 'react';
 import { Text, View } from 'react-native';
 import {
@@ -11,14 +8,12 @@ import {
   waitFor,
   within,
 } from '@testing-library/react-native';
-import renderer from 'react-test-renderer';
-import { v4 as uuidv4 } from 'uuid';
 
 import ChannelList from '../ChannelList';
 import { Chat } from '../../Chat';
-import { ChatContext } from '../../../context';
 import {
   dispatchChannelDeletedEvent,
+  dispatchChannelHiddenEvent,
   dispatchChannelTruncatedEvent,
   dispatchChannelUpdatedEvent,
   dispatchConnectionRecoveredEvent,
@@ -26,7 +21,7 @@ import {
   dispatchNotificationAddedToChannelEvent,
   dispatchNotificationMessageNewEvent,
   dispatchNotificationRemovedFromChannel,
-  erroredGetApi,
+  dispatchUserUpdatedEvent,
   generateChannel,
   generateMessage,
   generateUser,
@@ -42,56 +37,46 @@ import {
  * to those components might end up breaking tests for ChannelList, which will be quite painful
  * to debug then.
  */
-const ChannelPreviewComponent = ({
-  channel,
-  channelUpdateCount,
-  // latestMessage,
-  setActiveChannel,
-}) => {
-  // console.log('channel text', channel.state.messages[0]?.text);
-  return (
-    <View
-      accessibilityRole='list-item'
-      onPress={setActiveChannel}
-      testID={channel.id}
-    >
-      <Text testID='channel-update-count'>{channelUpdateCount}</Text>
-      <Text>{channel.data.name}</Text>
-      <Text>{channel.state.messages[0]?.text}</Text>
-      {/* <Text>{latestMessage}</Text> */}
-    </View>
-  );
-};
+const ChannelPreviewComponent = ({ channel, setActiveChannel }) => (
+  <View
+    accessibilityRole='list-item'
+    onPress={setActiveChannel}
+    testID={channel.id}
+  >
+    <Text>{channel.data.name}</Text>
+    <Text>{channel.state.messages[0]?.text}</Text>
+  </View>
+);
 
 const ChannelListComponent = (props) => {
   const { channels, onSelect } = props;
   return (
     <View testID='channel-list'>
-      {channels.map((channel) => {
-        // console.log('ChannelListComponent -> channel', channel.text);
-        return (
-          <ChannelPreviewComponent
-            channel={channel}
-            key={channel.id}
-            latestMessage={channel?.text}
-            setActiveChannel={onSelect}
-          />
-        );
-      })}
+      {channels.map((channel) => (
+        <ChannelPreviewComponent
+          {...props}
+          channel={channel}
+          key={channel.id}
+          setActiveChannel={onSelect}
+        />
+      ))}
     </View>
   );
 };
-
-const ROLE_LIST_ITEM_SELECTOR = '[role="list-item"]';
 
 describe('ChannelList', () => {
   let chatClient;
   let testChannel1;
   let testChannel2;
   let testChannel3;
+  const props = {
+    filters: {},
+    List: ChannelListComponent,
+    Preview: ChannelPreviewComponent,
+  };
 
   beforeEach(async () => {
-    chatClient = await getTestClientWithUser({ id: 'uthred' });
+    chatClient = await getTestClientWithUser({ id: 'dan' });
     testChannel1 = generateChannel();
     testChannel2 = generateChannel();
     testChannel3 = generateChannel();
@@ -100,12 +85,6 @@ describe('ChannelList', () => {
   afterEach(cleanup);
 
   it('should render a list of channels without crashing', async () => {
-    const props = {
-      filters: {},
-      List: ChannelListComponent,
-      Preview: ChannelPreviewComponent,
-    };
-
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId } = render(
@@ -118,12 +97,6 @@ describe('ChannelList', () => {
   });
 
   it('should render a preview of each channel', async () => {
-    const props = {
-      filters: {},
-      List: ChannelListComponent,
-      Preview: ChannelPreviewComponent,
-    };
-
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId } = render(
@@ -138,12 +111,6 @@ describe('ChannelList', () => {
   });
 
   it('should re-query channels when filters change', async () => {
-    const props = {
-      filters: {},
-      List: ChannelListComponent,
-      Preview: ChannelPreviewComponent,
-    };
-
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
     const { getByTestId, rerender } = render(
@@ -172,18 +139,11 @@ describe('ChannelList', () => {
 
   it('should call `setActiveChannel` on press of a channel in the list', async () => {
     const setActiveChannel = jest.fn();
-    const props = {
-      filters: {},
-      List: ChannelListComponent,
-      Preview: ChannelPreviewComponent,
-      onSelect: setActiveChannel,
-    };
-
     useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
 
-    const { getByTestId, debug } = render(
+    const { getByTestId } = render(
       <Chat client={chatClient}>
-        <ChannelList {...props} />
+        <ChannelList {...props} onSelect={setActiveChannel} />
       </Chat>,
     );
 
@@ -199,12 +159,6 @@ describe('ChannelList', () => {
   });
 
   describe('Event handling', () => {
-    const props = {
-      filters: {},
-      Preview: ChannelPreviewComponent,
-      List: ChannelListComponent,
-    };
-
     describe('message.new', () => {
       const sendNewMessageOnChannel3 = () => {
         const newMessage = generateMessage({
@@ -222,7 +176,7 @@ describe('ChannelList', () => {
         ]);
       });
 
-      it('should move channel to top of the list', async () => {
+      it('should move channel to top of the list by default', async () => {
         const { getByText, getByTestId, getAllByRole } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
@@ -272,12 +226,14 @@ describe('ChannelList', () => {
     });
 
     describe('notification.message_new', () => {
-      it('should move a channel to top of the list by default', async () => {
+      beforeEach(() => {
         useMockedApis(chatClient, [
           queryChannelsApi([testChannel1, testChannel2]),
           getOrCreateChannelApi(testChannel3),
         ]);
+      });
 
+      it('should move a channel to top of the list by default', async () => {
         const { getByTestId, getAllByRole } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
@@ -305,14 +261,8 @@ describe('ChannelList', () => {
         });
       });
 
-      it('should call the `onMessageNew` function if the prop is provided', async () => {
+      it('should call the `onMessageNew` function prop, if provided', async () => {
         const onMessageNew = jest.fn();
-
-        useMockedApis(chatClient, [
-          queryChannelsApi([testChannel1]),
-          getOrCreateChannelApi(testChannel2),
-        ]);
-
         const { getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} onMessageNew={onMessageNew} />
@@ -333,414 +283,409 @@ describe('ChannelList', () => {
       });
     });
 
-    //   describe('notification.added_to_channel', () => {
-    //     const channelListProps = {
-    //       filters: {},
-    //       Preview: ChannelPreviewComponent,
-    //       List: ChannelListComponent,
-    //       options: { state: true, watch: true, presence: true },
-    //     };
+    describe('notification.added_to_channel', () => {
+      beforeEach(() => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2]),
+          getOrCreateChannelApi(testChannel3),
+        ]);
+      });
 
-    //     beforeEach(async () => {
-    //       chatClient = await getTestClientWithUser({ id: 'vishal' });
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1, testChannel2]),
-    //         getOrCreateChannelApi(testChannel3),
-    //       ]);
-    //     });
+      it('should move a channel to top of the list by default', async () => {
+        const { getByTestId, getAllByRole } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //     it('should move channel to top of the list by default', async () => {
-    //       const { getByRole, getByTestId, getAllByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        act(() =>
+          dispatchNotificationAddedToChannelEvent(
+            chatClient,
+            testChannel3.channel,
+          ),
+        );
 
-    //       act(() =>
-    //         dispatchNotificationAddedToChannelEvent(
-    //           chatClient,
-    //           testChannel3.channel,
-    //         ),
-    //       );
+        await waitFor(() => {
+          expect(getByTestId(testChannel3.channel.id)).toBeTruthy();
+        });
 
-    //       await waitFor(() => {
-    //         expect(getByTestId(testChannel3.channel.id)).toBeInTheDocument();
-    //       });
+        const items = getAllByRole('list-item');
 
-    //       const items = getAllByRole('listitem');
+        await waitFor(() => {
+          expect(
+            within(items[0]).getByTestId(testChannel3.channel.id),
+          ).toBeTruthy();
+        });
+      });
 
-    //       // Get the closes listitem to the channel that received new message.
-    //       const channelPreview = getByTestId(testChannel3.channel.id);
-    //       expect(channelPreview.isEqualNode(items[0])).toBe(true);
-    //     });
+      it('should call the `onAddedToChannel` function prop, if provided', async () => {
+        const onAddedToChannel = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onAddedToChannel={onAddedToChannel} />
+          </Chat>,
+        );
 
-    //     it('should call `onAddedToChannel` function prop, if provided', async () => {
-    //       const onAddedToChannel = jest.fn();
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             {...channelListProps}
-    //             onAddedToChannel={onAddedToChannel}
-    //           />
-    //         </Chat>,
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        act(() =>
+          dispatchNotificationAddedToChannelEvent(
+            chatClient,
+            testChannel3.channel,
+          ),
+        );
 
-    //       // eslint-disable-next-line sonarjs/no-identical-functions
-    //       act(() =>
-    //         dispatchNotificationAddedToChannelEvent(
-    //           chatClient,
-    //           testChannel3.channel,
-    //         ),
-    //       );
+        await waitFor(() => {
+          expect(onAddedToChannel).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //       await waitFor(() => {
-    //         expect(onAddedToChannel).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+    describe('notification.removed_from_channel', () => {
+      beforeEach(() => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2, testChannel3]),
+        ]);
+      });
 
-    //   describe('notification.removed_from_channel', () => {
-    //     const channelListProps = {
-    //       filters: {},
-    //       Preview: ChannelPreviewComponent,
-    //       List: ChannelListComponent,
-    //     };
+      it('should remove the channel from list by default', async () => {
+        const { getAllByRole, getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //     // eslint-disable-next-line sonarjs/no-identical-functions
-    //     beforeEach(() => {
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1, testChannel2, testChannel3]),
-    //       ]);
-    //     });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //     it('should remove the channel from list by default', async () => {
-    //       const { getByRole, getByTestId } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
-    //       const nodeToBeRemoved = getByTestId(testChannel3.channel.id);
+        const items = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(items).toHaveLength(3);
+        });
 
-    //       act(() =>
-    //         dispatchNotificationRemovedFromChannel(
-    //           chatClient,
-    //           testChannel3.channel,
-    //         ),
-    //       );
+        act(() =>
+          dispatchNotificationRemovedFromChannel(
+            chatClient,
+            testChannel3.channel,
+          ),
+        );
 
-    //       await waitFor(() => {
-    //         expect(nodeToBeRemoved).not.toBeInTheDocument();
-    //       });
-    //     });
+        const newItems = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(newItems).toHaveLength(2);
+        });
+      });
 
-    //     it('should call `onRemovedFromChannel` function prop, if provided', async () => {
-    //       const onRemovedFromChannel = jest.fn();
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             {...channelListProps}
-    //             onRemovedFromChannel={onRemovedFromChannel}
-    //           />
-    //         </Chat>,
-    //       );
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
-    //       // eslint-disable-next-line sonarjs/no-identical-functions
-    //       act(() =>
-    //         dispatchNotificationRemovedFromChannel(
-    //           chatClient,
-    //           testChannel3.channel,
-    //         ),
-    //       );
+      it('should call the `onRemovedFromChannel` function prop, if provided', async () => {
+        const onRemovedFromChannel = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList
+              {...props}
+              onRemovedFromChannel={onRemovedFromChannel}
+            />
+          </Chat>,
+        );
 
-    //       await waitFor(() => {
-    //         expect(onRemovedFromChannel).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //   describe('channel.updated', () => {
-    //     const channelListProps = {
-    //       filters: {},
-    //       Preview: ChannelPreviewComponent,
-    //       List: ChannelListComponent,
-    //     };
+        act(() =>
+          dispatchNotificationRemovedFromChannel(
+            chatClient,
+            testChannel3.channel,
+          ),
+        );
 
-    //     beforeEach(() => {
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1, testChannel2]),
-    //       ]);
-    //     });
+        await waitFor(() => {
+          expect(onRemovedFromChannel).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //     it('should update the channel in list, by default', async () => {
-    //       const { getByRole, getByText } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
+    describe('channel.updated', () => {
+      beforeEach(() => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2]),
+        ]);
+      });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+      it('should update a channel in the list by default', async () => {
+        const { getByTestId, getByText } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //       const newChannelName = uuidv4();
-    //       act(() =>
-    //         dispatchChannelUpdatedEvent(chatClient, {
-    //           ...testChannel2.channel,
-    //           name: newChannelName,
-    //         }),
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       await waitFor(() => {
-    //         expect(getByText(newChannelName)).toBeInTheDocument();
-    //       });
-    //     });
+        act(() =>
+          dispatchChannelUpdatedEvent(chatClient, {
+            ...testChannel2.channel,
+            name: 'updated',
+          }),
+        );
 
-    //     it('should call `onChannelUpdated` function prop, if provided', async () => {
-    //       const onChannelUpdated = jest.fn();
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             {...channelListProps}
-    //             onChannelUpdated={onChannelUpdated}
-    //           />
-    //         </Chat>,
-    //       );
+        await waitFor(() => {
+          expect(getByText('updated')).toBeTruthy();
+        });
+      });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+      it('should call the `onChannelUpdated` function prop, if provided', async () => {
+        const onChannelUpdated = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onChannelUpdated={onChannelUpdated} />
+          </Chat>,
+        );
 
-    //       const newChannelName = uuidv4();
-    //       // eslint-disable-next-line sonarjs/no-identical-functions
-    //       act(() =>
-    //         dispatchChannelUpdatedEvent(chatClient, {
-    //           ...testChannel2.channel,
-    //           name: newChannelName,
-    //         }),
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       await waitFor(() => {
-    //         expect(onChannelUpdated).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+        act(() =>
+          dispatchChannelUpdatedEvent(chatClient, {
+            ...testChannel2.channel,
+            name: 'updated',
+          }),
+        );
 
-    //   describe('channel.deleted', () => {
-    //     const channelListProps = {
-    //       filters: {},
-    //       Preview: ChannelPreviewComponent,
-    //       List: ChannelListComponent,
-    //     };
+        await waitFor(() => {
+          expect(onChannelUpdated).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //     // eslint-disable-next-line sonarjs/no-identical-functions
-    //     beforeEach(() => {
-    //       useMockedApis(chatClient, [
-    //         queryChannelsApi([testChannel1, testChannel2]),
-    //       ]);
-    //     });
+    describe('channel.deleted', () => {
+      beforeEach(() => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2]),
+        ]);
+      });
 
-    //     it('should remove channel from list, by default', async () => {
-    //       const { getByRole, getByTestId } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
+      it('should remove a channel from the list by default', async () => {
+        const { getAllByRole, getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       const nodeToBeRemoved = getByTestId(testChannel2.channel.id);
-    //       act(() =>
-    //         dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
-    //       );
+        const items = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(items).toHaveLength(2);
+        });
 
-    //       await waitFor(() => {
-    //         expect(nodeToBeRemoved).not.toBeInTheDocument();
-    //       });
-    //     });
+        act(() =>
+          dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
+        );
 
-    //     it('should call `onChannelDeleted` function prop, if provided', async () => {
-    //       const onChannelDeleted = jest.fn();
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             {...channelListProps}
-    //             onChannelDeleted={onChannelDeleted}
-    //           />
-    //         </Chat>,
-    //       );
+        const newItems = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(newItems).toHaveLength(1);
+        });
+      });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+      it('should call the `onChannelDeleted` function prop, if provided', async () => {
+        const onChannelDeleted = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onChannelDeleted={onChannelDeleted} />
+          </Chat>,
+        );
 
-    //       act(() =>
-    //         dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       await waitFor(() => {
-    //         expect(onChannelDeleted).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
+        act(() =>
+          dispatchChannelDeletedEvent(chatClient, testChannel2.channel),
+        );
 
-    //     it('should unset activeChannel if it was deleted', async () => {
-    //       const setActiveChannel = jest.fn();
-    //       const { getByRole } = render(
-    //         <ChatContext.Provider
-    //           value={{ client: chatClient, setActiveChannel }}
-    //         >
-    //           <ChannelList
-    //             {...channelListProps}
-    //             channel={{ cid: testChannel1.channel.cid }}
-    //             setActiveChannel={setActiveChannel}
-    //           />
-    //         </ChatContext.Provider>,
-    //       );
+        await waitFor(() => {
+          expect(onChannelDeleted).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+    describe('channel.hidden', () => {
+      beforeEach(() => {
+        useMockedApis(chatClient, [
+          queryChannelsApi([testChannel1, testChannel2]),
+        ]);
+      });
 
-    //       act(() =>
-    //         dispatchChannelDeletedEvent(chatClient, testChannel1.channel),
-    //       );
+      it('should hide a channel from the list by default', async () => {
+        const { getAllByRole, getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //       await waitFor(() => {
-    //         expect(setActiveChannel).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //   describe('connection.recovered', () => {
-    //     it('should rerender the list', async () => {
-    //       const channel1 = generateChannel();
-    //       const channel2 = generateChannel();
-    //       const channelListProps = {
-    //         filters: {},
-    //         Preview: ChannelPreviewComponent,
-    //         List: ChannelListComponent,
-    //       };
+        const items = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(items).toHaveLength(2);
+        });
 
-    //       useMockedApis(chatClient, [queryChannelsApi([channel1])]);
+        act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
 
-    //       const { getByRole, getByTestId } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
+        const newItems = getAllByRole('list-item');
+        await waitFor(() => {
+          expect(newItems).toHaveLength(1);
+        });
+      });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+      it('should call the `onChannelHidden` function prop, if provided', async () => {
+        const onChannelHidden = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onChannelHidden={onChannelHidden} />
+          </Chat>,
+        );
 
-    //       const updateCount = parseInt(
-    //         getNodeText(getByTestId('channelUpdateCount')),
-    //         10,
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       useMockedApis(chatClient, [queryChannelsApi([channel2])]);
-    //       act(() => dispatchConnectionRecoveredEvent(chatClient));
+        act(() => dispatchChannelHiddenEvent(chatClient, testChannel2.channel));
 
-    //       await waitFor(() => {
-    //         expect(
-    //           parseInt(getNodeText(getByTestId('channelUpdateCount')), 10),
-    //         ).toBe(updateCount + 1);
-    //       });
-    //     });
-    //   });
+        await waitFor(() => {
+          expect(onChannelHidden).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //   describe('channel.truncated', () => {
-    //     let channel1;
-    //     let user1;
-    //     let message1;
-    //     let message2;
+    describe('connection.recovered', () => {
+      it('should call force update to re-render the list', async () => {
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const recoverSpy = jest.spyOn(chatClient, 'on');
 
-    //     const channelListProps = {
-    //       filters: {},
-    //       Preview: ChannelPreviewComponent,
-    //       List: ChannelListComponent,
-    //     };
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //     beforeEach(() => {
-    //       user1 = generateUser();
-    //       message1 = generateMessage({ user: user1 });
-    //       message2 = generateMessage({ user: user1 });
-    //       channel1 = generateChannel({ messages: [message1, message2] });
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       useMockedApis(chatClient, [queryChannelsApi([channel1])]);
-    //     });
+        act(() => dispatchConnectionRecoveredEvent(chatClient));
 
-    //     it('should remove latest message', async () => {
-    //       const { getByRole, getByText } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList {...channelListProps} />
-    //         </Chat>,
-    //       );
+        await waitFor(() => {
+          expect(recoverSpy).toHaveBeenCalledWith(
+            'connection.recovered',
+            expect.any(Function),
+          );
+        });
+      });
+    });
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+    describe('channel.truncated', () => {
+      it('should call the `onChannelTruncated` function prop, if provided', async () => {
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const onChannelTruncated = jest.fn();
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} onChannelTruncated={onChannelTruncated} />
+          </Chat>,
+        );
 
-    //       const latestMessageNode = getByText(message2.text);
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       act(() =>
-    //         dispatchChannelTruncatedEvent(chatClient, channel1.channel),
-    //       );
+        act(() =>
+          dispatchChannelTruncatedEvent(chatClient, testChannel1.channel),
+        );
 
-    //       await waitFor(() => {
-    //         expect(latestMessageNode).not.toHaveTextContent(message2.text);
-    //       });
-    //     });
+        await waitFor(() => {
+          expect(onChannelTruncated).toHaveBeenCalledTimes(1);
+        });
+      });
+    });
 
-    //     it('should call `onChannelTruncated` function prop, if provided', async () => {
-    //       const onChannelTruncated = jest.fn();
-    //       const { getByRole } = render(
-    //         <Chat client={chatClient}>
-    //           <ChannelList
-    //             {...channelListProps}
-    //             onChannelTruncated={onChannelTruncated}
-    //           />
-    //         </Chat>,
-    //       );
+    describe('user.updated', () => {
+      it('should call handleEvent in the custom hook if the user updates', async () => {
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const updateSpy = jest.spyOn(chatClient, 'on');
+        const offlineUser = generateUser();
 
-    //       // Wait for list of channels to load in DOM.
-    //       await waitFor(() => {
-    //         expect(getByRole('list')).toBeInTheDocument();
-    //       });
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
 
-    //       act(() =>
-    //         dispatchChannelTruncatedEvent(chatClient, channel1.channel),
-    //       );
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
 
-    //       await waitFor(() => {
-    //         expect(onChannelTruncated).toHaveBeenCalledTimes(1);
-    //       });
-    //     });
-    //   });
+        act(() =>
+          dispatchUserUpdatedEvent(
+            chatClient,
+            { ...offlineUser, name: 'dan' },
+            testChannel1.channel,
+          ),
+        );
+
+        await waitFor(() => {
+          expect(updateSpy).toHaveBeenCalledWith(
+            'user.updated',
+            expect.any(Function),
+          );
+        });
+      });
+    });
+
+    describe('user.presence.changed', () => {
+      it('should call handleEvent in the custom hook if user presence changes', async () => {
+        useMockedApis(chatClient, [queryChannelsApi([testChannel1])]);
+        const updateSpy = jest.spyOn(chatClient, 'on');
+        const offlineUser = generateUser();
+
+        const { getByTestId } = render(
+          <Chat client={chatClient}>
+            <ChannelList {...props} />
+          </Chat>,
+        );
+
+        await waitFor(() => {
+          expect(getByTestId('channel-list')).toBeTruthy();
+        });
+
+        act(() =>
+          dispatchUserUpdatedEvent(
+            chatClient,
+            { ...offlineUser, online: true },
+            testChannel1.channel,
+          ),
+        );
+
+        await waitFor(() => {
+          expect(updateSpy).toHaveBeenCalledWith(
+            'user.presence.changed',
+            expect.any(Function),
+          );
+        });
+      });
+    });
   });
 });
