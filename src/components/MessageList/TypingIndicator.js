@@ -8,7 +8,6 @@ import { themed } from '../../styles/theme';
 import { useTypingString } from './hooks/useTypingString';
 
 const Container = styled.View`
-  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -16,9 +15,9 @@ const Container = styled.View`
 `;
 
 const TypingText = styled.Text`
-  margin-left: 10px;
-  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
   color: ${({ theme }) => theme.typingIndicator.text.color};
+  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
+  margin-left: 10px;
   ${({ theme }) => theme.typingIndicator.text.css};
 `;
 

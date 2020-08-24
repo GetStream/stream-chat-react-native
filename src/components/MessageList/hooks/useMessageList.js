@@ -1,13 +1,13 @@
 import { useContext } from 'react';
 
 import {
-  ThreadContext,
-  MessagesContext,
   ChannelContext,
+  MessagesContext,
+  ThreadContext,
 } from '../../../context';
-import { getReadStates, getGroupStyles, insertDates } from '../utils';
+import { getGroupStyles, getReadStates, insertDates } from '../utils';
 
-export const useMessageList = (threadList, noGroupByUser) => {
+export const useMessageList = ({ noGroupByUser, threadList }) => {
   const { messages } = useContext(MessagesContext);
   const { threadMessages } = useContext(ThreadContext);
   const { read } = useContext(ChannelContext);
