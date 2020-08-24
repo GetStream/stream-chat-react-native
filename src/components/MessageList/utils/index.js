@@ -1,4 +1,4 @@
 export { getGroupStyles } from './getGroupStyles';
-export { getLastReceivedId } from './getLastReceivedId';
+export { getLastReceivedMessage } from './getLastReceivedMessage';
 export { getReadStates } from './getReadStates';
 export { insertDates } from './insertDates';

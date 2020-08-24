@@ -33,6 +33,20 @@ export const IconSquare = ({ icon, onPress }) => {
 };
 
 IconSquare.propTypes = {
-  icon: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  icon: PropTypes.oneOfType([
+    PropTypes.shape({
+      headers: PropTypes.objectOf(PropTypes.string),
+      uri: PropTypes.string,
+    }),
+    PropTypes.number,
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        headers: PropTypes.objectOf(PropTypes.string),
+        height: PropTypes.number,
+        uri: PropTypes.string,
+        width: PropTypes.number,
+      }),
+    ),
+  ]),
   onPress: PropTypes.func,
 };

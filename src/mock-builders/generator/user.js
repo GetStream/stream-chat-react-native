@@ -27,6 +27,12 @@ export const generateStaticUser = (userNumber) => {
         name: 'Grant',
         image: 'https://i.imgur.com/SLx06PP.png',
       });
+    case 2:
+      return generateUser({
+        id: 'ViriBoi2',
+        name: 'Vir',
+        image: 'https://i.imgur.com/iNaC3K7.jpg',
+      });
     default:
       return generateUser({
         id: 'NeiliBoi3',

@@ -31,11 +31,13 @@ export const KeyboardCompatibleView = ({
 
   const [initialHeight, setInitialHeight] = useState(0);
 
-  const [channelHeight, isKeyboardOpen] = useKeyboardCompatibleHeight({
-    enabled,
-    initialHeight,
-    rootChannelView,
-  });
+  const { height: channelHeight, isKeyboardOpen } = useKeyboardCompatibleHeight(
+    {
+      enabled,
+      initialHeight,
+      rootChannelView,
+    },
+  );
 
   useEffect(() => {
     Animated.timing(heightAnim, {

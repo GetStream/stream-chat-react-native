@@ -27,7 +27,30 @@
     "noEmitOnError": false,
     "noImplicitAny": true,
     "allowJs": true,
-    "checkJs": false
+    "checkJs": false,
+    "plugins": [
+      {
+        "name": "typescript-styled-plugin",
+        "lint": {
+          "validProperties": [
+            "include-font-padding",
+            "shadow-color",
+            "shadow-opacity",
+            "shadow-offset",
+            "shadow-radius",
+            "padding-horizontal",
+            "padding-vertical",
+            "margin-vertical",
+            "margin-horizontal",
+            "tint-color",
+            "aspect-ratio",
+            "elevation",
+            "resize-mode",
+            "text-align-vertical"
+          ]
+        }
+      }
+    ]
   },
   "include": ["./src/**/*"],
   "exclude": ["**/__tests__/*.test.js"]

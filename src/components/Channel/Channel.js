@@ -126,7 +126,7 @@ const Channel = (props) => {
     setMembers(channel.state.members);
     setMessages(channel.state.messages);
     setRead(channel.state.read);
-    setTyping(Immutable({}));
+    setTyping(channel.state.typing);
     setWatcherCount(channel.state.watcher_count);
     setWatchers(channel.state.watchers);
 
@@ -437,7 +437,7 @@ const Channel = (props) => {
   );
 
   const loadMoreThread = async () => {
-    if (threadLoadingMore) return;
+    if (threadLoadingMore || !thread?.id) return;
     setThreadLoadingMore(true);
 
     const parentID = thread.id;
@@ -467,6 +467,7 @@ const Channel = (props) => {
     markRead: markReadThrottled,
     members,
     read,
+    setLastRead,
     typing,
     watcherCount,
     watchers,
