@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider, ThemeConsumer } from '@stream-io/styled-components';
+import { ThemeConsumer, ThemeProvider } from '@stream-io/styled-components';
 import merge from 'lodash/merge';
 import lodashSet from 'lodash/set';
 import lodashGet from 'lodash/get';
@@ -9,25 +9,25 @@ import isPlainObject from 'lodash/isPlainObject';
 export const BASE_FONT_SIZE = 16;
 
 export const Colors = {
-  primary: '#006cff',
-  secondary: '#111',
   danger: '#EDD8DD',
   light: '#EBEBEB',
-  textLight: 'white',
+  primary: '#006cff',
+  secondary: '#111',
   textDark: 'rgba(0,0,0,1)',
   textGrey: 'rgba(0,0,0,0.5)',
+  textLight: 'white',
   transparent: 'transparent',
 };
 
 export const defaultTheme = {
-  colors: {
-    ...Colors,
-  },
   avatar: {
     container: {},
+    fallback: {},
     image: {},
     text: {},
-    fallback: {},
+  },
+  channelListFooterLoadingIndicator: {
+    container: {},
   },
   channelListHeaderErrorIndicator: {
     container: {},
@@ -37,7 +37,32 @@ export const defaultTheme = {
     container: {},
     errorText: {},
   },
-  channelListFooterLoadingIndicator: {
+  channelPreview: {
+    container: {},
+    date: {},
+    details: {},
+    detailsTop: {},
+    message: {
+      color: '#767676',
+      fontWeight: 'normal',
+      unreadColor: '#000',
+      unreadFontWeight: 'bold',
+    },
+    title: {},
+  },
+  closeButton: {
+    container: {},
+  },
+  colors: {
+    ...Colors,
+  },
+  iconBadge: {
+    container: {},
+    icon: {},
+    iconInner: {},
+    unreadCount: {},
+  },
+  iconSquare: {
     container: {},
   },
   loadingErrorIndicator: {
@@ -45,36 +70,46 @@ export const defaultTheme = {
     errorText: {},
     retryText: {},
   },
-  channelPreview: {
+  loadingIndicator: {
     container: {},
-    details: {},
-    detailsTop: {},
-    title: {},
-    date: {},
-    message: {
-      color: '#767676',
-      unreadColor: '#000',
-      fontWeight: 'normal',
-      unreadFontWeight: 'bold',
-    },
+    loadingText: {},
   },
-
-  closeButton: {
-    container: {},
-  },
-
-  iconBadge: {
-    container: {},
-    icon: {},
-    iconInner: {},
-    unreadCount: {},
-  },
-
-  iconSquare: {
-    container: {},
-  },
-
   message: {
+    actions: {
+      button: {
+        defaultBackgroundColor: 'white',
+        defaultBorderColor: 'transparent',
+        primaryBackgroundColor: Colors.primary,
+        primaryBorderColor: Colors.light,
+      },
+      buttonText: {
+        defaultColor: 'black',
+        primaryColor: 'white',
+      },
+      container: {},
+    },
+    actionSheet: {
+      buttonContainer: {},
+      buttonText: {},
+      cancelButtonContainer: {},
+      cancelButtonText: {},
+      titleContainer: {},
+      titleText: {},
+    },
+    avatarWrapper: {
+      container: {},
+      spacer: {},
+    },
+    card: {
+      container: {},
+      cover: {},
+      footer: {
+        description: {},
+        link: {},
+        logo: {},
+        title: {},
+      },
+    },
     container: {},
     content: {
       container: {
@@ -82,194 +117,151 @@ export const defaultTheme = {
         borderRadiusS: 2,
       },
       containerInner: {},
-      metaContainer: {},
-      metaText: {},
+      deletedContainer: {},
+      deletedText: {},
       errorContainer: {
         backgroundColor: Colors.danger,
       },
-      deletedContainer: {},
-      deletedText: {},
+      // Available options for styling text: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
+      markdown: {},
+      metaContainer: {},
+      metaText: {},
       textContainer: {
         borderRadiusL: 16,
         borderRadiusS: 2,
-        leftBorderWidth: 0.5,
         leftBorderColor: 'rgba(0,0,0,0.08)',
-        rightBorderWidth: 0,
+        leftBorderWidth: 0.5,
         rightBorderColor: 'transparent',
+        rightBorderWidth: 0,
       },
-      // Available options for styling text: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
-      markdown: {},
-    },
-    status: {
-      spacer: {},
-      deliveredContainer: {},
-      deliveredCircle: {},
-      checkMark: {},
-      sendingContainer: {},
-      sendingImage: {},
-      readByContainer: {},
-      readByCount: {},
-    },
-    avatarWrapper: {
-      container: {},
-      spacer: {},
-    },
-    replies: {
-      container: {},
-      messageRepliesText: {},
-      image: {},
     },
     file: {
       container: {},
       details: {},
-      title: {},
-      size: {},
       icon: {},
+      size: {},
+      title: {},
     },
-    actions: {
-      container: {},
-      button: {
-        primaryBackgroundColor: Colors.primary,
-        defaultBackgroundColor: 'white',
-        primaryBorderColor: Colors.light,
-        defaultBorderColor: 'transparent',
-      },
-      buttonText: {
-        primaryColor: 'white',
-        defaultColor: 'black',
-      },
-    },
-    card: {
-      container: {},
-      cover: {},
-      footer: {
-        title: {},
-        description: {},
-        link: {},
-        logo: {},
-      },
-    },
-
     gallery: {
-      width: 240,
-      size: 120,
-      halfSize: 80,
       doubleSize: 240,
-
-      single: {},
-      imageContainer: {},
       galleryContainer: {},
+      halfSize: 80,
       header: {
-        container: {},
         button: {},
+        container: {},
       },
+      imageContainer: {},
+      single: {},
+      size: 120,
+      width: 240,
     },
     reactionList: {
       container: {},
       reactionCount: {},
     },
-
     reactionPicker: {
+      column: {},
       container: {},
       containerView: {},
-      column: {},
       emoji: {},
       reactionCount: {},
       text: {},
     },
-    actionSheet: {
-      titleContainer: {},
-      titleText: {},
-      buttonContainer: {},
-      buttonText: {},
-      cancelButtonContainer: {},
-      cancelButtonText: {},
+    replies: {
+      container: {},
+      image: {},
+      messageRepliesText: {},
+    },
+    status: {
+      checkMark: {},
+      deliveredCircle: {},
+      deliveredContainer: {},
+      readByContainer: {},
+      readByCount: {},
+      sendingContainer: {},
+      sendingImage: {},
+      spacer: {},
     },
   },
-  loadingIndicator: {
-    container: {},
-    loadingText: {},
-  },
   messageInput: {
+    actionSheet: {
+      buttonContainer: {},
+      buttonText: {},
+      titleContainer: {},
+      titleText: {},
+    },
+    attachButton: {},
+    attachButtonIcon: {},
     container: {
       conditionalPadding: 20,
     },
-    inputBox: {},
-    inputBoxContainer: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
-    attachButton: {},
-    attachButtonIcon: {},
-    sendButton: {},
-    sendButtonIcon: {},
     imageUploadPreview: {
       container: {},
-      itemContainer: {},
       dismiss: {},
       dismissImage: {},
+      itemContainer: {},
       upload: {},
     },
-    uploadProgressIndicator: {
-      overlay: {},
-      container: {},
-    },
-
+    inputBox: {},
+    inputBoxContainer: {},
+    sendButton: {},
+    sendButtonIcon: {},
     suggestions: {
-      wrapper: {},
-      container: {
-        maxHeight: 250,
-        itemHeight: 50,
+      command: {
+        args: {},
+        container: {},
+        description: {},
+        title: {},
+        top: {},
       },
-      title: {},
-      separator: {},
+      container: {
+        itemHeight: 50,
+        maxHeight: 250,
+      },
       item: {},
       mention: {
         container: {},
         name: {},
       },
-      command: {
-        container: {},
-        top: {},
-        title: {},
-        args: {},
-        description: {},
-      },
+      separator: {},
+      title: {},
+      wrapper: {},
     },
-    actionSheet: {
-      titleContainer: {},
-      titleText: {},
-      buttonContainer: {},
-      buttonText: {},
+    uploadProgressIndicator: {
+      container: {},
+      overlay: {},
     },
   },
 
   messageList: {
+    dateSeparator: {
+      container: {},
+      date: {},
+      dateText: {},
+      line: {},
+    },
+    errorNotification: {},
+    errorNotificationText: {},
+    eventIndicator: {
+      date: {},
+      memberUpdateContainer: {},
+      memberUpdateText: {},
+      memberUpdateTextContainer: {},
+    },
     listContainer: {},
     messageNotification: {
       container: {},
       text: {},
     },
-    errorNotification: {},
-    errorNotificationText: {},
-    dateSeparator: {
-      container: {},
-      line: {},
-      date: {},
-      dateText: {},
-    },
     messageSystem: {
       container: {},
+      dateText: {},
       line: {},
       text: {},
       textContainer: {},
-      dateText: {},
-    },
-    eventIndicator: {
-      date: {},
-      memberUpdateContainer: {},
-      memberUpdateTextContainer: {},
-      memberUpdateText: {},
     },
     typingIndicatorContainer: {},
   },
@@ -283,11 +275,11 @@ export const defaultTheme = {
   },
 
   typingIndicator: {
-    text: {
-      fontSize: 14,
-      color: Colors.textGrey,
-    },
     container: {},
+    text: {
+      color: Colors.textGrey,
+      fontSize: 14,
+    },
   },
 };
 

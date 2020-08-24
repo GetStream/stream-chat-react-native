@@ -26,8 +26,8 @@ const AttachButtonIcon = styled.Image`
 class AttachButton extends React.PureComponent {
   static themePath = 'messageInput';
   static propTypes = {
-    handleOnPress: PropTypes.func,
     disabled: PropTypes.bool,
+    handleOnPress: PropTypes.func,
   };
   static defaultProps = {
     disabled: false,
@@ -36,7 +36,7 @@ class AttachButton extends React.PureComponent {
   render() {
     const { handleOnPress, disabled } = this.props;
     return (
-      <Container onPress={handleOnPress} disabled={disabled}>
+      <Container disabled={disabled} onPress={handleOnPress}>
         <AttachButtonIcon source={iconAddAttachment} />
       </Container>
     );

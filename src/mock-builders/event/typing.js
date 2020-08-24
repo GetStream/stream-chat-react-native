@@ -1,9 +1,9 @@
 export default (client, user = {}, channel = {}) => {
   client.dispatchEvent({
-    type: 'typing.start',
+    channel,
     cid: channel.cid,
+    type: 'typing.start',
     user,
     user_id: user.id,
-    channel,
   });
 };

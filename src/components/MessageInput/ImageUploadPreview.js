@@ -108,9 +108,9 @@ class ImageUploadPreview extends React.PureComponent {
       <React.Fragment>
         <ItemContainer>
           <UploadProgressIndicator
+            action={retryUpload && retryUpload.bind(this, item.id)}
             active={item.state !== FileState.UPLOADED}
             type={type}
-            action={retryUpload && retryUpload.bind(this, item.id)}
           >
             <Upload
               resizeMode='cover'
@@ -136,11 +136,11 @@ class ImageUploadPreview extends React.PureComponent {
     return (
       <Container>
         <FlatList
-          horizontal
-          style={{ flex: 1 }}
           data={this.props.imageUploads}
+          horizontal
           keyExtractor={(item) => item.id}
           renderItem={this._renderItem}
+          style={{ flex: 1 }}
         />
       </Container>
     );

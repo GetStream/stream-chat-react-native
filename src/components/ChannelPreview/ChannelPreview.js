@@ -59,8 +59,8 @@ const ChannelPreview = (props) => {
 ChannelPreview.propTypes = {
   channel: PropTypes.object.isRequired,
   client: PropTypes.object.isRequired,
-  setActiveChannel: PropTypes.func,
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  setActiveChannel: PropTypes.func,
 };
 
 export default React.memo(ChannelPreview);

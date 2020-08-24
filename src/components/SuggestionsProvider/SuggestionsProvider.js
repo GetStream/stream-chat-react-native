@@ -58,7 +58,7 @@ const SuggestionsProvider = ({ children }) => {
         messageInputBox.current.measureLayout(
           nodeHandleRoot,
           (x, y, width, height) => {
-            resolve({ x, y, height, width });
+            resolve({ height, width, x, y });
           },
         );
     });
@@ -70,7 +70,7 @@ const SuggestionsProvider = ({ children }) => {
         rootView.current.measureLayout(
           nodeHandleRoot,
           (x, y, width, height) => {
-            resolve({ x, y, height, width });
+            resolve({ height, width, x, y });
           },
         );
     });

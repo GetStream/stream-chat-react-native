@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { TouchableOpacity, Linking } from 'react-native';
+import { Linking, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
@@ -93,15 +93,32 @@ const FileAttachment = ({
 };
 
 FileAttachment.propTypes = {
-  /** The attachment to render */
-  attachment: PropTypes.object.isRequired,
+  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+  actionHandler: PropTypes.func,
+  /**
+   * Provide any additional props for child `TouchableOpacity`.
+   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   */
+  additionalTouchableProps: PropTypes.object,
   /**
    * Position of message. 'right' | 'left'
    * 'right' message belongs with current user while 'left' message belongs to other users.
    * */
   alignment: PropTypes.string,
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  actionHandler: PropTypes.func,
+  /** The attachment to render */
+  attachment: PropTypes.object.isRequired,
+  AttachmentActions: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -111,23 +128,6 @@ FileAttachment.propTypes = {
   groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
   /** Handler for long press event on attachment */
   onLongPress: PropTypes.func,
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  AttachmentActions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
 };
 
 export default FileAttachment;

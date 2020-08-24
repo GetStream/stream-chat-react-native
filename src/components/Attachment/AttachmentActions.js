@@ -66,14 +66,14 @@ const AttachmentActions = ({ actions, actionHandler, id }) => (
 );
 
 AttachmentActions.propTypes = {
+  /** The handler to execute after selecting an action */
+  actionHandler: PropTypes.func.isRequired,
+  /** A list of actions */
+  actions: PropTypes.array.isRequired,
   // /** The id of the form input */
   id: PropTypes.string,
   /** The text for the form input */
   text: PropTypes.string,
-  /** A list of actions */
-  actions: PropTypes.array.isRequired,
-  /** The handler to execute after selecting an action */
-  actionHandler: PropTypes.func.isRequired,
 };
 
 AttachmentActions.themePath = 'message.actions';

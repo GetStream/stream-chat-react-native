@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ActivityIndicator, Image, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
@@ -37,12 +37,12 @@ class UploadProgressIndicator extends React.PureComponent {
   }
 
   static propTypes = {
+    action: PropTypes.func,
     active: PropTypes.bool,
     type: PropTypes.oneOf([
       ProgressIndicatorTypes.IN_PROGRESS,
       ProgressIndicatorTypes.RETRY,
     ]),
-    action: PropTypes.func,
   };
 
   render() {
@@ -59,16 +59,16 @@ class UploadProgressIndicator extends React.PureComponent {
           {type === ProgressIndicatorTypes.IN_PROGRESS && (
             <View
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
+                alignItems: 'center',
                 bottom: 0,
                 justifyContent: 'center',
-                alignItems: 'center',
+                left: 0,
+                position: 'absolute',
+                right: 0,
+                top: 0,
               }}
             >
-              <ActivityIndicator style={{}} color='white' />
+              <ActivityIndicator color='white' style={{}} />
             </View>
           )}
           {type === ProgressIndicatorTypes.RETRY && (

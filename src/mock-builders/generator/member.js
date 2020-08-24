@@ -3,11 +3,11 @@ import { generateUser } from './user';
 export const generateMember = (options = {}) => {
   const user = options?.user || generateUser();
   return {
-    user_id: user.id,
-    user,
-    is_moderator: false,
     invited: false,
+    is_moderator: false,
     role: 'member',
+    user,
+    user_id: user.id,
     ...options,
   };
 };

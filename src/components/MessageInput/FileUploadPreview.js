@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { FileIcon } from '../Attachment';
@@ -25,9 +25,6 @@ class FileUploadPreview extends React.PureComponent {
     super(props);
   }
   static propTypes = {
-    fileUploads: PropTypes.array.isRequired,
-    removeFile: PropTypes.func,
-    retryUpload: PropTypes.func,
     /**
      * Custom UI component for attachment icon for type 'file' attachment.
      * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
@@ -36,6 +33,9 @@ class FileUploadPreview extends React.PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    fileUploads: PropTypes.array.isRequired,
+    removeFile: PropTypes.func,
+    retryUpload: PropTypes.func,
   };
 
   static defaultProps = {
@@ -54,24 +54,24 @@ class FileUploadPreview extends React.PureComponent {
     const AttachmentFileIcon = this.props.AttachmentFileIcon;
     return (
       <UploadProgressIndicator
+        action={this.props.retryUpload.bind(this, item.id)}
         active={item.state !== FileState.UPLOADED}
         type={type}
-        action={this.props.retryUpload.bind(this, item.id)}
       >
         <View
           style={{
-            height: FILE_PREVIEW_HEIGHT,
-            padding: FILE_PREVIEW_PADDING,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 5,
             borderColor: '#EBEBEB',
             borderWidth: 0.5,
+            display: 'flex',
+            flexDirection: 'row',
+            height: FILE_PREVIEW_HEIGHT,
+            justifyContent: 'space-between',
+            marginBottom: 5,
+            padding: FILE_PREVIEW_PADDING,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
             <AttachmentFileIcon mimeType={item.file.type} size={20} />
             <Text style={{ paddingLeft: 10 }}>
               {item.file.name.length > 35
@@ -94,15 +94,15 @@ class FileUploadPreview extends React.PureComponent {
         style={{
           display: 'flex',
           height: this.props.fileUploads.length * (FILE_PREVIEW_HEIGHT + 5),
-          marginRight: 10,
           marginLeft: 10,
+          marginRight: 10,
         }}
       >
         <FlatList
-          style={{ flex: 1 }}
           data={this.props.fileUploads}
           keyExtractor={(item) => item.id}
           renderItem={this._renderItem}
+          style={{ flex: 1 }}
         />
       </View>
     );

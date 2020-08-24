@@ -48,22 +48,6 @@ const ActionSheet = ({
   t,
 }) => (
   <ActionSheetCustom
-    ref={setAttachActionSheetRef}
-    title={
-      <ActionSheetTitleContainer>
-        <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
-        <IconSquare icon={iconClose} onPress={closeAttachActionSheet} />
-      </ActionSheetTitleContainer>
-    }
-    options={[
-      /* eslint-disable */
-      <AttachmentActionSheetItem
-        icon={iconGallery}
-        text={t('Upload a photo')}
-      />,
-      <AttachmentActionSheetItem icon={iconFolder} text={t('Upload a file')} />,
-      /* eslint-enable */
-    ]}
     onPress={(index) => {
       // https://github.com/beefe/react-native-actionsheet/issues/36
       setTimeout(() => {
@@ -78,7 +62,23 @@ const ActionSheet = ({
         }
       }, 201); // 201ms to fire after the animation is complete https://github.com/beefe/react-native-actionsheet/blob/master/lib/ActionSheetCustom.js#L78
     }}
+    options={[
+      /* eslint-disable */
+      <AttachmentActionSheetItem
+        icon={iconGallery}
+        text={t('Upload a photo')}
+      />,
+      <AttachmentActionSheetItem icon={iconFolder} text={t('Upload a file')} />,
+      /* eslint-enable */
+    ]}
+    ref={setAttachActionSheetRef}
     styles={styles}
+    title={
+      <ActionSheetTitleContainer>
+        <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
+        <IconSquare icon={iconClose} onPress={closeAttachActionSheet} />
+      </ActionSheetTitleContainer>
+    }
   />
 );
 

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
+import { Image, Modal, SafeAreaView, Text, View } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
@@ -174,7 +174,7 @@ const Gallery = ({ alignment, images }) => {
                   }}
                 >
                   <Text
-                    style={{ color: 'white', fontWeight: '700', fontSize: 22 }}
+                    style={{ color: 'white', fontSize: 22, fontWeight: '700' }}
                   >
                     {' '}
                     +{' '}
@@ -220,6 +220,12 @@ const Gallery = ({ alignment, images }) => {
 };
 
 Gallery.propTypes = {
+  /**
+   * Provide any additional props for child `TouchableOpacity`.
+   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   */
+  additionalTouchableProps: PropTypes.object,
+  alignment: PropTypes.string,
   /** The images to render */
   images: PropTypes.arrayOf(
     PropTypes.shape({
@@ -228,12 +234,6 @@ Gallery.propTypes = {
     }),
   ),
   onLongPress: PropTypes.func,
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  alignment: PropTypes.string,
 };
 
 Gallery.themePath = 'message.gallery';

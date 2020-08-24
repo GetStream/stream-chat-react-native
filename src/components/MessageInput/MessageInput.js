@@ -10,14 +10,14 @@ import { logChatPromiseExecution } from 'stream-chat';
 
 import {
   withChannelContext,
-  withSuggestionsContext,
   withKeyboardContext,
+  withSuggestionsContext,
   withTranslationContext,
 } from '../../context';
 import { IconSquare } from '../IconSquare';
 
-import { pickImage, pickDocument } from '../../native';
-import { FileState, ACITriggerSettings } from '../../utils';
+import { pickDocument, pickImage } from '../../native';
+import { ACITriggerSettings, FileState } from '../../utils';
 import { themed } from '../../styles/theme';
 
 import ActionSheetAttachment from './ActionSheetAttachment';
@@ -110,75 +110,6 @@ class MessageInput extends PureComponent {
 
   static themePath = 'messageInput';
   static propTypes = {
-    /** Initial value to set on input */
-    initialValue: PropTypes.string,
-    /**
-     * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-     *
-     * @param newText
-     */
-    onChangeText: PropTypes.func,
-    /**
-     * Override image upload request
-     *
-     * @param file    File object - {uri: ''}
-     * @param channel Current channel object
-     * */
-    doImageUploadRequest: PropTypes.func,
-    /**
-     * Override file upload request
-     *
-     * @param file    File object - {uri: '', name: ''}
-     * @param channel Current channel object
-     * */
-    doDocUploadRequest: PropTypes.func,
-    /** Limit on allowed number of files to attach at a time. */
-    maxNumberOfFiles: PropTypes.number,
-    /** If component should have image picker functionality  */
-    hasImagePicker: PropTypes.bool,
-    /** @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
-    dismissKeyboard: PropTypes.func,
-    /** If component should have file picker functionality  */
-    hasFilePicker: PropTypes.bool,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    members: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    watchers: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    clearEditingState: PropTypes.func,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    client: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    sendMessage: PropTypes.func,
-    /** Parent message object - in case of thread */
-    parent: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    channel: PropTypes.object,
-    /**
-     * Ref callback to set reference on input box container
-     * @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
-     * */
-    setInputBoxContainerRef: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    openSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    closeSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    updateSuggestions: PropTypes.func,
-    /**
-     * Custom UI component for send button.
-     *
-     * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
-     * */
-    SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-    /**
-     * Custom UI component for attach button.
-     *
-     * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
-     * */
-    AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component for ActionSheetAttachment.
      *
@@ -189,16 +120,22 @@ class MessageInput extends PureComponent {
       PropTypes.elementType,
     ]),
     /**
+     * Style object for actionsheet (used for option to choose file attachment or photo attachment).
+     * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+     */
+    actionSheetStyles: PropTypes.object,
+    /**
      * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
      *
      * @see See https://facebook.github.io/react-native/docs/textinput#reference
      */
     additionalTextInputProps: PropTypes.object,
     /**
-     * Style object for actionsheet (used for option to choose file attachment or photo attachment).
-     * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-     */
-    actionSheetStyles: PropTypes.object,
+     * Custom UI component for attach button.
+     *
+     * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
+     * */
+    AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * Custom UI component for attachment icon for type 'file' attachment in preview.
      * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
@@ -207,12 +144,75 @@ class MessageInput extends PureComponent {
       PropTypes.node,
       PropTypes.elementType,
     ]),
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    channel: PropTypes.object,
+    clearEditingState: PropTypes.func,
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    /** @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    client: PropTypes.object,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+    closeSuggestions: PropTypes.func,
     /** Disables the child MessageInput component */
     disabled: PropTypes.bool,
+    dismissKeyboard: PropTypes.func,
+    /**
+     * Override file upload request
+     *
+     * @param file    File object - {uri: '', name: ''}
+     * @param channel Current channel object
+     * */
+    doDocUploadRequest: PropTypes.func,
+    /**
+     * Override image upload request
+     *
+     * @param file    File object - {uri: ''}
+     * @param channel Current channel object
+     * */
+    doImageUploadRequest: PropTypes.func,
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+    /** If component should have file picker functionality  */
+    hasFilePicker: PropTypes.bool,
+    /** If component should have image picker functionality  */
+    hasImagePicker: PropTypes.bool,
+    /** Initial value to set on input */
+    initialValue: PropTypes.string,
+    /** Limit on allowed number of files to attach at a time. */
+    maxNumberOfFiles: PropTypes.number,
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    members: PropTypes.object,
+    /**
+     * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
+     *
+     * @param newText
+     */
+    onChangeText: PropTypes.func,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+    openSuggestions: PropTypes.func,
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    parent: PropTypes.object,
+    /**
+     * Custom UI component for send button.
+     *
+     * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
+     * */
+    SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
     /**
      * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
      */
     sendImageAsync: PropTypes.bool,
+    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+    sendMessage: PropTypes.func,
+    /**
+     * Ref callback to set reference on input box container
+     * @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
+     * */
+    setInputBoxContainerRef: PropTypes.func,
+    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
+    updateSuggestions: PropTypes.func,
+    /** Parent message object - in case of thread */
+    watchers: PropTypes.object,
   };
 
   static defaultProps = {
@@ -241,23 +241,23 @@ class MessageInput extends PureComponent {
           const id = generateRandomId();
           imageOrder.push(id);
           imageUploads[id] = {
-            id,
-            url: attach.image_url,
-            state: 'finished',
             file: { name: attach.fallback },
+            id,
+            state: 'finished',
+            url: attach.image_url,
           };
         } else if (attach.type === 'file') {
           const id = generateRandomId();
           fileOrder.push(id);
           fileUploads[id] = {
-            id,
-            url: attach.asset_url,
-            state: 'finished',
             file: {
               name: attach.title,
-              type: attach.mime_type,
               size: attach.file_size,
+              type: attach.mime_type,
             },
+            id,
+            state: 'finished',
+            url: attach.asset_url,
           };
         } else {
           attachments.push(attach);
@@ -269,14 +269,14 @@ class MessageInput extends PureComponent {
       }
     }
     return {
-      text,
       attachments,
-      imageOrder,
-      imageUploads: Immutable(imageUploads),
       fileOrder,
       fileUploads: Immutable(fileUploads),
+      imageOrder,
+      imageUploads: Immutable(imageUploads),
       mentioned_users,
       numberOfUploads: 0,
+      text,
     };
   };
 
@@ -414,26 +414,26 @@ class MessageInput extends PureComponent {
     if (image.state === FileState.UPLOADED) {
       const attachments = [
         {
-          type: 'image',
           image_url: image.url,
+          type: 'image',
         },
       ];
 
       try {
         this.props.sendMessage({
-          text: '',
-          parent: this.props.parent,
-          mentioned_users: [],
           attachments,
+          mentioned_users: [],
+          parent: this.props.parent,
+          text: '',
         });
 
         this.setState((prevState) => ({
-          numberOfUploads: prevState.numberOfUploads - 1,
           asyncIds: prevState.asyncIds.splice(
             prevState.asyncIds.indexOf(id),
             1,
           ),
           asyncUploads: prevState.asyncUploads.without([id]),
+          numberOfUploads: prevState.numberOfUploads - 1,
         }));
       } catch (err) {
         console.log('Failed');
@@ -474,9 +474,9 @@ class MessageInput extends PureComponent {
 
       if (image.state === FileState.UPLOADED) {
         attachments.push({
-          type: 'image',
-          image_url: image.url,
           fallback: image.file.name,
+          image_url: image.url,
+          type: 'image',
         });
       }
     }
@@ -492,11 +492,11 @@ class MessageInput extends PureComponent {
       }
       if (upload.state === FileState.UPLOADED) {
         attachments.push({
-          type: 'file',
           asset_url: upload.url,
-          title: upload.file.name,
-          mime_type: upload.file.type,
           file_size: upload.file.size,
+          mime_type: upload.file.type,
+          title: upload.file.name,
+          type: 'file',
         });
       }
     }
@@ -526,21 +526,21 @@ class MessageInput extends PureComponent {
     } else {
       try {
         this.props.sendMessage({
-          text,
-          parent: this.props.parent,
-          mentioned_users: uniq(this.state.mentioned_users),
           attachments,
+          mentioned_users: uniq(this.state.mentioned_users),
+          parent: this.props.parent,
+          text,
         });
 
         this.sending = false;
         this.setState((prevState) => ({
-          text: '',
-          imageUploads: Immutable({}),
-          imageOrder: Immutable([]),
-          fileUploads: Immutable({}),
           fileOrder: Immutable([]),
+          fileUploads: Immutable({}),
+          imageOrder: Immutable([]),
+          imageUploads: Immutable({}),
           mentioned_users: [],
           numberOfUploads: prevState.numberOfUploads - attachments.length,
+          text: '',
         }));
       } catch (err) {
         this.sending = false;
@@ -702,9 +702,9 @@ class MessageInput extends PureComponent {
         return {};
       }
       return {
-        numberOfUploads: prevState.numberOfUploads - 1,
-        imageUploads: prevState.imageUploads.set(id, undefined), // remove
         imageOrder: prevState.imageOrder.filter((_id) => id !== _id),
+        imageUploads: prevState.imageUploads.set(id, undefined), // remove
+        numberOfUploads: prevState.numberOfUploads - 1,
       };
     });
   };
@@ -716,9 +716,9 @@ class MessageInput extends PureComponent {
         return {};
       }
       return {
-        numberOfUploads: prevState.numberOfUploads - 1,
-        fileUploads: prevState.fileUploads.set(id, undefined), // remove
         fileOrder: prevState.fileOrder.filter((_id) => id !== _id),
+        fileUploads: prevState.fileUploads.set(id, undefined), // remove
+        numberOfUploads: prevState.numberOfUploads - 1,
       };
     });
   };
@@ -851,21 +851,21 @@ class MessageInput extends PureComponent {
       <Container padding={this.state.imageUploads.length > 0}>
         {this.state.fileUploads && (
           <FileUploadPreview
-            removeFile={this._removeFile}
-            retryUpload={this._uploadFile}
+            AttachmentFileIcon={this.props.AttachmentFileIcon}
             fileUploads={this.state.fileOrder.map(
               (id) => this.state.fileUploads[id],
             )}
-            AttachmentFileIcon={this.props.AttachmentFileIcon}
+            removeFile={this._removeFile}
+            retryUpload={this._uploadFile}
           />
         )}
         {this.state.imageUploads && (
           <ImageUploadPreview
-            removeImage={this._removeImage}
-            retryUpload={this._uploadImage}
             imageUploads={this.state.imageOrder.map(
               (id) => this.state.imageUploads[id],
             )}
+            removeImage={this._removeImage}
+            retryUpload={this._uploadImage}
           />
         )}
         {/**
@@ -874,33 +874,27 @@ class MessageInput extends PureComponent {
           */}
 
         <ActionSheetAttachment
-          setAttachActionSheetRef={this.setAttachActionSheetRef}
           closeAttachActionSheet={this.closeAttachActionSheet}
           pickFile={this._pickFile}
           pickImage={this._pickImage}
+          setAttachActionSheetRef={this.setAttachActionSheetRef}
           styles={this.props.actionSheetStyles}
         />
         <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
           {Input ? (
             <Input
               {...this.props}
-              getUsers={this.getUsers}
-              onSelectItem={this.onSelectItem}
-              isValidMessage={this.isValidMessage}
-              sendMessage={this.sendMessage}
-              updateMessage={this.updateMessage}
               _pickFile={this._pickFile}
-              uploadNewFile={this.uploadNewFile}
-              _uploadFile={this._uploadFile}
               _pickImage={this._pickImage}
-              uploadNewImage={this.uploadNewImage}
-              _removeImage={this._removeImage}
               _removeFile={this._removeFile}
+              _removeImage={this._removeImage}
+              _uploadFile={this._uploadFile}
               _uploadImage={this._uploadImage}
-              onChange={this.onChangeText}
-              closeAttachActionSheet={this.closeAttachActionSheet}
+              additionalTextInputProps={additionalTextInputProps}
               appendText={this.appendText}
-              setInputBoxRef={this.setInputBoxRef}
+              closeAttachActionSheet={this.closeAttachActionSheet}
+              disabled={disabled}
+              getUsers={this.getUsers}
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
                   await this.props.dismissKeyboard();
@@ -908,14 +902,20 @@ class MessageInput extends PureComponent {
                 } else if (hasImagePicker && !hasFilePicker) this._pickImage();
                 else if (!hasImagePicker && hasFilePicker) this._pickFile();
               }}
+              isValidMessage={this.isValidMessage}
+              onChange={this.onChangeText}
+              onSelectItem={this.onSelectItem}
+              sendMessage={this.sendMessage}
+              setInputBoxRef={this.setInputBoxRef}
               triggerSettings={ACITriggerSettings({
                 channel: this.props.channel,
                 onMentionSelectItem: this.onSelectItem,
                 t,
               })}
-              disabled={disabled}
+              updateMessage={this.updateMessage}
+              uploadNewFile={this.uploadNewFile}
+              uploadNewImage={this.uploadNewImage}
               value={this.state.text}
-              additionalTextInputProps={additionalTextInputProps}
             />
           ) : (
             <>
@@ -933,7 +933,7 @@ class MessageInput extends PureComponent {
                 />
               )}
               <AutoCompleteInput
-                value={this.state.text}
+                additionalTextInputProps={additionalTextInputProps}
                 onChange={this.onChangeText}
                 setInputBoxRef={this.setInputBoxRef}
                 triggerSettings={ACITriggerSettings({
@@ -941,13 +941,13 @@ class MessageInput extends PureComponent {
                   onMentionSelectItem: this.onSelectItem,
                   t,
                 })}
-                additionalTextInputProps={additionalTextInputProps}
+                value={this.state.text}
               />
               <SendButton
-                title={t('Send message')}
-                sendMessage={this.sendMessage}
-                editing={this.props.editing}
                 disabled={disabled || this.sending || !this.isValidMessage()}
+                editing={this.props.editing}
+                sendMessage={this.sendMessage}
+                title={t('Send message')}
               />
             </>
           )}
@@ -968,10 +968,10 @@ class MessageInput extends PureComponent {
                 {t('Editing Message')}
               </EditingBoxHeaderTitle>
               <IconSquare
+                icon={iconClose}
                 onPress={() => {
                   this.props.clearEditingState();
                 }}
-                icon={iconClose}
               />
             </EditingBoxHeader>
             {this.renderInputContainer()}

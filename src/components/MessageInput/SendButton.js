@@ -27,13 +27,13 @@ const SendButtonIcon = styled.Image`
 class SendButton extends React.PureComponent {
   static themePath = 'messageInput';
   static propTypes = {
-    title: PropTypes.string,
+    /** Disables the button */
+    disabled: PropTypes.bool,
     /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
     editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
     /** Function that sends message */
     sendMessage: PropTypes.func.isRequired,
-    /** Disables the button */
-    disabled: PropTypes.bool,
+    title: PropTypes.string,
   };
 
   static defaultProps = {
@@ -43,7 +43,7 @@ class SendButton extends React.PureComponent {
   render() {
     const { sendMessage, editing, title, disabled } = this.props;
     return (
-      <Container title={title} onPress={sendMessage} disabled={disabled}>
+      <Container disabled={disabled} onPress={sendMessage} title={title}>
         {editing ? (
           <SendButtonIcon source={iconEdit} />
         ) : (
