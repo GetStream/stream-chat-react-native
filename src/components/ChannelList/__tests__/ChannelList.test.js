@@ -21,6 +21,7 @@ import {
   dispatchNotificationAddedToChannelEvent,
   dispatchNotificationMessageNewEvent,
   dispatchNotificationRemovedFromChannel,
+  dispatchUserPresenceEvent,
   dispatchUserUpdatedEvent,
   generateChannel,
   generateMessage,
@@ -672,7 +673,7 @@ describe('ChannelList', () => {
         });
 
         act(() =>
-          dispatchUserUpdatedEvent(
+          dispatchUserPresenceEvent(
             chatClient,
             { ...offlineUser, online: true },
             testChannel1.channel,
