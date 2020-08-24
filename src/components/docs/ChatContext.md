@@ -1,11 +1,12 @@
-The channel context provides the following properties:
+The chat context exposes the following properties:
 
-- **client** (the client connection)
-- **channels** {array} The list of channels
-- **setActiveChannel** A function to set the currently active channel. This is used in [ChannelList](#channellist) component to navigate between channels.
+- **channel** {object} The currently active channel, only defined if set using `setActiveChannel` from ChatContext
+- **client** {object} The client connection and StreamChat instance
+- **connectionRecovering** {boolean} Whether or not the websocket connection is recovering
+- **isOnline** {boolean} Whether or not the user is active and online
+- **logger** {function} Custom logging function
+- **setActiveChannel** {function} Sets the currently active channel, used in the [ChannelList](#channellist) component to navigate between channels
 
-  **Params**
+  **Params:**
 
-  - `channel` Channel that needs to set to as active channel.
-
-- **channel** The currently active channel
+  - **channel:** The channel to be set as active

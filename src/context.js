@@ -1,18 +1,46 @@
 import React from 'react';
 import { Keyboard } from 'react-native';
+
+export const ChannelContext = React.createContext({});
 export const ChatContext = React.createContext({ client: null });
-
-export function withChatContext(OriginalComponent) {
-  const ContextAwareComponent = getContextAwareComponent(
-    ChatContext,
-    OriginalComponent,
-  );
-  return ContextAwareComponent;
-}
-
+export const KeyboardContext = React.createContext({
+  dismissKeyboard: Keyboard.dismiss,
+});
+export const MessageContentContext = React.createContext({});
+export const MessagesContext = React.createContext({});
+export const SuggestionsContext = React.createContext({});
+export const ThreadContext = React.createContext({});
 export const TranslationContext = React.createContext({
   t: () => 'Value not found',
 });
+
+export function withChannelContext(OriginalComponent) {
+  return getContextAwareComponent(ChannelContext, OriginalComponent);
+}
+
+export function withChatContext(OriginalComponent) {
+  return getContextAwareComponent(ChatContext, OriginalComponent);
+}
+
+export function withKeyboardContext(OriginalComponent) {
+  return getContextAwareComponent(KeyboardContext, OriginalComponent);
+}
+
+export function withMessageContentContext(OriginalComponent) {
+  return getContextAwareComponent(MessageContentContext, OriginalComponent);
+}
+
+export function withMessagesContext(OriginalComponent) {
+  return getContextAwareComponent(MessagesContext, OriginalComponent);
+}
+
+export function withSuggestionsContext(OriginalComponent) {
+  return getContextAwareComponent(SuggestionsContext, OriginalComponent);
+}
+
+export function withThreadContext(OriginalComponent) {
+  return getContextAwareComponent(ThreadContext, OriginalComponent);
+}
 
 export function withTranslationContext(OriginalComponent) {
   const ContextAwareComponent = getContextAwareComponent(
@@ -20,36 +48,6 @@ export function withTranslationContext(OriginalComponent) {
     OriginalComponent,
   );
   return ContextAwareComponent;
-}
-
-export const ChannelContext = React.createContext({});
-
-export function withChannelContext(OriginalComponent) {
-  const ContextAwareComponent = getContextAwareComponent(
-    ChannelContext,
-    OriginalComponent,
-  );
-  return ContextAwareComponent;
-}
-
-export const SuggestionsContext = React.createContext({});
-
-export function withSuggestionsContext(OriginalComponent) {
-  return getContextAwareComponent(SuggestionsContext, OriginalComponent);
-}
-
-export const MessageContentContext = React.createContext({});
-
-export function withMessageContentContext(OriginalComponent) {
-  return getContextAwareComponent(MessageContentContext, OriginalComponent);
-}
-
-export const KeyboardContext = React.createContext({
-  dismissKeyboard: Keyboard.dismiss,
-});
-
-export function withKeyboardContext(OriginalComponent) {
-  return getContextAwareComponent(KeyboardContext, OriginalComponent);
 }
 
 const getContextAwareComponent = function(context, originalComponent) {

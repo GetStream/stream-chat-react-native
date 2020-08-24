@@ -35,14 +35,16 @@ const LoadingErrorIndicator = ({ listType, retry }) => {
             retry && retry();
           }}
         >
-          <ErrorText>{t('Error loading channel list ...')}</ErrorText>
+          <ErrorText testID='loading-error'>
+            {t('Error loading channel list ...')}
+          </ErrorText>
           <RetryText>⟳</RetryText>
         </Container>
       );
     case 'message':
       return (
         <Container>
-          <ErrorText>
+          <ErrorText testID='loading-error'>
             {t('Error loading messages for this channel ...')}
           </ErrorText>
         </Container>
@@ -50,7 +52,7 @@ const LoadingErrorIndicator = ({ listType, retry }) => {
     default:
       return (
         <Container>
-          <ErrorText>{t('Error loading')}</ErrorText>
+          <ErrorText testID='loading-error'>{t('Error loading')}</ErrorText>
         </Container>
       );
   }
