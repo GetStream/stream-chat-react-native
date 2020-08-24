@@ -8,7 +8,6 @@ import { themed } from '../../styles/theme';
 import { useTypingString } from './hooks/useTypingString';
 
 const Container = styled.View`
-  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
