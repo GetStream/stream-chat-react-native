@@ -3,25 +3,26 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
   height: 100%;
   justify-content: center;
-  ${({ theme }) => theme.loadingErrorIndicator.container.css}
+  ${({ theme }) => theme.loadingErrorIndicator.container.css};
 `;
 
 const ErrorText = styled.Text`
   font-size: 14px;
   font-weight: 600;
   margin-top: 20px;
-  ${({ theme }) => theme.loadingErrorIndicator.errorText.css}
+  ${({ theme }) => theme.loadingErrorIndicator.errorText.css};
 `;
 
 const RetryText = styled.Text`
   font-size: 30px;
   font-weight: 600;
-  ${({ theme }) => theme.loadingErrorIndicator.retryText.css}
+  ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
 `;
 
 const LoadingErrorIndicator = ({ listType, retry }) => {
@@ -59,9 +60,12 @@ const LoadingErrorIndicator = ({ listType, retry }) => {
 };
 
 LoadingErrorIndicator.propTypes = {
+  // Type of list
   listType: PropTypes.oneOf(['channel', 'message', 'default']),
   // Calls the retry handler.
   retry: PropTypes.func,
 };
 
-export default LoadingErrorIndicator;
+LoadingErrorIndicator.themePath = 'loadingErrorIndicator';
+
+export default themed(LoadingErrorIndicator);

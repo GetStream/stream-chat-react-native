@@ -25,10 +25,8 @@ const ActionButton = styled(({ buttonStyle, ...rest }) => (
       : theme.message.actions.button.defaultBorderColor};
   border-radius: 20px;
   border-width: 1px;
-  padding-bottom: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
+  padding-horizontal: 10px;
+  padding-vertical: 5px;
   ${({ theme }) => theme.message.actions.button.css}
 `;
 

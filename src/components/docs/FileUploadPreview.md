@@ -26,32 +26,21 @@ const fileUploads = [
   },
 ];
 
-class IUPExample extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      fileUploads,
-    };
+const FUPExample = () => {
+  const [fileUploadsState, setFileUploadsState] = React.useState(fileUploads);
 
-    this.removeFile = this.removeFile.bind(this);
-  }
+  const removeFile = (id) => {
+    setFileUploadsState((prevFileUploads) => prevFileUploads.filter((file) => file.id !== id));
+  };
 
-  removeFile(id) {
-    this.setState({
-      fileUploads: this.state.fileUploads.filter((obj) => obj.id !== id),
-    });
-  }
+  return (
+    <FileUploadPreview
+      fileUploads={fileUploadsState}
+      removeFile={removeFile}
+      retryUpload={() => {}}
+    />
+  );
+};
 
-  render() {
-    return (
-      <FileUploadPreview
-        fileUploads={this.state.fileUploads}
-        removeFile={this.removeFile}
-        retryUpload={() => {}}
-      />
-    );
-  }
-}
-
-<IUPExample />;
+<FUPExample />;
 ```

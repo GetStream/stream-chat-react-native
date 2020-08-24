@@ -5,7 +5,7 @@ Here's what it looks like for today.
 const date = new Date();
 const data = require('./data');
 
-<React.Fragment>
+<Chat client={data.client}>
   <DateSeparator {...data.translationContext} message={{ date }} />
   <DateSeparator
     {...data.translationContext}
@@ -17,7 +17,7 @@ const data = require('./data');
     message={{ date }}
     alignment="left"
   />
-</React.Fragment>;
+</Chat>;
 ```
 
 and for a date in the past:
@@ -26,7 +26,7 @@ and for a date in the past:
 const data = require('./data');
 
 const date = new Date('December 17, 1995 03:24:00');
-<React.Fragment>
+<Chat client={data.client}>
   <DateSeparator {...data.translationContext} message={{ date }} />
   <DateSeparator
     {...data.translationContext}
@@ -38,7 +38,7 @@ const date = new Date('December 17, 1995 03:24:00');
     message={{ date }}
     alignment="left"
   />
-</React.Fragment>;
+</Chat>;
 ```
 
 and adding custom date formatting:
@@ -52,7 +52,7 @@ function formatDate(d) {
   return <h2>Messages posted after {d.toDateString()}</h2>;
 }
 
-<React.Fragment>
+<Chat client={data.client}>
   <DateSeparator
     {...data.translationContext}
     formatDate={formatDate}
@@ -70,5 +70,5 @@ function formatDate(d) {
     message={{ date }}
     alignment="left"
   />
-</React.Fragment>;
+</Chat>;
 ```

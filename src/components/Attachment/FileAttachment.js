@@ -81,13 +81,13 @@ const FileAttachment = ({
           <FileSize>{attachment.file_size} KB</FileSize>
         </FileDetails>
       </FileContainer>
-      {attachment.actions?.length && (
+      {attachment.actions && attachment.actions.length ? (
         <AttachmentActions
           actionHandler={actionHandler}
           key={`key-actions-${attachment.id}`}
           {...attachment}
         />
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 };

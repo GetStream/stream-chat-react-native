@@ -28,6 +28,15 @@ export const generateImageAttachment = (a) => ({
   ...a,
 });
 
+export const generateImageUploadPreview = (a) => ({
+  file: {
+    uri: image_url,
+  },
+  id: uuidv4(),
+  state: 'uploaded',
+  ...a,
+});
+
 export const generateAudioAttachment = (a) => ({
   type: 'audio',
   title: uuidv4(),
@@ -47,6 +56,17 @@ export const generateFileAttachment = (a) => ({
   file_size: 1337,
   text: uuidv4(),
   description: uuidv4(),
+  ...a,
+});
+
+export const generateFileUploadPreview = (a) => ({
+  file: {
+    name: 'dummy.pdf',
+    type: 'file',
+    ...a,
+  },
+  id: uuidv4(),
+  state: 'uploaded',
   ...a,
 });
 
