@@ -36,7 +36,5 @@
   "{{ imageCount }} more": "{{ imageCount }} adet daha",
   "{{ replyCount }} replies": "{{ replyCount }} cevaplar",
   "{{ user }} is typing...": "{{ user }} yazıyor...",
-  "{{ username }} joined the chat": "{{ username }} konuşmaya katıldı",
-  "{{ username }} was removed from the chat": "{{ username }} konuşmadan çıkarıldı",
   "🏙 Attachment...": "🏙 Ek..."
 }

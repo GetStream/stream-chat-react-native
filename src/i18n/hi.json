@@ -36,7 +36,5 @@
   "{{ imageCount }} more": "{{ imageCount }} और",
   "{{ replyCount }} replies": "{{ replyCount }} रिप्लाई",
   "{{ user }} is typing...": "{{ user }} टाइप कर रहा है...",
-  "{{ username }} joined the chat": "{{ username }} चैट में शामिल हुआ",
-  "{{ username }} was removed from the chat": "{{ username }} को चैट से हटा दिया गया है ",
   "🏙 Attachment...": "🏙 अटैचमेंट"
 }

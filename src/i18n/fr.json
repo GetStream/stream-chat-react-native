@@ -36,7 +36,5 @@
   "{{ imageCount }} more": "{{ imageCount }} supplémentaires",
   "{{ replyCount }} replies": "{{ replyCount }} réponses",
   "{{ user }} is typing...": "{{ user }} est en train d'écrire...",
-  "{{ username }} joined the chat": "{{ username }} a rejoint le chat",
-  "{{ username }} was removed from the chat": "{{ username }} a été supprimé du chat",
   "🏙 Attachment...": "🏙 Pièce jointe..."
 }
