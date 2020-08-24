@@ -7,7 +7,7 @@ import {
 } from '../../../context';
 import { getGroupStyles, getReadStates, insertDates } from '../utils';
 
-export const useMessageList = ({ threadList, noGroupByUser }) => {
+export const useMessageList = ({ noGroupByUser, threadList }) => {
   const { messages } = useContext(MessagesContext);
   const { threadMessages } = useContext(ThreadContext);
   const { read } = useContext(ChannelContext);
