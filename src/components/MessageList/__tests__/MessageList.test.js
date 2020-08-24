@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   cleanup,
+  fireEvent,
   render,
   waitFor,
-  fireEvent,
 } from '@testing-library/react-native';
 import {
   dispatchMessageNewEvent,

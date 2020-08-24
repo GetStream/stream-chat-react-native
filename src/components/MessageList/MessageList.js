@@ -7,9 +7,9 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   ChannelContext,
   ChatContext,
-  TranslationContext,
   MessagesContext,
   ThreadContext,
+  TranslationContext,
 } from '../../context';
 import DefaultDateSeparator from './DateSeparator';
 import { Message as DefaultMessage } from '../Message';
