@@ -15,19 +15,11 @@ export const TranslationContext = React.createContext({
 });
 
 export function withChannelContext(OriginalComponent) {
-  const ContextAwareComponent = getContextAwareComponent(
-    ChannelContext,
-    OriginalComponent,
-  );
-  return ContextAwareComponent;
+  return getContextAwareComponent(ChannelContext, OriginalComponent);
 }
 
 export function withChatContext(OriginalComponent) {
-  const ContextAwareComponent = getContextAwareComponent(
-    ChatContext,
-    OriginalComponent,
-  );
-  return ContextAwareComponent;
+  return getContextAwareComponent(ChatContext, OriginalComponent);
 }
 
 export function withKeyboardContext(OriginalComponent) {
@@ -38,8 +30,16 @@ export function withMessageContentContext(OriginalComponent) {
   return getContextAwareComponent(MessageContentContext, OriginalComponent);
 }
 
+export function withMessagesContext(OriginalComponent) {
+  return getContextAwareComponent(MessagesContext, OriginalComponent);
+}
+
 export function withSuggestionsContext(OriginalComponent) {
   return getContextAwareComponent(SuggestionsContext, OriginalComponent);
+}
+
+export function withThreadContext(OriginalComponent) {
+  return getContextAwareComponent(ThreadContext, OriginalComponent);
 }
 
 export function withTranslationContext(OriginalComponent) {

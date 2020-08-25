@@ -17,7 +17,6 @@ const Container = styled.TouchableOpacity`
 `;
 
 const Details = styled.View`
-  flex-direction: column;
   flex: 1;
   padding-left: 10px;
   ${({ theme }) => theme.channelPreview.details.css}
@@ -32,7 +31,6 @@ const DetailsTop = styled.View`
 const Title = styled.Text`
   font-weight: bold;
   font-size: 14px;
-  flex: 1;
   ${({ theme }) => theme.channelPreview.title.css}
 `;
 
@@ -89,7 +87,8 @@ const ChannelPreviewMessenger = ({
           </Date>
         </DetailsTop>
         <Message unread={unread > 0 ? unread : undefined}>
-          {latestMessage?.text &&
+          {latestMessage &&
+            latestMessage.text &&
             truncate(latestMessage.text.replace(/\n/g, ' '), {
               length: latestMessageLength,
             })}

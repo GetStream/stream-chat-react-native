@@ -4,6 +4,10 @@ import { findNodeHandle, View } from 'react-native';
 import { SuggestionsContext } from '../../context';
 import SuggestionsList from './SuggestionsList';
 
+/**
+ *
+ * This provider component exposes the properties stored within the SuggestionsContext.
+ */
 const SuggestionsProvider = ({ children }) => {
   const [componentType, setComponentType] = useState('');
   const [suggestions, setSuggestions] = useState({});
@@ -50,20 +54,25 @@ const SuggestionsProvider = ({ children }) => {
   const getInputBoxPosition = () =>
     new Promise((resolve) => {
       const nodeHandleRoot = findNodeHandle(rootView.current);
-      messageInputBox.current?.measureLayout(
-        nodeHandleRoot,
-        (x, y, width, height) => {
-          resolve({ x, y, height, width });
-        },
-      );
+      messageInputBox.current &&
+        messageInputBox.current.measureLayout(
+          nodeHandleRoot,
+          (x, y, width, height) => {
+            resolve({ x, y, height, width });
+          },
+        );
     });
 
   const getChatBoxPosition = () =>
     new Promise((resolve) => {
       const nodeHandleRoot = findNodeHandle(rootView.current);
-      rootView.current?.measureLayout(nodeHandleRoot, (x, y, width, height) => {
-        resolve({ x, y, height, width });
-      });
+      rootView.current &&
+        rootView.current.measureLayout(
+          nodeHandleRoot,
+          (x, y, width, height) => {
+            resolve({ x, y, height, width });
+          },
+        );
     });
 
   const suggestionsContext = {

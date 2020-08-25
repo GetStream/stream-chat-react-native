@@ -1,6 +1,8 @@
 ```js
-const data = require('./data');
-<Chat client={data.client}>
-    <MessageInput {...data.channelContext} {...data.suggestionsContext} {...data.translationContext} />
+const { channel, client } = require('./data');
+<Chat client={client}>
+    <Channel channel={channel}>
+        <MessageInput />
+    </Channel>
 </Chat>
 ```

@@ -7,5 +7,5 @@ const full =
 const thumb =
   'https://images.unsplash.com/photo-1517976487492-5750f3195933?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&q=70';
 
-<Image thumb_url={thumb} image_url={full} fallback={'Rocket Launch'} />;
+<Image fallback={'Rocket Launch'} image_url={full} thumb_url={thumb} />;
 ```

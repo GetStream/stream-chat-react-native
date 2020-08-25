@@ -1,288 +1,262 @@
-import React, { PureComponent } from 'react';
-import { View } from 'react-native';
-import { lookup } from 'mime-types';
-import Immutable from 'seamless-immutable';
-import PropTypes from 'prop-types';
-import uniq from 'lodash/uniq';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from '@stream-io/styled-components';
-
+import uniq from 'lodash/uniq';
+import { lookup } from 'mime-types';
+import PropTypes from 'prop-types';
+import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
 
-import {
-  withChannelContext,
-  withSuggestionsContext,
-  withKeyboardContext,
-  withTranslationContext,
-} from '../../context';
+import ActionSheetAttachmentDefault from './ActionSheetAttachment';
+import AttachButtonDefault from './AttachButton';
+import FileUploadPreview from './FileUploadPreview';
+import ImageUploadPreview from './ImageUploadPreview';
+import SendButtonDefault from './SendButton';
+
+import { AutoCompleteInput } from '../AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import { pickImage, pickDocument } from '../../native';
-import { FileState, ACITriggerSettings } from '../../utils';
-import { themed } from '../../styles/theme';
-
-import ActionSheetAttachment from './ActionSheetAttachment';
-import SendButton from './SendButton';
-import AttachButton from './AttachButton';
-import ImageUploadPreview from './ImageUploadPreview';
-import FileUploadPreview from './FileUploadPreview';
-import { AutoCompleteInput } from '../AutoCompleteInput';
-
+import {
+  ChatContext,
+  ChannelContext,
+  KeyboardContext,
+  MessagesContext,
+  SuggestionsContext,
+  ThreadContext,
+  TranslationContext,
+} from '../../context';
 import iconClose from '../../images/icons/icon_close.png';
+import { pickDocument, pickImage as pickImageNative } from '../../native';
+import { themed } from '../../styles/theme';
+import { ACITriggerSettings, FileState } from '../../utils';
 
 // https://stackoverflow.com/a/6860916/2570866
-function generateRandomId() {
-  // prettier-ignore
-  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-}
+const generateRandomId = () =>
+  S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
 
-function S4() {
-  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-}
+const S4 = () =>
+  (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 
-const Container = styled(({ padding, ...rest }) => <View {...rest} />)`
-  display: flex;
-  flex-direction: column;
-  border-radius: 10;
+const getMessageDetailsForState = (message, initialValue) => {
+  const attachments = [];
+  const fileOrder = [];
+  const fileUploads = {};
+  const imageOrder = [];
+  const imageUploads = {};
+  let mentioned_users = [];
+  let text = initialValue || '';
+
+  if (message) {
+    text = message.text;
+    for (const attach of message.attachments) {
+      if (attach.type === 'image') {
+        const id = generateRandomId();
+        imageOrder.push(id);
+        imageUploads[id] = {
+          file: { name: attach.fallback },
+          id,
+          state: 'finished',
+          url: attach.image_url,
+        };
+      } else if (attach.type === 'file') {
+        const id = generateRandomId();
+        fileOrder.push(id);
+        fileUploads[id] = {
+          file: {
+            name: attach.title,
+            size: attach.file_size,
+            type: attach.mime_type,
+          },
+          id,
+          state: 'finished',
+          url: attach.asset_url,
+        };
+      } else {
+        attachments.push(attach);
+      }
+    }
+
+    if (message.mentioned_users) {
+      mentioned_users = [...message.mentioned_users];
+    }
+  }
+  return {
+    attachments,
+    fileOrder,
+    fileUploads: Immutable(fileUploads),
+    imageOrder,
+    imageUploads: Immutable(imageUploads),
+    mentioned_users,
+    numberOfUploads: 0,
+    text,
+  };
+};
+
+const Container = styled.View`
   background-color: rgba(0, 0, 0, 0.05);
-  padding-top: ${({ theme, padding }) =>
+  border-radius: 10px;
+  flex-direction: column;
+  margin-horizontal: 10px;
+  padding-top: ${({ padding, theme }) =>
     padding ? theme.messageInput.container.conditionalPadding : 0}px;
-  margin-left: 10px;
-  margin-right: 10px;
-  ${({ theme }) => theme.messageInput.container.css}
+  ${({ theme }) => theme.messageInput.container.css};
 `;
 
 const EditingBoxContainer = styled.View`
-  padding-left: 0;
-  padding-right: 0;
+  background-color: white;
+  padding-horizontal: 0px;
   shadow-color: grey;
   shadow-opacity: 0.5;
   z-index: 100;
-  background-color: white;
-  ${({ theme }) => theme.messageInput.editingBoxContainer.css}
+  ${({ theme }) => theme.messageInput.editingBoxContainer.css};
 `;
 
 const EditingBoxHeader = styled.View`
-  flex-direction: row;
   align-items: center;
+  flex-direction: row;
   justify-content: space-between;
   padding: 10px;
-  ${({ theme }) => theme.messageInput.editingBoxHeader.css}
+  ${({ theme }) => theme.messageInput.editingBoxHeader.css};
 `;
 
 const EditingBoxHeaderTitle = styled.Text`
   font-weight: bold;
-  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css}
+  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css};
 `;
 
 const InputBoxContainer = styled.View`
-  display: flex;
-  flex-direction: row;
-  padding-left: 10px;
-  padding-right: 10px;
-  min-height: 46;
-  margin: 10px;
   align-items: center;
-  ${({ theme }) => theme.messageInput.inputBoxContainer.css}
+  flex-direction: row;
+  padding-horizontal: 10px;
+  margin: 10px;
+  min-height: 46px;
+  ${({ theme }) => theme.messageInput.inputBoxContainer.css};
 `;
 
 /**
  * UI Component for message input
- * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
- * and [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
+ * It's a consumer of
+ * [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext),
+ * [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext),
+ * [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext),
+ * [Messages Context](https://getstream.github.io/stream-chat-react-native/#messagescontext),
+ * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext),
+ * [Thread Context](https://getstream.github.io/stream-chat-react-native/#threadcontext), and
+ * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
  * @example ../docs/MessageInput.md
- * @extends PureComponent
  */
-class MessageInput extends PureComponent {
-  constructor(props) {
-    super(props);
-    const state = this.getMessageDetailsForState(
-      props.editing,
-      props.initialValue,
-    );
-    this.state = {
-      ...state,
-      asyncIds: Immutable([]), // saves data for images that resolve after hitting send
-      asyncUploads: Immutable({}), // saves data for images that resolve after hitting send
-    };
-    this.sending = false;
-  }
+const MessageInput = (props) => {
+  const channelContext = useContext(ChannelContext);
+  const { channel, disabled = false, members, watchers } = channelContext;
 
-  static themePath = 'messageInput';
-  static propTypes = {
-    /** Initial value to set on input */
-    initialValue: PropTypes.string,
-    /**
-     * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-     *
-     * @param newText
-     */
-    onChangeText: PropTypes.func,
-    /**
-     * Override image upload request
-     *
-     * @param file    File object - {uri: ''}
-     * @param channel Current channel object
-     * */
-    doImageUploadRequest: PropTypes.func,
-    /**
-     * Override file upload request
-     *
-     * @param file    File object - {uri: '', name: ''}
-     * @param channel Current channel object
-     * */
-    doDocUploadRequest: PropTypes.func,
-    /** Limit on allowed number of files to attach at a time. */
-    maxNumberOfFiles: PropTypes.number,
-    /** If component should have image picker functionality  */
-    hasImagePicker: PropTypes.bool,
-    /** @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
-    dismissKeyboard: PropTypes.func,
-    /** If component should have file picker functionality  */
-    hasFilePicker: PropTypes.bool,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    members: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    watchers: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    clearEditingState: PropTypes.func,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    client: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    sendMessage: PropTypes.func,
-    /** Parent message object - in case of thread */
-    parent: PropTypes.object,
-    /** @see See [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-    channel: PropTypes.object,
-    /**
-     * Ref callback to set reference on input box container
-     * @see See [keyboard context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext)
-     * */
-    setInputBoxContainerRef: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    openSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    closeSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    updateSuggestions: PropTypes.func,
-    /**
-     * Custom UI component for send button.
-     *
-     * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
-     * */
-    SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-    /**
-     * Custom UI component for attach button.
-     *
-     * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
-     * */
-    AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-    /**
-     * Custom UI component for ActionSheetAttachment.
-     *
-     * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
-     * */
-    ActionSheetAttachment: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /**
-     * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
-     *
-     * @see See https://facebook.github.io/react-native/docs/textinput#reference
-     */
-    additionalTextInputProps: PropTypes.object,
-    /**
-     * Style object for actionsheet (used for option to choose file attachment or photo attachment).
-     * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-     */
-    actionSheetStyles: PropTypes.object,
-    /**
-     * Custom UI component for attachment icon for type 'file' attachment in preview.
-     * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-     */
-    AttachmentFileIcon: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /** Disables the child MessageInput component */
-    disabled: PropTypes.bool,
-    /**
-     * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
-     */
-    sendImageAsync: PropTypes.bool,
+  const chatContext = useContext(ChatContext);
+  const { client } = chatContext;
+
+  const keyboardContext = useContext(KeyboardContext);
+  const { dismissKeyboard } = keyboardContext;
+
+  const messagesContext = useContext(MessagesContext);
+  const {
+    clearEditingState,
+    editing,
+    editMessage,
+    sendMessage: sendMessageContext,
+  } = messagesContext;
+
+  // TODO: remove all but setInputBoxContainerRef for SuggestionsContext. For now it's there to not introduce breaking changes for clients
+  const suggestionsContext = useContext(SuggestionsContext);
+  const {
+    closeSuggestions,
+    openSuggestions,
+    setInputBoxContainerRef,
+    updateSuggestions,
+  } = suggestionsContext;
+
+  // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
+  const threadContext = useContext(ThreadContext);
+
+  const translationContext = useContext(TranslationContext);
+  const { t } = translationContext;
+
+  const {
+    ActionSheetAttachment = ActionSheetAttachmentDefault,
+    actionSheetStyles,
+    additionalTextInputProps,
+    AttachButton = AttachButtonDefault,
+    AttachmentFileIcon,
+    doDocUploadRequest,
+    doImageUploadRequest,
+    hasFilePicker = true,
+    hasImagePicker = true,
+    initialValue,
+    Input,
+    maxNumberOfFiles,
+    onChangeText: onChangeTextProp,
+    parent,
+    SendButton = SendButtonDefault,
+    sendImageAsync = false,
+  } = props;
+
+  /**
+   * TODO: This should be removed when possible along with the spread into Input
+   */
+  const legacyProps = {
+    ...props,
+    ...channelContext,
+    ...chatContext,
+    ...keyboardContext,
+    ...messagesContext,
+    ...suggestionsContext,
+    ...threadContext,
+    ...translationContext,
   };
 
-  static defaultProps = {
-    ActionSheetAttachment,
-    AttachButton,
-    disabled: false,
-    hasFilePicker: true,
-    hasImagePicker: true,
-    SendButton,
-    sendImageAsync: false,
-  };
+  const attachActionSheet = useRef();
+  const inputBox = useRef();
+  const sending = useRef(false);
 
-  getMessageDetailsForState = (message, initialValue) => {
-    const imageOrder = [];
-    const imageUploads = {};
-    const fileOrder = [];
-    const fileUploads = {};
-    const attachments = [];
-    let mentioned_users = [];
-    let text = initialValue || '';
+  const [asyncIds, setAsyncIds] = useState(Immutable([]));
+  const [asyncUploads, setAsyncUploads] = useState(Immutable([]));
+  const [state, setState] = useState(() =>
+    getMessageDetailsForState(editing, initialValue),
+  );
 
-    if (message) {
-      text = message.text;
-      for (const attach of message.attachments) {
-        if (attach.type === 'image') {
-          const id = generateRandomId();
-          imageOrder.push(id);
-          imageUploads[id] = {
-            id,
-            url: attach.image_url,
-            state: 'finished',
-            file: { name: attach.fallback },
-          };
-        } else if (attach.type === 'file') {
-          const id = generateRandomId();
-          fileOrder.push(id);
-          fileUploads[id] = {
-            id,
-            url: attach.asset_url,
-            state: 'finished',
-            file: {
-              name: attach.title,
-              type: attach.mime_type,
-              size: attach.file_size,
-            },
-          };
-        } else {
-          attachments.push(attach);
-        }
+  useEffect(() => {
+    if (editing) {
+      if (inputBox.current) {
+        inputBox.current.focus();
       }
-
-      if (message.mentioned_users) {
-        mentioned_users = [...message.mentioned_users];
-      }
+      setState(editing, initialValue);
+    } else {
+      setState(getMessageDetailsForState(null, initialValue));
     }
-    return {
-      text,
-      attachments,
-      imageOrder,
-      imageUploads: Immutable(imageUploads),
-      fileOrder,
-      fileUploads: Immutable(fileUploads),
-      mentioned_users,
-      numberOfUploads: 0,
-    };
+  }, [editing, initialValue]);
+
+  useEffect(() => {
+    if (Object.keys(asyncUploads).length) {
+      /**
+       * When successful image upload response occurs after hitting send,
+       * send a follow up message with the image
+       */
+      sending.current = true;
+      asyncIds.forEach((id) => sendMessageAsync(id));
+      sending.current = false;
+    }
+  }, [asyncIds, asyncUploads, sending, sendMessageAsync]);
+
+  const appendText = (text) => {
+    setState((prevState) => ({
+      ...prevState,
+      text: `${prevState.text}${text}`,
+    }));
   };
 
-  getMembers = () => {
+  const closeAttachActionSheet = () => {
+    attachActionSheet.current.hide();
+  };
+
+  const getMembers = () => {
     const result = [];
-    const members = this.props.members;
     if (members && Object.values(members).length) {
       Object.values(members).forEach((member) => result.push(member.user));
     }
@@ -290,18 +264,8 @@ class MessageInput extends PureComponent {
     return result;
   };
 
-  getWatchers = () => {
-    const result = [];
-    const watchers = this.props.watchers;
-    if (watchers && Object.values(watchers).length) {
-      result.push(...Object.values(watchers));
-    }
-
-    return result;
-  };
-
-  getUsers = () => {
-    const users = [...this.getMembers(), ...this.getWatchers()];
+  const getUsers = () => {
+    const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
     const uniqueUsers = {};
@@ -315,71 +279,23 @@ class MessageInput extends PureComponent {
     return usersArray;
   };
 
-  componentDidMount() {
-    if (this.props.editing) this.inputBox.focus();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (Object.keys(this.state.asyncUploads).length) {
-      /**
-       * When successful image upload response occurs after hitting send,
-       * send a follow up message with the image
-       */
-      this.sending = true;
-      this.state.asyncIds.forEach((id) => this.sendMessageAsync(id));
-      this.sending = false;
+  const getWatchers = () => {
+    const result = [];
+    if (watchers && Object.values(watchers).length) {
+      result.push(...Object.values(watchers));
     }
 
-    if (this.props.editing) this.inputBox.focus();
-    if (
-      this.props.editing &&
-      prevProps.editing &&
-      this.props.editing.id === prevProps.editing.id
-    ) {
-      return;
-    }
-
-    if (this.props.editing && !prevProps.editing) {
-      this.setState(
-        this.getMessageDetailsForState(
-          this.props.editing,
-          this.props.initialValue,
-        ),
-      );
-    }
-
-    if (
-      this.props.editing &&
-      prevProps.editing &&
-      this.props.editing.id !== prevProps.editing.id
-    ) {
-      this.setState(
-        this.getMessageDetailsForState(
-          this.props.editing,
-          this.props.initialValue,
-        ),
-      );
-    }
-
-    if (!this.props.editing && prevProps.editing) {
-      this.setState(
-        this.getMessageDetailsForState(null, this.props.initialValue),
-      );
-    }
-  }
-
-  onSelectItem = (item) => {
-    this.setState((prevState) => ({
-      mentioned_users: [...prevState.mentioned_users, item.id],
-    }));
+    return result;
   };
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
-  isValidMessage = () => {
-    if (this.state.text && this.state.text !== '') return true;
+  const isValidMessage = () => {
+    if (state.text) {
+      return true;
+    }
 
-    for (const id of this.state.imageOrder) {
-      const image = this.state.imageUploads[id];
+    for (const id of state.imageOrder) {
+      const image = state.imageUploads[id];
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -391,8 +307,8 @@ class MessageInput extends PureComponent {
       return true;
     }
 
-    for (const id of this.state.fileOrder) {
-      const upload = this.state.fileUploads[id];
+    for (const id of state.fileOrder) {
+      const upload = state.fileUploads[id];
       if (!upload || upload.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -407,169 +323,32 @@ class MessageInput extends PureComponent {
     return false;
   };
 
-  sendMessageAsync = (id) => {
-    const image = this.state.asyncUploads[id];
-    if (!image || image.state === FileState.UPLOAD_FAILED) return;
-
-    if (image.state === FileState.UPLOADED) {
-      const attachments = [
-        {
-          type: 'image',
-          image_url: image.url,
-        },
-      ];
-
-      try {
-        this.props.sendMessage({
-          text: '',
-          parent: this.props.parent,
-          mentioned_users: [],
-          attachments,
-        });
-
-        this.setState((prevState) => ({
-          numberOfUploads: prevState.numberOfUploads - 1,
-          asyncIds: prevState.asyncIds.splice(
-            prevState.asyncIds.indexOf(id),
-            1,
-          ),
-          asyncUploads: prevState.asyncUploads.without([id]),
-        }));
-      } catch (err) {
-        console.log('Failed');
-      }
-    }
-  };
-
-  sendMessage = async () => {
-    if (this.sending) return;
-    this.sending = true;
-
-    const { text } = this.state;
-    await this.setState({ text: '' }, () => this.inputBox.clear());
-
-    const attachments = [];
-    for (const id of this.state.imageOrder) {
-      const image = this.state.imageUploads[id];
-
-      if (!image || image.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-
-      if (image.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        if (this.props.sendImageAsync) {
-          /**
-           * If user hit send before image uploaded, push ID into a queue to later
-           * be matched with the successful CDN response
-           */
-          this.setState((prevState) => ({
-            asyncIds: [...prevState.asyncIds, id],
-          }));
-        } else {
-          this.sending = false;
-          return this.setState({ text });
-        }
-      }
-
-      if (image.state === FileState.UPLOADED) {
-        attachments.push({
-          type: 'image',
-          image_url: image.url,
-          fallback: image.file.name,
-        });
-      }
-    }
-
-    for (const id of this.state.fileOrder) {
-      const upload = this.state.fileUploads[id];
-      if (!upload || upload.state === FileState.UPLOAD_FAILED) {
-        continue;
-      }
-      if (upload.state === FileState.UPLOADING) {
-        // TODO: show error to user that they should wait until image is uploaded
-        return (this.sending = false);
-      }
-      if (upload.state === FileState.UPLOADED) {
-        attachments.push({
-          type: 'file',
-          asset_url: upload.url,
-          title: upload.file.name,
-          mime_type: upload.file.type,
-          file_size: upload.file.size,
-        });
-      }
-    }
-
-    // Disallow sending message if its empty.
-    if (!text && attachments.length === 0) {
-      return (this.sending = false);
-    }
-
-    if (this.props.editing) {
-      const updatedMessage = { ...this.props.editing };
-
-      updatedMessage.text = text;
-      updatedMessage.attachments = attachments;
-      updatedMessage.mentioned_users = this.state.mentioned_users.map(
-        (mu) => mu.id,
-      );
-      // TODO: Remove this line and show an error when submit fails
-      this.props.clearEditingState();
-
-      const updateMessagePromise = this.props
-        .editMessage(updatedMessage)
-        .then(this.props.clearEditingState);
-      logChatPromiseExecution(updateMessagePromise, 'update message');
-
-      this.sending = false;
-    } else {
-      try {
-        this.props.sendMessage({
-          text,
-          parent: this.props.parent,
-          mentioned_users: uniq(this.state.mentioned_users),
-          attachments,
-        });
-
-        this.sending = false;
-        this.setState((prevState) => ({
-          text: '',
-          imageUploads: Immutable({}),
-          imageOrder: Immutable([]),
-          fileUploads: Immutable({}),
-          fileOrder: Immutable([]),
-          mentioned_users: [],
-          numberOfUploads: prevState.numberOfUploads - attachments.length,
-        }));
-      } catch (err) {
-        this.sending = false;
-        this.setState({ text });
-        console.log('Failed');
-      }
-    }
-  };
-
-  updateMessage = async () => {
-    try {
-      await this.props.client.editMessage({
-        ...this.props.editing,
-        text: this.state.text,
-      });
-
-      this.setState({ text: '' });
-      this.props.clearEditingState();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  _pickFile = async () => {
-    if (
-      this.props.maxNumberOfFiles &&
-      this.state.numberOfUploads >= this.props.maxNumberOfFiles
-    )
+  const onChangeText = (text) => {
+    if (sending.current) {
       return;
+    }
+    setState((prevState) => ({ ...prevState, text }));
+
+    if (text) {
+      logChatPromiseExecution(channel.keystroke(), 'start typing event');
+    }
+
+    if (onChangeTextProp) {
+      onChangeTextProp(text);
+    }
+  };
+
+  const onSelectItem = (item) => {
+    setState((prevState) => ({
+      ...prevState,
+      mentioned_users: [...prevState.mentioned_users, item.id],
+    }));
+  };
+
+  const pickFile = async () => {
+    if (maxNumberOfFiles && state.numberOfUploads >= maxNumberOfFiles) {
+      return;
+    }
 
     const result = await pickDocument();
     if (result.type === 'cancel' || result.cancelled) {
@@ -578,40 +357,347 @@ class MessageInput extends PureComponent {
     const mimeType = lookup(result.name);
 
     if (mimeType && mimeType.startsWith('image/')) {
-      this.uploadNewImage(result);
+      uploadNewImage(result);
     } else {
-      this.uploadNewFile(result);
+      uploadNewFile(result);
     }
   };
 
-  uploadNewFile = (file) => {
-    const id = generateRandomId();
-    const mimeType = lookup(file.name);
-    /* eslint-disable */
-    this.setState((prevState) => {
-      return {
-        numberOfUploads: prevState.numberOfUploads + 1,
-        fileOrder: prevState.fileOrder.concat([id]),
-        fileUploads: prevState.fileUploads.setIn([id], {
-          id,
-          file: { ...file, type: mimeType },
-          state: FileState.UPLOADING,
-        }),
-      };
-    });
-    /* eslint-enable */
+  const pickImage = async () => {
+    if (maxNumberOfFiles && state.numberOfUploads >= maxNumberOfFiles) {
+      return;
+    }
+    const result = await pickImageNative();
 
-    this._uploadFile(id);
+    if (result.cancelled) {
+      return;
+    }
+
+    uploadNewImage(result);
   };
 
-  _uploadFile = async (id) => {
-    const doc = this.state.fileUploads[id];
+  const removeFile = (id) => {
+    setState((prevState) => {
+      const file = prevState.fileUploads[id];
+      if (!file) {
+        return prevState;
+      }
+      return {
+        ...prevState,
+        numberOfUploads: prevState.numberOfUploads - 1,
+        fileOrder: prevState.fileOrder.filter((_id) => id !== _id),
+        fileUploads: prevState.fileUploads.set(id, undefined), // remove
+      };
+    });
+  };
+
+  const removeImage = (id) => {
+    setState((prevState) => {
+      const img = prevState.imageUploads[id];
+      if (!img) {
+        return prevState;
+      }
+      return {
+        ...prevState,
+        numberOfUploads: prevState.numberOfUploads - 1,
+        imageOrder: prevState.imageOrder.filter((_id) => id !== _id),
+        imageUploads: prevState.imageUploads.set(id, undefined), // remove
+      };
+    });
+  };
+
+  const renderInputContainer = () => {
+    let additionalTextInputContainerProps = additionalTextInputProps || {};
+
+    if (disabled) {
+      additionalTextInputContainerProps = {
+        editable: false,
+        ...additionalTextInputContainerProps,
+      };
+    }
+
+    return (
+      <Container padding={state.imageUploads && state.imageUploads.length > 0}>
+        {state.fileUploads && (
+          <FileUploadPreview
+            removeFile={removeFile}
+            retryUpload={uploadFile}
+            fileUploads={state.fileOrder.map((id) => state.fileUploads[id])}
+            AttachmentFileIcon={AttachmentFileIcon}
+          />
+        )}
+        {state.imageUploads && (
+          <ImageUploadPreview
+            removeImage={removeImage}
+            retryUpload={uploadImage}
+            imageUploads={state.imageOrder.map((id) => state.imageUploads[id])}
+          />
+        )}
+        {/**
+            TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+            work well with async onPress operations. So find a solution.
+          */}
+
+        <ActionSheetAttachment
+          setAttachActionSheetRef={setAttachActionSheetRef}
+          closeAttachActionSheet={closeAttachActionSheet}
+          pickFile={pickFile}
+          pickImage={pickImage}
+          styles={actionSheetStyles}
+        />
+        <InputBoxContainer ref={setInputBoxContainerRef}>
+          {Input ? (
+            <Input
+              {...legacyProps}
+              additionalTextInputProps={additionalTextInputContainerProps}
+              appendText={appendText}
+              closeAttachActionSheet={closeAttachActionSheet}
+              closeSuggestions={closeSuggestions}
+              disabled={disabled}
+              getUsers={getUsers}
+              handleOnPress={async () => {
+                if (hasImagePicker && hasFilePicker) {
+                  await dismissKeyboard();
+                  attachActionSheet.current.show();
+                } else if (hasImagePicker && !hasFilePicker) pickImage();
+                else if (!hasImagePicker && hasFilePicker) pickFile();
+              }}
+              isValidMessage={isValidMessage}
+              onChange={onChangeText}
+              onSelectItem={onSelectItem}
+              openSuggestions={openSuggestions}
+              _pickFile={pickFile}
+              _pickImage={pickImage}
+              _removeFile={removeFile}
+              _removeImage={removeImage}
+              sendMessage={sendMessage}
+              setInputBoxContainerRef={setInputBoxContainerRef}
+              setInputBoxRef={setInputBoxRef}
+              triggerSettings={ACITriggerSettings({
+                channel,
+                onMentionSelectItem: onSelectItem,
+                t,
+              })}
+              updateMessage={updateMessage}
+              updateSuggestions={updateSuggestions}
+              _uploadFile={uploadFile}
+              uploadNewFile={uploadNewFile}
+              _uploadImage={uploadImage}
+              uploadNewImage={uploadNewImage}
+              value={state.text}
+            />
+          ) : (
+            <>
+              {(hasImagePicker || hasFilePicker) && (
+                <AttachButton
+                  disabled={disabled}
+                  handleOnPress={async () => {
+                    if (hasImagePicker && hasFilePicker) {
+                      await dismissKeyboard();
+                      attachActionSheet.current.show();
+                    } else if (hasImagePicker && !hasFilePicker) pickImage();
+                    else if (!hasImagePicker && hasFilePicker) {
+                      pickFile();
+                    }
+                  }}
+                />
+              )}
+              <AutoCompleteInput
+                additionalTextInputProps={additionalTextInputProps}
+                onChange={onChangeText}
+                setInputBoxRef={setInputBoxRef}
+                triggerSettings={ACITriggerSettings({
+                  channel,
+                  onMentionSelectItem: onSelectItem,
+                  t,
+                })}
+                value={state.text}
+              />
+              <SendButton
+                disabled={disabled || sending.current || !isValidMessage()}
+                editing={editing}
+                sendMessage={sendMessage}
+              />
+            </>
+          )}
+        </InputBoxContainer>
+      </Container>
+    );
+  };
+
+  const sendMessage = async () => {
+    if (sending.current) {
+      return;
+    }
+    sending.current = true;
+
+    const { text } = state;
+    await setState((prevState) => ({ ...prevState, text: '' }));
+    inputBox.current.clear();
+
+    const attachments = [];
+    for (const id of state.imageOrder) {
+      const image = state.imageUploads[id];
+
+      if (!image || image.state === FileState.UPLOAD_FAILED) {
+        continue;
+      }
+
+      if (image.state === FileState.UPLOADING) {
+        // TODO: show error to user that they should wait until image is uploaded
+        if (sendImageAsync) {
+          /**
+           * If user hit send before image uploaded, push ID into a queue to later
+           * be matched with the successful CDN response
+           */
+          setAsyncIds((prevAsyncIds) => [...prevAsyncIds, id]);
+        } else {
+          sending.current = false;
+          return setState((prevState) => ({ ...prevState, text }));
+        }
+      }
+
+      if (image.state === FileState.UPLOADED) {
+        attachments.push({
+          fallback: image.file.name,
+          image_url: image.url,
+          type: 'image',
+        });
+      }
+    }
+
+    for (const id of state.fileOrder) {
+      const upload = state.fileUploads[id];
+      if (!upload || upload.state === FileState.UPLOAD_FAILED) {
+        continue;
+      }
+      if (upload.state === FileState.UPLOADING) {
+        // TODO: show error to user that they should wait until image is uploaded
+        return (sending.current = false);
+      }
+      if (upload.state === FileState.UPLOADED) {
+        attachments.push({
+          asset_url: upload.url,
+          file_size: upload.file.size,
+          mime_type: upload.file.type,
+          title: upload.file.name,
+          type: 'file',
+        });
+      }
+    }
+
+    // Disallow sending message if its empty.
+    if (!text && attachments.length === 0) {
+      return (sending.current = false);
+    }
+
+    if (editing) {
+      const updatedMessage = { ...editing };
+
+      updatedMessage.text = text;
+      updatedMessage.attachments = attachments;
+      updatedMessage.mentioned_users = state.mentioned_users.map((mu) => mu.id);
+      // TODO: Remove this line and show an error when submit fails
+      clearEditingState();
+
+      const updateMessagePromise = editMessage(updatedMessage).then(
+        clearEditingState,
+      );
+      logChatPromiseExecution(updateMessagePromise, 'update message');
+
+      sending.current = false;
+    } else {
+      try {
+        sendMessageContext({
+          attachments,
+          mentioned_users: uniq(state.mentioned_users),
+          parent,
+          text,
+        });
+
+        sending.current = false;
+        setState((prevState) => ({
+          ...prevState,
+          fileOrder: Immutable([]),
+          fileUploads: Immutable({}),
+          imageOrder: Immutable([]),
+          imageUploads: Immutable({}),
+          mentioned_users: [],
+          numberOfUploads: prevState.numberOfUploads - attachments.length,
+          text: '',
+        }));
+      } catch (err) {
+        sending.current = false;
+        setState((prevState) => ({ ...prevState, text }));
+        console.log('Failed');
+      }
+    }
+  };
+
+  const sendMessageAsync = (id) => {
+    const image = asyncUploads[id];
+    if (!image || image.state === FileState.UPLOAD_FAILED) {
+      return;
+    }
+
+    if (image.state === FileState.UPLOADED) {
+      const attachments = [
+        {
+          image_url: image.url,
+          type: 'image',
+        },
+      ];
+
+      try {
+        sendMessageContext({
+          attachments,
+          mentioned_users: [],
+          parent,
+          text: '',
+        });
+
+        setAsyncIds((prevAsyncIds) =>
+          prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1),
+        );
+        setAsyncUploads((prevAsyncUploads) => prevAsyncUploads.without([id]));
+
+        setState((prevState) => ({
+          ...prevState,
+          numberOfUploads: prevState.numberOfUploads - 1,
+        }));
+      } catch (err) {
+        console.log('Failed');
+      }
+    }
+  };
+
+  const setAttachActionSheetRef = (o) => (attachActionSheet.current = o);
+
+  const setInputBoxRef = (o) => (inputBox.current = o);
+
+  const updateMessage = async () => {
+    try {
+      await client.editMessage({
+        ...editing,
+        text: state.text,
+      });
+
+      setState((prevState) => ({ ...prevState, text: '' }));
+      clearEditingState();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const uploadFile = async (id) => {
+    const doc = state.fileUploads[id];
     if (!doc) {
       return;
     }
     const { file } = doc;
 
-    await this.setState((prevState) => ({
+    await setState((prevState) => ({
+      ...prevState,
       fileUploads: prevState.fileUploads.setIn(
         [id, 'state'],
         FileState.UPLOADING,
@@ -621,28 +707,23 @@ class MessageInput extends PureComponent {
     let response = {};
     response = {};
     try {
-      if (this.props.doDocUploadRequest) {
-        response = await this.props.doDocUploadRequest(
-          file,
-          this.props.channel,
-        );
+      if (doDocUploadRequest) {
+        response = await doDocUploadRequest(file, channel);
       } else {
-        response = await this.props.channel.sendFile(
-          file.uri,
-          file.name,
-          file.type,
-        );
+        response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (e) {
       console.warn(e);
-      await this.setState((prevState) => {
+      await setState((prevState) => {
         const image = prevState.fileUploads[id];
         if (!image) {
           return {
+            ...prevState,
             numberOfUploads: prevState.numberOfUploads - 1,
           };
         }
         return {
+          ...prevState,
           fileUploads: prevState.fileUploads.setIn(
             [id, 'state'],
             FileState.UPLOAD_FAILED,
@@ -654,77 +735,16 @@ class MessageInput extends PureComponent {
       return;
     }
 
-    this.setState((prevState) => ({
+    setState((prevState) => ({
+      ...prevState,
       fileUploads: prevState.fileUploads
         .setIn([id, 'state'], FileState.UPLOADED)
         .setIn([id, 'url'], response.file),
     }));
   };
 
-  _pickImage = async () => {
-    if (
-      this.props.maxNumberOfFiles &&
-      this.state.numberOfUploads >= this.props.maxNumberOfFiles
-    )
-      return;
-    const result = await pickImage();
-
-    if (result.cancelled) {
-      return;
-    }
-
-    this.uploadNewImage(result);
-  };
-
-  uploadNewImage = async (image) => {
-    const id = generateRandomId();
-    /* eslint-disable */
-    await this.setState((prevState) => {
-      return {
-        numberOfUploads: prevState.numberOfUploads + 1,
-        imageOrder: prevState.imageOrder.concat([id]),
-        imageUploads: prevState.imageUploads.setIn([id], {
-          id,
-          file: image,
-          state: FileState.UPLOADING,
-        }),
-      };
-    });
-    /* eslint-enable */
-
-    this._uploadImage(id);
-  };
-
-  _removeImage = (id) => {
-    this.setState((prevState) => {
-      const img = prevState.imageUploads[id];
-      if (!img) {
-        return {};
-      }
-      return {
-        numberOfUploads: prevState.numberOfUploads - 1,
-        imageUploads: prevState.imageUploads.set(id, undefined), // remove
-        imageOrder: prevState.imageOrder.filter((_id) => id !== _id),
-      };
-    });
-  };
-
-  _removeFile = (id) => {
-    this.setState((prevState) => {
-      const file = prevState.fileUploads[id];
-      if (!file) {
-        return {};
-      }
-      return {
-        numberOfUploads: prevState.numberOfUploads - 1,
-        fileUploads: prevState.fileUploads.set(id, undefined), // remove
-        fileOrder: prevState.fileOrder.filter((_id) => id !== _id),
-      };
-    });
-  };
-
-  _uploadImage = async (id) => {
-    const { file } = this.state.imageUploads[id];
+  const uploadImage = async (id) => {
+    const { file } = state.imageUploads[id];
     if (!file) {
       return;
     }
@@ -738,40 +758,33 @@ class MessageInput extends PureComponent {
     const contentType = lookup(filename) || 'application/octet-stream';
 
     try {
-      if (this.props.doImageUploadRequest) {
-        response = await this.props.doImageUploadRequest(
-          file,
-          this.props.channel,
-        );
-      } else if (this.props.sendImageAsync) {
-        this.props.channel
-          .sendImage(file.uri, null, contentType)
-          .then((res) => {
-            if (this.state.asyncIds.includes(id)) {
-              // Evaluates to true if user hit send before image successfully uploaded
-              this.setState((prevState) => ({
-                asyncUploads: prevState.asyncUploads
-                  .setIn([id, 'state'], FileState.UPLOADED)
-                  .setIn([id, 'url'], res.file),
-              }));
-            } else {
-              this.setState((prevState) => ({
-                imageUploads: prevState.imageUploads
-                  .setIn([id, 'state'], FileState.UPLOADED)
-                  .setIn([id, 'url'], res.file),
-              }));
-            }
-          });
+      if (doImageUploadRequest) {
+        response = await doImageUploadRequest(file, channel);
+      } else if (sendImageAsync) {
+        channel.sendImage(file.uri, null, contentType).then((res) => {
+          if (asyncIds.includes(id)) {
+            // Evaluates to true if user hit send before image successfully uploaded
+            setAsyncUploads((prevAsyncUploads) =>
+              prevAsyncUploads
+                .setIn([id, 'state'], FileState.UPLOADED)
+                .setIn([id, 'url'], res.file),
+            );
+          } else {
+            setState((prevState) => ({
+              ...prevState,
+              imageUploads: prevState.imageUploads
+                .setIn([id, 'state'], FileState.UPLOADED)
+                .setIn([id, 'url'], res.file),
+            }));
+          }
+        });
       } else {
-        response = await this.props.channel.sendImage(
-          file.uri,
-          null,
-          contentType,
-        );
+        response = await channel.sendImage(file.uri, null, contentType);
       }
 
       if (response) {
-        this.setState((prevState) => ({
+        setState((prevState) => ({
+          ...prevState,
           imageUploads: prevState.imageUploads
             .setIn([id, 'state'], FileState.UPLOADED)
             .setIn([id, 'url'], response.file),
@@ -779,15 +792,17 @@ class MessageInput extends PureComponent {
       }
     } catch (e) {
       console.warn(e);
-      await this.setState((prevState) => {
+      await setState((prevState) => {
         const image = prevState.imageUploads[id];
         if (!image) {
           return {
+            ...prevState,
             numberOfUploads: prevState.numberOfUploads - 1,
           };
         }
 
         return {
+          ...prevState,
           imageUploads: prevState.imageUploads.setIn(
             [id, 'state'],
             FileState.UPLOAD_FAILED,
@@ -800,196 +815,138 @@ class MessageInput extends PureComponent {
     }
   };
 
-  onChangeText = (text) => {
-    if (this.sending) return;
-    this.setState({ text });
+  const uploadNewFile = (file) => {
+    const id = generateRandomId();
+    const mimeType = lookup(file.name);
+    /* eslint-disable */
+    setState((prevState) => ({
+      ...prevState,
+      fileOrder: prevState.fileOrder.concat([id]),
+      fileUploads: prevState.fileUploads.setIn([id], {
+        file: { ...file, type: mimeType },
+        id,
+        state: FileState.UPLOADING,
+      }),
+      numberOfUploads: prevState.numberOfUploads + 1,
+    }));
+    /* eslint-enable */
 
-    if (text) {
-      logChatPromiseExecution(
-        this.props.channel.keystroke(),
-        'start typing event',
-      );
-    }
-
-    this.props.onChangeText && this.props.onChangeText(text);
+    uploadFile(id);
   };
 
-  appendText = (text) => {
-    this.setState({
-      text: this.state.text + text,
-    });
+  const uploadNewImage = async (image) => {
+    const id = generateRandomId();
+    /* eslint-disable */
+    await setState((prevState) => ({
+      ...prevState,
+      imageOrder: prevState.imageOrder.concat([id]),
+      imageUploads: prevState.imageUploads.setIn([id], {
+        file: image,
+        id,
+        state: FileState.UPLOADING,
+      }),
+      numberOfUploads: prevState.numberOfUploads + 1,
+    }));
+    /* eslint-enable */
+
+    uploadImage(id);
   };
 
-  setAttachActionSheetRef = (o) => (this.attachActionSheet = o);
-  setInputBoxRef = (o) => (this.inputBox = o);
-
-  closeAttachActionSheet = () => {
-    this.attachActionSheet.hide();
-  };
-
-  renderInputContainer = () => {
-    const {
-      hasImagePicker,
-      hasFilePicker,
-      SendButton,
-      AttachButton,
-      disabled,
-      Input,
-      t,
-    } = this.props;
-
-    let additionalTextInputProps = this.props.additionalTextInputProps || {};
-
-    if (disabled) {
-      additionalTextInputProps = {
-        editable: false,
-        ...additionalTextInputProps,
-      };
-    }
-
-    return (
-      <Container padding={this.state.imageUploads.length > 0}>
-        {this.state.fileUploads && (
-          <FileUploadPreview
-            removeFile={this._removeFile}
-            retryUpload={this._uploadFile}
-            fileUploads={this.state.fileOrder.map(
-              (id) => this.state.fileUploads[id],
-            )}
-            AttachmentFileIcon={this.props.AttachmentFileIcon}
-          />
-        )}
-        {this.state.imageUploads && (
-          <ImageUploadPreview
-            removeImage={this._removeImage}
-            retryUpload={this._uploadImage}
-            imageUploads={this.state.imageOrder.map(
-              (id) => this.state.imageUploads[id],
-            )}
-          />
-        )}
-        {/**
-            TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-            work well with async onPress operations. So find a solution.
-          */}
-
-        <ActionSheetAttachment
-          setAttachActionSheetRef={this.setAttachActionSheetRef}
-          closeAttachActionSheet={this.closeAttachActionSheet}
-          pickFile={this._pickFile}
-          pickImage={this._pickImage}
-          styles={this.props.actionSheetStyles}
+  return editing ? (
+    <EditingBoxContainer>
+      <EditingBoxHeader>
+        <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
+        <IconSquare
+          icon={iconClose}
+          onPress={() => {
+            clearEditingState();
+          }}
         />
-        <InputBoxContainer ref={this.props.setInputBoxContainerRef}>
-          {Input ? (
-            <Input
-              {...this.props}
-              getUsers={this.getUsers}
-              onSelectItem={this.onSelectItem}
-              isValidMessage={this.isValidMessage}
-              sendMessage={this.sendMessage}
-              updateMessage={this.updateMessage}
-              _pickFile={this._pickFile}
-              uploadNewFile={this.uploadNewFile}
-              _uploadFile={this._uploadFile}
-              _pickImage={this._pickImage}
-              uploadNewImage={this.uploadNewImage}
-              _removeImage={this._removeImage}
-              _removeFile={this._removeFile}
-              _uploadImage={this._uploadImage}
-              onChange={this.onChangeText}
-              closeAttachActionSheet={this.closeAttachActionSheet}
-              appendText={this.appendText}
-              setInputBoxRef={this.setInputBoxRef}
-              handleOnPress={async () => {
-                if (hasImagePicker && hasFilePicker) {
-                  await this.props.dismissKeyboard();
-                  this.attachActionSheet.show();
-                } else if (hasImagePicker && !hasFilePicker) this._pickImage();
-                else if (!hasImagePicker && hasFilePicker) this._pickFile();
-              }}
-              triggerSettings={ACITriggerSettings({
-                channel: this.props.channel,
-                onMentionSelectItem: this.onSelectItem,
-                t,
-              })}
-              disabled={disabled}
-              value={this.state.text}
-              additionalTextInputProps={additionalTextInputProps}
-            />
-          ) : (
-            <>
-              {(hasImagePicker || hasFilePicker) && (
-                <AttachButton
-                  disabled={disabled}
-                  handleOnPress={async () => {
-                    if (hasImagePicker && hasFilePicker) {
-                      await this.props.dismissKeyboard();
-                      this.attachActionSheet.show();
-                    } else if (hasImagePicker && !hasFilePicker)
-                      this._pickImage();
-                    else if (!hasImagePicker && hasFilePicker) this._pickFile();
-                  }}
-                />
-              )}
-              <AutoCompleteInput
-                openSuggestions={this.props.openSuggestions}
-                closeSuggestions={this.props.closeSuggestions}
-                updateSuggestions={this.props.updateSuggestions}
-                value={this.state.text}
-                onChange={this.onChangeText}
-                getCommands={this.getCommands}
-                setInputBoxRef={this.setInputBoxRef}
-                triggerSettings={ACITriggerSettings({
-                  channel: this.props.channel,
-                  onMentionSelectItem: this.onSelectItem,
-                  t,
-                })}
-                additionalTextInputProps={additionalTextInputProps}
-              />
-              <SendButton
-                title={t('Send message')}
-                sendMessage={this.sendMessage}
-                editing={this.props.editing}
-                disabled={disabled || this.sending || !this.isValidMessage()}
-              />
-            </>
-          )}
-        </InputBoxContainer>
-      </Container>
-    );
-  };
+      </EditingBoxHeader>
+      {renderInputContainer()}
+    </EditingBoxContainer>
+  ) : (
+    renderInputContainer()
+  );
+};
 
-  render() {
-    const { t } = this.props;
+MessageInput.propTypes = {
+  /**
+   * Custom UI component for ActionSheetAttachment.
+   *
+   * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
+   */
+  ActionSheetAttachment: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
+  /**
+   * Style object for actionsheet (used for option to choose file attachment or photo attachment).
+   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+   */
+  actionSheetStyles: PropTypes.object,
+  /**
+   * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
+   *
+   * @see See https://reactnative.dev/docs/textinput#reference
+   */
+  additionalTextInputProps: PropTypes.object,
+  /**
+   * Custom UI component for attach button.
+   *
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
+   */
+  AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment in preview.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
+  /**
+   * Override image upload request
+   *
+   * @param file    File object - { uri: '' }
+   * @param channel Current channel object
+   * */
+  doImageUploadRequest: PropTypes.func,
+  /**
+   * Override file upload request
+   *
+   * @param file    File object - { uri: '', name: '' }
+   * @param channel Current channel object
+   * */
+  doDocUploadRequest: PropTypes.func,
+  /** If component should have image picker functionality  */
+  hasImagePicker: PropTypes.bool,
+  /** If component should have file picker functionality  */
+  hasFilePicker: PropTypes.bool,
+  /** Initial value to set on input */
+  initialValue: PropTypes.string,
+  /** Limit on allowed number of files to attach at a time. */
+  maxNumberOfFiles: PropTypes.number,
+  /**
+   * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
+   *
+   * @param newText
+   */
+  onChangeText: PropTypes.func,
+  /** Parent message object - in case of thread */
+  parent: PropTypes.object,
+  /**
+   * Custom UI component for send button.
+   *
+   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
+   */
+  SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
+   */
+  sendImageAsync: PropTypes.bool,
+};
 
-    if (this.props.editing) {
-      return (
-        <React.Fragment>
-          <EditingBoxContainer>
-            <EditingBoxHeader>
-              <EditingBoxHeaderTitle>
-                {t('Editing Message')}
-              </EditingBoxHeaderTitle>
-              <IconSquare
-                onPress={() => {
-                  this.props.clearEditingState();
-                }}
-                icon={iconClose}
-              />
-            </EditingBoxHeader>
-            {this.renderInputContainer()}
-          </EditingBoxContainer>
-        </React.Fragment>
-      );
-    }
+MessageInput.themePath = 'messageInput';
 
-    return this.renderInputContainer();
-  }
-}
-
-export default withTranslationContext(
-  withKeyboardContext(
-    withSuggestionsContext(withChannelContext(themed(MessageInput))),
-  ),
-);
+export default themed(MessageInput);

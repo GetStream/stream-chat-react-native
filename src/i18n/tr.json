@@ -25,7 +25,6 @@
   "Please select a channel first": "Lütfen önce bir kanal seçin",
   "Reply": "Cevapla",
   "Searching for people": "Kişi aranıyor",
-  "Send message": "Mesaj yolla",
   "Start of a new thread": "Yeni konunun başı",
   "This message was deleted ...": "Bu mesaj silindi ...",
   "Upload a file": "Dosya yükle",
@@ -36,7 +35,5 @@
   "{{ imageCount }} more": "{{ imageCount }} adet daha",
   "{{ replyCount }} replies": "{{ replyCount }} cevaplar",
   "{{ user }} is typing...": "{{ user }} yazıyor...",
-  "{{ username }} joined the chat": "{{ username }} konuşmaya katıldı",
-  "{{ username }} was removed from the chat": "{{ username }} konuşmadan çıkarıldı",
   "🏙 Attachment...": "🏙 Ek..."
 }

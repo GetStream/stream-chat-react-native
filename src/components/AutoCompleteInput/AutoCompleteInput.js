@@ -1,194 +1,164 @@
-import React from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { withTranslationContext } from '../../context';
+import { SuggestionsContext, TranslationContext } from '../../context';
 
 const InputBox = styled.TextInput`
-  max-height: 60px;
-  margin: -5px;
   flex: 1;
+  margin: -5px;
+  max-height: 60px;
   ${({ theme }) => theme.messageInput.inputBox.css}
 `;
 
-class AutoCompleteInput extends React.PureComponent {
-  static propTypes = {
-    value: PropTypes.string,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    openSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    closeSuggestions: PropTypes.func,
-    /** @see See [suggestions context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext) */
-    updateSuggestions: PropTypes.func,
-    triggerSettings: PropTypes.object,
-    setInputBoxRef: PropTypes.func,
-    /**
-     * @param text string
-     */
-    onChange: PropTypes.func,
-    /**
-     * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
-     *
-     * @see See https://facebook.github.io/react-native/docs/textinput#reference
-     */
-    additionalTextInputProps: PropTypes.object,
-  };
+const computeCaretPosition = (token, startOfTokenPosition) =>
+  startOfTokenPosition + token.length;
 
-  static defaultProps = {
-    value: undefined,
-  };
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      selectionStart: 0,
-      selectionEnd: 0,
-      currentTrigger: null,
-    };
-
-    this.isTrackingStarted = false;
+const isCommand = (text) => {
+  if (text[0] !== '/') {
+    return false;
   }
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.value !== this.props.value) {
-      this.handleChange(this.props.value, true);
-    }
+  const tokens = text.split(' ');
+
+  if (tokens.length > 1) {
+    return false;
   }
 
-  startTracking = () => {
-    this.isTrackingStarted = true;
-    const { component, title } = this.props.triggerSettings[
-      this.state.currentTrigger
-    ];
-    this.props.openSuggestions(title, component);
+  return true;
+};
+
+const AutoCompleteInput = ({
+  additionalTextInputProps,
+  onChange,
+  setInputBoxRef,
+  triggerSettings,
+  value,
+}) => {
+  const {
+    closeSuggestions,
+    openSuggestions,
+    updateSuggestions: updateSuggestionsContext,
+  } = useContext(SuggestionsContext);
+  const { t } = useContext(TranslationContext);
+
+  const isTrackingStarted = useRef(false);
+
+  const [selectionEnd, setSelectionEnd] = useState(0);
+
+  useEffect(() => {
+    handleChange(value, true);
+  }, [handleChange, value]);
+
+  const startTracking = (trigger) => {
+    isTrackingStarted.current = true;
+    const { component, title } = triggerSettings[trigger];
+    openSuggestions(title, component);
   };
 
-  stopTracking = () => {
-    this.isTrackingStarted = false;
-    this.props.closeSuggestions();
+  const stopTracking = () => {
+    isTrackingStarted.current = false;
+    closeSuggestions();
   };
 
-  updateSuggestions = async (q) => {
-    this.setState({
-      currentTokenForSuggestions: q,
-    });
-    const triggers = this.props.triggerSettings;
-    await triggers[this.state.currentTrigger].dataProvider(
-      q,
-      this.props.value,
-      (data, query) => {
-        // Make sure that the result is still relevant for current query
-        if (this.state.currentTokenForSuggestions !== query) {
+  const updateSuggestions = async ({ query, trigger }) => {
+    await triggerSettings[trigger].dataProvider(
+      query,
+      value,
+      (data, queryCallback) => {
+        if (query !== queryCallback) {
           return;
         }
-        this.props.updateSuggestions({
+
+        updateSuggestionsContext({
           data,
-          onSelect: this.onSelectSuggestion,
+          onSelect: (item) => onSelectSuggestion({ item, trigger }),
         });
       },
     );
   };
 
-  handleChange = (text, fromUpdate = false) => {
+  const handleChange = (text, fromUpdate = false) => {
     if (!fromUpdate) {
-      this.props.onChange(text);
+      onChange(text);
+    } else {
+      handleSuggestions(text);
+    }
+  };
+
+  const handleSelectionChange = ({
+    nativeEvent: {
+      selection: { end },
+    },
+  }) => {
+    setSelectionEnd(end);
+  };
+
+  const onSelectSuggestion = ({ item, trigger }) => {
+    const newToken = triggerSettings[trigger].output(item);
+
+    if (!trigger) {
       return;
     }
 
-    this.handleSuggestions(text);
-  };
-
-  handleSelectionChange = ({
-    nativeEvent: {
-      selection: { start, end },
-    },
-  }) => {
-    this.setState({ selectionStart: start, selectionEnd: end });
-  };
-
-  onSelectSuggestion = (item) => {
-    const { value: text } = this.props;
-    const { currentTrigger, selectionEnd } = this.state;
-    const triggers = this.props.triggerSettings;
-    const newToken = triggers[currentTrigger].output(item);
-    // const { onChange, trigger } = this.props;
-
-    if (!currentTrigger) return;
-
-    const computeCaretPosition = (token, startToken) =>
-      startToken + token.length;
-
-    const textToModify = text.slice(0, selectionEnd);
+    const textToModify = value.slice(0, selectionEnd);
 
     const startOfTokenPosition = textToModify.search(
       /**
-       * It's important to escape the currentTrigger char for chars like [, (,...
+       * It's important to escape the trigger char for chars like [, (,...
        */
-      new RegExp(`\\${currentTrigger}${`[^\\${currentTrigger}${'\\s'}]`}*$`),
+      new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
     );
 
-    // we add space after emoji is selected if a caret position is next
     const newTokenString = `${newToken.text} `;
 
     const newCaretPosition = computeCaretPosition(
       newTokenString,
       startOfTokenPosition,
     );
-    const modifiedText =
-      textToModify.substring(0, startOfTokenPosition) + newTokenString;
 
-    this.stopTracking();
-    this.props.onChange(text.replace(textToModify, modifiedText));
+    const modifiedText = `${textToModify.substring(
+      0,
+      startOfTokenPosition,
+    )}${newTokenString}`;
 
-    this.syncCaretPosition(newCaretPosition);
+    stopTracking();
+    onChange(value.replace(textToModify, modifiedText));
 
-    if (triggers[currentTrigger].callback)
-      triggers[currentTrigger].callback(item);
+    setSelectionEnd(newCaretPosition || 0);
+
+    if (triggerSettings[trigger].callback) {
+      triggerSettings[trigger].callback(item);
+    }
   };
 
-  syncCaretPosition = async (position = 0) => {
-    await this.setState({ selectionStart: position, selectionEnd: position });
-  };
-
-  isCommand = (text) => {
-    if (text[0] !== '/') return false;
-
-    const tokens = text.split(' ');
-
-    if (tokens.length > 1) return false;
-
-    return true;
-  };
-
-  handleCommand = (text) => {
-    if (!this.isCommand(text)) {
+  const handleCommand = async (text) => {
+    if (!isCommand(text)) {
       return false;
     }
 
-    this.setState({ currentTrigger: '/' }, () => {
-      if (!this.isTrackingStarted) this.startTracking();
-
-      const actualToken = text.trim().slice(1);
-      return this.updateSuggestions(actualToken);
-    });
+    if (!isTrackingStarted.current) {
+      startTracking('/');
+    }
+    const actualToken = text.trim().slice(1);
+    await updateSuggestions({ query: actualToken, trigger: '/' });
 
     return true;
   };
 
-  handleMentions = (text) => {
-    const { selectionEnd } = this.state;
-    // TODO: Move these const to props
+  const handleMentions = ({ selectionEnd: selectionEndProp, text }) => {
     const minChar = 0;
 
     const tokenMatch = text
-      .slice(0, selectionEnd)
+      .slice(0, selectionEndProp)
       .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
 
     const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
-    const triggers = this.props.triggerSettings;
-    const currentTrigger =
-      (lastToken && Object.keys(triggers).find((a) => a === lastToken[0])) ||
+    const handleMentionsTrigger =
+      (lastToken &&
+        Object.keys(triggerSettings).find(
+          (trigger) => trigger === lastToken[0],
+        )) ||
       null;
 
     /*
@@ -196,63 +166,78 @@ class AutoCompleteInput extends React.PureComponent {
       the autocomplete
     */
     if (!lastToken || lastToken.length <= minChar) {
-      this.stopTracking();
+      stopTracking();
       return;
     }
 
     const actualToken = lastToken.slice(1);
 
     // if trigger is not configured step out from the function, otherwise proceed
-    if (!currentTrigger) {
+    if (!handleMentionsTrigger) {
       return;
     }
 
-    this.setState({ currentTrigger }, () => {
-      if (!this.isTrackingStarted) this.startTracking();
-    });
+    if (!isTrackingStarted.current) {
+      startTracking('@');
+    }
 
-    this.updateSuggestions(actualToken);
+    updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  handleSuggestions = (text) => {
-    // react native is not consistent in order of execution of onSelectionChange and onTextChange
-    // with android and iOS. onSelectionChange gets executed first on iOS (which is ideal for our scenario)
-    // Although on android, this order is reversed. So need to add following 0 timeout to make sure that
-    // onSelectionChange is executed first before we proceed with handleSuggestions.
-    setTimeout(() => {
-      const { selectionEnd: selectionEnd } = this.state;
-
+  const handleSuggestions = (text) => {
+    setTimeout(async () => {
       if (
         text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
-        !this.state.isTrackingStarted
+        !isTrackingStarted.current
       ) {
-        this.stopTracking();
-        return;
+        stopTracking();
+      } else if (!(await handleCommand(text))) {
+        handleMentions({ selectionEnd, text });
       }
-
-      if (this.handleCommand(text)) return;
-
-      this.handleMentions(text);
     }, 100);
   };
 
-  render() {
-    const { t, value } = this.props;
+  return (
+    <InputBox
+      multiline
+      onChangeText={(text) => {
+        handleChange(text);
+      }}
+      onSelectionChange={handleSelectionChange}
+      placeholder={t('Write your message')}
+      ref={setInputBoxRef}
+      testID='auto-complete-text-input'
+      value={value}
+      {...additionalTextInputProps}
+    />
+  );
+};
 
-    return (
-      <InputBox
-        ref={this.props.setInputBoxRef}
-        placeholder={t('Write your message')}
-        onChangeText={(text) => {
-          this.handleChange(text);
-        }}
-        value={value}
-        onSelectionChange={this.handleSelectionChange}
-        multiline
-        {...this.props.additionalTextInputProps}
-      />
-    );
-  }
-}
+AutoCompleteInput.propTypes = {
+  /**
+   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
+   *
+   * @see See https://reactnative.dev/docs/textinput#reference
+   */
+  additionalTextInputProps: PropTypes.object,
+  /**
+   * Handling text change events in the parent
+   *
+   * @param text string
+   */
+  onChange: PropTypes.func,
+  /**
+   * Ref callback to set reference on input box
+   */
+  setInputBoxRef: PropTypes.func,
+  /**
+   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
+   */
+  triggerSettings: PropTypes.object,
+  /**
+   * Text value of the TextInput
+   */
+  value: PropTypes.string,
+};
 
-export default withTranslationContext(AutoCompleteInput);
+export default AutoCompleteInput;

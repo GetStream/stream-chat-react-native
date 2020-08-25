@@ -1,15 +1,11 @@
 Attach button
 
 ```js
-<div className="str-chat">
-  <AttachButton />
-</div>
+<AttachButton />
 ```
 
-Send edited message button
+Disabled Attach button
 
 ```js
-<div className="str-chat">
-  <AttachButton />
-</div>
+<AttachButton disabled />
 ```

@@ -12,18 +12,13 @@ import {
   TranslationContext,
 } from '../../context';
 import DefaultDateSeparator from './DateSeparator';
-import DefaultEventIndicator from './EventIndicator';
 import { Message as DefaultMessage } from '../Message';
 import MessageNotification from './MessageNotification';
 import MessageSystem from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
-import {
-  getGroupStyles,
-  getLastReceivedId,
-  getReadStates,
-  insertDates,
-} from './utils';
+import { useMessageList } from './hooks/useMessageList';
+import { getLastReceivedMessage } from './utils';
 
 const ListContainer = styled.FlatList`
   flex: 1;
@@ -58,34 +53,6 @@ const ErrorNotification = styled.View`
  * @example ../docs/MessageList.md
  */
 const MessageList = (props) => {
-  const { t } = useContext(TranslationContext);
-  const { client, isOnline } = useContext(ChatContext);
-  const {
-    Attachment,
-    clearEditingState,
-    editing,
-    emojiData,
-    loadMore: mainLoadMore,
-    Message,
-    messages: mainMessages,
-    removeMessage,
-    retrySendMessage,
-    setEditingState,
-    updateMessage,
-  } = useContext(MessagesContext);
-  const { loadMoreThread, openThread, threadMessages } = useContext(
-    ThreadContext,
-  );
-  const {
-    channel,
-    disabled,
-    EmptyStateIndicator,
-    markRead,
-    read: mainRead,
-  } = useContext(ChannelContext);
-  const flatListRef = useRef();
-  const yOffset = useRef(0);
-
   const {
     actionSheetStyles,
     additionalFlatListProps = {},
@@ -94,8 +61,6 @@ const MessageList = (props) => {
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
-    eventIndicator,
-    EventIndicator = DefaultEventIndicator,
     headerComponent,
     HeaderComponent,
     messageActions,
@@ -107,19 +72,38 @@ const MessageList = (props) => {
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
-  const messages = threadList ? threadMessages : mainMessages;
-  const loadMore = threadList ? mainLoadMore : loadMoreThread;
-  const read = threadList ? {} : mainRead;
+  const { t } = useContext(TranslationContext);
+  const { client, isOnline } = useContext(ChatContext);
+  const {
+    Attachment,
+    clearEditingState,
+    editing,
+    emojiData,
+    loadMore: mainLoadMore,
+    Message,
+    removeMessage,
+    retrySendMessage,
+    setEditingState,
+    updateMessage,
+  } = useContext(MessagesContext);
+  const { loadMoreThread, openThread } = useContext(ThreadContext);
+  const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
+    ChannelContext,
+  );
+  const messageList = useMessageList({ noGroupByUser, threadList });
+
+  const flatListRef = useRef();
+  const yOffset = useRef(0);
 
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedId(messages),
+    getLastReceivedMessage(messageList)?.id,
   );
 
   useEffect(() => {
-    const currentLastReceivedId = getLastReceivedId(messages);
-    const currentLastMessage = messages[messages.length - 1];
-    if (lastReceivedId && currentLastReceivedId) {
+    const currentLastMessage = getLastReceivedMessage(messageList);
+    const currentLastReceivedId = currentLastMessage?.id;
+    if (currentLastReceivedId) {
       const hasNewMessage = lastReceivedId !== currentLastReceivedId;
       const userScrolledUp = yOffset.current > 0;
       const isOwner = currentLastMessage.user.id === client.userID;
@@ -142,15 +126,14 @@ const MessageList = (props) => {
       }
       if (hasNewMessage) setLastReceivedId(currentLastReceivedId);
     }
-  }, [messages]);
+  }, [messageList]);
+
+  const loadMore = threadList ? mainLoadMore : loadMoreThread;
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
       const DateSeparatorComponent = dateSeparator || DateSeparator;
       return <DateSeparatorComponent message={message} />;
-    } else if (message.type === 'channel.event') {
-      const EventIndicatorComponent = eventIndicator || EventIndicator;
-      return <EventIndicatorComponent event={message.event} />;
     } else if (message.type === 'system') {
       return <MessageSystem message={message} />;
     } else if (message.type !== 'message.read') {
@@ -208,28 +191,13 @@ const MessageList = (props) => {
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messages?.length === 0 && !threadList) {
+  if (messageList?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
       </View>
     );
   }
-
-  const messagesWithDates = insertDates(messages);
-  const messageGroupStyles = getGroupStyles({
-    messagesWithDates,
-    noGroupByUser,
-  });
-  const readData = getReadStates(messagesWithDates, read);
-
-  const messageList = messagesWithDates
-    .map((msg) => ({
-      ...msg,
-      groupStyles: messageGroupStyles[msg.id],
-      readBy: readData[msg.id] || [],
-    }))
-    .reverse();
 
   return (
     <>
@@ -261,6 +229,7 @@ const MessageList = (props) => {
             setFlatListRef && setFlatListRef(fl);
           }}
           renderItem={renderItem}
+          testID='message-flat-list'
           {...additionalFlatListProps}
         />
         {TypingIndicator && (
@@ -275,7 +244,7 @@ const MessageList = (props) => {
           />
         )}
         {!isOnline && (
-          <ErrorNotification>
+          <ErrorNotification testID='error-notification'>
             <ErrorNotificationText>
               {t('Connection failure, reconnecting now ...')}
             </ErrorNotificationText>
@@ -350,26 +319,6 @@ MessageList.propTypes = {
    * */
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: PropTypes.bool,
-  /**
-   * @deprecated User EventIndicator instead.
-   *
-   * UI Component to display following events in messagelist
-   *
-   * 1. member.added
-   * 2. member.removed
-   *
-   * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
-   * */
-  eventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * UI Component to display following events in messagelist
-   *
-   * 1. member.added
-   * 2. member.removed
-   *
-   * Defaults to and accepts same props as: [EventIndicator](https://getstream.github.io/stream-chat-react-native/#eventindicator)
-   * */
-  EventIndicator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * @deprecated Use HeaderComponent instead.
    *

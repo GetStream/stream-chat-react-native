@@ -25,7 +25,6 @@
   "Please select a channel first": "Veuillez d'abord selectionnez un canal",
   "Reply": "Répondre",
   "Searching for people": "Recherche de contacts",
-  "Send message": "Envoyer le message",
   "Start of a new thread": "Début d'un nouveau fil de discussion",
   "This message was deleted ...": "Ce message a été supprimé",
   "Upload a file": "Charger un fichier",
@@ -36,7 +35,5 @@
   "{{ imageCount }} more": "{{ imageCount }} supplémentaires",
   "{{ replyCount }} replies": "{{ replyCount }} réponses",
   "{{ user }} is typing...": "{{ user }} est en train d'écrire...",
-  "{{ username }} joined the chat": "{{ username }} a rejoint le chat",
-  "{{ username }} was removed from the chat": "{{ username }} a été supprimé du chat",
   "🏙 Attachment...": "🏙 Pièce jointe..."
 }

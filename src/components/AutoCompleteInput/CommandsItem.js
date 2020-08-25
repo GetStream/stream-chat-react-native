@@ -45,8 +45,17 @@ const CommandsItem = ({ item: { args, description, name } }) => (
 
 CommandsItem.propTypes = {
   item: PropTypes.shape({
+    /**
+     * Arguments which can be passed to the command
+     */
     args: PropTypes.string,
+    /**
+     * Description of the command
+     */
     description: PropTypes.string,
+    /**
+     * Name of the command
+     */
     name: PropTypes.string,
   }),
 };

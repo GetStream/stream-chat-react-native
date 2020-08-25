@@ -1,77 +1,57 @@
 import React from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { FileIcon } from '../Attachment';
 import UploadProgressIndicator from './UploadProgressIndicator';
+
 import { FileState, ProgressIndicatorTypes } from '../../utils';
-/**
- * FileUploadPreview
- *
- * @example ../docs/FileUploadPreview.md
- * @extends PureComponent
- */
+
 const FILE_PREVIEW_HEIGHT = 50;
 const FILE_PREVIEW_PADDING = 10;
 
 /**
+ * FileUploadPreview
  * UI Component to preview the files set for upload
  *
  * @example ../docs/FileUploadPreview.md
- * @extends PureComponent
  */
-class FileUploadPreview extends React.PureComponent {
-  constructor(props) {
-    super(props);
-  }
-  static propTypes = {
-    fileUploads: PropTypes.array.isRequired,
-    removeFile: PropTypes.func,
-    retryUpload: PropTypes.func,
-    /**
-     * Custom UI component for attachment icon for type 'file' attachment.
-     * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-     */
-    AttachmentFileIcon: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-  };
-
-  static defaultProps = {
-    AttachmentFileIcon: FileIcon,
-  };
-
-  _renderItem = ({ item }) => {
+const FileUploadPreview = ({
+  AttachmentFileIcon = FileIcon,
+  fileUploads,
+  removeFile,
+  retryUpload,
+}) => {
+  const renderItem = ({ item }) => {
     let type;
 
-    if (item.state === FileState.UPLOADING)
+    if (item.state === FileState.UPLOADING) {
       type = ProgressIndicatorTypes.IN_PROGRESS;
+    }
 
-    if (item.state === FileState.UPLOAD_FAILED)
+    if (item.state === FileState.UPLOAD_FAILED) {
       type = ProgressIndicatorTypes.RETRY;
+    }
 
-    const AttachmentFileIcon = this.props.AttachmentFileIcon;
     return (
       <UploadProgressIndicator
+        action={() => (retryUpload ? retryUpload(item.id) : null)}
         active={item.state !== FileState.UPLOADED}
         type={type}
-        action={this.props.retryUpload.bind(this, item.id)}
       >
         <View
           style={{
-            height: FILE_PREVIEW_HEIGHT,
-            padding: FILE_PREVIEW_PADDING,
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 5,
             borderColor: '#EBEBEB',
             borderWidth: 0.5,
+            flexDirection: 'row',
+            height: FILE_PREVIEW_HEIGHT,
+            justifyContent: 'space-between',
+            padding: FILE_PREVIEW_PADDING,
+            marginBottom: 5,
           }}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
             <AttachmentFileIcon mimeType={item.file.type} size={20} />
             <Text style={{ paddingLeft: 10 }}>
               {item.file.name.length > 35
@@ -79,34 +59,77 @@ class FileUploadPreview extends React.PureComponent {
                 : item.file.name}
             </Text>
           </View>
-          <Text onPress={this.props.removeFile.bind(this, item.id)}>X</Text>
+          <Text
+            onPress={() => removeFile(item.id)}
+            testID='remove-file-upload-preview'
+          >
+            X
+          </Text>
         </View>
       </UploadProgressIndicator>
     );
   };
 
-  render() {
-    if (!this.props.fileUploads || this.props.fileUploads.length === 0)
-      return null;
+  return fileUploads && fileUploads.length ? (
+    <View
+      style={{
+        height: fileUploads.length * (FILE_PREVIEW_HEIGHT + 5),
+        marginHorizontal: 10,
+      }}
+    >
+      <FlatList
+        data={fileUploads}
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        style={{ flex: 1 }}
+      />
+    </View>
+  ) : null;
+};
 
-    return (
-      <View
-        style={{
-          display: 'flex',
-          height: this.props.fileUploads.length * (FILE_PREVIEW_HEIGHT + 5),
-          marginRight: 10,
-          marginLeft: 10,
-        }}
-      >
-        <FlatList
-          style={{ flex: 1 }}
-          data={this.props.fileUploads}
-          keyExtractor={(item) => item.id}
-          renderItem={this._renderItem}
-        />
-      </View>
-    );
-  }
-}
+FileUploadPreview.propTypes = {
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
+  /**
+   * An array of file objects which are set for upload. It has the following structure:
+   *
+   * ```json
+   *  [
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_1",
+   *      "state": "uploading" // or "finished",
+   *      "url": "https://url1.com",
+   *    },
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_2",
+   *      "state": "uploading" // or "finished",
+   *      "url": "https://url1.com",
+   *    },
+   *  ]
+   * ```
+   *
+   */
+  fileUploads: PropTypes.array.isRequired,
+  /**
+   * Function for removing a file from the upload preview
+   *
+   * @param id string ID of file in `fileUploads` object in state of MessageInput
+   */
+  removeFile: PropTypes.func,
+  /**
+   * Function for attempting to upload a file
+   *
+   * @param id string ID of file in `fileUploads` object in state of MessageInput
+   */
+  retryUpload: PropTypes.func,
+};
 
 export default FileUploadPreview;

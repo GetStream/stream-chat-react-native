@@ -21,6 +21,7 @@ export const getReadStates = (messages, read) => {
   for (const readState of Object.values(read)) {
     /**
      * If no last read break
+     * TODO: Check if this is needed or if continue should be used instead
      */
     if (readState.last_read == null) {
       break;

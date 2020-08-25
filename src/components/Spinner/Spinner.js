@@ -15,7 +15,7 @@ export const Circle = styled(AnimatedView)`
   justify-content: center;
   margin: 5px;
   width: 30px;
-  ${({ theme }) => theme.spinner.css}
+  ${({ theme }) => theme.spinner.css};
 `;
 
 /**

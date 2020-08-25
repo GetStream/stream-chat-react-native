@@ -20,31 +20,20 @@ const imageUploads = [
   },
 ];
 
-class IUPExample extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      imageUploads,
-    };
+const IUPExample = () => {
+  const [imageUploadsState, setImageUploadsState] = React.useState(imageUploads);
 
-    this.removeImage = this.removeImage.bind(this);
-  }
+  const removeImage = (id) => {
+    setImageUploadsState((prevImageUploads) => prevImageUploads.filter((image) => image.id !== id));
+  };
 
-  removeImage(id) {
-    this.setState({
-      imageUploads: this.state.imageUploads.filter((obj) => obj.id !== id),
-    });
-  }
-
-  render() {
-    return (
-      <ImageUploadPreview
-        imageUploads={this.state.imageUploads}
-        removeImage={this.removeImage}
-      />
-    );
-  }
-}
+  return (
+    <ImageUploadPreview
+      imageUploads={imageUploadsState}
+      removeImage={removeImage}
+    />
+  );
+};
 
 <IUPExample />;
 ```

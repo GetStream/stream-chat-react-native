@@ -13,6 +13,7 @@ console.error = (e) => {
     _consoleE(e);
   }
 };
+console.warn = () => {};
 
 registerNativeHandlers({
   NetInfo: {
