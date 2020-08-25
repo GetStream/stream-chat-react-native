@@ -244,6 +244,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -359,6 +360,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -826,6 +828,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -941,6 +944,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -1319,6 +1323,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -1434,6 +1439,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View

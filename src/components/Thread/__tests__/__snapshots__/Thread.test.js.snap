@@ -237,6 +237,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -352,6 +353,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -679,6 +681,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -794,6 +797,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -1121,6 +1125,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -1236,6 +1241,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -1647,6 +1653,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -1762,6 +1769,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
