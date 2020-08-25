@@ -11,7 +11,7 @@ export const useChannelTruncated = ({
 
   useEffect(() => {
     const handleEvent = (e) => {
-      if (onChannelTruncated && typeof onChannelTruncated === 'function') {
+      if (typeof onChannelTruncated === 'function') {
         onChannelTruncated(setChannels, e);
       }
       setForceUpdate((count) => count + 1);

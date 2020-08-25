@@ -12,7 +12,7 @@ export const useAddedToChannelNotification = ({
 
   useEffect(() => {
     const handleEvent = async (e) => {
-      if (onAddedToChannel && typeof onAddedToChannel === 'function') {
+      if (typeof onAddedToChannel === 'function') {
         onAddedToChannel(setChannels, e);
       } else {
         const channel = await getChannel(

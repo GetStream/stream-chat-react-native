@@ -10,7 +10,7 @@ export const useRemovedFromChannelNotification = ({
 
   useEffect(() => {
     const handleEvent = (e) => {
-      if (onRemovedFromChannel && typeof onRemovedFromChannel === 'function') {
+      if (typeof onRemovedFromChannel === 'function') {
         onRemovedFromChannel(setChannels, e);
       } else {
         setChannels((channels) => {

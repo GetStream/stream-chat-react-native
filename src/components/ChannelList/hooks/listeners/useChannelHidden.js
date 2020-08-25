@@ -7,7 +7,7 @@ export const useChannelHidden = ({ onChannelHidden, setChannels }) => {
 
   useEffect(() => {
     const handleEvent = (e) => {
-      if (onChannelHidden && typeof onChannelHidden === 'function') {
+      if (typeof onChannelHidden === 'function') {
         onChannelHidden(setChannels, e);
       } else {
         setChannels((channels) => {

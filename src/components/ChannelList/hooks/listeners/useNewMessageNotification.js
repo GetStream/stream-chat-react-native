@@ -9,7 +9,7 @@ export const useNewMessageNotification = ({ onMessageNew, setChannels }) => {
 
   useEffect(() => {
     const handleEvent = async (e) => {
-      if (onMessageNew && typeof onMessageNew === 'function') {
+      if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, e);
       } else {
         const channel = await getChannel(

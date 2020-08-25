@@ -7,7 +7,7 @@ export const useChannelUpdated = ({ onChannelUpdated, setChannels }) => {
 
   useEffect(() => {
     const handleEvent = (e) => {
-      if (onChannelUpdated && typeof onChannelUpdated === 'function') {
+      if (typeof onChannelUpdated === 'function') {
         onChannelUpdated(setChannels, e);
       } else {
         setChannels((channels) => {

@@ -7,7 +7,7 @@ export const useChannelDeleted = ({ onChannelDeleted, setChannels }) => {
 
   useEffect(() => {
     const handleEvent = (e) => {
-      if (onChannelDeleted && typeof onChannelDeleted === 'function') {
+      if (typeof onChannelDeleted === 'function') {
         onChannelDeleted(setChannels, e);
       } else {
         setChannels((channels) => {
