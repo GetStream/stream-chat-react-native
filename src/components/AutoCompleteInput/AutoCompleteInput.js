@@ -52,8 +52,11 @@ const AutoCompleteInput = ({
 
   const startTracking = (trigger) => {
     isTrackingStarted.current = true;
-    const { component, title } = triggerSettings[trigger];
-    openSuggestions(title, component);
+    const { component: Component, title } = triggerSettings[trigger];
+    openSuggestions(
+      title,
+      typeof Component === 'string' ? Component : <Component />,
+    );
   };
 
   const stopTracking = () => {
