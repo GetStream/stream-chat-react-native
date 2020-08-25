@@ -47,8 +47,8 @@ const FileUploadPreview = ({
             flexDirection: 'row',
             height: FILE_PREVIEW_HEIGHT,
             justifyContent: 'space-between',
-            padding: FILE_PREVIEW_PADDING,
             marginBottom: 5,
+            padding: FILE_PREVIEW_PADDING,
           }}
         >
           <View style={{ alignItems: 'center', flexDirection: 'row' }}>

@@ -1,59 +1,59 @@
 import { Streami18n } from '../Streami18n';
 import { v4 as uuidv4 } from 'uuid';
 import { default as Dayjs } from 'dayjs';
-import { nlTranslations, frTranslations } from '../../i18n';
+import { frTranslations, nlTranslations } from '../../i18n';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
 Dayjs.extend(localeData);
 
 const customDayjsLocaleConfig = {
-  months: 'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split(
-    '_',
-  ),
-  monthsShort: 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
-  weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split(
-    '_',
-  ),
-  weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
-  weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
+  calendar: {
+    lastDay: '[Í gjár kl.] LT',
+    lastWeek: '[síðstu] dddd [kl] LT',
+    nextDay: '[Í morgin kl.] LT',
+    nextWeek: 'dddd [kl.] LT',
+    sameDay: '[Í dag kl.] LT',
+    sameElse: 'L',
+  },
+  dayOfMonthOrdinalParse: /\d{1,2}\./,
   formats: {
-    LT: 'HH:mm',
-    LTS: 'HH:mm:ss',
     L: 'DD/MM/YYYY',
     LL: 'D MMMM YYYY',
     LLL: 'D MMMM YYYY HH:mm',
     LLLL: 'dddd D. MMMM, YYYY HH:mm',
+    LT: 'HH:mm',
+    LTS: 'HH:mm:ss',
   },
-  calendar: {
-    sameDay: '[Í dag kl.] LT',
-    nextDay: '[Í morgin kl.] LT',
-    nextWeek: 'dddd [kl.] LT',
-    lastDay: '[Í gjár kl.] LT',
-    lastWeek: '[síðstu] dddd [kl] LT',
-    sameElse: 'L',
-  },
+  months: 'januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember'.split(
+    '_',
+  ),
+  monthsShort: 'jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des'.split('_'),
+  ordinal: '%d.',
   relativeTime: {
+    d: 'ein dagur',
+    dd: '%d dagar',
     future: 'um %s',
+    h: 'ein tími',
+    hh: '%d tímar',
+    M: 'ein mánaði',
+    m: 'ein minutt',
+    MM: '%d mánaðir',
+    mm: '%d minuttir',
     past: '%s síðani',
     s: 'fá sekund',
     ss: '%d sekundir',
-    m: 'ein minutt',
-    mm: '%d minuttir',
-    h: 'ein tími',
-    hh: '%d tímar',
-    d: 'ein dagur',
-    dd: '%d dagar',
-    M: 'ein mánaði',
-    MM: '%d mánaðir',
     y: 'eitt ár',
     yy: '%d ár',
   },
-  dayOfMonthOrdinalParse: /\d{1,2}\./,
-  ordinal: '%d.',
   week: {
     dow: 1, // Monday is the first day of the week.
     doy: 4, // The week that contains Jan 4th is the first week of the year.
   },
+  weekdays: 'sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur'.split(
+    '_',
+  ),
+  weekdaysMin: 'su_má_tý_mi_hó_fr_le'.split('_'),
+  weekdaysShort: 'sun_mán_týs_mik_hós_frí_ley'.split('_'),
 };
 
 describe('Streami18n instance - default', () => {
@@ -95,8 +95,8 @@ describe('Streami18n instance - with built-in langauge', () => {
 
   describe('datetime translations disabled', () => {
     const streami18nOptions = {
-      language: 'nl',
       disableDateTimeTranslations: true,
+      language: 'nl',
     };
     const streami18n = new Streami18n(streami18nOptions);
 
@@ -118,8 +118,8 @@ describe('Streami18n instance - with built-in langauge', () => {
 
   describe('custom dayjs locale config', () => {
     const streami18nOptions = {
-      language: 'nl',
       dayjsLocaleConfigForLanguage: customDayjsLocaleConfig,
+      language: 'nl',
     };
     const streami18n = new Streami18n(streami18nOptions);
 
@@ -172,8 +172,8 @@ describe('Streami18n instance - with custom translations', () => {
 
 describe('registerTranslation - register new language `mr` (Marathi) ', () => {
   const streami18nOptions = {
-    language: 'en',
     disableDateTimeTranslations: false,
+    language: 'en',
   };
   const streami18n = new Streami18n(streami18nOptions);
   const languageCode = 'mr';

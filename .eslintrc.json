@@ -38,7 +38,7 @@
     "object-shorthand": 1,
     "prefer-const": 1,
     "react/jsx-sort-props": [
-      "off",
+      "error",
       {
         "callbacksLast": false,
         "ignoreCase": true,
@@ -52,7 +52,7 @@
     "require-await": 2,
     "semi": [1, "always"],
     "sort-imports": [
-      "off",
+      "error",
       {
         "allowSeparatedGroups": true,
         "ignoreCase": true,
@@ -62,7 +62,7 @@
       }
     ],
     "sort-keys": [
-      "off",
+      "error",
       "asc",
       { "caseSensitive": false, "minKeys": 2, "natural": false }
     ],
@@ -145,7 +145,7 @@
         "object-shorthand": 1,
         "prefer-const": 1,
         "react/jsx-sort-props": [
-          "off",
+          "error",
           {
             "callbacksLast": false,
             "ignoreCase": true,
@@ -159,7 +159,7 @@
         "require-await": 2,
         "semi": [1, "always"],
         "sort-imports": [
-          "off",
+          "error",
           {
             "allowSeparatedGroups": true,
             "ignoreCase": true,
@@ -169,7 +169,7 @@
           }
         ],
         "sort-keys": [
-          "off",
+          "error",
           "asc",
           { "caseSensitive": false, "minKeys": 2, "natural": false }
         ],

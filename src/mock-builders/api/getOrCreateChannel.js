@@ -10,15 +10,15 @@ import { mockedApiResponse } from './utils.js';
 export const getOrCreateChannelApi = (
   channel = {
     channel: {},
-    messages: [],
     members: [],
+    messages: [],
   },
 ) => {
   const result = {
     channel: channel.channel,
-    messages: channel.messages,
-    members: channel.members,
     duration: 0.01,
+    members: channel.members,
+    messages: channel.messages,
   };
 
   return mockedApiResponse(result, 'post');

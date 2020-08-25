@@ -1,11 +1,11 @@
 import { registerNativeHandlers } from '..';
 
 const NetInfo = {
+  addEventListener: () => {},
   fetch: async () => {
     await undefined;
     return true;
   },
-  addEventListener: () => {},
 };
 registerNativeHandlers({
   NetInfo,

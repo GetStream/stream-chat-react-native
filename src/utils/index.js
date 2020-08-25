@@ -5,36 +5,36 @@ export { renderReactions } from './renderReactions';
 export { Streami18n } from './Streami18n';
 export const emojiData = [
   {
-    id: 'like',
     icon: '👍',
+    id: 'like',
   },
   {
-    id: 'love',
     icon: '❤️️',
+    id: 'love',
   },
   {
-    id: 'haha',
     icon: '😂',
+    id: 'haha',
   },
   {
-    id: 'wow',
     icon: '😮',
+    id: 'wow',
   },
   {
-    id: 'sad',
     icon: '😔',
+    id: 'sad',
   },
   {
-    id: 'angry',
     icon: '😠',
+    id: 'angry',
   },
 ];
 
 export const FileState = Object.freeze({
   NO_FILE: 'no_file',
-  UPLOADING: 'uploading',
-  UPLOADED: 'uploaded',
   UPLOAD_FAILED: 'upload_failed',
+  UPLOADED: 'uploaded',
+  UPLOADING: 'uploading',
 });
 
 export const ProgressIndicatorTypes = Object.freeze({
@@ -96,8 +96,8 @@ const queryMembers = async (channel, query, onReady) => {
 };
 
 const queryMembersDebounced = debounce(queryMembers, 200, {
-  trailing: true,
   leading: false,
+  trailing: true,
 });
 
 // ACI = AutoCompleteInput
@@ -114,54 +114,8 @@ export const ACITriggerSettings = ({
   onMentionSelectItem,
   t = (msg) => msg,
 }) => ({
-  '@': {
-    dataProvider: (query, text, onReady) => {
-      const members = channel.state.members;
-      // By default, we return maximum 100 members via queryChannels api call.
-      // Thus it is safe to assume, that if number of members in channel.state is < 100,
-      // then all the members are already available on client side and we don't need to
-      // make any api call to queryMembers endpoint.
-      if (!query || Object.values(members).length < 100) {
-        const users = getMembersAndWatchers(channel);
-
-        const matchingUsers = users.filter((user) => {
-          if (!query) return true;
-          if (
-            user.name !== undefined &&
-            user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-          ) {
-            return true;
-          } else if (
-            user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1
-          ) {
-            return true;
-          } else {
-            return false;
-          }
-        });
-        const data = matchingUsers.slice(0, 10);
-
-        onReady && onReady(data, query);
-
-        return data;
-      }
-
-      return queryMembersDebounced(channel, query, (data) => {
-        onReady(data, query);
-      });
-    },
-    component: 'MentionsItem',
-    title: t('Searching for people'),
-    output: (entity) => ({
-      key: entity.id,
-      text: `@${entity.name || entity.id}`,
-      caretPosition: 'next',
-    }),
-    callback: (item) => {
-      onMentionSelectItem(item);
-    },
-  },
   '/': {
+    component: 'CommandsItem',
     dataProvider: (q, text, onReady) => {
       if (text.indexOf('/') !== 0) {
         return [];
@@ -197,19 +151,65 @@ export const ACITriggerSettings = ({
 
       return result;
     },
-    title: t('Commands'),
-    component: 'CommandsItem',
     output: (entity) => ({
+      caretPosition: 'next',
       key: entity.id,
       text: `/${entity.name}`,
-      caretPosition: 'next',
     }),
+    title: t('Commands'),
+  },
+  '@': {
+    callback: (item) => {
+      onMentionSelectItem(item);
+    },
+    component: 'MentionsItem',
+    dataProvider: (query, text, onReady) => {
+      const members = channel.state.members;
+      // By default, we return maximum 100 members via queryChannels api call.
+      // Thus it is safe to assume, that if number of members in channel.state is < 100,
+      // then all the members are already available on client side and we don't need to
+      // make any api call to queryMembers endpoint.
+      if (!query || Object.values(members).length < 100) {
+        const users = getMembersAndWatchers(channel);
+
+        const matchingUsers = users.filter((user) => {
+          if (!query) return true;
+          if (
+            user.name !== undefined &&
+            user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+          ) {
+            return true;
+          } else if (
+            user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+        const data = matchingUsers.slice(0, 10);
+
+        onReady && onReady(data, query);
+
+        return data;
+      }
+
+      return queryMembersDebounced(channel, query, (data) => {
+        onReady(data, query);
+      });
+    },
+    output: (entity) => ({
+      caretPosition: 'next',
+      key: entity.id,
+      text: `@${entity.name || entity.id}`,
+    }),
+    title: t('Searching for people'),
   },
 });
 
 export const MESSAGE_ACTIONS = {
-  edit: 'edit',
   delete: 'delete',
+  edit: 'edit',
   reactions: 'reactions',
   reply: 'reply',
 };

@@ -234,9 +234,9 @@ const Channel = (props) => {
     text,
   }) => {
     const message = {
+      __html: text,
       attachments,
       created_at: new Date(),
-      __html: text,
       html: text,
       id: `${client.userID}-${uuidv4()}`,
       mentioned_users,
@@ -493,8 +493,8 @@ const Channel = (props) => {
 
   const threadContext = {
     closeThread,
-    openThread,
     loadMoreThread,
+    openThread,
     thread,
     threadHasMore,
     threadLoadingMore,
@@ -534,6 +534,11 @@ const Channel = (props) => {
 
 Channel.propTypes = {
   /**
+   * Custom UI component to display attachments on individual messages
+   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+   * */
+  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
    * The currently active channel
    * */
   channel: PropTypes.shape({
@@ -569,11 +574,6 @@ Channel.propTypes = {
    * @param updatedMessage UpdatedMessage object
    * */
   doUpdateMessageRequest: PropTypes.func,
-  /**
-   * Custom UI component to display attachments on individual messages
-   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
-   * */
-  Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Custom empty state indicator to override the Stream default
    * */

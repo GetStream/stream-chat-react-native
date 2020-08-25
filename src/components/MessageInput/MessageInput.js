@@ -16,8 +16,8 @@ import { AutoCompleteInput } from '../AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
 import {
-  ChatContext,
   ChannelContext,
+  ChatContext,
   KeyboardContext,
   MessagesContext,
   SuggestionsContext,
@@ -384,9 +384,9 @@ const MessageInput = (props) => {
       }
       return {
         ...prevState,
-        numberOfUploads: prevState.numberOfUploads - 1,
         fileOrder: prevState.fileOrder.filter((_id) => id !== _id),
         fileUploads: prevState.fileUploads.set(id, undefined), // remove
+        numberOfUploads: prevState.numberOfUploads - 1,
       };
     });
   };
@@ -399,9 +399,9 @@ const MessageInput = (props) => {
       }
       return {
         ...prevState,
-        numberOfUploads: prevState.numberOfUploads - 1,
         imageOrder: prevState.imageOrder.filter((_id) => id !== _id),
         imageUploads: prevState.imageUploads.set(id, undefined), // remove
+        numberOfUploads: prevState.numberOfUploads - 1,
       };
     });
   };
@@ -420,17 +420,17 @@ const MessageInput = (props) => {
       <Container padding={state.imageUploads && state.imageUploads.length > 0}>
         {state.fileUploads && (
           <FileUploadPreview
+            AttachmentFileIcon={AttachmentFileIcon}
+            fileUploads={state.fileOrder.map((id) => state.fileUploads[id])}
             removeFile={removeFile}
             retryUpload={uploadFile}
-            fileUploads={state.fileOrder.map((id) => state.fileUploads[id])}
-            AttachmentFileIcon={AttachmentFileIcon}
           />
         )}
         {state.imageUploads && (
           <ImageUploadPreview
+            imageUploads={state.imageOrder.map((id) => state.imageUploads[id])}
             removeImage={removeImage}
             retryUpload={uploadImage}
-            imageUploads={state.imageOrder.map((id) => state.imageUploads[id])}
           />
         )}
         {/**
@@ -439,16 +439,22 @@ const MessageInput = (props) => {
           */}
 
         <ActionSheetAttachment
-          setAttachActionSheetRef={setAttachActionSheetRef}
           closeAttachActionSheet={closeAttachActionSheet}
           pickFile={pickFile}
           pickImage={pickImage}
+          setAttachActionSheetRef={setAttachActionSheetRef}
           styles={actionSheetStyles}
         />
         <InputBoxContainer ref={setInputBoxContainerRef}>
           {Input ? (
             <Input
               {...legacyProps}
+              _pickFile={pickFile}
+              _pickImage={pickImage}
+              _removeFile={removeFile}
+              _removeImage={removeImage}
+              _uploadFile={uploadFile}
+              _uploadImage={uploadImage}
               additionalTextInputProps={additionalTextInputContainerProps}
               appendText={appendText}
               closeAttachActionSheet={closeAttachActionSheet}
@@ -466,10 +472,6 @@ const MessageInput = (props) => {
               onChange={onChangeText}
               onSelectItem={onSelectItem}
               openSuggestions={openSuggestions}
-              _pickFile={pickFile}
-              _pickImage={pickImage}
-              _removeFile={removeFile}
-              _removeImage={removeImage}
               sendMessage={sendMessage}
               setInputBoxContainerRef={setInputBoxContainerRef}
               setInputBoxRef={setInputBoxRef}
@@ -480,9 +482,7 @@ const MessageInput = (props) => {
               })}
               updateMessage={updateMessage}
               updateSuggestions={updateSuggestions}
-              _uploadFile={uploadFile}
               uploadNewFile={uploadNewFile}
-              _uploadImage={uploadImage}
               uploadNewImage={uploadNewImage}
               value={state.text}
             />
@@ -906,23 +906,23 @@ MessageInput.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * Override image upload request
-   *
-   * @param file    File object - { uri: '' }
-   * @param channel Current channel object
-   * */
-  doImageUploadRequest: PropTypes.func,
-  /**
    * Override file upload request
    *
    * @param file    File object - { uri: '', name: '' }
    * @param channel Current channel object
    * */
   doDocUploadRequest: PropTypes.func,
-  /** If component should have image picker functionality  */
-  hasImagePicker: PropTypes.bool,
+  /**
+   * Override image upload request
+   *
+   * @param file    File object - { uri: '' }
+   * @param channel Current channel object
+   * */
+  doImageUploadRequest: PropTypes.func,
   /** If component should have file picker functionality  */
   hasFilePicker: PropTypes.bool,
+  /** If component should have image picker functionality  */
+  hasImagePicker: PropTypes.bool,
   /** Initial value to set on input */
   initialValue: PropTypes.string,
   /** Limit on allowed number of files to attach at a time. */

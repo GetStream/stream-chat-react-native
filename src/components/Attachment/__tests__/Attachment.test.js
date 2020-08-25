@@ -82,7 +82,7 @@ describe('Attachment', () => {
       title_link: null,
     });
     const { getByTestId } = render(
-      getAttachmentComponent({ attachment, actionHandler: () => {} }),
+      getAttachmentComponent({ actionHandler: () => {}, attachment }),
     );
 
     await waitFor(() => {
@@ -95,8 +95,8 @@ describe('Attachment', () => {
     const action = generateAttachmentAction();
     const { getByTestId } = render(
       getActionComponent({
-        actions: [action],
         actionHandler,
+        actions: [action],
       }),
     );
 

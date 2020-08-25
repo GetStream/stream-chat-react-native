@@ -100,15 +100,7 @@ const ChannelPreviewMessenger = ({
 
 ChannelPreviewMessenger.propTypes = {
   /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
-  setActiveChannel: PropTypes.func,
-  /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
   channel: PropTypes.object,
-  /** Latest message (object) on channel */
-  latestMessage: PropTypes.object,
-  /** Number of unread messages on channel */
-  unread: PropTypes.number,
-  /** Length at which latest message should be truncated */
-  latestMessageLength: PropTypes.number,
   /**
    * Formatter function for date of latest message.
    * @param date Message date
@@ -119,6 +111,14 @@ ChannelPreviewMessenger.propTypes = {
    * default formatted date. This default logic is part of ChannelPreview component.
    */
   formatLatestMessageDate: PropTypes.func,
+  /** Latest message (object) on channel */
+  latestMessage: PropTypes.object,
+  /** Length at which latest message should be truncated */
+  latestMessageLength: PropTypes.number,
+  /** @see See [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext) */
+  setActiveChannel: PropTypes.func,
+  /** Number of unread messages on channel */
+  unread: PropTypes.number,
 };
 
 ChannelPreviewMessenger.themePath = 'channelPreview';

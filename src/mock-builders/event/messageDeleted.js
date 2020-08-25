@@ -1,8 +1,8 @@
 export default (client, message, channel = {}) => {
   client.dispatchEvent({
-    type: 'message.deleted',
+    channel,
     cid: channel.cid,
     message,
-    channel,
+    type: 'message.deleted',
   });
 };

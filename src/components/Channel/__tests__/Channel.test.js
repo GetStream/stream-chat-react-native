@@ -15,9 +15,9 @@ import {
   generateChannel,
   generateMember,
   generateMessage,
-  getTestClientWithUser,
   generateUser,
   getOrCreateChannelApi,
+  getTestClientWithUser,
   useMockedApis,
 } from '../../../mock-builders';
 
@@ -41,7 +41,7 @@ const ContextConsumer = ({ context, fn }) => {
 let chatClient;
 let channel;
 
-const user = generateUser({ name: 'name', id: 'id' });
+const user = generateUser({ id: 'id', name: 'name' });
 const messages = [generateMessage({ user })];
 
 const renderComponent = (
@@ -62,8 +62,8 @@ describe('Channel', () => {
   beforeEach(async () => {
     const members = [generateMember({ user })];
     const mockedChannel = generateChannel({
-      messages,
       members,
+      messages,
     });
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
@@ -193,9 +193,9 @@ describe('Channel', () => {
     getOrCreateChannelApi(
       generateChannel({
         channel: {
+          config: channel.getConfig(),
           id: channel.id,
           type: channel.type,
-          config: channel.getConfig(),
         },
         messages: newMessages,
       }),
