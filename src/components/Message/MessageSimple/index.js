@@ -335,15 +335,17 @@ export const MessageSimple = themed(
       };
     }
 
-    openReactionPicker = async () => {
+    openReactionPicker = () => {
       const { disabled, readOnly } = this.props;
       if (disabled || readOnly) return;
+
       // Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
       // So we need to postpone the calculation for reaction picker position
       // until after keyboard is closed completely. To achieve this, we close
       // the keyboard forcefully and then calculate position of picker in callback.
-      await this.props.dismissKeyboard();
-      this.setState({ reactionPickerVisible: true });
+      this.props.dismissKeyboard(() => {
+        this.setState({ reactionPickerVisible: true });
+      });
     };
 
     dismissReactionPicker = () => {

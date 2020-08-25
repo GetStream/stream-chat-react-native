@@ -1,9 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, View } from 'react-native';
-
-import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
+import {
+  Animated,
+  Keyboard,
+  View,
+  LayoutAnimation,
+  Platform,
+  StatusBar,
+} from 'react-native';
 
 import { KeyboardContext } from '../../context';
+import { useAppState } from './hooks/useAppState';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
@@ -20,63 +26,97 @@ import { KeyboardContext } from '../../context';
  * </KeyboardCompatibleView>
  * ```
  */
-export const KeyboardCompatibleView = ({
-  children,
-  enabled = true,
-  keyboardDismissAnimationDuration = 500,
-  keyboardOpenAnimationDuration = 500,
-}) => {
+export const KeyboardCompatibleView = ({ children, enabled = true }) => {
   const heightAnim = useRef(new Animated.Value(0)).current;
-  const rootChannelView = useRef();
+  const appState = useAppState();
+  const [channelHeight, setChannelHeight] = useState(0);
 
-  const [initialHeight, setInitialHeight] = useState(0);
-
-  const { height: channelHeight, isKeyboardOpen } = useKeyboardCompatibleHeight(
-    {
-      enabled,
-      initialHeight,
-      rootChannelView,
-    },
-  );
+  const rootChannelView = useRef(null);
+  const isKeyboardOpen = useRef(false);
+  const initialHeight = useRef(0);
 
   useEffect(() => {
-    Animated.timing(heightAnim, {
-      duration: isKeyboardOpen
-        ? keyboardDismissAnimationDuration
-        : keyboardOpenAnimationDuration,
-      toValue: channelHeight,
-      useNativeDriver: false,
-    }).start();
-  }, [
-    channelHeight,
-    heightAnim,
-    keyboardDismissAnimationDuration,
-    keyboardOpenAnimationDuration,
-  ]);
-
-  const dismissKeyboard = useCallback(() => {
-    Keyboard.dismiss();
-
-    return new Promise((resolve) => {
-      if (!isKeyboardOpen) {
-        // If channel height is already at full length, then don't do anything.
-        resolve();
-      } else {
-        // Bring the channel height to its full length state.
-        Animated.timing(heightAnim, {
-          duration: keyboardDismissAnimationDuration,
-          toValue: initialHeight,
-          useNativeDriver: false,
-        }).start(resolve);
+    const onKeyboardChange = (e) => {
+      if (!enabled) {
+        return;
       }
-    });
-  }, [
-    channelHeight,
-    heightAnim,
-    initialHeight,
-    isKeyboardOpen,
-    keyboardDismissAnimationDuration,
-  ]);
+
+      if (e === null) {
+        setChannelHeight(initialHeight.current);
+        isKeyboardOpen.current = false;
+        return;
+      }
+
+      const { endCoordinates } = e;
+      let isOpening = true;
+
+      if (Platform.OS === 'ios') {
+        const { startCoordinates } = e;
+        isOpening = endCoordinates.screenY < startCoordinates.screenY;
+      }
+
+      const keyboardY = endCoordinates.screenY;
+      if (rootChannelView) {
+        if (e.duration && e.easing) {
+          LayoutAnimation.configureNext({
+            // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+            duration: e.duration > 10 ? e.duration : 10,
+            update: {
+              duration: e.duration > 10 ? e.duration : 10,
+              type: LayoutAnimation.Types[e.easing] || 'keyboard',
+            },
+          });
+        }
+        rootChannelView.current.measureInWindow((x, y) => {
+          if (Platform.OS === 'android') {
+            setChannelHeight(
+              isOpening
+                ? keyboardY - y - StatusBar.currentHeight
+                : initialHeight.current,
+            );
+          } else {
+            setChannelHeight(isOpening ? keyboardY - y : initialHeight.current);
+          }
+          isKeyboardOpen.current = !!isOpening;
+        });
+      }
+    };
+
+    let subscriptions = [];
+    if (appState === 'active' && enabled) {
+      if (Platform.OS === 'ios') {
+        subscriptions = [
+          Keyboard.addListener('keyboardWillChangeFrame', onKeyboardChange),
+        ];
+      } else {
+        subscriptions = [
+          Keyboard.addListener('keyboardDidHide', onKeyboardChange),
+          Keyboard.addListener('keyboardDidShow', onKeyboardChange),
+        ];
+      }
+    }
+    return () => {
+      subscriptions.forEach((subscription) => {
+        subscription.remove();
+      });
+    };
+  }, [enabled, appState]);
+
+  const dismissKeyboard = useCallback((callback) => {
+    if (!isKeyboardOpen.current) {
+      callback && callback();
+    } else {
+      if (callback) {
+        const subscribe = Keyboard.addListener('keyboardDidHide', () => {
+          callback();
+          subscribe.remove();
+        });
+      }
+
+      Keyboard.dismiss();
+      isKeyboardOpen.current = false;
+    }
+  }, []);
 
   const onLayout = useCallback(
     ({
@@ -89,16 +129,12 @@ export const KeyboardCompatibleView = ({
       }
 
       // Not to set initial height again.
-      if (!initialHeight) {
-        setInitialHeight(height);
-        Animated.timing(heightAnim, {
-          duration: 10,
-          toValue: height,
-          useNativeDriver: false,
-        }).start();
+      if (!initialHeight.current) {
+        initialHeight.current = height;
+        setChannelHeight(height);
       }
     },
-    [enabled, heightAnim, initialHeight],
+    [enabled, heightAnim],
   );
 
   if (!enabled) {
@@ -114,10 +150,10 @@ export const KeyboardCompatibleView = ({
   }
 
   return (
-    <Animated.View
+    <View
       onLayout={onLayout}
       style={{
-        height: initialHeight ? heightAnim : undefined,
+        height: initialHeight.current ? channelHeight : undefined,
       }}
     >
       <KeyboardContext.Provider value={{ dismissKeyboard }}>
@@ -125,7 +161,7 @@ export const KeyboardCompatibleView = ({
           {children}
         </View>
       </KeyboardContext.Provider>
-    </Animated.View>
+    </View>
   );
 };
 
