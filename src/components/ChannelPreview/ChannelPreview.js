@@ -8,7 +8,7 @@ const ChannelPreview = (props) => {
   const { channel, Preview, setActiveChannel } = props;
   const { client } = useContext(ChatContext);
   const [lastMessage, setLastMessage] = useState({});
-  const [unread, setUnread] = useState(channel.countUnread?.());
+  const [unread, setUnread] = useState(channel.countUnread());
   const latestMessage = useLatestMessagePreview(channel, lastMessage);
 
   useEffect(() => {
