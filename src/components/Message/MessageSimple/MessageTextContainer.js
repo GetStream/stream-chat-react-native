@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import styled, { withTheme } from '@stream-io/styled-components';
 
-import { renderText, capitalize } from '../../../utils';
+import { capitalize, renderText } from '../../../utils';
 
 const TextContainer = styled.View`
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
@@ -79,8 +79,6 @@ const MessageTextContainer = withTheme((props) => {
 });
 
 MessageTextContainer.propTypes = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -94,12 +92,14 @@ MessageTextContainer.propTypes = {
    * @param message
    * */
   isMyMessage: PropTypes.func,
+  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
+  markdownRules: PropTypes.object,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
   /** Custom UI component for message text */
   MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /** Complete theme object. Its a [defaultTheme](https://github.com/GetStream/stream-chat-react-native/blob/master/src/styles/theme.js#L22) merged with customized theme provided as prop to Chat component */
   theme: PropTypes.object,
-  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules: PropTypes.object,
 };
 
 export default MessageTextContainer;

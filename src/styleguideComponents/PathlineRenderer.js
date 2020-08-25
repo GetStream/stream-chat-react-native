@@ -5,14 +5,14 @@ import Link from 'react-styleguidist/lib/rsg-components/Link';
 import Styled from 'react-styleguidist/lib/rsg-components/Styled';
 
 export const styles = ({ space, fontFamily, fontSize, color }) => ({
-  pathline: {
-    fontFamily: fontFamily.monospace,
-    fontSize: fontSize.small,
-    color: color.light,
-    wordBreak: 'break-all',
-  },
   copyButton: {
     marginLeft: space[0],
+  },
+  pathline: {
+    color: color.light,
+    fontFamily: fontFamily.monospace,
+    fontSize: fontSize.small,
+    wordBreak: 'break-all',
   },
 });
 
@@ -26,8 +26,8 @@ export function PathlineRenderer({ classes, children }) {
           'https://github.com/GetStream/stream-chat-react-native/blob/master/' +
           source
         }
-        target='blank'
         rel='noopener'
+        target='blank'
       >
         {source}
       </Link>
@@ -36,8 +36,8 @@ export function PathlineRenderer({ classes, children }) {
 }
 
 PathlineRenderer.propTypes = {
-  classes: PropTypes.object.isRequired,
   children: PropTypes.string,
+  classes: PropTypes.object.isRequired,
 };
 
 export default Styled(styles)(PathlineRenderer);

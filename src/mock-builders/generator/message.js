@@ -2,12 +2,12 @@ import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { generateUser } from './user';
 
 export const generateMessage = (options) => ({
+  attachments: [],
+  created_at: new Date().toString(),
+  html: '<p>regular</p>',
   id: uuidv4(),
   text: uuidv4(),
   type: 'regular',
-  html: '<p>regular</p>',
-  attachments: [],
-  created_at: new Date().toString(),
   updated_at: new Date().toString(),
   user: generateUser(),
   ...options,

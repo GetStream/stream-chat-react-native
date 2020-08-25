@@ -70,7 +70,7 @@ describe('MessageList', () => {
       members: [generateMember({ user: user1 })],
       messages: [
         generateMessage({ user: user1 }),
-        generateMessage({ user: undefined, type: 'system' }),
+        generateMessage({ type: 'system', user: undefined }),
         generateMessage({ user: user1 }),
       ],
     });

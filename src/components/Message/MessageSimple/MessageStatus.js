@@ -90,8 +90,8 @@ const MessageStatus = ({
       return (
         <ReadByContainer>
           <Avatar
-            name={lastReadUser.name || lastReadUser.id}
             image={lastReadUser.image}
+            name={lastReadUser.name || lastReadUser.id}
             size={16}
           />
         </ReadByContainer>
@@ -120,14 +120,14 @@ const MessageStatus = ({
 MessageStatus.propTypes = {
   /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
   client: PropTypes.object,
-  /** A list of users who have read the message */
-  readBy: PropTypes.array,
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
-  /** Latest message id on current channel */
-  lastReceivedId: PropTypes.string,
   /** Boolean if current message is part of thread */
   isThreadList: PropTypes.bool,
+  /** Latest message id on current channel */
+  lastReceivedId: PropTypes.string,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /** A list of users who have read the message */
+  readBy: PropTypes.array,
 };
 
 export default MessageStatus;

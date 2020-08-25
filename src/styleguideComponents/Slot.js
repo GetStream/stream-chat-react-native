@@ -133,9 +133,9 @@ export default function Slot(
       const { onClick } = props;
       fillProps = {
         ...props,
-        name: id,
         // Set active prop to active fill
         active: active && id === active,
+        name: id,
         // Pass fill ID to onClick event handler
         // eslint-disable-next-line react/prop-types
         onClick: onClick && ((...attrs) => onClick(id, ...attrs)),
@@ -156,11 +156,11 @@ export default function Slot(
 }
 
 Slot.propTypes = {
-  name: PropTypes.string.isRequired,
   active: PropTypes.string,
+  className: PropTypes.string,
+  name: PropTypes.string.isRequired,
   onlyActive: PropTypes.bool,
   props: PropTypes.object,
-  className: PropTypes.string,
 };
 Slot.contextTypes = {
   slots: PropTypes.object.isRequired,

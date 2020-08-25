@@ -21,8 +21,8 @@ function mockClient(client) {
   jest.spyOn(client, '_setToken').mockImplementation();
   jest.spyOn(client, '_setupConnection').mockImplementation();
   client.tokenManager = {
-    tokenReady: jest.fn(() => true),
     getToken: jest.fn(() => token),
+    tokenReady: jest.fn(() => true),
   };
   client.setUser = setUser.bind(null, client);
   return client;

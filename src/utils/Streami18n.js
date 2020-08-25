@@ -8,12 +8,12 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 
 import {
   enTranslations,
-  nlTranslations,
-  ruTranslations,
-  trTranslations,
   frTranslations,
   hiTranslations,
   itTranslations,
+  nlTranslations,
+  ruTranslations,
+  trTranslations,
 } from '../i18n';
 
 const defaultNS = 'translation';
@@ -34,46 +34,58 @@ Dayjs.extend(updateLocale);
 
 Dayjs.updateLocale('en', {
   format: {
-    LT: 'hh:mmA',
-    LTS: 'HH:mm:ss',
     L: 'DD/MM/YYYY',
     LL: 'D MMMM YYYY',
     LLL: 'D MMMM YYYY HH:mm',
     LLLL: 'dddd, D MMMM YYYY HH:mm',
+    LT: 'hh:mmA',
+    LTS: 'HH:mm:ss',
   },
 });
 Dayjs.updateLocale('nl', {
   calendar: {
-    sameDay: '[vandaag om] LT',
-    nextDay: '[morgen om] LT',
-    nextWeek: 'dddd [om] LT',
     lastDay: '[gisteren om] LT',
     lastWeek: '[afgelopen] dddd [om] LT',
+    nextDay: '[morgen om] LT',
+    nextWeek: 'dddd [om] LT',
+    sameDay: '[vandaag om] LT',
     sameElse: 'L',
   },
 });
 Dayjs.updateLocale('it', {
   calendar: {
-    sameDay: '[Oggi alle] LT',
-    nextDay: '[Domani alle] LT',
-    nextWeek: 'dddd [alle] LT',
     lastDay: '[Ieri alle] LT',
     lastWeek: '[lo scorso] dddd [alle] LT',
+    nextDay: '[Domani alle] LT',
+    nextWeek: 'dddd [alle] LT',
+    sameDay: '[Oggi alle] LT',
     sameElse: 'L',
   },
 });
 Dayjs.updateLocale('hi', {
   calendar: {
-    sameDay: '[आज] LT',
-    nextDay: '[कल] LT',
-    nextWeek: 'dddd, LT',
     lastDay: '[कल] LT',
     lastWeek: '[पिछले] dddd, LT',
+    nextDay: '[कल] LT',
+    nextWeek: 'dddd, LT',
+    sameDay: '[आज] LT',
     sameElse: 'L',
   },
   // Hindi notation for meridiems are quite fuzzy in practice. While there exists
   // a rigid notion of a 'Pahar' it is not used as rigidly in modern Hindi.
-  meridiemParse: /रात|सुबह|दोपहर|शाम/,
+  meridiem(hour) {
+    if (hour < 4) {
+      return 'रात';
+    } else if (hour < 10) {
+      return 'सुबह';
+    } else if (hour < 17) {
+      return 'दोपहर';
+    } else if (hour < 20) {
+      return 'शाम';
+    } else {
+      return 'रात';
+    }
+  },
   meridiemHour(hour, meridiem) {
     if (hour === 12) {
       hour = 0;
@@ -88,53 +100,41 @@ Dayjs.updateLocale('hi', {
       return hour + 12;
     }
   },
-  meridiem(hour) {
-    if (hour < 4) {
-      return 'रात';
-    } else if (hour < 10) {
-      return 'सुबह';
-    } else if (hour < 17) {
-      return 'दोपहर';
-    } else if (hour < 20) {
-      return 'शाम';
-    } else {
-      return 'रात';
-    }
-  },
+  meridiemParse: /रात|सुबह|दोपहर|शाम/,
 });
 Dayjs.updateLocale('fr', {
   calendar: {
-    sameDay: '[Aujourd’hui à] LT',
-    nextDay: '[Demain à] LT',
-    nextWeek: 'dddd [à] LT',
     lastDay: '[Hier à] LT',
     lastWeek: 'dddd [dernier à] LT',
+    nextDay: '[Demain à] LT',
+    nextWeek: 'dddd [à] LT',
+    sameDay: '[Aujourd’hui à] LT',
     sameElse: 'L',
   },
 });
 Dayjs.updateLocale('tr', {
   calendar: {
-    sameDay: '[bugün saat] LT',
-    nextDay: '[yarın saat] LT',
-    nextWeek: '[gelecek] dddd [saat] LT',
     lastDay: '[dün] LT',
     lastWeek: '[geçen] dddd [saat] LT',
+    nextDay: '[yarın saat] LT',
+    nextWeek: '[gelecek] dddd [saat] LT',
+    sameDay: '[bugün saat] LT',
     sameElse: 'L',
   },
 });
 Dayjs.updateLocale('ru', {
   calendar: {
-    sameDay: '[Сегодня, в] LT',
-    nextDay: '[Завтра, в] LT',
     lastDay: '[Вчера, в] LT',
+    nextDay: '[Завтра, в] LT',
+    sameDay: '[Сегодня, в] LT',
   },
 });
 
 const en_locale = {
-  weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split(
+  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split(
     '_',
   ),
-  months: 'January_February_March_April_May_June_July_August_September_October_November_December'.split(
+  weekdays: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday'.split(
     '_',
   ),
 };
@@ -287,12 +287,12 @@ const en_locale = {
  *
  */
 const defaultStreami18nOptions = {
-  language: 'en',
-  disableDateTimeTranslations: false,
-  debug: false,
-  logger: (msg) => console.warn(msg),
-  dayjsLocaleConfigForLanguage: null,
   DateTimeParser: Dayjs,
+  dayjsLocaleConfigForLanguage: null,
+  debug: false,
+  disableDateTimeTranslations: false,
+  language: 'en',
+  logger: (msg) => console.warn(msg),
   /**
    * @deprecated Please use DateTimeParser instead
    */
@@ -308,12 +308,12 @@ export class Streami18n {
   tDateTimeParser = null;
   translations = {
     en: { [defaultNS]: enTranslations },
-    nl: { [defaultNS]: nlTranslations },
-    ru: { [defaultNS]: ruTranslations },
-    tr: { [defaultNS]: trTranslations },
     fr: { [defaultNS]: frTranslations },
     hi: { [defaultNS]: hiTranslations },
     it: { [defaultNS]: itTranslations },
+    nl: { [defaultNS]: nlTranslations },
+    ru: { [defaultNS]: ruTranslations },
+    tr: { [defaultNS]: trTranslations },
   };
   /**
    * dayjs.defineLanguage('nl') also changes the global locale. We don't want to do that
@@ -398,12 +398,12 @@ export class Streami18n {
     }
 
     this.i18nextConfig = {
-      nsSeparator: false,
-      keySeparator: false,
-      fallbackLng: false,
       debug: finalOptions.debug,
-      lng: this.currentLanguage,
+      fallbackLng: false,
       interpolation: { escapeValue: false },
+      keySeparator: false,
+      lng: this.currentLanguage,
+      nsSeparator: false,
 
       parseMissingKeyHandler: (key) => {
         this.logger(`Streami18n: Missing translation for key: ${key}`);
@@ -448,8 +448,8 @@ export class Streami18n {
     try {
       this.t = await this.i18nInstance.init({
         ...this.i18nextConfig,
-        resources: this.translations,
         lng: this.currentLanguage,
+        resources: this.translations,
       });
       this.initialized = true;
 

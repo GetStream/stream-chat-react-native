@@ -72,13 +72,6 @@ Chat.propTypes = {
   /** The StreamChat client object */
   client: PropTypes.object.isRequired,
   /**
-   * Theme object
-   *
-   * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-   * */
-  style: PropTypes.object,
-  logger: PropTypes.func,
-  /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
    * Stream provides following list of in-built translations:
@@ -130,6 +123,13 @@ Chat.propTypes = {
    * ```
    */
   i18nInstance: PropTypes.instanceOf(Streami18n),
+  logger: PropTypes.func,
+  /**
+   * Theme object
+   *
+   * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+   * */
+  style: PropTypes.object,
 };
 
 Chat.themePath = '';

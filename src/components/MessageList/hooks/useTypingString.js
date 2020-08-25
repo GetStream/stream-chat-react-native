@@ -1,8 +1,8 @@
 import { useContext } from 'react';
 
 import {
-  ChatContext,
   ChannelContext,
+  ChatContext,
   TranslationContext,
 } from '../../../context';
 

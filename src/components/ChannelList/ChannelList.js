@@ -4,9 +4,9 @@ import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
 
 import {
-  LoadingIndicator,
-  LoadingErrorIndicator,
   EmptyStateIndicator,
+  LoadingErrorIndicator,
+  LoadingIndicator,
 } from '../Indicators';
 
 import { ChannelPreviewMessenger } from '../ChannelPreview';
@@ -36,128 +36,6 @@ export const MAX_QUERY_CHANNELS_LIMIT = 30;
  */
 class ChannelList extends PureComponent {
   static propTypes = {
-    /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
-    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-
-    /** The loading indicator to use */
-    LoadingIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /** The indicator to use when there is error in fetching channels */
-    LoadingErrorIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /** The indicator to use when channel list is empty */
-    EmptyStateIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /**
-     * The indicator to display network-down error at top of list, if there is connectivity issue
-     * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
-     */
-    HeaderNetworkDownIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /**
-     * The indicator to display error at top of list, if there was an error loading some page/channels after the first page.
-     * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
-     */
-    HeaderErrorIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    /**
-     * Loading indicator to display at bottom of the list, while loading further pages.
-     * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
-     */
-    FooterLoadingIndicator: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-    onSelect: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when new message is received on channel that is not being watched
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
-     * */
-    onMessageNew: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when users gets added to a channel
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
-     * */
-    onAddedToChannel: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when users gets removed from a channel
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
-     * */
-    onRemovedFromChannel: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when channel gets updated
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
-     * */
-    onChannelUpdated: PropTypes.func,
-    /**
-     * Function to customize behaviour when channel gets truncated
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
-     * */
-    onChannelTruncated: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
-     * */
-    onChannelDeleted: PropTypes.func,
-    /**
-     * Function that overrides default behaviour when channel gets hidden. In absence of this prop, channel will be removed from the list.
-     *
-     * @param {Component} thisArg Reference to ChannelList component
-     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
-     * */
-    onChannelHidden: PropTypes.func,
-    /**
-     * Object containing query filters
-     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for filter.
-     * */
-    filters: PropTypes.object,
-    /**
-     * Object containing query options
-     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for options.
-     * */
-    options: PropTypes.object,
-    /**
-     * Object containing sort parameters
-     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for sort.
-     * */
-    sort: PropTypes.object,
-    /** For flatlist  */
-    loadMoreThreshold: PropTypes.number,
-    /** Client object. Avaiable from [Chat context](#chatcontext) */
-    client: PropTypes.object,
-    /**
-     * Function to set change active channel. This function acts as bridge between channel list and currently active channel component.
-     *
-     * @param channel A Channel object
-     */
-    setActiveChannel: PropTypes.func,
-    /**
-     * If true, channels won't be dynamically sorted by most recent message.
-     */
-    lockChannelOrder: PropTypes.bool,
     /**
      * Besides existing (default) UX behaviour of underlying flatlist of ChannelList component, if you want
      * to attach some additional props to un derlying flatlist, you can add it to following prop.
@@ -175,6 +53,145 @@ class ChannelList extends PureComponent {
      * ```
      */
     additionalFlatListProps: PropTypes.object,
+
+    /** Client object. Avaiable from [Chat context](#chatcontext) */
+    client: PropTypes.object,
+
+    /** The indicator to use when channel list is empty */
+    EmptyStateIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    /**
+     * Object containing query filters
+     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for filter.
+     * */
+    filters: PropTypes.object,
+
+    /**
+     * Loading indicator to display at bottom of the list, while loading further pages.
+     * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+     */
+    FooterLoadingIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    /**
+     * The indicator to display error at top of list, if there was an error loading some page/channels after the first page.
+     * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
+     */
+    HeaderErrorIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    /**
+     * The indicator to display network-down error at top of list, if there is connectivity issue
+     * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+     */
+    HeaderNetworkDownIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    List: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+
+    /** The indicator to use when there is error in fetching channels */
+    LoadingErrorIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    /** The loading indicator to use */
+    LoadingIndicator: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+
+    /** For flatlist  */
+    loadMoreThreshold: PropTypes.number,
+
+    /**
+     * If true, channels won't be dynamically sorted by most recent message.
+     */
+    lockChannelOrder: PropTypes.bool,
+
+    /**
+     * Function that overrides default behaviour when users gets added to a channel
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+     * */
+    onAddedToChannel: PropTypes.func,
+
+    /**
+     * Function that overrides default behaviour when channel gets deleted. In absence of this prop, channel will be removed from the list.
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+     * */
+    onChannelDeleted: PropTypes.func,
+
+    /**
+     * Function that overrides default behaviour when channel gets hidden. In absence of this prop, channel will be removed from the list.
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+     * */
+    onChannelHidden: PropTypes.func,
+
+    /**
+     * Function to customize behaviour when channel gets truncated
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+     * */
+    onChannelTruncated: PropTypes.func,
+
+    /**
+     * Function that overrides default behaviour when channel gets updated
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+     * */
+    onChannelUpdated: PropTypes.func,
+
+    /**
+     * Function that overrides default behaviour when new message is received on channel that is not being watched
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+     * */
+    onMessageNew: PropTypes.func,
+
+    /**
+     * Function that overrides default behaviour when users gets removed from a channel
+     *
+     * @param {Component} thisArg Reference to ChannelList component
+     * @param {Event} event       [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+     * */
+    onRemovedFromChannel: PropTypes.func,
+
+    onSelect: PropTypes.func,
+
+    /**
+     * Object containing query options
+     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for options.
+     * */
+    options: PropTypes.object,
+
+    /** The Preview to use, defaults to [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger) */
+    Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+
+    /**
+     * Function to set change active channel. This function acts as bridge between channel list and currently active channel component.
+     *
+     * @param channel A Channel object
+     */
+    setActiveChannel: PropTypes.func,
+
     /**
      * Use `setFlatListRef` to get access to ref to inner FlatList.
      *
@@ -187,35 +204,41 @@ class ChannelList extends PureComponent {
      * ```
      */
     setFlatListRef: PropTypes.func,
+
+    /**
+     * Object containing sort parameters
+     * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available fields for sort.
+     * */
+    sort: PropTypes.object,
   };
 
   static defaultProps = {
-    Preview: ChannelPreviewMessenger,
-    List: ChannelListMessenger,
-    LoadingIndicator,
-    LoadingErrorIndicator,
+    additionalFlatListProps: {},
     EmptyStateIndicator,
     filters: {},
-    options: {},
-    sort: {},
+    List: ChannelListMessenger,
+    LoadingErrorIndicator,
+    LoadingIndicator,
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold: 2,
     lockChannelOrder: false,
-    additionalFlatListProps: {},
     logger: () => {},
+    options: {},
+    Preview: ChannelPreviewMessenger,
+    sort: {},
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      error: false,
-      channels: Immutable([]),
       channelIds: Immutable([]),
-      refreshing: false,
+      channels: Immutable([]),
+      error: false,
+      hasNextPage: true,
       loadingChannels: true,
       loadingNextPage: false,
-      hasNextPage: true,
       offset: 0,
+      refreshing: false,
     };
     this.listRef = React.createRef();
     this.lastRefresh = new Date();
@@ -331,39 +354,39 @@ class ChannelList extends PureComponent {
 
     const queryOptions = {
       ...options,
-      offset,
       limit,
+      offset,
     };
 
     return {
       filters,
-      sort,
       options: queryOptions,
+      sort,
     };
   };
 
   setRefreshingUIState = () =>
     this.setStateAsync({
-      refreshing: true,
       loadingChannels: false,
       loadingNextPage: false,
+      refreshing: true,
     });
 
   setReloadingUIState = () =>
     this.setStateAsync({
-      refreshing: false,
+      channelIds: Immutable([]),
+      channels: Immutable([]),
+      error: false,
       loadingChannels: true,
       loadingNextPage: false,
-      error: false,
-      channels: Immutable([]),
-      channelIds: Immutable([]),
+      refreshing: false,
     });
 
   setLoadingNextPageUIState = () =>
     this.setStateAsync({
-      refreshing: false,
       loadingChannels: false,
       loadingNextPage: true,
+      refreshing: false,
     });
 
   // Sets the loading UI state before the star
@@ -383,9 +406,9 @@ class ChannelList extends PureComponent {
 
   finishQueryLoadingUIState = () =>
     this.setStateAsync({
-      refreshing: false,
       loadingChannels: false,
       loadingNextPage: false,
+      refreshing: false,
     });
 
   /**
@@ -422,13 +445,13 @@ class ChannelList extends PureComponent {
 
         if (queryType === 'refresh' || queryType === 'reload') {
           await this.setChannels(channelQueryResponse, {
-            hasNextPage,
             error: false,
+            hasNextPage,
           });
         } else {
           await this.appendChannels(channelQueryResponse, {
-            hasNextPage,
             error: false,
+            hasNextPage,
           });
         }
 
@@ -465,8 +488,8 @@ class ChannelList extends PureComponent {
     ];
 
     return this.setStateAsync({
-      channels: distinctChannels,
       channelIds,
+      channels: distinctChannels,
       offset: distinctChannels.length,
       ...additionalState,
     });
@@ -477,8 +500,8 @@ class ChannelList extends PureComponent {
     const channelIds = [...channels.map((c) => c.id)];
 
     return this.setStateAsync({
-      channels: distinctChannels,
       channelIds,
+      channels: distinctChannels,
       offset: distinctChannels.length,
       ...additionalState,
     });
@@ -548,8 +571,8 @@ class ChannelList extends PureComponent {
         // move channel to starting position
         if (this._unmounted) return;
         this.setState((prevState) => ({
-          channels: uniqBy([channel, ...prevState.channels], 'cid'),
           channelIds: uniqWith([channel.id, ...prevState.channelIds], isEqual),
+          channels: uniqBy([channel, ...prevState.channels], 'cid'),
           offset: prevState.offset + 1,
         }));
       }
@@ -567,8 +590,8 @@ class ChannelList extends PureComponent {
 
         if (this._unmounted) return;
         this.setState((prevState) => ({
-          channels: uniqBy([channel, ...prevState.channels], 'cid'),
           channelIds: uniqWith([channel.id, ...prevState.channelIds], isEqual),
+          channels: uniqBy([channel, ...prevState.channels], 'cid'),
           offset: prevState.offset + 1,
         }));
       }
@@ -591,8 +614,8 @@ class ChannelList extends PureComponent {
             (cid) => cid !== e.channel.cid,
           );
           return {
-            channels,
             channelIds,
+            channels,
           };
         });
       }

@@ -37,7 +37,7 @@ const MessageReplies = ({
   return (
     <Container onPress={openThread}>
       {alignment === 'left' ? (
-        <MessageRepliesImage source={iconPath} alignment={alignment} />
+        <MessageRepliesImage alignment={alignment} source={iconPath} />
       ) : null}
       <MessageRepliesText>
         {message.reply_count === 1
@@ -45,21 +45,21 @@ const MessageReplies = ({
           : t('{{ replyCount }} replies', { replyCount: message.reply_count })}
       </MessageRepliesText>
       {alignment === 'right' ? (
-        <MessageRepliesImage source={iconPath} alignment={alignment} />
+        <MessageRepliesImage alignment={alignment} source={iconPath} />
       ) : null}
     </Container>
   );
 };
 
 MessageReplies.propTypes = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
-  /** Boolean if current message is part of thread */
-  isThreadList: PropTypes.bool,
-  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-  openThread: PropTypes.func,
   /** right | left */
   alignment: PropTypes.oneOf(['right', 'left']),
+  /** Boolean if current message is part of thread */
+  isThreadList: PropTypes.bool,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
+  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  openThread: PropTypes.func,
 };
 
 export default withTranslationContext(MessageReplies);
