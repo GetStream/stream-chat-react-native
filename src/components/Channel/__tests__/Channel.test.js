@@ -207,7 +207,7 @@ describe('Channel', () => {
     const newMessages = [generateMessage()];
     renderComponent(
       { channel },
-      ({ loadMore, messages: contextMessages, hasMore }) => {
+      ({ hasMore, loadMore, messages: contextMessages }) => {
         if (
           !contextMessages.find((message) => message.id === newMessages[0].id)
         ) {
@@ -247,7 +247,7 @@ describe('Channel', () => {
 
     renderComponent(
       { channel },
-      ({ loadMore, loadingMore }) => {
+      ({ loadingMore, loadMore }) => {
         // return a promise that hasn't resolved yet, so loadMore will be stuck in the 'await' part of the function
         jest.spyOn(channel, 'query').mockImplementationOnce(() => queryPromise);
         loadMore();
@@ -301,7 +301,7 @@ describe('Channel', () => {
 
     renderComponent(
       { channel },
-      ({ removeMessage, messages: contextMessages }) => {
+      ({ messages: contextMessages, removeMessage }) => {
         if (contextMessages.length > 0) {
           // if there are messages passed as the context, remove them
           removeMessage(contextMessages[0]);

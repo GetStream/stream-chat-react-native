@@ -354,15 +354,15 @@ const MessageSimple = themed(
 
     render() {
       const {
-        message,
-        isMyMessage,
-        groupStyles,
         forceAlign,
-        showMessageStatus,
-        reactionsEnabled,
+        groupStyles,
+        isMyMessage,
+        message,
         MessageAvatar,
         MessageContent,
         MessageStatus,
+        reactionsEnabled,
+        showMessageStatus,
       } = this.props;
 
       let alignment;

@@ -93,16 +93,16 @@ class ReactionPicker extends React.PureComponent {
 
   render() {
     const {
-      hideReactionCount,
-      hideReactionOwners,
-      reactionPickerVisible,
       handleDismiss,
       handleReaction,
+      hideReactionCount,
+      hideReactionOwners,
       latestReactions,
       reactionCounts,
+      reactionPickerVisible,
       rpLeft,
-      rpTop,
       rpRight,
+      rpTop,
       supportedReactions,
     } = this.props;
 
@@ -135,7 +135,7 @@ class ReactionPicker extends React.PureComponent {
                 ...position,
               }}
             >
-              {supportedReactions.map(({ id, icon }) => {
+              {supportedReactions.map(({ icon, id }) => {
                 const latestUser = this.getLatestUser(latestReactions, id);
                 const count = reactionCounts && reactionCounts[id];
                 return (

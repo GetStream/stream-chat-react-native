@@ -8,31 +8,31 @@ import { renderText } from './utils/renderText';
 const TextContainer = styled.View`
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
-  background-color: ${({ theme, alignment, type, status }) =>
+  background-color: ${({ alignment, status, theme, type }) =>
     alignment === 'left' || type === 'error' || status === 'failed'
       ? theme.colors.transparent
       : theme.colors.light};
-  border-bottom-left-radius: ${({ theme, groupStyle }) =>
+  border-bottom-left-radius: ${({ groupStyle, theme }) =>
     groupStyle.indexOf('left') !== -1
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  border-bottom-right-radius: ${({ theme, groupStyle }) =>
+  border-bottom-right-radius: ${({ groupStyle, theme }) =>
     groupStyle.indexOf('right') !== -1
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  border-color: ${({ theme, alignment }) =>
+  border-color: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderColor
       : theme.message.content.textContainer.rightBorderColor};
-  border-top-left-radius: ${({ theme, groupStyle }) =>
+  border-top-left-radius: ${({ groupStyle, theme }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  border-top-right-radius: ${({ theme, groupStyle }) =>
+  border-top-right-radius: ${({ groupStyle, theme }) =>
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL};
-  border-width: ${({ theme, alignment }) =>
+  border-width: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth
       : theme.message.content.textContainer.rightBorderWidth};

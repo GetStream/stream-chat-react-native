@@ -21,9 +21,9 @@ describe('MessageAvatar', () => {
     const {
       getByTestId,
       getByText,
-      rerender,
       queryAllByTestId,
       queryAllByText,
+      rerender,
       toJSON,
     } = render(
       <ThemeProvider theme={defaultTheme}>

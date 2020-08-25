@@ -332,7 +332,7 @@ class ChannelList extends PureComponent {
   };
 
   getQueryParams = (queryType) => {
-    const { options, filters, sort } = this.props;
+    const { filters, options, sort } = this.props;
     let offset;
     let limit;
 
@@ -426,7 +426,7 @@ class ChannelList extends PureComponent {
       try {
         await this.startQueryLoadingUIState(queryType);
 
-        const { filters, sort, options } = this.getQueryParams(queryType);
+        const { filters, options, sort } = this.getQueryParams(queryType);
         const channelQueryResponse = await this.queryChannelsRequest(
           filters,
           sort,

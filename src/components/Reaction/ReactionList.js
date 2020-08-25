@@ -135,11 +135,11 @@ class ReactionList extends React.PureComponent {
 
   render() {
     const {
-      latestReactions,
-      getTotalReactionCount,
-      visible,
       alignment,
+      getTotalReactionCount,
+      latestReactions,
       supportedReactions,
+      visible,
     } = this.props;
     return (
       <TouchableWrapper activeOpacity={1} alignment={alignment}>

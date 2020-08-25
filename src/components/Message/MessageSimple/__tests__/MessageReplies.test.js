@@ -30,8 +30,8 @@ describe('MessageReplies', () => {
     const {
       getByTestId,
       getByText,
-      rerender,
       queryAllByTestId,
+      rerender,
       toJSON,
     } = render(
       <TranslationContext.Provider value={{ t }}>
@@ -92,7 +92,7 @@ describe('MessageReplies', () => {
     const message = generateMessage({
       user,
     });
-    const { rerender, queryAllByTestId } = render(
+    const { queryAllByTestId, rerender } = render(
       <TranslationContext.Provider value={{ t }}>
         <ThemeProvider theme={defaultTheme}>
           <MessageReplies

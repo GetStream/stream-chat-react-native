@@ -16,7 +16,12 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["babel", "markdown", "better-styled-components"],
+  "plugins": [
+    "babel",
+    "markdown",
+    "better-styled-components",
+    "sort-destructure-keys"
+  ],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
@@ -51,6 +56,10 @@
     "react/prop-types": 0,
     "require-await": 2,
     "semi": [1, "always"],
+    "sort-destructure-keys/sort-destructure-keys": [
+      2,
+      { "caseSensitive": false }
+    ],
     "sort-imports": [
       "error",
       {
@@ -122,7 +131,8 @@
         "prettier",
         "react",
         "typescript-sort-keys",
-        "better-styled-components"
+        "better-styled-components",
+        "sort-destructure-keys"
       ],
       "rules": {
         "@typescript-eslint/ban-ts-comment": 0,
@@ -158,6 +168,10 @@
         "react/prop-types": 0,
         "require-await": 2,
         "semi": [1, "always"],
+        "sort-destructure-keys/sort-destructure-keys": [
+          2,
+          { "caseSensitive": false }
+        ],
         "sort-imports": [
           "error",
           {

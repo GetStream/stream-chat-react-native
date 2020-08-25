@@ -52,9 +52,9 @@ describe('ActionSheetAttachment', () => {
     const {
       getAllByTestId,
       getByTestId,
-      queryByText,
       queryAllByTestId,
       queryByTestId,
+      queryByText,
       toJSON,
     } = render(getComponent(props));
 

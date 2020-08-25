@@ -274,9 +274,9 @@ const Message = withKeyboardContext(
 
     onMessageTouch = (e, message) => {
       const {
-        onMessageTouch,
-        dismissKeyboardOnMessageTouch,
         dismissKeyboard,
+        dismissKeyboardOnMessageTouch,
+        onMessageTouch,
       } = this.props;
 
       if (onMessageTouch) onMessageTouch(e, message);

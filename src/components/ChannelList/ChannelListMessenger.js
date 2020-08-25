@@ -161,7 +161,7 @@ class ChannelListMessenger extends PureComponent {
   };
 
   renderHeaderIndicator = () => {
-    const { isOnline, error, refreshList } = this.props;
+    const { error, isOnline, refreshList } = this.props;
 
     if (!isOnline) {
       const HeaderNetworkDownIndicator = this.props.HeaderNetworkDownIndicator;

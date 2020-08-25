@@ -60,7 +60,7 @@ const StatusContainer = styled.View`
   width: 20;
 `;
 
-const MessageStatus = ({ readBy, message, lastReceivedId, threadList }) => {
+const MessageStatus = ({ lastReceivedId, message, readBy, threadList }) => {
   const { client } = useContext(ChatContext);
   const justReadByMe =
     readBy.length === 1 && readBy[0] && readBy[0].id === client.user.id;

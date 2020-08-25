@@ -31,7 +31,7 @@ const GalleryContainer = styled.View`
     alignment === 'right' ? 16 : 2}px;
   flex-direction: row;
   flex-wrap: wrap;
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     length >= 4
       ? theme.message.gallery.doubleSize
       : length === 3
@@ -43,11 +43,11 @@ const GalleryContainer = styled.View`
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     length !== 3
       ? theme.message.gallery.size
       : theme.message.gallery.halfSize}px;
-  width: ${({ theme, length }) =>
+  width: ${({ length, theme }) =>
     length !== 3
       ? theme.message.gallery.size
       : theme.message.gallery.halfSize}px;

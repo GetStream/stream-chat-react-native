@@ -100,18 +100,18 @@ class ReactionPickerWrapper extends React.PureComponent {
 
   render() {
     const {
-      handleReaction,
-      message,
-      supportedReactions,
+      dismissReactionPicker,
       /** @deprecated */
       emojiData,
-      style,
-      dismissReactionPicker,
-      reactionPickerVisible,
-      ReactionPicker,
-      openReactionPicker,
+      handleReaction,
       hideReactionCount,
       hideReactionOwners,
+      message,
+      openReactionPicker,
+      ReactionPicker,
+      reactionPickerVisible,
+      style,
+      supportedReactions,
     } = this.props;
     return (
       <TouchableOpacity
