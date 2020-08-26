@@ -1,17 +1,15 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import {
-  generateChannel,
-  generateUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from 'mock-builders';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 import ActionSheetAttachment from '../ActionSheetAttachment';
 
-import { Chat } from '../../Chat';
+import Chat from '../../Chat/Chat';
 
 describe('ActionSheetAttachment', () => {
   const clientUser = generateUser();

@@ -6,7 +6,6 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     Array [
       Object {
         "alignItems": "center",
-        "display": "flex",
         "flexDirection": "row",
         "justifyContent": "center",
         "marginBottom": 10,

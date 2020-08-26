@@ -1,12 +1,11 @@
 import React from 'react';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
+import Avatar from '../../Avatar/Avatar';
 
 import loadingGif from '../../../images/loading.gif';
 import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
-
-import { Avatar } from '../../Avatar';
 
 const Spacer = styled.View`
   height: 10;

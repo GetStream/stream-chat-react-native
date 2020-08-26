@@ -1,11 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Text } from 'react-native';
-import PropTypes from 'prop-types';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
+import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
 import { v4 as uuidv4 } from 'uuid';
+
+import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
+import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
+import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
+import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import SuggestionsProvider from '../SuggestionsProvider/SuggestionsProvider';
 
 import {
   ChannelContext,
@@ -14,14 +20,7 @@ import {
   ThreadContext,
   TranslationContext,
 } from '../../context';
-import {
-  EmptyStateIndicator as EmptyStateIndicatorDefault,
-  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
-  LoadingIndicator as LoadingIndicatorDefault,
-} from '../Indicators';
-import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView';
-import { SuggestionsProvider } from '../SuggestionsProvider';
-import { emojiData as emojiDataDefault } from '../../utils';
+import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 /**
  *

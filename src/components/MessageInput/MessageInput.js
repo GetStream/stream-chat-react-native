@@ -15,7 +15,7 @@ import SendButtonDefault from './SendButton';
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
 import { generateRandomId } from './utils/generateRandomId';
 
-import { AutoCompleteInput } from '../AutoCompleteInput';
+import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
 import {
@@ -30,7 +30,7 @@ import {
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
-import { ACITriggerSettings, FileState } from '../../utils';
+import { ACITriggerSettings, FileState } from '../../utils/utils';
 
 const Container = styled.View`
   background-color: rgba(0, 0, 0, 0.05);

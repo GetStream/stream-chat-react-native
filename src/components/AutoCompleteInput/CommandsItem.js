@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+
 import { themed } from '../../styles/theme';
 
 const CommandArgs = styled.Text`

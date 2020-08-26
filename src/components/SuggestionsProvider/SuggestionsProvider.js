@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { findNodeHandle, View } from 'react-native';
 
-import { SuggestionsContext } from '../../context';
 import SuggestionsList from './SuggestionsList';
+
+import { SuggestionsContext } from '../../context';
 
 /**
  *

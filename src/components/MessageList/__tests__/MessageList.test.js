@@ -5,25 +5,29 @@ import {
   render,
   waitFor,
 } from '@testing-library/react-native';
+import { act } from 'react-test-renderer';
+
+import MessageList from '../MessageList';
+
+import Channel from '../../Channel/Channel';
+import Chat from '../../Chat/Chat';
+
+import { ChatContext } from '../../../context';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';
+import dispatchTypingEvent from '../../../mock-builders/event/typing';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMember } from '../../../mock-builders/generator/member';
 import {
-  dispatchMessageNewEvent,
-  dispatchTypingEvent,
-  generateChannel,
-  generateMember,
   generateMessage,
   generateStaticMessage,
+} from '../../../mock-builders/generator/message';
+import {
   generateStaticUser,
   generateUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from 'mock-builders';
-
-import { Channel } from '../../Channel';
-import { Chat } from '../../Chat';
-import MessageList from '../MessageList';
-import { ChatContext } from '../../../context';
-import { act } from 'react-test-renderer';
+} from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('MessageList', () => {
   afterEach(cleanup);

@@ -1,26 +1,28 @@
 import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
-import {
-  generateChannel,
-  generateMember,
-  generateMessage,
-  generateStaticMessage,
-  generateStaticUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from 'mock-builders';
 import { v5 as uuidv5 } from 'uuid';
 
-import { Channel } from '../../Channel';
-import { Chat } from '../../Chat';
+import Thread from '../Thread';
+
+import Channel from '../../Channel/Channel';
+import Chat from '../../Chat/Chat';
+
 import {
   ChannelContext,
   ThreadContext,
   TranslationContext,
 } from '../../../context';
-import Thread from '../Thread';
-import { Streami18n } from '../../../utils';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateMember } from '../../../mock-builders/generator/member';
+import {
+  generateMessage,
+  generateStaticMessage,
+} from '../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
+import { Streami18n } from '../../../utils/Streami18n';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 

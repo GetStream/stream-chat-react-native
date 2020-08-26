@@ -2,8 +2,10 @@
   "name": "stream-chat-react-native-core",
   "version": "1.2.0",
   "author": {
-    "company": "Stream.io Inc"
+    "company": "Stream.io Inc",
+    "name": "Stream.io Inc"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "src/index.js",

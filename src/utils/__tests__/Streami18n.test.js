@@ -1,9 +1,13 @@
-import { Streami18n } from '../Streami18n';
-import { v4 as uuidv4 } from 'uuid';
 import { default as Dayjs } from 'dayjs';
-import { frTranslations, nlTranslations } from '../../i18n';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
+import { v4 as uuidv4 } from 'uuid';
+
+import { Streami18n } from '../Streami18n';
+
+import frTranslations from '../../i18n/fr.json';
+import nlTranslations from '../../i18n/nl.json';
+
 Dayjs.extend(localeData);
 
 const customDayjsLocaleConfig = {

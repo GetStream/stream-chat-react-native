@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+
 import { TranslationContext } from '../../../context';
 
 const getLatestMessageDisplayText = (message, t) => {

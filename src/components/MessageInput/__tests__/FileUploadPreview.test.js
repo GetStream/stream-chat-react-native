@@ -3,9 +3,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import FileUploadPreview from '../FileUploadPreview';
 
-import { FileState } from '../../../utils';
-
-import { generateFileUploadPreview } from '../../../mock-builders';
+import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
+import { FileState } from '../../../utils/utils';
 
 describe('FileUploadPreview', () => {
   it('should render FileUploadPreview with all uploading files', async () => {

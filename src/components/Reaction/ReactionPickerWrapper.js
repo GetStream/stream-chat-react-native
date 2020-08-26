@@ -1,10 +1,10 @@
 import React from 'react';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Dimensions, TouchableOpacity } from 'react-native';
-
 import ReactionPicker from './ReactionPicker';
-import { emojiData } from '../../utils';
+
+import { emojiData } from '../../utils/utils';
 
 class ReactionPickerWrapper extends React.PureComponent {
   static propTypes = {

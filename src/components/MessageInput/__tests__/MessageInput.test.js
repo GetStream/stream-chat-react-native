@@ -8,16 +8,14 @@ import {
 
 import MessageInput from '../MessageInput';
 
-import { Chat } from '../../Chat';
-import { Channel } from '../../Channel';
+import Channel from '../../Channel/Channel';
+import Chat from '../../Chat/Chat';
 
-import {
-  generateChannel,
-  generateUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from '../../../mock-builders';
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();

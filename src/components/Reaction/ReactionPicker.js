@@ -1,12 +1,12 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
+import Avatar from '../Avatar/Avatar';
 
 import { themed } from '../../styles/theme';
-import { Avatar } from '../Avatar';
-import { emojiData } from '../../utils';
+import { emojiData } from '../../utils/utils';
 
 const Container = styled.TouchableOpacity`
   flex: 1;
