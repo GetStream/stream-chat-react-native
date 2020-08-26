@@ -82,7 +82,7 @@ const SuggestionsList = (props) => {
           return null;
       }
     } else {
-      render = <Component item={item} />;
+      render = React.cloneElement(Component, { item });
     }
 
     return (
