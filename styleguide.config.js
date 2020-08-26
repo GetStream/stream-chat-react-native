@@ -8,7 +8,7 @@ const notBabeledDeps = [
   'react-native-image-zoom-viewer',
 ];
 
-export default {
+module.exports = {
   assetsDir: 'src/assets',
   compilerConfig: {
     objectAssign: 'Object.assign',
