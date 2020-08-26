@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Animated,
   Keyboard,
   View,
   LayoutAnimation,
@@ -27,7 +26,6 @@ import { useAppState } from './hooks/useAppState';
  * ```
  */
 export const KeyboardCompatibleView = ({ children, enabled = true }) => {
-  const heightAnim = useRef(new Animated.Value(0)).current;
   const appState = useAppState();
   const [channelHeight, setChannelHeight] = useState(0);
 
@@ -134,7 +132,7 @@ export const KeyboardCompatibleView = ({ children, enabled = true }) => {
         setChannelHeight(height);
       }
     },
-    [enabled, heightAnim],
+    [enabled],
   );
 
   if (!enabled) {
