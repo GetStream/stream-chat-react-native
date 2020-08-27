@@ -1,17 +1,15 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import DateSeparator from '../DateSeparator';
-
-import { TranslationContext } from '../../../context';
 import {
   generateMessage,
   generateStaticMessage,
-} from '../../../mock-builders/generator/message';
-import {
-  generateStaticUser,
-  generateUser,
-} from '../../../mock-builders/generator/user';
+} from 'mock-builders/generator/message';
+import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
+
+import DateSeparator from '../DateSeparator';
+
+import { TranslationContext } from '../../../context';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);

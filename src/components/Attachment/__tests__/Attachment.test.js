@@ -13,7 +13,7 @@ import {
   generateGiphyAttachment,
   generateImageAttachment,
   generateImgurAttachment,
-} from '../../../mock-builders/generator/attachment';
+} from 'mock-builders/generator/attachment';
 
 const getAttachmentComponent = (props) => <Attachment {...props} />;
 const getActionComponent = (props) => <AttachmentActions {...props} />;

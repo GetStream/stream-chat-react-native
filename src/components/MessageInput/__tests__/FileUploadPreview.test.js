@@ -1,9 +1,10 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { generateFileUploadPreview } from 'mock-builders/generator/attachment';
+
 import FileUploadPreview from '../FileUploadPreview';
 
-import { generateFileUploadPreview } from '../../../mock-builders/generator/attachment';
 import { FileState } from '../../../utils/utils';
 
 describe('FileUploadPreview', () => {
