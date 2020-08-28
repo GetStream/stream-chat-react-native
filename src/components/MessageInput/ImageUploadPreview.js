@@ -6,10 +6,8 @@ import PropTypes from 'prop-types';
 import UploadProgressIndicator from './UploadProgressIndicator';
 
 import closeRound from '../../images/icons/close-round.png';
-
 import { themed } from '../../styles/theme';
-
-import { FileState, ProgressIndicatorTypes } from '../../utils';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const Container = styled.View`
   height: 70px;
@@ -69,26 +67,24 @@ const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
     }
 
     return (
-      <React.Fragment>
-        <ItemContainer>
-          <UploadProgressIndicator
-            action={() => (retryUpload ? retryUpload(item.id) : null)}
-            active={item.state !== FileState.UPLOADED}
-            type={type}
-          >
-            <Upload
-              resizeMode='cover'
-              source={{ uri: item.url || item.file.uri }}
-            />
-          </UploadProgressIndicator>
-          <Dismiss
-            onPress={() => removeImage(item.id)}
-            testID='remove-image-upload-preview'
-          >
-            <DismissImage source={closeRound} />
-          </Dismiss>
-        </ItemContainer>
-      </React.Fragment>
+      <ItemContainer>
+        <UploadProgressIndicator
+          action={() => (retryUpload ? retryUpload(item.id) : null)}
+          active={item.state !== FileState.UPLOADED}
+          type={type}
+        >
+          <Upload
+            resizeMode='cover'
+            source={{ uri: item.file.uri || item.url }}
+          />
+        </UploadProgressIndicator>
+        <Dismiss
+          onPress={() => removeImage(item.id)}
+          testID='remove-image-upload-preview'
+        >
+          <DismissImage source={closeRound} />
+        </Dismiss>
+      </ItemContainer>
     );
   };
 

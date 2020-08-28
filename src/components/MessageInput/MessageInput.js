@@ -12,7 +12,10 @@ import FileUploadPreview from './FileUploadPreview';
 import ImageUploadPreview from './ImageUploadPreview';
 import SendButtonDefault from './SendButton';
 
-import { AutoCompleteInput } from '../AutoCompleteInput';
+import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
+import { generateRandomId } from './utils/generateRandomId';
+
+import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
 import {
@@ -27,69 +30,7 @@ import {
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
-import { ACITriggerSettings, FileState } from '../../utils';
-
-// https://stackoverflow.com/a/6860916/2570866
-const generateRandomId = () =>
-  S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
-
-const S4 = () =>
-  (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-
-const getMessageDetailsForState = (message, initialValue) => {
-  const attachments = [];
-  const fileOrder = [];
-  const fileUploads = {};
-  const imageOrder = [];
-  const imageUploads = {};
-  let mentioned_users = [];
-  let text = initialValue || '';
-
-  if (message) {
-    text = message.text;
-    for (const attach of message.attachments) {
-      if (attach.type === 'image') {
-        const id = generateRandomId();
-        imageOrder.push(id);
-        imageUploads[id] = {
-          file: { name: attach.fallback },
-          id,
-          state: 'finished',
-          url: attach.image_url,
-        };
-      } else if (attach.type === 'file') {
-        const id = generateRandomId();
-        fileOrder.push(id);
-        fileUploads[id] = {
-          file: {
-            name: attach.title,
-            size: attach.file_size,
-            type: attach.mime_type,
-          },
-          id,
-          state: 'finished',
-          url: attach.asset_url,
-        };
-      } else {
-        attachments.push(attach);
-      }
-    }
-
-    if (message.mentioned_users) {
-      mentioned_users = [...message.mentioned_users];
-    }
-  }
-  return {
-    attachments,
-    fileOrder,
-    fileUploads: Immutable(fileUploads),
-    imageOrder,
-    imageUploads: Immutable(imageUploads),
-    mentioned_users,
-    numberOfUploads: 0,
-    text,
-  };
-};
+import { ACITriggerSettings, FileState } from '../../utils/utils';
 
 const Container = styled.View`
   background-color: rgba(0, 0, 0, 0.05);
@@ -163,14 +104,8 @@ const MessageInput = (props) => {
     sendMessage: sendMessageContext,
   } = messagesContext;
 
-  // TODO: remove all but setInputBoxContainerRef for SuggestionsContext. For now it's there to not introduce breaking changes for clients
   const suggestionsContext = useContext(SuggestionsContext);
-  const {
-    closeSuggestions,
-    openSuggestions,
-    setInputBoxContainerRef,
-    updateSuggestions,
-  } = suggestionsContext;
+  const { setInputBoxContainerRef } = suggestionsContext;
 
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
   const threadContext = useContext(ThreadContext);
@@ -217,20 +152,26 @@ const MessageInput = (props) => {
 
   const [asyncIds, setAsyncIds] = useState(Immutable([]));
   const [asyncUploads, setAsyncUploads] = useState(Immutable([]));
-  const [state, setState] = useState(() =>
-    getMessageDetailsForState(editing, initialValue),
-  );
+  const {
+    fileUploads,
+    imageUploads,
+    mentionedUsers,
+    numberOfUploads,
+    setFileUploads,
+    setImageUploads,
+    setMentionedUsers,
+    setNumberOfUploads,
+    setText,
+    text,
+  } = useMessageDetailsForState(editing, initialValue);
 
   useEffect(() => {
     if (editing) {
       if (inputBox.current) {
         inputBox.current.focus();
       }
-      setState(editing, initialValue);
-    } else {
-      setState(getMessageDetailsForState(null, initialValue));
     }
-  }, [editing, initialValue]);
+  }, [editing]);
 
   useEffect(() => {
     if (Object.keys(asyncUploads).length) {
@@ -244,11 +185,8 @@ const MessageInput = (props) => {
     }
   }, [asyncIds, asyncUploads, sending, sendMessageAsync]);
 
-  const appendText = (text) => {
-    setState((prevState) => ({
-      ...prevState,
-      text: `${prevState.text}${text}`,
-    }));
+  const appendText = (newText) => {
+    setText((prevText) => `${prevText}${newText}`);
   };
 
   const closeAttachActionSheet = () => {
@@ -290,12 +228,11 @@ const MessageInput = (props) => {
 
   /** Checks if the message is valid or not. Accordingly we can enable/disable send button */
   const isValidMessage = () => {
-    if (state.text) {
+    if (text) {
       return true;
     }
 
-    for (const id of state.imageOrder) {
-      const image = state.imageUploads[id];
+    for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -307,12 +244,11 @@ const MessageInput = (props) => {
       return true;
     }
 
-    for (const id of state.fileOrder) {
-      const upload = state.fileUploads[id];
-      if (!upload || upload.state === FileState.UPLOAD_FAILED) {
+    for (const file of fileUploads) {
+      if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
-      if (upload.state === FileState.UPLOADING) {
+      if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         return false;
       }
@@ -323,30 +259,27 @@ const MessageInput = (props) => {
     return false;
   };
 
-  const onChangeText = (text) => {
+  const onChangeText = (newText) => {
     if (sending.current) {
       return;
     }
-    setState((prevState) => ({ ...prevState, text }));
+    setText(newText);
 
-    if (text) {
+    if (newText) {
       logChatPromiseExecution(channel.keystroke(), 'start typing event');
     }
 
     if (onChangeTextProp) {
-      onChangeTextProp(text);
+      onChangeTextProp(newText);
     }
   };
 
   const onSelectItem = (item) => {
-    setState((prevState) => ({
-      ...prevState,
-      mentioned_users: [...prevState.mentioned_users, item.id],
-    }));
+    setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
   };
 
   const pickFile = async () => {
-    if (maxNumberOfFiles && state.numberOfUploads >= maxNumberOfFiles) {
+    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
 
@@ -364,7 +297,7 @@ const MessageInput = (props) => {
   };
 
   const pickImage = async () => {
-    if (maxNumberOfFiles && state.numberOfUploads >= maxNumberOfFiles) {
+    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
     const result = await pickImageNative();
@@ -377,33 +310,23 @@ const MessageInput = (props) => {
   };
 
   const removeFile = (id) => {
-    setState((prevState) => {
-      const file = prevState.fileUploads[id];
-      if (!file) {
-        return prevState;
-      }
-      return {
-        ...prevState,
-        fileOrder: prevState.fileOrder.filter((_id) => id !== _id),
-        fileUploads: prevState.fileUploads.set(id, undefined), // remove
-        numberOfUploads: prevState.numberOfUploads - 1,
-      };
-    });
+    const fileExists = fileUploads.some((file) => file.id === id);
+    if (fileExists) {
+      setFileUploads((prevFileUploads) =>
+        prevFileUploads.filter((file) => file.id !== id),
+      );
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+    }
   };
 
   const removeImage = (id) => {
-    setState((prevState) => {
-      const img = prevState.imageUploads[id];
-      if (!img) {
-        return prevState;
-      }
-      return {
-        ...prevState,
-        imageOrder: prevState.imageOrder.filter((_id) => id !== _id),
-        imageUploads: prevState.imageUploads.set(id, undefined), // remove
-        numberOfUploads: prevState.numberOfUploads - 1,
-      };
-    });
+    const imageExists = imageUploads.some((image) => image.id === id);
+    if (imageExists) {
+      setImageUploads((prevImageUploads) =>
+        prevImageUploads.filter((image) => image.id !== id),
+      );
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+    }
   };
 
   const renderInputContainer = () => {
@@ -417,18 +340,18 @@ const MessageInput = (props) => {
     }
 
     return (
-      <Container padding={state.imageUploads && state.imageUploads.length > 0}>
-        {state.fileUploads && (
+      <Container padding={imageUploads && imageUploads.length > 0}>
+        {fileUploads && (
           <FileUploadPreview
             AttachmentFileIcon={AttachmentFileIcon}
-            fileUploads={state.fileOrder.map((id) => state.fileUploads[id])}
+            fileUploads={fileUploads}
             removeFile={removeFile}
             retryUpload={uploadFile}
           />
         )}
-        {state.imageUploads && (
+        {imageUploads && (
           <ImageUploadPreview
-            imageUploads={state.imageOrder.map((id) => state.imageUploads[id])}
+            imageUploads={imageUploads}
             removeImage={removeImage}
             retryUpload={uploadImage}
           />
@@ -458,7 +381,6 @@ const MessageInput = (props) => {
               additionalTextInputProps={additionalTextInputContainerProps}
               appendText={appendText}
               closeAttachActionSheet={closeAttachActionSheet}
-              closeSuggestions={closeSuggestions}
               disabled={disabled}
               getUsers={getUsers}
               handleOnPress={async () => {
@@ -471,7 +393,6 @@ const MessageInput = (props) => {
               isValidMessage={isValidMessage}
               onChange={onChangeText}
               onSelectItem={onSelectItem}
-              openSuggestions={openSuggestions}
               sendMessage={sendMessage}
               setInputBoxContainerRef={setInputBoxContainerRef}
               setInputBoxRef={setInputBoxRef}
@@ -481,10 +402,9 @@ const MessageInput = (props) => {
                 t,
               })}
               updateMessage={updateMessage}
-              updateSuggestions={updateSuggestions}
               uploadNewFile={uploadNewFile}
               uploadNewImage={uploadNewImage}
-              value={state.text}
+              value={text}
             />
           ) : (
             <>
@@ -511,7 +431,7 @@ const MessageInput = (props) => {
                   onMentionSelectItem: onSelectItem,
                   t,
                 })}
-                value={state.text}
+                value={text}
               />
               <SendButton
                 disabled={disabled || sending.current || !isValidMessage()}
@@ -531,14 +451,12 @@ const MessageInput = (props) => {
     }
     sending.current = true;
 
-    const { text } = state;
-    await setState((prevState) => ({ ...prevState, text: '' }));
+    const prevText = text;
+    await setText('');
     inputBox.current.clear();
 
     const attachments = [];
-    for (const id of state.imageOrder) {
-      const image = state.imageUploads[id];
-
+    for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
       }
@@ -550,10 +468,10 @@ const MessageInput = (props) => {
            * If user hit send before image uploaded, push ID into a queue to later
            * be matched with the successful CDN response
            */
-          setAsyncIds((prevAsyncIds) => [...prevAsyncIds, id]);
+          setAsyncIds((prevAsyncIds) => [...prevAsyncIds, image.id]);
         } else {
           sending.current = false;
-          return setState((prevState) => ({ ...prevState, text }));
+          return setText(prevText);
         }
       }
 
@@ -566,37 +484,36 @@ const MessageInput = (props) => {
       }
     }
 
-    for (const id of state.fileOrder) {
-      const upload = state.fileUploads[id];
-      if (!upload || upload.state === FileState.UPLOAD_FAILED) {
+    for (const file of fileUploads) {
+      if (!file || file.state === FileState.UPLOAD_FAILED) {
         continue;
       }
-      if (upload.state === FileState.UPLOADING) {
+      if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
         return (sending.current = false);
       }
-      if (upload.state === FileState.UPLOADED) {
+      if (file.state === FileState.UPLOADED) {
         attachments.push({
-          asset_url: upload.url,
-          file_size: upload.file.size,
-          mime_type: upload.file.type,
-          title: upload.file.name,
+          asset_url: file.url,
+          file_size: file.file.size,
+          mime_type: file.file.type,
+          title: file.file.name,
           type: 'file',
         });
       }
     }
 
     // Disallow sending message if its empty.
-    if (!text && attachments.length === 0) {
+    if (!prevText && attachments.length === 0) {
       return (sending.current = false);
     }
 
     if (editing) {
       const updatedMessage = { ...editing };
 
-      updatedMessage.text = text;
+      updatedMessage.text = prevText;
       updatedMessage.attachments = attachments;
-      updatedMessage.mentioned_users = state.mentioned_users.map((mu) => mu.id);
+      updatedMessage.mentioned_users = mentionedUsers.map((mu) => mu.id);
       // TODO: Remove this line and show an error when submit fails
       clearEditingState();
 
@@ -610,25 +527,22 @@ const MessageInput = (props) => {
       try {
         sendMessageContext({
           attachments,
-          mentioned_users: uniq(state.mentioned_users),
+          mentioned_users: uniq(mentionedUsers),
           parent,
-          text,
+          text: prevText,
         });
 
         sending.current = false;
-        setState((prevState) => ({
-          ...prevState,
-          fileOrder: Immutable([]),
-          fileUploads: Immutable({}),
-          imageOrder: Immutable([]),
-          imageUploads: Immutable({}),
-          mentioned_users: [],
-          numberOfUploads: prevState.numberOfUploads - attachments.length,
-          text: '',
-        }));
+        setFileUploads(Immutable([]));
+        setImageUploads(Immutable([]));
+        setMentionedUsers([]);
+        setNumberOfUploads(
+          (prevNumberOfUploads) => prevNumberOfUploads - attachments.length,
+        );
+        setText('');
       } catch (err) {
         sending.current = false;
-        setState((prevState) => ({ ...prevState, text }));
+        setText(prevText);
         console.log('Failed');
       }
     }
@@ -661,10 +575,7 @@ const MessageInput = (props) => {
         );
         setAsyncUploads((prevAsyncUploads) => prevAsyncUploads.without([id]));
 
-        setState((prevState) => ({
-          ...prevState,
-          numberOfUploads: prevState.numberOfUploads - 1,
-        }));
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       } catch (err) {
         console.log('Failed');
       }
@@ -679,30 +590,33 @@ const MessageInput = (props) => {
     try {
       await client.editMessage({
         ...editing,
-        text: state.text,
+        text,
       });
 
-      setState((prevState) => ({ ...prevState, text: '' }));
+      setText('');
       clearEditingState();
     } catch (err) {
       console.log(err);
     }
   };
 
-  const uploadFile = async (id) => {
-    const doc = state.fileUploads[id];
-    if (!doc) {
+  const uploadFile = async ({ newFile }) => {
+    if (!newFile) {
       return;
     }
-    const { file } = doc;
+    const { file, id } = newFile;
 
-    await setState((prevState) => ({
-      ...prevState,
-      fileUploads: prevState.fileUploads.setIn(
-        [id, 'state'],
-        FileState.UPLOADING,
-      ),
-    }));
+    await setFileUploads((prevFileUploads) =>
+      prevFileUploads.map((fileUpload) => {
+        if (fileUpload.id === id) {
+          return {
+            ...fileUpload,
+            state: FileState.UPLOADING,
+          };
+        }
+        return fileUpload;
+      }),
+    );
 
     let response = {};
     response = {};
@@ -714,40 +628,46 @@ const MessageInput = (props) => {
       }
     } catch (e) {
       console.warn(e);
-      await setState((prevState) => {
-        const image = prevState.fileUploads[id];
-        if (!image) {
-          return {
-            ...prevState,
-            numberOfUploads: prevState.numberOfUploads - 1,
-          };
-        }
-        return {
-          ...prevState,
-          fileUploads: prevState.fileUploads.setIn(
-            [id, 'state'],
-            FileState.UPLOAD_FAILED,
-          ),
-          numberOfUploads: prevState.numberOfUploads - 1,
-        };
-      });
-
+      if (!newFile) {
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      } else {
+        setFileUploads((prevFileUploads) =>
+          prevFileUploads.map((fileUpload) => {
+            if (fileUpload.id === id) {
+              return {
+                ...fileUpload,
+                state: FileState.UPLOAD_FAILED,
+              };
+            }
+            return fileUpload;
+          }),
+        );
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      }
       return;
     }
 
-    setState((prevState) => ({
-      ...prevState,
-      fileUploads: prevState.fileUploads
-        .setIn([id, 'state'], FileState.UPLOADED)
-        .setIn([id, 'url'], response.file),
-    }));
+    setFileUploads((prevFileUploads) =>
+      prevFileUploads.map((fileUpload) => {
+        if (fileUpload.id === id) {
+          return {
+            ...fileUpload,
+            state: FileState.UPLOADED,
+            url: response.file,
+          };
+        }
+        return fileUpload;
+      }),
+    );
   };
 
-  const uploadImage = async (id) => {
-    const { file } = state.imageUploads[id];
+  const uploadImage = async ({ newImage }) => {
+    const { file } = newImage || {};
     if (!file) {
       return;
     }
+
+    const id = newImage.id;
 
     let response;
 
@@ -770,12 +690,18 @@ const MessageInput = (props) => {
                 .setIn([id, 'url'], res.file),
             );
           } else {
-            setState((prevState) => ({
-              ...prevState,
-              imageUploads: prevState.imageUploads
-                .setIn([id, 'state'], FileState.UPLOADED)
-                .setIn([id, 'url'], res.file),
-            }));
+            setImageUploads((prevImageUploads) =>
+              prevImageUploads.map((imageUpload) => {
+                if (imageUpload.id === id) {
+                  return {
+                    ...imageUpload,
+                    state: FileState.UPLOADED,
+                    url: res.file,
+                  };
+                }
+                return imageUpload;
+              }),
+            );
           }
         });
       } else {
@@ -783,73 +709,71 @@ const MessageInput = (props) => {
       }
 
       if (response) {
-        setState((prevState) => ({
-          ...prevState,
-          imageUploads: prevState.imageUploads
-            .setIn([id, 'state'], FileState.UPLOADED)
-            .setIn([id, 'url'], response.file),
-        }));
+        setImageUploads((prevImageUploads) =>
+          prevImageUploads.map((imageUpload) => {
+            if (imageUpload.id === id) {
+              return {
+                ...imageUpload,
+                state: FileState.UPLOADED,
+                url: response.file,
+              };
+            }
+            return imageUpload;
+          }),
+        );
       }
     } catch (e) {
       console.warn(e);
-      await setState((prevState) => {
-        const image = prevState.imageUploads[id];
-        if (!image) {
-          return {
-            ...prevState,
-            numberOfUploads: prevState.numberOfUploads - 1,
-          };
-        }
-
-        return {
-          ...prevState,
-          imageUploads: prevState.imageUploads.setIn(
-            [id, 'state'],
-            FileState.UPLOAD_FAILED,
-          ),
-          numberOfUploads: prevState.numberOfUploads - 1,
-        };
-      });
+      if (newImage) {
+        setImageUploads((prevImageUploads) =>
+          prevImageUploads.map((imageUpload) => {
+            if (imageUpload.id === id) {
+              return {
+                ...imageUpload,
+                state: FileState.UPLOAD_FAILED,
+              };
+            }
+            return imageUpload;
+          }),
+        );
+      }
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
 
       return;
     }
   };
 
-  const uploadNewFile = (file) => {
+  const uploadNewFile = async (file) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
-    /* eslint-disable */
-    setState((prevState) => ({
-      ...prevState,
-      fileOrder: prevState.fileOrder.concat([id]),
-      fileUploads: prevState.fileUploads.setIn([id], {
-        file: { ...file, type: mimeType },
-        id,
-        state: FileState.UPLOADING,
-      }),
-      numberOfUploads: prevState.numberOfUploads + 1,
-    }));
-    /* eslint-enable */
+    const newFile = {
+      file: { ...file, type: mimeType },
+      id,
+      state: FileState.UPLOADING,
+    };
+    await Promise.all([
+      setFileUploads((prevFileUploads) => prevFileUploads.concat([newFile])),
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+    ]);
 
-    uploadFile(id);
+    uploadFile({ newFile });
   };
 
   const uploadNewImage = async (image) => {
     const id = generateRandomId();
-    /* eslint-disable */
-    await setState((prevState) => ({
-      ...prevState,
-      imageOrder: prevState.imageOrder.concat([id]),
-      imageUploads: prevState.imageUploads.setIn([id], {
-        file: image,
-        id,
-        state: FileState.UPLOADING,
-      }),
-      numberOfUploads: prevState.numberOfUploads + 1,
-    }));
-    /* eslint-enable */
+    const newImage = {
+      file: image,
+      id,
+      state: FileState.UPLOADING,
+    };
+    await Promise.all([
+      setImageUploads((prevImageUploads) =>
+        prevImageUploads.concat([newImage]),
+      ),
+      setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads + 1),
+    ]);
 
-    uploadImage(id);
+    uploadImage({ newImage });
   };
 
   return editing ? (

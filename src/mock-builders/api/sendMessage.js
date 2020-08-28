@@ -1,4 +1,4 @@
-import { mockedApiResponse } from './utils.js';
+import { mockedApiResponse } from './utils';
 
 /**
  * Returns the api response for sendMessage api.

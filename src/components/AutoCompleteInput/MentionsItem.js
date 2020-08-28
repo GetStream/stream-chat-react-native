@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { Avatar } from '../Avatar';
+import Avatar from '../Avatar/Avatar';
 
 import { themed } from '../../styles/theme';
 

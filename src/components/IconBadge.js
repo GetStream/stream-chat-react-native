@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import styled from '@stream-io/styled-components';
 
 const Container = styled.View``;

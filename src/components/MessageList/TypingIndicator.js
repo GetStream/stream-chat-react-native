@@ -2,14 +2,16 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { Avatar as DefaultAvatar } from '../Avatar';
-import { ChannelContext, ChatContext } from '../../context';
-import { themed } from '../../styles/theme';
 import { useTypingString } from './hooks/useTypingString';
 
+import DefaultAvatar from '../Avatar/Avatar';
+
+import { ChannelContext, ChatContext } from '../../context';
+import { themed } from '../../styles/theme';
+
 const Container = styled.View`
-  flex-direction: row;
   align-items: center;
+  flex-direction: row;
   justify-content: flex-start;
   ${({ theme }) => theme.typingIndicator.container.css};
 `;

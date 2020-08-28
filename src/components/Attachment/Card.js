@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { Linking, View } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { makeImageCompatibleUrl } from '../../utils';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const Container = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.light};

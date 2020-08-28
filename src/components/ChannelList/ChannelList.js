@@ -1,22 +1,19 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import Immutable from 'seamless-immutable';
 import debounce from 'lodash/debounce';
-
-import {
-  EmptyStateIndicator,
-  LoadingErrorIndicator,
-  LoadingIndicator,
-} from '../Indicators';
-
-import { ChannelPreviewMessenger } from '../ChannelPreview';
-import ChannelListMessenger from './ChannelListMessenger';
-
-import { withChatContext } from '../../context';
-
+import isEqual from 'lodash/isEqual';
 import uniqBy from 'lodash/uniqBy';
 import uniqWith from 'lodash/uniqWith';
-import isEqual from 'lodash/isEqual';
+import PropTypes from 'prop-types';
+import Immutable from 'seamless-immutable';
+
+import ChannelListMessenger from './ChannelListMessenger';
+
+import ChannelPreviewMessenger from '../ChannelPreview/ChannelPreviewMessenger';
+import EmptyStateIndicator from '../Indicators/EmptyStateIndicator';
+import LoadingErrorIndicator from '../Indicators/LoadingErrorIndicator';
+import LoadingIndicator from '../Indicators/LoadingIndicator';
+
+import { withChatContext } from '../../context';
 
 export const isPromise = (thing) => {
   const promise = thing && typeof thing.then === 'function';
