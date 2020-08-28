@@ -446,7 +446,7 @@ class MessageInput extends PureComponent {
     this.sending = true;
 
     const { text } = this.state;
-    await this.setState({ text: '' }, () => this.inputBox.clear());
+    await this.setState({ text: '' }, () => this.inputBox?.clear());
 
     const attachments = [];
     for (const id of this.state.imageOrder) {

@@ -1,4 +1,5 @@
 export { default as dispatchChannelDeletedEvent } from './channelDeleted';
+export { default as dispatchChannelHiddenEvent } from './channelHidden';
 export { default as dispatchChannelUpdatedEvent } from './channelUpdated';
 export { default as dispatchChannelTruncatedEvent } from './channelTruncated';
 export { default as dispatchConnectionChangedEvent } from './connectionChanged';
@@ -11,3 +12,5 @@ export { default as dispatchNotificationAddedToChannelEvent } from './notificati
 export { default as dispatchNotificationMessageNewEvent } from './notificationMessageNew';
 export { default as dispatchNotificationMutesUpdated } from './notificationMutesUpdated';
 export { default as dispatchNotificationRemovedFromChannel } from './notificationRemovedFromChannel';
+export { default as dispatchUserPresenceEvent } from './userPresence';
+export { default as dispatchUserUpdatedEvent } from './userUpdated';
