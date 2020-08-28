@@ -24,11 +24,12 @@ export const usePaginatedChannels = ({
 
   const queryChannels = async (queryType = '', retryCount = 1) => {
     if (loadingChannels || loadingNextPage || refreshing) return;
-    setRefreshing(true);
 
     if (queryType === 'reload') {
       setChannels([]);
       setLoadingChannels(true);
+    } else if (queryType === 'refresh') {
+      setRefreshing(true);
     } else if (!queryType) {
       setLoadingNextPage(true);
     }
