@@ -20,7 +20,7 @@ const MessageRepliesImage = styled.Image`
 
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
-  font-size: 12;
+  font-size: 12px;
   font-weight: 700;
   ${({ theme }) => theme.message.replies.messageRepliesText.css}
 `;

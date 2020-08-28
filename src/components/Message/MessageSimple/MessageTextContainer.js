@@ -15,11 +15,11 @@ const TextContainer = styled.View`
   border-bottom-left-radius: ${({ groupStyle, theme }) =>
     groupStyle.indexOf('left') !== -1
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-bottom-right-radius: ${({ groupStyle, theme }) =>
     groupStyle.indexOf('right') !== -1
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-color: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderColor
@@ -27,19 +27,18 @@ const TextContainer = styled.View`
   border-top-left-radius: ${({ groupStyle, theme }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-top-right-radius: ${({ groupStyle, theme }) =>
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-width: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth
-      : theme.message.content.textContainer.rightBorderWidth};
-  margin-top: 2;
-  padding: 5px;
-  padding-left: 8;
-  padding-right: 8;
+      : theme.message.content.textContainer.rightBorderWidth}px;
+  margin-top: 2px;
+  padding-horizontal: 8px;
+  padding-vertical: 5px;
   ${({ theme }) => theme.message.content.textContainer.css}
 `;
 

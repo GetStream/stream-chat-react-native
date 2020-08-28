@@ -17,7 +17,6 @@ exports[`MessageStatus should render message status with read by container 1`] =
       Array [
         Object {
           "alignItems": "center",
-          "display": "flex",
           "flexDirection": "row",
         },
       ]

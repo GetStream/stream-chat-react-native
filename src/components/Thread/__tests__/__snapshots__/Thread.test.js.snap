@@ -219,7 +219,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
@@ -290,8 +289,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -346,10 +343,8 @@ exports[`Thread should match thread snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -663,7 +658,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
@@ -734,8 +728,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -790,10 +782,8 @@ exports[`Thread should match thread snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -1107,7 +1097,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
@@ -1178,8 +1167,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -1234,10 +1221,8 @@ exports[`Thread should match thread snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -1531,7 +1516,6 @@ exports[`Thread should match thread snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
                       "marginBottom": 20,
@@ -1635,7 +1619,6 @@ exports[`Thread should match thread snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 30,
@@ -1706,8 +1689,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -1762,10 +1743,8 @@ exports[`Thread should match thread snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -2043,7 +2022,6 @@ exports[`Thread should match thread snapshot 1`] = `
                       "alignItems": "center",
                       "backgroundColor": "#f4f9ff",
                       "borderRadius": 4,
-                      "display": "flex",
                       "marginBottom": 10,
                       "marginLeft": 10,
                       "marginRight": 10,
@@ -2077,7 +2055,6 @@ exports[`Thread should match thread snapshot 1`] = `
             Object {
               "backgroundColor": "rgba(0, 0, 0, 0.05)",
               "borderRadius": 10,
-              "flexDirection": "column",
               "marginHorizontal": 10,
               "paddingTop": 0,
             },

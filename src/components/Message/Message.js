@@ -1,13 +1,13 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 import deepequal from 'deep-equal';
+import PropTypes from 'prop-types';
 
-import { Attachment } from '../Attachment';
-import { MessageSimple } from './MessageSimple';
+import Attachment from '../Attachment/Attachment';
+import MessageSimple from './MessageSimple/MessageSimple';
 
 import { withKeyboardContext } from '../../context';
-import { MESSAGE_ACTIONS } from '../../utils';
+import { MESSAGE_ACTIONS } from '../../utils/utils';
 
 /**
  * Message - A high level component which implements all the logic required for a message.

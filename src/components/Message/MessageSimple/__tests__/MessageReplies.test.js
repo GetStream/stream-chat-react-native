@@ -6,14 +6,13 @@ import {
   render,
   waitFor,
 } from '@testing-library/react-native';
-import {
-  generateMessage,
-  generateStaticUser,
-  generateUser,
-} from 'mock-builders';
+
+import { generateMessage } from 'mock-builders/generator/message';
+import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
+
+import MessageReplies from '../MessageReplies';
 
 import { TranslationContext } from '../../../../context';
-import MessageReplies from '../MessageReplies';
 import { defaultTheme } from '../../../../styles/theme';
 
 afterEach(cleanup);

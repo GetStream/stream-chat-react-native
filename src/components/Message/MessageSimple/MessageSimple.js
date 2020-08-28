@@ -1,23 +1,21 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
-
-import { default as DefaultMessageAvatar } from './MessageAvatar';
-import { default as DefaultMessageContent } from './MessageContent';
-import { default as DefaultMessageStatus } from './MessageStatus';
-
-import { emojiData } from '../../../utils';
-import { themed } from '../../../styles/theme';
-
 import PropTypes from 'prop-types';
 
+import DefaultMessageAvatar from './MessageAvatar';
+import DefaultMessageContent from './MessageContent';
+import DefaultMessageStatus from './MessageStatus';
+
+import { themed } from '../../../styles/theme';
+import { emojiData } from '../../../utils/utils';
+
 const Container = styled.View`
-  display: flex;
-  flex-direction: row;
   align-items: flex-end;
+  flex-direction: row;
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   margin-bottom: ${({ hasMarginBottom, isVeryLastMessage }) =>
-    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0};
+    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0}px;
   ${({ theme }) => theme.message.container.css}
 `;
 
@@ -28,7 +26,6 @@ const Container = styled.View`
  * @example ../../docs/MessageSimple.md
  * @extends Component
  */
-
 const MessageSimple = themed(
   class MessageSimple extends React.PureComponent {
     static propTypes = {

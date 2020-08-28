@@ -1,8 +1,5 @@
 import debounce from 'lodash/debounce';
 
-export { renderReactions } from './renderReactions';
-
-export { Streami18n } from './Streami18n';
 export const emojiData = [
   {
     icon: '👍',

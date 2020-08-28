@@ -4,79 +4,71 @@ import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import Immutable from 'seamless-immutable';
 
-import {
-  Attachment as DefaultAttachment,
-  FileAttachment as DefaultFileAttachment,
-  FileAttachmentGroup as DefaultFileAttachmentGroup,
-  Gallery as DefaultGallery,
-} from '../../Attachment';
+import DefaultMessageReplies from './MessageReplies';
+import MessageTextContainer from './MessageTextContainer';
+
+import DefaultAttachment from '../../Attachment/Attachment';
+import DefaultFileAttachment from '../../Attachment/FileAttachment';
+import DefaultFileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
+import DefaultGallery from '../../Attachment/Gallery';
+import DefaultReactionList from '../../Reaction/ReactionList';
+import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
+
 import {
   ChannelContext,
   KeyboardContext,
   MessageContentContext,
   TranslationContext,
 } from '../../../context';
-import DefaultMessageReplies from './MessageReplies';
-import MessageTextContainer from './MessageTextContainer';
-import {
-  ReactionList as DefaultReactionList,
-  ReactionPickerWrapper,
-} from '../../Reaction';
 import { themed } from '../../../styles/theme';
-import { emojiData, MESSAGE_ACTIONS } from '../../../utils';
+import { emojiData, MESSAGE_ACTIONS } from '../../../utils/utils';
 
 const ActionSheetButtonContainer = styled.View`
-  height: 50;
-  width: 100%;
   align-items: center;
   background-color: #fff;
+  height: 50px;
   justify-content: center;
+  width: 100%;
   ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
 `;
 
 const ActionSheetButtonText = styled.Text`
-  font-size: 18;
   color: #388cea;
+  font-size: 18px;
   ${({ theme }) => theme.message.actionSheet.buttonText.css};
 `;
 
 const ActionSheetCancelButtonContainer = styled.View`
-  height: 50;
-  width: 100%;
   align-items: center;
+  height: 50px;
   justify-content: center;
+  width: 100%;
   ${({ theme }) => theme.message.actionSheet.cancelButtonContainer.css};
 `;
 const ActionSheetCancelButtonText = styled.Text`
-  font-size: 18;
   color: red;
+  font-size: 18px;
   ${({ theme }) => theme.message.actionSheet.cancelButtonText.css};
 `;
 
 const ActionSheetTitleContainer = styled.View`
-  width: 100%;
-  height: 100%;
   align-items: center;
   justify-content: center;
+  height: 100%;
+  width: 100%;
   ${({ theme }) => theme.message.actionSheet.titleContainer.css};
 `;
 
 const ActionSheetTitleText = styled.Text`
+  font-size: 14px;
   color: #757575;
-  font-size: 14;
   ${({ theme }) => theme.message.actionSheet.titleText.css};
 `;
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transparent, so border radius is not really visible.
 const Container = styled.TouchableOpacity`
-  display: flex;
-  flex-direction: column;
-  max-width: 250;
-  padding: ${({ error }) => (error ? 5 : 0)}px;
   align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   background-color: ${({ error, theme }) =>
     error
@@ -85,15 +77,19 @@ const Container = styled.TouchableOpacity`
   border-bottom-left-radius: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.container.borderRadiusS
-      : theme.message.content.container.borderRadiusL};
+      : theme.message.content.container.borderRadiusL}px;
   border-bottom-right-radius: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.container.borderRadiusL
-      : theme.message.content.container.borderRadiusS};
+      : theme.message.content.container.borderRadiusS}px;
   border-top-left-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL};
+    theme.message.content.container.borderRadiusL}px;
   border-top-right-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL};
+    theme.message.content.container.borderRadiusL}px;
+  justify-content: ${({ alignment }) =>
+    alignment === 'left' ? 'flex-start' : 'flex-end'};
+  max-width: 250px;
+  padding: ${({ error }) => (error ? 5 : 0)}px;
   ${({ theme }) => theme.message.content.container.css};
 `;
 
@@ -104,21 +100,19 @@ const ContainerInner = styled.View`
 `;
 
 const DeletedContainer = styled.View`
-  display: flex;
-  flex-direction: column;
-  max-width: 250;
-  padding: 5px;
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
+  max-width: 250px;
+  padding: 5px;
   ${({ theme }) => theme.message.content.deletedContainer.css};
 `;
 
 const DeletedText = styled.Text`
-  font-size: 15;
-  line-height: 20;
   color: #a4a4a4;
+  font-size: 15px;
+  line-height: 20px;
   ${({ theme }) => theme.message.content.deletedText.css};
 `;
 
@@ -128,13 +122,13 @@ const FailedText = styled.Text`
 `;
 
 const MetaContainer = styled.View`
-  margin-top: 2;
+  margin-top: 2px;
   ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
 const MetaText = styled.Text`
-  font-size: 11;
   color: ${({ theme }) => theme.colors.textGrey};
+  font-size: 11px;
   text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
   ${({ theme }) => theme.message.content.metaText.css};
 `;

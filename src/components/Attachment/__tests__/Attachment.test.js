@@ -2,6 +2,9 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { v4 as uuidv4 } from 'uuid';
 
+import Attachment from '../Attachment';
+import AttachmentActions from '../AttachmentActions';
+
 import {
   generateAttachmentAction,
   generateAudioAttachment,
@@ -10,10 +13,7 @@ import {
   generateGiphyAttachment,
   generateImageAttachment,
   generateImgurAttachment,
-} from 'mock-builders';
-
-import Attachment from '../Attachment';
-import AttachmentActions from '../AttachmentActions';
+} from 'mock-builders/generator/attachment';
 
 const getAttachmentComponent = (props) => <Attachment {...props} />;
 const getActionComponent = (props) => <AttachmentActions {...props} />;

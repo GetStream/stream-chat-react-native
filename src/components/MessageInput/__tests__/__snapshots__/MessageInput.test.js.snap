@@ -27,7 +27,6 @@ exports[`MessageInput should render MessageInput 1`] = `
             Object {
               "backgroundColor": "rgba(0, 0, 0, 0.05)",
               "borderRadius": 10,
-              "flexDirection": "column",
               "marginHorizontal": 10,
               "paddingTop": 0,
             },

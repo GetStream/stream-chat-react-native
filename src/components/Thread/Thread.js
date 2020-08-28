@@ -1,6 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
+
+import DefaultMessage from '../Message/Message';
+import DefaultMessageInput from '../MessageInput/MessageInput';
+import DefaultMessageList from '../MessageList/MessageList';
 
 import {
   ChannelContext,
@@ -9,9 +13,6 @@ import {
   ThreadContext,
   TranslationContext,
 } from '../../context';
-import { Message as DefaultMessage } from '../Message';
-import { MessageInput as DefaultMessageInput } from '../MessageInput';
-import { MessageList as DefaultMessageList } from '../MessageList';
 import { themed } from '../../styles/theme';
 
 const NewThread = styled.View`
@@ -19,7 +20,6 @@ const NewThread = styled.View`
   background-color: #f4f9ff;
   margin: 10px;
   border-radius: 4;
-  display: flex;
   align-items: center;
   ${({ theme }) => theme.thread.newThread.css};
 `;

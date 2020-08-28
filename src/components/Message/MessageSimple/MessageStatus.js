@@ -2,62 +2,60 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { Avatar } from '../../Avatar';
+import Avatar from '../../Avatar/Avatar';
+
 import { ChatContext } from '../../../context';
 import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
 import loadingGif from '../../../images/loading.gif';
 
 const CheckMark = styled.Image`
-  height: 6;
-  width: 8;
+  height: 6px;
+  width: 8px;
   ${({ theme }) => theme.message.status.checkMark.css};
 `;
 
 const DeliveredCircle = styled.View`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 16;
-  height: 16;
+  border-radius: 16px;
+  height: 16px;
   justify-content: center;
   padding: 6px;
-  width: 16;
+  width: 16px;
   ${({ theme }) => theme.message.status.deliveredCircle.css};
 `;
 
 const DeliveredContainer = styled.View`
   align-items: center;
-  display: flex;
-  height: 20;
+  height: 20px;
   ${({ theme }) => theme.message.status.deliveredContainer.css};
 `;
 
 const ReadByContainer = styled.View`
   align-items: center;
-  display: flex;
   flex-direction: row;
   ${({ theme }) => theme.message.status.readByContainer.css};
 `;
 
 const SendingContainer = styled.View`
   align-items: center;
-  display: flex;
   ${({ theme }) => theme.message.status.sendingContainer.css};
 `;
 
 const SendingImage = styled.View`
-  height: 10;
-  width: 10;
+  height: 10px;
+  width: 10px;
   ${({ theme }) => theme.message.status.sendingImage.css};
 `;
 
 const Spacer = styled.View`
-  height: 10;
+  height: 10px;
 `;
 
 const StatusContainer = styled.View`
   flex-direction: row;
   justify-content: center;
-  width: 20;
+  width: 20px;
 `;
 
 const MessageStatus = ({ lastReceivedId, message, readBy, threadList }) => {

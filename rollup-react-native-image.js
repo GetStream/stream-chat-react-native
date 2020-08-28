@@ -24,8 +24,7 @@ export default function reactNativeImage(options = {}) {
   }
 
   return {
-    name: 'react-native-image',
-    load(id) {
+    load: (id) => {
       if (!extensions.includes(path.extname(id))) {
         return null;
       }
@@ -35,7 +34,8 @@ export default function reactNativeImage(options = {}) {
       }
       return `const img = require('./${toFileName(id)}'); export default img;`;
     },
-    ongenerate(options) {
+    name: 'react-native-image',
+    ongenerate: (options) => {
       for (const image of includedImages) {
         const origFileName = toFileName(image);
         const origSourceDir = image.slice(0, -origFileName.length + 1);

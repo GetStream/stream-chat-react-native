@@ -226,7 +226,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 30,
@@ -297,8 +296,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -353,10 +350,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -701,7 +696,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
                       "marginBottom": 20,
@@ -810,7 +804,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
@@ -881,8 +874,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -937,10 +928,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -1305,7 +1294,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
@@ -1376,8 +1364,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -1432,10 +1418,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
@@ -1780,7 +1764,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
                       "marginBottom": 20,

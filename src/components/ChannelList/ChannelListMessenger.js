@@ -1,19 +1,18 @@
 import React, { PureComponent } from 'react';
 import { FlatList } from 'react-native';
 import PropTypes from 'prop-types';
-import { ChannelPreview, ChannelPreviewMessenger } from '../ChannelPreview';
-
-import { withChatContext } from '../../context';
 
 import ChannelListHeaderNetworkDownIndicator from './ChannelListHeaderNetworkDownIndicator';
 import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
 import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
 
-import {
-  EmptyStateIndicator,
-  LoadingErrorIndicator,
-  LoadingIndicator,
-} from '../Indicators';
+import ChannelPreview from '../ChannelPreview/ChannelPreview';
+import ChannelPreviewMessenger from '../ChannelPreview/ChannelPreviewMessenger';
+import EmptyStateIndicator from '../Indicators/EmptyStateIndicator';
+import LoadingErrorIndicator from '../Indicators/LoadingErrorIndicator';
+import LoadingIndicator from '../Indicators/LoadingIndicator';
+
+import { withChatContext } from '../../context';
 
 /**
  * ChannelListMessenger - UI component for list of channels, allowing you to select the channel you want to open

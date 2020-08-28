@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import AttachmentActions from './AttachmentActions';
+
 import { MessageContentContext } from '../../context';
 
 const FileContainer = styled.View`
@@ -27,7 +28,6 @@ const FileContainer = styled.View`
 `;
 
 const FileDetails = styled.View`
-  flex-direction: column;
   padding-left: 10px;
   ${({ theme }) => theme.message.file.details.css}
 `;

@@ -2,14 +2,14 @@ import React, { useContext } from 'react';
 import { View } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { MessageContentContext } from '../../context';
-import { themed } from '../../styles/theme';
-
 import AttachmentActions from './AttachmentActions';
 import Card from './Card';
 import FileAttachment from './FileAttachment';
 import FileIcon from './FileIcon';
 import Gallery from './Gallery';
+
+import { MessageContentContext } from '../../context';
+import { themed } from '../../styles/theme';
 
 /**
  * Attachment - The message attachment

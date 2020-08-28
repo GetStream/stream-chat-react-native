@@ -15,10 +15,8 @@ exports[`MessageTextContainer should render message text container 1`] = `
         "borderTopRightRadius": 16,
         "borderWidth": 0,
         "marginTop": 2,
-        "paddingBottom": 5,
-        "paddingLeft": 8,
-        "paddingRight": 8,
-        "paddingTop": 5,
+        "paddingHorizontal": 8,
+        "paddingVertical": 5,
       },
     ]
   }

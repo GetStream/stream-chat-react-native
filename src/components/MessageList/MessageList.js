@@ -4,6 +4,17 @@ import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
+import DefaultDateSeparator from './DateSeparator';
+import MessageNotification from './MessageNotification';
+import MessageSystem from './MessageSystem';
+import DefaultTypingIndicator from './TypingIndicator';
+import TypingIndicatorContainer from './TypingIndicatorContainer';
+
+import { useMessageList } from './hooks/useMessageList';
+import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
+
+import DefaultMessage from '../Message/Message';
+
 import {
   ChannelContext,
   ChatContext,
@@ -11,14 +22,6 @@ import {
   ThreadContext,
   TranslationContext,
 } from '../../context';
-import DefaultDateSeparator from './DateSeparator';
-import { Message as DefaultMessage } from '../Message';
-import MessageNotification from './MessageNotification';
-import MessageSystem from './MessageSystem';
-import DefaultTypingIndicator from './TypingIndicator';
-import TypingIndicatorContainer from './TypingIndicatorContainer';
-import { useMessageList } from './hooks/useMessageList';
-import { getLastReceivedMessage } from './utils';
 
 const ListContainer = styled.FlatList`
   flex: 1;
@@ -35,8 +38,6 @@ const ErrorNotificationText = styled.Text`
 `;
 
 const ErrorNotification = styled.View`
-  display: flex;
-  flex-direction: column;
   align-items: center;
   z-index: 10;
   margin-bottom: 0;

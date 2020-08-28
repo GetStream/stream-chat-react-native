@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
+
 import { withTranslationContext } from '../../context';
 
 const Container = styled.View`
