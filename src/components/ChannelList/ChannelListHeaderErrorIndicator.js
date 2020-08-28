@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { withTranslationContext } from '../../context';
+import { TranslationContext } from '../../context';
 
 const Container = styled.TouchableOpacity`
-  width: 100%;
   align-items: center;
-  justify-content: center;
   background-color: #fae6e8;
+  justify-content: center;
   padding: 3px;
+  width: 100%;
   ${({ theme }) => theme.channelListHeaderErrorIndicator.container.css}
 `;
 
@@ -21,17 +21,16 @@ const ErrorText = styled.Text`
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
 `;
 
-const ChannelListHeaderErrorIndicator = withTranslationContext(
-  ({ onPress, t }) => (
-    <Container
-      onPress={() => {
-        onPress && onPress();
-      }}
-    >
-      <ErrorText>{t('Error while loading, please reload/refresh')}</ErrorText>
+const ChannelListHeaderErrorIndicator = ({ onPress = () => {} }) => {
+  const { t } = useContext(TranslationContext);
+  return (
+    <Container onPress={onPress}>
+      <ErrorText testID='channel-loading-error'>
+        {t('Error while loading, please reload/refresh')}
+      </ErrorText>
     </Container>
-  ),
-);
+  );
+};
 
 ChannelListHeaderErrorIndicator.propTypes = {
   onPress: PropTypes.func,

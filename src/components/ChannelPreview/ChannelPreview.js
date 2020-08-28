@@ -6,7 +6,7 @@ import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 import { ChatContext } from '../../context';
 
 const ChannelPreview = (props) => {
-  const { channel } = props;
+  const { channel, Preview, setActiveChannel } = props;
   const { client } = useContext(ChatContext);
   const [lastMessage, setLastMessage] = useState({});
   const [unread, setUnread] = useState(channel.countUnread());
@@ -40,18 +40,15 @@ const ChannelPreview = (props) => {
     };
 
     channel.on('message.read', handleReadEvent);
-
-    return () => {
-      channel.off('message.read', handleReadEvent);
-    };
+    return () => channel.off('message.read', handleReadEvent);
   }, []);
 
-  const { Preview } = props;
   return (
     <Preview
       {...props}
       lastMessage={lastMessage}
       latestMessage={latestMessage}
+      setActiveChannel={setActiveChannel}
       unread={unread}
     />
   );
@@ -59,7 +56,6 @@ const ChannelPreview = (props) => {
 
 ChannelPreview.propTypes = {
   channel: PropTypes.object.isRequired,
-  client: PropTypes.object.isRequired,
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   setActiveChannel: PropTypes.func,
 };
