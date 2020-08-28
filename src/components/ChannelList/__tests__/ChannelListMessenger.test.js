@@ -6,24 +6,23 @@ import { ThemeProvider } from '@stream-io/styled-components';
 import ChannelListMessenger from '../ChannelListMessenger';
 import { Chat } from '../../Chat';
 import { TranslationContext } from '../../../context';
-import { getTestClient } from '../../../mock-builders';
+import {
+  getTestClientWithUser,
+  useMockedApis,
+  getOrCreateChannelApi,
+  generateChannel,
+} from '../../../mock-builders';
 import { defaultTheme } from '../../../styles/theme';
 
-const mockChannels = [
-  { cid: '1', name: 'dan', on: () => null, off: () => null },
-  { cid: '2', name: 'neil', on: () => null, off: () => null },
-];
+let mockChannels;
+let chatClient;
 
 const t = jest.fn((key) => key);
 
-const Component = ({
-  channels = mockChannels,
-  error = false,
-  loadingChannels = false,
-}) => (
+const Component = ({ channels, error = false, loadingChannels = false }) => (
   <ThemeProvider theme={defaultTheme}>
     <TranslationContext.Provider value={{ t }}>
-      <Chat client={getTestClient()}>
+      <Chat client={chatClient}>
         <ChannelListMessenger
           channels={channels}
           error={error}
@@ -40,39 +39,51 @@ const Component = ({
 );
 
 describe('ChannelListMessenger', () => {
+  beforeAll(async () => {
+    chatClient = await getTestClientWithUser({ id: 'vishal' });
+    const c1 = generateChannel();
+    const c2 = generateChannel();
+    useMockedApis(chatClient, [
+      getOrCreateChannelApi(c1),
+      getOrCreateChannelApi(c2),
+    ]);
+    const channel1 = chatClient.channel(c1.channel.type, c1.channel.id);
+    await channel1.watch();
+    const channel2 = chatClient.channel(c2.channel.type, c2.channel.id);
+    await channel2.watch();
+    mockChannels = [channel1, channel2];
+  });
   afterEach(cleanup);
 
   it('renders without crashing', async () => {
-    const { getByTestId, toJSON } = render(<Component />);
+    const { getByTestId } = render(<Component channels={mockChannels} />);
     await waitFor(() => {
       expect(getByTestId('channel-list-messenger')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
   it('renders the `EmptyStateIndicator` when no channels are present', async () => {
-    const { getByTestId, toJSON } = render(<Component channels={[]} />);
+    const { getByTestId } = render(<Component channels={[]} />);
     await waitFor(() => {
       expect(getByTestId('empty-channel-state')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
   it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
-    const { getByTestId, toJSON } = render(<Component error={true} />);
+    const { getByTestId } = render(
+      <Component error={true} channels={mockChannels} />,
+    );
     await waitFor(() => {
       expect(getByTestId('channel-loading-error')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 
   it('renders the `LoadingIndicator` when `loadingChannels` prop is true', async () => {
-    const { getByTestId, toJSON } = render(
-      <Component loadingChannels={true} />,
+    const { getByTestId } = render(
+      <Component loadingChannels={true} channels={mockChannels} />,
     );
     await waitFor(() => {
       expect(getByTestId('loading-indicator')).toBeTruthy();
-      expect(toJSON()).toMatchSnapshot();
     });
   });
 });
