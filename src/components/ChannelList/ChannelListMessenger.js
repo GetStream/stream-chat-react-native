@@ -115,7 +115,7 @@ const ChannelListMessenger = (props) => {
     );
   };
 
-  if (error && !refreshing && channels.length === 0) {
+  if (error && !refreshing && !(channels && channels.length)) {
     return renderLoadingError();
   } else if (loadingChannels) {
     return renderLoading();
