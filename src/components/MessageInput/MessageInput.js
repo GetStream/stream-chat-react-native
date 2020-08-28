@@ -452,7 +452,9 @@ const MessageInput = (props) => {
 
     const prevText = text;
     await setText('');
-    inputBox.current.clear();
+    if (inputBox.current) {
+      inputBox.current.clear();
+    }
 
     const attachments = [];
     for (const image of imageUploads) {
