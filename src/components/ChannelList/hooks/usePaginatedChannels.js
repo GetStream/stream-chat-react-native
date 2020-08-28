@@ -22,7 +22,7 @@ export const usePaginatedChannels = ({
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (queryType = '', retryCount = 1) => {
+  const queryChannels = async (queryType = '', retryCount = 0) => {
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
