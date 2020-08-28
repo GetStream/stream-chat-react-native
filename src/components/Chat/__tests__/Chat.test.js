@@ -2,13 +2,13 @@ import React, { useContext } from 'react';
 import { View } from 'react-native';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { Chat } from '..';
+import dispatchConnectionChangedEvent from 'mock-builders/event/connectionChanged';
+import dispatchConnectionRecoveredEvent from 'mock-builders/event/connectionRecovered';
+import { getTestClient } from 'mock-builders/mock';
+
+import Chat from '../Chat';
+
 import { ChatContext, TranslationContext } from '../../../context';
-import {
-  dispatchConnectionChangedEvent,
-  dispatchConnectionRecoveredEvent,
-  getTestClient,
-} from '../../../mock-builders';
 import { Streami18n } from '../../../utils/Streami18n';
 
 const ChatContextConsumer = ({ fn }) => {

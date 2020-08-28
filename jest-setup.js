@@ -23,6 +23,6 @@ registerNativeHandlers({
         resolve();
       }),
   },
-  pickImage: () => null,
   pickDocument: () => null,
+  pickImage: () => null,
 });

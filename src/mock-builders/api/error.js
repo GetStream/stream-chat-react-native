@@ -1,4 +1,4 @@
-import { mockedApiResponse } from './utils.js';
+import { mockedApiResponse } from './utils';
 
 const defaultErrorObject = {
   duration: 0.01,

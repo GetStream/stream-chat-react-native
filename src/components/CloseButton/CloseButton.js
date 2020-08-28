@@ -1,10 +1,8 @@
 import React from 'react';
 import { Image } from 'react-native';
-
 import styled from '@stream-io/styled-components';
 
 import closeRound from '../../images/icons/close-round.png';
-
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`

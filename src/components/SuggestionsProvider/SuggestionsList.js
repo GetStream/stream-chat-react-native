@@ -1,8 +1,10 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
-import { CommandsItem, MentionsItem } from '../AutoCompleteInput';
+import PropTypes from 'prop-types';
+
+import CommandsItem from '../AutoCompleteInput/CommandsItem';
+import MentionsItem from '../AutoCompleteInput/MentionsItem';
 
 const Wrapper = styled.TouchableOpacity`
   height: ${({ height }) => height};

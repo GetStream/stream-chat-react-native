@@ -2,10 +2,11 @@ import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { FileIcon } from '../Attachment';
 import UploadProgressIndicator from './UploadProgressIndicator';
 
-import { FileState, ProgressIndicatorTypes } from '../../utils';
+import FileIcon from '../Attachment/FileIcon';
+
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const FILE_PREVIEW_HEIGHT = 50;
 const FILE_PREVIEW_PADDING = 10;

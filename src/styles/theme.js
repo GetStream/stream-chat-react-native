@@ -1,10 +1,10 @@
 import React from 'react';
 import { ThemeConsumer, ThemeProvider } from '@stream-io/styled-components';
+import lodashGet from 'lodash/get';
+import isPlainObject from 'lodash/isPlainObject';
+import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
 import lodashSet from 'lodash/set';
-import lodashGet from 'lodash/get';
-import mapValues from 'lodash/mapValues';
-import isPlainObject from 'lodash/isPlainObject';
 
 export const BASE_FONT_SIZE = 16;
 

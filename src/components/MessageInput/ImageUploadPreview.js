@@ -6,10 +6,8 @@ import PropTypes from 'prop-types';
 import UploadProgressIndicator from './UploadProgressIndicator';
 
 import closeRound from '../../images/icons/close-round.png';
-
 import { themed } from '../../styles/theme';
-
-import { FileState, ProgressIndicatorTypes } from '../../utils';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const Container = styled.View`
   height: 70px;

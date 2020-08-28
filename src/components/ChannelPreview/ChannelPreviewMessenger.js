@@ -1,12 +1,14 @@
 import React from 'react';
-import truncate from 'lodash/truncate';
 import styled from '@stream-io/styled-components';
+import truncate from 'lodash/truncate';
 import PropTypes from 'prop-types';
 
-import { Avatar } from '../Avatar';
-import { themed } from '../../styles/theme';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
+
+import Avatar from '../Avatar/Avatar';
+
+import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   flex-direction: row;

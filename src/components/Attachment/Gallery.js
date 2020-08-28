@@ -1,14 +1,14 @@
 import React, { useContext, useState } from 'react';
 import { Image, Modal, SafeAreaView, Text, View } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
+import ImageViewer from 'react-native-image-zoom-viewer';
+
+import CloseButton from '../CloseButton/CloseButton';
 
 import { MessageContentContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { makeImageCompatibleUrl } from '../../utils';
-
-import { CloseButton } from '../CloseButton';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const Single = styled.TouchableOpacity`
   border-top-left-radius: 16px;
