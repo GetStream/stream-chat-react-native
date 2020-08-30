@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useContext } from 'react';
+import { Image } from 'react-native';
 import PropTypes from 'prop-types';
 
 import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
+import { ChatContext } from '../../context';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;
@@ -12,7 +14,9 @@ const AvatarContainer = styled.View`
   ${({ theme }) => theme.avatar.container.css}
 `;
 
-const AvatarImage = styled.Image`
+const AvatarImage = styled(({ ImageComponent, ...otherProps }) => (
+  <ImageComponent {...otherProps} />
+))`
   border-radius: ${({ size }) => size / 2}px;
   height: ${({ size }) => size}px;
   width: ${({ size }) => size}px;
@@ -52,6 +56,7 @@ const getInitials = (fullName) =>
  */
 const Avatar = ({ image, name, size = BASE_AVATAR_SIZE }) => {
   const [imageError, setImageError] = useState(false);
+  const { ImageComponent } = useContext(ChatContext);
 
   const fontSize = useMemo(
     () => BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE),
@@ -69,6 +74,7 @@ const Avatar = ({ image, name, size = BASE_AVATAR_SIZE }) => {
           size={size}
           source={{ uri: image }}
           testID='avatar-image'
+          ImageComponent={ImageComponent || Image}
         />
       ) : (
         <AvatarFallback size={size}>

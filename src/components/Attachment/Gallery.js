@@ -4,7 +4,11 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
 
-import { MessageContentContext, TranslationContext } from '../../context';
+import {
+  MessageContentContext,
+  TranslationContext,
+  ChatContext,
+} from '../../context';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils';
 
@@ -87,6 +91,7 @@ const GalleryHeader = ({ handleDismiss }) => (
  * @example ../docs/Gallery.md
  */
 const Gallery = ({ alignment, images }) => {
+  const { ImageComponent = Image } = useContext(ChatContext);
   const { additionalTouchableProps, onLongPress } = useContext(
     MessageContentContext,
   );
@@ -111,7 +116,7 @@ const Gallery = ({ alignment, images }) => {
           testID='image-attachment-single'
           {...additionalTouchableProps}
         >
-          <Image
+          <ImageComponent
             resizeMode='cover'
             source={{ uri: galleryImages[0].url }}
             style={{ flex: 1 }}
@@ -160,7 +165,7 @@ const Gallery = ({ alignment, images }) => {
           >
             {i === 3 && galleryImages.length > 4 ? (
               <View style={{ flex: 1 }}>
-                <Image
+                <ImageComponent
                   resizeMode='cover'
                   source={{ uri: galleryImages[3].url }}
                   style={{ flex: 1 }}
@@ -185,7 +190,7 @@ const Gallery = ({ alignment, images }) => {
                 </View>
               </View>
             ) : (
-              <Image
+              <ImageComponent
                 resizeMode='cover'
                 source={{ uri: image.url }}
                 style={{ flex: 1 }}

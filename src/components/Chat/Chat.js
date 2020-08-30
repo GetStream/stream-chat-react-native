@@ -26,7 +26,13 @@ import { Streami18n } from '../../utils/Streami18n';
  * @example ../docs/Chat.md
  */
 const Chat = (props) => {
-  const { children, client, i18nInstance, logger = () => {} } = props;
+  const {
+    children,
+    client,
+    i18nInstance,
+    offlineConfig: { storage, ImageComponent } = {},
+    logger = () => {},
+  } = props;
 
   const [channel, setChannel] = useState();
   const [connectionRecovering, setConnectionRecovering] = useState(false);
@@ -49,8 +55,9 @@ const Chat = (props) => {
   const setActiveChannel = (channel) => setChannel(channel);
 
   if (!translators.t) return null;
-
   const chatContext = {
+    storage,
+    ImageComponent,
     channel,
     client,
     connectionRecovering,

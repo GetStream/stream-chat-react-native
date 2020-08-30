@@ -1,7 +1,5 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-
-import { ChatContext } from '../../context';
 
 import ChannelListMessenger from './ChannelListMessenger';
 
@@ -16,6 +14,7 @@ import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotifi
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
+import { usePaginatedCachedChannels } from './hooks/usePaginatedCachedChannels';
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
@@ -42,7 +41,6 @@ const ChannelList = (props) => {
     sort = {},
   } = props;
 
-  const { client } = useContext(ChatContext);
   const listRef = useRef(null);
   const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -53,13 +51,17 @@ const ChannelList = (props) => {
     refreshList,
     reloadList,
     setChannels,
+    active,
     status,
-  } = usePaginatedChannels({
-    client,
-    filters,
-    options,
-    sort,
-  });
+  } = usePaginatedChannels(filters, options, sort);
+
+  const {
+    channels: ls__channels,
+    hasNextPage: ls__hasNextPage,
+    loadNextPage: ls__loadNextPage,
+    reloadList: ls__reloadList,
+    status: ls__status,
+  } = usePaginatedCachedChannels(filters, options, sort);
 
   // Setup event listeners
   useAddedToChannelNotification({ onAddedToChannel, setChannels });
@@ -73,19 +75,42 @@ const ChannelList = (props) => {
   useRemovedFromChannelNotification({ onRemovedFromChannel, setChannels });
   useUserPresence({ setChannels });
 
+  if (active) {
+    return (
+      <List
+        {...props}
+        channels={channels}
+        error={status.error}
+        forceUpdate={forceUpdate}
+        hasNextPage={hasNextPage}
+        loadingChannels={status.loadingChannels}
+        loadNextPage={loadNextPage}
+        loadingNextPage={status.loadingNextPage}
+        refreshing={status.refreshing}
+        refreshList={refreshList}
+        reloadList={reloadList}
+        setActiveChannel={onSelect}
+        setFlatListRef={(ref) => {
+          listRef.current = ref;
+          setFlatListRef && setFlatListRef(ref);
+        }}
+      />
+    );
+  }
+
+  // Offline channel list
   return (
     <List
       {...props}
-      channels={channels}
-      error={status.error}
+      channels={ls__channels}
+      error={ls__status.error}
+      hasNextPage={ls__hasNextPage}
+      loadingChannels={ls__status.loadingChannels}
+      loadNextPage={ls__loadNextPage}
+      loadingNextPage={ls__status.loadingNextPage}
+      refreshing={ls__status.refreshing}
+      reloadList={ls__reloadList}
       forceUpdate={forceUpdate}
-      hasNextPage={hasNextPage}
-      loadingChannels={status.loadingChannels}
-      loadNextPage={loadNextPage}
-      loadingNextPage={status.loadingNextPage}
-      refreshing={status.refreshing}
-      refreshList={refreshList}
-      reloadList={reloadList}
       setActiveChannel={onSelect}
       setFlatListRef={(ref) => {
         listRef.current = ref;
