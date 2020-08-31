@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Modal } from 'react-native';
+import { Modal, View } from 'react-native';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
+import Avatar from '../Avatar/Avatar';
 
 import { themed } from '../../styles/theme';
-import { Avatar } from '../Avatar';
-import { emojiData } from '../../utils';
+import { emojiData } from '../../utils/utils';
 
 const Container = styled.TouchableOpacity`
   flex: 1;
@@ -50,26 +50,26 @@ class ReactionPicker extends React.PureComponent {
   static themePath = 'message.reactionPicker';
 
   static propTypes = {
-    hideReactionCount: PropTypes.bool,
-    hideReactionOwners: PropTypes.bool,
-    reactionPickerVisible: PropTypes.bool,
     handleDismiss: PropTypes.func,
     handleReaction: PropTypes.func,
+    hideReactionCount: PropTypes.bool,
+    hideReactionOwners: PropTypes.bool,
     latestReactions: PropTypes.array,
     reactionCounts: PropTypes.object,
+    reactionPickerVisible: PropTypes.bool,
     rpLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    rpTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     rpRight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    rpTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     supportedReactions: PropTypes.array,
   };
 
   static defaultProps = {
     hideReactionCount: false,
     hideReactionOwners: false,
-    supportedReactions: emojiData,
-    rpTop: 40,
     rpLeft: 30,
     rpRight: 10,
+    rpTop: 40,
+    supportedReactions: emojiData,
   };
 
   constructor(props) {
@@ -118,17 +118,17 @@ class ReactionPicker extends React.PureComponent {
 
     return (
       <Modal
-        visible={reactionPickerVisible}
-        transparent
         animationType='fade'
-        onShow={() => {}}
         onRequestClose={handleDismiss}
+        onShow={() => {}}
+        transparent
+        visible={reactionPickerVisible}
       >
         {reactionPickerVisible && (
           <Container
-            onPress={handleDismiss}
-            leftAlign={Boolean(rpLeft)}
             activeOpacity={1}
+            leftAlign={Boolean(rpLeft)}
+            onPress={handleDismiss}
           >
             <ContainerView
               style={{
@@ -142,8 +142,9 @@ class ReactionPicker extends React.PureComponent {
                   <Column key={id}>
                     {latestUser !== 'NotFound' && !hideReactionOwners ? (
                       <Avatar
-                        image={latestUser.image}
                         alt={latestUser.id}
+                        image={latestUser.image}
+                        name={latestUser.name || latestUser.id}
                         size={18}
                         style={{
                           image: {
@@ -151,7 +152,6 @@ class ReactionPicker extends React.PureComponent {
                             borderWidth: 1,
                           },
                         }}
-                        name={latestUser.name || latestUser.id}
                       />
                     ) : (
                       !hideReactionOwners && (

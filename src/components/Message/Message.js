@@ -1,13 +1,13 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 import deepequal from 'deep-equal';
+import PropTypes from 'prop-types';
 
-import { Attachment } from '../Attachment';
-import { MessageSimple } from './MessageSimple';
+import Attachment from '../Attachment/Attachment';
+import MessageSimple from './MessageSimple/MessageSimple';
 
 import { withKeyboardContext } from '../../context';
-import { MESSAGE_ACTIONS } from '../../utils';
+import { MESSAGE_ACTIONS } from '../../utils/utils';
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -28,47 +28,39 @@ const Message = withKeyboardContext(
     }
 
     static propTypes = {
-      /** The message object */
-      message: PropTypes.object.isRequired,
-      /** The client connection object for connecting to Stream */
-      client: PropTypes.object.isRequired,
+      /**
+       * Attachment UI component to display attachment in individual message.
+       * Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+       * */
+      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /** The current channel this message is displayed in */
       channel: PropTypes.object.isRequired,
-      /** A list of users that have read this message **/
-      readBy: PropTypes.array,
-      /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
-      groupStyles: PropTypes.array,
+      /** The client connection object for connecting to Stream */
+      client: PropTypes.object.isRequired,
+      /** Disables the message UI. Which means, message actions, reactions won't work. */
+      disabled: PropTypes.bool,
+      /** @see See [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
+      dismissKeyboard: PropTypes.func,
+      /** Should keyboard be dismissed when messaged is touched */
+      dismissKeyboardOnMessageTouch: PropTypes.bool,
       /** Editing, if the message is currently being edited */
       editing: PropTypes.oneOfType([PropTypes.object, PropTypes.bool]),
+      /** groupStyles, a list of styles to apply to this message. ie. top, bottom, single etc */
+      groupStyles: PropTypes.array,
+      /** Latest message id on current channel */
+      lastReceivedId: PropTypes.string,
+      /** The message object */
+      message: PropTypes.object.isRequired,
       /**
        * Message UI component to display a message in message list.
        * Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
        * */
       Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
       /**
-       * Attachment UI component to display attachment in individual message.
-       * Available from [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
-       * */
-      Attachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-      /**
        * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
        * If all the actions need to be disabled, empty array or false should be provided as value of prop.
        * */
       messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
-      /** Latest message id on current channel */
-      lastReceivedId: PropTypes.string,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-      setEditingState: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-      updateMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-      removeMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-      retrySendMessage: PropTypes.func,
-      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-      openThread: PropTypes.func,
-      /** @see See [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext) */
-      dismissKeyboard: PropTypes.func,
       /**
        * Callback for onPress event on Message component
        *
@@ -77,26 +69,34 @@ const Message = withKeyboardContext(
        *
        * */
       onMessageTouch: PropTypes.func,
-      /** Should keyboard be dismissed when messaged is touched */
-      dismissKeyboardOnMessageTouch: PropTypes.bool,
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+      openThread: PropTypes.func,
+      /** A list of users that have read this message **/
+      readBy: PropTypes.array,
       /**
        * @deprecated Please use `disabled` instead.
        *
        * Disables the message UI. Which means, message actions, reactions won't work.
        */
       readOnly: PropTypes.bool,
-      /** Disables the message UI. Which means, message actions, reactions won't work. */
-      disabled: PropTypes.bool,
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+      removeMessage: PropTypes.func,
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+      retrySendMessage: PropTypes.func,
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+      setEditingState: PropTypes.func,
+      /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+      updateMessage: PropTypes.func,
     };
 
     static defaultProps = {
+      Attachment,
+      dismissKeyboardOnMessageTouch: true,
+      editing: false,
+      groupStyles: [],
       Message: MessageSimple,
       messageActions: Object.keys(MESSAGE_ACTIONS),
       readBy: [],
-      groupStyles: [],
-      Attachment,
-      editing: false,
-      dismissKeyboardOnMessageTouch: true,
     };
 
     shouldComponentUpdate(nextProps) {
@@ -230,10 +230,10 @@ const Message = withKeyboardContext(
         // add the reaction
         const messageID = this.props.message.id;
         const tmpReaction = {
-          message_id: messageID,
-          user: this.props.client.user,
-          type: reactionType,
           created_at: new Date(),
+          message_id: messageID,
+          type: reactionType,
+          user: this.props.client.user,
         };
         const reaction = { type: reactionType };
 
@@ -325,34 +325,34 @@ const Message = withKeyboardContext(
 
       return (
         <TouchableOpacity
+          activeOpacity={1}
           onPress={(e) => {
             this.onMessageTouch(e, message);
           }}
-          activeOpacity={1}
         >
           <Component
             {...this.props}
             {...actionProps}
-            client={this.props.client}
-            channel={this.props.channel}
             actionsEnabled={actionsEnabled}
+            canDeleteMessage={this.canDeleteMessage}
+            canEditMessage={this.canEditMessage}
+            channel={this.props.channel}
+            client={this.props.client}
+            getTotalReactionCount={this.getTotalReactionCount}
+            handleAction={this.handleAction}
+            handleDelete={this.handleDelete}
+            handleEdit={this.handleEdit}
+            handleFlag={this.handleFlag}
+            handleMute={this.handleMute}
+            handleReaction={this.handleReaction}
+            handleRetry={this.handleRetry}
+            isAdmin={this.isAdmin}
+            isModerator={this.isModerator}
+            isMyMessage={this.isMyMessage}
             Message={this}
             onMessageTouch={(e) => {
               this.onMessageTouch(e, message);
             }}
-            handleReaction={this.handleReaction}
-            getTotalReactionCount={this.getTotalReactionCount}
-            handleFlag={this.handleFlag}
-            handleMute={this.handleMute}
-            handleAction={this.handleAction}
-            handleRetry={this.handleRetry}
-            isMyMessage={this.isMyMessage}
-            isAdmin={this.isAdmin}
-            isModerator={this.isModerator}
-            canEditMessage={this.canEditMessage}
-            canDeleteMessage={this.canDeleteMessage}
-            handleEdit={this.handleEdit}
-            handleDelete={this.handleDelete}
             openThread={
               this.props.openThread && this.props.openThread.bind(this, message)
             }

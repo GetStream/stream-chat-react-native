@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { Avatar } from '../Avatar';
+import Avatar from '../Avatar/Avatar';
 
 import { themed } from '../../styles/theme';
 
@@ -20,6 +20,9 @@ const Name = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
+/**
+ * @example ../docs/MentionsItem.md
+ */
 const MentionsItem = ({ item: { id, image, name } }) => (
   <Container>
     <Avatar image={image} name={name} />
@@ -29,8 +32,17 @@ const MentionsItem = ({ item: { id, image, name } }) => (
 
 MentionsItem.propTypes = {
   item: PropTypes.shape({
+    /**
+     * User ID of the suggested mention user
+     */
     id: PropTypes.string,
+    /**
+     * Image to be shown as the Avatar for the user
+     */
     image: PropTypes.string,
+    /**
+     * Name of the suggested mention user
+     */
     name: PropTypes.string,
   }),
 };

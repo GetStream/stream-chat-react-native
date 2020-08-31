@@ -1,17 +1,18 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { ThemeProvider } from '@stream-io/styled-components';
+import { cleanup, render, waitFor } from '@testing-library/react-native';
+
+import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from 'mock-builders/api/useMockedApis';
+import { generateChannel } from 'mock-builders/generator/channel';
+import { getTestClientWithUser } from 'mock-builders/mock';
 
 import ChannelListMessenger from '../ChannelListMessenger';
-import { Chat } from '../../Chat';
+
+import Chat from '../../Chat/Chat';
+
 import { TranslationContext } from '../../../context';
-import {
-  getTestClientWithUser,
-  useMockedApis,
-  getOrCreateChannelApi,
-  generateChannel,
-} from '../../../mock-builders';
 import { defaultTheme } from '../../../styles/theme';
 
 let mockChannels;
@@ -71,7 +72,7 @@ describe('ChannelListMessenger', () => {
 
   it('renders the `LoadingErrorIndicator` when `error` prop is true', async () => {
     const { getByTestId } = render(
-      <Component error={true} channels={mockChannels} />,
+      <Component channels={mockChannels} error={true} />,
     );
     await waitFor(() => {
       expect(getByTestId('channel-loading-error')).toBeTruthy();
@@ -80,7 +81,7 @@ describe('ChannelListMessenger', () => {
 
   it('renders the `LoadingIndicator` when `loadingChannels` prop is true', async () => {
     const { getByTestId } = render(
-      <Component loadingChannels={true} channels={mockChannels} />,
+      <Component channels={mockChannels} loadingChannels={true} />,
     );
     await waitFor(() => {
       expect(getByTestId('loading-indicator')).toBeTruthy();

@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ChatContext } from '../../context';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
+
+import { ChatContext } from '../../context';
 
 const ChannelPreview = (props) => {
   const { channel, Preview, setActiveChannel } = props;

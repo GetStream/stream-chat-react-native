@@ -15,7 +15,7 @@ export const Circle = styled(AnimatedView)`
   justify-content: center;
   margin: 5px;
   width: 30px;
-  ${({ theme }) => theme.spinner.css}
+  ${({ theme }) => theme.spinner.css};
 `;
 
 /**
@@ -24,18 +24,18 @@ export const Circle = styled(AnimatedView)`
 const Spinner = () => {
   const rotateValue = useRef(new Animated.Value(0));
 
-  const startSpinning = () => {
-    Animated.loop(
-      Animated.timing(rotateValue.current, {
-        duration: 800,
-        easing: Easing.linear,
-        toValue: 1,
-        useNativeDriver: true,
-      }),
-    ).start();
-  };
+  const loop = Animated.loop(
+    Animated.timing(rotateValue.current, {
+      duration: 800,
+      easing: Easing.linear,
+      toValue: 1,
+    }),
+  );
 
-  useEffect(() => startSpinning());
+  useEffect(() => {
+    loop.start();
+    return loop.stop;
+  });
 
   return (
     <Circle

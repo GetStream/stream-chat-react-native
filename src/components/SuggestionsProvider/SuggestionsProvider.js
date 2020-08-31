@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
 import { findNodeHandle, View } from 'react-native';
 
-import { SuggestionsContext } from '../../context';
 import SuggestionsList from './SuggestionsList';
+
+import { SuggestionsContext } from '../../context';
 
 /**
  *
@@ -58,7 +59,7 @@ const SuggestionsProvider = ({ children }) => {
         messageInputBox.current.measureLayout(
           nodeHandleRoot,
           (x, y, width, height) => {
-            resolve({ x, y, height, width });
+            resolve({ height, width, x, y });
           },
         );
     });
@@ -70,7 +71,7 @@ const SuggestionsProvider = ({ children }) => {
         rootView.current.measureLayout(
           nodeHandleRoot,
           (x, y, width, height) => {
-            resolve({ x, y, height, width });
+            resolve({ height, width, x, y });
           },
         );
     });

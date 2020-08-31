@@ -1,10 +1,10 @@
-import React from 'react';
-import { ActionSheetCustom } from 'react-native-actionsheet';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
+import { ActionSheetCustom } from 'react-native-actionsheet';
 
 import { IconSquare } from '../IconSquare';
 
-import { withTranslationContext } from '../../context';
+import { TranslationContext } from '../../context';
 
 import iconGallery from '../../images/icons/icon_attach-media.png';
 import iconClose from '../../images/icons/icon_close.png';
@@ -28,8 +28,7 @@ const ActionSheetTitleContainer = styled.View`
   flex-direction: row;
   height: 100%;
   justify-content: space-between;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-horizontal: 20px;
   width: 100%;
   ${({ theme }) => theme.messageInput.actionSheet.titleContainer.css};
 `;
@@ -45,48 +44,58 @@ const ActionSheet = ({
   pickImage,
   setAttachActionSheetRef,
   styles,
-  t,
-}) => (
-  <ActionSheetCustom
-    ref={setAttachActionSheetRef}
-    title={
-      <ActionSheetTitleContainer>
-        <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
-        <IconSquare icon={iconClose} onPress={closeAttachActionSheet} />
-      </ActionSheetTitleContainer>
-    }
-    options={[
-      /* eslint-disable */
-      <AttachmentActionSheetItem
-        icon={iconGallery}
-        text={t('Upload a photo')}
-      />,
-      <AttachmentActionSheetItem icon={iconFolder} text={t('Upload a file')} />,
-      /* eslint-enable */
-    ]}
-    onPress={(index) => {
-      // https://github.com/beefe/react-native-actionsheet/issues/36
-      setTimeout(() => {
-        switch (index) {
-          case 0:
-            pickImage();
-            break;
-          case 1:
-            pickFile();
-            break;
-          default:
-        }
-      }, 201); // 201ms to fire after the animation is complete https://github.com/beefe/react-native-actionsheet/blob/master/lib/ActionSheetCustom.js#L78
-    }}
-    styles={styles}
-  />
-);
+}) => {
+  const { t } = useContext(TranslationContext);
 
-const AttachmentActionSheetItem = ({ icon, text }) => (
-  <ActionSheetButtonContainer>
+  return (
+    <ActionSheetCustom
+      onPress={(index) => {
+        // https://github.com/beefe/react-native-actionsheet/issues/36
+        setTimeout(() => {
+          switch (index) {
+            case 0:
+              pickImage();
+              break;
+            case 1:
+              pickFile();
+              break;
+            default:
+          }
+        }, 201); // 201ms to fire after the animation is complete https://github.com/beefe/react-native-actionsheet/blob/master/lib/ActionSheetCustom.js#L78
+      }}
+      options={[
+        <AttachmentActionSheetItem
+          icon={iconGallery}
+          key='upload-photo-item'
+          testID='upload-photo-item'
+          text={t('Upload a photo')}
+        />,
+        <AttachmentActionSheetItem
+          icon={iconFolder}
+          key='upload-file-item'
+          testID='upload-file-item'
+          text={t('Upload a file')}
+        />,
+      ]}
+      ref={setAttachActionSheetRef}
+      styles={styles}
+      title={
+        <ActionSheetTitleContainer>
+          <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
+          <IconSquare icon={iconClose} onPress={closeAttachActionSheet} />
+        </ActionSheetTitleContainer>
+      }
+    />
+  );
+};
+
+ActionSheet.themePath = 'messageInput.actionSheet';
+
+const AttachmentActionSheetItem = ({ icon, key, testID, text }) => (
+  <ActionSheetButtonContainer key={key} testID={testID}>
     <IconSquare icon={icon} />
     <ActionSheetButtonText>{text}</ActionSheetButtonText>
   </ActionSheetButtonContainer>
 );
 
-export default withTranslationContext(ActionSheet);
+export default ActionSheet;

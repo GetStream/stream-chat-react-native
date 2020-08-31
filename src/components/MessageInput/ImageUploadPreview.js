@@ -1,150 +1,141 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import UploadProgressIndicator from './UploadProgressIndicator';
-import { FileState, ProgressIndicatorTypes } from '../../utils';
-import { themed } from '../../styles/theme';
 
 import closeRound from '../../images/icons/close-round.png';
+import { themed } from '../../styles/theme';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const Container = styled.View`
-  height: 70;
-  display: flex;
+  height: 70px;
   padding: 10px;
   ${({ theme }) => theme.messageInput.imageUploadPreview.container.css};
 `;
 
-const ItemContainer = styled.View`
-  display: flex;
-  height: 50;
-  flex-direction: row;
-  align-items: flex-start;
-  margin-left: 5;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
-`;
-
 const Dismiss = styled.TouchableOpacity`
-  position: absolute;
-  top: 5;
-  right: 5;
-  background-color: #fff;
-  width: 20;
-  height: 20;
-  display: flex;
   align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  height: 20px;
   justify-content: center;
-  border-radius: 20;
+  position: absolute;
+  right: 5;
+  top: 5;
+  width: 20px;
   ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
 `;
 
-const Upload = styled.Image`
-  width: 50;
-  height: 50;
-  border-radius: 10;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
+const DismissImage = styled.Image`
+  height: 10px;
+  width: 10px;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
 `;
 
-const DismissImage = styled.Image`
-  width: 10;
-  height: 10;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
+const ItemContainer = styled.View`
+  align-items: flex-start;
+  flex-direction: row;
+  height: 50px;
+  margin-left: 5px;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
+`;
+
+const Upload = styled.Image`
+  border-radius: 10px;
+  height: 50px;
+  width: 50px;
+  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
 `;
 
 /**
  * UI Component to preview the images set for upload
  *
  * @example ../docs/ImageUploadPreview.md
- * @extends PureComponent
  */
-class ImageUploadPreview extends React.PureComponent {
-  static themePath = 'messageInput.imageUploadPreview';
-  constructor(props) {
-    super(props);
-  }
-  static propTypes = {
-    /**
-     * Its an object/map of id vs image objects which are set for upload. It has following structure:
-     *
-     * ```json
-     *  {
-     *    "randomly_generated_temp_id_1": {
-     *        "id": "randomly_generated_temp_id_1",
-     *        "file": // File object
-     *        "status": "Uploading" // or "Finished"
-     *      },
-     *    "randomly_generated_temp_id_2": {
-     *        "id": "randomly_generated_temp_id_2",
-     *        "file": // File object
-     *        "status": "Uploading" // or "Finished"
-     *      },
-     *  }
-     * ```
-     *
-     * */
-    imageUploads: PropTypes.array.isRequired,
-    /**
-     * @param id Index of image in `imageUploads` array in state of MessageInput.
-     */
-    removeImage: PropTypes.func,
-    /**
-     * @param id Index of image in `imageUploads` array in state of MessageInput.
-     */
-    retryUpload: PropTypes.func,
-  };
-
-  _renderItem = ({ item }) => {
+const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
+  const renderItem = ({ item }) => {
     let type;
 
-    const { retryUpload } = this.props;
-
-    if (item.state === FileState.UPLOADING)
+    if (item.state === FileState.UPLOADING) {
       type = ProgressIndicatorTypes.IN_PROGRESS;
+    }
 
-    if (item.state === FileState.UPLOAD_FAILED)
+    if (item.state === FileState.UPLOAD_FAILED) {
       type = ProgressIndicatorTypes.RETRY;
+    }
+
     return (
-      <React.Fragment>
-        <ItemContainer>
-          <UploadProgressIndicator
-            active={item.state !== FileState.UPLOADED}
-            type={type}
-            action={retryUpload && retryUpload.bind(this, item.id)}
-          >
-            <Upload
-              resizeMode='cover'
-              source={{ uri: item.url || item.file.uri }}
-            />
-          </UploadProgressIndicator>
-          <Dismiss
-            onPress={() => {
-              this.props.removeImage(item.id);
-            }}
-          >
-            <DismissImage source={closeRound} />
-          </Dismiss>
-        </ItemContainer>
-      </React.Fragment>
+      <ItemContainer>
+        <UploadProgressIndicator
+          action={() => (retryUpload ? retryUpload(item.id) : null)}
+          active={item.state !== FileState.UPLOADED}
+          type={type}
+        >
+          <Upload
+            resizeMode='cover'
+            source={{ uri: item.file.uri || item.url }}
+          />
+        </UploadProgressIndicator>
+        <Dismiss
+          onPress={() => removeImage(item.id)}
+          testID='remove-image-upload-preview'
+        >
+          <DismissImage source={closeRound} />
+        </Dismiss>
+      </ItemContainer>
     );
   };
 
-  render() {
-    if (!this.props.imageUploads || this.props.imageUploads.length === 0)
-      return null;
+  return imageUploads && imageUploads.length ? (
+    <Container>
+      <FlatList
+        data={imageUploads}
+        horizontal
+        keyExtractor={(item) => item.id}
+        renderItem={renderItem}
+        style={{ flex: 1 }}
+      />
+    </Container>
+  ) : null;
+};
 
-    return (
-      <Container>
-        <FlatList
-          horizontal
-          style={{ flex: 1 }}
-          data={this.props.imageUploads}
-          keyExtractor={(item) => item.id}
-          renderItem={this._renderItem}
-        />
-      </Container>
-    );
-  }
-}
+ImageUploadPreview.propTypes = {
+  /**
+   * An array of image objects which are set for upload. It has the following structure:
+   *
+   * ```json
+   *  [
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_1",
+   *      "state": "uploading" // or "finished",
+   *    },
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_2",
+   *      "state": "uploading" // or "finished",
+   *    },
+   *  ]
+   * ```
+   *
+   */
+  imageUploads: PropTypes.array.isRequired,
+  /**
+   * Function for removing an image from the upload preview
+   *
+   * @param id string ID of image in `imageUploads` object in state of MessageInput
+   */
+  removeImage: PropTypes.func,
+  /**
+   * Function for attempting to upload an image
+   *
+   * @param id string ID of image in `imageUploads` object in state of MessageInput
+   */
+  retryUpload: PropTypes.func,
+};
+
+ImageUploadPreview.themePath = 'messageInput.imageUploadPreview';
 
 export default themed(ImageUploadPreview);

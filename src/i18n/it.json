@@ -3,7 +3,6 @@
   "Add Reaction": "Aggiungi reazione",
   "Add a file": "Aggiungi un file",
   "Cancel": "Annulla",
-  "Channel Missing": "Il canale non esiste",
   "Choose an action": "Scegli una azione",
   "Commands": "Comandi",
   "Connection failure, reconnecting now ...": "Connessione interrotta, riconnessione in corso ...",
@@ -26,7 +25,6 @@
   "Please select a channel first": "Seleziona un canale",
   "Reply": "Rispondere",
   "Searching for people": "Ricerca persone in corso",
-  "Send message": "Invia messaggio",
   "Start of a new thread": "Inizia un nuovo thread",
   "This message was deleted ...": "Questo messaggio é stato cancellato",
   "Upload a file": "Carica un file",
@@ -37,7 +35,5 @@
   "{{ imageCount }} more": "+ {{ imageCount }}",
   "{{ replyCount }} replies": "{{ replyCount }} risposte",
   "{{ user }} is typing...": "{{ user }} sta scrivendo...",
-  "{{ username }} joined the chat": "{{ username }} si é unito alla chat",
-  "{{ username }} was removed from the chat": "{{ username }} é stato rimosso dalla chat",
   "🏙 Attachment...": "🏙 Allegato..."
 }

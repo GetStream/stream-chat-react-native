@@ -2,8 +2,10 @@
   "name": "stream-chat-react-native-core",
   "version": "1.2.0",
   "author": {
-    "company": "Stream.io Inc"
+    "company": "Stream.io Inc",
+    "name": "Stream.io Inc"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "src/index.js",
@@ -28,7 +30,7 @@
   "scripts": {
     "build": "rm -rf dist && yarn build-translations && bob build",
     "docs": "styleguidist build",
-    "test": "jest",
+    "test": "TZ=UTC jest",
     "docs-server": "styleguidist server",
     "build-translations": "rm -rf .tmpi18ncache || true && mkdir .tmpi18ncache && yarn run babel --config-file ./babel.i18next-extract.json 'src/**/*.{js,jsx,ts,tsx}' --out-dir '.tmpi18ncache/' && rm -rf .tmpi18ncache && prettier --write 'src/i18n/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
     "prettier": "prettier --list-different '**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc",
@@ -67,9 +69,20 @@
         true,
         {
           "ignoreProperties": [
+            "include-font-padding",
             "shadow-color",
             "shadow-opacity",
-            "shadow-offset"
+            "shadow-offset",
+            "shadow-radius",
+            "padding-horizontal",
+            "padding-vertical",
+            "margin-vertical",
+            "margin-horizontal",
+            "tint-color",
+            "aspect-ratio",
+            "elevation",
+            "resize-mode",
+            "text-align-vertical"
           ]
         }
       ]
@@ -95,7 +108,7 @@
     "react-native-image-zoom-viewer": "^3.0.1",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^1.14.0",
-    "uuid": "^3.3.2"
+    "uuid": "^8.3.0"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
@@ -136,6 +149,7 @@
     "eslint-plugin-typescript-sort-keys": "^1.3.0",
     "husky": "^2.1.0",
     "jest": "^26.2.2",
+    "mockdate": "^3.0.2",
     "prettier": "^1.16.4",
     "react": "^16.5.0",
     "react-dom": "^16.8.6",

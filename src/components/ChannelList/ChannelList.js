@@ -1,8 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { ChatContext } from '../../context';
-
 import ChannelListMessenger from './ChannelListMessenger';
 
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
@@ -16,6 +14,8 @@ import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotifi
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
+
+import { ChatContext } from '../../context';
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
@@ -81,8 +81,8 @@ const ChannelList = (props) => {
       forceUpdate={forceUpdate}
       hasNextPage={hasNextPage}
       loadingChannels={status.loadingChannels}
-      loadNextPage={loadNextPage}
       loadingNextPage={status.loadingNextPage}
+      loadNextPage={loadNextPage}
       refreshing={status.refreshing}
       refreshList={refreshList}
       reloadList={reloadList}
@@ -95,6 +95,7 @@ const ChannelList = (props) => {
   );
 };
 
+/* eslint-disable */
 ChannelList.propTypes = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
@@ -266,5 +267,6 @@ ChannelList.propTypes = {
    * */
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
+/* eslint-enable */
 
 export default ChannelList;

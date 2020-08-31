@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
-import { Avatar } from '../../Avatar';
 import PropTypes from 'prop-types';
+
+import Avatar from '../../Avatar/Avatar';
 
 const Container = styled.View`
   margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)};
@@ -43,14 +44,6 @@ const MessageAvatar = ({
 };
 
 MessageAvatar.propTypes = {
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
-  /**
-   * Returns true if message (param) belongs to current user, else false
-   *
-   * @param message
-   * */
-  isMyMessage: PropTypes.func,
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -58,6 +51,14 @@ MessageAvatar.propTypes = {
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
   groupStyles: PropTypes.array,
+  /**
+   * Returns true if message (param) belongs to current user, else false
+   *
+   * @param message
+   * */
+  isMyMessage: PropTypes.func,
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object,
 };
 
 export default MessageAvatar;

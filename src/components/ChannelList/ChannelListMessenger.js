@@ -2,17 +2,17 @@ import React, { useContext } from 'react';
 import { FlatList } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { ChatContext } from '../../context';
-
-import { ChannelPreview, ChannelPreviewMessenger } from '../ChannelPreview';
 import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
 import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
 import ChannelListHeaderNetworkDownIndicator from './ChannelListHeaderNetworkDownIndicator';
-import {
-  EmptyStateIndicator as EmptyStateIndicatorDefault,
-  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
-  LoadingIndicator as LoadingIndicatorDefault,
-} from '../Indicators';
+
+import ChannelPreview from '../ChannelPreview/ChannelPreview';
+import ChannelPreviewMessenger from '../ChannelPreview/ChannelPreviewMessenger';
+import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
+import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
+import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
+
+import { ChatContext } from '../../context';
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation.
@@ -124,6 +124,7 @@ const ChannelListMessenger = (props) => {
   }
 };
 
+/* eslint-disable */
 ChannelListMessenger.propTypes = {
   /**
    * Channels can be either an array of channels or a promise which resolves to an array of channels
@@ -266,5 +267,6 @@ ChannelListMessenger.propTypes = {
    * */
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
+/* eslint-enable */
 
 export default ChannelListMessenger;

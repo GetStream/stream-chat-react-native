@@ -1,20 +1,18 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import {
-  generateChannel,
-  generateUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from 'mock-builders';
+import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from 'mock-builders/api/useMockedApis';
+import { generateChannel } from 'mock-builders/generator/channel';
+import { generateUser } from 'mock-builders/generator/user';
+import { getTestClientWithUser } from 'mock-builders/mock';
 
 import AutoCompleteInput from '../AutoCompleteInput';
 
-import { Chat } from '../../Chat';
-import { SuggestionsContext } from '../../../context';
+import Chat from '../../Chat/Chat';
 
-import { ACITriggerSettings } from '../../../utils';
+import { SuggestionsContext } from '../../../context';
+import { ACITriggerSettings } from '../../../utils/utils';
 
 describe('AutoCompleteInput', () => {
   const clientUser = generateUser();
@@ -38,7 +36,6 @@ describe('AutoCompleteInput', () => {
   );
 
   const initializeChannel = async (c) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useMockedApis(chatClient, [getOrCreateChannelApi(c)]);
 
     channel = chatClient.channel('messaging');

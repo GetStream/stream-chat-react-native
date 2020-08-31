@@ -48,14 +48,6 @@ export const renderText = (message, styles, markdownRules) => {
 };
 
 const defaultMarkdownStyles = {
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  url: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
   inlineCode: {
     backgroundColor: '#F3F3F3',
     borderColor: '#dddddd',
@@ -63,5 +55,13 @@ const defaultMarkdownStyles = {
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  url: {
+    color: 'blue',
+    textDecorationLine: 'underline',
   },
 };
