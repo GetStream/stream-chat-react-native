@@ -482,7 +482,7 @@ MessageContent.themePath = 'message.content';
 
 MessageContent.propTypes = {
   /**
-   * Style object for actionsheet (used to message actions).
+   * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
   actionSheetStyles: PropTypes.object,
@@ -601,7 +601,7 @@ MessageContent.propTypes = {
    *      {...props}
    *      onLongPress={(thisArg, message, e) => {
    *        props.openReactionPicker();
-   *        // Or if you want to open actionsheet
+   *        // Or if you want to open action sheet
    *        // thisArg.showActionSheet();
    *      }}
    *  )
@@ -642,7 +642,7 @@ MessageContent.propTypes = {
    *      {...props}
    *      onPress={(thisArg, message, e) => {
    *        props.openReactionPicker();
-   *        // Or if you want to open actionsheet
+   *        // Or if you want to open action sheet
    *        // thisArg.showActionSheet();
    *      }}
    *  )
