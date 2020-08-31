@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0] 2020-09-01
+## [1.3.0] 2020-09-01 (UNPUBLISHED)
 
 - We converted the ChannelList component from a class to a function. We also abstracted the event listener logic into custom hooks. On upgrading to this release, ensure events and any custom handling functions (ex: `onAddedToChannel` or `onMessageNew`) are properly processed and update the UI as expected.
 
