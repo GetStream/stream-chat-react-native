@@ -1,19 +1,33 @@
 import React from 'react';
+import { Dimensions, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { TouchableOpacity, Dimensions } from 'react-native';
-
 import ReactionPicker from './ReactionPicker';
-import { emojiData } from '../../utils';
+
+import { emojiData } from '../../utils/utils';
 
 class ReactionPickerWrapper extends React.PureComponent {
   static propTypes = {
+    dismissReactionPicker: PropTypes.func,
+    /**
+     * @deprecated
+     * emojiData is deprecated. But going to keep it for now
+     * to have backward compatibility. Please use supportedReactions instead.
+     * TODO: Remove following prop in 1.x.x
+     */
+    emojiData: PropTypes.array,
+    handleReaction: PropTypes.func,
+    hideReactionCount: PropTypes.bool,
+    hideReactionOwners: PropTypes.bool,
     isMyMessage: PropTypes.func,
     message: PropTypes.object,
     offset: PropTypes.object,
-    hideReactionCount: PropTypes.bool,
-    hideReactionOwners: PropTypes.bool,
-    handleReaction: PropTypes.func,
+    openReactionPicker: PropTypes.func,
+    ReactionPicker: PropTypes.oneOfType([
+      PropTypes.node,
+      PropTypes.elementType,
+    ]),
+    reactionPickerVisible: PropTypes.bool,
     /**
      * e.g.,
      * [
@@ -35,35 +49,21 @@ class ReactionPickerWrapper extends React.PureComponent {
      *  },
      * ]
      */
-    supportedReactions: PropTypes.array,
-    /**
-     * @deprecated
-     * emojiData is deprecated. But going to keep it for now
-     * to have backward compatibility. Please use supportedReactions instead.
-     * TODO: Remove following prop in 1.x.x
-     */
-    emojiData: PropTypes.array,
-    ReactionPicker: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    dismissReactionPicker: PropTypes.func,
-    reactionPickerVisible: PropTypes.bool,
-    openReactionPicker: PropTypes.func,
     style: PropTypes.any,
+    supportedReactions: PropTypes.array,
   };
 
   static defaultProps = {
-    offset: {
-      top: 40,
-      left: 30,
-      right: 10,
-    },
-    ReactionPicker,
-    supportedReactions: emojiData,
     emojiData,
     hideReactionCount: false,
     hideReactionOwners: false,
+    offset: {
+      left: 30,
+      right: 10,
+      top: 40,
+    },
+    ReactionPicker,
+    supportedReactions: emojiData,
   };
 
   constructor(props) {
@@ -86,13 +86,13 @@ class ReactionPickerWrapper extends React.PureComponent {
     if (this.messageContainer) {
       this.messageContainer.measureInWindow((x, y, width) => {
         this.setState({
-          rpTop: y - 60 + offset.top,
           rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
           rpRight:
             alignment === 'right'
               ? Math.round(Dimensions.get('window').width) -
                 (x + width + offset.right)
               : null,
+          rpTop: y - 60 + offset.top,
         });
       });
     }
@@ -123,18 +123,18 @@ class ReactionPickerWrapper extends React.PureComponent {
         {this.props.children}
         <ReactionPicker
           {...this.props}
-          reactionPickerVisible={reactionPickerVisible}
-          handleReaction={handleReaction}
-          latestReactions={message.latest_reactions}
-          reactionCounts={message.reaction_counts}
           handleDismiss={dismissReactionPicker}
+          handleReaction={handleReaction}
           hideReactionCount={hideReactionCount}
           hideReactionOwners={hideReactionOwners}
-          style={style}
-          supportedReactions={supportedReactions || emojiData}
+          latestReactions={message.latest_reactions}
+          reactionCounts={message.reaction_counts}
+          reactionPickerVisible={reactionPickerVisible}
           rpLeft={this.state.rpLeft}
           rpRight={this.state.rpRight}
           rpTop={this.state.rpTop}
+          style={style}
+          supportedReactions={supportedReactions || emojiData}
         />
       </TouchableOpacity>
     );

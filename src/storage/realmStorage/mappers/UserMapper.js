@@ -18,17 +18,17 @@ export const convertUserToRealm = (u, realm) => {
   } = u;
 
   const user = {
-    id,
-    name,
-    image,
-    role,
     created_at,
-    updated_at,
-    last_active,
-    deleted_at,
     deactivated_at,
-    online,
+    deleted_at,
     extraData: JSON.stringify(extraData),
+    id,
+    image,
+    last_active,
+    name,
+    online,
+    role,
+    updated_at,
   };
 
   return realm.create('User', user, true);
@@ -45,16 +45,16 @@ export const getUsersFromRealmList = (uList) => {
 
 export const getUserFromRealm = (u) => {
   const user = {
-    id: u.id,
-    name: u.name,
-    image: u.image,
-    role: u.role,
     created_at: u.created_at,
-    updated_at: u.updated_at,
-    last_active: u.last_active,
-    deleted_at: u.deleted_at,
     deactivated_at: u.deactivated_at,
+    deleted_at: u.deleted_at,
+    id: u.id,
+    image: u.image,
+    last_active: u.last_active,
+    name: u.name,
     online: u.online,
+    role: u.role,
+    updated_at: u.updated_at,
     ...JSON.parse(u.extraData),
   };
 

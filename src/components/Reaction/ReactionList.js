@@ -3,10 +3,6 @@ import { Text } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { themed } from '../../styles/theme';
-import { renderReactions } from '../../utils/renderReactions';
-import { emojiData } from '../../utils';
-
 import leftTail from '../../images/reactionlist/left-tail.png';
 import leftCenter from '../../images/reactionlist/left-center.png';
 import leftEnd from '../../images/reactionlist/left-end.png';
@@ -14,6 +10,10 @@ import leftEnd from '../../images/reactionlist/left-end.png';
 import rightTail from '../../images/reactionlist/right-tail.png';
 import rightCenter from '../../images/reactionlist/right-center.png';
 import rightEnd from '../../images/reactionlist/right-end.png';
+
+import { themed } from '../../styles/theme';
+import { renderReactions } from '../../utils/renderReactions';
+import { emojiData } from '../../utils/utils';
 
 const TouchableWrapper = styled.View`
   position: relative;
@@ -100,10 +100,9 @@ class ReactionList extends React.PureComponent {
   }
 
   static propTypes = {
+    getTotalReactionCount: PropTypes.func,
     latestReactions: PropTypes.array,
     openReactionSelector: PropTypes.func,
-    getTotalReactionCount: PropTypes.func,
-    visible: PropTypes.bool,
     position: PropTypes.string,
     /**
      * e.g.,
@@ -127,6 +126,7 @@ class ReactionList extends React.PureComponent {
      * ]
      */
     supportedReactions: PropTypes.array,
+    visible: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -142,7 +142,7 @@ class ReactionList extends React.PureComponent {
       supportedReactions,
     } = this.props;
     return (
-      <TouchableWrapper alignment={alignment} activeOpacity={1}>
+      <TouchableWrapper activeOpacity={1} alignment={alignment}>
         <Container visible={visible}>
           <Reactions>
             {renderReactions(latestReactions, supportedReactions)}
@@ -157,13 +157,13 @@ class ReactionList extends React.PureComponent {
           {alignment === 'left' ? (
             <React.Fragment>
               <LeftTail source={leftTail} />
-              <LeftCenter source={leftCenter} resizeMode='stretch' />
+              <LeftCenter resizeMode='stretch' source={leftCenter} />
               <LeftEnd source={leftEnd} />
             </React.Fragment>
           ) : (
             <React.Fragment>
               <RightEnd source={rightEnd} />
-              <RightCenter source={rightCenter} resizeMode='stretch' />
+              <RightCenter resizeMode='stretch' source={rightCenter} />
               <RightTail source={rightTail} />
             </React.Fragment>
           )}

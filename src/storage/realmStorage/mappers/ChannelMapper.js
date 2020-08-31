@@ -24,12 +24,12 @@ export const convertChannelToRealm = (channel, realm) => {
     ? [...channel.state.messages]
     : [];
   const offlineChannel = {
-    type: channel.type,
-    id: channel.id,
-    data: JSON.stringify(channel.data),
     cid: channel.cid,
-    initialized: channel.initialized,
     config: channel.config,
+    data: JSON.stringify(channel.data),
+    id: channel.id,
+    initialized: channel.initialized,
+    type: channel.type,
   };
   const newMessages = convertMessagesToRealm(stateMessages, realm);
 

@@ -1,43 +1,42 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 
-import { withTranslationContext } from '../../context';
+import { TranslationContext } from '../../context';
 
 const Container = styled.View`
-  display: flex;
+  align-items: center;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
   margin-bottom: 10;
   ${({ theme }) => theme.messageList.messageSystem.container.css}
 `;
 
 const Line = styled.View`
+  background-color: ${({ theme }) => theme.colors.light};
   flex: 1;
   height: 0.5;
-  background-color: ${({ theme }) => theme.colors.light};
   ${({ theme }) => theme.messageList.messageSystem.line.css}
 `;
 
 const TextContainer = styled.View`
-  margin-top: 10;
   flex: 3;
+  margin-top: 10;
   ${({ theme }) => theme.messageList.messageSystem.textContainer.css}
 `;
 
 const Text = styled.Text`
-  text-align: center;
+  color: rgba(0, 0, 0, 0.5);
   font-size: 10;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
   ${({ theme }) => theme.messageList.messageSystem.text.css}
 `;
 
 const DateText = styled.Text`
-  text-align: center;
+  color: rgba(0, 0, 0, 0.5);
   font-size: 10;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.5);
+  text-align: center;
   ${({ theme }) => theme.messageList.messageSystem.dateText.css}
 `;
 
@@ -46,19 +45,22 @@ const DateText = styled.Text`
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = ({ message, tDateTimeParser }) => (
-  <Container>
-    <Line />
-    <TextContainer>
-      <Text>{message.text.toUpperCase()}</Text>
-      <DateText>
-        {tDateTimeParser(message.created_at)
-          .calendar()
-          .toUpperCase()}
-      </DateText>
-    </TextContainer>
-    <Line />
-  </Container>
-);
+const MessageSystem = ({ message }) => {
+  const { tDateTimeParser } = useContext(TranslationContext);
+  return (
+    <Container testID='message-system'>
+      <Line />
+      <TextContainer>
+        <Text>{message.text.toUpperCase()}</Text>
+        <DateText>
+          {tDateTimeParser(message.created_at)
+            .calendar()
+            .toUpperCase()}
+        </DateText>
+      </TextContainer>
+      <Line />
+    </Container>
+  );
+};
 
-export default withTranslationContext(MessageSystem);
+export default MessageSystem;

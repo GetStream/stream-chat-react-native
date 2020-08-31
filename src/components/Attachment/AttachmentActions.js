@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import { themed } from '../../styles/theme';
 
@@ -25,10 +25,8 @@ const ActionButton = styled(({ buttonStyle, ...rest }) => (
       : theme.message.actions.button.defaultBorderColor};
   border-radius: 20px;
   border-width: 1px;
-  padding-bottom: 5px;
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-top: 5px;
+  padding-horizontal: 10px;
+  padding-vertical: 5px;
   ${({ theme }) => theme.message.actions.button.css}
 `;
 
@@ -66,14 +64,14 @@ const AttachmentActions = ({ actions, actionHandler, id }) => (
 );
 
 AttachmentActions.propTypes = {
+  /** The handler to execute after selecting an action */
+  actionHandler: PropTypes.func.isRequired,
+  /** A list of actions */
+  actions: PropTypes.array.isRequired,
   // /** The id of the form input */
   id: PropTypes.string,
   /** The text for the form input */
   text: PropTypes.string,
-  /** A list of actions */
-  actions: PropTypes.array.isRequired,
-  /** The handler to execute after selecting an action */
-  actionHandler: PropTypes.func.isRequired,
 };
 
 AttachmentActions.themePath = 'message.actions';

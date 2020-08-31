@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 
-import { Spinner } from '../Spinner';
+import Spinner from '../Spinner/Spinner';
 
 const Container = styled.View`
   align-items: center;

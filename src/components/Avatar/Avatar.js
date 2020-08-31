@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useContext } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Image } from 'react-native';
+import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
 import { themed } from '../../styles/theme';
 import { ChatContext } from '../../context';
 
@@ -69,12 +69,12 @@ const Avatar = ({ image, name, size = BASE_AVATAR_SIZE }) => {
       {image && !imageError ? (
         <AvatarImage
           accessibilityLabel='initials'
+          ImageComponent={ImageComponent || Image}
           onError={() => setImageError(true)}
           resizeMethod='resize'
           size={size}
           source={{ uri: image }}
           testID='avatar-image'
-          ImageComponent={ImageComponent || Image}
         />
       ) : (
         <AvatarFallback size={size}>

@@ -1,6 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import Attachment from './Attachment';
 
@@ -50,15 +50,7 @@ const FileAttachmentGroup = (props) => {
 };
 
 FileAttachmentGroup.propTypes = {
-  messageId: PropTypes.string,
-  files: PropTypes.array,
-  handleAction: PropTypes.func,
   alignment: PropTypes.oneOf(['right', 'left']),
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
@@ -67,6 +59,14 @@ FileAttachmentGroup.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
+  /**
+   * Custom UI component to display File type attachment.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   */
+  FileAttachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  files: PropTypes.array,
+  handleAction: PropTypes.func,
+  messageId: PropTypes.string,
 };
 
 export default FileAttachmentGroup;

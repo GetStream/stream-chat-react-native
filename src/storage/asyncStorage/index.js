@@ -1,16 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 import {
   convertChannelToStorable,
+  convertMemberToStorable,
   convertMessageToStorable,
   convertUserToStorable,
-  convertMemberToStorable,
 } from './mappers';
 import {
-  getQueryKey,
   getChannelKey,
+  getChannelMembersKey,
   getChannelMessagesKey,
   getChannelReadKey,
-  getChannelMembersKey,
+  getQueryKey,
 } from './keys';
 
 const VALID_CHANNELS_SORT_KEYS = [
@@ -210,10 +210,10 @@ export class AsyncLocalStorage {
     let usersToRetrive = [];
     const storedChannels = channels.map((c) => ({
       ...c,
-      messages: state[c.messages],
-      members: state[c.members],
-      read: state[c.read],
       config: state[c.config],
+      members: state[c.members],
+      messages: state[c.messages],
+      read: state[c.read],
     }));
 
     storedChannels.forEach((c) => {

@@ -56,8 +56,8 @@ export class LocalStorage {
       await this.db.storeChannels(query, channelValues, resync);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'storeChannels failed', {
-        tags: [`${this.storageType}`, 'storeChannels'],
         error: e,
+        tags: [`${this.storageType}`, 'storeChannels'],
       });
     }
   }
@@ -72,8 +72,8 @@ export class LocalStorage {
       await this.db.updateChannelData(channelId, data);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateChannelData failed', {
-        tags: [`${this.storageType}`, 'updateChannelData'],
         error: e,
+        tags: [`${this.storageType}`, 'updateChannelData'],
       });
     }
   }
@@ -104,8 +104,8 @@ export class LocalStorage {
       const fChannels = storedChannels.map((c) => {
         this.chatClient._addChannelConfig({
           channel: {
-            type: c.type,
             config: c.config,
+            type: c.type,
           },
         });
 
@@ -133,8 +133,8 @@ export class LocalStorage {
       return fChannels;
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'queryChannels failed', {
-        tags: [`${this.storageType}`, 'queryChannels'],
         error: e,
+        tags: [`${this.storageType}`, 'queryChannels'],
       });
       throw e;
     }
@@ -151,8 +151,8 @@ export class LocalStorage {
         `${this.storageType} storage`,
         'insertMessageForChannel failed',
         {
-          tags: [`${this.storageType}`, 'insertMessageForChannel'],
           error: e,
+          tags: [`${this.storageType}`, 'insertMessageForChannel'],
         },
       );
     }
@@ -165,8 +165,8 @@ export class LocalStorage {
         `${this.storageType} storage`,
         'insertMessagesForChannel failed',
         {
-          tags: [`${this.storageType}`, 'insertMessagesForChannel'],
           error: e,
+          tags: [`${this.storageType}`, 'insertMessagesForChannel'],
         },
       );
     }
@@ -180,8 +180,8 @@ export class LocalStorage {
       await this.db.updateMessage(channelId, message);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateMessage failed', {
-        tags: [`${this.storageType}`, 'updateMessage'],
         error: e,
+        tags: [`${this.storageType}`, 'updateMessage'],
       });
     }
   }
@@ -197,8 +197,8 @@ export class LocalStorage {
         `${this.storageType} storage`,
         'addReactionForMessage failed',
         {
-          tags: [`${this.storageType}`, 'addReactionForMessage'],
           error: e,
+          tags: [`${this.storageType}`, 'addReactionForMessage'],
         },
       );
     }
@@ -215,8 +215,8 @@ export class LocalStorage {
         `${this.storageType} storage`,
         'deleteReactionForMessage failed',
         {
-          tags: [`${this.storageType}`, 'deleteReactionForMessage'],
           error: e,
+          tags: [`${this.storageType}`, 'deleteReactionForMessage'],
         },
       );
     }
@@ -226,8 +226,8 @@ export class LocalStorage {
       await this.db.addMemberToChannel(channel_id, member);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'addMemberToChannel failed', {
-        tags: [`${this.storageType}`, 'addMemberToChannel'],
         error: e,
+        tags: [`${this.storageType}`, 'addMemberToChannel'],
       });
     }
   }
@@ -239,8 +239,8 @@ export class LocalStorage {
         `${this.storageType} storage`,
         'removeMemberFromChannel failed',
         {
-          tags: [`${this.storageType}`, 'removeMemberFromChannel'],
           error: e,
+          tags: [`${this.storageType}`, 'removeMemberFromChannel'],
         },
       );
     }
@@ -250,8 +250,8 @@ export class LocalStorage {
       await this.db.updateMember(member);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateMember failed', {
-        tags: [`${this.storageType}`, 'updateMember'],
         error: e,
+        tags: [`${this.storageType}`, 'updateMember'],
       });
     }
   }
@@ -260,8 +260,8 @@ export class LocalStorage {
       await this.db.updateReadState(channelId, user, lastRead);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'updateReadState failed', {
-        tags: [`${this.storageType}`, 'updateReadState'],
         error: e,
+        tags: [`${this.storageType}`, 'updateReadState'],
       });
     }
   }
@@ -271,8 +271,8 @@ export class LocalStorage {
       return await this.db.queryMessages(channelId, lastMessage, limitPerPage);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'queryMessages failed', {
-        tags: [`${this.storageType}`, 'queryMessages'],
         error: e,
+        tags: [`${this.storageType}`, 'queryMessages'],
       });
     }
   }
@@ -282,8 +282,8 @@ export class LocalStorage {
       await this.db.truncateChannel(channelId);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'truncateChannel failed', {
-        tags: [`${this.storageType}`, 'truncateChannel'],
         error: e,
+        tags: [`${this.storageType}`, 'truncateChannel'],
       });
     }
   }
@@ -293,8 +293,8 @@ export class LocalStorage {
       await this.db.deleteChannel(channelId);
     } catch (e) {
       this.logger(`${this.storageType} storage`, 'deleteChannel failed', {
-        tags: [`${this.storageType}`, 'deleteChannel'],
         error: e,
+        tags: [`${this.storageType}`, 'deleteChannel'],
       });
     }
   }

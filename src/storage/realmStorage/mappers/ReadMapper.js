@@ -5,10 +5,10 @@ export const convertReadStatesToRealm = (channelId, r, realm) => {
   for (const userId in r) {
     if (r[userId] && !r[userId].user) {
       readsArr.push({
+        last_read: r[userId],
         user: {
           id: userId,
         },
-        last_read: r[userId],
       });
     } else {
       readsArr.push(r[userId]);
@@ -41,8 +41,8 @@ export const getReadStatesFromRealmList = (rl) => {
   for (const r of rl) {
     const user = { ...r.user };
     read.push({
-      user,
       last_read: r.lastRead,
+      user,
     });
   }
 

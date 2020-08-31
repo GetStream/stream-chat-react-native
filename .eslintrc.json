@@ -1,4 +1,8 @@
 {
+  "env": {
+    "browser": true,
+    "es6": true
+  },
   "extends": [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -6,114 +10,166 @@
   ],
   "parser": "babel-eslint",
   "parserOptions": {
-    "sourceType": "module",
-    "ecmaVersion": 2018,
     "ecmaFeatures": {
       "modules": true
-    }
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
   },
   "plugins": ["babel", "markdown"],
   "rules": {
+    "array-callback-return": 2,
+    "arrow-body-style": 2,
+    "comma-dangle": 0,
+    "babel/no-invalid-this": 2,
+    "default-case": 2,
+    "eqeqeq": [2, "smart"],
+    "jest/expect-expect": 0,
+    "jsx-quotes": ["error", "prefer-single"],
+    "linebreak-style": [2, "unix"],
     "no-console": 0,
     "no-mixed-spaces-and-tabs": 1,
-    "comma-dangle": 0,
-    "no-unused-vars": [1, { "ignoreRestSiblings": true }],
-    "eqeqeq": [2, "smart"],
-    "no-useless-concat": 2,
-    "default-case": 2,
     "no-self-compare": 2,
-    "prefer-const": 1,
     "no-underscore-dangle": [2, { "allowAfterThis": true }],
-    "object-shorthand": 1,
-    "babel/no-invalid-this": 2,
-    "array-callback-return": 2,
-    "valid-typeof": 2,
-    "arrow-body-style": 2,
-    "require-await": 2,
-    "react/prop-types": 0,
+    "no-unused-vars": [1, { "ignoreRestSiblings": true }],
+    "no-useless-concat": 2,
     "no-var": 2,
-    "linebreak-style": [2, "unix"],
+    "object-shorthand": 1,
+    "prefer-const": 1,
+    "react/jsx-sort-props": [
+      "error",
+      {
+        "callbacksLast": false,
+        "ignoreCase": true,
+        "noSortAlphabetically": false,
+        "reservedFirst": false,
+        "shorthandFirst": false,
+        "shorthandLast": false
+      }
+    ],
+    "react/prop-types": 0,
+    "require-await": 2,
     "semi": [1, "always"],
-    "jest/expect-expect": 0,
-    "jsx-quotes": ["error", "prefer-single"]
-  },
-  "env": {
-    "es6": true,
-    "browser": true
+    "sort-imports": [
+      "error",
+      {
+        "allowSeparatedGroups": true,
+        "ignoreCase": true,
+        "ignoreDeclarationSort": true,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+      }
+    ],
+    "sort-keys": [
+      "error",
+      "asc",
+      { "caseSensitive": false, "minKeys": 2, "natural": false }
+    ],
+    "valid-typeof": 2
   },
   "settings": {
-    "react": {
-      "version": "detect",
-      "pragma": "React"
-    },
     "import/resolver": {
+      "babel-module": {},
       "node": {
-        "paths": ["src"],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      },
-      "babel-module": {}
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "paths": ["src"]
+      }
+    },
+    "react": {
+      "pragma": "React",
+      "version": "detect"
     }
   },
   "overrides": [
     {
       "files": ["*.md"],
       "rules": {
+        "no-undef": 0,
         "react/jsx-no-undef": 0,
         "react/react-in-jsx-scope": 0,
-        "semi": 0,
-        "no-undef": 0
+        "semi": 0
       }
     },
     {
-      "files": ["**/*.ts", "**/*.tsx"],
+      "env": {
+        "es6": true,
+        "browser": true
+      },
       "extends": [
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "prettier/@typescript-eslint",
         "@react-native-community",
         "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:jest/recommended",
         "plugin:prettier/recommended",
-        "plugin:jest/recommended"
+        "plugin:react/recommended",
+        "prettier/@typescript-eslint"
       ],
+      "files": ["**/*.ts", "**/*.tsx"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
-        "sourceType": "module",
-        "ecmaVersion": 2018,
         "ecmaFeatures": {
           "modules": true,
           "jsx": true
-        }
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
       },
       "plugins": [
+        "@typescript-eslint",
         "babel",
         "markdown",
-        "react",
         "prettier",
-        "@typescript-eslint",
+        "react",
         "typescript-sort-keys"
       ],
       "rules": {
+        "@typescript-eslint/ban-ts-comment": 0,
+        "array-callback-return": 2,
+        "arrow-body-style": 2,
+        "comma-dangle": 0,
+        "babel/no-invalid-this": 2,
+        "default-case": 2,
+        "eqeqeq": [2, "smart"],
+        "linebreak-style": [2, "unix"],
+        "jsx-quotes": ["error", "prefer-single"],
         "no-console": 0,
         "no-mixed-spaces-and-tabs": 1,
-        "comma-dangle": 0,
-        "no-unused-vars": [1, { "ignoreRestSiblings": true }],
-        "eqeqeq": [2, "smart"],
-        "no-useless-concat": 2,
-        "default-case": 2,
         "no-self-compare": 2,
-        "prefer-const": 1,
         "no-underscore-dangle": [2, { "allowAfterThis": true }],
-        "object-shorthand": 1,
-        "babel/no-invalid-this": 2,
-        "array-callback-return": 2,
-        "valid-typeof": 2,
-        "arrow-body-style": 2,
-        "require-await": 2,
-        "react/prop-types": 0,
+        "no-unused-vars": [1, { "ignoreRestSiblings": true }],
+        "no-useless-concat": 2,
         "no-var": 2,
-        "linebreak-style": [2, "unix"],
+        "object-shorthand": 1,
+        "prefer-const": 1,
+        "react/jsx-sort-props": [
+          "error",
+          {
+            "callbacksLast": false,
+            "ignoreCase": true,
+            "noSortAlphabetically": false,
+            "reservedFirst": false,
+            "shorthandFirst": false,
+            "shorthandLast": false
+          }
+        ],
+        "react/prop-types": 0,
+        "require-await": 2,
         "semi": [1, "always"],
-        "@typescript-eslint/ban-ts-comment": 0,
+        "sort-imports": [
+          "error",
+          {
+            "allowSeparatedGroups": true,
+            "ignoreCase": true,
+            "ignoreDeclarationSort": true,
+            "ignoreMemberSort": false,
+            "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+          }
+        ],
+        "sort-keys": [
+          "error",
+          "asc",
+          { "caseSensitive": false, "minKeys": 2, "natural": false }
+        ],
         "typescript-sort-keys/interface": [
           "error",
           "asc",
@@ -124,11 +180,7 @@
           "asc",
           { "caseSensitive": false, "natural": true }
         ],
-        "jsx-quotes": ["error", "prefer-single"]
-      },
-      "env": {
-        "es6": true,
-        "browser": true
+        "valid-typeof": 2
       }
     }
   ]

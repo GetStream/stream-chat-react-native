@@ -23,16 +23,16 @@ export const convertChannelMemberToRealm = (
   }
 
   const member = {
+    created_at: m.created_at,
     id: channelId + m.user.id,
-    user_id: m.user.id,
-    user: m.user,
-    is_moderator: m.is_moderator,
-    invited: m.invited,
     invite_accepted_at: m.invite_accepted_at,
     invite_rejected_at: m.invite_rejected_at,
+    invited: m.invited,
+    is_moderator: m.is_moderator,
     role: m.role,
-    created_at: m.created_at,
     updated_at: m.updated_at,
+    user: m.user,
+    user_id: m.user.id,
   };
 
   member.user = realm.create('User', member.user, true);
@@ -45,16 +45,16 @@ export const getMembersFromRealmList = (ml) => {
   const members = [];
   for (const m of ml) {
     const member = {
+      created_at: m.created_at,
       id: m.id,
-      user_id: m.user_id,
-      user: getUserFromRealm(m.user),
-      is_moderator: m.is_moderator,
-      invited: m.invited,
       invite_accepted_at: m.invite_accepted_at,
       invite_rejected_at: m.invite_rejected_at,
+      invited: m.invited,
+      is_moderator: m.is_moderator,
       role: m.role,
-      created_at: m.created_at,
       updated_at: m.updated_at,
+      user: getUserFromRealm(m.user),
+      user_id: m.user_id,
     };
     members.push(member);
   }

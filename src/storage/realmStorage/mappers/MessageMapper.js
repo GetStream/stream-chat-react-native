@@ -1,9 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import {
-  convertReactionsToRealm,
   convertReactionCountsToRealm,
-  getReactionsFromRealmList,
+  convertReactionsToRealm,
   getReactionCountsFromRealmList,
+  getReactionsFromRealmList,
 } from './ReactionMapper';
 import {
   convertAttachmentsToRealm,
@@ -50,22 +50,22 @@ export const convertMessageToRealm = (m, realm, forceUpdate = false) => {
     }
   }
   const message = {
-    id,
-    text,
-    parent_id,
-    command,
-    user,
-    html,
-    type,
-    latest_reactions: latest_reactions ? [...m.latest_reactions] : [],
-    own_reactions: own_reactions ? [...m.own_reactions] : [],
-    mentioned_users: mentioned_users ? [...m.mentioned_users] : [],
-    reaction_counts: reaction_counts ? { ...m.reaction_counts } : [],
     attachments: attachments ? [...m.attachments] : [],
-    show_in_channel,
-    reply_count,
-    status,
+    command,
     extraData: JSON.stringify(extraData),
+    html,
+    id,
+    latest_reactions: latest_reactions ? [...m.latest_reactions] : [],
+    mentioned_users: mentioned_users ? [...m.mentioned_users] : [],
+    own_reactions: own_reactions ? [...m.own_reactions] : [],
+    parent_id,
+    reaction_counts: reaction_counts ? { ...m.reaction_counts } : [],
+    reply_count,
+    show_in_channel,
+    status,
+    text,
+    type,
+    user,
   };
 
   if (isValidDate(updated_at)) {
@@ -111,19 +111,19 @@ export const getMessagesFromRealmList = (ml) => {
   for (const m of ml) {
     const extraData = m.extraData ? JSON.parse(m.extraData) : {};
     const message = {
-      id: m.id,
-      text: m.text,
-      parent_id: m.parent_id,
       command: m.command,
-      user: m.user,
-      html: m.html,
-      type: m.type,
-      show_in_channel: m.show_in_channel,
-      reply_count: m.reply_count,
       created_at: m.created_at,
-      updated_at: m.updated_at,
-      status: m.status,
       deleted_at: m.deleted_at,
+      html: m.html,
+      id: m.id,
+      parent_id: m.parent_id,
+      reply_count: m.reply_count,
+      show_in_channel: m.show_in_channel,
+      status: m.status,
+      text: m.text,
+      type: m.type,
+      updated_at: m.updated_at,
+      user: m.user,
       ...extraData,
     };
     message.attachments = getAttachmentsFromRealmList(m.attachments);

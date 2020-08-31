@@ -1,18 +1,18 @@
 import React, { useContext, useState } from 'react';
-import { Text, View, Modal, Image, SafeAreaView } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
-import PropTypes from 'prop-types';
+import { Image, Modal, SafeAreaView, Text, View } from 'react-native';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
+import ImageViewer from 'react-native-image-zoom-viewer';
+
+import CloseButton from '../CloseButton/CloseButton';
 
 import {
+  ChatContext,
   MessageContentContext,
   TranslationContext,
-  ChatContext,
 } from '../../context';
 import { themed } from '../../styles/theme';
-import { makeImageCompatibleUrl } from '../../utils';
-
-import { CloseButton } from '../CloseButton';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const Single = styled.TouchableOpacity`
   border-top-left-radius: 16px;
@@ -179,7 +179,7 @@ const Gallery = ({ alignment, images }) => {
                   }}
                 >
                   <Text
-                    style={{ color: 'white', fontWeight: '700', fontSize: 22 }}
+                    style={{ color: 'white', fontSize: 22, fontWeight: '700' }}
                   >
                     {' '}
                     +{' '}
@@ -225,6 +225,12 @@ const Gallery = ({ alignment, images }) => {
 };
 
 Gallery.propTypes = {
+  /**
+   * Provide any additional props for child `TouchableOpacity`.
+   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   */
+  additionalTouchableProps: PropTypes.object,
+  alignment: PropTypes.string,
   /** The images to render */
   images: PropTypes.arrayOf(
     PropTypes.shape({
@@ -233,12 +239,6 @@ Gallery.propTypes = {
     }),
   ),
   onLongPress: PropTypes.func,
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  alignment: PropTypes.string,
 };
 
 Gallery.themePath = 'message.gallery';

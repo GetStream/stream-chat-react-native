@@ -1,8 +1,9 @@
 import { useContext, useEffect } from 'react';
 import uniqBy from 'lodash/uniqBy';
 
-import { ChatContext } from '../../../../context';
 import { getChannel } from '../../utils';
+
+import { ChatContext } from '../../../../context';
 
 export const useAddedToChannelNotification = ({
   onAddedToChannel,

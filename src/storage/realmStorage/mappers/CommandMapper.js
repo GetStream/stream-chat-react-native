@@ -4,9 +4,9 @@ export const convertCommandsToRealm = (commands, realm) =>
 
 export const convertCommandToRealm = (c, realm) => {
   const command = {
-    name: c.name,
-    description: c.description,
     args: c.args,
+    description: c.description,
+    name: c.name,
     set: c.set,
   };
 

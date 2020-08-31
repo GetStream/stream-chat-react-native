@@ -15,21 +15,21 @@ export const convertChannelConfigToStorable = (
   appUserId,
 ) => {
   const config = {
-    type,
-    name: c.name,
-    typing_events: c.typing_events,
-    read_events: c.read_events,
-    connect_events: c.connect_events,
-    reactions: c.reactions,
-    replies: c.replies,
-    search: c.search,
-    mutes: c.mutes,
-    message_retention: c.message_retention,
-    max_message_length: c.max_message_length,
-    uploads: c.uploads,
     automod: c.automod,
     automod_behavior: c.automod_behavior,
     commands: c.commands,
+    connect_events: c.connect_events,
+    max_message_length: c.max_message_length,
+    message_retention: c.message_retention,
+    mutes: c.mutes,
+    name: c.name,
+    reactions: c.reactions,
+    read_events: c.read_events,
+    replies: c.replies,
+    search: c.search,
+    type,
+    typing_events: c.typing_events,
+    uploads: c.uploads,
   };
 
   storables[getChannelConfigKey(appUserId, type)] = config;

@@ -1,7 +1,8 @@
 import { useContext, useEffect } from 'react';
 
-import { ChatContext } from '../../../../context';
 import { moveChannelUp } from '../../utils';
+
+import { ChatContext } from '../../../../context';
 
 export const useNewMessage = ({ lockChannelOrder, setChannels }) => {
   const { client } = useContext(ChatContext);

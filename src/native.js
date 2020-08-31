@@ -4,8 +4,8 @@ const fail = () => {
   );
 };
 export let NetInfo = {
-  fetch: fail,
   addEventListener: fail,
+  fetch: fail,
 };
 export let pickImage = fail;
 export let pickDocument = fail;

@@ -13,6 +13,7 @@ console.error = (e) => {
     _consoleE(e);
   }
 };
+console.warn = () => {};
 
 registerNativeHandlers({
   NetInfo: {
@@ -22,6 +23,6 @@ registerNativeHandlers({
         resolve();
       }),
   },
-  pickImage: () => null,
   pickDocument: () => null,
+  pickImage: () => null,
 });

@@ -1,20 +1,19 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { v4 as uuidv4 } from 'uuid';
 import truncate from 'lodash/truncate';
+import { v4 as uuidv4 } from 'uuid';
 
-import {
-  generateChannel,
-  generateMember,
-  generateMessage,
-  generateUser,
-  getOrCreateChannelApi,
-  getTestClientWithUser,
-  useMockedApis,
-} from 'mock-builders';
+import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from 'mock-builders/api/useMockedApis';
+import { generateChannel } from 'mock-builders/generator/channel';
+import { generateMember } from 'mock-builders/generator/member';
+import { generateMessage } from 'mock-builders/generator/message';
+import { generateUser } from 'mock-builders/generator/user';
+import { getTestClientWithUser } from 'mock-builders/mock';
 
 import ChannelPreviewMessenger from '../ChannelPreviewMessenger';
-import { Chat } from '../../Chat';
+
+import Chat from '../../Chat/Chat';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();

@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 import { ChatContext } from '../../../context';
 
@@ -88,13 +88,13 @@ export const usePaginatedChannels = (filters = {}, options = {}, sort = {}) => {
   }, [filters]);
 
   return {
+    active,
     channels,
     hasNextPage,
     loadNextPage,
     refreshList,
     reloadList,
     setChannels,
-    active,
     status: {
       error,
       loadingChannels,

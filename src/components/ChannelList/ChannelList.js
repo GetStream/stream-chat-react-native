@@ -84,8 +84,8 @@ const ChannelList = (props) => {
         forceUpdate={forceUpdate}
         hasNextPage={hasNextPage}
         loadingChannels={status.loadingChannels}
-        loadNextPage={loadNextPage}
         loadingNextPage={status.loadingNextPage}
+        loadNextPage={loadNextPage}
         refreshing={status.refreshing}
         refreshList={refreshList}
         reloadList={reloadList}
@@ -104,13 +104,13 @@ const ChannelList = (props) => {
       {...props}
       channels={ls__channels}
       error={ls__status.error}
+      forceUpdate={forceUpdate}
       hasNextPage={ls__hasNextPage}
       loadingChannels={ls__status.loadingChannels}
-      loadNextPage={ls__loadNextPage}
       loadingNextPage={ls__status.loadingNextPage}
+      loadNextPage={ls__loadNextPage}
       refreshing={ls__status.refreshing}
       reloadList={ls__reloadList}
-      forceUpdate={forceUpdate}
       setActiveChannel={onSelect}
       setFlatListRef={(ref) => {
         listRef.current = ref;
@@ -120,6 +120,7 @@ const ChannelList = (props) => {
   );
 };
 
+/* eslint-disable */
 ChannelList.propTypes = {
   /**
    * Besides the existing default behavior of the ChannelListMessenger component, you can attach
@@ -291,5 +292,6 @@ ChannelList.propTypes = {
    * */
   Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
 };
+/* eslint-enable */
 
 export default ChannelList;

@@ -218,17 +218,28 @@ const AutoCompleteInput = ({
 
 AutoCompleteInput.propTypes = {
   /**
-   * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
+   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
    *
-   * @see See https://facebook.github.io/react-native/docs/textinput#reference
+   * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps: PropTypes.object,
   /**
+   * Handling text change events in the parent
+   *
    * @param text string
    */
   onChange: PropTypes.func,
+  /**
+   * Ref callback to set reference on input box
+   */
   setInputBoxRef: PropTypes.func,
+  /**
+   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
+   */
   triggerSettings: PropTypes.object,
+  /**
+   * Text value of the TextInput
+   */
   value: PropTypes.string,
 };
 

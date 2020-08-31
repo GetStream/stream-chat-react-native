@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+
 import { themed } from '../../styles/theme';
 
 const CommandArgs = styled.Text`
@@ -45,8 +46,17 @@ const CommandsItem = ({ item: { args, description, name } }) => (
 
 CommandsItem.propTypes = {
   item: PropTypes.shape({
+    /**
+     * Arguments which can be passed to the command
+     */
     args: PropTypes.string,
+    /**
+     * Description of the command
+     */
     description: PropTypes.string,
+    /**
+     * Name of the command
+     */
     name: PropTypes.string,
   }),
 };

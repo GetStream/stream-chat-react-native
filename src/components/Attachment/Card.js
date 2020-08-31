@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { Linking, View } from 'react-native';
-import PropTypes from 'prop-types';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { makeImageCompatibleUrl } from '../../utils';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const Container = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.light};
@@ -123,29 +123,29 @@ const Card = (props) => {
 };
 
 Card.propTypes = {
-  /** Title returned by the OG scraper */
-  title: PropTypes.string,
-  /** Link returned by the OG scraper */
-  title_link: PropTypes.string,
-  /** The scraped url, used as a fallback if the OG-data doesn't include a link */
-  og_scrape_url: PropTypes.string,
-  /** The url of the full sized image */
-  image_url: PropTypes.string,
-  /** The url for thumbnail sized image*/
-  thumb_url: PropTypes.string,
-  /** Description returned by the OG scraper */
-  text: PropTypes.string,
-  type: PropTypes.string,
-  alignment: PropTypes.string,
-  onLongPress: PropTypes.func,
   /**
    * Provide any additional props for child `TouchableOpacity`.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
    */
   additionalTouchableProps: PropTypes.object,
-  Header: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  alignment: PropTypes.string,
   Cover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   Footer: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  Header: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /** The url of the full sized image */
+  image_url: PropTypes.string,
+  /** The scraped url, used as a fallback if the OG-data doesn't include a link */
+  og_scrape_url: PropTypes.string,
+  onLongPress: PropTypes.func,
+  /** Description returned by the OG scraper */
+  text: PropTypes.string,
+  /** The url for thumbnail sized image*/
+  thumb_url: PropTypes.string,
+  /** Title returned by the OG scraper */
+  title: PropTypes.string,
+  /** Link returned by the OG scraper */
+  title_link: PropTypes.string,
+  type: PropTypes.string,
 };
 
 Card.themePath = 'card';

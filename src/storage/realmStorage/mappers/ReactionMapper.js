@@ -14,11 +14,11 @@ export const convertReactionsToRealm = (reactions, realm) =>
 
 export const convertReactionToRealm = (lr, realm) => {
   const latestReaction = {
-    id: lr.id,
-    type: lr.type,
-    message_id: lr.message_id,
-    user_id: lr.user_id,
     created_at: lr.created_at,
+    id: lr.id,
+    message_id: lr.message_id,
+    type: lr.type,
+    user_id: lr.user_id,
   };
   latestReaction.id =
     latestReaction.message_id + latestReaction.user_id + latestReaction.type;
@@ -36,9 +36,9 @@ export const convertReactionCountsToRealm = (
 
   const reactionsCount = rcKeys.map((type) => {
     const reactionCount = {
+      count: reaction_counts[type],
       id: `${messageId}${type}`,
       type,
-      count: reaction_counts[type],
     };
 
     return realm.create('ReactionCount', reactionCount, true);

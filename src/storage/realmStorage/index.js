@@ -1,25 +1,25 @@
 import {
-  QueryChannelsSchema,
-  ChannelSchema,
-  MemberSchema,
-  UserSchema,
-  MessageSchema,
-  ReadSchema,
-  ReactionSchema,
-  ChannelConfigSchema,
-  CommandSchema,
   AttachmentSchema,
+  ChannelConfigSchema,
+  ChannelSchema,
+  CommandSchema,
+  MemberSchema,
+  MessageSchema,
+  QueryChannelsSchema,
   ReactionCountSchema,
+  ReactionSchema,
+  ReadSchema,
+  UserSchema,
 } from './schemas';
 import {
-  getMessagesFromRealmList,
-  getReadStatesFromRealmList,
-  getChannelConfigFromRealm,
+  convertChannelMemberToRealm,
+  convertChannelToRealm,
   convertMessageToRealm,
   convertReadStateToRealm,
-  convertChannelToRealm,
-  convertChannelMemberToRealm,
+  getChannelConfigFromRealm,
   getMembersFromRealmList,
+  getMessagesFromRealmList,
+  getReadStatesFromRealmList,
 } from './mappers';
 import { isValidDate } from '../../utils';
 
@@ -122,8 +122,8 @@ export class RealmStorage {
         realm.create(
           'QueryChannels',
           {
-            query,
             channels: offlineChannels,
+            query,
           },
           true,
         );
@@ -195,17 +195,17 @@ export class RealmStorage {
       const config = getChannelConfigFromRealm(c.config);
 
       channels.push({
-        type: c.type,
-        id: c.id,
         cid: c.cid,
-        created_at: c.created_at,
-        updated_at: c.updated_at,
-        initialized: c.initialized,
-        data: JSON.parse(c.data),
-        messages,
-        members,
-        read,
         config,
+        created_at: c.created_at,
+        data: JSON.parse(c.data),
+        id: c.id,
+        initialized: c.initialized,
+        members,
+        messages,
+        read,
+        type: c.type,
+        updated_at: c.updated_at,
       });
     }
     return channels;
@@ -339,8 +339,8 @@ export class RealmStorage {
       channel.read.push(
         convertReadStateToRealm(channelId, {
           last_read: lastRead,
-          user,
           realm,
+          user,
         }),
       );
     });

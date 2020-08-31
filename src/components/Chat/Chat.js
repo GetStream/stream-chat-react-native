@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
-import { ChatContext, TranslationContext } from '../../context';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
+
+import { ChatContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 import { Streami18n } from '../../utils/Streami18n';
 
@@ -56,14 +57,14 @@ const Chat = (props) => {
 
   if (!translators.t) return null;
   const chatContext = {
-    storage,
-    ImageComponent,
     channel,
     client,
     connectionRecovering,
+    ImageComponent,
     isOnline,
     logger,
     setActiveChannel,
+    storage,
   };
 
   return (
@@ -79,13 +80,6 @@ Chat.propTypes = {
   /** The StreamChat client object */
   client: PropTypes.object.isRequired,
   /**
-   * Theme object
-   *
-   * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-   * */
-  style: PropTypes.object,
-  logger: PropTypes.func,
-  /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
    * Stream provides following list of in-built translations:
@@ -97,7 +91,7 @@ Chat.propTypes = {
    * Simplest way to start using chat components in one of the in-built languages would be following:
    *
    * ```
-   * const i18n = new Streami18n('nl);
+   * const i18n = new Streami18n('nl');
    * <Chat client={chatClient} i18nInstance={i18n}>
    *  ...
    * </Chat>
@@ -107,7 +101,7 @@ Chat.propTypes = {
    * UI will be automatically updated in this case.
    *
    * ```
-   * const i18n = new Streami18n('nl);
+   * const i18n = new Streami18n('nl');
    *
    * i18n.registerTranslation('nl', {
    *  'Nothing yet...': 'Nog Niet ...',
@@ -137,6 +131,13 @@ Chat.propTypes = {
    * ```
    */
   i18nInstance: PropTypes.instanceOf(Streami18n),
+  logger: PropTypes.func,
+  /**
+   * Theme object
+   *
+   * @ref https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
+   * */
+  style: PropTypes.object,
 };
 
 Chat.themePath = '';

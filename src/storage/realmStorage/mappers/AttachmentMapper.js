@@ -3,21 +3,21 @@ export const convertAttachmentsToRealm = (attachments, realm) => {
 
   return attachments.map((a) => {
     const attachment = {
-      type: a.type,
-      fallback: a.fallback,
-      pretext: a.pretext,
-      autor_name: a.autor_name,
-      author_link: a.author_link,
+      actions: a.actions ? JSON.stringify(a.actions) : undefined,
       author_icon: a.author_icon,
-      title: a.title,
-      title_link: a.title_link,
-      text: a.text,
-      image_url: a.image_url,
-      thumb_url: a.thumb_url,
+      author_link: a.author_link,
+      autor_name: a.autor_name,
+      fallback: a.fallback,
       footer: a.footer,
       footer_icon: a.footer_icon,
-      actions: a.actions ? JSON.stringify(a.actions) : undefined,
+      image_url: a.image_url,
       og_scrape_url: a.og_scrape_url,
+      pretext: a.pretext,
+      text: a.text,
+      thumb_url: a.thumb_url,
+      title: a.title,
+      title_link: a.title_link,
+      type: a.type,
     };
 
     return realm.create('Attachment', attachment);
