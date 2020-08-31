@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.3.0] 2020-09-01
+
+- We converted the ChannelList component from a class to a function. We also abstracted the event listener logic into custom hooks. On upgrading to this release, ensure events and any custom handling functions (ex: `onAddedToChannel` or `onMessageNew`) are properly processed and update the UI as expected.
+
 ## [1.2.0] 2020-08-21
 
 **NO BREAKING CHANGES**
@@ -43,11 +47,11 @@ Breaking change: stream-chat-react-native now relies on hooks and will need reac
 
 Rewrite will involve following changes:
 
-1. Functional compoenents instead of class based components
+1. Functional components instead of class based components
 2. Static typing using typescript
 3. UI tests
 
-We are going to increamentally implement these changes and will try to keep everything backwards compatible unless really necessary.
+We are going to incrementally implement these changes and will try to keep everything backwards compatible unless really necessary.
 
 ## [0.15.2] 2020-07-29
 
@@ -171,7 +175,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
   - messageInput.suggestions.command.description
 
 - Handling `channel.hidden` event in  `ChannelList` component
-- Adding support for function prop `onChannelHidde` on `ChannelList`
+- Adding support for function prop `onChannelHide` on `ChannelList`
 - Avoid breaking markRead api call if channel is disconnected [a1cfd96](https://github.com/GetStream/stream-chat-react-native/commit/a1cfd96ebfcd2859164c60a0535abe8791f826ac)
 - Updating `stream-chat` version to `1.7.3`
 - Fixing the error: `[Unhandled promise rejection: TypeError: mimeType.startsWith is not a function. (In 'mimeType.startsWith('image/')', 'mimeType.startsWith' is undefined)]` [451b2a4](https://github.com/GetStream/stream-chat-react-native/commit/451b2a4e19ad202f5c5f428b369301ee312e0c3f)
@@ -405,7 +409,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 - Adding boolean prop `hideReactionCount` and `hideReactionOwners` in `MessageSimple` component. [3814266](https://github.com/GetStream/stream-chat-react-native/commit/38142667fb3290b4c81495a5a92fbfda7856bfe4)
 - `MessageInput` and `MessageList` component as prop in `Thread` component. [db97289](https://github.com/GetStream/stream-chat-react-native/commit/db97289f7f79c055816cfdc6377b590076e178ee)
 - Disabling keyboard listeners when app goes to background [8a372e6](https://github.com/GetStream/stream-chat-react-native/commit/8a372e62f56cdd9389d73dfc4ab5ba8d5077a37e)
-- Dismiss keyboard when opening actionsheet. [bb12a55](https://github.com/GetStream/stream-chat-react-native/commit/bb12a55c9125c6168289f642f10d0340ea3b3abe)
+- Dismiss keyboard when opening action sheet. [bb12a55](https://github.com/GetStream/stream-chat-react-native/commit/bb12a55c9125c6168289f642f10d0340ea3b3abe)
 - Disable escaping in translator function. [a5118dc](https://github.com/GetStream/stream-chat-react-native/commit/a5118dc9606878242de3a2c9015a88fc6ccd7021)
 - Allow moderator to edit/delete message. [44165f6](https://github.com/GetStream/stream-chat-react-native/commit/44165f677d5883ab53c908a615bbd914ccb9401b)
 
@@ -415,7 +419,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.7.0] 2020-03-17
 
-- Introducing internationalisation (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/docs/Streami18n.md
+- Introducing internationalization (i18n) support for the sdk https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/docs/Streami18n.md
 
 ## [0.6.6] 2020-02-20
 
@@ -454,7 +458,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 - Fixing date issue in `MessageSystem` component. ([35c18e3](https://github.com/GetStream/stream-chat-react-native/commit/35c18e3da0503f152d8caec9011d9d2132529661))
 - Adding prop for AttachButton to MessageInput ([600b1d2](https://github.com/GetStream/stream-chat-react-native/commit/600b1d28d87e837de7f1249880bb436065277e0f))
 - Adding prop `formatDate` to `MessageSimple` component ([c3cfdf6](https://github.com/GetStream/stream-chat-react-native/commit/c3cfdf67b7887f7bb171f21daf1ed980da21f44b))
-- Adding style and text customizability to LoadingIndicator ([232241c](https://github.com/GetStream/stream-chat-react-native/commit/232241c1b84a7cf9f6729039e8e1a404e092818e))
+- Adding style and text customization to LoadingIndicator ([232241c](https://github.com/GetStream/stream-chat-react-native/commit/232241c1b84a7cf9f6729039e8e1a404e092818e))
 
 ## [0.6.2] 2020-01-20
 
@@ -526,17 +530,17 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 #### stream-chat-expo (Expo package)
 
 - Changes to add compatibility for Expo 36. Adding [netinfo](https://github.com/react-native-community/react-native-netinfo) as peer dependency - https://github.com/GetStream/stream-chat-react-native/issues/97
-- Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
+- Disabling the long press on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 - Fixing broken threads issue
 - Support for `additionalFlatListProps` prop in `MessageList` and `ChannelList` component
-- Changing proptype for component type props to `elementType` instead of `func`
+- Changing prop-type for component type props to `elementType` instead of `func`
 
 #### stream-chat-react-native (Native package)
 
-- Disabling the longpress on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
+- Disabling the long press on image viewer (in Attachment) - https://github.com/GetStream/stream-chat-react-native/issues/100 to avoid freezing of UI.
 - Fixing broken threads issue
 - Support for `additionalFlatListProps` prop in `MessageList` and `ChannelList` component
-- Changing proptype for component type props to `elementType` instead of `func`
+- Changing prop-type for component type props to `elementType` instead of `func`
 
 ## [0.4.0] 2019-12-16
 
@@ -575,11 +579,11 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 
 ## [0.3.6] 2019-11-04
 
-- Adding support for `actionSheetStyles` prop, so as to add more customizability for styles of actionsheet.
+- Adding support for `actionSheetStyles` prop, so as to add more customization for styles of action sheet.
 
 ## [0.3.5] 2019-10-28
 
-- Fixing some styles for actionsheet in MessageSimple component.
+- Fixing some styles for action sheet in MessageSimple component.
 
 ## [0.3.4] 2019-10-03
 
@@ -602,7 +606,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 ## [0.3.0] 2019-09-30
 
 - Adding typescript declaration file
-- Adding style customization support for actionsheet
+- Adding style customization support for action sheet
 
 ## [0.2.6] 2019-09-23
 
@@ -626,7 +630,7 @@ From now on, autocomplete input (specifically mentions autocomplete) will be api
 ## [0.2.2] 2019-09-06
 
 - Updated example two to react native 0.60
-- Fixing UX for image/file picker - closing keyboard when you open file/image picker actionsheet
+- Fixing UX for image/file picker - closing keyboard when you open file/image picker action sheet
 
 ## [0.2.1] 2019-09-02
 

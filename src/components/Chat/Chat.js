@@ -39,7 +39,7 @@ const Chat = (props) => {
   useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
-  const { isOnline, connectionRecovering } = useIsOnline({
+  const { connectionRecovering, isOnline } = useIsOnline({
     client,
   });
 
