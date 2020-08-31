@@ -10,7 +10,7 @@ import {
   getAttachmentsFromRealmList,
 } from './AttachmentMapper';
 import { convertUsersToRealm, getUsersFromRealmList } from './UserMapper';
-import { isValidDate } from '../../../utils';
+import { isValidDate } from '../../../utils/utils';
 
 export const convertMessagesToRealm = (messages, realm) =>
   messages.map((m) => convertMessageToRealm(m, realm));

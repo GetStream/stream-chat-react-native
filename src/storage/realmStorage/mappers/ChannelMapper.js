@@ -3,7 +3,7 @@ import { convertMessagesToRealm } from './MessageMapper';
 import { convertChannelMembersToRealm } from './MemberMapper';
 import { convertChannelConfigToRealm } from './ChannelConfigMapper';
 import { convertReadStatesToRealm } from './ReadMapper';
-import { isValidDate } from '../../../utils';
+import { isValidDate } from '../../../utils/utils';
 
 export const convertChannelToRealm = (channel, realm) => {
   let isUpdated = true;

@@ -224,3 +224,13 @@ export const makeImageCompatibleUrl = (url) => {
 
   return newUrl.trim();
 };
+
+export const isValidDate = (d) => {
+  let date = d;
+
+  if (typeof d === 'string') {
+    date = new Date(d);
+  }
+
+  return date instanceof Date && !isNaN(date);
+};

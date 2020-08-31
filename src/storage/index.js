@@ -117,7 +117,6 @@ export class LocalStorage {
           messages: c.messages,
           read: c.read,
         });
-        console.r.log('>> >>', fChannel);
 
         // TODO: Currently I am maintainign two variables on channel
         //

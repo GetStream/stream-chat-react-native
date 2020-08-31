@@ -7,8 +7,6 @@ export * from './utils/renderText';
 export * from './utils/Streami18n';
 export * from './utils/utils';
 
-export * from './i18n';
-
 export {
   AsyncLocalStorage,
   getStreamChatKey,
@@ -22,6 +20,7 @@ export {
 } from './storage/asyncStorage';
 export { RealmStorage } from './storage/realmStorage/index.js';
 export { LocalStorage } from './storage';
+
 export { default as enTranslations } from './i18n/en.json';
 export { default as frTranslations } from './i18n/fr.json';
 export { default as hiTranslations } from './i18n/hi.json';

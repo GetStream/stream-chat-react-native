@@ -21,7 +21,7 @@ import {
   getMessagesFromRealmList,
   getReadStatesFromRealmList,
 } from './mappers';
-import { isValidDate } from '../../utils';
+import { isValidDate } from '../../utils/utils';
 
 const SCHEMA_VERSION = 0;
 
