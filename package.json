@@ -44,8 +44,18 @@
     "source": "src",
     "output": "lib",
     "targets": [
-      "commonjs",
-      "module",
+      [
+        "commonjs",
+        {
+          "babelrc": true
+        }
+      ],
+      [
+        "module",
+        {
+          "babelrc": true
+        }
+      ],
       "typescript"
     ]
   },
@@ -136,6 +146,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-i18next-extract": "^0.6.1",
     "babel-plugin-react-native-web": "^0.11.2",
+    "babel-plugin-typescript-to-proptypes": "^1.4.0",
     "babel-preset-expo": "^5.0.0",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",

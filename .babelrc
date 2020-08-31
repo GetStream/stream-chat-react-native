@@ -1,10 +1,5 @@
 {
-  "presets": ["@babel/env", "module:metro-react-native-babel-preset"],
-  "plugins": [
-    "macros",
-    "@babel/transform-runtime",
-    "babel-plugin-styled-components"
-  ],
+  "comments": true,
   "env": {
     "production": {
       "presets": [
@@ -16,5 +11,16 @@
         ]
       ]
     }
-  }
+  },
+  "overrides": [
+    {
+      "compact": false
+    }
+  ],
+  "plugins": [
+    "macros",
+    "babel-plugin-styled-components",
+    ["babel-plugin-typescript-to-proptypes", { "comments": true }]
+  ],
+  "presets": ["@babel/env", "module:metro-react-native-babel-preset"]
 }

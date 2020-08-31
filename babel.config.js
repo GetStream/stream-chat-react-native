@@ -1,6 +1,4 @@
 module.exports = {
-  presets: ['@babel/env', 'module:metro-react-native-babel-preset'],
-  plugins: ['macros', 'babel-plugin-styled-components'],
   env: {
     production: {
       presets: [
@@ -18,4 +16,10 @@ module.exports = {
       compact: false,
     },
   ],
+  plugins: [
+    'macros',
+    'babel-plugin-styled-components',
+    ['babel-plugin-typescript-to-proptypes', { comments: true }],
+  ],
+  presets: ['@babel/env', 'module:metro-react-native-babel-preset'],
 };
