@@ -33,6 +33,7 @@ export const useIsOnline = ({
 
     const setConnectionListener = () => {
       NetInfo.fetch().then((isConnected) => {
+        setIsOnline(isConnected);
         notifyChatClient(isConnected);
       });
       setUnsubscribeNetInfo(
