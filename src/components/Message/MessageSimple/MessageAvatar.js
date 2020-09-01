@@ -53,7 +53,7 @@ MessageAvatar.propTypes = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object,
   /**
-   * Should show avatar.
+   * Whether or not to show user avatar
    */
   showAvatar: PropTypes.bool,
 };

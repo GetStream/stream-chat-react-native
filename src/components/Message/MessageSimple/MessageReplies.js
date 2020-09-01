@@ -61,7 +61,7 @@ MessageReplies.propTypes = {
   isThreadList: PropTypes.bool,
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object,
-  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
+  /** @see See [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext) */
   openThread: PropTypes.func,
 };
 

@@ -223,7 +223,7 @@ const MessageContentWithContext = React.memo((props) => {
         await handleDelete();
         break;
       case MESSAGE_ACTIONS.reply:
-        onShowActionSheet();
+        onOpenThread();
         break;
       case MESSAGE_ACTIONS.reactions:
         openReactionPicker();

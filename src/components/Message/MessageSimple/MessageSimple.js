@@ -24,7 +24,6 @@ const Container = styled.View`
  * Message UI component
  *
  * @example ../../docs/MessageSimple.md
- * @extends Component
  */
 const MessageSimple = (props) => {
   const {
@@ -156,7 +155,7 @@ MessageSimple.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** @see See [keyboard context](https://getstream.io/chat/docs/#keyboardcontext) */
+  /** @see See [KeyboardContext](https://getstream.io/chat/docs/#keyboardcontext) */
   dismissKeyboard: PropTypes.func,
   /**
    * Custom UI component to display File type attachment.
