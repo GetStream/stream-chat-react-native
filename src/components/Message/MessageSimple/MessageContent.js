@@ -18,6 +18,7 @@ import {
   ChannelContext,
   KeyboardContext,
   MessageContentContext,
+  MessagesContext,
   TranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
@@ -154,7 +155,6 @@ const MessageContent = (props) => {
     alignment,
     canDeleteMessage,
     canEditMessage,
-    disabled,
     dismissReactionPicker,
     formatDate,
     getTotalReactionCount,
@@ -168,7 +168,7 @@ const MessageContent = (props) => {
     isMyMessage,
     markdownRules,
     message,
-    messageActions,
+    messageActions = Object.keys(MESSAGE_ACTIONS),
     MessageReplies = DefaultMessageReplies,
     onLongPress,
     onMessageTouch,
@@ -180,15 +180,18 @@ const MessageContent = (props) => {
     reactionsEnabled = true,
     readOnly,
     repliesEnabled = true,
-    retrySendMessage,
     supportedReactions = emojiData,
     threadList,
   } = props;
 
-  const { Attachment = DefaultAttachment, Message, channel } = useContext(
-    ChannelContext,
-  );
+  const {
+    Attachment = DefaultAttachment,
+    disabled,
+    Message,
+    channel,
+  } = useContext(ChannelContext);
   const { dismissKeyboard } = useContext(KeyboardContext);
+  const { retrySendMessage } = useContext(MessagesContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
@@ -529,8 +532,6 @@ MessageContent.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Disables the message UI. Which means, message actions, reactions won't work. */
-  disabled: PropTypes.bool,
   /** Dismiss the reaction picker */
   dismissReactionPicker: PropTypes.func,
   /**
@@ -706,6 +707,8 @@ MessageContent.propTypes = {
    * ]
    */
   supportedReactions: PropTypes.array,
+  /** Whether or not the MessageList is part of a Thread */
+  threadList: PropTypes.bool,
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js

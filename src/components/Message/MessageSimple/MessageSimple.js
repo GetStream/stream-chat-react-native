@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
@@ -7,6 +7,7 @@ import DefaultMessageContent from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
+import { ChannelContext, KeyboardContext } from '../../../context';
 
 const Container = styled.View`
   align-items: flex-end;
@@ -27,9 +28,6 @@ const Container = styled.View`
  */
 const MessageSimple = (props) => {
   const {
-    channel,
-    disabled,
-    dismissKeyboard,
     forceAlign = false,
     groupStyles,
     isMyMessage,
@@ -42,6 +40,8 @@ const MessageSimple = (props) => {
     showMessageStatus = true,
   } = props;
 
+  const { channel, disabled } = useContext(ChannelContext);
+  const { dismissKeyboard } = useContext(KeyboardContext);
   /**
    * reactionPickerVisible has been lifted up in MessageSimple component so that one can use
    * ReactionPickerWrapper component outside MessageContent as well. This way `Add Reaction` message
@@ -156,10 +156,6 @@ MessageSimple.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-  client: PropTypes.object,
-  /** Disables the message UI. Which means, message actions, reactions won't work. */
-  disabled: PropTypes.bool,
   /** @see See [keyboard context](https://getstream.io/chat/docs/#keyboardcontext) */
   dismissKeyboard: PropTypes.func,
   /**
@@ -325,8 +321,6 @@ MessageSimple.propTypes = {
    * @param message A message object to open the thread upon.
    */
   onThreadSelect: PropTypes.func,
-  /** @see See [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext) */
-  openThread: PropTypes.func,
   /**
    * Custom UI component to display reaction list.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js

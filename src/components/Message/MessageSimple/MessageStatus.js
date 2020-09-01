@@ -58,10 +58,14 @@ const StatusContainer = styled.View`
   width: 20px;
 `;
 
-const MessageStatus = ({ lastReceivedId, message, readBy, threadList }) => {
+const MessageStatus = ({
+  lastReceivedId,
+  message,
+  readBy = [],
+  threadList,
+}) => {
   const { client } = useContext(ChatContext);
-  const justReadByMe =
-    readBy.length === 1 && readBy[0] && readBy[0].id === client.user.id;
+  const justReadByMe = readBy.length === 1 && readBy[0].id === client.user.id;
 
   const Status = () => {
     if (message.status === 'sending') {
@@ -123,7 +127,9 @@ MessageStatus.propTypes = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object.isRequired,
   /** A list of users who have read the message */
-  readBy: PropTypes.array.isRequired,
+  readBy: PropTypes.array,
+  /** Whether or not the MessageList is part of a Thread */
+  threadList: PropTypes.bool,
 };
 
 export default MessageStatus;

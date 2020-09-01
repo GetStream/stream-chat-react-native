@@ -73,7 +73,8 @@ const MessageList = (props) => {
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
-  const { t } = useContext(TranslationContext);
+  /**
+   * const { t } = useContext(TranslationContext);
   const { client, isOnline } = useContext(ChatContext);
   const {
     Attachment,
@@ -91,15 +92,27 @@ const MessageList = (props) => {
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
   );
+   */
+
+  const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
+    ChannelContext,
+  );
+  const { client, isOnline } = useContext(ChatContext);
+  const { clearEditingState, editing, loadMore: mainLoadMore } = useContext(
+    MessagesContext,
+  );
+  const { loadMoreThread } = useContext(ThreadContext);
+  const { t } = useContext(TranslationContext);
+
   const messageList = useMessageList({ noGroupByUser, threadList });
 
   const flatListRef = useRef();
   const yOffset = useRef(0);
 
-  const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
+  const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
@@ -141,6 +154,25 @@ const MessageList = (props) => {
       return (
         <DefaultMessage
           actionSheetStyles={actionSheetStyles}
+          AttachmentFileIcon={AttachmentFileIcon}
+          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
+          groupStyles={message.groupStyles}
+          lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
+          message={message}
+          messageActions={messageActions}
+          onMessageTouch={onMessageTouch}
+          onThreadSelect={onThreadSelect}
+          readBy={message.readBy || []}
+          threadList={threadList}
+        />
+      );
+    }
+  };
+
+  /**
+   * 
+   * <DefaultMessage
+          actionSheetStyles={actionSheetStyles}
           Attachment={Attachment}
           AttachmentFileIcon={AttachmentFileIcon}
           channel={channel}
@@ -163,10 +195,8 @@ const MessageList = (props) => {
           setEditingState={setEditingState}
           threadList={threadList}
           updateMessage={updateMessage}
-        />
-      );
-    }
-  };
+        /> 
+   */
 
   const handleScroll = (event) => {
     const y = event.nativeEvent.contentOffset.y;
@@ -365,6 +395,7 @@ MessageList.propTypes = {
    * ```
    */
   setFlatListRef: PropTypes.func,
+  /** Whether or not the MessageList is part of a Thread */
   threadList: PropTypes.bool,
   /**
    * Typing indicator UI component to render

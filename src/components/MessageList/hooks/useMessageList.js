@@ -11,9 +11,10 @@ import { getReadStates } from '../utils/getReadStates';
 import { insertDates } from '../utils/insertDates';
 
 export const useMessageList = ({ noGroupByUser, threadList }) => {
+  const { read } = useContext(ChannelContext);
   const { messages } = useContext(MessagesContext);
   const { threadMessages } = useContext(ThreadContext);
-  const { read } = useContext(ChannelContext);
+
   const messageList = threadList ? threadMessages : messages;
   const readList = threadList ? {} : read;
 
