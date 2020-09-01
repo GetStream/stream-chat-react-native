@@ -209,21 +209,13 @@ const MessageContent = (props) => {
     }
   };
 
-  const onHandleDelete = async () => {
-    await handleDelete();
-  };
-
-  const onHandleEdit = () => {
-    handleEdit();
-  };
-
-  const onActionPress = (action) => {
+  const onActionPress = async (action) => {
     switch (action) {
       case MESSAGE_ACTIONS.edit:
-        onHandleEdit();
+        handleEdit();
         break;
       case MESSAGE_ACTIONS.delete:
-        onHandleDelete();
+        await handleDelete();
         break;
       case MESSAGE_ACTIONS.reply:
         onShowActionSheet();
@@ -296,12 +288,13 @@ const MessageContent = (props) => {
     });
   }
 
-  if (message.deleted_at)
+  if (message.deleted_at) {
     return (
       <DeletedContainer alignment={alignment}>
         <DeletedText>{t('This message was deleted ...')}</DeletedText>
       </DeletedContainer>
     );
+  }
 
   const contentProps = {
     activeOpacity: 0.7,
@@ -310,17 +303,18 @@ const MessageContent = (props) => {
     hasReactions,
     onLongPress:
       onLongPress && !(disabled || readOnly)
-        ? (e) => onLongPress(e, message)
+        ? (e) => onLongPress(message, e)
         : options.length > 1 && !(disabled || readOnly)
         ? onShowActionSheet
         : () => null,
-    onPress: onPress ? (e) => onPress(e, message) : onMessageTouch,
+    onPress: onPress ? (e) => onPress(message, e) : onMessageTouch,
     status: message.status,
     ...additionalTouchableProps,
   };
 
-  if (message.status === 'failed')
+  if (message.status === 'failed') {
     contentProps.onPress = () => retrySendMessage(Immutable(message));
+  }
 
   const context = {
     additionalTouchableProps,

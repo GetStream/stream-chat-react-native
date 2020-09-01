@@ -11,13 +11,6 @@ import {
   MessagesContext,
 } from '../../context';
 
-/**
- * Message - A high level component which implements all the logic required for a message.
- * The actual rendering of the message is delegated via the "Message" property
- *
- * @example ../docs/Message.md
- * @extends Component
- */
 const MessageWithContext = React.memo((props) => {
   const {
     channel,
@@ -84,8 +77,10 @@ const MessageWithContext = React.memo((props) => {
 
     const currentUser = client.userID;
     for (const reaction of message.own_reactions) {
-      // own user should only ever contain the current user id
-      // just in case we check to prevent bugs with message updates from breaking reactions
+      /**
+       * Own user should only ever contain the current user id, just in
+       * case we check to prevent bugs with message updates from breaking reactions
+       */
       if (currentUser === reaction.user.id && reaction.type === reactionType) {
         userExistingReaction = reaction;
       } else if (currentUser !== reaction.user.id) {
@@ -98,11 +93,7 @@ const MessageWithContext = React.memo((props) => {
     const originalMessage = message;
     let reactionChangePromise;
 
-    /*
-    - Add the reaction to the local state
-    - Make the API call in the background
-    - If it fails, revert to the old message...
-    */
+    // Add reaction to local state, make API call in background, revert to old message if fails
     if (userExistingReaction) {
       channel.state.removeReaction(userExistingReaction);
 
@@ -124,10 +115,8 @@ const MessageWithContext = React.memo((props) => {
     }
 
     try {
-      // only wait for the API call after the state is updated
       await reactionChangePromise;
     } catch (e) {
-      // revert to the original message if the API call fails
       updateMessage(originalMessage);
     }
   };
@@ -225,6 +214,13 @@ const MessageWithContext = React.memo((props) => {
 
 MessageWithContext.displayName = 'messageWithContext';
 
+/**
+ * Message - A high level component which implements all the logic required for a message.
+ * The actual rendering of the message is delegated via the "Message" property
+ *
+ * @example ../docs/Message.md
+ * @extends Component
+ */
 const Message = (props) => {
   const { Message = MessageSimple, channel } = useContext(ChannelContext);
   const {

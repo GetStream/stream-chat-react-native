@@ -259,8 +259,8 @@ MessageSimple.propTypes = {
    *  return (
    *    <MessageSimple
    *      {...props}
-   *      onLongPress={(thisArg, message, e) => {
-   *        thisArg.openReactionSelector();
+   *      onLongPress={(message, e) => {
+   *        openReactionSelector();
    *      }}
    *  )
    * }
@@ -273,7 +273,6 @@ MessageSimple.propTypes = {
    *
    * By default we show action sheet with all the message actions on long press.
    *
-   * @param {Component} thisArg Reference to MessageContent component
    * @param message Message object which was long pressed
    * @param e       Event object for onLongPress event
    * */
@@ -298,8 +297,8 @@ MessageSimple.propTypes = {
    *  return (
    *    <MessageSimple
    *      {...props}
-   *      onPress={(thisArg, message, e) => {
-   *        thisArg.openReactionSelector();
+   *      onPress={(message, e) => {
+   *        openReactionSelector();
    *      }}
    *  )
    * }
@@ -310,7 +309,6 @@ MessageSimple.propTypes = {
    *
    * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
    *
-   * @param {Component} thisArg Reference to MessageContent component
    * @param message Message object which was pressed
    * @param e       Event object for onPress event
    * */
