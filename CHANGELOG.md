@@ -2,7 +2,77 @@
 
 ## [1.3.0] 2020-09-01 (UNPUBLISHED)
 
-- We converted the ChannelList component from a class to a function. We also abstracted the event listener logic into custom hooks. On upgrading to this release, ensure events and any custom handling functions (ex: `onAddedToChannel` or `onMessageNew`) are properly processed and update the UI as expected.
+**BREAKING CHANGES**
+
+*ChannelList*
+
+- We converted the ChannelList component from a class to a function and abstracted the event listener logic into custom hooks. The default event handlers can still be overriden by providing custom prop functions to the ChannelList component. Custom logic can be provided for the following events:
+
+  - `onAddedToChannel` overrides `notification.added_to_channel` default
+  - `onChannelDeleted` overrides `channel.deleted` default
+  - `onChannelHidden` overrides `channel.hidden` default
+  - `onChannelTruncated` overrides `channel.truncated` default
+  - `onChannelUpdated` overrides `channel.updated` default
+  - `onMessageNew` overrides `notification.message_new` default
+  - `onRemovedFromChannel` overrides `notification.removed_from_channel` default
+
+- All custom event handlers now accept two arguments, with the `this` reference no longer needed in the functional component.
+
+  - 1st argument: `setChannels` reference to the `useState` hook that sets the `channels` in the React Native FlatList
+  - 2nd argument: `event` object returned by the StreamChat instance
+
+- On upgrading to this release, ensure events and any custom handling functions (ex: `onAddedToChannel` or `onMessageNew`) are properly processed and update the list UI as expected.
+
+*ChannelContext*
+
+- We have split the `ChannelContext` into three separate contexts to further modularize the code and reduce renders as items in context change. The following contexts now contain the following values, previously all held within the `ChannelContext`:
+
+  - `ChannelContext`:
+
+    - `channel`
+    - `disabled`
+    - `EmptyStateIndicator`
+    - `error`
+    - `eventHistory`
+    - `lastRead`
+    - `loading`
+    - `markRead`
+    - `members`
+    - `read`
+    - `setLastRead`
+    - `typing`
+    - `watcherCount`
+    - `watchers`
+
+  - `MessagesContext`
+
+    - `Attachment`
+    - `clearEditingState`
+    - `editing`
+    - `editMessage`
+    - `emojiData`
+    - `hasMore`
+    - `loadingMore`
+    - `loadMore`
+    - `Message`
+    - `messages`
+    - `removeMessage`
+    - `retrySendMessage`
+    - `sendMessage`
+    - `setEditingState`
+    - `updateMessage`
+
+  - `ThreadContext`
+
+    - `closeThread`
+    - `loadMoreThread`
+    - `openThread`
+    - `thread`
+    - `threadHasMore`
+    - `threadLoadingMore`
+    - `threadMessages`
+
+- All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or the `useContext` hook (ex: `const { messages } = useContext(MessagesContext);`)
 
 ## [1.2.0] 2020-08-21
 
