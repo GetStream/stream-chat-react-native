@@ -11,6 +11,11 @@ import {
   MessagesContext,
 } from '../../context';
 
+/**
+ * Since this component doesn't consume `messages` from `MessagesContext`,
+ * we memoized and broke it up to prevent new messages from re-rendering
+ * each individual Message component.
+ */
 const MessageWithContext = React.memo((props) => {
   const {
     channel,
@@ -29,15 +34,18 @@ const MessageWithContext = React.memo((props) => {
   const { client } = useContext(ChatContext);
 
   const isMyMessage = (message) => client.user.id === message.user.id;
+
   const isAdmin = () =>
     client.user.role === 'admin' ||
     (channel.state &&
       channel.state.membership &&
       channel.state.membership.role === 'admin');
+
   const isOwner = () =>
     channel.state &&
     channel.state.membership &&
     channel.state.membership.role === 'owner';
+
   const isModerator = () =>
     channel.state &&
     channel.state.membership &&
@@ -45,23 +53,13 @@ const MessageWithContext = React.memo((props) => {
       channel.state.membership.role === 'moderator');
 
   const canEditMessage = () =>
-    isMyMessage(props.message) || isModerator() || isOwner() || isAdmin();
+    isMyMessage(message) || isModerator() || isOwner() || isAdmin();
 
   const canDeleteMessage = () => canEditMessage();
 
-  const handleFlag = async (event) => {
-    event?.preventDefault?.();
+  const handleFlag = async () => await client.flagMessage(message.id);
 
-    const message = message;
-    await client.flagMessage(message.id);
-  };
-
-  const handleMute = async (event) => {
-    event?.preventDefault?.();
-
-    const message = message;
-    await client.flagMessage(message.user.id);
-  };
+  const handleMute = async () => await client.flagMessage(message.user.id);
 
   const handleEdit = () => setEditingState(message);
 
@@ -70,65 +68,49 @@ const MessageWithContext = React.memo((props) => {
     updateMessage(data.message);
   };
 
-  const handleReaction = async (reactionType, event) => {
-    event?.preventDefault?.();
+  const handleReaction = async (reactionType) => {
+    let userExistingReaction;
 
-    let userExistingReaction = null;
-
-    const currentUser = client.userID;
     for (const reaction of message.own_reactions) {
       /**
        * Own user should only ever contain the current user id, just in
        * case we check to prevent bugs with message updates from breaking reactions
        */
-      if (currentUser === reaction.user.id && reaction.type === reactionType) {
+      if (
+        client.userID === reaction.user.id &&
+        reaction.type === reactionType
+      ) {
         userExistingReaction = reaction;
-      } else if (currentUser !== reaction.user.id) {
+      } else if (client.userID !== reaction.user.id) {
         console.warn(
           `message.own_reactions contained reactions from a different user, this indicates a bug`,
         );
       }
     }
 
-    const originalMessage = message;
-    let reactionChangePromise;
-
     // Add reaction to local state, make API call in background, revert to old message if fails
-    if (userExistingReaction) {
-      channel.state.removeReaction(userExistingReaction);
-
-      reactionChangePromise = channel.deleteReaction(
-        message.id,
-        userExistingReaction.type,
-      );
-    } else {
-      const tmpReaction = {
-        created_at: new Date(),
-        message_id: message.id,
-        type: reactionType,
-        user: client.user,
-      };
-      const reaction = { type: reactionType };
-
-      channel.state.addReaction(tmpReaction);
-      reactionChangePromise = channel.sendReaction(message.id, reaction);
-    }
-
     try {
-      await reactionChangePromise;
+      if (userExistingReaction) {
+        channel.state.removeReaction(userExistingReaction);
+        await channel.deleteReaction(message.id, userExistingReaction.type);
+      } else {
+        const tmpReaction = {
+          created_at: new Date(),
+          message_id: message.id,
+          type: reactionType,
+          user: client.user,
+        };
+
+        channel.state.addReaction(tmpReaction);
+        await channel.sendReaction(message.id, { type: reactionType });
+      }
     } catch (e) {
-      updateMessage(originalMessage);
+      updateMessage(message);
     }
   };
 
-  const handleAction = async (name, value, event) => {
-    event?.preventDefault?.();
-    const messageID = message.id;
-    const formData = {};
-    formData[name] = value;
-
-    const data = await channel.sendAction(messageID, formData);
-
+  const handleAction = async (name, value) => {
+    const data = await channel.sendAction(message.id, { name: value });
     if (data && data.message) {
       updateMessage(data.message);
     } else {
@@ -136,9 +118,7 @@ const MessageWithContext = React.memo((props) => {
     }
   };
 
-  const handleRetry = async (message) => {
-    await retrySendMessage(message);
-  };
+  const handleRetry = async (message) => await retrySendMessage(message);
 
   const onMessageTouch = (e, message) => {
     if (onMessageTouchProp) {
@@ -150,24 +130,19 @@ const MessageWithContext = React.memo((props) => {
   };
 
   const getTotalReactionCount = (supportedReactions) => {
-    let count = null;
+    let count;
     if (!supportedReactions) {
       supportedReactions = emojiData;
     }
 
     const reactionCounts = message.reaction_counts;
 
-    if (
-      reactionCounts !== null &&
-      reactionCounts !== undefined &&
-      Object.keys(reactionCounts).length > 0
-    ) {
+    if (reactionCounts && Object.keys(reactionCounts).length > 0) {
       count = 0;
       Object.keys(reactionCounts).map((key) => {
         if (supportedReactions.find((e) => e.id === key)) {
           count += reactionCounts[key];
         }
-
         return count;
       });
     }

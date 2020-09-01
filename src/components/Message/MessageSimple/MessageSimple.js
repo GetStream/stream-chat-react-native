@@ -205,11 +205,15 @@ MessageSimple.propTypes = {
    * `editing` prop is then used by MessageInput component to switch to edit mode.
    */
   handleEdit: PropTypes.func,
-  /** Handler resend the message. */
+  /** Handler to flag the message */
+  handleFlag: PropTypes.func,
+  /** Handler to mute the user */
+  handleMute: PropTypes.func,
+  /** Handler to resend the message */
   handleRetry: PropTypes.func,
-  // enable hiding reaction count from reaction picker
+  /** enable hiding reaction count from reaction picker  */
   hideReactionCount: PropTypes.bool,
-  /** enable hiding reaction owners from reaction picker. */
+  /** enable hiding reaction owners from reaction picker */
   hideReactionOwners: PropTypes.bool,
   /**
    * Returns true if message (param) belongs to current user, else false

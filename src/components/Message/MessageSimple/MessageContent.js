@@ -134,7 +134,12 @@ const MetaText = styled.Text`
   ${({ theme }) => theme.message.content.metaText.css};
 `;
 
-const MessageContent = (props) => {
+/**
+ * Since this component doesn't consume `messages` from `MessagesContext`,
+ * we memoized and broke it up to prevent new messages from re-rendering
+ * each individual MessageContent component.
+ */
+const MessageContentWithContext = React.memo((props) => {
   const {
     AttachmentActions,
     AttachmentFileIcon,
@@ -180,6 +185,7 @@ const MessageContent = (props) => {
     reactionsEnabled = true,
     readOnly,
     repliesEnabled = true,
+    retrySendMessage,
     supportedReactions = emojiData,
     threadList,
   } = props;
@@ -191,7 +197,6 @@ const MessageContent = (props) => {
     channel,
   } = useContext(ChannelContext);
   const { dismissKeyboard } = useContext(KeyboardContext);
-  const { retrySendMessage } = useContext(MessagesContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
@@ -473,6 +478,12 @@ const MessageContent = (props) => {
       </Container>
     </MessageContentContext.Provider>
   );
+});
+
+const MessageContent = (props) => {
+  const { retrySendMessage } = useContext(MessagesContext);
+
+  return <MessageContentWithContext {...props} {...{ retrySendMessage }} />;
 };
 
 MessageContent.themePath = 'message.content';
