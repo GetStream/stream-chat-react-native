@@ -48,8 +48,13 @@ const ErrorNotification = styled.View`
 `;
 
 /**
- * MessageList - The message list component renders a list of messages.
- * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
+ * The message list component renders a list of messages. It consumes the following contexts:
+ *
+ * [ChannelContext](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+ * [ChatContext](https://getstream.github.io/stream-chat-react-native/#chatcontext)
+ * [MessagesContext](https://getstream.github.io/stream-chat-react-native/#messagescontext)
+ * [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext)
+ * [TranslationContext](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
  * @example ../docs/MessageList.md
  */
@@ -72,27 +77,6 @@ const MessageList = (props) => {
     threadList,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
-
-  /**
-   * const { t } = useContext(TranslationContext);
-  const { client, isOnline } = useContext(ChatContext);
-  const {
-    Attachment,
-    clearEditingState,
-    editing,
-    emojiData,
-    loadMore: mainLoadMore,
-    Message,
-    removeMessage,
-    retrySendMessage,
-    setEditingState,
-    updateMessage,
-  } = useContext(MessagesContext);
-  const { loadMoreThread, openThread } = useContext(ThreadContext);
-  const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
-    ChannelContext,
-  );
-   */
 
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
@@ -142,7 +126,7 @@ const MessageList = (props) => {
     }
   }, [messageList]);
 
-  const loadMore = threadList ? mainLoadMore : loadMoreThread;
+  const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
@@ -169,35 +153,6 @@ const MessageList = (props) => {
     }
   };
 
-  /**
-   * 
-   * <DefaultMessage
-          actionSheetStyles={actionSheetStyles}
-          Attachment={Attachment}
-          AttachmentFileIcon={AttachmentFileIcon}
-          channel={channel}
-          client={client}
-          disabled={disabled}
-          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
-          editing={editing}
-          emojiData={emojiData}
-          groupStyles={message.groupStyles}
-          lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
-          message={message}
-          Message={Message}
-          messageActions={messageActions}
-          onMessageTouch={onMessageTouch}
-          onThreadSelect={onThreadSelect}
-          openThread={openThread}
-          readBy={message.readBy}
-          removeMessage={removeMessage}
-          retrySendMessage={retrySendMessage}
-          setEditingState={setEditingState}
-          threadList={threadList}
-          updateMessage={updateMessage}
-        /> 
-   */
-
   const handleScroll = (event) => {
     const y = event.nativeEvent.contentOffset.y;
     const removeNewMessageNotification = y <= 0;
@@ -220,8 +175,10 @@ const MessageList = (props) => {
     if (!threadList) markRead();
   };
 
-  // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
-  // https://github.com/facebook/react-native/issues/21196
+  /**
+   * We can't provide ListEmptyComponent to FlatList when inverted flag is set.
+   * https://github.com/facebook/react-native/issues/21196
+   */
   if (messageList?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
@@ -238,6 +195,7 @@ const MessageList = (props) => {
       >
         <ListContainer
           data={messageList}
+          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
           inverted
           keyboardShouldPersistTaps='always'
@@ -254,7 +212,6 @@ const MessageList = (props) => {
           }}
           onEndReached={loadMore}
           onScroll={handleScroll}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           ref={(fl) => {
             flatListRef.current = fl;
             setFlatListRef && setFlatListRef(fl);
@@ -303,13 +260,13 @@ const MessageList = (props) => {
 
 MessageList.propTypes = {
   /**
-   * Style object for actionsheet (used to message actions).
+   * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
   actionSheetStyles: PropTypes.object,
   /**
    * Besides existing (default) UX behaviour of underlying flatlist of MessageList component, if you want
-   * to attach some additional props to un derlying flatlist, you can add it to following prop.
+   * to attach some additional props to underlying flatlist, you can add it to following prop.
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
    *
@@ -331,7 +288,7 @@ MessageList.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * @deprecated User DateSeperator instead.
+   * @deprecated Use DateSeparator instead.
    * Date separator UI component to render
    *
    * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
