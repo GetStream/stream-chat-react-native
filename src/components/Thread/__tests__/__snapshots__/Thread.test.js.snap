@@ -400,6 +400,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -413,7 +414,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                     <Modal
@@ -843,6 +844,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -856,7 +858,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                     <Modal
@@ -1286,6 +1288,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -1299,7 +1302,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                     <Modal
@@ -1812,6 +1815,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -1825,7 +1829,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                     <Modal

@@ -1,63 +1,56 @@
 import React, { useContext } from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import { ThemeProvider } from '@stream-io/styled-components';
 
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';
+import { generateChannel } from 'mock-builders/generator/channel';
+import { generateMember } from 'mock-builders/generator/member';
 import { generateMessage } from 'mock-builders/generator/message';
-import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
+import { generateReaction } from 'mock-builders/generator/reaction';
+import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import MessageContent from '../MessageContent';
-import MessageSimple from '../MessageSimple';
 import Message from '../../Message';
 import Chat from '../../../Chat/Chat';
 import Channel from '../../../Channel/Channel';
-import MessageList from '../../../MessageList/MessageList';
-import { ChatContext, MessageContentContext } from '../../../../context';
-import { Streami18n } from '../../../../utils/Streami18n';
-import { defaultTheme } from '../../../../styles/theme';
-
-const MessageContentContextConsumer = ({ fn }) => {
-  fn(useContext(MessageContentContext));
-  // fn(useContext(ChatContext));
-  return <View testID='children' />;
-};
-
-let channel;
-let chatClient;
-
-const user = generateUser({ id: 'id', name: 'name' });
-const messages = [generateMessage({ user })];
+import { MessageContentContext } from '../../../../context';
 
 /**
- * MessageContent
+ * Message
  * - it should show the action sheet on long press
  * - it should edit a message
  * - it should delete a message
- * - it should render the deleted message text component
  * - it should open a thread
- * - it should open the reaction picker
- * - it shows the time if a MessageFooter doesn't exist
- * MessageContentContext
- *  - it renders children without crashing
- *  - it exposes the message content context
- *  - it updates the context when props change
  */
 
 describe('MessageContent', () => {
+  let channel;
+  let chatClient;
+  let renderMessage;
+
+  const user = generateUser({ id: 'id', name: 'name' });
+  const messages = [generateMessage({ user })];
+
   beforeEach(async () => {
     const members = [generateMember({ user })];
     const mockedChannel = generateChannel({
       members,
       messages,
     });
+
     chatClient = await getTestClientWithUser(user);
     useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
     channel = chatClient.channel('messaging', mockedChannel.id);
+
+    renderMessage = (options) =>
+      render(
+        <Chat client={chatClient}>
+          <Channel channel={channel}>
+            <Message groupStyles={['bottom']} {...options} />
+          </Channel>
+        </Chat>,
+      );
   });
 
   afterEach(() => {
@@ -69,13 +62,7 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -87,16 +74,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={{ ...message, type: 'error' }}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({
+      message: { ...message, type: 'error' },
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -108,16 +88,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={{ ...message, status: 'failed' }}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({
+      message: { ...message, status: 'failed' },
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -129,16 +102,9 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={{ ...message, deleted_at: true }}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({
+      message: { ...message, deleted_at: true },
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -149,17 +115,11 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={message}
-            MessageHeader={(props) => <View {...props} />}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({
+      message,
+      // eslint-disable-next-line react/display-name
+      MessageHeader: (props) => <View {...props} />,
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -171,17 +131,11 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={message}
-            MessageFooter={(props) => <View {...props} />}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({
+      message,
+      // eslint-disable-next-line react/display-name
+      MessageFooter: (props) => <View {...props} />,
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -193,17 +147,10 @@ describe('MessageContent', () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
-    const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message
-            groupStyles={['bottom']}
-            message={message}
-            MessageFooter={null}
-          />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId, queryAllByTestId } = renderMessage({
+      message,
+      MessageFooter: null,
+    });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -221,13 +168,7 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -245,13 +186,7 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId, queryAllByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId, queryAllByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
@@ -267,26 +202,115 @@ describe('MessageContent', () => {
       user,
     });
 
-    const { getByTestId } = render(
-      <Chat client={chatClient}>
-        <Channel channel={channel}>
-          <Message groupStyles={['bottom']} message={message} />
-        </Channel>
-      </Chat>,
-    );
+    const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
       expect(getByTestId('file-attachment')).toBeTruthy();
     });
   });
-});
 
-/* <MessageContent groupStyles={['bottom']} onLongPress={onLongPress}>
-        <MessageContentContextConsumer
-          fn={(ctx) => {
-            context = ctx;
-          }}
-        ></MessageContentContextConsumer>
-      </MessageContent>
-    */
+  it('renders the ReactionList when the message has reactions', async () => {
+    const user = generateUser();
+    const reaction = generateReaction();
+    const message = generateMessage({
+      latest_reactions: [reaction],
+      user,
+    });
+
+    const { getByTestId } = renderMessage({ message });
+
+    await waitFor(() => {
+      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('reaction-list')).toBeTruthy();
+    });
+  });
+
+  describe('MessageContentContext', () => {
+    const MessageContentContextConsumer = ({ fn }) => {
+      fn(useContext(MessageContentContext));
+      return <View testID='children' />;
+    };
+
+    it('renders children without crashing', async () => {
+      const { getByTestId } = render(
+        <MessageContentContext.Provider>
+          <View testID='children' />
+        </MessageContentContext.Provider>,
+      );
+
+      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+    });
+
+    it('exposes the message content context', async () => {
+      let context;
+
+      const mockContext = {
+        disabled: false,
+        onLongPress: () => {},
+      };
+
+      render(
+        <MessageContentContext.Provider value={mockContext}>
+          <MessageContentContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></MessageContentContextConsumer>
+        </MessageContentContext.Provider>,
+      );
+
+      await waitFor(() => {
+        expect(context).toBeInstanceOf(Object);
+        expect(context.disabled).toBe(false);
+        expect(context.onLongPress).toBeInstanceOf(Function);
+      });
+    });
+
+    it('updates the context when props change', async () => {
+      let context;
+
+      const mockContext = {
+        disabled: false,
+        onLongPress: () => {},
+      };
+
+      const { rerender } = render(
+        <MessageContentContext.Provider value={mockContext}>
+          <MessageContentContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></MessageContentContextConsumer>
+        </MessageContentContext.Provider>,
+      );
+
+      await waitFor(() => {
+        expect(context).toBeInstanceOf(Object);
+        expect(context.disabled).toBe(false);
+        expect(context.onLongPress).toBeInstanceOf(Function);
+      });
+
+      const newContext = {
+        disabled: true,
+        onLongPress: null,
+      };
+
+      rerender(
+        <MessageContentContext.Provider value={newContext}>
+          <MessageContentContextConsumer
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></MessageContentContextConsumer>
+        </MessageContentContext.Provider>,
+      );
+
+      await waitFor(() => {
+        expect(context).toBeInstanceOf(Object);
+        expect(context.disabled).toBe(true);
+        expect(context.onLongPress).toBeNull();
+      });
+    });
+  });
+});
