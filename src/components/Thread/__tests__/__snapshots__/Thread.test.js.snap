@@ -315,6 +315,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -754,6 +755,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -1193,6 +1195,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -1715,6 +1718,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
