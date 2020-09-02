@@ -325,6 +325,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -906,6 +907,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -1399,6 +1401,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
