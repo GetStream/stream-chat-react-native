@@ -30,8 +30,6 @@ const Chat = (props) => {
   const { children, client, i18nInstance, logger = () => {} } = props;
 
   const [channel, setChannel] = useState();
-  const [connectionRecovering, setConnectionRecovering] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
   const [translators, setTranslators] = useState({
     t: (key) => key,
     tDateTimeParser: (input) => Dayjs(input),
@@ -41,10 +39,8 @@ const Chat = (props) => {
   useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
-  useIsOnline({
+  const { connectionRecovering, isOnline } = useIsOnline({
     client,
-    setConnectionRecovering,
-    setIsOnline,
   });
 
   const setActiveChannel = (channel) => setChannel(channel);

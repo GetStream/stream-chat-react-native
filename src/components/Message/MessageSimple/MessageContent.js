@@ -367,7 +367,6 @@ const MessageContentWithContext = React.memo((props) => {
                   alignment={alignment}
                   getTotalReactionCount={getTotalReactionCount}
                   latestReactions={message.latest_reactions}
-                  reactionCounts={message.reaction_counts}
                   supportedReactions={supportedReactions}
                   visible={!reactionPickerVisible}
                 />
