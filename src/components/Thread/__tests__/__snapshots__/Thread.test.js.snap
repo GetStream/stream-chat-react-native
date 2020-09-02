@@ -210,6 +210,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -225,6 +226,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -298,6 +300,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -409,7 +412,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        2:50 PM
+                        8:50 AM
                       </Text>
                     </View>
                     <Modal
@@ -649,6 +652,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -664,6 +668,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -737,6 +742,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -848,7 +854,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        2:50 PM
+                        8:50 AM
                       </Text>
                     </View>
                     <Modal
@@ -1088,6 +1094,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -1103,6 +1110,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -1176,6 +1184,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -1287,7 +1296,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        2:50 PM
+                        8:50 AM
                       </Text>
                     </View>
                     <Modal
@@ -1610,6 +1619,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -1625,6 +1635,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -1698,6 +1709,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -1809,7 +1821,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        2:50 PM
+                        8:50 AM
                       </Text>
                     </View>
                     <Modal

@@ -91,6 +91,7 @@ const MessageSimple = (props) => {
       alignment={alignment}
       hasMarginBottom={hasMarginBottom}
       isVeryLastMessage={isVeryLastMessage}
+      testID='message-simple-wrapper'
     >
       {alignment === 'right' ? (
         <>
@@ -328,7 +329,7 @@ MessageSimple.propTypes = {
    */
   ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /** enabled reactions, this is usually set by the parent component based on channel configs */
-  reactionsEnabled: PropTypes.bool.isRequired,
+  reactionsEnabled: PropTypes.bool,
   /** A list of users who have read the message */
   readBy: PropTypes.array,
   /*
@@ -338,7 +339,7 @@ MessageSimple.propTypes = {
    */
   readOnly: PropTypes.bool,
   /** enabled replies, this is usually set by the parent component based on channel configs */
-  repliesEnabled: PropTypes.bool.isRequired,
+  repliesEnabled: PropTypes.bool,
   showMessageStatus: PropTypes.bool,
   showReactionsList: PropTypes.bool,
   /**

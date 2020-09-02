@@ -217,6 +217,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -232,6 +233,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -305,6 +307,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -416,7 +419,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        2:50 PM
+                        8:50 AM
                       </Text>
                     </View>
                     <Modal
@@ -795,6 +798,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -810,6 +814,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -883,6 +888,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -994,7 +1000,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        2:49 PM
+                        8:49 AM
                       </Text>
                     </View>
                     <Modal
@@ -1285,6 +1291,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -1300,6 +1307,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -1373,6 +1381,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -1484,7 +1493,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        2:48 PM
+                        8:48 AM
                       </Text>
                     </View>
                     <Modal

@@ -296,7 +296,9 @@ const MessageContentWithContext = React.memo((props) => {
   if (message.deleted_at) {
     return (
       <DeletedContainer alignment={alignment}>
-        <DeletedText>{t('This message was deleted ...')}</DeletedText>
+        <DeletedText testID='message-deleted'>
+          {t('This message was deleted ...')}
+        </DeletedText>
       </DeletedContainer>
     );
   }
@@ -332,12 +334,15 @@ const MessageContentWithContext = React.memo((props) => {
       <Container
         {...contentProps}
         error={message.type === 'error' || message.status === 'failed'}
+        testID='message-content-wrapper'
       >
         {message.type === 'error' ? (
-          <FailedText>{t('ERROR · UNSENT')}</FailedText>
+          <FailedText testID='message-error'>{t('ERROR · UNSENT')}</FailedText>
         ) : null}
         {message.status === 'failed' ? (
-          <FailedText>{t('Message failed - try again')}</FailedText>
+          <FailedText testID='message-failed'>
+            {t('Message failed - try again')}
+          </FailedText>
         ) : null}
         {reactionsEnabled && ReactionList && (
           <ReactionPickerWrapper
@@ -369,7 +374,7 @@ const MessageContentWithContext = React.memo((props) => {
               )}
           </ReactionPickerWrapper>
         )}
-        {MessageHeader && <MessageHeader {...props} />}
+        {MessageHeader && <MessageHeader testID='message-header' {...props} />}
         {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
         <ContainerInner alignment={alignment} collapsable={false}>
           {hasAttachment &&
@@ -435,9 +440,9 @@ const MessageContentWithContext = React.memo((props) => {
             openThread={onOpenThread}
           />
         ) : null}
-        {MessageFooter && <MessageFooter {...props} />}
+        {MessageFooter && <MessageFooter testID='message-footer' {...props} />}
         {!MessageFooter && showTime ? (
-          <MetaContainer>
+          <MetaContainer testID='show-time'>
             <MetaText alignment={alignment}>
               {formatDate
                 ? formatDate(message.created_at)

@@ -163,6 +163,7 @@ const MessageWithContext = React.memo((props) => {
     <TouchableOpacity
       activeOpacity={1}
       onPress={(e) => onMessageTouch(e, message)}
+      testID='message-wrapper'
     >
       <Message
         {...props}
