@@ -60,6 +60,7 @@ import TypingIndicatorContainer from './MessageList/TypingIndicatorContainer';
 import ReactionList from './Reaction/ReactionList';
 import ReactionPicker from './Reaction/ReactionPicker';
 import ReactionPickerWrapper from './Reaction/ReactionPickerWrapper';
+import { renderReactions } from './Reaction/utils/renderReactions';
 
 import Spinner from './Spinner/Spinner';
 
@@ -113,6 +114,7 @@ export {
   ReactionList,
   ReactionPicker,
   ReactionPickerWrapper,
+  renderReactions,
   renderText,
   SendButton,
   Spinner,
