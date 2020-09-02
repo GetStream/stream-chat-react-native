@@ -196,10 +196,11 @@ MessageWithContext.displayName = 'messageWithContext';
  * @example ../docs/Message.md
  */
 const Message = (props) => {
-  const { Message = MessageSimple, channel } = useContext(ChannelContext);
+  const { channel } = useContext(ChannelContext);
   const {
     editing,
     emojiData,
+    Message = MessageSimple,
     removeMessage,
     retrySendMessage,
     setEditingState,

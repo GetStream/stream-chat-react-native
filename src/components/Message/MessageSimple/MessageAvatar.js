@@ -32,7 +32,7 @@ const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
           name={message.user.name || message.user.id}
         />
       ) : (
-        <Spacer />
+        <Spacer testID='spacer' />
       )}
     </Container>
   );
