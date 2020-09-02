@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { default as DefaultMessageAvatar } from './MessageAvatar';
@@ -15,7 +15,7 @@ const Container = styled.View`
   justify-content: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   margin-bottom: ${({ hasMarginBottom, isVeryLastMessage }) =>
-    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0};
+    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0}px;
   ${({ theme }) => theme.message.container.css}
 `;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 const StyledTouchableOpacity = styled.TouchableOpacity`
   background-color: rgba(0, 0, 0, 0.05);

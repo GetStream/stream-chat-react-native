@@ -1,6 +1,6 @@
 import React from 'react';
 import truncate from 'lodash/truncate';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { Avatar } from '../Avatar';

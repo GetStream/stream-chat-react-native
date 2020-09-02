@@ -240,7 +240,7 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
-        '@stream-io/styled-components':
+        'styled-components':
           '@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
         // Looks ugly in docs, better to just not show it for now
         'react-native-actionsheet': path.join(

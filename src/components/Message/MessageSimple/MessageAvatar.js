@@ -1,17 +1,17 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import { Avatar } from '../../Avatar';
 import PropTypes from 'prop-types';
 
 const Container = styled.View`
-  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)};
-  margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)};
+  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;
+  margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)}px;
   ${({ theme }) => theme.message.avatarWrapper.container.css}
 `;
 
 const Spacer = styled.View`
-  width: 32;
-  height: 28;
+  width: 32px;
+  height: 28px;
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 

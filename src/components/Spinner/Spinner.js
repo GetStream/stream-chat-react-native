@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import { themed } from '../../styles/theme';
 

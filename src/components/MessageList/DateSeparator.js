@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
@@ -10,31 +10,31 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: 20;
-  margin-bottom: 20;
+  margin-top: 20px;
+  margin-bottom: 20px;
   ${({ theme }) => theme.messageList.dateSeparator.container.css}
 `;
 
 const Line = styled.View`
   flex: 1;
-  height: 0.5;
+  height: 0.5px;
   background-color: ${({ theme }) => theme.colors.light};
   ${({ theme }) => theme.messageList.dateSeparator.line.css}
 `;
 
 const DateText = styled.Text`
-  margin-left: 5;
-  margin-right: 5;
+  margin-left: 5px;
+  margin-right: 5px;
   text-align: center;
   text-transform: uppercase;
-  font-size: 10;
+  font-size: 10px;
   opacity: 0.8;
   ${({ theme }) => theme.messageList.dateSeparator.dateText.css}
 `;
 
 const Date = styled.Text`
   font-weight: 700;
-  font-size: 10;
+  font-size: 10px;
   text-transform: uppercase;
   opacity: 0.8;
   ${({ theme }) => theme.messageList.dateSeparator.date.css}

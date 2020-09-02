@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -39,7 +39,7 @@ const ErrorNotification = styled.View`
   flex-direction: column;
   align-items: center;
   z-index: 10;
-  margin-bottom: 0;
+  margin-bottom: 0px;
   padding: 5px;
   color: red;
   background-color: #fae6e8;
@@ -251,21 +251,23 @@ const MessageList = (props) => {
           </ErrorNotification>
         )}
       </View>
-      {// Mask for edit state
-      editing && disableWhileEditing && (
-        <TouchableOpacity
-          collapsable={false}
-          onPress={clearEditingState}
-          style={{
-            backgroundColor: 'black',
-            height: '100%',
-            opacity: 0.4,
-            position: 'absolute',
-            width: '100%',
-            zIndex: 100,
-          }}
-        />
-      )}
+      {
+        // Mask for edit state
+        editing && disableWhileEditing && (
+          <TouchableOpacity
+            collapsable={false}
+            onPress={clearEditingState}
+            style={{
+              backgroundColor: 'black',
+              height: '100%',
+              opacity: 0.4,
+              position: 'absolute',
+              width: '100%',
+              zIndex: 100,
+            }}
+          />
+        )
+      }
     </>
   );
 };

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import { Spinner } from '../Spinner';
 
 const Container = styled.View`

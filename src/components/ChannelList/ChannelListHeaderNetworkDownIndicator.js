@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import { withTranslationContext } from '../../context';
 
 const Container = styled.View`
@@ -13,7 +13,7 @@ const Container = styled.View`
 
 const ErrorText = styled.Text`
   color: red;
-  font-size: 12;
+  font-size: 12px;
   font-weight: bold;
   padding: 3px;
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}

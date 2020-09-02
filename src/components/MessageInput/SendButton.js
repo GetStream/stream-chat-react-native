@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import { MessagesContext } from '../../context';

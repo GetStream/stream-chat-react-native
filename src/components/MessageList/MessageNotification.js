@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
@@ -14,7 +14,7 @@ const Container = styled.TouchableOpacity`
   height: 27px;
   width: 112px;
   z-index: 10;
-  margin-bottom: 0;
+  margin-bottom: 0px;
   border-radius: 13px;
   background-color: ${({ theme }) => theme.colors.primary};
   transform: translateY(9px);

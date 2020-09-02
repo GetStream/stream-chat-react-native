@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import {
   ChannelContext,
@@ -18,7 +18,7 @@ const NewThread = styled.View`
   padding: 8px;
   background-color: #f4f9ff;
   margin: 10px;
-  border-radius: 4;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   ${({ theme }) => theme.thread.newThread.css};

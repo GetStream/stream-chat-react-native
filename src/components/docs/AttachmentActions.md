@@ -23,7 +23,7 @@ const actions = [
 ```
 
 ```js
-const { css } = require('@stream-io/styled-components');
+const { css } = require('styled-components');
 
 function actionHandler(action) {
   console.log(action);

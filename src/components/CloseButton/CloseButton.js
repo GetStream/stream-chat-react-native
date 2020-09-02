@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-native';
 
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import closeRound from '../../images/icons/close-round.png';
 

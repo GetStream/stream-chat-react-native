@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import iconPath from '../../../images/icons/icon_path.png';
@@ -15,7 +15,7 @@ const Container = styled.TouchableOpacity`
 const MessageRepliesText = styled.Text`
   color: ${({ theme }) => theme.colors.primary};
   font-weight: 700;
-  font-size: 12;
+  font-size: 12px;
   ${({ theme }) => theme.message.replies.messageRepliesText.css}
 `;
 

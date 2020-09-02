@@ -44,7 +44,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "rgba(0, 0, 0, 0.5)",
+            "color": "rgba(0,0,0,0.5)",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",
@@ -58,7 +58,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "rgba(0, 0, 0, 0.5)",
+            "color": "rgba(0,0,0,0.5)",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",

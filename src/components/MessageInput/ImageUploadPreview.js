@@ -1,6 +1,6 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import UploadProgressIndicator from './UploadProgressIndicator';
@@ -24,8 +24,8 @@ const Dismiss = styled.TouchableOpacity`
   height: 20px;
   justify-content: center;
   position: absolute;
-  right: 5;
-  top: 5;
+  right: 5px;
+  top: 5px;
   width: 20px;
   ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
 `;

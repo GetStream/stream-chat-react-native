@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 import { themed } from '../../styles/theme';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;

@@ -1,8 +1,7 @@
 import * as React from 'react';
+import { View } from 'react-native';
 
-import styled from '@stream-io/styled-components';
-
-const Container = styled.View``;
+import { styled } from 'src/styles/styledComponents';
 
 const Icon = styled.View`
   align-items: center;
@@ -31,21 +30,24 @@ const UnreadCount = styled.Text`
   ${({ theme }) => theme.iconBadge.unreadCount.css};
 `;
 
-export class IconBadge extends React.Component {
-  render() {
-    const { children, showNumber, unread } = this.props;
+type Props = {
+  unread: number;
+  showNumber?: boolean;
+};
 
-    return (
-      <Container>
-        {children}
-        {unread > 0 && (
-          <Icon>
-            <IconInner>
-              {showNumber && <UnreadCount>{unread}</UnreadCount>}
-            </IconInner>
-          </Icon>
-        )}
-      </Container>
-    );
-  }
-}
+export const IconBadge: React.FC<Props> = (props) => {
+  const { children, showNumber, unread } = props;
+
+  return (
+    <View>
+      {children}
+      {unread > 0 && (
+        <Icon>
+          <IconInner>
+            {showNumber && <UnreadCount>{unread}</UnreadCount>}
+          </IconInner>
+        </Icon>
+      )}
+    </View>
+  );
+};

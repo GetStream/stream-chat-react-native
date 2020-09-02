@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import { TranslationContext } from '../../context';
 
@@ -8,19 +8,19 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10;
+  margin-bottom: 10px;
   ${({ theme }) => theme.messageList.messageSystem.container.css}
 `;
 
 const Line = styled.View`
   flex: 1;
-  height: 0.5;
+  height: 0.5px;
   background-color: ${({ theme }) => theme.colors.light};
   ${({ theme }) => theme.messageList.messageSystem.line.css}
 `;
 
 const TextContainer = styled.View`
-  margin-top: 10;
+  margin-top: 10px;
   flex: 3;
   ${({ theme }) => theme.messageList.messageSystem.textContainer.css}
 `;
@@ -54,9 +54,7 @@ const MessageSystem = ({ message }) => {
       <TextContainer>
         <Text>{message.text.toUpperCase()}</Text>
         <DateText>
-          {tDateTimeParser(message.created_at)
-            .calendar()
-            .toUpperCase()}
+          {tDateTimeParser(message.created_at).calendar().toUpperCase()}
         </DateText>
       </TextContainer>
       <Line />

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Image, Modal, SafeAreaView, Text, View } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import PropTypes from 'prop-types';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components';
 
 import { MessageContentContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
