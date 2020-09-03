@@ -53,5 +53,5 @@ export const useIsOnline = ({ client }) => {
     };
   }, [client]);
 
-  return { isOnline, connectionRecovering };
+  return { connectionRecovering, isOnline };
 };
