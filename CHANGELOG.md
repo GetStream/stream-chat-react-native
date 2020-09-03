@@ -74,6 +74,10 @@
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or the `useContext` hook (ex: `const { messages } = useContext(MessagesContext);`)
 
+- Dropped support for deprecated props from MessageList component
+  - `dateSeparator` (use DateSeparator instead)
+  - `headerComponent` (use HeaderComponent instead)
+
 ## [1.2.0] 2020-08-21
 
 **NO BREAKING CHANGES**
