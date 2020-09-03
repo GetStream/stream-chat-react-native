@@ -111,6 +111,11 @@ const MessageSimple = (props) => {
 
 MessageSimple.propTypes = {
   /**
+   * Custom UI component for the action sheet that appears on long press of a Message.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
+   */
+  ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */

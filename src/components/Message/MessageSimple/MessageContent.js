@@ -1,9 +1,9 @@
 import React, { useContext, useRef, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
-import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import Immutable from 'seamless-immutable';
 
+import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies from './MessageReplies';
 import MessageTextContainer from './MessageTextContainer';
 
@@ -24,50 +24,10 @@ import {
 import { themed } from '../../../styles/theme';
 import { emojiData, MESSAGE_ACTIONS } from '../../../utils/utils';
 
-const ActionSheetButtonContainer = styled.View`
-  align-items: center;
-  background-color: #fff;
-  height: 50px;
-  justify-content: center;
-  width: 100%;
-  ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
-`;
-
-const ActionSheetButtonText = styled.Text`
-  color: #388cea;
-  font-size: 18px;
-  ${({ theme }) => theme.message.actionSheet.buttonText.css};
-`;
-
-const ActionSheetCancelButtonContainer = styled.View`
-  align-items: center;
-  height: 50px;
-  justify-content: center;
-  width: 100%;
-  ${({ theme }) => theme.message.actionSheet.cancelButtonContainer.css};
-`;
-const ActionSheetCancelButtonText = styled.Text`
-  color: red;
-  font-size: 18px;
-  ${({ theme }) => theme.message.actionSheet.cancelButtonText.css};
-`;
-
-const ActionSheetTitleContainer = styled.View`
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  ${({ theme }) => theme.message.actionSheet.titleContainer.css};
-`;
-
-const ActionSheetTitleText = styled.Text`
-  font-size: 14px;
-  color: #757575;
-  ${({ theme }) => theme.message.actionSheet.titleText.css};
-`;
-
-// Border radii are useful for the case of error message types only.
-// Otherwise background is transparent, so border radius is not really visible.
+/**
+ * Border radii are useful for the case of error message types only.
+ * Otherwise background is transparent, so border radius is not really visible.
+ */
 const Container = styled.TouchableOpacity`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
@@ -141,6 +101,7 @@ const MetaText = styled.Text`
  */
 const MessageContentWithContext = React.memo((props) => {
   const {
+    ActionSheet = DefaultActionSheet,
     AttachmentActions,
     AttachmentFileIcon,
     Card,
@@ -454,37 +415,8 @@ const MessageContentWithContext = React.memo((props) => {
         ) : null}
         {actionSheetVisible && (
           <ActionSheet
-            cancelButtonIndex={0}
-            destructiveButtonIndex={0}
-            onPress={(index) => onActionPress(options[index].id)}
-            options={options.map((o, i) => {
-              if (i === 0) {
-                return (
-                  <ActionSheetCancelButtonContainer testID='cancel-button'>
-                    <ActionSheetCancelButtonText>
-                      {t('Cancel')}
-                    </ActionSheetCancelButtonText>
-                  </ActionSheetCancelButtonContainer>
-                );
-              }
-              return (
-                <ActionSheetButtonContainer
-                  key={o.title}
-                  testID={`action-sheet-item-${o.title}`}
-                >
-                  <ActionSheetButtonText>{o.title}</ActionSheetButtonText>
-                </ActionSheetButtonContainer>
-              );
-            })}
+            {...{ actionSheetStyles, onActionPress, options }}
             ref={actionSheetRef}
-            styles={actionSheetStyles}
-            title={
-              <ActionSheetTitleContainer testID='action-sheet-container'>
-                <ActionSheetTitleText>
-                  {t('Choose an action')}
-                </ActionSheetTitleText>
-              </ActionSheetTitleContainer>
-            }
           />
         )}
       </Container>
@@ -501,6 +433,11 @@ const MessageContent = (props) => {
 MessageContent.themePath = 'message.content';
 
 MessageContent.propTypes = {
+  /**
+   * Custom UI component for the action sheet that appears on long press of a Message.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
+   */
+  ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
