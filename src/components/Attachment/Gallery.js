@@ -145,7 +145,11 @@ const Gallery = ({ alignment, images }) => {
 
   return (
     <>
-      <GalleryContainer alignment={alignment} length={galleryImages.length}>
+      <GalleryContainer
+        alignment={alignment}
+        length={galleryImages.length}
+        testID='image-multiple-container'
+      >
         {galleryImages.slice(0, 4).map((image, i) => (
           <ImageContainer
             activeOpacity={0.8}
@@ -156,6 +160,7 @@ const Gallery = ({ alignment, images }) => {
               setViewerModalOpen(true);
               setViewerModalImageIndex(i);
             }}
+            testID='image-multiple'
             {...additionalTouchableProps}
           >
             {i === 3 && galleryImages.length > 4 ? (

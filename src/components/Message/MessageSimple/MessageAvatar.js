@@ -32,7 +32,7 @@ const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
           name={message.user.name || message.user.id}
         />
       ) : (
-        <Spacer />
+        <Spacer testID='spacer' />
       )}
     </Container>
   );
@@ -40,11 +40,11 @@ const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
 
 MessageAvatar.propTypes = {
   /**
-   * Avatar alignment 'left' or 'right'.
+   * Avatar alignment: 'left' or 'right'
    */
   alignment: PropTypes.string,
   /**
-   * Position of message in group - top, bottom, middle, single.
+   * Position of message in group - top, bottom, middle, or single
    *
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
@@ -53,7 +53,7 @@ MessageAvatar.propTypes = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object,
   /**
-   * Should show avatar.
+   * Whether or not to show user avatar
    */
   showAvatar: PropTypes.bool,
 };

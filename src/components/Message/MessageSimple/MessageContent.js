@@ -18,6 +18,7 @@ import {
   ChannelContext,
   KeyboardContext,
   MessageContentContext,
+  MessagesContext,
   TranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
@@ -133,7 +134,12 @@ const MetaText = styled.Text`
   ${({ theme }) => theme.message.content.metaText.css};
 `;
 
-const MessageContent = (props) => {
+/**
+ * Since this component doesn't consume `messages` from `MessagesContext`,
+ * we memoized and broke it up to prevent new messages from re-rendering
+ * each individual MessageContent component.
+ */
+const MessageContentWithContext = React.memo((props) => {
   const {
     AttachmentActions,
     AttachmentFileIcon,
@@ -154,7 +160,6 @@ const MessageContent = (props) => {
     alignment,
     canDeleteMessage,
     canEditMessage,
-    disabled,
     dismissReactionPicker,
     formatDate,
     getTotalReactionCount,
@@ -168,7 +173,7 @@ const MessageContent = (props) => {
     isMyMessage,
     markdownRules,
     message,
-    messageActions,
+    messageActions = Object.keys(MESSAGE_ACTIONS),
     MessageReplies = DefaultMessageReplies,
     onLongPress,
     onMessageTouch,
@@ -185,9 +190,12 @@ const MessageContent = (props) => {
     threadList,
   } = props;
 
-  const { Attachment = DefaultAttachment, Message, channel } = useContext(
-    ChannelContext,
-  );
+  const {
+    Attachment = DefaultAttachment,
+    disabled,
+    Message,
+    channel,
+  } = useContext(ChannelContext);
   const { dismissKeyboard } = useContext(KeyboardContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
@@ -206,24 +214,16 @@ const MessageContent = (props) => {
     }
   };
 
-  const onHandleDelete = async () => {
-    await handleDelete();
-  };
-
-  const onHandleEdit = () => {
-    handleEdit();
-  };
-
-  const onActionPress = (action) => {
+  const onActionPress = async (action) => {
     switch (action) {
       case MESSAGE_ACTIONS.edit:
-        onHandleEdit();
+        handleEdit();
         break;
       case MESSAGE_ACTIONS.delete:
-        onHandleDelete();
+        await handleDelete();
         break;
       case MESSAGE_ACTIONS.reply:
-        onShowActionSheet();
+        onOpenThread();
         break;
       case MESSAGE_ACTIONS.reactions:
         openReactionPicker();
@@ -293,12 +293,15 @@ const MessageContent = (props) => {
     });
   }
 
-  if (message.deleted_at)
+  if (message.deleted_at) {
     return (
       <DeletedContainer alignment={alignment}>
-        <DeletedText>{t('This message was deleted ...')}</DeletedText>
+        <DeletedText testID='message-deleted'>
+          {t('This message was deleted ...')}
+        </DeletedText>
       </DeletedContainer>
     );
+  }
 
   const contentProps = {
     activeOpacity: 0.7,
@@ -307,17 +310,18 @@ const MessageContent = (props) => {
     hasReactions,
     onLongPress:
       onLongPress && !(disabled || readOnly)
-        ? (e) => onLongPress(e, message)
+        ? (e) => onLongPress(message, e)
         : options.length > 1 && !(disabled || readOnly)
         ? onShowActionSheet
         : () => null,
-    onPress: onPress ? (e) => onPress(e, message) : onMessageTouch,
+    onPress: onPress ? (e) => onPress(message, e) : onMessageTouch,
     status: message.status,
     ...additionalTouchableProps,
   };
 
-  if (message.status === 'failed')
+  if (message.status === 'failed') {
     contentProps.onPress = () => retrySendMessage(Immutable(message));
+  }
 
   const context = {
     additionalTouchableProps,
@@ -330,12 +334,15 @@ const MessageContent = (props) => {
       <Container
         {...contentProps}
         error={message.type === 'error' || message.status === 'failed'}
+        testID='message-content-wrapper'
       >
         {message.type === 'error' ? (
-          <FailedText>{t('ERROR · UNSENT')}</FailedText>
+          <FailedText testID='message-error'>{t('ERROR · UNSENT')}</FailedText>
         ) : null}
         {message.status === 'failed' ? (
-          <FailedText>{t('Message failed - try again')}</FailedText>
+          <FailedText testID='message-failed'>
+            {t('Message failed - try again')}
+          </FailedText>
         ) : null}
         {reactionsEnabled && ReactionList && (
           <ReactionPickerWrapper
@@ -366,7 +373,7 @@ const MessageContent = (props) => {
               )}
           </ReactionPickerWrapper>
         )}
-        {MessageHeader && <MessageHeader {...props} />}
+        {MessageHeader && <MessageHeader testID='message-header' {...props} />}
         {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
         <ContainerInner alignment={alignment} collapsable={false}>
           {hasAttachment &&
@@ -432,9 +439,9 @@ const MessageContent = (props) => {
             openThread={onOpenThread}
           />
         ) : null}
-        {MessageFooter && <MessageFooter {...props} />}
+        {MessageFooter && <MessageFooter testID='message-footer' {...props} />}
         {!MessageFooter && showTime ? (
-          <MetaContainer>
+          <MetaContainer testID='show-time'>
             <MetaText alignment={alignment}>
               {formatDate
                 ? formatDate(message.created_at)
@@ -475,13 +482,19 @@ const MessageContent = (props) => {
       </Container>
     </MessageContentContext.Provider>
   );
+});
+
+const MessageContent = (props) => {
+  const { retrySendMessage } = useContext(MessagesContext);
+
+  return <MessageContentWithContext {...props} {...{ retrySendMessage }} />;
 };
 
 MessageContent.themePath = 'message.content';
 
 MessageContent.propTypes = {
   /**
-   * Style object for actionsheet (used to message actions).
+   * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
   actionSheetStyles: PropTypes.object,
@@ -528,8 +541,6 @@ MessageContent.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Disables the message UI. Which means, message actions, reactions won't work. */
-  disabled: PropTypes.bool,
   /** Dismiss the reaction picker */
   dismissReactionPicker: PropTypes.func,
   /**
@@ -600,7 +611,7 @@ MessageContent.propTypes = {
    *      {...props}
    *      onLongPress={(thisArg, message, e) => {
    *        props.openReactionPicker();
-   *        // Or if you want to open actionsheet
+   *        // Or if you want to open action sheet
    *        // thisArg.showActionSheet();
    *      }}
    *  )
@@ -641,7 +652,7 @@ MessageContent.propTypes = {
    *      {...props}
    *      onPress={(thisArg, message, e) => {
    *        props.openReactionPicker();
-   *        // Or if you want to open actionsheet
+   *        // Or if you want to open action sheet
    *        // thisArg.showActionSheet();
    *      }}
    *  )
@@ -705,6 +716,8 @@ MessageContent.propTypes = {
    * ]
    */
   supportedReactions: PropTypes.array,
+  /** Whether or not the MessageList is part of a Thread */
+  threadList: PropTypes.bool,
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js

@@ -11,19 +11,25 @@ import Chat from '../../../Chat/Chat';
 
 import { Streami18n } from '../../../../utils/Streami18n';
 
-afterEach(cleanup);
+let chatClient;
+let id;
+let i18nInstance;
 
 describe('MessageStatus', () => {
+  beforeAll(async () => {
+    id = 'testID';
+    chatClient = await getTestClientWithUser({ id });
+    i18nInstance = new Streami18n();
+  });
+  afterEach(cleanup);
+
   it('should render message status with spacer', async () => {
-    const id = 'testID';
-    const chatClient = await getTestClientWithUser({ id });
-    const i18nInstance = new Streami18n();
     const user = generateUser();
     const message = generateMessage({ user });
+
     const { getByTestId } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
         <MessageStatus
-          client={chatClient}
           lastReceivedId={message.id}
           message={message}
           readBy={[{ id }]}
@@ -37,15 +43,12 @@ describe('MessageStatus', () => {
   });
 
   it('should render message status with delivered container', async () => {
-    const id = 'testID';
-    const chatClient = await getTestClientWithUser({ id });
-    const i18nInstance = new Streami18n();
     const user = generateUser();
     const message = generateMessage({ user });
+
     const { getByTestId } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
         <MessageStatus
-          client={chatClient}
           lastReceivedId={message.id}
           message={{ ...message, status: 'received' }}
           readBy={[{ id }]}
@@ -59,15 +62,12 @@ describe('MessageStatus', () => {
   });
 
   it('should render message status with read by container', async () => {
-    const id = 'testID';
-    const chatClient = await getTestClientWithUser({ id });
-    const i18nInstance = new Streami18n();
     const user = generateUser();
     const message = generateMessage({ user });
+
     const { getByTestId, getByText, rerender, toJSON } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
         <MessageStatus
-          client={chatClient}
           lastReceivedId={message.id}
           message={message}
           readBy={[{ id }, { id: user.id, name: user.name }]}
@@ -87,7 +87,6 @@ describe('MessageStatus', () => {
     rerender(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
         <MessageStatus
-          client={chatClient}
           lastReceivedId={staticMessage.id}
           message={staticMessage}
           readBy={[
@@ -110,17 +109,12 @@ describe('MessageStatus', () => {
   });
 
   it('should render message status with sending container', async () => {
-    const i18nInstance = new Streami18n();
     const user = generateUser();
-    const chatClient = await getTestClientWithUser({ id: user.id });
     const message = generateMessage({ user });
+
     const { getByTestId } = render(
       <Chat client={chatClient} i18nInstance={i18nInstance}>
-        <MessageStatus
-          client={chatClient}
-          message={{ ...message, status: 'sending' }}
-          readBy={[]}
-        />
+        <MessageStatus message={{ ...message, status: 'sending' }} />
       </Chat>,
     );
 

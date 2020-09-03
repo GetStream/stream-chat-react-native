@@ -217,6 +217,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -232,6 +233,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -305,6 +307,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -404,6 +407,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -796,6 +800,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -811,6 +816,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -884,6 +890,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -983,6 +990,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -1287,6 +1295,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -1302,6 +1311,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -1375,6 +1385,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -1474,6 +1485,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"

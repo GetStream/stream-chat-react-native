@@ -50,6 +50,7 @@ describe('MessageAvatar', () => {
     );
 
     await waitFor(() => {
+      expect(getByTestId('spacer')).toBeTruthy();
       expect(queryAllByTestId('avatar-text')).toHaveLength(0);
       expect(queryAllByTestId('avatar-image')).toHaveLength(0);
     });
