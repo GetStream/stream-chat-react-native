@@ -16,14 +16,6 @@ import Chat from '../../../Chat/Chat';
 import Channel from '../../../Channel/Channel';
 import { MessageContentContext } from '../../../../context';
 
-/**
- * Message
- * - it should show the action sheet on long press
- * - it should edit a message
- * - it should delete a message
- * - it should open a thread
- */
-
 describe('MessageContent', () => {
   let channel;
   let chatClient;
@@ -58,15 +50,13 @@ describe('MessageContent', () => {
     cleanup();
   });
 
-  it('renders Message, MessageSimple, and MessageContent', async () => {
+  it('renders the MessageContent component', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
-      expect(getByTestId('message-simple-wrapper')).toBeTruthy();
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
     });
   });
@@ -79,7 +69,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('message-error')).toBeTruthy();
     });
   });
@@ -93,7 +83,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('message-failed')).toBeTruthy();
     });
   });
@@ -122,7 +112,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('message-header')).toBeTruthy();
     });
   });
@@ -138,7 +128,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('message-footer')).toBeTruthy();
     });
   });
@@ -153,7 +143,7 @@ describe('MessageContent', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('show-time')).toBeTruthy();
       expect(queryAllByTestId('message-footer')).toHaveLength(0);
     });
@@ -171,7 +161,7 @@ describe('MessageContent', () => {
     const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('image-attachment-single')).toBeTruthy();
     });
   });
@@ -189,7 +179,7 @@ describe('MessageContent', () => {
     const { getByTestId, queryAllByTestId } = renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('image-multiple-container')).toBeTruthy();
       expect(queryAllByTestId('image-multiple')).toHaveLength(2);
     });
@@ -205,7 +195,7 @@ describe('MessageContent', () => {
     const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('file-attachment')).toBeTruthy();
     });
   });
@@ -221,7 +211,7 @@ describe('MessageContent', () => {
     const { getByTestId } = renderMessage({ message });
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('reaction-list')).toBeTruthy();
     });
   });
