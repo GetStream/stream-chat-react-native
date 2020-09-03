@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
@@ -200,6 +200,7 @@ const MessageContentWithContext = React.memo((props) => {
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -209,6 +210,7 @@ const MessageContentWithContext = React.memo((props) => {
 
   const onShowActionSheet = async () => {
     await dismissKeyboard();
+    setActionSheetVisible(true);
     if (actionSheetRef.current) {
       actionSheetRef.current.show();
     }
@@ -231,6 +233,7 @@ const MessageContentWithContext = React.memo((props) => {
       default:
         break;
     }
+    setActionSheetVisible(false);
   };
 
   const hasAttachment = Boolean(
@@ -449,36 +452,41 @@ const MessageContentWithContext = React.memo((props) => {
             </MetaText>
           </MetaContainer>
         ) : null}
-        <ActionSheet
-          cancelButtonIndex={0}
-          destructiveButtonIndex={0}
-          onPress={(index) => onActionPress(options[index].id)}
-          options={options.map((o, i) => {
-            if (i === 0) {
+        {actionSheetVisible && (
+          <ActionSheet
+            cancelButtonIndex={0}
+            destructiveButtonIndex={0}
+            onPress={(index) => onActionPress(options[index].id)}
+            options={options.map((o, i) => {
+              if (i === 0) {
+                return (
+                  <ActionSheetCancelButtonContainer testID='cancel-button'>
+                    <ActionSheetCancelButtonText>
+                      {t('Cancel')}
+                    </ActionSheetCancelButtonText>
+                  </ActionSheetCancelButtonContainer>
+                );
+              }
               return (
-                <ActionSheetCancelButtonContainer>
-                  <ActionSheetCancelButtonText>
-                    {t('Cancel')}
-                  </ActionSheetCancelButtonText>
-                </ActionSheetCancelButtonContainer>
+                <ActionSheetButtonContainer
+                  key={o.title}
+                  testID={`action-sheet-item-${o.title}`}
+                >
+                  <ActionSheetButtonText>{o.title}</ActionSheetButtonText>
+                </ActionSheetButtonContainer>
               );
+            })}
+            ref={actionSheetRef}
+            styles={actionSheetStyles}
+            title={
+              <ActionSheetTitleContainer testID='action-sheet-container'>
+                <ActionSheetTitleText>
+                  {t('Choose an action')}
+                </ActionSheetTitleText>
+              </ActionSheetTitleContainer>
             }
-            return (
-              <ActionSheetButtonContainer key={o.title}>
-                <ActionSheetButtonText>{o.title}</ActionSheetButtonText>
-              </ActionSheetButtonContainer>
-            );
-          })}
-          ref={actionSheetRef}
-          styles={actionSheetStyles}
-          title={
-            <ActionSheetTitleContainer>
-              <ActionSheetTitleText>
-                {t('Choose an action')}
-              </ActionSheetTitleText>
-            </ActionSheetTitleContainer>
-          }
-        />
+          />
+        )}
       </Container>
     </MessageContentContext.Provider>
   );

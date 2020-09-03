@@ -778,7 +778,7 @@ const MessageInput = (props) => {
   };
 
   return editing ? (
-    <EditingBoxContainer>
+    <EditingBoxContainer testID='editing'>
       <EditingBoxHeader>
         <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
         <IconSquare

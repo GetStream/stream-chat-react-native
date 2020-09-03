@@ -59,7 +59,7 @@ const MessageWithContext = React.memo((props) => {
 
   const handleFlag = async () => await client.flagMessage(message.id);
 
-  const handleMute = async () => await client.flagMessage(message.user.id);
+  const handleMute = async () => await client.muteUser(message.user.id);
 
   const handleEdit = () => setEditingState(message);
 
