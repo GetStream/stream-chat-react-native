@@ -19,7 +19,6 @@ const Container = styled.View`
   align-items: center;
   flex-direction: row;
   height: 24px;
-  opacity: ${({ visible }) => (visible ? 1 : 0)};
   padding-horizontal: 5px;
   z-index: 1;
   ${({ theme }) => theme.message.reactionList.container.css}
@@ -27,7 +26,6 @@ const Container = styled.View`
 
 const ImageWrapper = styled.View`
   flex-direction: row;
-  opacity: ${({ visible }) => (visible ? 1 : 0)};
   top: -23px;
 `;
 
@@ -97,29 +95,35 @@ const ReactionList = ({
     alignment={alignment}
     testID='reaction-list'
   >
-    <Container visible={visible}>
-      <Reactions>
-        {renderReactions(latestReactions, supportedReactions)}
-      </Reactions>
-      <ReactionCount reactionCounts={getTotalReactionCount(supportedReactions)}>
-        {getTotalReactionCount(supportedReactions)}
-      </ReactionCount>
-    </Container>
-    <ImageWrapper visible={visible}>
-      {alignment === 'left' ? (
-        <>
-          <LeftTail source={leftTail} />
-          <LeftCenter resizeMode='stretch' source={leftCenter} />
-          <LeftEnd source={leftEnd} />
-        </>
-      ) : (
-        <>
-          <RightEnd source={rightEnd} />
-          <RightCenter resizeMode='stretch' source={rightCenter} />
-          <RightTail source={rightTail} />
-        </>
-      )}
-    </ImageWrapper>
+    {visible && (
+      <Container>
+        <Reactions>
+          {renderReactions(latestReactions, supportedReactions)}
+        </Reactions>
+        <ReactionCount
+          reactionCounts={getTotalReactionCount(supportedReactions)}
+        >
+          {getTotalReactionCount(supportedReactions)}
+        </ReactionCount>
+      </Container>
+    )}
+    {visible && (
+      <ImageWrapper>
+        {alignment === 'left' ? (
+          <>
+            <LeftTail source={leftTail} />
+            <LeftCenter resizeMode='stretch' source={leftCenter} />
+            <LeftEnd source={leftEnd} />
+          </>
+        ) : (
+          <>
+            <RightEnd source={rightEnd} />
+            <RightCenter resizeMode='stretch' source={rightCenter} />
+            <RightTail source={rightTail} />
+          </>
+        )}
+      </ImageWrapper>
+    )}
   </TouchableWrapper>
 );
 

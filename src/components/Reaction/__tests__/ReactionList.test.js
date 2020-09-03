@@ -1,8 +1,14 @@
-```js
-const View = require('react-native').View;
+import React from 'react';
+import { render, waitFor } from '@testing-library/react-native';
 
-const props = {
-  alignment: 'right',
+import { generateUser } from 'mock-builders/generator/user';
+import { getTestClientWithUser } from 'mock-builders/mock';
+
+import ReactionList from '../ReactionList';
+
+import Chat from '../../Chat/Chat';
+
+const defaultProps = {
   getTotalReactionCount: () => 5,
   latestReactions: [
     {
@@ -105,7 +111,71 @@ const props = {
   ],
   visible: true,
 };
-<View style={{ width: 90 }}>
-  <ReactionList {...props} />
-</View>;
-```
+
+const emojiTypes = ['sad', 'haha', 'like'];
+
+describe('ReactionList', () => {
+  const clientUser = generateUser();
+  let chatClient;
+
+  const getComponent = (props = {}) => (
+    <Chat client={chatClient}>
+      <ReactionList {...props} />
+    </Chat>
+  );
+
+  beforeEach(async () => {
+    chatClient = await getTestClientWithUser(clientUser);
+  });
+
+  it('should render left aligned ReactionList', async () => {
+    const { queryByTestId, toJSON } = render(
+      getComponent({ ...defaultProps, alignment: 'left' }),
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('reaction-list')).toBeTruthy();
+      emojiTypes.forEach((emoji) => expect(queryByTestId(emoji)).toBeTruthy());
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  it('should render right aligned ReactionList', async () => {
+    const { queryByTestId, toJSON } = render(
+      getComponent({ ...defaultProps, alignment: 'right' }),
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('reaction-list')).toBeTruthy();
+      emojiTypes.forEach((emoji) => expect(queryByTestId(emoji)).toBeTruthy());
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  it('should render not visible ReactionList', async () => {
+    const { queryByTestId, toJSON } = render(
+      getComponent({ ...defaultProps, visible: false }),
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('reaction-list')).toBeTruthy();
+      emojiTypes.forEach((emoji) => expect(queryByTestId(emoji)).toBeFalsy());
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+});
