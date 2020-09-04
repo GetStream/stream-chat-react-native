@@ -42,7 +42,7 @@ MessageAvatar.propTypes = {
   /**
    * Avatar alignment: 'left' or 'right'
    */
-  alignment: PropTypes.string,
+  alignment: PropTypes.oneOf(['left', 'right']),
   /**
    * Position of message in group - top, bottom, middle, or single
    *
