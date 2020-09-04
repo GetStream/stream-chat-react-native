@@ -177,26 +177,6 @@ const MessageContentWithContext = React.memo((props) => {
     }
   };
 
-  const onActionPress = async (action) => {
-    switch (action) {
-      case MESSAGE_ACTIONS.edit:
-        handleEdit();
-        break;
-      case MESSAGE_ACTIONS.delete:
-        await handleDelete();
-        break;
-      case MESSAGE_ACTIONS.reply:
-        onOpenThread();
-        break;
-      case MESSAGE_ACTIONS.reactions:
-        openReactionPicker();
-        break;
-      default:
-        break;
-    }
-    setActionSheetVisible(false);
-  };
-
   const hasAttachment = Boolean(
     message && message.attachments && message.attachments.length,
   );
@@ -415,8 +395,17 @@ const MessageContentWithContext = React.memo((props) => {
         ) : null}
         {actionSheetVisible && (
           <ActionSheet
-            {...{ actionSheetStyles, onActionPress, options }}
+            actionSheetStyles={actionSheetStyles}
+            canDeleteMessage={canDeleteMessage}
+            canEditMessage={canEditMessage}
+            handleDelete={handleDelete}
+            handleEdit={handleEdit}
+            messageActions={messageActions}
+            openReactionPicker={openReactionPicker}
+            openThread={onOpenThread}
+            options={options}
             ref={actionSheetRef}
+            setActionSheetVisible={setActionSheetVisible}
           />
         )}
       </Container>
@@ -468,6 +457,14 @@ MessageContent.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
+  /**
+   * Function that returns a boolean indicating whether or not the user can delete the message.
+   */
+  canDeleteMessage: PropTypes.func,
+  /**
+   * Function that returns a boolean indicating whether or not the user can edit the message.
+   */
+  canEditMessage: PropTypes.func,
   /**
    * Custom UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js

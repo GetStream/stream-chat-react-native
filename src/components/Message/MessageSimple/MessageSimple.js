@@ -144,6 +144,14 @@ MessageSimple.propTypes = {
     PropTypes.elementType,
   ]),
   /**
+   * Function that returns a boolean indicating whether or not the user can delete the message.
+   */
+  canDeleteMessage: PropTypes.func,
+  /**
+   * Function that returns a boolean indicating whether or not the user can edit the message.
+   */
+  canEditMessage: PropTypes.func,
+  /**
    * Custom UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
    */
@@ -208,8 +216,8 @@ MessageSimple.propTypes = {
    */
   handleDelete: PropTypes.func,
   /**
-   * Handler to edit a current message. This message simply sets current message as value of `editing` property of channel context.
-   * `editing` prop is then used by MessageInput component to switch to edit mode.
+   * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
+   * The `editing` prop is used by the MessageInput component to switch to edit mode.
    */
   handleEdit: PropTypes.func,
   /** Handler to flag the message */
