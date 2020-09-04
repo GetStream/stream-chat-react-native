@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, View } from 'react-native';
-import styled from 'styled-components';
+import { Animated, Easing } from 'react-native';
+import { styled } from '../../styles/styledComponents';
 
 import { themed } from '../../styles/theme';
 
-const AnimatedView = Animated.createAnimatedComponent(View);
+const AnimatedView = Animated.createAnimatedComponent(Animated.View);
 
-export const Circle = styled(AnimatedView)`
+const Circle = styled(AnimatedView)`
   border-color: ${({ theme }) => theme.colors.primary};
   border-radius: 30px;
   border-right-color: transparent;
@@ -19,9 +19,9 @@ export const Circle = styled(AnimatedView)`
 `;
 
 /**
- * @example ../docs/Spinner.md
+ * @example ./Spinner.md
  */
-const Spinner = () => {
+const Spinner: React.FC & { themePath: string } = () => {
   const rotateValue = useRef(new Animated.Value(0));
 
   const loop = Animated.loop(
@@ -29,6 +29,7 @@ const Spinner = () => {
       duration: 800,
       easing: Easing.linear,
       toValue: 1,
+      useNativeDriver: false,
     }),
   );
 
