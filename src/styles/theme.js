@@ -198,6 +198,13 @@ export const defaultTheme = {
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
+    fileUploadPreview: {
+      attachmentContainerView: {},
+      attachmentView: {},
+      container: {},
+      dismissText: {},
+      filenameText: {},
+    },
     imageUploadPreview: {
       container: {},
       dismiss: {},
