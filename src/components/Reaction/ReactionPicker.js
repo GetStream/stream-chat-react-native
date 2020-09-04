@@ -56,6 +56,7 @@ const getUsersPerReaction = (reactions, type) => {
   return filtered;
 };
 
+// TODO: change from using Modal to reanimated view to save on rendering and performance
 const ReactionPicker = ({
   handleDismiss,
   handleReaction,
@@ -117,11 +118,12 @@ const ReactionPicker = ({
                   onPress={() => {
                     handleReaction(id);
                   }}
+                  testID={`${id}-reaction`}
                 >
                   {icon}
                 </Emoji>
                 {!hideReactionCount && (
-                  <ReactionCount testID={`${id}-${count}`}>
+                  <ReactionCount testID={`${id}-${count || 'count'}`}>
                     {count > 0 ? count : ''}
                   </ReactionCount>
                 )}

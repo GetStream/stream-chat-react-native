@@ -1,9 +1,16 @@
-```js
-const View = require('react-native').View;
+import React from 'react';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-const props = {
-  alignment: 'right',
-  getTotalReactionCount: () => 5,
+import { generateUser } from 'mock-builders/generator/user';
+import { getTestClientWithUser } from 'mock-builders/mock';
+
+import ReactionPicker from '../ReactionPicker';
+
+import Chat from '../../Chat/Chat';
+
+import { emojiData } from '../../../utils/utils';
+
+const defaultProps = {
   latestReactions: [
     {
       created_at: '2019-11-28T11:14:20.155817Z',
@@ -103,9 +110,86 @@ const props = {
       user_id: 'billowing-firefly-8',
     },
   ],
-  visible: true,
+  reactionCounts: {
+    haha: 1,
+    like: 2,
+    sad: 2,
+  },
+  reactionPickerVisible: true,
 };
-<View style={{ width: 90 }}>
-  <ReactionList {...props} />
-</View>;
-```
+
+describe('ReactionPicker', () => {
+  const clientUser = generateUser();
+  let chatClient;
+
+  const getComponent = (props = {}) => (
+    <Chat client={chatClient}>
+      <ReactionPicker {...props} />
+    </Chat>
+  );
+
+  beforeEach(async () => {
+    chatClient = await getTestClientWithUser(clientUser);
+  });
+
+  it('should render ReactionPicker', async () => {
+    const props = { ...defaultProps, handleReaction: jest.fn() };
+    const { getByTestId, queryByTestId, toJSON } = render(getComponent(props));
+
+    await waitFor(() => {
+      expect(queryByTestId('reaction-picker')).toBeTruthy();
+      emojiData.forEach((emoji) => {
+        expect(queryByTestId(`${emoji.id}-reaction`)).toBeTruthy();
+        expect(
+          queryByTestId(
+            `${emoji.id}-${defaultProps.reactionCounts[emoji.id] || 'count'}`,
+          ),
+        ).toBeTruthy();
+        expect(
+          getByTestId(
+            `${emoji.id}-${defaultProps.reactionCounts[emoji.id] || 'count'}`,
+          ),
+        ).toHaveTextContent(defaultProps.reactionCounts[emoji.id] || '');
+      });
+      expect(props.handleReaction).toHaveBeenCalledTimes(0);
+    });
+
+    emojiData.forEach((emoji) => {
+      fireEvent.press(getByTestId(`${emoji.id}-reaction`));
+    });
+
+    await waitFor(() => {
+      expect(props.handleReaction).toHaveBeenCalledTimes(emojiData.length);
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+
+  it('should render not visible ReactionPicker', async () => {
+    const { queryByTestId, toJSON } = render(
+      getComponent({ ...defaultProps, reactionPickerVisible: false }),
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId('reaction-picker')).toBeFalsy();
+      emojiData.forEach((emoji) => {
+        expect(queryByTestId(`${emoji.id}-reaction`)).toBeFalsy();
+        expect(
+          queryByTestId(
+            `${emoji.id}-${defaultProps.reactionCounts[emoji.id] || 'count'}`,
+          ),
+        ).toBeFalsy();
+      });
+    });
+
+    const snapshot = toJSON();
+
+    await waitFor(() => {
+      expect(snapshot).toMatchSnapshot();
+    });
+  });
+});
