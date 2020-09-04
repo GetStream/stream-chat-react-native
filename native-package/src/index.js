@@ -1,8 +1,8 @@
 import { Platform } from 'react-native';
-import { registerNativeHandlers } from 'stream-chat-react-native-core';
 import NetInfo from '@react-native-community/netinfo';
-import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
+import ImagePicker from 'react-native-image-crop-picker';
+import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
 registerNativeHandlers({
   NetInfo: {
@@ -42,34 +42,38 @@ registerNativeHandlers({
       });
     },
   },
-  pickImage: () =>
-    new Promise((resolve, reject) => {
-      ImagePicker.showImagePicker({}, (response) => {
-        if (response.error) {
-          reject(Error(response.error));
-        }
-        let { uri } = response;
-        if (Platform.OS === 'android') {
-          uri = 'file://' + response.path;
-        }
-
-        resolve({
-          cancelled: response.didCancel,
-          uri,
-        });
-      });
-    }),
   pickDocument: async () => {
     try {
-      const res = await DocumentPicker.pick({
+      const res = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.allFiles],
       });
-      const { uri } = res;
 
       return {
         cancelled: false,
-        uri,
-        name: res.name,
+        docs: res.map(({ name, uri }) => ({ name, uri })),
+      };
+    } catch (err) {
+      return {
+        cancelled: true,
+      };
+    }
+  },
+  pickImage: async () => {
+    try {
+      const res = await ImagePicker.openPicker({
+        includeBase64: Platform.OS === 'ios',
+        multiple: true,
+        writeTempFile: false,
+      });
+
+      return {
+        cancelled: false,
+        images: res.map((image) => ({
+          uri:
+            Platform.OS === 'ios'
+              ? `data:${image.mime};base64,${image.data}`
+              : image.path,
+        })),
       };
     } catch (err) {
       return {

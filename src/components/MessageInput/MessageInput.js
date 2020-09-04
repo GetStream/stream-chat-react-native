@@ -37,8 +37,10 @@ const Container = styled.View`
   border-radius: 10px;
   flex-direction: column;
   margin-horizontal: 10px;
-  padding-top: ${({ padding, theme }) =>
-    padding ? theme.messageInput.container.conditionalPadding : 0}px;
+  padding-top: ${({ imageUploads, theme }) =>
+    imageUploads && imageUploads.length > 0
+      ? theme.messageInput.container.conditionalPadding
+      : 0}px;
   ${({ theme }) => theme.messageInput.container.css};
 `;
 
@@ -284,15 +286,28 @@ const MessageInput = (props) => {
     }
 
     const result = await pickDocument();
-    if (result.type === 'cancel' || result.cancelled) {
-      return;
-    }
-    const mimeType = lookup(result.name);
+    if (!result.cancelled) {
+      if (result.docs) {
+        // condition to support react-native-image-crop-picker
+        result.docs.forEach((doc) => {
+          const mimeType = lookup(doc.name);
 
-    if (mimeType && mimeType.startsWith('image/')) {
-      uploadNewImage(result);
-    } else {
-      uploadNewFile(result);
+          if (mimeType && mimeType.startsWith('image/')) {
+            uploadNewImage(doc);
+          } else {
+            uploadNewFile(doc);
+          }
+        });
+      } else {
+        // condition to support react-native-image-picker
+        const mimeType = lookup(result.name);
+
+        if (mimeType && mimeType.startsWith('image/')) {
+          uploadNewImage(result);
+        } else {
+          uploadNewFile(result);
+        }
+      }
     }
   };
 
@@ -302,11 +317,15 @@ const MessageInput = (props) => {
     }
     const result = await pickImageNative();
 
-    if (result.cancelled) {
-      return;
+    if (!result.cancelled) {
+      if (result.images) {
+        result.images.forEach((image) => {
+          uploadNewImage(image);
+        });
+      } else {
+        uploadNewImage(result);
+      }
     }
-
-    uploadNewImage(result);
   };
 
   const removeFile = (id) => {
@@ -340,7 +359,7 @@ const MessageInput = (props) => {
     }
 
     return (
-      <Container padding={imageUploads && imageUploads.length > 0}>
+      <Container imageUploads={imageUploads}>
         {fileUploads && (
           <FileUploadPreview
             AttachmentFileIcon={AttachmentFileIcon}
