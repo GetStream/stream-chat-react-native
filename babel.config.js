@@ -18,7 +18,6 @@ module.exports = (api) => {
   }
 
   return {
-    comments: true,
     env: {
       production: {
         presets: [

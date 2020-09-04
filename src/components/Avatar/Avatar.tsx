@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
 
-import styled from 'styled-components';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
@@ -12,14 +11,14 @@ const AvatarContainer = styled.View`
   ${({ theme }) => theme.avatar.container.css}
 `;
 
-const AvatarImage = styled.Image`
+const AvatarImage = styled.Image<{ size: number }>`
   border-radius: ${({ size }) => size / 2}px;
   height: ${({ size }) => size}px;
   width: ${({ size }) => size}px;
   ${({ theme }) => theme.avatar.image.css}
 `;
 
-const AvatarFallback = styled.View`
+const AvatarFallback = styled.View<{ size: number }>`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.primary};
   border-radius: ${({ size }) => size / 2}px;
@@ -29,7 +28,7 @@ const AvatarFallback = styled.View`
   ${({ theme }) => theme.avatar.fallback.css}
 `;
 
-const AvatarText = styled.Text`
+const AvatarText = styled.Text<{ fontSize: number }>`
   color: ${({ theme }) => theme.colors.textLight};
   font-size: ${({ fontSize }) => fontSize}px;
   font-weight: bold;
@@ -37,7 +36,7 @@ const AvatarText = styled.Text`
   ${({ theme }) => theme.avatar.text.css}
 `;
 
-const getInitials = (fullName) =>
+const getInitials = (fullName?: string) =>
   fullName
     ? fullName
         .split(' ')
@@ -45,12 +44,25 @@ const getInitials = (fullName) =>
         .map((name) => name.charAt(0))
     : null;
 
+type Props = {
+  /** image url */
+  image?: string;
+  /** name of the picture, used for title tag fallback */
+  name?: string;
+  /** size in pixels */
+  size?: number;
+};
+
 /**
  * Avatar - A round avatar image with fallback to user's initials
  *
  * @example ../docs/Avatar.md
  */
-const Avatar = ({ image, name, size = BASE_AVATAR_SIZE }) => {
+const Avatar: React.FC<Props> & { themePath: string } = ({
+  image,
+  name,
+  size = BASE_AVATAR_SIZE,
+}) => {
   const [imageError, setImageError] = useState(false);
 
   const fontSize = useMemo(
@@ -79,15 +91,6 @@ const Avatar = ({ image, name, size = BASE_AVATAR_SIZE }) => {
       )}
     </AvatarContainer>
   );
-};
-
-Avatar.propTypes = {
-  /** image url */
-  image: PropTypes.string,
-  /** name of the picture, used for title tag fallback */
-  name: PropTypes.string,
-  /** size in pixels */
-  size: PropTypes.number,
 };
 
 Avatar.themePath = 'avatar';

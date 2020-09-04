@@ -1,5 +1,4 @@
 {
-  "comments": true,
   "env": {
     "production": {
       "presets": [
