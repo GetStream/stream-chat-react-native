@@ -56,7 +56,7 @@ type Props = {
 /**
  * Avatar - A round avatar image with fallback to user's initials
  *
- * @example ../docs/Avatar.md
+ * @example ./Avatar.md
  */
 const Avatar: React.FC<Props> & { themePath: string } = ({
   image,

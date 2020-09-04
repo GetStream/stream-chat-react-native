@@ -424,7 +424,7 @@ export const defaultTheme: Theme = {
       textContainer: {
         borderRadiusL: 16,
         borderRadiusS: 2,
-        leftBorderColor: 'rgba(0,0,0,0.08)',
+        leftBorderColor: 'rgba(0, 0, 0, 0.08)',
         leftBorderWidth: 0.5,
         rightBorderColor: 'transparent',
         rightBorderWidth: 0,

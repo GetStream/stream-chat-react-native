@@ -103,7 +103,7 @@ exports[`ActionSheetAttachment should render ActionSheetAttachment and click thr
             onStartShouldSetResponder={[Function]}
             style={
               Object {
-                "backgroundColor": "rgba(0,0,0,0.05)",
+                "backgroundColor": "rgba(0, 0, 0, 0.05)",
                 "borderRadius": 5,
                 "opacity": 1,
                 "paddingBottom": 5,
@@ -175,7 +175,7 @@ exports[`ActionSheetAttachment should render ActionSheetAttachment and click thr
                 style={
                   Array [
                     Object {
-                      "backgroundColor": "rgba(0,0,0,0.05)",
+                      "backgroundColor": "rgba(0, 0, 0, 0.05)",
                       "borderRadius": 5,
                       "paddingBottom": 5,
                       "paddingLeft": 5,
@@ -252,7 +252,7 @@ exports[`ActionSheetAttachment should render ActionSheetAttachment and click thr
                 style={
                   Array [
                     Object {
-                      "backgroundColor": "rgba(0,0,0,0.05)",
+                      "backgroundColor": "rgba(0, 0, 0, 0.05)",
                       "borderRadius": 5,
                       "paddingBottom": 5,
                       "paddingLeft": 5,

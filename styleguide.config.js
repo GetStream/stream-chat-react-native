@@ -255,7 +255,7 @@ module.exports = {
         // Looks ugly in docs, better to just not show it for now
         'react-native-actionsheet': path.join(
           __dirname,
-          'lib/module/styleguideComponents/ReactNativeActionSheet.js',
+          'src/styleguideComponents/ReactNativeActionSheet.js',
         ),
       },
       extensions: ['.web.js', '.js', '.ts', '.tsx'],
