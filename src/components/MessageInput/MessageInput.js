@@ -121,6 +121,7 @@ const MessageInput = (props) => {
     additionalTextInputProps,
     AttachButton = AttachButtonDefault,
     AttachmentFileIcon,
+    compressImageQuality,
     doDocUploadRequest,
     doImageUploadRequest,
     hasFilePicker = true,
@@ -285,7 +286,7 @@ const MessageInput = (props) => {
       return;
     }
 
-    const result = await pickDocument();
+    const result = await pickDocument({ maxNumberOfFiles });
     if (!result.cancelled) {
       if (result.docs) {
         // condition to support react-native-image-crop-picker
@@ -315,7 +316,10 @@ const MessageInput = (props) => {
     if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
-    const result = await pickImageNative();
+    const result = await pickImageNative({
+      compressImageQuality,
+      maxNumberOfFiles,
+    });
 
     if (!result.cancelled) {
       if (result.images) {
@@ -850,6 +854,8 @@ MessageInput.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
+  /** Compress image with quality (from 0 to 1, where 1 is best quality). On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images, while a value of 0.8 will reduce the file size by about half or less compared to a value of 1. Image picker defaults to 0.8 for iOS and 1 for Android */
+  compressImageQuality: PropTypes.number,
   /**
    * Override file upload request
    *

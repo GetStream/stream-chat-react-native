@@ -16,6 +16,6 @@
     "@react-native-community/netinfo": ">=2.0.7",
     "react-native-document-picker": ">=3.5.4",
     "react-native-image-crop-picker": ">=0.33.2",
-    "react-native": "*"
+    "react-native": ">=0.59.0"
   }
 }

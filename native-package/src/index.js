@@ -42,11 +42,15 @@ registerNativeHandlers({
       });
     },
   },
-  pickDocument: async () => {
+  pickDocument: async ({ maxNumberOfFiles }) => {
     try {
-      const res = await DocumentPicker.pickMultiple({
+      let res = await DocumentPicker.pickMultiple({
         type: [DocumentPicker.types.allFiles],
       });
+
+      if (maxNumberOfFiles && res.length > maxNumberOfFiles) {
+        res = res.slice(0, maxNumberOfFiles);
+      }
 
       return {
         cancelled: false,
@@ -58,13 +62,20 @@ registerNativeHandlers({
       };
     }
   },
-  pickImage: async () => {
+  pickImage: async ({ compressImageQuality, maxNumberOfFiles }) => {
     try {
-      const res = await ImagePicker.openPicker({
+      let res = await ImagePicker.openPicker({
+        compressImageQuality,
         includeBase64: Platform.OS === 'ios',
+        maxFiles: maxNumberOfFiles || undefined,
         multiple: true,
         writeTempFile: false,
       });
+
+      // maxFiles option on picker is only for iOS so this is a safety check for android
+      if (maxNumberOfFiles && res.length > maxNumberOfFiles) {
+        res = res.slice(0, maxNumberOfFiles);
+      }
 
       return {
         cancelled: false,

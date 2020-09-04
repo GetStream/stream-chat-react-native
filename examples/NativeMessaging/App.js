@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { SafeAreaView, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
@@ -60,6 +60,7 @@ const streami18n = new Streami18n({
 
 
 const ChannelListScreen = React.memo(({ navigation }) => {
+  const { setChannel } = useContext(AppContext);
   return (
     <SafeAreaView>
       <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
@@ -70,9 +71,8 @@ const ChannelListScreen = React.memo(({ navigation }) => {
             options={options}
             Preview={ChannelPreviewMessenger}
             onSelect={channel => {
-              navigation.navigate('Channel', {
-                channel,
-              });
+              setChannel(channel);
+              navigation.navigate('Channel');
             }}
           />
         </View>
@@ -81,8 +81,8 @@ const ChannelListScreen = React.memo(({ navigation }) => {
   );
 });
 
-const ChannelScreen = React.memo(({ navigation, route }) => {
-  const [channel] = useState(route.params.channel);
+const ChannelScreen = React.memo(({ navigation }) => {
+  const { channel, setThread } = useContext(AppContext);
 
   return (
     <SafeAreaView>
@@ -91,8 +91,9 @@ const ChannelScreen = React.memo(({ navigation, route }) => {
           <View style={{ height: '100%' }}>
             <MessageList
               onThreadSelect={thread => {
+                setThread(thread);
                 navigation.navigate('Thread', {
-                  channel: channel.id,
+                  channelId: channel.id,
                   thread,
                 });
               }}
@@ -106,8 +107,8 @@ const ChannelScreen = React.memo(({ navigation, route }) => {
 });
 
 const ThreadScreen = React.memo(({ route }) => {
-  const [thread] = useState(route.params.thread);
-  const [channel] = useState(chatClient.channel('messaging', route.params.channel));
+  const { thread } = useContext(AppContext);
+  const [channel] = useState(chatClient.channel('messaging', route.params.channelId));
 
   return (
     <SafeAreaView>
@@ -132,8 +133,12 @@ const ThreadScreen = React.memo(({ route }) => {
 
 const Stack = createStackNavigator();
 
+const AppContext = React.createContext();
+
 export default () => {
+  const [channel, setChannel] = useState();
   const [clientReady, setClientReady] = useState(false);
+  const [thread, setThread] = useState();
 
   useEffect(() => {
     const setupClient = async () => {
@@ -150,6 +155,7 @@ export default () => {
 
   return (
     <NavigationContainer>
+      <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
       {
         clientReady &&
           <Stack.Navigator
@@ -162,9 +168,9 @@ export default () => {
             <Stack.Screen
               component={ChannelScreen}
               name='Channel'
-              options={({ route }) => ({
+              options={() => ({
                 headerBackTitle: 'Back',
-                headerTitle: route.params.channel.data.name
+                headerTitle: channel.data.name
               })}
             />
             <Stack.Screen
@@ -198,6 +204,7 @@ export default () => {
             />
           </Stack.Navigator>
       }
+      </AppContext.Provider>
     </NavigationContainer>
   );
 };
