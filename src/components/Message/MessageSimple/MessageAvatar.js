@@ -20,9 +20,7 @@ const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
   const visible =
     typeof showAvatar === 'boolean'
       ? showAvatar
-      : groupStyles[0] === 'single' || groupStyles[0] === 'bottom'
-      ? true
-      : false;
+      : groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
   return (
     <Container alignment={alignment} testID='message-avatar'>
