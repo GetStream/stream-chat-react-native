@@ -162,7 +162,7 @@ export default () => {
             initialRouteName='ChannelList'
             screenOptions={{
               cardStyle: { backgroundColor: 'white' },
-              headerTitleStyle: { fontWeight: 'bold' },
+              headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
             }}
           >
             <Stack.Screen
@@ -170,6 +170,7 @@ export default () => {
               name='Channel'
               options={() => ({
                 headerBackTitle: 'Back',
+                headerRight: () => <></>,
                 headerTitle: channel.data.name
               })}
             />
@@ -182,7 +183,7 @@ export default () => {
               component={ThreadScreen}
               name='Thread'
               options={({ navigation }) => ({
-                headerLeft: null,
+                headerLeft: () => <></>,
                 headerRight: () => (
                   <TouchableOpacity
                     onPress={() => {
