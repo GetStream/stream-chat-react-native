@@ -22,7 +22,7 @@ import {
   TranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
-import { emojiData, MESSAGE_ACTIONS } from '../../../utils/utils';
+import { emojiData } from '../../../utils/utils';
 
 /**
  * Border radii are useful for the case of error message types only.
@@ -122,6 +122,7 @@ const MessageContentWithContext = React.memo((props) => {
     canDeleteMessage,
     canEditMessage,
     dismissReactionPicker,
+    enableLongPress = true,
     formatDate,
     getTotalReactionCount,
     groupStyles,
@@ -134,7 +135,7 @@ const MessageContentWithContext = React.memo((props) => {
     isMyMessage,
     markdownRules,
     message,
-    messageActions = Object.keys(MESSAGE_ACTIONS),
+    messageActions,
     MessageReplies = DefaultMessageReplies,
     onLongPress,
     onMessageTouch,
@@ -151,16 +152,14 @@ const MessageContentWithContext = React.memo((props) => {
     threadList,
   } = props;
 
-  const {
-    Attachment = DefaultAttachment,
-    disabled,
-    Message,
-    channel,
-  } = useContext(ChannelContext);
+  const { Attachment = DefaultAttachment, disabled, Message } = useContext(
+    ChannelContext,
+  );
   const { dismissKeyboard } = useContext(KeyboardContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
+  const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   const onOpenThread = () => {
@@ -185,7 +184,6 @@ const MessageContentWithContext = React.memo((props) => {
     reactionsEnabled &&
     message.latest_reactions &&
     message.latest_reactions.length > 0;
-  const options = [{ id: 'cancel', title: 'Cancel' }];
   const images =
     hasAttachment &&
     message.attachments.filter(
@@ -194,48 +192,6 @@ const MessageContentWithContext = React.memo((props) => {
     );
   const files =
     hasAttachment && message.attachments.filter((item) => item.type === 'file');
-
-  if (
-    messageActions &&
-    reactionsEnabled &&
-    messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
-  ) {
-    options.splice(1, 0, {
-      id: MESSAGE_ACTIONS.reactions,
-      title: t('Add Reaction'),
-    });
-  }
-
-  if (
-    messageActions &&
-    repliesEnabled &&
-    messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
-    !threadList
-  ) {
-    options.splice(1, 0, { id: MESSAGE_ACTIONS.reply, title: t('Reply') });
-  }
-
-  if (
-    messageActions &&
-    messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-    canEditMessage()
-  ) {
-    options.splice(1, 0, {
-      id: MESSAGE_ACTIONS.edit,
-      title: t('Edit Message'),
-    });
-  }
-
-  if (
-    messageActions &&
-    messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-    canDeleteMessage()
-  ) {
-    options.splice(1, 0, {
-      id: MESSAGE_ACTIONS.delete,
-      title: t('Delete Message'),
-    });
-  }
 
   if (message.deleted_at) {
     return (
@@ -255,7 +211,7 @@ const MessageContentWithContext = React.memo((props) => {
     onLongPress:
       onLongPress && !(disabled || readOnly)
         ? (e) => onLongPress(message, e)
-        : options.length > 1 && !(disabled || readOnly)
+        : enableLongPress
         ? onShowActionSheet
         : () => null,
     onPress: onPress ? (e) => onPress(message, e) : onMessageTouch,
@@ -377,7 +333,6 @@ const MessageContentWithContext = React.memo((props) => {
         {repliesEnabled ? (
           <MessageReplies
             alignment={alignment}
-            channel={channel}
             isThreadList={!!threadList}
             message={message}
             openThread={onOpenThread}
@@ -393,7 +348,7 @@ const MessageContentWithContext = React.memo((props) => {
             </MetaText>
           </MetaContainer>
         ) : null}
-        {actionSheetVisible && (
+        {actionSheetVisible && enableLongPress && (
           <ActionSheet
             actionSheetStyles={actionSheetStyles}
             canDeleteMessage={canDeleteMessage}
@@ -404,14 +359,20 @@ const MessageContentWithContext = React.memo((props) => {
             openReactionPicker={openReactionPicker}
             openThread={onOpenThread}
             options={options}
+            reactionsEnabled={reactionsEnabled}
             ref={actionSheetRef}
+            repliesEnabled={repliesEnabled}
             setActionSheetVisible={setActionSheetVisible}
+            setOptions={setOptions}
+            threadList={threadList}
           />
         )}
       </Container>
     </MessageContentContext.Provider>
   );
 });
+
+MessageContentWithContext.displayName = 'message.contentWithContext';
 
 const MessageContent = (props) => {
   const { retrySendMessage } = useContext(MessagesContext);
@@ -488,6 +449,10 @@ MessageContent.propTypes = {
   /** Dismiss the reaction picker */
   dismissReactionPicker: PropTypes.func,
   /**
+   * Whether or not users are able to long press messages.
+   */
+  enableLongPress: PropTypes.bool,
+  /**
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
    */
@@ -535,6 +500,11 @@ MessageContent.propTypes = {
   hideReactionOwners: PropTypes.bool,
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules: PropTypes.object,
+  /**
+   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
+   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
+   * */
+  messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
   MessageFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   MessageHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   MessageReplies: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
@@ -553,10 +523,10 @@ MessageContent.propTypes = {
    *  return (
    *    <MessageSimple
    *      {...props}
-   *      onLongPress={(thisArg, message, e) => {
+   *      onLongPress={(message, e) => {
    *        props.openReactionPicker();
    *        // Or if you want to open action sheet
-   *        // thisArg.showActionSheet();
+   *        // showActionSheet();
    *      }}
    *  )
    * }
@@ -569,7 +539,6 @@ MessageContent.propTypes = {
    * By default we show action sheet with all the message actions on long press.
    * ```
    *
-   * @param {Component} thisArg Reference to MessageContent component
    * @param message Message object which was long pressed
    * @param e       Event object for onLongPress event
    * */

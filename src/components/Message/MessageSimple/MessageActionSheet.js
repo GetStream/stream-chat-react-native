@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
@@ -51,15 +51,63 @@ const ActionSheetTitleText = styled.Text`
 const MessageActionSheet = React.forwardRef((props, ref) => {
   const {
     actionSheetStyles,
+    canDeleteMessage,
+    canEditMessage,
     handleDelete,
     handleEdit,
+    messageActions = Object.keys(MESSAGE_ACTIONS),
     openReactionPicker,
     openThread,
     options,
+    reactionsEnabled,
+    repliesEnabled,
     setActionSheetVisible,
+    setOptions,
+    threadList,
   } = props;
 
   const { t } = useContext(TranslationContext);
+
+  useEffect(() => {
+    const newOptions = [];
+
+    if (
+      reactionsEnabled &&
+      messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
+    ) {
+      newOptions.splice(1, 0, {
+        id: MESSAGE_ACTIONS.reactions,
+        title: t('Add Reaction'),
+      });
+    }
+
+    if (
+      repliesEnabled &&
+      messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
+      !threadList
+    ) {
+      newOptions.splice(1, 0, { id: MESSAGE_ACTIONS.reply, title: t('Reply') });
+    }
+
+    if (messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 && canEditMessage()) {
+      newOptions.splice(1, 0, {
+        id: MESSAGE_ACTIONS.edit,
+        title: t('Edit Message'),
+      });
+    }
+
+    if (
+      messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
+      canDeleteMessage()
+    ) {
+      newOptions.splice(1, 0, {
+        id: MESSAGE_ACTIONS.delete,
+        title: t('Delete Message'),
+      });
+    }
+
+    setOptions((prevOptions) => [...prevOptions, ...newOptions]);
+  }, []);
 
   const onActionPress = async (action) => {
     switch (action) {
@@ -162,14 +210,24 @@ MessageActionSheet.propTypes = {
    * The action sheet ref declared in MessageContent. To access the ref, ensure the ActionSheet custom
    * component is wrapped in `React.forwardRef`.
    */
+  /** enabled reactions, this is usually set by the parent component based on channel configs */
+  reactionsEnabled: PropTypes.bool,
   ref: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.any }),
   ]),
+  /** enabled replies, this is usually set by the parent component based on channel configs */
+  repliesEnabled: PropTypes.bool,
   /**
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: PropTypes.func,
+  /**
+   * React useState hook setter function that sets action sheet `options`
+   */
+  setOptions: PropTypes.func,
+  /** Whether or not the MessageList is part of a Thread */
+  threadList: PropTypes.bool,
 };
 
 export default MessageActionSheet;

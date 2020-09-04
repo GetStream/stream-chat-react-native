@@ -174,6 +174,10 @@ MessageSimple.propTypes = {
   /** @see See [KeyboardContext](https://getstream.io/chat/docs/#keyboardcontext) */
   dismissKeyboard: PropTypes.func,
   /**
+   * Whether or not users are able to long press messages.
+   */
+  enableLongPress: PropTypes.bool,
+  /**
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
    */

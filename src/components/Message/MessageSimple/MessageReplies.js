@@ -61,7 +61,11 @@ MessageReplies.propTypes = {
   isThreadList: PropTypes.bool,
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object,
-  /** @see See [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext) */
+  /**
+   * Handler to open the thread on message. This function runs on press of the replies button.
+   *
+   * @param message A message object to open the thread upon.
+   * */
   openThread: PropTypes.func,
 };
 
