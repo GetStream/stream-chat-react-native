@@ -1,10 +1,11 @@
 import React from 'react';
-import { ThemeConsumer, ThemeProvider } from './styledComponents';
+import lodashGet from 'lodash/get';
+import isPlainObject from 'lodash/isPlainObject';
+import mapValues from 'lodash/mapValues';
 import merge from 'lodash/merge';
 import lodashSet from 'lodash/set';
-import lodashGet from 'lodash/get';
-import mapValues from 'lodash/mapValues';
-import isPlainObject from 'lodash/isPlainObject';
+
+import { ThemeConsumer, ThemeProvider } from './styledComponents';
 import { defaultTheme } from './themeConstants';
 
 // replaces
