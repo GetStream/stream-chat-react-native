@@ -13,7 +13,7 @@ import ChannelListMessenger from '../ChannelListMessenger';
 import Chat from '../../Chat/Chat';
 
 import { TranslationContext } from '../../../context';
-import { defaultTheme } from '../../../styles/theme';
+import { defaultTheme } from '../../../styles/themeConstants';
 
 let mockChannels;
 let chatClient;

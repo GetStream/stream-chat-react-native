@@ -234,6 +234,13 @@ export type Theme = {
     editingBoxContainer: CSS;
     editingBoxHeader: CSS;
     editingBoxHeaderTitle: CSS;
+    fileUploadPreview: {
+      attachmentContainerView: CSS;
+      attachmentView: CSS;
+      container: CSS;
+      dismissText: CSS;
+      filenameText: CSS;
+    };
     imageUploadPreview: {
       container: CSS;
       dismiss: CSS;
@@ -493,6 +500,13 @@ export const defaultTheme: Theme = {
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
+    fileUploadPreview: {
+      attachmentContainerView: {},
+      attachmentView: {},
+      container: {},
+      dismissText: {},
+      filenameText: {},
+    },
     imageUploadPreview: {
       container: {},
       dismiss: {},
