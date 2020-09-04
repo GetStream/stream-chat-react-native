@@ -78,7 +78,7 @@ const MessageTextContainer = (props) => {
 
 MessageTextContainer.propTypes = {
   /** Position of message. 'right' | 'left' */
-  alignment: PropTypes.oneOf(['right', 'left']),
+  alignment: PropTypes.oneOf(['left', 'right']),
   /**
    * Position of message in group - top, bottom, middle, single.
    *
