@@ -15,13 +15,15 @@ export const useChannelPreviewDisplayName = (channel) => {
 };
 
 const getChannelPreviewDisplayName = (channel, client) => {
-  const currentUserId = client?.user?.id;
-  const channelName = channel?.data?.name;
+  const currentUserId = client && client.user && client.user.id;
+  const channelName = channel && channel.data && channel.data.name;
 
   if (typeof channelName === 'string') {
     return channelName;
   } else {
-    const members = Object.values(channel?.state?.members || {});
+    const members = Object.values(
+      (channel && channel.state && channel.state.members) || {},
+    );
     const otherMembers = members.filter(
       (member) => member.user.id !== currentUserId,
     );

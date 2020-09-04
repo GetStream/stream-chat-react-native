@@ -17,10 +17,6 @@
       "compact": false
     }
   ],
-  "plugins": [
-    "macros",
-    "babel-plugin-styled-components",
-    ["babel-plugin-typescript-to-proptypes", { "comments": true }]
-  ],
+  "plugins": ["macros", "module-resolver", "babel-plugin-styled-components"],
   "presets": ["@babel/env", "module:metro-react-native-babel-preset"]
 }

@@ -40,19 +40,17 @@ const replaceCssShorthand = (
 };
 
 export const themed = <
-  P extends {
-    style?: { [key: string]: string };
-  } = Record<string, unknown>
+  P extends Record<string, unknown> = Record<string, unknown>
 >(
   OriginalComponent: React.ComponentType<P> & {
     themePath: string;
     extraThemePaths?: string[];
   },
-): React.FC<P> => {
+): React.FC<P & { style?: { [key: string]: string } }> => {
   if (OriginalComponent.themePath == null) {
     throw Error('Only use themed on components that have a static themePath');
   }
-  const ThemedComponent: React.FC<P> & {
+  const ThemedComponent: React.FC<P & { style?: { [key: string]: string } }> & {
     themePath: string;
     extraThemePaths?: string[];
   } = ({ style, ...props }) => (

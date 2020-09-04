@@ -29,7 +29,7 @@ const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
 };
 
 const getLatestMessagePreview = (channel, t, tDateTimeParser) => {
-  const messages = channel?.state?.messages;
+  const messages = channel && channel.state && channel.state.messages;
 
   if (!messages || !messages.length) {
     return {

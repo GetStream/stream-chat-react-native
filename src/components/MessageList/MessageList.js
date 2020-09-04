@@ -97,12 +97,13 @@ const MessageList = (props) => {
 
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedMessage(messageList)?.id,
+    getLastReceivedMessage(messageList) &&
+      getLastReceivedMessage(messageList).id,
   );
 
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
-    const currentLastReceivedId = currentLastMessage?.id;
+    const currentLastReceivedId = currentLastMessage && currentLastMessage.id;
     if (currentLastReceivedId) {
       const hasNewMessage = lastReceivedId !== currentLastReceivedId;
       const userScrolledUp = yOffset.current > 0;
@@ -117,7 +118,9 @@ const MessageList = (props) => {
         setNewMessageNotification(true);
       }
       if (scrollToBottom) {
-        flatListRef.current?.scrollToIndex({ index: 0 });
+        if (flatListRef.current) {
+          flatListRef.current.scrollToIndex({ index: 0 });
+        }
       }
 
       // remove the scroll notification if we already scrolled down...
@@ -185,13 +188,15 @@ const MessageList = (props) => {
 
   const goToNewMessages = () => {
     setNewMessageNotification(false);
-    flatListRef.current?.scrollToIndex({ index: 0 });
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index: 0 });
+    }
     if (!threadList) markRead();
   };
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messageList?.length === 0 && !threadList) {
+  if (messageList && messageList.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />

@@ -36,13 +36,13 @@
       [
         "commonjs",
         {
-          "babelrc": true
+          "configFile": "./babel.config.js"
         }
       ],
       [
         "module",
         {
-          "babelrc": true
+          "configFile": "./babel.config.js"
         }
       ],
       "typescript"
@@ -130,7 +130,7 @@
     "@types/jest": "^26.0.13",
     "@types/lodash": "^4.14.161",
     "@types/react": "^16.8.23",
-    "@types/react-native": "^0.57.0",
+    "@types/react-native": "^0.63.14",
     "@types/react-test-renderer": "^16.9.3",
     "@types/styled-components": "^5.1.2",
     "@typescript-eslint/eslint-plugin": "^3.7.1",
@@ -140,8 +140,8 @@
     "babel-jest": "^26.3.0",
     "babel-loader": "^8.0.5",
     "babel-plugin-i18next-extract": "^0.6.1",
+    "babel-plugin-module-resolver": "^4.0.0",
     "babel-plugin-react-native-web": "^0.11.2",
-    "babel-plugin-typescript-to-proptypes": "^1.4.0",
     "babel-preset-expo": "^5.0.0",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",
@@ -156,6 +156,7 @@
     "mockdate": "^3.0.2",
     "prettier": "^2.1.1",
     "react": "^16.5.0",
+    "react-docgen-typescript": "^1.20.4",
     "react-dom": "^16.8.6",
     "react-native": "0.61.5",
     "react-native-typescript-transformer": "^1.2.13",

@@ -21,9 +21,9 @@ export const useChannelPreviewDisplayAvatar = (channel) => {
 };
 
 const getChannelPreviewDisplayAvatar = (channel, client) => {
-  const currentUserId = client?.user?.id;
-  const channelName = channel?.data?.name;
-  const channelImage = channel?.data?.image;
+  const currentUserId = client && client.user && client.user.id;
+  const channelName = channel && channel.date && channel.data.name;
+  const channelImage = channel && channel.data && channel.data.image;
 
   if (channelImage) {
     return {
@@ -31,7 +31,9 @@ const getChannelPreviewDisplayAvatar = (channel, client) => {
       name: channelName,
     };
   } else if (currentUserId) {
-    const members = Object.values(channel?.state?.members || {});
+    const members = Object.values(
+      (channel && channel.state && channel.state.members) || {},
+    );
     const otherMembers = members.filter(
       (member) => member.user.id !== currentUserId,
     );

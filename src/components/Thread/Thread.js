@@ -83,7 +83,7 @@ const Thread = (props) => {
       await loadMoreThread();
     };
 
-    if (thread?.id && thread?.reply_count) {
+    if (thread && thread.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
   }, []);

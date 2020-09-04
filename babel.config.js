@@ -8,7 +8,7 @@ module.exports = (api) => {
           compact: false,
         },
       ],
-      plugins: ['macros', 'babel-plugin-styled-components'],
+      plugins: ['macros', 'module-resolver', 'babel-plugin-styled-components'],
       presets: [
         '@babel/env',
         'module:metro-react-native-babel-preset',
@@ -18,6 +18,7 @@ module.exports = (api) => {
   }
 
   return {
+    comments: true,
     env: {
       production: {
         presets: [
@@ -35,11 +36,11 @@ module.exports = (api) => {
         compact: false,
       },
     ],
-    plugins: [
-      'macros',
-      'babel-plugin-styled-components',
-      ['babel-plugin-typescript-to-proptypes', { comments: true }],
+    plugins: ['macros', 'module-resolver', 'babel-plugin-styled-components'],
+    presets: [
+      '@babel/env',
+      'module:metro-react-native-babel-preset',
+      '@babel/preset-typescript',
     ],
-    presets: ['@babel/env', 'module:metro-react-native-babel-preset'],
   };
 };

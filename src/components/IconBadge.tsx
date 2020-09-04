@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 
-import { styled } from 'src/styles/styledComponents';
+import { styled } from '../styles/styledComponents';
 
 const Icon = styled.View`
   align-items: center;
