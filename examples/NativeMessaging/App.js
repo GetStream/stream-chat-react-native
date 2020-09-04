@@ -92,10 +92,7 @@ const ChannelScreen = React.memo(({ navigation }) => {
             <MessageList
               onThreadSelect={thread => {
                 setThread(thread);
-                navigation.navigate('Thread', {
-                  channelId: channel.id,
-                  thread,
-                });
+                navigation.navigate('Thread', { channelId: channel.id });
               }}
             />
             <MessageInput />
