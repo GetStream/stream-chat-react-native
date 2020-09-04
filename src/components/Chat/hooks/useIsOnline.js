@@ -2,12 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { NetInfo } from '../../../native';
 
-export const useIsOnline = ({
-  client,
-  setConnectionRecovering,
-  setIsOnline,
-}) => {
+export const useIsOnline = ({ client }) => {
   const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState(null);
+  const [isOnline, setIsOnline] = useState(true);
+  const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   useEffect(() => {
     const handleChangedEvent = (e) => {
@@ -56,4 +54,6 @@ export const useIsOnline = ({
       }
     };
   }, [client]);
+
+  return { connectionRecovering, isOnline };
 };

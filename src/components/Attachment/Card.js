@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';
 import { themed } from '../../styles/theme';
-import { makeImageCompatibleUrl } from '../../utils';
+import { makeImageCompatibleUrl } from '../../utils/utils';
 
 const Container = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.light};

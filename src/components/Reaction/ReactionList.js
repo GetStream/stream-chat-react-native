@@ -3,10 +3,6 @@ import { Text } from 'react-native';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { themed } from '../../styles/theme';
-import { renderReactions } from '../../utils/renderReactions';
-import { emojiData } from '../../utils';
-
 import leftTail from '../../images/reactionlist/left-tail.png';
 import leftCenter from '../../images/reactionlist/left-center.png';
 import leftEnd from '../../images/reactionlist/left-end.png';
@@ -14,6 +10,10 @@ import leftEnd from '../../images/reactionlist/left-end.png';
 import rightTail from '../../images/reactionlist/right-tail.png';
 import rightCenter from '../../images/reactionlist/right-center.png';
 import rightEnd from '../../images/reactionlist/right-end.png';
+
+import { themed } from '../../styles/theme';
+import { renderReactions } from '../../utils/renderReactions';
+import { emojiData } from '../../utils/utils';
 
 const TouchableWrapper = styled.View`
   position: relative;

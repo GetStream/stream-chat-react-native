@@ -5,7 +5,10 @@ import {
   MessagesContext,
   ThreadContext,
 } from '../../../context';
-import { getGroupStyles, getReadStates, insertDates } from '../utils';
+
+import { getGroupStyles } from '../utils/getGroupStyles';
+import { getReadStates } from '../utils/getReadStates';
+import { insertDates } from '../utils/insertDates';
 
 export const useMessageList = ({ noGroupByUser, threadList }) => {
   const { messages } = useContext(MessagesContext);

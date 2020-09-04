@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import styled, { withTheme } from 'styled-components';
 
-import { capitalize, renderText } from '../../../utils';
+import { renderText } from '../../../utils/renderText';
+import { capitalize } from '../../../utils/utils';
 
 const TextContainer = styled.View`
   border-bottom-left-radius: ${({ theme, groupStyle }) =>

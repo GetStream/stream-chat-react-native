@@ -1,7 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
-import { Avatar } from '../../Avatar';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
+
+import Avatar from '../../Avatar/Avatar';
 
 const Container = styled.View`
   margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;

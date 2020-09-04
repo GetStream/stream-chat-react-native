@@ -4,10 +4,8 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 import iconReload from '../../images/reload1.png';
-
 import { themed } from '../../styles/theme';
-
-import { ProgressIndicatorTypes } from '../../utils';
+import { ProgressIndicatorTypes } from '../../utils/utils';
 
 const Container = styled.View`
   align-items: center;

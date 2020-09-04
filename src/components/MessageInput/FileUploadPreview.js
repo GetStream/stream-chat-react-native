@@ -1,14 +1,52 @@
 import React from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList } from 'react-native';
+import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { FileIcon } from '../Attachment';
 import UploadProgressIndicator from './UploadProgressIndicator';
 
-import { FileState, ProgressIndicatorTypes } from '../../utils';
+import FileIcon from '../Attachment/FileIcon';
+
+import { themed } from '../../styles/theme';
+import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const FILE_PREVIEW_HEIGHT = 50;
 const FILE_PREVIEW_PADDING = 10;
+
+const AttachmentContainerView = styled.View`
+  align-items: center;
+  border-color: #ebebeb;
+  border-width: 0.5px;
+  flex-direction: row;
+  height: ${FILE_PREVIEW_HEIGHT}px;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  padding: ${FILE_PREVIEW_PADDING}px;
+  ${({ theme }) =>
+    theme.messageInput.fileUploadPreview.attachmentContainerView.css};
+`;
+
+const AttachmentView = styled.View`
+  align-items: center;
+  flex-direction: row;
+  ${({ theme }) => theme.messageInput.fileUploadPreview.attachmentView.css};
+`;
+
+const Container = styled.View`
+  height: ${({ fileUploadsLength }) =>
+    fileUploadsLength * (FILE_PREVIEW_HEIGHT + 5)}px;
+  margin-horizontal: 10px;
+  ${({ theme }) => theme.messageInput.fileUploadPreview.container.css};
+`;
+
+const DismissText = styled.Text`
+  ${({ theme }) => theme.messageInput.fileUploadPreview.dismissText.css};
+`;
+
+const FilenameText = styled.Text`
+  padding-left: 10px;
+  ${({ theme }) => theme.messageInput.fileUploadPreview.filenameText.css};
+`;
 
 /**
  * FileUploadPreview
@@ -39,51 +77,35 @@ const FileUploadPreview = ({
         active={item.state !== FileState.UPLOADED}
         type={type}
       >
-        <View
-          style={{
-            alignItems: 'center',
-            borderColor: '#EBEBEB',
-            borderWidth: 0.5,
-            flexDirection: 'row',
-            height: FILE_PREVIEW_HEIGHT,
-            justifyContent: 'space-between',
-            marginBottom: 5,
-            padding: FILE_PREVIEW_PADDING,
-          }}
-        >
-          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+        <AttachmentContainerView>
+          <AttachmentView>
             <AttachmentFileIcon mimeType={item.file.type} size={20} />
-            <Text style={{ paddingLeft: 10 }}>
+            <FilenameText>
               {item.file.name.length > 35
                 ? item.file.name.substring(0, 35).concat('...')
                 : item.file.name}
-            </Text>
-          </View>
-          <Text
+            </FilenameText>
+          </AttachmentView>
+          <DismissText
             onPress={() => removeFile(item.id)}
             testID='remove-file-upload-preview'
           >
             X
-          </Text>
-        </View>
+          </DismissText>
+        </AttachmentContainerView>
       </UploadProgressIndicator>
     );
   };
 
   return fileUploads && fileUploads.length ? (
-    <View
-      style={{
-        height: fileUploads.length * (FILE_PREVIEW_HEIGHT + 5),
-        marginHorizontal: 10,
-      }}
-    >
+    <Container fileUploadsLength={fileUploads.length}>
       <FlatList
         data={fileUploads}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         style={{ flex: 1 }}
       />
-    </View>
+    </Container>
   ) : null;
 };
 
@@ -132,4 +154,6 @@ FileUploadPreview.propTypes = {
   retryUpload: PropTypes.func,
 };
 
-export default FileUploadPreview;
+FileUploadPreview.themePath = 'messageInput.fileUploadPreview';
+
+export default themed(FileUploadPreview);

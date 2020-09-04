@@ -1,12 +1,12 @@
 import React from 'react';
-
 import styled from 'styled-components';
-import { Spinner } from '../Spinner';
+
+import Spinner from '../Spinner/Spinner';
 
 const Container = styled.View`
-  width: 100%;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  width: 100%;
   ${({ theme }) => theme.channelListFooterLoadingIndicator.container.css}
 `;
 

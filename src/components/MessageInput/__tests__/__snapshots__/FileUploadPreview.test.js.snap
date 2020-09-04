@@ -2,11 +2,14 @@
 
 exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 uploaded, and 1 failed file 1`] = `
 <View
+  fileUploadsLength={3}
   style={
-    Object {
-      "height": 165,
-      "marginHorizontal": 10,
-    }
+    Array [
+      Object {
+        "height": 165,
+        "marginHorizontal": 10,
+      },
+    ]
   }
 >
   <RCTScrollView
@@ -94,24 +97,31 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -132,9 +142,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -142,6 +154,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -209,24 +226,31 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -247,9 +271,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -257,6 +283,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -288,24 +319,31 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -326,9 +364,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -336,6 +376,11 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -394,11 +439,14 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
 
 exports[`FileUploadPreview should render FileUploadPreview with all failed files 1`] = `
 <View
+  fileUploadsLength={3}
   style={
-    Object {
-      "height": 165,
-      "marginHorizontal": 10,
-    }
+    Array [
+      Object {
+        "height": 165,
+        "marginHorizontal": 10,
+      },
+    ]
   }
 >
   <RCTScrollView
@@ -486,24 +534,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -524,9 +579,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -534,6 +591,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -609,24 +671,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -647,9 +716,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -657,6 +728,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -732,24 +808,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -770,9 +853,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -780,6 +865,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -838,11 +928,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
 
 exports[`FileUploadPreview should render FileUploadPreview with all uploaded files 1`] = `
 <View
+  fileUploadsLength={3}
   style={
-    Object {
-      "height": 165,
-      "marginHorizontal": 10,
-    }
+    Array [
+      Object {
+        "height": 165,
+        "marginHorizontal": 10,
+      },
+    ]
   }
 >
   <RCTScrollView
@@ -915,24 +1008,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -953,9 +1053,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -963,6 +1065,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -979,24 +1086,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -1017,9 +1131,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -1027,6 +1143,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -1043,24 +1164,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -1081,9 +1209,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -1091,6 +1221,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -1105,11 +1240,14 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploaded fil
 
 exports[`FileUploadPreview should render FileUploadPreview with all uploading files 1`] = `
 <View
+  fileUploadsLength={3}
   style={
-    Object {
-      "height": 165,
-      "marginHorizontal": 10,
-    }
+    Array [
+      Object {
+        "height": 165,
+        "marginHorizontal": 10,
+      },
+    ]
   }
 >
   <RCTScrollView
@@ -1197,24 +1335,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -1235,9 +1380,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -1245,6 +1392,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -1327,24 +1479,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -1365,9 +1524,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -1375,6 +1536,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X
@@ -1457,24 +1623,31 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
         >
           <View
             style={
-              Object {
-                "alignItems": "center",
-                "borderColor": "#EBEBEB",
-                "borderWidth": 0.5,
-                "flexDirection": "row",
-                "height": 50,
-                "justifyContent": "space-between",
-                "marginBottom": 5,
-                "padding": 10,
-              }
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "borderColor": "#ebebeb",
+                  "borderWidth": 0.5,
+                  "flexDirection": "row",
+                  "height": 50,
+                  "justifyContent": "space-between",
+                  "marginBottom": 5,
+                  "paddingBottom": 10,
+                  "paddingLeft": 10,
+                  "paddingRight": 10,
+                  "paddingTop": 10,
+                },
+              ]
             }
           >
             <View
               style={
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                }
+                Array [
+                  Object {
+                    "alignItems": "center",
+                    "flexDirection": "row",
+                  },
+                ]
               }
             >
               <Image
@@ -1495,9 +1668,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               />
               <Text
                 style={
-                  Object {
-                    "paddingLeft": 10,
-                  }
+                  Array [
+                    Object {
+                      "paddingLeft": 10,
+                    },
+                  ]
                 }
               >
                 dummy.pdf
@@ -1505,6 +1680,11 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
             </View>
             <Text
               onPress={[Function]}
+              style={
+                Array [
+                  Object {},
+                ]
+              }
               testID="remove-file-upload-preview"
             >
               X

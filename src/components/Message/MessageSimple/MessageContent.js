@@ -1,27 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
-import Immutable from 'seamless-immutable';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
+import Immutable from 'seamless-immutable';
+
+import MessageReplies from './MessageReplies';
+import MessageTextContainer from './MessageTextContainer';
+
+import Attachment from '../../Attachment/Attachment';
+import FileAttachment from '../../Attachment/FileAttachment';
+import FileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
+import Gallery from '../../Attachment/Gallery';
+import ReactionList from '../../Reaction/ReactionList';
+import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
 import {
   MessageContentContext,
   withTranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
-
-import {
-  Attachment,
-  FileAttachment,
-  FileAttachmentGroup,
-  Gallery,
-} from '../../Attachment';
-import { ReactionList, ReactionPickerWrapper } from '../../Reaction';
-
-import MessageTextContainer from './MessageTextContainer';
-import MessageReplies from './MessageReplies';
-
-import { emojiData, MESSAGE_ACTIONS } from '../../../utils';
+import { emojiData, MESSAGE_ACTIONS } from '../../../utils/utils';
 
 // Border radii are useful for the case of error message types only.
 // Otherwise background is transparent, so border radius is not really visible.
@@ -431,7 +429,7 @@ class MessageContent extends React.PureComponent {
    */
   _setReactionPickerPosition = async () => {
     console.warn(
-      'openReactionSelector has been deprecared and will be removed in next major release.' +
+      'openReactionSelector has been deprecated and will be removed in next major release.' +
         'Please use this.props.openReactionPicker instead.',
     );
 
@@ -440,7 +438,7 @@ class MessageContent extends React.PureComponent {
 
   openReactionSelector = async () => {
     console.warn(
-      'openReactionSelector has been deprecared and will be removed in next major release.' +
+      'openReactionSelector has been deprecated and will be removed in next major release.' +
         'Please use this.props.openReactionPicker instead.',
     );
 

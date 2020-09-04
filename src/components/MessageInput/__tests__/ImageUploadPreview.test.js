@@ -1,11 +1,11 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { generateImageUploadPreview } from 'mock-builders/generator/attachment';
+
 import ImageUploadPreview from '../ImageUploadPreview';
 
-import { FileState } from '../../../utils';
-
-import { generateImageUploadPreview } from '../../../mock-builders';
+import { FileState } from '../../../utils/utils';
 
 describe('ImageUploadPreview', () => {
   it('should render ImageUploadPreview with all uploading images', async () => {

@@ -1,16 +1,18 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
+
 import {
   generateMessage,
   generateStaticMessage,
-  generateStaticUser,
-} from 'mock-builders';
+} from 'mock-builders/generator/message';
+import { generateStaticUser } from 'mock-builders/generator/user';
+
+import MessageSystem from '../MessageSystem';
 
 import { TranslationContext } from '../../../context';
-import MessageSystem from '../MessageSystem';
 import { defaultTheme } from '../../../styles/themeConstants';
-import { Streami18n } from '../../../utils';
+import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
 

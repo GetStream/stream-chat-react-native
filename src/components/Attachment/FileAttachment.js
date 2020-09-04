@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import AttachmentActions from './AttachmentActions';
+
 import { MessageContentContext } from '../../context';
 
 const FileContainer = styled.View`

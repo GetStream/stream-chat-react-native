@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { default as DefaultMessageAvatar } from './MessageAvatar';
-import { default as DefaultMessageContent } from './MessageContent';
-import { default as DefaultMessageStatus } from './MessageStatus';
-import { emojiData } from '../../../utils';
+import DefaultMessageAvatar from './MessageAvatar';
+import DefaultMessageContent from './MessageContent';
+import DefaultMessageStatus from './MessageStatus';
+
 import { themed } from '../../../styles/theme';
+import { emojiData } from '../../../utils/utils';
 
 const Container = styled.View`
   display: flex;
@@ -27,7 +28,7 @@ const Container = styled.View`
  * @extends Component
  */
 
-export const MessageSimple = themed(
+export default themed(
   class MessageSimple extends React.PureComponent {
     static propTypes = {
       /**
@@ -417,8 +418,3 @@ export const MessageSimple = themed(
     }
   },
 );
-
-export { default as MessageStatus } from './MessageStatus';
-export { default as MessageContent } from './MessageContent';
-export { default as MessageAvatar } from './MessageAvatar';
-export { default as MessageTextContainer } from './MessageTextContainer';

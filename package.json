@@ -2,8 +2,10 @@
   "name": "stream-chat-react-native-core",
   "version": "1.2.0",
   "author": {
-    "company": "Stream.io Inc"
+    "company": "Stream.io Inc",
+    "name": "Stream.io Inc"
   },
+  "license": "SEE LICENSE IN LICENSE",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "react-native": "src/index.js",
@@ -101,7 +103,7 @@
     "path": "^0.12.7",
     "react-art": "^16.8.6",
     "react-native-actionsheet": "^2.4.2",
-    "react-native-image-zoom-viewer": "^2.2.25",
+    "react-native-image-zoom-viewer": "^3.0.1",
     "seamless-immutable": "^7.1.4",
     "stream-chat": "^1.14.0",
     "styled-components": "^5.1.1",

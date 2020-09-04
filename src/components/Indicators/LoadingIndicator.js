@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
-import { Spinner } from '../Spinner';
+import Spinner from '../Spinner/Spinner';
 
 import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';

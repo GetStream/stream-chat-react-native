@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
+
 import { ChatContext } from '../../../context';
 
 export const useChannelPreviewDisplayName = (channel) => {

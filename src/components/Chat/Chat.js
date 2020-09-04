@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import Dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
-import { ChatContext, TranslationContext } from '../../context';
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
+
+import { ChatContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 import { Streami18n } from '../../utils/Streami18n';
 
@@ -29,8 +30,6 @@ const Chat = (props) => {
   const { children, client, i18nInstance, logger = () => {} } = props;
 
   const [channel, setChannel] = useState();
-  const [connectionRecovering, setConnectionRecovering] = useState(false);
-  const [isOnline, setIsOnline] = useState(true);
   const [translators, setTranslators] = useState({
     t: (key) => key,
     tDateTimeParser: (input) => Dayjs(input),
@@ -40,10 +39,8 @@ const Chat = (props) => {
   useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
-  useIsOnline({
+  const { connectionRecovering, isOnline } = useIsOnline({
     client,
-    setConnectionRecovering,
-    setIsOnline,
   });
 
   const setActiveChannel = (channel) => setChannel(channel);
@@ -83,7 +80,7 @@ Chat.propTypes = {
    * Simplest way to start using chat components in one of the in-built languages would be following:
    *
    * ```
-   * const i18n = new Streami18n('nl);
+   * const i18n = new Streami18n('nl');
    * <Chat client={chatClient} i18nInstance={i18n}>
    *  ...
    * </Chat>
@@ -93,7 +90,7 @@ Chat.propTypes = {
    * UI will be automatically updated in this case.
    *
    * ```
-   * const i18n = new Streami18n('nl);
+   * const i18n = new Streami18n('nl');
    *
    * i18n.registerTranslation('nl', {
    *  'Nothing yet...': 'Nog Niet ...',

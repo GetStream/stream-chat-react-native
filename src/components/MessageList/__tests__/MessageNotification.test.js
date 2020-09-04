@@ -7,8 +7,9 @@ import {
 } from '@testing-library/react-native';
 
 import MessageNotification from '../MessageNotification';
+
 import { TranslationContext } from '../../../context';
-import { Streami18n } from '../../../utils';
+import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
 
