@@ -113,6 +113,8 @@ MessageSimple.propTypes = {
   /**
    * Custom UI component for the action sheet that appears on long press of a Message.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
+   *
+   * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
    */
   ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
