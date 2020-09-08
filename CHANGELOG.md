@@ -80,6 +80,10 @@
 
 - We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
 
+- We have also dropped support for the following `MessageList` props:
+  - `dateSeparator` (use DateSeparator instead)
+  - `headerComponent` (use HeaderComponent instead)
+
 ## [1.2.0] 2020-08-21
 
 **NO BREAKING CHANGES**

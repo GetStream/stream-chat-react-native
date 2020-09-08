@@ -17,7 +17,7 @@ const DefaultMessageWithContext = React.memo((props) => {
     client,
     emojiData,
     message,
-    Message,
+    Message = MessageSimple,
     removeMessage,
     retrySendMessage,
     setEditingState,
@@ -179,7 +179,6 @@ const DefaultMessage = (props) => {
   const {
     editing,
     emojiData,
-    Message = MessageSimple,
     removeMessage,
     retrySendMessage,
     setEditingState,
@@ -194,7 +193,6 @@ const DefaultMessage = (props) => {
         client,
         editing,
         emojiData,
-        Message,
         removeMessage,
         retrySendMessage,
         setEditingState,
@@ -234,6 +232,11 @@ DefaultMessage.propTypes = {
   groupStyles: PropTypes.array,
   /** Latest message id on current channel */
   lastReceivedId: PropTypes.string,
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object.isRequired,
   /**

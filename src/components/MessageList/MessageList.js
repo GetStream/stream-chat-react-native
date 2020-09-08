@@ -63,11 +63,10 @@ const MessageList = (props) => {
     actionSheetStyles,
     additionalFlatListProps = {},
     AttachmentFileIcon,
-    dateSeparator,
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
-    headerComponent,
     HeaderComponent,
+    Message: MessageFromProps,
     messageActions,
     noGroupByUser,
     onThreadSelect,
@@ -80,12 +79,16 @@ const MessageList = (props) => {
     ChannelContext,
   );
   const { client, isOnline } = useContext(ChatContext);
-  const { clearEditingState, editing, loadMore: mainLoadMore } = useContext(
-    MessagesContext,
-  );
+  const {
+    clearEditingState,
+    editing,
+    loadMore: mainLoadMore,
+    Message: MessageFromContext,
+  } = useContext(MessagesContext);
   const { loadMoreThread } = useContext(ThreadContext);
   const { t } = useContext(TranslationContext);
 
+  const Message = MessageFromProps || MessageFromContext;
   const messageList = useMessageList({ noGroupByUser, threadList });
 
   const flatListRef = useRef();
@@ -128,8 +131,7 @@ const MessageList = (props) => {
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
-      const DateSeparatorComponent = dateSeparator || DateSeparator;
-      return <DateSeparatorComponent message={message} />;
+      return <DateSeparator message={message} />;
     } else if (message.type === 'system') {
       return <MessageSystem message={message} />;
     } else if (message.type !== 'message.read') {
@@ -139,6 +141,7 @@ const MessageList = (props) => {
           AttachmentFileIcon={AttachmentFileIcon}
           groupStyles={message.groupStyles}
           lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
+          Message={Message}
           message={message}
           messageActions={messageActions}
           onThreadSelect={onThreadSelect}
@@ -201,7 +204,7 @@ const MessageList = (props) => {
             (item.date ? item.date.toISOString() : false) ||
             uuidv4()
           }
-          ListFooterComponent={headerComponent || HeaderComponent}
+          ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,
@@ -284,13 +287,6 @@ MessageList.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * @deprecated Use DateSeparator instead.
-   * Date separator UI component to render
-   *
-   * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
-   * */
-  dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
    * Date separator UI component to render
    *
    * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
@@ -302,18 +298,17 @@ MessageList.propTypes = {
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    * */
   /**
-   * @deprecated Use HeaderComponent instead.
-   *
-   * UI component for header of message list.
-   */
-  headerComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
    * UI component for header of message list. By default message list doesn't have any header.
    * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
    * used in MessageList. Its footer instead of header, since message list is inverted.
    *
    */
   HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
   /**
    * Boolean weather current message list is a thread.
