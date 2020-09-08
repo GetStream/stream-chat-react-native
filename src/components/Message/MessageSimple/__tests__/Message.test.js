@@ -285,22 +285,23 @@ describe('Message', () => {
     const message = generateMessage({ user });
     const onThreadSelect = jest.fn();
     const MessageComponent = () => (
-      <Message groupStyles={['bottom']} message={message} />
+      <Message
+        groupStyles={['bottom']}
+        message={message}
+        onThreadSelect={onThreadSelect}
+      />
     );
 
     const { getByTestId, queryAllByTestId, queryAllByText } = render(
       <Chat client={chatClient}>
         <Channel channel={channel}>
-          <MessageList
-            Message={MessageComponent}
-            onThreadSelect={onThreadSelect}
-          />
+          <MessageList Message={MessageComponent} />
         </Channel>
       </Chat>,
     );
 
     await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-simple-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 

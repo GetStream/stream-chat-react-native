@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
@@ -7,7 +7,7 @@ import DefaultMessageContent from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
-import { ChannelContext, KeyboardContext } from '../../../context';
+import { ChannelContext } from '../../../context';
 
 const Container = styled.View`
   align-items: flex-end;
@@ -38,27 +38,7 @@ const MessageSimple = (props) => {
     showMessageStatus = true,
   } = props;
 
-  const { channel, disabled } = useContext(ChannelContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
-  /**
-   * reactionPickerVisible has been lifted up in MessageSimple component so that one can use
-   * ReactionPickerWrapper component outside MessageContent as well. This way `Add Reaction` message
-   * action can trigger the ReactionPickerWrapper to open the reaction picker.
-   */
-  const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
-
-  const openReactionPicker = async () => {
-    if (disabled) return;
-    /**
-     * Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
-     * So we need to postpone the calculation for the reaction picker position until after the keyboard closes.
-     * To achieve this, we close the keyboard forcefully and then calculate position of picker in callback.
-     */
-    await dismissKeyboard();
-    setReactionPickerVisible(true);
-  };
-
-  const dismissReactionPicker = () => setReactionPickerVisible(false);
+  const { channel } = useContext(ChannelContext);
 
   let alignment;
   if (forceAlign && (forceAlign === 'left' || forceAlign === 'right')) {
@@ -79,10 +59,7 @@ const MessageSimple = (props) => {
   const forwardedProps = {
     ...props,
     alignment,
-    dismissReactionPicker,
     groupStyles: hasReactions ? ['bottom'] : groupStyles,
-    openReactionPicker,
-    reactionPickerVisible,
   };
 
   return (
@@ -121,6 +98,10 @@ MessageSimple.propTypes = {
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
   actionSheetStyles: PropTypes.object,
+  /**
+   * Whether or not to show the action sheet
+   */
+  actionSheetVisible: PropTypes.bool,
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -170,6 +151,8 @@ MessageSimple.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /** Dismiss the reaction picker */
+  dismissReactionPicker: PropTypes.func,
   /**
    * Whether or not users are able to long press messages.
    */
@@ -280,7 +263,7 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onLongPress={(message, e) => {
-   *        openReactionSelector();
+   *        openReactionPicker();
    *      }}
    *  )
    * }
@@ -309,7 +292,7 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onPress={(message, e) => {
-   *        openReactionSelector();
+   *        openReactionPicker();
    *      }}
    *  )
    * }
@@ -330,17 +313,25 @@ MessageSimple.propTypes = {
    * @param message A message object to open the thread upon.
    */
   onThreadSelect: PropTypes.func,
+  /** Open the reaction picker */
+  openReactionPicker: PropTypes.func,
   /**
    * Custom UI component to display reaction list.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
    */
   ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /** Whether or not the reaction picker is visible */
+  reactionPickerVisible: PropTypes.bool,
   /** enabled reactions, this is usually set by the parent component based on channel configs */
   reactionsEnabled: PropTypes.bool,
   /** A list of users who have read the message */
   readBy: PropTypes.array,
   /** enabled replies, this is usually set by the parent component based on channel configs */
   repliesEnabled: PropTypes.bool,
+  /**
+   * React useState hook setter function that toggles action sheet visibility
+   */
+  setActionSheetVisible: PropTypes.func,
   showMessageStatus: PropTypes.bool,
   showReactionsList: PropTypes.bool,
   /**

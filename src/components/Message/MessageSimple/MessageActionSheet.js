@@ -47,7 +47,7 @@ const ActionSheetTitleText = styled.Text`
   ${({ theme }) => theme.message.actionSheet.titleText.css};
 `;
 
-const MessageActionSheet = React.forwardRef((props, ref) => {
+const MessageActionSheet = React.forwardRef((props, actionSheetRef) => {
   const {
     actionSheetStyles,
     canDeleteMessage,
@@ -151,7 +151,7 @@ const MessageActionSheet = React.forwardRef((props, ref) => {
           </ActionSheetButtonContainer>
         );
       })}
-      ref={ref}
+      ref={actionSheetRef}
       styles={actionSheetStyles}
       title={
         <ActionSheetTitleContainer testID='action-sheet-container'>
@@ -165,6 +165,13 @@ const MessageActionSheet = React.forwardRef((props, ref) => {
 MessageActionSheet.displayName = 'messageActionSheet';
 
 MessageActionSheet.propTypes = {
+  /**
+   * The action sheet ref forwarded to the UI component
+   */
+  actionSheetRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]),
   /**
    * Style object for action sheet (used to style message actions)
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
@@ -206,13 +213,6 @@ MessageActionSheet.propTypes = {
    */
   /** enabled reactions, this is usually set by the parent component based on channel configs */
   reactionsEnabled: PropTypes.bool,
-  /**
-   * The action sheet ref forwarded to the UI component
-   */
-  ref: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.shape({ current: PropTypes.any }),
-  ]),
   /** enabled replies, this is usually set by the parent component based on channel configs */
   repliesEnabled: PropTypes.bool,
   /**

@@ -1,10 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import { ChannelContext, ChatContext, MessagesContext } from '../../context';
+import {
+  ChannelContext,
+  ChatContext,
+  KeyboardContext,
+  MessagesContext,
+} from '../../context';
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -15,6 +20,8 @@ const DefaultMessageWithContext = React.memo((props) => {
   const {
     channel,
     client,
+    disabled,
+    dismissKeyboard,
     emojiData,
     message,
     Message = MessageSimple,
@@ -23,6 +30,9 @@ const DefaultMessageWithContext = React.memo((props) => {
     setEditingState,
     updateMessage,
   } = props;
+
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
   const isMyMessage = (message) => client.user.id === message.user.id;
 
@@ -58,6 +68,19 @@ const DefaultMessageWithContext = React.memo((props) => {
   // TODO: add flag/mute functionality to SDK
   const handleFlag = async () => await client.flagMessage(message.id);
   const handleMute = async () => await client.muteUser(message.user.id);
+
+  const openReactionPicker = async () => {
+    if (disabled) return;
+    /**
+     * Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
+     * So we need to postpone the calculation for the reaction picker position until after the keyboard closes.
+     * To achieve this, we close the keyboard forcefully and then calculate position of picker in callback.
+     */
+    await dismissKeyboard();
+    setReactionPickerVisible(true);
+  };
+
+  const dismissReactionPicker = () => setReactionPickerVisible(false);
 
   const handleReaction = async (reactionType) => {
     let userExistingReaction;
@@ -147,8 +170,10 @@ const DefaultMessageWithContext = React.memo((props) => {
         {...props}
         {...actionProps}
         actionsEnabled={actionsEnabled}
+        actionSheetVisible={actionSheetVisible}
         canDeleteMessage={canDeleteMessage}
         canEditMessage={canEditMessage}
+        dismissReactionPicker={dismissReactionPicker}
         getTotalReactionCount={getTotalReactionCount}
         handleAction={handleAction}
         handleDelete={handleDelete}
@@ -160,6 +185,9 @@ const DefaultMessageWithContext = React.memo((props) => {
         isAdmin={isAdmin}
         isModerator={isModerator}
         isMyMessage={isMyMessage}
+        openReactionPicker={openReactionPicker}
+        reactionPickerVisible={reactionPickerVisible}
+        setActionSheetVisible={setActionSheetVisible}
       />
     </TouchableOpacity>
   );
@@ -174,8 +202,9 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
  * @example ../docs/Message.md
  */
 const DefaultMessage = (props) => {
-  const { channel } = useContext(ChannelContext);
+  const { channel, disabled } = useContext(ChannelContext);
   const { client } = useContext(ChatContext);
+  const { dismissKeyboard } = useContext(KeyboardContext);
   const {
     editing,
     emojiData,
@@ -191,6 +220,8 @@ const DefaultMessage = (props) => {
       {...{
         channel,
         client,
+        disabled,
+        dismissKeyboard,
         editing,
         emojiData,
         removeMessage,

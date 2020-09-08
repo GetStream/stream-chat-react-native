@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
@@ -122,6 +122,7 @@ const MessageContentWithContext = React.memo((props) => {
     ReactionList = DefaultReactionList,
     UrlPreview,
     actionSheetStyles,
+    actionSheetVisible,
     additionalTouchableProps,
     alignment,
     canDeleteMessage,
@@ -150,6 +151,7 @@ const MessageContentWithContext = React.memo((props) => {
     reactionsEnabled = true,
     repliesEnabled = true,
     retrySendMessage,
+    setActionSheetVisible,
     supportedReactions = emojiData,
     threadList,
   } = props;
@@ -159,7 +161,6 @@ const MessageContentWithContext = React.memo((props) => {
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
-  const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -405,6 +406,10 @@ MessageContent.propTypes = {
    */
   actionSheetStyles: PropTypes.object,
   /**
+   * Whether or not to show the action sheet
+   */
+  actionSheetVisible: PropTypes.bool,
+  /**
    * Provide any additional props for `TouchableOpacity` which wraps `MessageContent` component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
    */
@@ -595,12 +600,16 @@ MessageContent.propTypes = {
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
    */
   ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Boolean - if reaction picker is visible. Hides the reaction list in that case */
+  /** Whether or not the reaction picker is visible */
   reactionPickerVisible: PropTypes.bool,
   /** enabled reactions, this is usually set by the parent component based on channel configs */
   reactionsEnabled: PropTypes.bool.isRequired,
   /** enabled replies, this is usually set by the parent component based on channel configs */
   repliesEnabled: PropTypes.bool.isRequired,
+  /**
+   * React useState hook setter function that toggles action sheet visibility
+   */
+  setActionSheetVisible: PropTypes.func,
   /**
    * e.g.,
    * [
