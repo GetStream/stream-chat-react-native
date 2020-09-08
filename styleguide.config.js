@@ -79,6 +79,7 @@ module.exports = {
         'src/components/Attachment/Gallery.js',
         'src/components/Message/Message.js',
         'src/components/Message/MessageSimple/index.js',
+        'src/components/Message/MessageSimple/MessageActionSheet.js',
         'src/components/Message/MessageSimple/MessageAvatar.js',
         'src/components/Message/MessageSimple/MessageContent.js',
         'src/components/Message/MessageSimple/MessageReplies.js',

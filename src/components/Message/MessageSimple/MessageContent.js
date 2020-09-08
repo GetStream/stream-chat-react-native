@@ -159,7 +159,6 @@ const MessageContentWithContext = React.memo((props) => {
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
-  const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
 
   const onOpenThread = () => {
@@ -358,12 +357,10 @@ const MessageContentWithContext = React.memo((props) => {
             messageActions={messageActions}
             openReactionPicker={openReactionPicker}
             openThread={onOpenThread}
-            options={options}
             reactionsEnabled={reactionsEnabled}
             ref={actionSheetRef}
             repliesEnabled={repliesEnabled}
             setActionSheetVisible={setActionSheetVisible}
-            setOptions={setOptions}
             threadList={threadList}
           />
         )}

@@ -16,9 +16,10 @@ import {
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual Message component.
  */
-const MessageWithContext = React.memo((props) => {
+const DefaultMessageWithContext = React.memo((props) => {
   const {
     channel,
+    client,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch = true,
     emojiData,
@@ -30,8 +31,6 @@ const MessageWithContext = React.memo((props) => {
     setEditingState,
     updateMessage,
   } = props;
-
-  const { client } = useContext(ChatContext);
 
   const isMyMessage = (message) => client.user.id === message.user.id;
 
@@ -57,16 +56,16 @@ const MessageWithContext = React.memo((props) => {
 
   const canDeleteMessage = () => canEditMessage();
 
-  const handleFlag = async () => await client.flagMessage(message.id);
-
-  const handleMute = async () => await client.muteUser(message.user.id);
-
   const handleEdit = () => setEditingState(message);
 
   const handleDelete = async () => {
     const data = await client.deleteMessage(message.id);
     updateMessage(data.message);
   };
+
+  // TODO: add flag/mute functionality to SDK
+  const handleFlag = async () => await client.flagMessage(message.id);
+  const handleMute = async () => await client.muteUser(message.user.id);
 
   const handleReaction = async (reactionType) => {
     let userExistingReaction;
@@ -188,7 +187,7 @@ const MessageWithContext = React.memo((props) => {
   );
 });
 
-MessageWithContext.displayName = 'messageWithContext';
+DefaultMessageWithContext.displayName = 'messageWithContext';
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -196,8 +195,9 @@ MessageWithContext.displayName = 'messageWithContext';
  *
  * @example ../docs/Message.md
  */
-const Message = (props) => {
+const DefaultMessage = (props) => {
   const { channel } = useContext(ChannelContext);
+  const { client } = useContext(ChatContext);
   const {
     editing,
     emojiData,
@@ -210,10 +210,11 @@ const Message = (props) => {
   const { dismissKeyboard } = useContext(KeyboardContext);
 
   return (
-    <MessageWithContext
+    <DefaultMessageWithContext
       {...props}
       {...{
         channel,
+        client,
         dismissKeyboard,
         editing,
         emojiData,
@@ -227,7 +228,7 @@ const Message = (props) => {
   );
 };
 
-Message.propTypes = {
+DefaultMessage.propTypes = {
   /**
    * Custom UI component for the action sheet that appears on long press of a Message.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
@@ -293,8 +294,8 @@ Message.propTypes = {
   threadList: PropTypes.bool,
 };
 
-Message.themePath = 'message';
+DefaultMessage.themePath = 'message';
 
-Message.extraThemePaths = ['avatar'];
+DefaultMessage.extraThemePaths = ['avatar'];
 
-export default Message;
+export default DefaultMessage;

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
@@ -36,9 +36,8 @@ const ActionSheetCancelButtonText = styled.Text`
 
 const ActionSheetTitleContainer = styled.View`
   align-items: center;
+  flex: 1;
   justify-content: center;
-  height: 100%;
-  width: 100%;
   ${({ theme }) => theme.message.actionSheet.titleContainer.css};
 `;
 
@@ -58,15 +57,14 @@ const MessageActionSheet = React.forwardRef((props, ref) => {
     messageActions = Object.keys(MESSAGE_ACTIONS),
     openReactionPicker,
     openThread,
-    options,
     reactionsEnabled,
     repliesEnabled,
     setActionSheetVisible,
-    setOptions,
     threadList,
   } = props;
 
   const { t } = useContext(TranslationContext);
+  const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
 
   useEffect(() => {
     const newOptions = [];
@@ -203,15 +201,14 @@ MessageActionSheet.propTypes = {
    */
   openThread: PropTypes.func,
   /**
-   * The message actions that populate the action sheet
-   */
-  options: PropTypes.array,
-  /**
    * The action sheet ref declared in MessageContent. To access the ref, ensure the ActionSheet custom
    * component is wrapped in `React.forwardRef`.
    */
   /** enabled reactions, this is usually set by the parent component based on channel configs */
   reactionsEnabled: PropTypes.bool,
+  /**
+   * The action sheet ref forwarded to the UI component
+   */
   ref: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.any }),
@@ -222,10 +219,6 @@ MessageActionSheet.propTypes = {
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: PropTypes.func,
-  /**
-   * React useState hook setter function that sets action sheet `options`
-   */
-  setOptions: PropTypes.func,
   /** Whether or not the MessageList is part of a Thread */
   threadList: PropTypes.bool,
 };
