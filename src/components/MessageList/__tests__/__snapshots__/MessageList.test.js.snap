@@ -203,7 +203,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -421,7 +421,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                   </View>
@@ -535,7 +535,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -753,7 +753,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        8:49 AM
+                        2:49 PM
                       </Text>
                     </View>
                   </View>
@@ -779,7 +779,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -997,7 +997,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           ]
                         }
                       >
-                        8:48 AM
+                        2:48 PM
                       </Text>
                     </View>
                   </View>

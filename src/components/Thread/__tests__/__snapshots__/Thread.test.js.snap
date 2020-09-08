@@ -196,7 +196,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -414,7 +414,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                   </View>
@@ -440,7 +440,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -658,7 +658,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                   </View>
@@ -684,7 +684,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -902,7 +902,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                   </View>
@@ -1011,7 +1011,7 @@ exports[`Thread should match thread snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -1229,7 +1229,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           ]
                         }
                       >
-                        8:50 AM
+                        2:50 PM
                       </Text>
                     </View>
                   </View>

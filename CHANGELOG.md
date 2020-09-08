@@ -74,6 +74,12 @@
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or the `useContext` hook (ex: `const { messages } = useContext(MessagesContext);`)
 
+*Deprecated Props*
+
+- We have removed support for the `MessageList` component's `onMessageTouch` prop. Since this prop no longer exists, we have also removed `dismissKeyboardOnMessageTouch`. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
+
+- We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
+
 ## [1.2.0] 2020-08-21
 
 **NO BREAKING CHANGES**

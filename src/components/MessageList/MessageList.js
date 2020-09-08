@@ -66,12 +66,10 @@ const MessageList = (props) => {
     dateSeparator,
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
-    dismissKeyboardOnMessageTouch = true,
     headerComponent,
     HeaderComponent,
     messageActions,
     noGroupByUser,
-    onMessageTouch,
     onThreadSelect,
     setFlatListRef,
     threadList,
@@ -139,12 +137,10 @@ const MessageList = (props) => {
         <DefaultMessage
           actionSheetStyles={actionSheetStyles}
           AttachmentFileIcon={AttachmentFileIcon}
-          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
           groupStyles={message.groupStyles}
           lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
           message={message}
           messageActions={messageActions}
-          onMessageTouch={onMessageTouch}
           onThreadSelect={onThreadSelect}
           readBy={message.readBy || []}
           threadList={threadList}
@@ -305,8 +301,6 @@ MessageList.propTypes = {
    * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    * */
-  /** Should keyboard be dismissed when messaged is touched */
-  dismissKeyboardOnMessageTouch: PropTypes.bool,
   /**
    * @deprecated Use HeaderComponent instead.
    *
@@ -326,14 +320,6 @@ MessageList.propTypes = {
    */
   /** Turn off grouping of messages by user */
   noGroupByUser: PropTypes.bool,
-  /**
-   * Callback for onPress event on Message component
-   *
-   * @param e       Event object for onPress event
-   * @param message Message object which was pressed
-   *
-   * */
-  onMessageTouch: PropTypes.func,
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *

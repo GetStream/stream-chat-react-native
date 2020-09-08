@@ -4,12 +4,7 @@ import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-} from '../../context';
+import { ChannelContext, ChatContext, MessagesContext } from '../../context';
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -20,12 +15,9 @@ const DefaultMessageWithContext = React.memo((props) => {
   const {
     channel,
     client,
-    dismissKeyboard,
-    dismissKeyboardOnMessageTouch = true,
     emojiData,
     message,
     Message,
-    onMessageTouch: onMessageTouchProp,
     removeMessage,
     retrySendMessage,
     setEditingState,
@@ -119,15 +111,6 @@ const DefaultMessageWithContext = React.memo((props) => {
 
   const handleRetry = async (message) => await retrySendMessage(message);
 
-  const onMessageTouch = (e, message) => {
-    if (onMessageTouchProp) {
-      onMessageTouchProp(e, message);
-    }
-    if (dismissKeyboardOnMessageTouch) {
-      dismissKeyboard();
-    }
-  };
-
   const getTotalReactionCount = (supportedReactions) => {
     let count;
     if (!supportedReactions) {
@@ -159,11 +142,7 @@ const DefaultMessageWithContext = React.memo((props) => {
   }
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={(e) => onMessageTouch(e, message)}
-      testID='message-wrapper'
-    >
+    <TouchableOpacity activeOpacity={1} testID='message-wrapper'>
       <Message
         {...props}
         {...actionProps}
@@ -181,7 +160,6 @@ const DefaultMessageWithContext = React.memo((props) => {
         isAdmin={isAdmin}
         isModerator={isModerator}
         isMyMessage={isMyMessage}
-        onMessageTouch={(e) => onMessageTouch(e, message)}
       />
     </TouchableOpacity>
   );
@@ -207,7 +185,6 @@ const DefaultMessage = (props) => {
     setEditingState,
     updateMessage,
   } = useContext(MessagesContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
 
   return (
     <DefaultMessageWithContext
@@ -215,7 +192,6 @@ const DefaultMessage = (props) => {
       {...{
         channel,
         client,
-        dismissKeyboard,
         editing,
         emojiData,
         Message,
@@ -249,8 +225,6 @@ DefaultMessage.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
-  /** Should keyboard be dismissed when messaged is touched */
-  dismissKeyboardOnMessageTouch: PropTypes.bool,
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -268,15 +242,6 @@ DefaultMessage.propTypes = {
    * */
   messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
   /**
-   * Callback for onPress event on Message component
-   *
-   * @param e       Event object for onPress event
-   * @param message Message object which was pressed
-   *
-   * @deprecated Use onPress instead
-   * */
-  onMessageTouch: PropTypes.func,
-  /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
    * @param message A message object to open the thread upon.
@@ -284,12 +249,6 @@ DefaultMessage.propTypes = {
   onThreadSelect: PropTypes.func,
   /** A list of users that have read this message **/
   readBy: PropTypes.array,
-  /**
-   * @deprecated Please use `disabled` instead.
-   *
-   * Disables the message UI. Which means, message actions, reactions won't work.
-   */
-  readOnly: PropTypes.bool,
   /** Whether or not the MessageList is part of a Thread */
   threadList: PropTypes.bool,
 };

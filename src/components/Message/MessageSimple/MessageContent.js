@@ -19,6 +19,7 @@ import {
   KeyboardContext,
   MessageContentContext,
   MessagesContext,
+  ThreadContext,
   TranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
@@ -102,6 +103,7 @@ const MetaText = styled.Text`
 const MessageContentWithContext = React.memo((props) => {
   const {
     ActionSheet = DefaultActionSheet,
+    Attachment,
     AttachmentActions,
     AttachmentFileIcon,
     Card,
@@ -112,15 +114,19 @@ const MessageContentWithContext = React.memo((props) => {
     FileAttachmentGroup = DefaultFileAttachmentGroup,
     Gallery = DefaultGallery,
     Giphy,
+    Message,
     MessageFooter,
     MessageHeader,
+    MessageReplies = DefaultMessageReplies,
     MessageText,
+    ReactionList = DefaultReactionList,
     UrlPreview,
     actionSheetStyles,
     additionalTouchableProps,
     alignment,
     canDeleteMessage,
     canEditMessage,
+    disabled,
     dismissReactionPicker,
     enableLongPress = true,
     formatDate,
@@ -136,26 +142,20 @@ const MessageContentWithContext = React.memo((props) => {
     markdownRules,
     message,
     messageActions,
-    MessageReplies = DefaultMessageReplies,
     onLongPress,
-    onMessageTouch,
     onPress,
     onThreadSelect,
     openReactionPicker,
-    ReactionList = DefaultReactionList,
     reactionPickerVisible,
     reactionsEnabled = true,
-    readOnly,
     repliesEnabled = true,
     retrySendMessage,
     supportedReactions = emojiData,
     threadList,
   } = props;
 
-  const { Attachment = DefaultAttachment, disabled, Message } = useContext(
-    ChannelContext,
-  );
   const { dismissKeyboard } = useContext(KeyboardContext);
+  const { openThread } = useContext(ThreadContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
@@ -164,6 +164,8 @@ const MessageContentWithContext = React.memo((props) => {
   const onOpenThread = () => {
     if (onThreadSelect) {
       onThreadSelect(message);
+    } else if (openThread) {
+      openThread(message);
     }
   };
 
@@ -205,15 +207,15 @@ const MessageContentWithContext = React.memo((props) => {
   const contentProps = {
     activeOpacity: 0.7,
     alignment,
-    disabled: disabled || readOnly,
+    disabled,
     hasReactions,
     onLongPress:
-      onLongPress && !(disabled || readOnly)
+      onLongPress && !disabled
         ? (e) => onLongPress(message, e)
         : enableLongPress
         ? onShowActionSheet
         : () => null,
-    onPress: onPress ? (e) => onPress(message, e) : onMessageTouch,
+    onPress: onPress ? (e) => onPress(message, e) : () => null,
     status: message.status,
     ...additionalTouchableProps,
   };
@@ -224,7 +226,7 @@ const MessageContentWithContext = React.memo((props) => {
 
   const context = {
     additionalTouchableProps,
-    disabled: disabled || readOnly,
+    disabled,
     onLongPress: contentProps.onLongPress,
   };
 
@@ -372,9 +374,19 @@ const MessageContentWithContext = React.memo((props) => {
 MessageContentWithContext.displayName = 'message.contentWithContext';
 
 const MessageContent = (props) => {
-  const { retrySendMessage } = useContext(MessagesContext);
+  const { disabled } = useContext(ChannelContext);
+  const {
+    Attachment = DefaultAttachment,
+    Message,
+    retrySendMessage,
+  } = useContext(MessagesContext);
 
-  return <MessageContentWithContext {...props} {...{ retrySendMessage }} />;
+  return (
+    <MessageContentWithContext
+      {...props}
+      {...{ Attachment, disabled, Message, retrySendMessage }}
+    />
+  );
 };
 
 MessageContent.themePath = 'message.content';
@@ -541,15 +553,6 @@ MessageContent.propTypes = {
    * */
   onLongPress: PropTypes.func,
   /**
-   * Callback for onPress event on Message component
-   *
-   * @param e       Event object for onPress event
-   * @param message Message object which was pressed
-   *
-   * @deprecated Use onPress instead
-   * */
-  onMessageTouch: PropTypes.func,
-  /**
    * Function that overrides default behaviour when message is pressed/touched
    * e.g. if you would like to open reaction picker on message press:
    *
@@ -596,12 +599,6 @@ MessageContent.propTypes = {
   reactionPickerVisible: PropTypes.bool,
   /** enabled reactions, this is usually set by the parent component based on channel configs */
   reactionsEnabled: PropTypes.bool.isRequired,
-  /**
-   * @deprecated Please use `disabled` instead.
-   *
-   * Disables the message UI. Which means, message actions, reactions won't work.
-   */
-  readOnly: PropTypes.bool,
   /** enabled replies, this is usually set by the parent component based on channel configs */
   repliesEnabled: PropTypes.bool.isRequired,
   /**

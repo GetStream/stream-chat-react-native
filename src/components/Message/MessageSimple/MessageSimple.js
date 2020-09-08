@@ -35,7 +35,6 @@ const MessageSimple = (props) => {
     MessageContent = DefaultMessageContent,
     MessageStatus = DefaultMessageStatus,
     reactionsEnabled = true,
-    readOnly,
     showMessageStatus = true,
   } = props;
 
@@ -49,7 +48,7 @@ const MessageSimple = (props) => {
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
   const openReactionPicker = async () => {
-    if (disabled || readOnly) return;
+    if (disabled) return;
     /**
      * Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
      * So we need to postpone the calculation for the reaction picker position until after the keyboard closes.
@@ -171,8 +170,6 @@ MessageSimple.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** @see See [KeyboardContext](https://getstream.io/chat/docs/#keyboardcontext) */
-  dismissKeyboard: PropTypes.func,
   /**
    * Whether or not users are able to long press messages.
    */
@@ -301,15 +298,6 @@ MessageSimple.propTypes = {
    * */
   onLongPress: PropTypes.func,
   /**
-   * Callback for onPress event on Message component
-   *
-   * @param e       Event object for onPress event
-   * @param message Message object which was pressed
-   *
-   * @deprecated Use onPress instead
-   * */
-  onMessageTouch: PropTypes.func,
-  /**
    * Function that overrides default behaviour when message is pressed/touched
    * e.g. if you would like to open reaction picker on message press:
    *
@@ -351,12 +339,6 @@ MessageSimple.propTypes = {
   reactionsEnabled: PropTypes.bool,
   /** A list of users who have read the message */
   readBy: PropTypes.array,
-  /*
-   * @deprecated Please use `disabled` instead.
-   *
-   * Disables the message UI. Which means, message actions, reactions won't work.
-   */
-  readOnly: PropTypes.bool,
   /** enabled replies, this is usually set by the parent component based on channel configs */
   repliesEnabled: PropTypes.bool,
   showMessageStatus: PropTypes.bool,
