@@ -60,12 +60,11 @@ const MessageList = (props) => {
     actionSheetStyles,
     additionalFlatListProps = {},
     AttachmentFileIcon,
-    dateSeparator,
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
-    headerComponent,
     HeaderComponent,
+    Message: MessageFromProps,
     messageActions,
     noGroupByUser,
     onMessageTouch,
@@ -83,12 +82,13 @@ const MessageList = (props) => {
     editing,
     emojiData,
     loadMore: mainLoadMore,
-    Message,
+    Message: MessageFromChannelContext,
     removeMessage,
     retrySendMessage,
     setEditingState,
     updateMessage,
   } = useContext(MessagesContext);
+  const Message = MessageFromProps || MessageFromChannelContext;
   const { loadMoreThread, openThread } = useContext(ThreadContext);
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
@@ -135,8 +135,7 @@ const MessageList = (props) => {
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
-      const DateSeparatorComponent = dateSeparator || DateSeparator;
-      return <DateSeparatorComponent message={message} />;
+      return <DateSeparator message={message} />;
     } else if (message.type === 'system') {
       return <MessageSystem message={message} />;
     } else if (message.type !== 'message.read') {
@@ -219,7 +218,7 @@ const MessageList = (props) => {
             (item.date ? item.date.toISOString() : false) ||
             uuidv4()
           }
-          ListFooterComponent={headerComponent || HeaderComponent}
+          ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,
@@ -303,13 +302,6 @@ MessageList.propTypes = {
     PropTypes.elementType,
   ]),
   /**
-   * @deprecated User DateSeperator instead.
-   * Date separator UI component to render
-   *
-   * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
-   * */
-  dateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
    * Date separator UI component to render
    *
    * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
@@ -322,12 +314,6 @@ MessageList.propTypes = {
    * */
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: PropTypes.bool,
-  /**
-   * @deprecated Use HeaderComponent instead.
-   *
-   * UI component for header of message list.
-   */
-  headerComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * UI component for header of message list. By default message list doesn't have any header.
    * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
