@@ -339,9 +339,9 @@ describe('Message', () => {
   it('renders a custom action sheet when the `ActionSheet` prop exists', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
-    // eslint-disable-next-line react/display-name
+    // eslint-disable-next-line
     const ActionSheet = React.forwardRef((props, ref) => (
-      <View {...props} ref={ref} testID='action-sheet-prop' />
+      <View {...props} testID='action-sheet-prop' />
     ));
 
     const { getByTestId, queryAllByTestId } = renderMessage({
