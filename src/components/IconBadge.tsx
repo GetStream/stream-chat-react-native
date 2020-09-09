@@ -17,8 +17,8 @@ const IconInner = styled.View`
   align-self: flex-start;
   background-color: green;
   border-radius: 20px;
-  justify-content: center;
   height: 15px;
+  justify-content: center;
   min-width: 15px;
   padding-horizontal: 3px;
   ${({ theme }) => theme.iconBadge.iconInner.css};

@@ -14,7 +14,6 @@ const Container = styled.TouchableOpacity`
   height: 27px;
   width: 112px;
   z-index: 10;
-  margin-bottom: 0px;
   border-radius: 13px;
   background-color: ${({ theme }) => theme.colors.primary};
   transform: translateY(9px);

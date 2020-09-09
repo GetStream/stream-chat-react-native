@@ -42,7 +42,6 @@ const ErrorNotification = styled.View`
   flex-direction: column;
   align-items: center;
   z-index: 10;
-  margin-bottom: 0px;
   padding: 5px;
   color: red;
   background-color: #fae6e8;
