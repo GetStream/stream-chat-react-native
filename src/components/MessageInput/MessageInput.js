@@ -38,7 +38,7 @@ const Container = styled.View`
   flex-direction: column;
   margin-horizontal: 10px;
   padding-top: ${({ imageUploads, theme }) =>
-    imageUploads && imageUploads.length > 0
+    imageUploads && imageUploads.length
       ? theme.messageInput.container.conditionalPadding
       : 0}px;
   ${({ theme }) => theme.messageInput.container.css};
