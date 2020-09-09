@@ -10,6 +10,7 @@ const ReactionPickerWrapper = (props) => {
   const {
     alignment,
     children,
+    customMessageContent,
     dismissReactionPicker,
     emojiData = emojiDataDefault,
     handleReaction,
@@ -36,24 +37,27 @@ const ReactionPickerWrapper = (props) => {
 
   const setReactionPickerPosition = () => {
     if (messageContainer.current) {
-      messageContainer.current.measureInWindow((x, y, width) => {
-        setRPLeft(alignment === 'left' ? x - 10 + offset.left : null);
-        setRPRight(
-          alignment === 'right'
-            ? Math.round(Dimensions.get('window').width) -
-                (x + width + offset.right)
-            : null,
-        );
-        setRPTop(y - 60 + offset.top);
-      });
+      setTimeout(
+        () => {
+          messageContainer.current.measureInWindow((x, y, width) => {
+            setRPLeft(alignment === 'left' ? x - 10 + offset.left : null);
+            setRPRight(
+              alignment === 'right'
+                ? Math.round(Dimensions.get('window').width) -
+                    (x + width + offset.right)
+                : null,
+            );
+            setRPTop(y - 60 + offset.top);
+          });
+        },
+        customMessageContent ? 10 : 0,
+      );
     }
   };
 
   return (
     <TouchableOpacity
-      onPress={() => {
-        openReactionPicker();
-      }}
+      onPress={openReactionPicker}
       ref={messageContainer}
       testID='reaction-picker-wrapper'
     >
@@ -78,6 +82,10 @@ const ReactionPickerWrapper = (props) => {
 
 ReactionPickerWrapper.propTypes = {
   alignment: PropTypes.oneOf(['left', 'right']),
+  /**
+   * Whether or not the app is using a custom MessageContent component
+   */
+  customMessageContent: PropTypes.bool,
   dismissReactionPicker: PropTypes.func,
   /**
    * @deprecated

@@ -40,6 +40,8 @@ const MessageSimple = (props) => {
 
   const { channel } = useContext(ChannelContext);
 
+  const customMessageContent = !!props.MessageContent;
+
   let alignment;
   if (forceAlign && (forceAlign === 'left' || forceAlign === 'right')) {
     alignment = forceAlign;
@@ -59,6 +61,7 @@ const MessageSimple = (props) => {
   const forwardedProps = {
     ...props,
     alignment,
+    customMessageContent,
     groupStyles: hasReactions ? ['bottom'] : groupStyles,
   };
 

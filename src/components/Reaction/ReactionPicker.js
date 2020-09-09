@@ -115,9 +115,7 @@ const ReactionPicker = ({
                   )
                 )}
                 <Emoji
-                  onPress={() => {
-                    handleReaction(id);
-                  }}
+                  onPress={() => handleReaction(id)}
                   testID={`${id}-reaction`}
                 >
                   {icon}

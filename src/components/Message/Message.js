@@ -104,6 +104,8 @@ const DefaultMessageWithContext = React.memo((props) => {
 
     // Add reaction to local state, make API call in background, revert to old message if fails
     try {
+      setReactionPickerVisible(false);
+
       if (userExistingReaction) {
         channel.state.removeReaction(userExistingReaction);
         await channel.deleteReaction(message.id, userExistingReaction.type);
@@ -119,6 +121,7 @@ const DefaultMessageWithContext = React.memo((props) => {
         await channel.sendReaction(message.id, { type: reactionType });
       }
     } catch (e) {
+      setReactionPickerVisible(true);
       updateMessage(message);
     }
   };

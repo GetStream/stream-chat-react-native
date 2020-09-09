@@ -3,7 +3,7 @@
 exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 1`] = `
 <View
   accessible={true}
-  focusable={true}
+  focusable={false}
   isTVSelectable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}
@@ -384,7 +384,7 @@ exports[`ReactionPickerWrapper should render not visible ReactionPickerWrapper 1
 exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper 1`] = `
 <View
   accessible={true}
-  focusable={true}
+  focusable={false}
   isTVSelectable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}

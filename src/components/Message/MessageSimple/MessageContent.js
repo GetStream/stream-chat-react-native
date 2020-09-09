@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
@@ -127,6 +127,7 @@ const MessageContentWithContext = React.memo((props) => {
     alignment,
     canDeleteMessage,
     canEditMessage,
+    customMessageContent,
     disabled,
     dismissReactionPicker,
     enableLongPress = true,
@@ -173,10 +174,18 @@ const MessageContentWithContext = React.memo((props) => {
   const onShowActionSheet = async () => {
     await dismissKeyboard();
     setActionSheetVisible(true);
-    if (actionSheetRef.current) {
-      actionSheetRef.current.show();
-    }
   };
+
+  useEffect(() => {
+    if (actionSheetVisible && actionSheetRef.current) {
+      setTimeout(
+        () => {
+          actionSheetRef.current?.show();
+        },
+        customMessageContent ? 10 : 0,
+      );
+    }
+  }, [actionSheetRef.current, actionSheetVisible]);
 
   const hasAttachment = Boolean(
     message && message.attachments && message.attachments.length,
@@ -249,6 +258,7 @@ const MessageContentWithContext = React.memo((props) => {
         {reactionsEnabled && ReactionList && (
           <ReactionPickerWrapper
             alignment={alignment}
+            customMessageContent={customMessageContent}
             dismissReactionPicker={dismissReactionPicker}
             handleReaction={handleReaction}
             hideReactionCount={hideReactionCount}
@@ -460,6 +470,10 @@ MessageContent.propTypes = {
    * Accepts the same props as Card component.
    */
   CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * Whether or not the app is using a custom MessageContent component
+   */
+  customMessageContent: PropTypes.bool,
   /** Dismiss the reaction picker */
   dismissReactionPicker: PropTypes.func,
   /**
