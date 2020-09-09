@@ -37,8 +37,10 @@ const Container = styled.View`
   border-radius: 10px;
   flex-direction: column;
   margin-horizontal: 10px;
-  padding-top: ${({ padding, theme }) =>
-    padding ? theme.messageInput.container.conditionalPadding : 0}px;
+  padding-top: ${({ imageUploads, theme }) =>
+    imageUploads && imageUploads.length
+      ? theme.messageInput.container.conditionalPadding
+      : 0}px;
   ${({ theme }) => theme.messageInput.container.css};
 `;
 
@@ -340,7 +342,7 @@ const MessageInput = (props) => {
     }
 
     return (
-      <Container padding={imageUploads && imageUploads.length > 0}>
+      <Container imageUploads={imageUploads}>
         {fileUploads && (
           <FileUploadPreview
             AttachmentFileIcon={AttachmentFileIcon}

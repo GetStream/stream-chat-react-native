@@ -55,7 +55,6 @@ const ImageContainer = styled.TouchableOpacity`
 `;
 
 const HeaderContainer = styled.View`
-  flex: 1;
   flex-direction: row;
   justify-content: flex-end;
   z-index: 1000;

@@ -21,7 +21,7 @@ exports[`MessageInput should render MessageInput 1`] = `
       }
     >
       <View
-        padding={false}
+        imageUploads={Array []}
         style={
           Array [
             Object {
