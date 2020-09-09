@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled, { withTheme } from 'styled-components';
+import styled, { withTheme } from 'styled-components/native';
 
 import { renderText } from '../../../utils/renderText';
 import { capitalize } from '../../../utils/utils';

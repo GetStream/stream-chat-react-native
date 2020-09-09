@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import PropTypes from 'prop-types';

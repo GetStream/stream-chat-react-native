@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import AttachmentActions from './AttachmentActions';
 

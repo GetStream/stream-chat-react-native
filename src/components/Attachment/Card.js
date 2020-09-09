@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Linking, View } from 'react-native';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';

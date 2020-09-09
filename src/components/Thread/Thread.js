@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import DefaultMessage from '../Message/Message';

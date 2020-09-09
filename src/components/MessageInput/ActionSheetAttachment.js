@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import { ActionSheetCustom } from 'react-native-actionsheet';
 
 import { IconSquare } from '../IconSquare';

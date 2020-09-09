@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import iconPDF from '../../images/PDF.png';
 import iconDOC from '../../images/DOC.png';

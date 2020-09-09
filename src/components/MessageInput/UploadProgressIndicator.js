@@ -1,6 +1,6 @@
 import React from 'react';
 import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import iconReload from '../../images/reload1.png';

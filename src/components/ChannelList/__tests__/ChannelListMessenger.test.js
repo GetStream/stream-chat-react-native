@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { ThemeProvider } from 'styled-components';
+import { ThemeProvider } from 'styled-components/native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
