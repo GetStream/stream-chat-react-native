@@ -11,8 +11,8 @@ const Container = styled.View`
 `;
 
 const Spacer = styled.View`
-  width: 32px;
   height: 28px;
+  width: 32px;
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
