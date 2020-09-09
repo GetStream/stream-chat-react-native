@@ -23,9 +23,8 @@ const TextContainer = styled.View`
       ? theme.message.content.textContainer.borderRadiusS
       : theme.message.content.textContainer.borderRadiusL}px;
   padding: 5px;
-  padding-left: 8px;
   margin-top: 2px;
-  padding-right: 8px;
+  padding-horizontal: 8px;
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
