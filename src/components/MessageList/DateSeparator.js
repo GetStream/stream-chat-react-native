@@ -10,8 +10,7 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-vertical: 20px;
   ${({ theme }) => theme.messageList.dateSeparator.container.css}
 `;
 
