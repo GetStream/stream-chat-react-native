@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import DefaultDateSeparator from './DateSeparator';
 import MessageNotification from './MessageNotification';
-import MessageSystem from './MessageSystem';
+import { MessageSystem as DefaultMessageSystem } from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
 
@@ -65,6 +65,7 @@ const MessageList = (props) => {
     dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
     Message: MessageFromProps,
+    MessageSystem = DefaultMessageSystem,
     messageActions,
     noGroupByUser,
     onMessageTouch,
