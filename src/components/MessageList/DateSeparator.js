@@ -23,8 +23,7 @@ const Line = styled.View`
 `;
 
 const DateText = styled.Text`
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-horizontal: 5px;
   text-align: center;
   text-transform: uppercase;
   font-size: 10px;
