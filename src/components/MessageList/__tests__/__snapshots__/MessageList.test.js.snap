@@ -353,8 +353,9 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
+                              "paddingHorizontal": 8,
+                              "paddingLeft": 5,
+                              "paddingRight": 5,
                               "paddingTop": 5,
                             },
                           ]
@@ -702,8 +703,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
-                      "marginBottom": 20,
-                      "marginTop": 20,
+                      "marginVertical": 20,
                     },
                   ]
                 }
@@ -727,8 +727,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "fontSize": 10,
-                        "marginLeft": 5,
-                        "marginRight": 5,
+                        "marginHorizontal": 5,
                         "opacity": 0.8,
                         "textAlign": "center",
                         "textTransform": "uppercase",
@@ -935,8 +934,9 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
+                              "paddingHorizontal": 8,
+                              "paddingLeft": 5,
+                              "paddingRight": 5,
                               "paddingTop": 5,
                             },
                           ]
@@ -1428,8 +1428,9 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
+                              "paddingHorizontal": 8,
+                              "paddingLeft": 5,
+                              "paddingRight": 5,
                               "paddingTop": 5,
                             },
                           ]
@@ -1777,8 +1778,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
-                      "marginBottom": 20,
-                      "marginTop": 20,
+                      "marginVertical": 20,
                     },
                   ]
                 }
@@ -1802,8 +1802,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "fontSize": 10,
-                        "marginLeft": 5,
-                        "marginRight": 5,
+                        "marginHorizontal": 5,
                         "opacity": 0.8,
                         "textAlign": "center",
                         "textTransform": "uppercase",
