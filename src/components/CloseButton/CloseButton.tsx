@@ -16,7 +16,7 @@ const Container = styled.View`
   ${({ theme }) => theme.closeButton.container.css}
 `;
 
-const CloseButton = () => (
+const CloseButton: React.FC & { themePath: string } = () => (
   <Container>
     <Image source={closeRound} testID='close-button' />
   </Container>
