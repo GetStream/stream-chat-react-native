@@ -295,7 +295,7 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onPress={(message, e) => {
-   *        openReactionPicker();
+   *        props.openReactionPicker();
    *      }}
    *  )
    * }
