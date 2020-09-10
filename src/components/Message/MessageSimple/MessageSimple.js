@@ -266,7 +266,7 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onLongPress={(message, e) => {
-   *        openReactionPicker();
+   *        props.openReactionPicker();
    *      }}
    *  )
    * }
