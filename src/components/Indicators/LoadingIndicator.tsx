@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
 
 import Spinner from '../Spinner/Spinner';
 
@@ -20,12 +19,20 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css};
 `;
 
+type Props = {
+  listType?: 'channel' | 'message' | 'default';
+  loadingText?: string;
+};
+
 /**
  * UI Component for LoadingIndicator
  *
  * @example ../docs/LoadingIndicator.md
  */
-const LoadingIndicator = ({ listType = 'default', loadingText }) => {
+const LoadingIndicator: React.FC<Props> & { themePath: string } = ({
+  listType,
+  loadingText,
+}) => {
   const { t } = useContext(TranslationContext);
   let indicatorText = '';
 
@@ -36,7 +43,6 @@ const LoadingIndicator = ({ listType = 'default', loadingText }) => {
     case 'message':
       indicatorText = loadingText ? loadingText : t('Loading messages ...');
       break;
-    case 'default':
     default:
       indicatorText = loadingText ? loadingText : t('Loading ...');
   }
@@ -47,13 +53,6 @@ const LoadingIndicator = ({ listType = 'default', loadingText }) => {
       <LoadingText testID='loading'>{indicatorText}</LoadingText>
     </Container>
   );
-};
-
-LoadingIndicator.propTypes = {
-  // Type of list
-  listType: PropTypes.oneOf(['channel', 'message', 'default']),
-  // String text shown under spinner
-  loadingText: PropTypes.string,
 };
 
 LoadingIndicator.themePath = 'loadingIndicator';
