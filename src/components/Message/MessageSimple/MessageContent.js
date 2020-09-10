@@ -16,7 +16,6 @@ import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
 import {
   ChannelContext,
-  KeyboardContext,
   MessageContentContext,
   MessagesContext,
   ThreadContext,
@@ -146,6 +145,7 @@ const MessageContentWithContext = React.memo((props) => {
     messageActions,
     onLongPress,
     onPress,
+    onShowActionSheet,
     onThreadSelect,
     openReactionPicker,
     reactionPickerVisible,
@@ -157,7 +157,6 @@ const MessageContentWithContext = React.memo((props) => {
     threadList,
   } = props;
 
-  const { dismissKeyboard } = useContext(KeyboardContext);
   const { openThread } = useContext(ThreadContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
@@ -169,11 +168,6 @@ const MessageContentWithContext = React.memo((props) => {
     } else if (openThread) {
       openThread(message);
     }
-  };
-
-  const onShowActionSheet = async () => {
-    await dismissKeyboard();
-    setActionSheetVisible(true);
   };
 
   useEffect(() => {
@@ -540,9 +534,7 @@ MessageContent.propTypes = {
   MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Function that overrides default behaviour when message is long pressed
-   * e.g.
-   *
-   * if you would like to open reaction picker on message long press:
+   * e.g. if you would like to open reaction picker on message long press:
    *
    * ```
    * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
@@ -554,18 +546,18 @@ MessageContent.propTypes = {
    *      onLongPress={(message, e) => {
    *        props.openReactionPicker();
    *        // Or if you want to open action sheet
-   *        // showActionSheet();
+   *        // props.showActionSheet();
    *      }}
    *  )
    * }
-   *
-   * Similarly, you can also call other methods available on MessageContent
-   * component such as handleEdit, handleDelete, showActionSheet etc.
-   *
-   * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
-   *
-   * By default we show action sheet with all the message actions on long press.
    * ```
+   *
+   * Similarly, you can call other methods available on the Message
+   * component such as handleEdit, handleDelete, handleAction etc.
+   *
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+   *
+   * By default, we show the action sheet with all the message actions on long press.
    *
    * @param message Message object which was long pressed
    * @param e       Event object for onLongPress event
@@ -582,25 +574,30 @@ MessageContent.propTypes = {
    *  return (
    *    <MessageSimple
    *      {...props}
-   *      onPress={(thisArg, message, e) => {
+   *      onPress={(message, e) => {
    *        props.openReactionPicker();
    *        // Or if you want to open action sheet
-   *        // thisArg.showActionSheet();
+   *        // props.showActionSheet();
    *      }}
    *  )
    * }
    * ```
    *
-   * Similarly, you can also call other methods available on MessageContent
-   * component such as handleEdit, handleDelete, showActionSheet etc.
+   * Similarly, you can call other methods available on the Message
+   * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
    *
-   * @param {Component} thisArg Reference to MessageContent component
+   * By default, messages do not have an on press action.
+   *
    * @param message Message object which was pressed
    * @param e       Event object for onPress event
    * */
   onPress: PropTypes.func,
+  /**
+   * Opens the action sheet
+   */
+  onShowActionSheet: PropTypes.func,
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *

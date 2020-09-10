@@ -266,18 +266,20 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onLongPress={(message, e) => {
-   *        openReactionPicker();
+   *        props.openReactionPicker();
+   *        // Or if you want to open action sheet
+   *        // props.showActionSheet();
    *      }}
    *  )
    * }
-   *
-   * Similarly, you can also call other methods available on MessageContent
-   * component such as handleEdit, handleDelete, showActionSheet etc.
-   *
-   * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
    * ```
    *
-   * By default we show action sheet with all the message actions on long press.
+   * Similarly, you can call other methods available on the Message
+   * component such as handleEdit, handleDelete, handleAction etc.
+   *
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+   *
+   * By default, we show the action sheet with all the message actions on long press.
    *
    * @param message Message object which was long pressed
    * @param e       Event object for onLongPress event
@@ -295,21 +297,29 @@ MessageSimple.propTypes = {
    *    <MessageSimple
    *      {...props}
    *      onPress={(message, e) => {
-   *        openReactionPicker();
+   *        props.openReactionPicker();
+   *        // Or if you want to open action sheet
+   *        // props.showActionSheet();
    *      }}
    *  )
    * }
    * ```
    *
-   * Similarly, you can also call other methods available on MessageContent
-   * component such as handleEdit, handleDelete, showActionSheet etc.
+   * Similarly, you can call other methods available on the Message
+   * component such as handleEdit, handleDelete, handleAction etc.
    *
-   * Source - [MessageContent](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js)
+   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+   *
+   * By default, messages do not have an on press action.
    *
    * @param message Message object which was pressed
    * @param e       Event object for onPress event
    * */
   onPress: PropTypes.func,
+  /**
+   * Opens the action sheet
+   */
+  onShowActionSheet: PropTypes.func,
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
