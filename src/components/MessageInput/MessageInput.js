@@ -785,6 +785,7 @@ const MessageInput = (props) => {
           icon={iconClose}
           onPress={() => {
             clearEditingState();
+            setText('');
           }}
         />
       </EditingBoxHeader>
