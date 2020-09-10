@@ -9,8 +9,7 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
         "display": "flex",
         "flexDirection": "row",
         "justifyContent": "center",
-        "marginBottom": 20,
-        "marginTop": 20,
+        "marginVertical": 20,
       },
     ]
   }
@@ -34,8 +33,7 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
       Array [
         Object {
           "fontSize": 10,
-          "marginLeft": 5,
-          "marginRight": 5,
+          "marginHorizontal": 5,
           "opacity": 0.8,
           "textAlign": "center",
           "textTransform": "uppercase",

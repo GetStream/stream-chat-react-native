@@ -1,7 +1,7 @@
 import * as React from 'react';
-import styled from '@stream-io/styled-components';
+import { View } from 'react-native';
 
-const Container = styled.View``;
+import { styled } from '../styles/styledComponents';
 
 const Icon = styled.View`
   align-items: center;
@@ -17,8 +17,8 @@ const IconInner = styled.View`
   align-self: flex-start;
   background-color: green;
   border-radius: 20px;
-  justify-content: center;
   height: 15px;
+  justify-content: center;
   min-width: 15px;
   padding-horizontal: 3px;
   ${({ theme }) => theme.iconBadge.iconInner.css};
@@ -30,21 +30,24 @@ const UnreadCount = styled.Text`
   ${({ theme }) => theme.iconBadge.unreadCount.css};
 `;
 
-export class IconBadge extends React.Component {
-  render() {
-    const { children, showNumber, unread } = this.props;
+type Props = {
+  unread: number;
+  showNumber?: boolean;
+};
 
-    return (
-      <Container>
-        {children}
-        {unread > 0 && (
-          <Icon>
-            <IconInner>
-              {showNumber && <UnreadCount>{unread}</UnreadCount>}
-            </IconInner>
-          </Icon>
-        )}
-      </Container>
-    );
-  }
-}
+export const IconBadge: React.FC<Props> = (props) => {
+  const { children, showNumber, unread } = props;
+
+  return (
+    <View>
+      {children}
+      {unread > 0 && (
+        <Icon>
+          <IconInner>
+            {showNumber && <UnreadCount>{unread}</UnreadCount>}
+          </IconInner>
+        </Icon>
+      )}
+    </View>
+  );
+};

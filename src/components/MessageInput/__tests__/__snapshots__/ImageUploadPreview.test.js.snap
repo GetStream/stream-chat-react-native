@@ -132,7 +132,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -147,7 +147,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -376,7 +376,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -391,7 +391,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -598,7 +598,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -613,7 +613,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -746,7 +746,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -761,7 +761,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -894,7 +894,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -909,7 +909,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -1457,7 +1457,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -1472,7 +1472,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -1612,7 +1612,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -1627,7 +1627,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
@@ -1767,7 +1767,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "rgba(0,0,0,0.3)",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
@@ -1782,7 +1782,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "rgba(255,255,255,0)",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",

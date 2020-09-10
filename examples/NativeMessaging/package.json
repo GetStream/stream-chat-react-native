@@ -16,7 +16,8 @@
     "react-native-image-picker": "^1.1.0",
     "react-native-reanimated": "^1.4.0",
     "react-navigation": "3.11.0",
-    "stream-chat-react-native": "^"
+    "stream-chat-react-native": "^",
+    "styled-components": "^5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.4",

@@ -120,10 +120,15 @@
         "markdown",
         "prettier",
         "react",
-        "typescript-sort-keys"
+        "typescript-sort-keys",
+        "better-styled-components"
       ],
       "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": 0,
+        "@typescript-eslint/no-empty-interface": 0,
         "@typescript-eslint/ban-ts-comment": 0,
+        "better-styled-components/sort-declarations-alphabetically": 1,
+        "react-native/no-inline-styles": 0,
         "array-callback-return": 2,
         "arrow-body-style": 2,
         "comma-dangle": 0,

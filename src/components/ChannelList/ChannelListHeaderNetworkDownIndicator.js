@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 
 import { TranslationContext } from '../../context';
 
@@ -14,9 +14,9 @@ const Container = styled.View`
 
 const ErrorText = styled.Text`
   color: red;
-  padding: 3px;
   font-size: 12px;
   font-weight: bold;
+  padding: 3px;
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
 `;
 

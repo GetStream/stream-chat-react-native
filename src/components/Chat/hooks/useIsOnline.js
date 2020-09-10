@@ -16,7 +16,7 @@ export const useIsOnline = ({ client }) => {
     const handleRecoveredEvent = () => setConnectionRecovering(false);
 
     const notifyChatClient = (isConnected) => {
-      if (client?.wsConnection) {
+      if (client && client.wsConnection) {
         if (isConnected) {
           client.wsConnection.onlineStatusChanged({
             type: 'online',
@@ -49,7 +49,9 @@ export const useIsOnline = ({ client }) => {
     return () => {
       client.off('connection.changed', handleChangedEvent);
       client.off('connection.recovered', handleRecoveredEvent);
-      unsubscribeNetInfo?.();
+      if (unsubscribeNetInfo) {
+        unsubscribeNetInfo();
+      }
     };
   }, [client]);
 

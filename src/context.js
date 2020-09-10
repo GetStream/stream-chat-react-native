@@ -50,10 +50,10 @@ export function withTranslationContext(OriginalComponent) {
   return ContextAwareComponent;
 }
 
-const getContextAwareComponent = function(context, originalComponent) {
+const getContextAwareComponent = function (context, originalComponent) {
   const Context = context;
   const OriginalComponent = originalComponent;
-  const ContextAwareComponent = function(props) {
+  const ContextAwareComponent = function (props) {
     return (
       <Context.Consumer>
         {(c) => <OriginalComponent {...c} {...props} />}

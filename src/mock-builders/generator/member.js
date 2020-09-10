@@ -1,7 +1,7 @@
 import { generateUser } from './user';
 
 export const generateMember = (options = {}) => {
-  const user = options?.user || generateUser();
+  const user = (options && options.user) || generateUser();
   return {
     invited: false,
     is_moderator: false,

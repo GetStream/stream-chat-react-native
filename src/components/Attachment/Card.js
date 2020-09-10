@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Linking, View } from 'react-native';
-import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';
@@ -11,9 +11,9 @@ import { makeImageCompatibleUrl } from '../../utils/utils';
 const Container = styled.TouchableOpacity`
   background-color: ${({ theme }) => theme.colors.light};
   border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2};
+    alignment === 'right' ? 16 : 2}px;
   border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2};
+    alignment === 'left' ? 16 : 2}px;
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   overflow: hidden;

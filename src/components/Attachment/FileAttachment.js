@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
-import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import AttachmentActions from './AttachmentActions';
 
@@ -13,15 +13,15 @@ const FileContainer = styled.View`
   border-radius: ${({ groupStyle }) => {
     if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
     return 16;
-  }};
+  }}px;
   border-bottom-left-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
     return alignment === 'right' ? 16 : 2;
-  }};
+  }}px;
   border-bottom-right-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
     return alignment === 'left' ? 16 : 2;
-  }};
+  }}px;
   flex-direction: row;
   padding: 10px;
   ${({ theme }) => theme.message.file.container.css}

@@ -5,7 +5,7 @@ export const getReadStates = (messages, read) => {
     /**
      * Filter out date separators
      */
-    if (!message?.id) {
+    if (!(message && message.id)) {
       continue;
     }
 

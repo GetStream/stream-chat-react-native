@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
@@ -15,7 +15,7 @@ const Container = styled.TouchableOpacity`
 
 const ErrorText = styled.Text`
   color: red;
-  font-size: 12;
+  font-size: 12px;
   font-weight: bold;
   padding: 3px;
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}

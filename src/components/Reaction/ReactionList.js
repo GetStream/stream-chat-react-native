@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import leftTail from '../../images/reactionlist/left-tail.png';

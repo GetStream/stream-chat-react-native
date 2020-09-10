@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 
 import { ChannelContext, ChatContext } from '../../context';
 
 const Container = styled.View`
-  bottom: 0;
+  bottom: 0px;
   height: 30px;
   padding-left: 16px;
   padding-vertical: 3px;

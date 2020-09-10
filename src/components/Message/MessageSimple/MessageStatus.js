@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import Avatar from '../../Avatar/Avatar';
 
@@ -8,11 +8,11 @@ import loadingGif from '../../../images/loading.gif';
 import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
 
 const Spacer = styled.View`
-  height: 10;
+  height: 10px;
 `;
 
 const StatusContainer = styled.View`
-  width: 20;
+  width: 20px;
   flex-direction: row;
   justify-content: center;
 `;
@@ -20,14 +20,14 @@ const StatusContainer = styled.View`
 const DeliveredContainer = styled.View`
   display: flex;
   align-items: center;
-  height: 20;
+  height: 20px;
   ${({ theme }) => theme.message.status.deliveredContainer.css};
 `;
 
 const DeliveredCircle = styled.View`
-  width: 16;
-  height: 16;
-  border-radius: 16;
+  width: 16px;
+  height: 16px;
+  border-radius: 16px;
   background-color: ${({ theme }) => theme.colors.primary};
   align-items: center;
   justify-content: center;
@@ -36,8 +36,8 @@ const DeliveredCircle = styled.View`
 `;
 
 const CheckMark = styled.Image`
-  width: 8;
-  height: 6;
+  height: 6px;
+  width: 8px;
   ${({ theme }) => theme.message.status.checkMark.css};
 `;
 
@@ -48,8 +48,8 @@ const SendingContainer = styled.View`
 `;
 
 const SendingImage = styled.View`
-  height: 10;
-  width: 10;
+  height: 10px;
+  width: 10px;
   ${({ theme }) => theme.message.status.sendingImage.css};
 `;
 

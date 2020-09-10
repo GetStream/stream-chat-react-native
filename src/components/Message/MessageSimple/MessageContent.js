@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 import Immutable from 'seamless-immutable';
@@ -26,7 +26,7 @@ import { emojiData, MESSAGE_ACTIONS } from '../../../utils/utils';
 const Container = styled.TouchableOpacity`
   display: flex;
   flex-direction: column;
-  max-width: 250;
+  max-width: 250px;
   padding: ${({ error }) => (error ? 5 : 0)}px;
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
@@ -39,15 +39,15 @@ const Container = styled.TouchableOpacity`
   border-bottom-left-radius: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.container.borderRadiusS
-      : theme.message.content.container.borderRadiusL};
+      : theme.message.content.container.borderRadiusL}px;
   border-bottom-right-radius: ${({ alignment, theme }) =>
     alignment === 'left'
       ? theme.message.content.container.borderRadiusL
-      : theme.message.content.container.borderRadiusS};
+      : theme.message.content.container.borderRadiusS}px;
   border-top-left-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL};
+    theme.message.content.container.borderRadiusL}px;
   border-top-right-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL};
+    theme.message.content.container.borderRadiusL}px;
   ${({ theme }) => theme.message.content.container.css};
 `;
 
@@ -58,12 +58,12 @@ const ContainerInner = styled.View`
 `;
 
 const MetaContainer = styled.View`
-  margin-top: 2;
+  margin-top: 2px;
   ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
 const MetaText = styled.Text`
-  font-size: 11;
+  font-size: 11px;
   color: ${({ theme }) => theme.colors.textGrey};
   text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
   ${({ theme }) => theme.message.content.metaText.css};
@@ -72,7 +72,7 @@ const MetaText = styled.Text`
 const DeletedContainer = styled.View`
   display: flex;
   flex-direction: column;
-  max-width: 250;
+  max-width: 250px;
   padding: 5px;
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
@@ -82,8 +82,8 @@ const DeletedContainer = styled.View`
 `;
 
 const DeletedText = styled.Text`
-  font-size: 15;
-  line-height: 20;
+  font-size: 15px;
+  line-height: 20px;
   color: #a4a4a4;
   ${({ theme }) => theme.message.content.deletedText.css};
 `;
@@ -103,12 +103,12 @@ const ActionSheetTitleContainer = styled.View`
 
 const ActionSheetTitleText = styled.Text`
   color: #757575;
-  font-size: 14;
+  font-size: 14px;
   ${({ theme }) => theme.message.actionSheet.titleText.css};
 `;
 
 const ActionSheetButtonContainer = styled.View`
-  height: 50;
+  height: 50px;
   width: 100%;
   align-items: center;
   background-color: #fff;
@@ -117,20 +117,20 @@ const ActionSheetButtonContainer = styled.View`
 `;
 
 const ActionSheetButtonText = styled.Text`
-  font-size: 18;
+  font-size: 18px;
   color: #388cea;
   ${({ theme }) => theme.message.actionSheet.buttonText.css};
 `;
 
 const ActionSheetCancelButtonContainer = styled.View`
-  height: 50;
+  height: 50px;
   width: 100%;
   align-items: center;
   justify-content: center;
   ${({ theme }) => theme.message.actionSheet.cancelButtonContainer.css};
 `;
 const ActionSheetCancelButtonText = styled.Text`
-  font-size: 18;
+  font-size: 18px;
   color: red;
   ${({ theme }) => theme.message.actionSheet.cancelButtonText.css};
 `;

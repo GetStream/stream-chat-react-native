@@ -167,14 +167,18 @@ const Message = withKeyboardContext(
     canDeleteMessage = () => this.canEditMessage();
 
     handleFlag = async (event) => {
-      event?.preventDefault?.();
+      if (event && event.preventDefault) {
+        event.preventDefault();
+      }
 
       const message = this.props.message;
       await this.props.client.flagMessage(message.id);
     };
 
     handleMute = async (event) => {
-      event?.preventDefault?.();
+      if (event && event.preventDefault) {
+        event.preventDefault();
+      }
 
       const message = this.props.message;
       await this.props.client.flagMessage(message.user.id);
@@ -191,7 +195,9 @@ const Message = withKeyboardContext(
     };
 
     handleReaction = async (reactionType, event) => {
-      event?.preventDefault?.();
+      if (event && event.preventDefault) {
+        event.preventDefault();
+      }
 
       let userExistingReaction = null;
 
@@ -254,7 +260,9 @@ const Message = withKeyboardContext(
     };
 
     handleAction = async (name, value, event) => {
-      event?.preventDefault?.();
+      if (event && event.preventDefault) {
+        event.preventDefault();
+      }
       const messageID = this.props.message.id;
       const formData = {};
       formData[name] = value;

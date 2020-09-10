@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -42,7 +42,6 @@ const ErrorNotification = styled.View`
   flex-direction: column;
   align-items: center;
   z-index: 10;
-  margin-bottom: 0;
   padding: 5px;
   color: red;
   background-color: #fae6e8;
@@ -100,12 +99,13 @@ const MessageList = (props) => {
 
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
-    getLastReceivedMessage(messageList)?.id,
+    getLastReceivedMessage(messageList) &&
+      getLastReceivedMessage(messageList).id,
   );
 
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
-    const currentLastReceivedId = currentLastMessage?.id;
+    const currentLastReceivedId = currentLastMessage && currentLastMessage.id;
     if (currentLastReceivedId) {
       const hasNewMessage = lastReceivedId !== currentLastReceivedId;
       const userScrolledUp = yOffset.current > 0;
@@ -120,7 +120,9 @@ const MessageList = (props) => {
         setNewMessageNotification(true);
       }
       if (scrollToBottom) {
-        flatListRef.current?.scrollToIndex({ index: 0 });
+        if (flatListRef.current) {
+          flatListRef.current.scrollToIndex({ index: 0 });
+        }
       }
 
       // remove the scroll notification if we already scrolled down...
@@ -188,13 +190,15 @@ const MessageList = (props) => {
 
   const goToNewMessages = () => {
     setNewMessageNotification(false);
-    flatListRef.current?.scrollToIndex({ index: 0 });
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index: 0 });
+    }
     if (!threadList) markRead();
   };
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messageList?.length === 0 && !threadList) {
+  if (messageList && messageList.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
@@ -254,21 +258,23 @@ const MessageList = (props) => {
           </ErrorNotification>
         )}
       </View>
-      {// Mask for edit state
-      editing && disableWhileEditing && (
-        <TouchableOpacity
-          collapsable={false}
-          onPress={clearEditingState}
-          style={{
-            backgroundColor: 'black',
-            height: '100%',
-            opacity: 0.4,
-            position: 'absolute',
-            width: '100%',
-            zIndex: 100,
-          }}
-        />
-      )}
+      {
+        // Mask for edit state
+        editing && disableWhileEditing && (
+          <TouchableOpacity
+            collapsable={false}
+            onPress={clearEditingState}
+            style={{
+              backgroundColor: 'black',
+              height: '100%',
+              opacity: 0.4,
+              position: 'absolute',
+              width: '100%',
+              zIndex: 100,
+            }}
+          />
+        )
+      }
     </>
   );
 };

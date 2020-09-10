@@ -1,6 +1,6 @@
 import React from 'react';
-import styled, { withTheme } from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import styled, { withTheme } from 'styled-components/native';
 
 import { renderText } from '../../../utils/renderText';
 import { capitalize } from '../../../utils/utils';
@@ -9,29 +9,28 @@ const TextContainer = styled.View`
   border-bottom-left-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('left') !== -1
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-bottom-right-radius: ${({ theme, groupStyle }) =>
     groupStyle.indexOf('right') !== -1
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-top-left-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   border-top-right-radius: ${({ theme, groupStyle }) =>
     groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
       ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL};
+      : theme.message.content.textContainer.borderRadiusL}px;
   padding: 5px;
-  padding-left: 8;
-  margin-top: 2;
-  padding-right: 8;
+  margin-top: 2px;
+  padding-horizontal: 8px;
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   border-width: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderWidth
-      : theme.message.content.textContainer.rightBorderWidth};
+      : theme.message.content.textContainer.rightBorderWidth}px;
   border-color: ${({ theme, alignment }) =>
     alignment === 'left'
       ? theme.message.content.textContainer.leftBorderColor

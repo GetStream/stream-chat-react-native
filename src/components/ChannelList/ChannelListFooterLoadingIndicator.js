@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 
 import Spinner from '../Spinner/Spinner';
 

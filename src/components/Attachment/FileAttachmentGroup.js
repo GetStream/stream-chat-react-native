@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import Attachment from './Attachment';
 

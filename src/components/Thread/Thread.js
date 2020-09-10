@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import DefaultMessage from '../Message/Message';
@@ -19,7 +19,7 @@ const NewThread = styled.View`
   padding: 8px;
   background-color: #f4f9ff;
   margin: 10px;
-  border-radius: 4;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   ${({ theme }) => theme.thread.newThread.css};
@@ -84,7 +84,7 @@ const Thread = (props) => {
       await loadMoreThread();
     };
 
-    if (thread?.id && thread?.reply_count) {
+    if (thread && thread.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
   }, []);

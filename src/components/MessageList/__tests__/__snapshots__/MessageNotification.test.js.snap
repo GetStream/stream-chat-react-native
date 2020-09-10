@@ -31,7 +31,6 @@ exports[`MessageNotification should render the message notification and match sn
         "flexDirection": "column",
         "height": 27,
         "justifyContent": "center",
-        "marginBottom": 0,
         "opacity": 1,
         "transform": Array [
           Object {

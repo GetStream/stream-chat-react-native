@@ -74,7 +74,10 @@ const Channel = (props) => {
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState(
-    channel.state?.threads?.[props.thread?.id] || [],
+    (channel.state &&
+      channel.state.threads &&
+      channel.state.threads[props.thread && props.thread.id]) ||
+      [],
   );
   const [typing, setTyping] = useState(Immutable({}));
   const [watcherCount, setWatcherCount] = useState();
@@ -85,7 +88,7 @@ const Channel = (props) => {
 
     return () => {
       client.off('connection.recovered', handleEvent);
-      channel.off?.(handleEvent);
+      channel.off && channel.off(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
@@ -95,7 +98,11 @@ const Channel = (props) => {
   useEffect(() => {
     if (props.thread) {
       setThread(props.thread);
-      setThreadMessages(channel.state.threads?.[props.thread?.id] || []);
+      setThreadMessages(
+        (channel.state.threads &&
+          channel.state.threads[props.thread && props.thread.id]) ||
+          [],
+      );
     }
   }, [props.thread]);
 
@@ -171,7 +178,7 @@ const Channel = (props) => {
       setThreadMessages(updatedThreadMessages);
     }
 
-    if (thread && e.message?.id === thread.id) {
+    if (thread && e.message && e.message.id === thread.id) {
       const updatedThread = channel.state.messageToImmutable(e.message);
       setThread(updatedThread);
     }
@@ -250,7 +257,7 @@ const Channel = (props) => {
       ...extraFields,
     };
 
-    if (parent?.id) {
+    if (parent && parent.id) {
       message.parent_id = parent.id;
     }
     return message;
@@ -358,13 +365,13 @@ const Channel = (props) => {
       return setLoadingMore(false);
     }
 
-    const oldestMessage = messages?.[0];
+    const oldestMessage = messages && messages[0];
 
-    if (oldestMessage?.status !== 'received') {
+    if (oldestMessage && oldestMessage.status !== 'received') {
       return setLoadingMore(false);
     }
 
-    const oldestID = oldestMessage?.id;
+    const oldestID = oldestMessage && oldestMessage.id;
     const limit = 100;
 
     try {
@@ -436,12 +443,12 @@ const Channel = (props) => {
   );
 
   const loadMoreThread = async () => {
-    if (threadLoadingMore || !thread?.id) return;
+    if (threadLoadingMore || !(thread && thread.id)) return;
     setThreadLoadingMore(true);
 
     const parentID = thread.id;
     const oldMessages = channel.state.threads[parentID] || [];
-    const oldestMessageID = oldMessages?.[0]?.id;
+    const oldestMessageID = oldMessages && oldMessages[0] && oldMessages[0].id;
 
     const limit = 50;
     const queryResponse = await channel.getReplies(parentID, {
@@ -456,7 +463,7 @@ const Channel = (props) => {
 
   const channelContext = {
     channel,
-    disabled: channel.data?.frozen && disableIfFrozenChannel,
+    disabled: channel.data && channel.data.frozen && disableIfFrozenChannel,
     EmptyStateIndicator:
       props.EmptyStateIndicator || EmptyStateIndicatorDefault,
     error,
@@ -500,7 +507,7 @@ const Channel = (props) => {
     threadMessages,
   };
 
-  if (!channel?.cid || !channel.watch) {
+  if (!(channel && channel.cid) || !channel.watch) {
     return (
       <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
         {t('Please select a channel first')}

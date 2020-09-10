@@ -3,7 +3,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TabButton from 'react-styleguidist/lib/rsg-components/TabButton';
-import { defaultTheme, originalCSS } from '../styles/theme';
+import { originalCSS } from '../styles/theme';
+import { defaultTheme } from '../styles/themeConstants';
 import merge from 'lodash/merge';
 import lodashGet from 'lodash/get';
 import lodashSet from 'lodash/set';

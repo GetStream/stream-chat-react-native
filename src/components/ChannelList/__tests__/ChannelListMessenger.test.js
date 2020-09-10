@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { ThemeProvider } from '@stream-io/styled-components';
+import { ThemeProvider } from 'styled-components/native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
@@ -13,7 +13,7 @@ import ChannelListMessenger from '../ChannelListMessenger';
 import Chat from '../../Chat/Chat';
 
 import { TranslationContext } from '../../../context';
-import { defaultTheme } from '../../../styles/theme';
+import { defaultTheme } from '../../../styles/themeConstants';
 
 let mockChannels;
 let chatClient;

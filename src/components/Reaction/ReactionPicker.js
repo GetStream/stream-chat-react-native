@@ -1,10 +1,9 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
-import styled from '@stream-io/styled-components';
+import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
 import Avatar from '../Avatar/Avatar';
-
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
@@ -19,29 +18,29 @@ const ContainerView = styled.View`
   flex-direction: row;
   background-color: black;
   padding-left: 20px;
-  height: 60;
+  height: 60px;
   padding-right: 20px;
-  border-radius: 30;
+  border-radius: 30px;
   ${({ theme }) => theme.message.reactionPicker.containerView.css}
 `;
 
 const Column = styled.View`
   flex-direction: column;
   align-items: center;
-  margin-top: -5;
+  margin-top: -5px;
   ${({ theme }) => theme.message.reactionPicker.column.css}
 `;
 
 const Emoji = styled.Text`
-  font-size: 20;
-  margin-bottom: 5;
-  margin-top: 5;
+  font-size: 20px;
+  margin-bottom: 5px;
+  margin-top: 5px;
   ${({ theme }) => theme.message.reactionPicker.emoji.css}
 `;
 
 const ReactionCount = styled.Text`
   color: white;
-  font-size: 10;
+  font-size: 10px;
   font-weight: bold;
   ${({ theme }) => theme.message.reactionPicker.text.css}
 `;
