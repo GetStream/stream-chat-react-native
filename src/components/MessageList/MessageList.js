@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import DefaultDateSeparator from './DateSeparator';
 import MessageNotification from './MessageNotification';
-import MessageSystem from './MessageSystem';
+import DefaultMessageSystem from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
 
@@ -67,6 +67,7 @@ const MessageList = (props) => {
     disableWhileEditing = true,
     HeaderComponent,
     Message: MessageFromProps,
+    MessageSystem = DefaultMessageSystem,
     messageActions,
     noGroupByUser,
     onThreadSelect,
@@ -310,6 +311,11 @@ MessageList.propTypes = {
    * */
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
+  /**
+   * Custom UI component to display a system message
+   * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
+   */
+  MessageSystem: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Boolean weather current message list is a thread.
    */

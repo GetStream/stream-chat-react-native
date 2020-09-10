@@ -65,6 +65,7 @@ module.exports = {
         'src/components/MessageList/EventIndicator.js',
         'src/components/MessageList/MessageList.js',
         'src/components/MessageList/MessageNotification.js',
+        'src/components/MessageList/MessageSystem.js',
         'src/components/MessageList/TypingIndicator.js',
       ],
       exampleMode: 'collapse',
@@ -104,7 +105,7 @@ module.exports = {
         'src/components/MessageInput/UploadProgressIndicator.js',
       ],
       exampleMode: 'collapse',
-      name: 'Message Input',
+      name: 'MessageInput Components',
       usageMode: 'expand',
     },
     {
@@ -193,7 +194,7 @@ module.exports = {
     },
     {
       exampleMode: 'collapse',
-      name: 'Custom UI component props',
+      name: 'Custom UI Component Props',
       sections: [
         {
           content: 'src/components/docs/AttachmentProps.md',
