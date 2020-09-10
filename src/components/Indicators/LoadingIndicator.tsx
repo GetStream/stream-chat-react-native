@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { styled } from '../../styles/styledComponents';
 
 import Spinner from '../Spinner/Spinner';
 
 import { TranslationContext } from '../../context';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
