@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image } from 'react-native';
-import styled from 'styled-components/native';
+import { styled } from '../../styles/styledComponents';
 
 import closeRound from '../../images/icons/close-round.png';
 import { themed } from '../../styles/theme';
