@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components/native';
+import { styled } from '../../styles/styledComponents';
 
 import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
