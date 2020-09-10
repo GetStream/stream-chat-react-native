@@ -317,10 +317,6 @@ MessageSimple.propTypes = {
    * */
   onPress: PropTypes.func,
   /**
-   * Opens the action sheet
-   */
-  onShowActionSheet: PropTypes.func,
-  /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
    * @param message A message object to open the thread upon.
@@ -345,6 +341,10 @@ MessageSimple.propTypes = {
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: PropTypes.func,
+  /**
+   * Opens the action sheet
+   */
+  showActionSheet: PropTypes.func,
   showMessageStatus: PropTypes.bool,
   showReactionsList: PropTypes.bool,
   /**

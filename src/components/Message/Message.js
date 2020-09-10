@@ -69,7 +69,7 @@ const DefaultMessageWithContext = React.memo((props) => {
   const handleFlag = async () => await client.flagMessage(message.id);
   const handleMute = async () => await client.muteUser(message.user.id);
 
-  const onShowActionSheet = async () => {
+  const showActionSheet = async () => {
     await dismissKeyboard();
     setActionSheetVisible(true);
   };
@@ -193,10 +193,10 @@ const DefaultMessageWithContext = React.memo((props) => {
         isAdmin={isAdmin}
         isModerator={isModerator}
         isMyMessage={isMyMessage}
-        onShowActionSheet={onShowActionSheet}
         openReactionPicker={openReactionPicker}
         reactionPickerVisible={reactionPickerVisible}
         setActionSheetVisible={setActionSheetVisible}
+        showActionSheet={showActionSheet}
       />
     </TouchableOpacity>
   );

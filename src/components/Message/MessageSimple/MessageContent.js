@@ -145,7 +145,6 @@ const MessageContentWithContext = React.memo((props) => {
     messageActions,
     onLongPress,
     onPress,
-    onShowActionSheet,
     onThreadSelect,
     openReactionPicker,
     reactionPickerVisible,
@@ -153,6 +152,7 @@ const MessageContentWithContext = React.memo((props) => {
     repliesEnabled = true,
     retrySendMessage,
     setActionSheetVisible,
+    showActionSheet,
     supportedReactions = emojiData,
     threadList,
   } = props;
@@ -217,7 +217,7 @@ const MessageContentWithContext = React.memo((props) => {
       onLongPress && !disabled
         ? (e) => onLongPress(message, e)
         : enableLongPress
-        ? onShowActionSheet
+        ? showActionSheet
         : () => null,
     onPress: onPress ? (e) => onPress(message, e) : () => null,
     status: message.status,
@@ -595,10 +595,6 @@ MessageContent.propTypes = {
    * */
   onPress: PropTypes.func,
   /**
-   * Opens the action sheet
-   */
-  onShowActionSheet: PropTypes.func,
-  /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
    * @param message A message object to open the thread upon.
@@ -621,6 +617,10 @@ MessageContent.propTypes = {
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: PropTypes.func,
+  /**
+   * Opens the action sheet
+   */
+  showActionSheet: PropTypes.func,
   /**
    * e.g.,
    * [
