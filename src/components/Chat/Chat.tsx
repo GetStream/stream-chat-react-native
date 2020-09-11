@@ -145,8 +145,7 @@ const Chat = <
   >();
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date | Dayjs.Dayjs) =>
-      Dayjs(input),
+    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
   // Setup translators
