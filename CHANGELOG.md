@@ -90,7 +90,7 @@
 
 *renderText Function*
 
-- The `renderText` function utilized in the `MessageTextContainer` component now accepts a single object containing `markdownRules`, `markdownStyles`, and `message`. Previously each value was it's own function parameter.
+- The `renderText` function utilized in the `MessageTextContainer` component now accepts a single object containing `markdownRules`, `markdownStyles`, and `message`. Previously each value was a separate function parameter.
 
 ## [1.2.0] 2020-08-21
 
