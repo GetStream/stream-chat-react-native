@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
+import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
 
@@ -61,6 +62,11 @@ const MessageSystem = ({ message }) => {
       <Line />
     </Container>
   );
+};
+
+MessageSystem.propTypes = {
+  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
+  message: PropTypes.object.isRequired,
 };
 
 export default MessageSystem;

@@ -6,7 +6,6 @@ import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
-  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;

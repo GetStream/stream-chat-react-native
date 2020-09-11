@@ -20,7 +20,6 @@ const NewThread = styled.View`
   background-color: #f4f9ff;
   margin: 10px;
   border-radius: 4;
-  display: flex;
   align-items: center;
   ${({ theme }) => theme.thread.newThread.css};
 `;

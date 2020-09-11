@@ -6,7 +6,6 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
     Array [
       Object {
         "alignItems": "center",
-        "display": "flex",
         "flexDirection": "row",
         "justifyContent": "center",
         "marginBottom": 20,

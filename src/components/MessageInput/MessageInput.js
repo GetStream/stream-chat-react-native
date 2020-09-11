@@ -35,7 +35,6 @@ import { ACITriggerSettings, FileState } from '../../utils/utils';
 const Container = styled.View`
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
-  flex-direction: column;
   margin-horizontal: 10px;
   padding-top: ${({ imageUploads, theme }) =>
     imageUploads && imageUploads.length
@@ -781,13 +780,14 @@ const MessageInput = (props) => {
   };
 
   return editing ? (
-    <EditingBoxContainer>
+    <EditingBoxContainer testID='editing'>
       <EditingBoxHeader>
         <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
         <IconSquare
           icon={iconClose}
           onPress={() => {
             clearEditingState();
+            setText('');
           }}
         />
       </EditingBoxHeader>
