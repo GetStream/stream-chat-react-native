@@ -26,7 +26,7 @@ function registerCSS({ references }) {
 
     const code = toCode(arg.node);
 
-    const importStament = parse(
+    const importStatement = parse(
       `import { setOriginalCSS } from "../styles/theme";`,
       {
         sourceType: 'module',
@@ -36,7 +36,7 @@ function registerCSS({ references }) {
       themePathArg.node.value,
     )}, ${JSON.stringify(code)});;`;
 
-    arg.hub.file.path.node.body.push(importStament.program.body[0]);
+    arg.hub.file.path.node.body.push(importStatement.program.body[0]);
     arg.hub.file.path.node.body.push(parse(newCode));
   });
 }
