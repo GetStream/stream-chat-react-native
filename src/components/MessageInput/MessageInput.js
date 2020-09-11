@@ -120,6 +120,7 @@ const MessageInput = (props) => {
     additionalTextInputProps,
     AttachButton = AttachButtonDefault,
     AttachmentFileIcon,
+    compressImageQuality,
     doDocUploadRequest,
     doImageUploadRequest,
     hasFilePicker = true,
@@ -284,16 +285,29 @@ const MessageInput = (props) => {
       return;
     }
 
-    const result = await pickDocument();
-    if (result.type === 'cancel' || result.cancelled) {
-      return;
-    }
-    const mimeType = lookup(result.name);
+    const result = await pickDocument({ maxNumberOfFiles });
+    if (!result.cancelled) {
+      if (result.docs) {
+        // condition to support react-native-image-crop-picker
+        result.docs.forEach((doc) => {
+          const mimeType = lookup(doc.name);
 
-    if (mimeType && mimeType.startsWith('image/')) {
-      uploadNewImage(result);
-    } else {
-      uploadNewFile(result);
+          if (mimeType && mimeType.startsWith('image/')) {
+            uploadNewImage(doc);
+          } else {
+            uploadNewFile(doc);
+          }
+        });
+      } else {
+        // condition to support react-native-image-picker
+        const mimeType = lookup(result.name);
+
+        if (mimeType && mimeType.startsWith('image/')) {
+          uploadNewImage(result);
+        } else {
+          uploadNewFile(result);
+        }
+      }
     }
   };
 
@@ -301,13 +315,20 @@ const MessageInput = (props) => {
     if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
-    const result = await pickImageNative();
+    const result = await pickImageNative({
+      compressImageQuality,
+      maxNumberOfFiles,
+    });
 
-    if (result.cancelled) {
-      return;
+    if (!result.cancelled) {
+      if (result.images) {
+        result.images.forEach((image) => {
+          uploadNewImage(image);
+        });
+      } else {
+        uploadNewImage(result);
+      }
     }
-
-    uploadNewImage(result);
   };
 
   const removeFile = (id) => {
@@ -833,6 +854,8 @@ MessageInput.propTypes = {
     PropTypes.node,
     PropTypes.elementType,
   ]),
+  /** Compress image with quality (from 0 to 1, where 1 is best quality). On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images, while a value of 0.8 will reduce the file size by about half or less compared to a value of 1. Image picker defaults to 0.8 for iOS and 1 for Android */
+  compressImageQuality: PropTypes.number,
   /**
    * Override file upload request
    *

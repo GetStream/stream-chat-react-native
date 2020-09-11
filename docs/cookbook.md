@@ -4,6 +4,8 @@ Cookbook has been moved to [wiki pages](https://github.com/GetStream/stream-chat
 
 This following document is no longer being maintained and will be removed in future.
 
+Disclaimer: information mentioned here is applicable for version 0.x.x and will soon be updated for 1.x.x
+
 ------------------------------------------------------------------------------------------------
 
 - [How to customize message component](#how-to-customize-message-component)
