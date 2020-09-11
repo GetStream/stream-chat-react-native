@@ -1,10 +1,10 @@
 import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Dimensions,
   Keyboard,
   KeyboardEventListener,
   Platform,
   StatusBar,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -29,6 +29,9 @@ export const useKeyboardCompatibleHeight = ({
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const [height, setHeight] = useState(initialHeight);
+
+  const { height: windowHeight } = useWindowDimensions();
+
   const keyboardDidShow: KeyboardEventListener = useCallback(
     (e) => {
       if (!enabled) {
@@ -43,7 +46,6 @@ export const useKeyboardCompatibleHeight = ({
 
       if (rootChannelView && rootChannelView.current) {
         rootChannelView.current.measureInWindow((_, y) => {
-          const { height: windowHeight } = Dimensions.get('window');
           let finalHeight;
 
           if (Platform.OS === 'android') {
@@ -67,7 +69,13 @@ export const useKeyboardCompatibleHeight = ({
         });
       }
     },
-    [enabled, hidingKeyboardInProgress, rootChannelView, setHeight],
+    [
+      enabled,
+      hidingKeyboardInProgress,
+      rootChannelView,
+      setHeight,
+      windowHeight,
+    ],
   );
 
   const keyboardDidHide: KeyboardEventListener = useCallback(() => {
