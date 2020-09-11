@@ -153,7 +153,15 @@ const Chat = <
   useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
-  const { connectionRecovering, isOnline } = useIsOnline({
+  const { connectionRecovering, isOnline } = useIsOnline<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({
     client,
   });
 

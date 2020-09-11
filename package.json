@@ -126,6 +126,7 @@
     "@react-native-community/bob": "^0.16.2",
     "@react-native-community/eslint-config": "2.0.0",
     "@react-native-community/eslint-plugin": "1.1.0",
+    "@react-native-community/netinfo": "^5.9.6",
     "@testing-library/jest-native": "^3.3.0",
     "@testing-library/react-native": "^7.0.1",
     "@types/eslint": "^7.2.0",
