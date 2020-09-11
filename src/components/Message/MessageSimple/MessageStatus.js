@@ -36,8 +36,8 @@ const DeliveredCircle = styled.View`
 `;
 
 const CheckMark = styled.Image`
-  width: 8px;
   height: 6px;
+  width: 8px;
   ${({ theme }) => theme.message.status.checkMark.css};
 `;
 
