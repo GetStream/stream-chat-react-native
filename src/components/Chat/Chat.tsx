@@ -10,11 +10,11 @@ import type {
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
-import { ChatProvider } from '../../contexts/ChatContext';
+import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import {
   TranslationContextValue,
   TranslationProvider,
-} from '../../contexts/TranslationContext';
+} from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 import type { Streami18n } from '../../utils/Streami18n';
 

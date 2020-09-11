@@ -120,7 +120,7 @@ const sections = [
     name: 'Contexts',
     sections: [
       {
-        content: 'src/contexts/ChatContext.md',
+        content: 'src/contexts/chatContext/ChatContext.md',
         name: 'ChatContext',
       },
       {

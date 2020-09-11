@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import type { TranslationContextValue } from '../../../contexts/TranslationContext';
+import type { TranslationContextValue } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 export const useStreami18n = ({
