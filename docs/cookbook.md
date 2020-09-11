@@ -856,7 +856,7 @@ const messageSwipeableStyles = StyleSheet.create({
 
 _**in progress ...**_
 
-## Actionsheet Styling
+## ActionSheet Styling
 
 Internally we use [react-native-actionsheet](https://github.com/beefe/react-native-actionsheet) library. This library supports style customizations.
 But used our own components for header and actionsheet. So some basic styling could be done using theme object (provided to Chat component)
@@ -943,21 +943,93 @@ const actionsheetStyles = {
   },
 };
 
-const MessageSimpleWithCustomActionsheet = props => (
+const MessageSimpleWithActionSheetStyles = (props) => (
   <MessageSimple
     {...props}
     actionsheetStyles={actionsheetStyles} />
   )}
 );
 
-// When you render chat components ...
 <Chat client={chatClient}>
   <Channel>
-    <MessageList Message={MessageSimpleWithCustomActionsheet} />
+    <MessageList Message={MessageSimpleWithActionSheetStyles} />
     <MessageInput/>
   </Channel>
 </Chat>
+```
 
+## Implement a custom action sheet component
+
+While our SDK provides a default action sheet with standard message actions, we allow the ability to override our default behavior and create a custom action sheet component. The custom action sheet, supplied as the `ActionSheet` prop on `MessageSimple` receives the following props:
+
+- `actionSheetRef` - ref for the action sheet
+- `actionSheetStyles` - custom styles
+- `canDeleteMessage` - whether the current user can delete the message
+- `canEditMessage` - whether the current user can edit the message
+- `handleDelete` - deletes the message
+- `handleEdit` - edits the message
+- `messageActions` - the actions to display in the list
+- `openReactionPicker` - opens the reaction picker
+- `openThread` - opens a thread on the message
+- `reactionsEnabled` - whether the current user can react on the message
+- `repliesEnabled` - whether the current user can reply on the message
+- `setActionSheetVisible` - toggles component visibility
+- `threadList` - whether the current message is in a thread
+
+Please note that in order to gain access to the `actionSheetRef` created in the `MessageContent` component, you will need to wrap your custom action sheet component in `React.forwardRef` and pull off the ref as your component's second argument. Then you can add `actionSheetRef` as the `ref` prop in the return of your custom component.
+
+```js
+import React from 'react';
+import { Chat, Channel, MessageList, MessageInput, MessageSimple } from 'stream-chat-react-native';
+
+const CustomActionSheet = React.forwardRef((props, actionSheetRef) => {
+  const {
+      actionSheetStyles,
+      canDeleteMessage,
+      canEditMessage,
+      handleDelete,
+      handleEdit,
+      messageActions,
+      openReactionPicker,
+      openThread,
+      reactionsEnabled,
+      repliesEnabled,
+      setActionSheetVisible,
+      threadList,
+    } = props;
+
+    // perform logic/add custom methods here
+
+    return (
+      // render custom JSX here
+      // add ref={actionSheetRef} to your component
+    );
+});
+
+const customActionSheetStyles = {
+  // add custom styles here, see above examples
+};
+
+const customMessageActions = [
+  // add custom actions here, e.g. 'edit', 'delete', 'hide', 'react'
+];
+
+const MessageSimpleWithCustomActionSheet = (props) => (
+    <MessageSimple
+      {...props}
+      ActionSheet={CustomActionSheet}
+      actionsheetStyles={customActionSheetStyles} 
+      messageActions={customMessageActions}
+    />
+  )}
+);
+
+<Chat client={chatClient}>
+  <Channel>
+    <MessageList Message={MessageSimpleWithCustomActionSheet} />
+    <MessageInput/>
+  </Channel>
+</Chat>
 ```
 
 ## Keyboard
