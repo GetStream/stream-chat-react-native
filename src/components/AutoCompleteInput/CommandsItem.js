@@ -13,7 +13,6 @@ const CommandDescription = styled.Text`
 `;
 
 const Container = styled.View`
-  flex-direction: column;
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.command.container.css}
 `;

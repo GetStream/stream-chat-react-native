@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 import PropTypes from 'prop-types';
 
@@ -8,6 +9,8 @@ import { useStreami18n } from './hooks/useStreami18n';
 import { ChatContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 import { Streami18n } from '../../utils/Streami18n';
+
+import { version } from '../../../package.json';
 
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
@@ -42,6 +45,10 @@ const Chat = (props) => {
   const { connectionRecovering, isOnline } = useIsOnline({
     client,
   });
+
+  useEffect(() => {
+    client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+  }, []);
 
   const setActiveChannel = (channel) => setChannel(channel);
 

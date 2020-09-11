@@ -57,7 +57,7 @@ describe('Thread', () => {
     await channel.query();
     let openThread;
 
-    const { getByText, getAllByText, rerender, queryByText } = render(
+    const { getAllByText, getByText, queryByText, rerender } = render(
       <Chat client={chatClient}>
         <TranslationContext.Provider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread}>

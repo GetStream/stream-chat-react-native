@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import DefaultDateSeparator from './DateSeparator';
 import MessageNotification from './MessageNotification';
-import MessageSystem from './MessageSystem';
+import DefaultMessageSystem from './MessageSystem';
 import DefaultTypingIndicator from './TypingIndicator';
 import TypingIndicatorContainer from './TypingIndicatorContainer';
 
@@ -38,8 +38,6 @@ const ErrorNotificationText = styled.Text`
 `;
 
 const ErrorNotification = styled.View`
-  display: flex;
-  flex-direction: column;
   align-items: center;
   z-index: 10;
   margin-bottom: 0;
@@ -50,8 +48,13 @@ const ErrorNotification = styled.View`
 `;
 
 /**
- * MessageList - The message list component renders a list of messages.
- * Its a consumer of [Channel Context](https://getstream.github.io/stream-chat-react-native/#channel)
+ * The message list component renders a list of messages. It consumes the following contexts:
+ *
+ * [ChannelContext](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+ * [ChatContext](https://getstream.github.io/stream-chat-react-native/#chatcontext)
+ * [MessagesContext](https://getstream.github.io/stream-chat-react-native/#messagescontext)
+ * [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext)
+ * [TranslationContext](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
  * @example ../docs/MessageList.md
  */
@@ -62,46 +65,40 @@ const MessageList = (props) => {
     AttachmentFileIcon,
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
-    dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
     Message: MessageFromProps,
+    MessageSystem = DefaultMessageSystem,
     messageActions,
     noGroupByUser,
-    onMessageTouch,
     onThreadSelect,
     setFlatListRef,
     threadList,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
-  const { t } = useContext(TranslationContext);
-  const { client, isOnline } = useContext(ChatContext);
-  const {
-    Attachment,
-    clearEditingState,
-    editing,
-    emojiData,
-    loadMore: mainLoadMore,
-    Message: MessageFromChannelContext,
-    removeMessage,
-    retrySendMessage,
-    setEditingState,
-    updateMessage,
-  } = useContext(MessagesContext);
-  const Message = MessageFromProps || MessageFromChannelContext;
-  const { loadMoreThread, openThread } = useContext(ThreadContext);
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
   );
+  const { client, isOnline } = useContext(ChatContext);
+  const {
+    clearEditingState,
+    editing,
+    loadMore: mainLoadMore,
+    Message: MessageFromContext,
+  } = useContext(MessagesContext);
+  const { loadMoreThread } = useContext(ThreadContext);
+  const { t } = useContext(TranslationContext);
+
+  const Message = MessageFromProps || MessageFromContext;
   const messageList = useMessageList({ noGroupByUser, threadList });
 
   const flatListRef = useRef();
   const yOffset = useRef(0);
 
-  const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
+  const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
@@ -131,7 +128,7 @@ const MessageList = (props) => {
     }
   }, [messageList]);
 
-  const loadMore = threadList ? mainLoadMore : loadMoreThread;
+  const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
   const renderItem = ({ item: message }) => {
     if (message.type === 'message.date') {
@@ -142,28 +139,15 @@ const MessageList = (props) => {
       return (
         <DefaultMessage
           actionSheetStyles={actionSheetStyles}
-          Attachment={Attachment}
           AttachmentFileIcon={AttachmentFileIcon}
-          channel={channel}
-          client={client}
-          disabled={disabled}
-          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
-          editing={editing}
-          emojiData={emojiData}
           groupStyles={message.groupStyles}
           lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
-          message={message}
           Message={Message}
+          message={message}
           messageActions={messageActions}
-          onMessageTouch={onMessageTouch}
           onThreadSelect={onThreadSelect}
-          openThread={openThread}
-          readBy={message.readBy}
-          removeMessage={removeMessage}
-          retrySendMessage={retrySendMessage}
-          setEditingState={setEditingState}
+          readBy={message.readBy || []}
           threadList={threadList}
-          updateMessage={updateMessage}
         />
       );
     }
@@ -191,8 +175,10 @@ const MessageList = (props) => {
     if (!threadList) markRead();
   };
 
-  // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
-  // https://github.com/facebook/react-native/issues/21196
+  /**
+   * We can't provide ListEmptyComponent to FlatList when inverted flag is set.
+   * https://github.com/facebook/react-native/issues/21196
+   */
   if (messageList?.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
@@ -209,6 +195,7 @@ const MessageList = (props) => {
       >
         <ListContainer
           data={messageList}
+          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
           inverted
           keyboardShouldPersistTaps='always'
@@ -225,7 +212,6 @@ const MessageList = (props) => {
           }}
           onEndReached={loadMore}
           onScroll={handleScroll}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           ref={(fl) => {
             flatListRef.current = fl;
             setFlatListRef && setFlatListRef(fl);
@@ -274,13 +260,13 @@ const MessageList = (props) => {
 
 MessageList.propTypes = {
   /**
-   * Style object for actionsheet (used to message actions).
+   * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
   actionSheetStyles: PropTypes.object,
   /**
    * Besides existing (default) UX behaviour of underlying flatlist of MessageList component, if you want
-   * to attach some additional props to un derlying flatlist, you can add it to following prop.
+   * to attach some additional props to underlying flatlist, you can add it to following prop.
    *
    * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
    *
@@ -312,8 +298,6 @@ MessageList.propTypes = {
    * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    * */
-  /** Should keyboard be dismissed when messaged is touched */
-  dismissKeyboardOnMessageTouch: PropTypes.bool,
   /**
    * UI component for header of message list. By default message list doesn't have any header.
    * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -321,20 +305,22 @@ MessageList.propTypes = {
    *
    */
   HeaderComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
+  /**
+   * Custom UI component to display a system message
+   * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
+   */
+  MessageSystem: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * Boolean weather current message list is a thread.
    */
   /** Turn off grouping of messages by user */
   noGroupByUser: PropTypes.bool,
-  /**
-   * Callback for onPress event on Message component
-   *
-   * @param e       Event object for onPress event
-   * @param message Message object which was pressed
-   *
-   * */
-  onMessageTouch: PropTypes.func,
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
@@ -353,6 +339,7 @@ MessageList.propTypes = {
    * ```
    */
   setFlatListRef: PropTypes.func,
+  /** Whether or not the MessageList is part of a Thread */
   threadList: PropTypes.bool,
   /**
    * Typing indicator UI component to render

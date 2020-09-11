@@ -15,11 +15,11 @@ const Container = styled.View`
 const ActionButton = styled(({ buttonStyle, ...rest }) => (
   <TouchableOpacity {...rest} />
 ))`
-  background-color: ${({ theme, buttonStyle }) =>
+  background-color: ${({ buttonStyle, theme }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.button.primaryBackgroundColor
       : theme.message.actions.button.defaultBackgroundColor};
-  border-color: ${({ theme, buttonStyle }) =>
+  border-color: ${({ buttonStyle, theme }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.button.primaryBorderColor
       : theme.message.actions.button.defaultBorderColor};
@@ -33,7 +33,7 @@ const ActionButton = styled(({ buttonStyle, ...rest }) => (
 const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
   <Text {...rest} />
 ))`
-  color: ${({ theme, buttonStyle }) =>
+  color: ${({ buttonStyle, theme }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.buttonText.primaryColor
       : theme.message.actions.buttonText.defaultColor};
@@ -46,7 +46,7 @@ const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
  *
  * @example ../docs/AttachmentActions.md
  */
-const AttachmentActions = ({ actions, actionHandler, id }) => (
+const AttachmentActions = ({ actionHandler, actions, id }) => (
   <Container testID='attachment-actions'>
     {actions.map((action) => (
       <ActionButton

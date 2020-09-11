@@ -7,8 +7,6 @@ import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 27px;

@@ -203,7 +203,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -217,6 +217,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -226,13 +227,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 30,
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -244,6 +245,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -296,8 +298,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -307,6 +307,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -324,6 +325,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -352,13 +354,12 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -406,6 +407,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -422,257 +424,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         2:50 PM
                       </Text>
                     </View>
-                    <Modal
-                      animationType="none"
-                      hardwareAccelerated={false}
-                      onRequestClose={[Function]}
-                      transparent={true}
-                      visible={false}
-                    >
-                      <View
-                        style={
-                          Array [
-                            Array [
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              },
-                            ],
-                          ]
-                        }
-                      >
-                        <Text
-                          onPress={[Function]}
-                          style={
-                            Array [
-                              Array [
-                                Object {
-                                  "backgroundColor": "#000",
-                                  "bottom": 0,
-                                  "left": 0,
-                                  "opacity": 0.4,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                },
-                              ],
-                            ]
-                          }
-                        />
-                        <View
-                          style={
-                            Object {
-                              "alignSelf": "flex-end",
-                              "backgroundColor": "#e5e5e5",
-                              "flex": 1,
-                              "height": 197,
-                              "transform": Array [
-                                Object {
-                                  "translateY": 197,
-                                },
-                              ],
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 40,
-                                  "justifyContent": "center",
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": "100%",
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#757575",
-                                      "fontSize": 14,
-                                    },
-                                  ]
-                                }
-                              >
-                                Choose an action
-                              </Text>
-                            </View>
-                          </View>
-                          <RCTScrollView
-                            scrollEnabled={false}
-                          >
-                            <View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Reply
-                                  </Text>
-                                </View>
-                              </View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Add Reaction
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </RCTScrollView>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            isTVSelectable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 50,
-                                  "justifyContent": "center",
-                                  "marginTop": 6,
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": 50,
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                  null,
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "red",
-                                      "fontSize": 18,
-                                    },
-                                  ]
-                                }
-                              >
-                                Cancel
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                    </Modal>
                   </View>
                 </View>
               </View>
@@ -699,7 +450,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
                       "marginBottom": 20,
@@ -785,7 +535,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -799,6 +549,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -808,13 +559,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -826,6 +577,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -878,8 +630,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -889,6 +639,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -906,6 +657,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -934,13 +686,12 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -988,6 +739,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -1004,257 +756,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         2:49 PM
                       </Text>
                     </View>
-                    <Modal
-                      animationType="none"
-                      hardwareAccelerated={false}
-                      onRequestClose={[Function]}
-                      transparent={true}
-                      visible={false}
-                    >
-                      <View
-                        style={
-                          Array [
-                            Array [
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              },
-                            ],
-                          ]
-                        }
-                      >
-                        <Text
-                          onPress={[Function]}
-                          style={
-                            Array [
-                              Array [
-                                Object {
-                                  "backgroundColor": "#000",
-                                  "bottom": 0,
-                                  "left": 0,
-                                  "opacity": 0.4,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                },
-                              ],
-                            ]
-                          }
-                        />
-                        <View
-                          style={
-                            Object {
-                              "alignSelf": "flex-end",
-                              "backgroundColor": "#e5e5e5",
-                              "flex": 1,
-                              "height": 197,
-                              "transform": Array [
-                                Object {
-                                  "translateY": 197,
-                                },
-                              ],
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 40,
-                                  "justifyContent": "center",
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": "100%",
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#757575",
-                                      "fontSize": 14,
-                                    },
-                                  ]
-                                }
-                              >
-                                Choose an action
-                              </Text>
-                            </View>
-                          </View>
-                          <RCTScrollView
-                            scrollEnabled={false}
-                          >
-                            <View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Reply
-                                  </Text>
-                                </View>
-                              </View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Add Reaction
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </RCTScrollView>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            isTVSelectable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 50,
-                                  "justifyContent": "center",
-                                  "marginTop": 6,
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": 50,
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                  null,
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "red",
-                                      "fontSize": 18,
-                                    },
-                                  ]
-                                }
-                              >
-                                Cancel
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                    </Modal>
                   </View>
                 </View>
               </View>
@@ -1278,7 +779,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
             >
               <View
                 accessible={true}
-                focusable={true}
+                focusable={false}
                 isTVSelectable={true}
                 onClick={[Function]}
                 onResponderGrant={[Function]}
@@ -1292,6 +793,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     "opacity": 1,
                   }
                 }
+                testID="message-wrapper"
               >
                 <View
                   alignment="left"
@@ -1301,13 +803,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                     Array [
                       Object {
                         "alignItems": "flex-end",
-                        "display": "flex",
                         "flexDirection": "row",
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
                     ]
                   }
+                  testID="message-simple-wrapper"
                 >
                   <View
                     alignment="left"
@@ -1319,6 +821,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         },
                       ]
                     }
+                    testID="message-avatar"
                   >
                     <View
                       style={
@@ -1371,8 +874,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "borderBottomRightRadius": 16,
                         "borderTopLeftRadius": 16,
                         "borderTopRightRadius": 16,
-                        "display": "flex",
-                        "flexDirection": "column",
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
@@ -1382,6 +883,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "paddingTop": 0,
                       }
                     }
+                    testID="message-content-wrapper"
                   >
                     <View
                       accessible={true}
@@ -1399,6 +901,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 1,
                         }
                       }
+                      testID="reaction-picker-wrapper"
                     />
                     <View
                       alignment="left"
@@ -1427,13 +930,12 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "borderTopRightRadius": 16,
                               "borderWidth": 0.5,
                               "marginTop": 2,
-                              "paddingBottom": 5,
-                              "paddingLeft": 8,
-                              "paddingRight": 8,
-                              "paddingTop": 5,
+                              "paddingHorizontal": 8,
+                              "paddingVertical": 5,
                             },
                           ]
                         }
+                        testID="message-text-container"
                         type="regular"
                       >
                         <View
@@ -1481,6 +983,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           },
                         ]
                       }
+                      testID="show-time"
                     >
                       <Text
                         alignment="left"
@@ -1497,257 +1000,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         2:48 PM
                       </Text>
                     </View>
-                    <Modal
-                      animationType="none"
-                      hardwareAccelerated={false}
-                      onRequestClose={[Function]}
-                      transparent={true}
-                      visible={false}
-                    >
-                      <View
-                        style={
-                          Array [
-                            Array [
-                              Object {
-                                "flex": 1,
-                                "flexDirection": "row",
-                              },
-                            ],
-                          ]
-                        }
-                      >
-                        <Text
-                          onPress={[Function]}
-                          style={
-                            Array [
-                              Array [
-                                Object {
-                                  "backgroundColor": "#000",
-                                  "bottom": 0,
-                                  "left": 0,
-                                  "opacity": 0.4,
-                                  "position": "absolute",
-                                  "right": 0,
-                                  "top": 0,
-                                },
-                              ],
-                            ]
-                          }
-                        />
-                        <View
-                          style={
-                            Object {
-                              "alignSelf": "flex-end",
-                              "backgroundColor": "#e5e5e5",
-                              "flex": 1,
-                              "height": 197,
-                              "transform": Array [
-                                Object {
-                                  "translateY": 197,
-                                },
-                              ],
-                            }
-                          }
-                        >
-                          <View
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 40,
-                                  "justifyContent": "center",
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": "100%",
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "#757575",
-                                      "fontSize": 14,
-                                    },
-                                  ]
-                                }
-                              >
-                                Choose an action
-                              </Text>
-                            </View>
-                          </View>
-                          <RCTScrollView
-                            scrollEnabled={false}
-                          >
-                            <View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Reply
-                                  </Text>
-                                </View>
-                              </View>
-                              <View
-                                accessible={true}
-                                focusable={true}
-                                isTVSelectable={true}
-                                onClick={[Function]}
-                                onResponderGrant={[Function]}
-                                onResponderMove={[Function]}
-                                onResponderRelease={[Function]}
-                                onResponderTerminate={[Function]}
-                                onResponderTerminationRequest={[Function]}
-                                onStartShouldSetResponder={[Function]}
-                                style={
-                                  Array [
-                                    Object {
-                                      "alignItems": "center",
-                                      "backgroundColor": "#fff",
-                                      "height": 50,
-                                      "justifyContent": "center",
-                                      "marginTop": 0.5,
-                                    },
-                                  ]
-                                }
-                              >
-                                <View
-                                  style={
-                                    Array [
-                                      Object {
-                                        "alignItems": "center",
-                                        "backgroundColor": "#fff",
-                                        "height": 50,
-                                        "justifyContent": "center",
-                                        "width": "100%",
-                                      },
-                                      null,
-                                    ]
-                                  }
-                                >
-                                  <Text
-                                    style={
-                                      Array [
-                                        Object {
-                                          "color": "#388cea",
-                                          "fontSize": 18,
-                                        },
-                                      ]
-                                    }
-                                  >
-                                    Add Reaction
-                                  </Text>
-                                </View>
-                              </View>
-                            </View>
-                          </RCTScrollView>
-                          <View
-                            accessible={true}
-                            focusable={true}
-                            isTVSelectable={true}
-                            onClick={[Function]}
-                            onResponderGrant={[Function]}
-                            onResponderMove={[Function]}
-                            onResponderRelease={[Function]}
-                            onResponderTerminate={[Function]}
-                            onResponderTerminationRequest={[Function]}
-                            onStartShouldSetResponder={[Function]}
-                            style={
-                              Array [
-                                Object {
-                                  "alignItems": "center",
-                                  "backgroundColor": "#fff",
-                                  "height": 50,
-                                  "justifyContent": "center",
-                                  "marginTop": 6,
-                                },
-                              ]
-                            }
-                          >
-                            <View
-                              style={
-                                Array [
-                                  Object {
-                                    "alignItems": "center",
-                                    "height": 50,
-                                    "justifyContent": "center",
-                                    "width": "100%",
-                                  },
-                                  null,
-                                ]
-                              }
-                            >
-                              <Text
-                                style={
-                                  Array [
-                                    Object {
-                                      "color": "red",
-                                      "fontSize": 18,
-                                    },
-                                  ]
-                                }
-                              >
-                                Cancel
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      </View>
-                    </Modal>
                   </View>
                 </View>
               </View>
@@ -1774,7 +1026,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "display": "flex",
                       "flexDirection": "row",
                       "justifyContent": "center",
                       "marginBottom": 20,
