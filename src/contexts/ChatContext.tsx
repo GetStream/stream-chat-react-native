@@ -75,7 +75,7 @@ export const ChatProvider = <
     CommandType
   >;
 }>) => (
-  <ChatContext.Provider value={value as ChatContextValue}>
+  <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
     {children}
   </ChatContext.Provider>
 );
@@ -89,7 +89,7 @@ export const useChatContext = <
   EventType extends UnknownType = UnknownType,
   CommandType extends string = LiteralStringForUnion
 >() =>
-  useContext(ChatContext) as ChatContextValue<
+  (useContext(ChatContext) as unknown) as ChatContextValue<
     ChannelType,
     UserType,
     MessageType,
