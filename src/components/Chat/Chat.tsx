@@ -107,7 +107,7 @@ type Props<
  *
  * It also exposes the withChatContext HOC which you can use to consume the ChatContext
  *
- * @example ../docs/Chat.md
+ * @example ./Chat.md
  */
 const Chat = <
   ChannelType extends UnknownType = UnknownType,
