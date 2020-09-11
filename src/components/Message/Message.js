@@ -273,11 +273,6 @@ DefaultMessage.propTypes = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object.isRequired,
   /**
-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
-   * */
-  messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
-  /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
    * @param message A message object to open the thread upon.
