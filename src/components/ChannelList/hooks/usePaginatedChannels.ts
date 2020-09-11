@@ -1,36 +1,29 @@
 import { useEffect, useState } from 'react';
+import { useChatContext } from '../../../contexts/ChatContext';
 import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
   LiteralStringForUnion,
-  StreamChat,
   UnknownType,
 } from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms: number) => {
+const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-};
 
-type ChannelsInput<
+type Parameters<
   ChannelType extends UnknownType = UnknownType,
   UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  EventType extends UnknownType = UnknownType,
   CommandType extends string = LiteralStringForUnion
 > = {
-  client: StreamChat<
-    ChannelType,
-    UserType,
-    MessageType,
-    AttachmentType,
-    ReactionType,
-    EventType,
-    CommandType
-  >;
+  filters: ChannelFilters<ChannelType, UserType, CommandType>;
+  options: ChannelOptions;
+  sort: ChannelSort<ChannelType>;
 };
 
 export const usePaginatedChannels = <
@@ -42,20 +35,31 @@ export const usePaginatedChannels = <
   EventType extends UnknownType = UnknownType,
   CommandType extends string = LiteralStringForUnion
 >({
-  client,
   filters = {},
   options = {},
   sort = {},
-}: ChannelsInput<
-  ChannelType,
-  UserType,
-  MessageType,
-  AttachmentType,
-  ReactionType,
-  EventType,
-  CommandType
->) => {
-  const [channels, setChannels] = useState([]);
+}: Parameters<ChannelType, UserType, CommandType>) => {
+  const { client } = useChatContext<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >();
+
+  const [channels, setChannels] = useState<
+    Channel<
+      AttachmentType,
+      ChannelType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType,
+      CommandType
+    >[]
+  >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loadingChannels, setLoadingChannels] = useState(false);
@@ -63,7 +67,10 @@ export const usePaginatedChannels = <
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (queryType = '', retryCount = 0) => {
+  const queryChannels = async (
+    queryType = '',
+    retryCount = 0,
+  ): Promise<void> => {
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
@@ -119,6 +126,7 @@ export const usePaginatedChannels = <
 
   const loadNextPage = () => {
     if (hasNextPage) return queryChannels();
+    return null;
   };
   const refreshList = () => queryChannels('refresh');
   const reloadList = () => queryChannels('reload');

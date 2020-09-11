@@ -27,8 +27,8 @@ const RetryText = styled.Text`
 type Props = {
   listType: 'channel' | 'message' | 'default';
   error?: boolean;
-  loadNextPage?: () => void;
-  retry?: () => void;
+  loadNextPage?: () => Promise<void> | null;
+  retry?: () => Promise<void>;
 };
 
 const LoadingErrorIndicator: React.FC<Props> & { themePath: string } = ({

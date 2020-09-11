@@ -1,6 +1,15 @@
 import React, { PropsWithChildren, useRef, useState } from 'react';
 import type { FlatList, FlatListProps } from 'react-native';
 import PropTypes from 'prop-types';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  Event,
+  LiteralStringForUnion,
+  UnknownType,
+} from 'stream-chat';
 
 import ChannelListMessenger from './ChannelListMessenger';
 
@@ -15,9 +24,6 @@ import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotifi
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
-
-import { useChatContext } from '../../contexts/ChatContext';
-import type { Channel, LiteralStringForUnion, UnknownType } from 'stream-chat';
 
 type Props<
   ChannelType extends UnknownType = UnknownType,
@@ -39,7 +45,34 @@ type Props<
       CommandType
     >
   >;
+  filters: ChannelFilters<ChannelType, UserType, CommandType>;
   lockChannelOrder: boolean;
+  onAddedToChannel: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType,
+          CommandType
+        >[]
+      >
+    >,
+    e: Event<
+      EventType,
+      AttachmentType,
+      ChannelType,
+      MessageType,
+      ReactionType,
+      UserType,
+      CommandType
+    >,
+  ) => void;
+  options: ChannelOptions;
+  sort: ChannelSort<ChannelType>;
 };
 
 /**
@@ -58,7 +91,17 @@ const ChannelList = <
   EventType extends UnknownType = UnknownType,
   CommandType extends string = LiteralStringForUnion
 >(
-  props: PropsWithChildren<Props>,
+  props: PropsWithChildren<
+    Props<
+      ChannelType,
+      UserType,
+      MessageType,
+      AttachmentType,
+      ReactionType,
+      EventType,
+      CommandType
+    >
+  >,
 ) => {
   const {
     List = ChannelListMessenger,
@@ -77,15 +120,6 @@ const ChannelList = <
     sort = {},
   } = props;
 
-  const { client } = useChatContext<
-    ChannelType,
-    UserType,
-    MessageType,
-    AttachmentType,
-    ReactionType,
-    EventType,
-    CommandType
-  >();
   const listRef = useRef<FlatList>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
 
@@ -106,23 +140,111 @@ const ChannelList = <
     EventType,
     CommandType
   >({
-    client,
     filters,
     options,
     sort,
   });
 
   // Setup event listeners
-  useAddedToChannelNotification({ onAddedToChannel, setChannels });
-  useChannelDeleted({ onChannelDeleted, setChannels });
-  useChannelHidden({ onChannelHidden, setChannels });
-  useChannelTruncated({ onChannelTruncated, setChannels, setForceUpdate });
-  useChannelUpdated({ onChannelUpdated, setChannels });
-  useConnectionRecovered({ setForceUpdate });
-  useNewMessage({ lockChannelOrder, setChannels });
-  useNewMessageNotification({ onMessageNew, setChannels });
-  useRemovedFromChannelNotification({ onRemovedFromChannel, setChannels });
-  useUserPresence({ setChannels });
+  useAddedToChannelNotification<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onAddedToChannel, setChannels });
+
+  useChannelDeleted<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onChannelDeleted, setChannels });
+
+  useChannelHidden<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onChannelHidden, setChannels });
+
+  useChannelTruncated<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onChannelTruncated, setChannels, setForceUpdate });
+
+  useChannelUpdated<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onChannelUpdated, setChannels });
+
+  useConnectionRecovered<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ setForceUpdate });
+
+  useNewMessage<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ lockChannelOrder, setChannels });
+
+  useNewMessageNotification<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onMessageNew, setChannels });
+
+  useRemovedFromChannelNotification<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ onRemovedFromChannel, setChannels });
+
+  useUserPresence<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({ setChannels });
 
   return (
     <List
