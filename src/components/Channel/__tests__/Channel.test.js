@@ -305,7 +305,7 @@ describe('Channel', () => {
       ({ messages: contextMessages, removeMessage }) => {
         if (contextMessages.length > 0) {
           // if there are messages passed as the context, remove them
-          removeMessage(contextMessages[0]);
+          removeMessage({ id: contextMessages[0].id });
         } else {
           // once they're all gone, set to true so we can verify that we no longer have messages
           allMessagesRemoved = true;
@@ -315,7 +315,7 @@ describe('Channel', () => {
     );
 
     await waitFor(() => {
-      expect(removeSpy).toHaveBeenCalledWith(messages[0]);
+      expect(removeSpy).toHaveBeenCalledWith({ id: messages[0].id });
       expect(allMessagesRemoved).toBe(true);
     });
   });
