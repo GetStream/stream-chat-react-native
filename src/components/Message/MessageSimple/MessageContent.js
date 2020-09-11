@@ -378,6 +378,9 @@ const MessageContentWithContext = React.memo((props) => {
 
 MessageContentWithContext.displayName = 'message.contentWithContext';
 
+/**
+ * Child of MessageSimple that displays a message's content.
+ */
 const MessageContent = (props) => {
   const { disabled } = useContext(ChannelContext);
   const {
