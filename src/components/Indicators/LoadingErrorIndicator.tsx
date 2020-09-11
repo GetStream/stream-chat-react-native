@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
@@ -35,7 +35,7 @@ const LoadingErrorIndicator: React.FC<Props> & { themePath: string } = ({
   listType,
   retry = () => null,
 }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   switch (listType) {
     case 'channel':

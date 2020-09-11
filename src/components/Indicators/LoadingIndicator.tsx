@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import Spinner from '../Spinner/Spinner';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
@@ -33,7 +33,7 @@ const LoadingIndicator: React.FC<Props> & { themePath: string } = ({
   listType,
   loadingText,
 }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
   let indicatorText = '';
 
   switch (listType) {
