@@ -1,4 +1,5 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { PropsWithChildren, useRef, useState } from 'react';
+import type { FlatList, FlatListProps } from 'react-native';
 import PropTypes from 'prop-types';
 
 import ChannelListMessenger from './ChannelListMessenger';
@@ -15,7 +16,31 @@ import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
-import { ChatContext } from '../../context';
+import { useChatContext } from '../../contexts/ChatContext';
+import type { Channel, LiteralStringForUnion, UnknownType } from 'stream-chat';
+
+type Props<
+  ChannelType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType,
+  MessageType extends UnknownType = UnknownType,
+  AttachmentType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  EventType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion
+> = {
+  additionalFlatListProps: FlatListProps<
+    Channel<
+      ChannelType,
+      UserType,
+      MessageType,
+      AttachmentType,
+      ReactionType,
+      EventType,
+      CommandType
+    >
+  >;
+  lockChannelOrder: boolean;
+};
 
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
@@ -24,7 +49,17 @@ import { ChatContext } from '../../context';
  *
  * @example ../docs/ChannelList.md
  */
-const ChannelList = (props) => {
+const ChannelList = <
+  ChannelType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType,
+  MessageType extends UnknownType = UnknownType,
+  AttachmentType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  EventType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion
+>(
+  props: PropsWithChildren<Props>,
+) => {
   const {
     List = ChannelListMessenger,
     filters = {},
@@ -42,8 +77,16 @@ const ChannelList = (props) => {
     sort = {},
   } = props;
 
-  const { client } = useContext(ChatContext);
-  const listRef = useRef(null);
+  const { client } = useChatContext<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >();
+  const listRef = useRef<FlatList>(null);
   const [forceUpdate, setForceUpdate] = useState(0);
 
   const {
@@ -54,7 +97,15 @@ const ChannelList = (props) => {
     reloadList,
     setChannels,
     status,
-  } = usePaginatedChannels({
+  } = usePaginatedChannels<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >({
     client,
     filters,
     options,

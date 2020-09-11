@@ -1,19 +1,60 @@
 import { useEffect, useState } from 'react';
+import type {
+  LiteralStringForUnion,
+  StreamChat,
+  UnknownType,
+} from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms) => {
+const wait = (ms: number) => {
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
 };
 
-export const usePaginatedChannels = ({
+type ChannelsInput<
+  ChannelType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType,
+  MessageType extends UnknownType = UnknownType,
+  AttachmentType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  EventType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion
+> = {
+  client: StreamChat<
+    ChannelType,
+    UserType,
+    MessageType,
+    AttachmentType,
+    ReactionType,
+    EventType,
+    CommandType
+  >;
+};
+
+export const usePaginatedChannels = <
+  ChannelType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType,
+  MessageType extends UnknownType = UnknownType,
+  AttachmentType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  EventType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion
+>({
   client,
   filters = {},
   options = {},
   sort = {},
-}) => {
+}: ChannelsInput<
+  ChannelType,
+  UserType,
+  MessageType,
+  AttachmentType,
+  ReactionType,
+  EventType,
+  CommandType
+>) => {
   const [channels, setChannels] = useState([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
