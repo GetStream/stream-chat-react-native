@@ -23,7 +23,7 @@ export type ChatContextValue<
     ReactionType,
     EventType,
     CommandType
-  > | null;
+  >;
   connectionRecovering: boolean;
   isOnline: boolean;
   logger: (message?: string | undefined) => void;
@@ -49,9 +49,7 @@ export type ChatContextValue<
   >;
 };
 
-export const ChatContext = React.createContext({
-  client: null,
-} as ChatContextValue);
+export const ChatContext = React.createContext({} as ChatContextValue);
 
 export const ChatProvider = <
   ChannelType extends UnknownType = UnknownType,
