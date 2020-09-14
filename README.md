@@ -135,21 +135,6 @@ The React Native components are created using the stream-chat-js library. If you
 
 2. Minor releases may come with some breaking changes, so always check the release notes before upgrading the minor version.
 
-Library currently exposes the following components:
-
-1. Avatar
-2. Chat
-3. Channel
-4. MessageList
-5. TypingIndicator
-6. MessageInput
-7. MessageSimple
-8. ChannelList
-9. Thread
-10. ChannelPreviewMessenger
-11. CloseButton
-12. IconBadge
-
 You can see detailed documentation about the components at https://getstream.github.io/stream-chat-react-native
 
 ## Setup (Setting up a chat app)
@@ -200,30 +185,23 @@ yarn add stream-chat-react-native
 # For React native <= 0.58.x - use @react-native-community/netinfo@2.0.7
 yarn add @react-native-community/netinfo@3.2.1
 
-# https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
-yarn add react-native-image-picker@0.28.1
+# https://github.com/ivpusic/react-native-image-crop-picker#important-note
+yarn add react-native-image-crop-picker@0.25.0
 yarn add react-native-document-picker
 
 react-native link @react-native-community/netinfo
 
 # if you are planning to use image picker or file picker or both
-react-native link react-native-image-picker
+react-native link react-native-image-crop-picker
 react-native link react-native-document-picker
 
 ```
 
 Please check the [example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/NativeMessaging/App.js) to see the usage of these components.
 
-OR you can swap this file for your `App.js` in the root folder by following these additional steps:
+OR you can swap this file for your `App.js` in the root folder and follow this guide for your installed version https://reactnavigation.org/docs/getting-started#installing-dependencies-into-a-bare-react-native-project
 
-```bash
-yarn add react-navigation@3.11.0
-yarn add react-native-gesture-handler@1.3.0 react-native-reanimated
-react-native link react-native-gesture-handler
-react-native link react-native-reanimated
-```
-
-If you are planning to use the image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+If you are planning to use the image crop picker, there are some additional steps to be done. You can find them here - https://github.com/ivpusic/react-native-image-crop-picker/blob/v0.25.0/README.md#install
 
 If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
 
@@ -239,7 +217,7 @@ react-native run-ios
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
-yarn add @react-native-community/netinfo react-native-image-picker react-native-document-picker
+yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker
 cd ios && pod install && cd ..
 
 ```
@@ -248,19 +226,18 @@ Just to be sure, please verify you are using the appropriate version of the foll
 
 - netinfo : https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
 
-- react-native-image-picker : https://github.com/react-native-community/react-native-image-picker#react-native-compatibility
+- react-native-image-crop-picker : https://github.com/ivpusic/react-native-image-crop-picker#important-note
 
 Please check the [example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/NativeMessaging/App.js) to see the usage of components.
 
 OR you can swap this file for your `App.js` in the root folder by following these additional steps:
 
 ```bash
-yarn add react-navigation@3.11.0
-yarn add react-native-gesture-handler react-native-reanimated
+yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens
 cd ios && pod install && cd ..
 ```
 
-If you are planning to use an image picker, there are some additional steps to be done. You can find them here - https://github.com/react-native-community/react-native-image-picker/blob/master/docs/Install.md
+If you are planning to use an image crop picker, there are some additional steps to be done. You can find them here - https://github.com/ivpusic/react-native-image-crop-picker#install
 
 If you are planning to use file/document picker, you need to enable iCloud capability in your app - https://github.com/Elyx0/react-native-document-picker#reminder
 
@@ -269,7 +246,7 @@ and finally
 **iOS**:
 
 ```bash
-react-native run-ios
+npx react-native run-ios
 ```
 
 **Note for Android**:
@@ -287,6 +264,9 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 ![Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
 
 ## Upgrade
+
+- Upgrade from 1.2.x to 1.3.x:
+  - 1.3.x replaced native dependency support for react-native-image-picker in favor of react-native-image-crop-picker for multi-image selection capabilities
 
 - Upgrade from 0.1.x to 0.2.x:
 
@@ -343,7 +323,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
    To resolve this, do the following.
 
-   1. Craete a file named `local.properties` inside `stream-chat-react-native/examples/NativeMessaging/android` directory
+   1. Create a file named `local.properties` inside `stream-chat-react-native/examples/NativeMessaging/android` directory
    2. Put the this line in that file. Make sure sdk path is correctly mentioned as per your system:
       ```
       sdk.dir=/Users/{user_name}/Library/Android/sdk/

@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 import type {
   Channel,
@@ -17,6 +18,8 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 import type { Streami18n } from '../../utils/Streami18n';
+
+import { version } from '../../../package.json';
 
 type Props<
   ChannelType extends UnknownType = UnknownType,
@@ -163,6 +166,10 @@ const Chat = <
   >({
     client,
   });
+
+  useEffect(() => {
+    client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+  }, []);
 
   const setActiveChannel = (
     newChannel?: Channel<

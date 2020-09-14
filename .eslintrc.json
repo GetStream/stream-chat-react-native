@@ -16,10 +16,16 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["babel", "markdown"],
+  "plugins": [
+    "babel",
+    "markdown",
+    "better-styled-components",
+    "sort-destructure-keys"
+  ],
   "rules": {
     "array-callback-return": 2,
     "arrow-body-style": 2,
+    "better-styled-components/sort-declarations-alphabetically": 0,
     "comma-dangle": 0,
     "babel/no-invalid-this": 2,
     "default-case": 2,
@@ -50,6 +56,10 @@
     "react/prop-types": 0,
     "require-await": 2,
     "semi": [1, "always"],
+    "sort-destructure-keys/sort-destructure-keys": [
+      2,
+      { "caseSensitive": false }
+    ],
     "sort-imports": [
       "error",
       {
@@ -121,7 +131,8 @@
         "prettier",
         "react",
         "typescript-sort-keys",
-        "better-styled-components"
+        "better-styled-components",
+        "sort-destructure-keys"
       ],
       "rules": {
         "@typescript-eslint/explicit-module-boundary-types": 0,
@@ -132,6 +143,7 @@
         "react-native/no-inline-styles": 0,
         "array-callback-return": 2,
         "arrow-body-style": 2,
+        "better-styled-components/sort-declarations-alphabetically": 0,
         "comma-dangle": 0,
         "babel/no-invalid-this": 2,
         "default-case": 2,
@@ -161,6 +173,10 @@
         "react/prop-types": 0,
         "require-await": 2,
         "semi": [1, "always"],
+        "sort-destructure-keys/sort-destructure-keys": [
+          2,
+          { "caseSensitive": false }
+        ],
         "sort-imports": [
           "error",
           {

@@ -28,7 +28,6 @@ const FileContainer = styled.View`
 `;
 
 const FileDetails = styled.View`
-  flex-direction: column;
   padding-left: 10px;
   ${({ theme }) => theme.message.file.details.css}
 `;

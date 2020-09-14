@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
 
 export const useAppState = () => {
   const [appState, setAppState] = useState(AppState.currentState);
 
   useEffect(() => {
-    const handleAppStateChange = (nextAppState) => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
       if (appState !== nextAppState) {
         setAppState(nextAppState);
       }

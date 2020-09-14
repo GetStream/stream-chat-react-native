@@ -1,5 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Dimensions, Keyboard, Platform, StatusBar } from 'react-native';
+import { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Keyboard,
+  KeyboardEventListener,
+  Platform,
+  StatusBar,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useAppState } from './useAppState';
 
@@ -7,6 +14,10 @@ export const useKeyboardCompatibleHeight = ({
   enabled,
   initialHeight,
   rootChannelView,
+}: {
+  enabled: boolean;
+  initialHeight: number;
+  rootChannelView: RefObject<View>;
 }) => {
   const appState = useAppState();
 
@@ -18,7 +29,10 @@ export const useKeyboardCompatibleHeight = ({
   const [keyboardOpen, setKeyboardOpen] = useState(false);
 
   const [height, setHeight] = useState(initialHeight);
-  const keyboardDidShow = useCallback(
+
+  const { height: windowHeight } = useWindowDimensions();
+
+  const keyboardDidShow: KeyboardEventListener = useCallback(
     (e) => {
       if (!enabled) {
         return;
@@ -30,14 +44,16 @@ export const useKeyboardCompatibleHeight = ({
 
       const keyboardHeight = e.endCoordinates.height;
 
-      if (rootChannelView) {
-        rootChannelView.current.measureInWindow((x, y) => {
-          const { height: windowHeight } = Dimensions.get('window');
+      if (rootChannelView && rootChannelView.current) {
+        rootChannelView.current.measureInWindow((_, y) => {
           let finalHeight;
 
           if (Platform.OS === 'android') {
             finalHeight =
-              windowHeight - y - keyboardHeight - StatusBar.currentHeight;
+              windowHeight -
+              y -
+              keyboardHeight -
+              (StatusBar.currentHeight || 0);
           } else {
             finalHeight = windowHeight - y - keyboardHeight;
           }
@@ -53,10 +69,16 @@ export const useKeyboardCompatibleHeight = ({
         });
       }
     },
-    [enabled, hidingKeyboardInProgress, rootChannelView, setHeight],
+    [
+      enabled,
+      hidingKeyboardInProgress,
+      rootChannelView,
+      setHeight,
+      windowHeight,
+    ],
   );
 
-  const keyboardDidHide = useCallback(() => {
+  const keyboardDidHide: KeyboardEventListener = useCallback(() => {
     if (Platform.OS === 'ios') {
       hidingKeyboardInProgress.current = true;
     }

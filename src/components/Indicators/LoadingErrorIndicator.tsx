@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
 
 import { TranslationContext } from '../../context';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
@@ -25,7 +24,17 @@ const RetryText = styled.Text`
   ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
 `;
 
-const LoadingErrorIndicator = ({ listType, retry = () => {} }) => {
+type Props = {
+  listType: 'channel' | 'message' | 'default';
+  error?: boolean;
+  loadNextPage?: () => void;
+  retry?: () => void;
+};
+
+const LoadingErrorIndicator: React.FC<Props> & { themePath: string } = ({
+  listType,
+  retry = () => null,
+}) => {
   const { t } = useContext(TranslationContext);
 
   switch (listType) {
@@ -53,13 +62,6 @@ const LoadingErrorIndicator = ({ listType, retry = () => {} }) => {
         </Container>
       );
   }
-};
-
-LoadingErrorIndicator.propTypes = {
-  // Type of list
-  listType: PropTypes.oneOf(['channel', 'message', 'default']),
-  // Calls the retry handler.
-  retry: PropTypes.func,
 };
 
 LoadingErrorIndicator.themePath = 'loadingErrorIndicator';

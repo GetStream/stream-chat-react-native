@@ -11,7 +11,7 @@ export const MessagesContext = React.createContext({});
 export const SuggestionsContext = React.createContext({});
 export const ThreadContext = React.createContext({});
 export const TranslationContext = React.createContext({
-  t: () => 'Value not found',
+  t: (arg) => arg || 'Value not found', // TODO: remove this little workaround when context builds out
 });
 
 export function withChannelContext(OriginalComponent) {

@@ -1,8 +1,11 @@
 import React from 'react';
 import { Text } from 'react-native';
-import PropTypes from 'prop-types';
 
-const EmptyStateIndicator = ({ listType }) => {
+type Props = {
+  listType: 'channel' | 'message' | 'default';
+};
+
+const EmptyStateIndicator: React.FC<Props> = ({ listType }) => {
   switch (listType) {
     case 'channel':
       return (
@@ -13,11 +16,6 @@ const EmptyStateIndicator = ({ listType }) => {
     default:
       return <Text>No items exist</Text>;
   }
-};
-
-EmptyStateIndicator.propTypes = {
-  // Type of list
-  listType: PropTypes.oneOf(['channel', 'message', 'default']),
 };
 
 export default EmptyStateIndicator;

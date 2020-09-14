@@ -31,7 +31,7 @@ const GalleryContainer = styled.View`
     alignment === 'right' ? 16 : 2}px;
   flex-direction: row;
   flex-wrap: wrap;
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     length >= 4
       ? theme.message.gallery.doubleSize
       : length === 3
@@ -43,11 +43,11 @@ const GalleryContainer = styled.View`
 `;
 
 const ImageContainer = styled.TouchableOpacity`
-  height: ${({ theme, length }) =>
+  height: ${({ length, theme }) =>
     length !== 3
       ? theme.message.gallery.size
       : theme.message.gallery.halfSize}px;
-  width: ${({ theme, length }) =>
+  width: ${({ length, theme }) =>
     length !== 3
       ? theme.message.gallery.size
       : theme.message.gallery.halfSize}px;
@@ -55,7 +55,6 @@ const ImageContainer = styled.TouchableOpacity`
 `;
 
 const HeaderContainer = styled.View`
-  flex: 1;
   flex-direction: row;
   justify-content: flex-end;
   z-index: 1000;
@@ -145,7 +144,11 @@ const Gallery = ({ alignment, images }) => {
 
   return (
     <>
-      <GalleryContainer alignment={alignment} length={galleryImages.length}>
+      <GalleryContainer
+        alignment={alignment}
+        length={galleryImages.length}
+        testID='image-multiple-container'
+      >
         {galleryImages.slice(0, 4).map((image, i) => (
           <ImageContainer
             activeOpacity={0.8}
@@ -156,6 +159,7 @@ const Gallery = ({ alignment, images }) => {
               setViewerModalOpen(true);
               setViewerModalImageIndex(i);
             }}
+            testID='image-multiple'
             {...additionalTouchableProps}
           >
             {i === 3 && galleryImages.length > 4 ? (
