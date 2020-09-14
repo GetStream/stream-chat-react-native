@@ -299,7 +299,7 @@ const MessageInput = (props) => {
           }
         });
       } else {
-        // condition to support react-native-image-picker
+        // condition to support react-native-image-crop-picker
         const mimeType = lookup(result.name);
 
         if (mimeType && mimeType.startsWith('image/')) {
