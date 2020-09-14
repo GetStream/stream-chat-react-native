@@ -29,7 +29,7 @@ const Spinner: React.FC & { themePath: string } = () => {
       duration: 800,
       easing: Easing.linear,
       toValue: 1,
-      useNativeDriver: false,
+      useNativeDriver: true,
     }),
   );
 

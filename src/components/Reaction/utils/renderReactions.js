@@ -20,7 +20,9 @@ export const renderReactions = (reactions, supportedReactions) => {
   const reactionTypes = supportedReactions.map((e) => e.id);
   return Object.keys(reactionsByType).map((type) =>
     reactionTypes.indexOf(type) > -1 ? (
-      <Text key={type}>{emojiDataByType[type].icon}</Text>
+      <Text key={type} testID={type}>
+        {emojiDataByType[type].icon}
+      </Text>
     ) : null,
   );
 };

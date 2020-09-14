@@ -1,6 +1,6 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import { themed } from '../../styles/theme';
 
@@ -13,7 +13,6 @@ const CommandDescription = styled.Text`
 `;
 
 const Container = styled.View`
-  flex-direction: column;
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.command.container.css}
 `;

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Link from 'react-styleguidist/lib/rsg-components/Link';
 import Styled from 'react-styleguidist/lib/rsg-components/Styled';
 
-export const styles = ({ space, fontFamily, fontSize, color }) => ({
+export const styles = ({ color, fontFamily, fontSize, space }) => ({
   copyButton: {
     marginLeft: space[0],
   },
@@ -16,7 +16,7 @@ export const styles = ({ space, fontFamily, fontSize, color }) => ({
   },
 });
 
-export function PathlineRenderer({ classes, children }) {
+export function PathlineRenderer({ children, classes }) {
   const source = children;
 
   return (

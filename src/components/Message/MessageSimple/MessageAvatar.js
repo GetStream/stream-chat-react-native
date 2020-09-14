@@ -16,28 +16,21 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-const MessageAvatar = ({
-  message,
-  alignment,
-  groupStyles,
-  showAvatar = null,
-}) => {
-  let visible = showAvatar;
-
-  if (visible === null) {
-    visible =
-      groupStyles[0] === 'single' || groupStyles[0] === 'bottom' ? true : false;
-  }
+const MessageAvatar = ({ alignment, groupStyles, message, showAvatar }) => {
+  const visible =
+    typeof showAvatar === 'boolean'
+      ? showAvatar
+      : groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
   return (
-    <Container alignment={alignment}>
+    <Container alignment={alignment} testID='message-avatar'>
       {visible ? (
         <Avatar
           image={message.user.image}
           name={message.user.name || message.user.id}
         />
       ) : (
-        <Spacer />
+        <Spacer testID='spacer' />
       )}
     </Container>
   );
@@ -45,20 +38,22 @@ const MessageAvatar = ({
 
 MessageAvatar.propTypes = {
   /**
-   * Position of message in group - top, bottom, middle, single.
+   * Avatar alignment: 'left' or 'right'
+   */
+  alignment: PropTypes.oneOf(['left', 'right']),
+  /**
+   * Position of message in group - top, bottom, middle, or single
    *
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
   groupStyles: PropTypes.array,
-  /**
-   * Returns true if message (param) belongs to current user, else false
-   *
-   * @param message
-   * */
-  isMyMessage: PropTypes.func,
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object,
+  /**
+   * Whether or not to show user avatar
+   */
+  showAvatar: PropTypes.bool,
 };
 
 export default MessageAvatar;
