@@ -7,6 +7,7 @@ import UploadProgressIndicator from './UploadProgressIndicator';
 
 import FileIcon from '../Attachment/FileIcon';
 
+import closeRound from '../../images/icons/close-round.png';
 import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
@@ -39,6 +40,25 @@ const Container = styled.View`
   ${({ theme }) => theme.messageInput.fileUploadPreview.container.css};
 `;
 
+const Dismiss = styled.TouchableOpacity`
+  align-items: center;
+  background-color: #fff;
+  border-radius: 20px;
+  height: 20px;
+  justify-content: center;
+  position: absolute;
+  right: 5;
+  top: 5;
+  width: 20px;
+  ${({ theme }) => theme.messageInput.fileUploadPreview.dismiss.css};
+`;
+
+const DismissImage = styled.Image`
+  height: 10px;
+  width: 10px;
+  ${({ theme }) => theme.messageInput.fileUploadPreview.dismissImage.css};
+`;
+
 const FilenameText = styled.Text`
   padding-left: 10px;
   ${({ theme }) => theme.messageInput.fileUploadPreview.filenameText.css};
@@ -68,27 +88,38 @@ const FileUploadPreview = ({
     }
 
     return (
-      <UploadProgressIndicator
-        action={() => {
-          retryUpload ? retryUpload(item.id) : null;
-        }}
-        active={item.state !== FileState.UPLOADED}
-        cancel={() => {
-          removeFile ? removeFile(item.id) : null;
-        }}
-        type={type}
-      >
-        <AttachmentContainerView>
-          <AttachmentView>
-            <AttachmentFileIcon mimeType={item.file.type} size={20} />
-            <FilenameText>
-              {item.file.name.length > 35
-                ? item.file.name.substring(0, 35).concat('...')
-                : item.file.name}
-            </FilenameText>
-          </AttachmentView>
-        </AttachmentContainerView>
-      </UploadProgressIndicator>
+      <>
+        <UploadProgressIndicator
+          action={() => {
+            if (retryUpload) {
+              retryUpload(item.id);
+            }
+          }}
+          active={item.state !== FileState.UPLOADED}
+          type={type}
+        >
+          <AttachmentContainerView>
+            <AttachmentView>
+              <AttachmentFileIcon mimeType={item.file.type} size={20} />
+              <FilenameText>
+                {item.file.name.length > 35
+                  ? item.file.name.substring(0, 35).concat('...')
+                  : item.file.name}
+              </FilenameText>
+            </AttachmentView>
+          </AttachmentContainerView>
+        </UploadProgressIndicator>
+        <Dismiss
+          onPress={() => {
+            if (removeFile) {
+              removeFile(item.id);
+            }
+          }}
+          testID='remove-file-upload-preview'
+        >
+          <DismissImage source={closeRound} />
+        </Dismiss>
+      </>
     );
   };
 

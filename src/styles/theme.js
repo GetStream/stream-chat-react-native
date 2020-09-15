@@ -202,7 +202,10 @@ export const defaultTheme = {
       attachmentContainerView: {},
       attachmentView: {},
       container: {},
+      dismiss: {},
+      dismissImage: {},
       filenameText: {},
+      itemContainer: {},
     },
     imageUploadPreview: {
       container: {},

@@ -38,12 +38,6 @@ const ActivityIndicatorContainer = styled.View`
   top: 0;
 `;
 
-const DismissText = styled.Text`
-  align-self: flex-end;
-  margin-right: 10px;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.dismiss.css};
-`;
-
 const RetryButtonContainer = styled.TouchableOpacity`
   align-items: center;
   bottom: 0;
@@ -54,7 +48,7 @@ const RetryButtonContainer = styled.TouchableOpacity`
   top: 0;
 `;
 
-const UploadProgressIndicator = ({ action, active, cancel, children, type }) =>
+const UploadProgressIndicator = ({ action, active, children, type }) =>
   !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
@@ -63,7 +57,7 @@ const UploadProgressIndicator = ({ action, active, cancel, children, type }) =>
       <Overlay />
       <Container>
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <ActivityIndicatorContainer style={{}}>
+          <ActivityIndicatorContainer>
             <ActivityIndicator
               color='grey'
               testID='upload-progress-indicator'
@@ -79,9 +73,6 @@ const UploadProgressIndicator = ({ action, active, cancel, children, type }) =>
             />
           </RetryButtonContainer>
         )}
-        <DismissText onPress={cancel} testID='remove-file-upload-preview'>
-          X
-        </DismissText>
       </Container>
     </View>
   );
@@ -89,10 +80,8 @@ const UploadProgressIndicator = ({ action, active, cancel, children, type }) =>
 UploadProgressIndicator.propTypes = {
   /** Action triggered when clicked indicator */
   action: PropTypes.func,
-  active: PropTypes.bool,
-  /** Action triggered when clicked cancel button */
-  cancel: PropTypes.func,
   /** Boolean status of upload progress */
+  active: PropTypes.bool,
   /** Type of active indicator */
   type: PropTypes.oneOf([
     ProgressIndicatorTypes.IN_PROGRESS,
