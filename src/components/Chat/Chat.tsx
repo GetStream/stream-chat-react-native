@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 import type {
   Channel,
@@ -10,13 +11,15 @@ import type {
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
-import { ChatProvider } from '../../contexts/ChatContext';
+import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import {
   TranslationContextValue,
   TranslationProvider,
-} from '../../contexts/TranslationContext';
+} from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 import type { Streami18n } from '../../utils/Streami18n';
+
+import { version } from '../../../package.json';
 
 type Props<
   ChannelType extends UnknownType = UnknownType,
@@ -107,7 +110,7 @@ type Props<
  *
  * It also exposes the withChatContext HOC which you can use to consume the ChatContext
  *
- * @example ../docs/Chat.md
+ * @example ./Chat.md
  */
 const Chat = <
   ChannelType extends UnknownType = UnknownType,
@@ -145,8 +148,7 @@ const Chat = <
   >();
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date | Dayjs.Dayjs) =>
-      Dayjs(input),
+    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
   // Setup translators
@@ -164,6 +166,10 @@ const Chat = <
   >({
     client,
   });
+
+  useEffect(() => {
+    client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+  }, []);
 
   const setActiveChannel = (
     newChannel?: Channel<

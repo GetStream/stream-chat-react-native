@@ -27,11 +27,6 @@ export const emojiData = [
   },
 ];
 
-export const capitalize = (s) => {
-  if (typeof s !== 'string') return '';
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
 export const FileState = Object.freeze({
   NO_FILE: 'no_file',
   UPLOAD_FAILED: 'upload_failed',

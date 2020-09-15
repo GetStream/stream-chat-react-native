@@ -21,13 +21,12 @@ exports[`MessageInput should render MessageInput 1`] = `
       }
     >
       <View
-        padding={false}
+        imageUploads={Array []}
         style={
           Array [
             Object {
               "backgroundColor": "rgba(0,0,0,0.05)",
               "borderRadius": 10,
-              "flexDirection": "column",
               "marginHorizontal": 10,
               "paddingTop": 0,
             },

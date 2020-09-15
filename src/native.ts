@@ -2,7 +2,7 @@ import type {
   NetInfoChangeHandler,
   NetInfoState,
   NetInfoSubscription,
-} from '@react-native-community/NetInfo';
+} from '@react-native-community/netinfo';
 
 const fail = () => {
   throw Error(

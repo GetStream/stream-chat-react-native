@@ -27,7 +27,7 @@ type Props = {
 /**
  * UI Component for LoadingIndicator
  *
- * @example ../docs/LoadingIndicator.md
+ * @example ./LoadingIndicator.md
  */
 const LoadingIndicator: React.FC<Props> & { themePath: string } = ({
   listType,

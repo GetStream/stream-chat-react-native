@@ -1,7 +1,7 @@
 Simple default LoadingIndicator
 
 ```js
-const { client } = require('./data');
+const { client } = require('../docs/data');
 
 <Chat client={client}>
     <LoadingIndicator />
@@ -11,7 +11,7 @@ const { client } = require('./data');
 Channel LoadingIndicator
 
 ```js
-const { client } = require('./data');
+const { client } = require('../docs/data');
 
 <Chat client={client}>
     <LoadingIndicator listType='channel' />
@@ -21,7 +21,7 @@ const { client } = require('./data');
 Message LoadingIndicator
 
 ```js
-const { client } = require('./data');
+const { client } = require('../docs/data');
 
 <Chat client={client}>
     <LoadingIndicator listType='message' />

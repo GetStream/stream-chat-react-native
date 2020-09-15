@@ -19,8 +19,7 @@ const NewThread = styled.View`
   padding: 8px;
   background-color: #f4f9ff;
   margin: 10px;
-  border-radius: 4px;
-  display: flex;
+  border-radius: 4;
   align-items: center;
   ${({ theme }) => theme.thread.newThread.css};
 `;

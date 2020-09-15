@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type {
   NetInfoState,
   NetInfoSubscription,
-} from '@react-native-community/NetInfo';
+} from '@react-native-community/netinfo';
 import type {
   Event,
   LiteralStringForUnion,
