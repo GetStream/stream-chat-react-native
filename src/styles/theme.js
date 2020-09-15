@@ -241,7 +241,6 @@ export const defaultTheme = {
     },
     uploadProgressIndicator: {
       container: {},
-      dismiss: {},
       overlay: {},
     },
   },
