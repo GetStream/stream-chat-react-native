@@ -26,26 +26,26 @@ import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedF
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
 type Props<
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 > = {
   additionalFlatListProps: FlatListProps<
     Channel<
-      ChannelType,
-      UserType,
-      MessageType,
       AttachmentType,
-      ReactionType,
+      ChannelType,
+      CommandType,
       EventType,
-      CommandType
+      MessageType,
+      ReactionType,
+      UserType
     >
   >;
-  filters: ChannelFilters<ChannelType, UserType, CommandType>;
+  filters: ChannelFilters<ChannelType, CommandType, UserType>;
   lockChannelOrder: boolean;
   onAddedToChannel: (
     setChannels: React.Dispatch<
@@ -53,22 +53,22 @@ type Props<
         Channel<
           AttachmentType,
           ChannelType,
+          CommandType,
           EventType,
           MessageType,
           ReactionType,
-          UserType,
-          CommandType
+          UserType
         >[]
       >
     >,
     e: Event<
-      EventType,
       AttachmentType,
       ChannelType,
+      CommandType,
+      EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >,
   ) => void;
   options: ChannelOptions;
@@ -83,23 +83,23 @@ type Props<
  * @example ../docs/ChannelList.md
  */
 const ChannelList = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >(
   props: PropsWithChildren<
     Props<
-      ChannelType,
-      UserType,
-      MessageType,
       AttachmentType,
-      ReactionType,
+      ChannelType,
+      CommandType,
       EventType,
-      CommandType
+      MessageType,
+      ReactionType,
+      UserType
     >
   >,
 ) => {
@@ -147,103 +147,103 @@ const ChannelList = <
 
   // Setup event listeners
   useAddedToChannelNotification<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onAddedToChannel, setChannels });
 
   useChannelDeleted<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onChannelDeleted, setChannels });
 
   useChannelHidden<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onChannelHidden, setChannels });
 
   useChannelTruncated<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onChannelTruncated, setChannels, setForceUpdate });
 
   useChannelUpdated<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onChannelUpdated, setChannels });
 
   useConnectionRecovered<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ setForceUpdate });
 
   useNewMessage<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ lockChannelOrder, setChannels });
 
   useNewMessageNotification<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onMessageNew, setChannels });
 
   useRemovedFromChannelNotification<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType,
   >({ onRemovedFromChannel, setChannels });
 
   useUserPresence<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
-    EventType,
+    ChannelType,
     CommandType
+    EventType,
+    MessageType,
+    ReactionType,
+    UserType,
   >({ setChannels });
 
   return (

@@ -8,16 +8,16 @@ import type {
 } from 'stream-chat';
 
 import { getChannel } from '../../utils';
-import { useChatContext } from '../../../../contexts/ChatContext';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 type Parameters<
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 > = {
   onAddedToChannel: (
     setChannels: React.Dispatch<
@@ -25,22 +25,22 @@ type Parameters<
         Channel<
           AttachmentType,
           ChannelType,
+          CommandType,
           EventType,
           MessageType,
           ReactionType,
-          UserType,
-          CommandType
+          UserType
         >[]
       >
     >,
     e: Event<
-      EventType,
       AttachmentType,
       ChannelType,
+      CommandType,
+      EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >,
   ) => void;
   setChannels: React.Dispatch<
@@ -48,56 +48,56 @@ type Parameters<
       Channel<
         AttachmentType,
         ChannelType,
+        CommandType,
         EventType,
         MessageType,
         ReactionType,
-        UserType,
-        CommandType
+        UserType
       >[]
     >
   >;
 };
 
 export const useAddedToChannelNotification = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >({
   onAddedToChannel,
   setChannels,
 }: Parameters<
-  ChannelType,
-  UserType,
-  MessageType,
   AttachmentType,
-  ReactionType,
+  ChannelType,
+  CommandType,
   EventType,
-  CommandType
+  MessageType,
+  ReactionType,
+  UserType
 >) => {
   const { client } = useChatContext<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >();
 
   useEffect(() => {
     const handleEvent = async (
       e: Event<
-        EventType,
         AttachmentType,
         ChannelType,
+        CommandType,
+        EventType,
         MessageType,
         ReactionType,
-        UserType,
-        CommandType
+        UserType
       >,
     ) => {
       if (typeof onAddedToChannel === 'function') {

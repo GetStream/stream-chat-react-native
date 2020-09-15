@@ -7,22 +7,22 @@ import type {
 } from 'stream-chat';
 
 export type ChatContextValue<
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 > = {
   client: StreamChat<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >;
   connectionRecovering: boolean;
   isOnline: boolean;
@@ -31,46 +31,46 @@ export type ChatContextValue<
     newChannel?: Channel<
       AttachmentType,
       ChannelType,
+      CommandType,
       EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >,
   ) => void;
   channel?: Channel<
     AttachmentType,
     ChannelType,
+    CommandType,
     EventType,
     MessageType,
     ReactionType,
-    UserType,
-    CommandType
+    UserType
   >;
 };
 
 export const ChatContext = React.createContext({} as ChatContextValue);
 
 export const ChatProvider = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >({
   children,
   value,
 }: PropsWithChildren<{
   value: ChatContextValue<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >;
 }>) => (
   <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
@@ -79,20 +79,20 @@ export const ChatProvider = <
 );
 
 export const useChatContext = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >() =>
   (useContext(ChatContext) as unknown) as ChatContextValue<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >;

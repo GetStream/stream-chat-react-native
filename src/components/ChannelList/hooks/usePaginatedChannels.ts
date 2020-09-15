@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useChatContext } from '../../../contexts/ChatContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type {
   Channel,
   ChannelFilters,
@@ -18,46 +18,46 @@ const wait = (ms: number) =>
 
 type Parameters<
   ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  CommandType extends string = LiteralStringForUnion,
+  UserType extends UnknownType = UnknownType
 > = {
-  filters: ChannelFilters<ChannelType, UserType, CommandType>;
+  filters: ChannelFilters<ChannelType, CommandType, UserType>;
   options: ChannelOptions;
   sort: ChannelSort<ChannelType>;
 };
 
 export const usePaginatedChannels = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >({
   filters = {},
   options = {},
   sort = {},
-}: Parameters<ChannelType, UserType, CommandType>) => {
+}: Parameters<ChannelType, CommandType, UserType>) => {
   const { client } = useChatContext<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >();
 
   const [channels, setChannels] = useState<
     Channel<
       AttachmentType,
       ChannelType,
+      CommandType,
       EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >[]
   >([]);
   const [error, setError] = useState(false);

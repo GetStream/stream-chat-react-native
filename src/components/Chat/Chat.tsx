@@ -22,23 +22,23 @@ import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../../package.json';
 
 type Props<
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 > = {
   /** The StreamChat client object */
   client: StreamChat<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >;
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
@@ -113,23 +113,23 @@ type Props<
  * @example ./Chat.md
  */
 const Chat = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
   AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
   EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
 >(
   props: PropsWithChildren<
     Props<
-      ChannelType,
-      UserType,
-      MessageType,
       AttachmentType,
-      ReactionType,
+      ChannelType,
+      CommandType,
       EventType,
-      CommandType
+      MessageType,
+      ReactionType,
+      UserType
     >
   >,
 ) => {
@@ -139,11 +139,11 @@ const Chat = <
     Channel<
       AttachmentType,
       ChannelType,
+      CommandType,
       EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >
   >();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -156,13 +156,13 @@ const Chat = <
 
   // Setup connection event listeners
   const { connectionRecovering, isOnline } = useIsOnline<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >({
     client,
   });
@@ -175,11 +175,11 @@ const Chat = <
     newChannel?: Channel<
       AttachmentType,
       ChannelType,
+      CommandType,
       EventType,
       MessageType,
       ReactionType,
-      UserType,
-      CommandType
+      UserType
     >,
   ) => setChannel(newChannel);
 
@@ -196,13 +196,13 @@ const Chat = <
 
   return (
     <ChatProvider<
-      ChannelType,
-      UserType,
-      MessageType,
       AttachmentType,
-      ReactionType,
+      ChannelType,
+      CommandType,
       EventType,
-      CommandType
+      MessageType,
+      ReactionType,
+      UserType
     >
       value={chatContext}
     >
