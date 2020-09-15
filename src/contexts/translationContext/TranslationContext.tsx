@@ -23,3 +23,11 @@ export const TranslationProvider: React.FC<{
 );
 
 export const useTranslationContext = () => useContext(TranslationContext);
+
+export const withTranslationContext = <P extends object>(
+  Component: React.ComponentType<P>,
+): React.FC<Omit<P, keyof TranslationContextValue>> => (props) => {
+  const translationContext = useTranslationContext();
+
+  return <Component {...(props as P)} {...translationContext} />;
+};

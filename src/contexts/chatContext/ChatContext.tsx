@@ -62,3 +62,27 @@ export const useChatContext = <
     Re,
     Us
   >;
+
+/**
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withChatContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
+export const withChatContext = <
+  P extends object,
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
+>(
+  Component: React.ComponentType<P>,
+): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => (
+  props,
+) => {
+  const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  return <Component {...(props as P)} {...chatContext} />;
+};
