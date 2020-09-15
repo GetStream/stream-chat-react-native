@@ -1,144 +1,129 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import ReactionPicker from './ReactionPicker';
+import ReactionPickerDefault from './ReactionPicker';
 
-import { emojiData } from '../../utils/utils';
+import { emojiData as emojiDataDefault } from '../../utils/utils';
 
-class ReactionPickerWrapper extends React.PureComponent {
-  static propTypes = {
-    dismissReactionPicker: PropTypes.func,
-    /**
-     * @deprecated
-     * emojiData is deprecated. But going to keep it for now
-     * to have backward compatibility. Please use supportedReactions instead.
-     * TODO: Remove following prop in 1.x.x
-     */
-    emojiData: PropTypes.array,
-    handleReaction: PropTypes.func,
-    hideReactionCount: PropTypes.bool,
-    hideReactionOwners: PropTypes.bool,
-    isMyMessage: PropTypes.func,
-    message: PropTypes.object,
-    offset: PropTypes.object,
-    openReactionPicker: PropTypes.func,
-    ReactionPicker: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.elementType,
-    ]),
-    reactionPickerVisible: PropTypes.bool,
-    /**
-     * e.g.,
-     * [
-     *  {
-     *    id: 'like',
-     *    icon: '👍',
-     *  },
-     *  {
-     *    id: 'love',
-     *    icon: '❤️️',
-     *  },
-     *  {
-     *    id: 'haha',
-     *    icon: '😂',
-     *  },
-     *  {
-     *    id: 'wow',
-     *    icon: '😮',
-     *  },
-     * ]
-     */
-    style: PropTypes.any,
-    supportedReactions: PropTypes.array,
-  };
+const ReactionPickerWrapper = (props) => {
+  const {
+    alignment,
+    children,
+    customMessageContent,
+    dismissReactionPicker,
+    emojiData = emojiDataDefault,
+    handleReaction,
+    hideReactionCount = false,
+    hideReactionOwners = false,
+    message,
+    offset = { left: 30, right: 10, top: 40 },
+    openReactionPicker,
+    ReactionPicker = ReactionPickerDefault,
+    reactionPickerVisible,
+    supportedReactions = emojiDataDefault,
+  } = props;
 
-  static defaultProps = {
-    emojiData,
-    hideReactionCount: false,
-    hideReactionOwners: false,
-    offset: {
-      left: 30,
-      right: 10,
-      top: 40,
-    },
-    ReactionPicker,
-    supportedReactions: emojiData,
-  };
+  const messageContainer = useRef();
+  const [rpLeft, setRPLeft] = useState();
+  const [rpRight, setRPRight] = useState();
+  const [rpTop, setRPTop] = useState();
 
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {
-    if (this.props.reactionPickerVisible) this._setReactionPickerPosition();
-  }
-
-  componentDidUpdate(prevProps) {
-    if (!prevProps.reactionPickerVisible && this.props.reactionPickerVisible) {
-      this._setReactionPickerPosition();
+  useEffect(() => {
+    if (reactionPickerVisible) {
+      setReactionPickerPosition();
     }
-  }
+  }, [reactionPickerVisible]);
 
-  _setReactionPickerPosition = () => {
-    const { alignment, offset } = this.props;
-    if (this.messageContainer) {
-      this.messageContainer.measureInWindow((x, y, width) => {
-        this.setState({
-          rpLeft: alignment === 'left' ? x - 10 + offset.left : null,
-          rpRight:
-            alignment === 'right'
-              ? Math.round(Dimensions.get('window').width) -
-                (x + width + offset.right)
-              : null,
-          rpTop: y - 60 + offset.top,
-        });
-      });
+  const setReactionPickerPosition = () => {
+    if (messageContainer.current) {
+      setTimeout(
+        () => {
+          messageContainer.current.measureInWindow((x, y, width) => {
+            setRPLeft(alignment === 'left' ? x - 10 + offset.left : null);
+            setRPRight(
+              alignment === 'right'
+                ? Math.round(Dimensions.get('window').width) -
+                    (x + width + offset.right)
+                : null,
+            );
+            setRPTop(y - 60 + offset.top);
+          });
+        },
+        customMessageContent ? 10 : 0,
+      );
     }
   };
 
-  render() {
-    const {
-      handleReaction,
-      message,
-      supportedReactions,
-      /** @deprecated */
-      emojiData,
-      style,
-      dismissReactionPicker,
-      reactionPickerVisible,
-      ReactionPicker,
-      openReactionPicker,
-      hideReactionCount,
-      hideReactionOwners,
-    } = this.props;
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          openReactionPicker();
-        }}
-        ref={(o) => (this.messageContainer = o)}
-      >
-        {this.props.children}
-        <ReactionPicker
-          {...this.props}
-          handleDismiss={dismissReactionPicker}
-          handleReaction={handleReaction}
-          hideReactionCount={hideReactionCount}
-          hideReactionOwners={hideReactionOwners}
-          latestReactions={message.latest_reactions}
-          reactionCounts={message.reaction_counts}
-          reactionPickerVisible={reactionPickerVisible}
-          rpLeft={this.state.rpLeft}
-          rpRight={this.state.rpRight}
-          rpTop={this.state.rpTop}
-          style={style}
-          supportedReactions={supportedReactions || emojiData}
-        />
-      </TouchableOpacity>
-    );
-  }
-}
+  return (
+    <TouchableOpacity
+      onPress={openReactionPicker}
+      ref={messageContainer}
+      testID='reaction-picker-wrapper'
+    >
+      {children}
+      <ReactionPicker
+        {...props}
+        handleDismiss={dismissReactionPicker}
+        handleReaction={handleReaction}
+        hideReactionCount={hideReactionCount}
+        hideReactionOwners={hideReactionOwners}
+        latestReactions={message.latest_reactions}
+        reactionCounts={message.reaction_counts}
+        reactionPickerVisible={reactionPickerVisible}
+        rpLeft={rpLeft}
+        rpRight={rpRight}
+        rpTop={rpTop}
+        supportedReactions={supportedReactions || emojiData}
+      />
+    </TouchableOpacity>
+  );
+};
+
+ReactionPickerWrapper.propTypes = {
+  alignment: PropTypes.oneOf(['left', 'right']),
+  /**
+   * Whether or not the app is using a custom MessageContent component
+   */
+  customMessageContent: PropTypes.bool,
+  dismissReactionPicker: PropTypes.func,
+  /**
+   * @deprecated
+   * emojiData is deprecated. But going to keep it for now
+   * to have backward compatibility. Please use supportedReactions instead.
+   * TODO: Remove following prop in 1.x.x
+   */
+  emojiData: PropTypes.array,
+  handleReaction: PropTypes.func,
+  hideReactionCount: PropTypes.bool,
+  hideReactionOwners: PropTypes.bool,
+  message: PropTypes.object,
+  offset: PropTypes.object,
+  openReactionPicker: PropTypes.func,
+  ReactionPicker: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
+  reactionPickerVisible: PropTypes.bool,
+  /**
+   * e.g.,
+   * [
+   *  {
+   *    id: 'like',
+   *    icon: '👍',
+   *  },
+   *  {
+   *    id: 'love',
+   *    icon: '❤️️',
+   *  },
+   *  {
+   *    id: 'haha',
+   *    icon: '😂',
+   *  },
+   *  {
+   *    id: 'wow',
+   *    icon: '😮',
+   *  },
+   * ]
+   */
+  supportedReactions: PropTypes.array,
+};
 
 export default ReactionPickerWrapper;

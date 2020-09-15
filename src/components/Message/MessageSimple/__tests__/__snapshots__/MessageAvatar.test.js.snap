@@ -1,0 +1,48 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageAvatar should render message avatar 1`] = `
+<View
+  alignment="left"
+  style={
+    Array [
+      Object {
+        "marginLeft": 0,
+        "marginRight": 8,
+      },
+    ]
+  }
+  testID="message-avatar"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "alignItems": "center",
+        },
+      ]
+    }
+  >
+    <Image
+      accessibilityLabel="initials"
+      onError={[Function]}
+      resizeMethod="resize"
+      size={32}
+      source={
+        Object {
+          "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
+        }
+      }
+      style={
+        Array [
+          Object {
+            "borderRadius": 16,
+            "height": 32,
+            "width": 32,
+          },
+        ]
+      }
+      testID="avatar-image"
+    />
+  </View>
+</View>
+`;

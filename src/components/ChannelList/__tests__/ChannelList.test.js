@@ -178,7 +178,7 @@ describe('ChannelList', () => {
       });
 
       it('should move channel to top of the list by default', async () => {
-        const { getByText, getByTestId, getAllByRole } = render(
+        const { getAllByRole, getByTestId, getByText } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
           </Chat>,
@@ -202,7 +202,7 @@ describe('ChannelList', () => {
       });
 
       it('should not alter order if `lockChannelOrder` prop is true', async () => {
-        const { getByText, getByTestId, getAllByRole } = render(
+        const { getAllByRole, getByTestId, getByText } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} lockChannelOrder={true} />
           </Chat>,
@@ -235,7 +235,7 @@ describe('ChannelList', () => {
       });
 
       it('should move a channel to top of the list by default', async () => {
-        const { getByTestId, getAllByRole } = render(
+        const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
           </Chat>,
@@ -293,7 +293,7 @@ describe('ChannelList', () => {
       });
 
       it('should move a channel to top of the list by default', async () => {
-        const { getByTestId, getAllByRole } = render(
+        const { getAllByRole, getByTestId } = render(
           <Chat client={chatClient}>
             <ChannelList {...props} />
           </Chat>,

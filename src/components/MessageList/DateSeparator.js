@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
+import styled from 'styled-components/native';
 
 import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
-  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;

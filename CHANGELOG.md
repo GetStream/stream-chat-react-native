@@ -1,12 +1,12 @@
 # Changelog
 
-## [1.3.0] 2020-09-01 (UNPUBLISHED)
+## [1.3.0] 2020-09-11 (UNPUBLISHED)
 
 **BREAKING CHANGES**
 
 *ChannelList*
 
-- We converted the ChannelList component from a class to a function and abstracted the event listener logic into custom hooks. The default event handlers can still be overriden by providing custom prop functions to the ChannelList component. Custom logic can be provided for the following events:
+- We converted the ChannelList component from a class to a function and abstracted the event listener logic into custom hooks. The default event handlers can still be overridden by providing custom prop functions to the ChannelList component. Custom logic can be provided for the following events:
 
   - `onAddedToChannel` overrides `notification.added_to_channel` default
   - `onChannelDeleted` overrides `channel.deleted` default
@@ -73,6 +73,24 @@
     - `threadMessages`
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or the `useContext` hook (ex: `const { messages } = useContext(MessagesContext);`)
+
+*Deprecated Props*
+
+- We have removed support for the `MessageList` component's `onMessageTouch` prop. Since this prop no longer exists, we have also removed `dismissKeyboardOnMessageTouch`. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
+
+- We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
+
+- We have also dropped support for the following `MessageList` props:
+  - `dateSeparator` (use DateSeparator instead)
+  - `headerComponent` (use HeaderComponent instead)
+
+*this Reference Removal*
+
+- We have removed the `this` class component reference from the prop functions in `MessageSimple`. For example, if you wish to override the SDK's standard long press behavior on a message, the `onLongPress` function passed in to `MessageSimple` no longer takes the `this` component reference as it's first argument. The message and the event object become the first and second arguments, respectively.
+
+*renderText Function*
+
+- The `renderText` function utilized in the `MessageTextContainer` component now accepts a single object containing `markdownRules`, `markdownStyles`, and `message`. Previously each value was a separate function parameter.
 
 ## [1.2.0] 2020-08-21
 

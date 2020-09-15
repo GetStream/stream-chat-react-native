@@ -2,8 +2,6 @@ export * from './components';
 export { registerNativeHandlers, NetInfo } from './native';
 export * from './context';
 
-export * from './utils/renderReactions';
-export * from './utils/renderText';
 export * from './utils/Streami18n';
 export * from './utils/utils';
 

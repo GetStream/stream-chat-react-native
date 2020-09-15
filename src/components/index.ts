@@ -40,6 +40,7 @@ import MessageReplies from './Message/MessageSimple/MessageReplies';
 import MessageSimple from './Message/MessageSimple/MessageSimple';
 import MessageStatus from './Message/MessageSimple/MessageStatus';
 import MessageTextContainer from './Message/MessageSimple/MessageTextContainer';
+import { renderText } from './Message/MessageSimple/utils/renderText';
 
 import ActionSheetAttachment from './MessageInput/ActionSheetAttachment';
 import AttachButton from './MessageInput/AttachButton';
@@ -59,6 +60,7 @@ import TypingIndicatorContainer from './MessageList/TypingIndicatorContainer';
 import ReactionList from './Reaction/ReactionList';
 import ReactionPicker from './Reaction/ReactionPicker';
 import ReactionPickerWrapper from './Reaction/ReactionPickerWrapper';
+import { renderReactions } from './Reaction/utils/renderReactions';
 
 import Spinner from './Spinner/Spinner';
 
@@ -112,6 +114,8 @@ export {
   ReactionList,
   ReactionPicker,
   ReactionPickerWrapper,
+  renderReactions,
+  renderText,
   SendButton,
   Spinner,
   SuggestionsList,

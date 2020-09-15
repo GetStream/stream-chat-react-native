@@ -265,9 +265,9 @@ const Channel = (props) => {
 
   const sendMessageRequest = async (message) => {
     const {
+      __html,
       attachments,
       created_at,
-      __html,
       html,
       id,
       mentioned_users,
