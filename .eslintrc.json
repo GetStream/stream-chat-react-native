@@ -139,6 +139,7 @@
         "@typescript-eslint/no-empty-interface": 0,
         "@typescript-eslint/ban-ts-comment": 0,
         "better-styled-components/sort-declarations-alphabetically": 1,
+        "react-hooks/exhaustive-deps": 0,
         "react-native/no-inline-styles": 0,
         "array-callback-return": 2,
         "arrow-body-style": 2,

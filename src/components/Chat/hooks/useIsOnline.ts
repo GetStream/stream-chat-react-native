@@ -1,23 +1,47 @@
 import { useEffect, useState } from 'react';
+import type {
+  NetInfoState,
+  NetInfoSubscription,
+} from '@react-native-community/netinfo';
+import type {
+  Event,
+  LiteralStringForUnion,
+  StreamChat,
+  UnknownType,
+} from 'stream-chat';
 
 import { NetInfo } from '../../../native';
 
-export const useIsOnline = ({ client }) => {
-  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState(null);
+export const useIsOnline = <
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
+>({
+  client,
+}: {
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+}) => {
+  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<
+    NetInfoSubscription
+  >();
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   useEffect(() => {
-    const handleChangedEvent = (e) => {
+    const handleChangedEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setConnectionRecovering(!e.online);
-      setIsOnline(e.online);
+      setIsOnline(e.online || false);
     };
 
     const handleRecoveredEvent = () => setConnectionRecovering(false);
 
-    const notifyChatClient = (isConnected) => {
+    const notifyChatClient = (netInfoState: NetInfoState) => {
       if (client && client.wsConnection) {
-        if (isConnected) {
+        if (netInfoState?.isConnected) {
           client.wsConnection.onlineStatusChanged({
             type: 'online',
           });
@@ -30,12 +54,12 @@ export const useIsOnline = ({ client }) => {
     };
 
     const setConnectionListener = () => {
-      NetInfo.fetch().then((isConnected) => {
-        notifyChatClient(isConnected);
+      NetInfo.fetch().then((netInfoState) => {
+        notifyChatClient(netInfoState);
       });
       setUnsubscribeNetInfo(
-        NetInfo.addEventListener((isConnected) => {
-          notifyChatClient(isConnected);
+        NetInfo.addEventListener((netInfoState) => {
+          notifyChatClient(netInfoState);
         }),
       );
     };
