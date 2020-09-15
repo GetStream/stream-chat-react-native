@@ -202,7 +202,6 @@ export const defaultTheme = {
       attachmentContainerView: {},
       attachmentView: {},
       container: {},
-      dismissText: {},
       filenameText: {},
     },
     imageUploadPreview: {
@@ -239,6 +238,7 @@ export const defaultTheme = {
     },
     uploadProgressIndicator: {
       container: {},
+      dismiss: {},
       overlay: {},
     },
   },

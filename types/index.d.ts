@@ -1141,6 +1141,7 @@ export interface UploadProgressIndicatorProps extends StyledComponentProps {
   active: boolean;
   type: 'in_progress' | 'retry';
   action?(event: GestureResponderEvent): void;
+  cancel?(event: GestureResponderEvent): void;
 }
 
 export interface AttachmentActionsProps extends StyledComponentProps {

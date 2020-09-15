@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, View } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
@@ -28,51 +28,71 @@ const Overlay = styled.View`
   ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
 `;
 
-const UploadProgressIndicator = ({ action, active, children, type }) =>
+const ActivityIndicatorContainer = styled.View`
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+const DismissText = styled.Text`
+  align-self: flex-end;
+  margin-right: 10px;
+  ${({ theme }) => theme.messageInput.uploadProgressIndicator.dismiss.css};
+`;
+
+const RetryButtonContainer = styled.TouchableOpacity`
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+const UploadProgressIndicator = ({ action, active, cancel, children, type }) =>
   !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
-    <TouchableOpacity
-      onPress={action}
-      testID='active-upload-progress-indicator'
-    >
+    <View testID='active-upload-progress-indicator'>
       {children}
       <Overlay />
       <Container>
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <View
-            style={{
-              alignItems: 'center',
-              bottom: 0,
-              justifyContent: 'center',
-              left: 0,
-              position: 'absolute',
-              right: 0,
-              top: 0,
-            }}
-          >
+          <ActivityIndicatorContainer style={{}}>
             <ActivityIndicator
-              color='white'
+              color='grey'
               testID='upload-progress-indicator'
             />
-          </View>
+          </ActivityIndicatorContainer>
         )}
         {type === ProgressIndicatorTypes.RETRY && (
-          <Image
-            source={iconReload}
-            style={{ height: 18, width: 18 }}
-            testID='retry-upload-progress-indicator'
-          />
+          <RetryButtonContainer onPress={action}>
+            <Image
+              source={iconReload}
+              style={{ height: 18, width: 18 }}
+              testID='retry-upload-progress-indicator'
+            />
+          </RetryButtonContainer>
         )}
+        <DismissText onPress={cancel} testID='remove-file-upload-preview'>
+          X
+        </DismissText>
       </Container>
-    </TouchableOpacity>
+    </View>
   );
 
 UploadProgressIndicator.propTypes = {
   /** Action triggered when clicked indicator */
   action: PropTypes.func,
-  /** Boolean status of upload progress */
   active: PropTypes.bool,
+  /** Action triggered when clicked cancel button */
+  cancel: PropTypes.func,
+  /** Boolean status of upload progress */
   /** Type of active indicator */
   type: PropTypes.oneOf([
     ProgressIndicatorTypes.IN_PROGRESS,

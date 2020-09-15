@@ -39,10 +39,6 @@ const Container = styled.View`
   ${({ theme }) => theme.messageInput.fileUploadPreview.container.css};
 `;
 
-const DismissText = styled.Text`
-  ${({ theme }) => theme.messageInput.fileUploadPreview.dismissText.css};
-`;
-
 const FilenameText = styled.Text`
   padding-left: 10px;
   ${({ theme }) => theme.messageInput.fileUploadPreview.filenameText.css};
@@ -73,8 +69,13 @@ const FileUploadPreview = ({
 
     return (
       <UploadProgressIndicator
-        action={() => (retryUpload ? retryUpload(item.id) : null)}
+        action={() => {
+          retryUpload ? retryUpload(item.id) : null;
+        }}
         active={item.state !== FileState.UPLOADED}
+        cancel={() => {
+          removeFile ? removeFile(item.id) : null;
+        }}
         type={type}
       >
         <AttachmentContainerView>
@@ -86,12 +87,6 @@ const FileUploadPreview = ({
                 : item.file.name}
             </FilenameText>
           </AttachmentView>
-          <DismissText
-            onPress={() => removeFile(item.id)}
-            testID='remove-file-upload-preview'
-          >
-            X
-          </DismissText>
         </AttachmentContainerView>
       </UploadProgressIndicator>
     );
