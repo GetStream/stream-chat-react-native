@@ -103,12 +103,22 @@ export const useAddedToChannelNotification = <
       if (typeof onAddedToChannel === 'function') {
         onAddedToChannel(setChannels, e);
       } else {
-        const channel = await getChannel(
-          client,
-          e.channel?.type,
-          e.channel?.id,
-        );
-        setChannels((channels) => uniqBy([channel, ...channels], 'cid'));
+        if (e.channel?.id && e.channel?.type) {
+          const channel = await getChannel<
+            AttachmentType,
+            ChannelType,
+            CommandType,
+            EventType,
+            MessageType,
+            ReactionType,
+            UserType
+          >({
+            client,
+            id: e.channel.id,
+            type: e.channel.type,
+          });
+          setChannels((channels) => uniqBy([channel, ...channels], 'cid'));
+        }
       }
     };
 

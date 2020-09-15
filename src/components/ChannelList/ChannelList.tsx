@@ -71,6 +71,150 @@ type Props<
       UserType
     >,
   ) => void;
+  onChannelDeleted: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
+  onChannelHidden: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
+  onChannelTruncated: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
+  onChannelUpdated: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
+  onMessageNew: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
+  onRemovedFromChannel: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<
+        Channel<
+          AttachmentType,
+          ChannelType,
+          CommandType,
+          EventType,
+          MessageType,
+          ReactionType,
+          UserType
+        >[]
+      >
+    >,
+    e: Event<
+      AttachmentType,
+      ChannelType,
+      CommandType,
+      EventType,
+      MessageType,
+      ReactionType,
+      UserType
+    >,
+  ) => void;
   options: ChannelOptions;
   sort: ChannelSort<ChannelType>;
 };
@@ -132,13 +276,13 @@ const ChannelList = <
     setChannels,
     status,
   } = usePaginatedChannels<
-    ChannelType,
-    UserType,
-    MessageType,
     AttachmentType,
-    ReactionType,
+    ChannelType,
+    CommandType,
     EventType,
-    CommandType
+    MessageType,
+    ReactionType,
+    UserType
   >({
     filters,
     options,
@@ -153,7 +297,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onAddedToChannel, setChannels });
 
   useChannelDeleted<
@@ -163,7 +307,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onChannelDeleted, setChannels });
 
   useChannelHidden<
@@ -173,7 +317,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onChannelHidden, setChannels });
 
   useChannelTruncated<
@@ -183,7 +327,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onChannelTruncated, setChannels, setForceUpdate });
 
   useChannelUpdated<
@@ -193,7 +337,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onChannelUpdated, setChannels });
 
   useConnectionRecovered<
@@ -203,7 +347,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ setForceUpdate });
 
   useNewMessage<
@@ -213,7 +357,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ lockChannelOrder, setChannels });
 
   useNewMessageNotification<
@@ -223,7 +367,7 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onMessageNew, setChannels });
 
   useRemovedFromChannelNotification<
@@ -233,17 +377,17 @@ const ChannelList = <
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ onRemovedFromChannel, setChannels });
 
   useUserPresence<
     AttachmentType,
     ChannelType,
-    CommandType
+    CommandType,
     EventType,
     MessageType,
     ReactionType,
-    UserType,
+    UserType
   >({ setChannels });
 
   return (

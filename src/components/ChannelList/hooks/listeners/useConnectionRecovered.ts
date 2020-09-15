@@ -1,9 +1,32 @@
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
+import type { LiteralStringForUnion, UnknownType } from 'stream-chat';
 
-import { ChatContext } from '../../../../context';
+import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
-export const useConnectionRecovered = ({ setForceUpdate }) => {
-  const { client } = useContext(ChatContext);
+type Parameters = {
+  setForceUpdate: React.Dispatch<React.SetStateAction<number>>;
+};
+
+export const useConnectionRecovered = <
+  AttachmentType extends UnknownType = UnknownType,
+  ChannelType extends UnknownType = UnknownType,
+  CommandType extends string = LiteralStringForUnion,
+  EventType extends UnknownType = UnknownType,
+  MessageType extends UnknownType = UnknownType,
+  ReactionType extends UnknownType = UnknownType,
+  UserType extends UnknownType = UnknownType
+>({
+  setForceUpdate,
+}: Parameters) => {
+  const { client } = useChatContext<
+    AttachmentType,
+    ChannelType,
+    CommandType,
+    EventType,
+    MessageType,
+    ReactionType,
+    UserType
+  >();
 
   useEffect(() => {
     const handleEvent = () => {
