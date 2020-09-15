@@ -13,25 +13,17 @@ import type {
 import { NetInfo } from '../../../native';
 
 export const useIsOnline = <
-  ChannelType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  AttachmentType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  EventType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   client,
 }: {
-  client: StreamChat<
-    ChannelType,
-    UserType,
-    MessageType,
-    AttachmentType,
-    ReactionType,
-    EventType,
-    CommandType
-  >;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
 }) => {
   const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<
     NetInfoSubscription
@@ -40,17 +32,7 @@ export const useIsOnline = <
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   useEffect(() => {
-    const handleChangedEvent = (
-      e: Event<
-        EventType,
-        AttachmentType,
-        ChannelType,
-        MessageType,
-        ReactionType,
-        UserType,
-        CommandType
-      >,
-    ) => {
+    const handleChangedEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setConnectionRecovering(!e.online);
       setIsOnline(e.online || false);
     };

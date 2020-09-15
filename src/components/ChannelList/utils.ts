@@ -6,46 +6,30 @@ import type {
 } from 'stream-chat';
 
 type MoveParameters<
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 > = {
-  channels: Channel<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >[];
+  channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
   cid: string;
 };
 
 export const moveChannelUp = <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   cid,
   channels = [],
-}: MoveParameters<
-  AttachmentType,
-  ChannelType,
-  CommandType,
-  EventType,
-  MessageType,
-  ReactionType,
-  UserType
->) => {
+}: MoveParameters<At, Ch, Co, Ev, Me, Re, Us>) => {
   // get channel from channels
   const index = channels.findIndex((c) => c.cid === cid);
   if (index <= 0) return channels;
@@ -59,48 +43,32 @@ export const moveChannelUp = <
 };
 
 type GetParameters<
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 > = {
-  client: StreamChat<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   id: string;
   type: string;
 };
 
 export const getChannel = async <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   client,
   id,
   type,
-}: GetParameters<
-  AttachmentType,
-  ChannelType,
-  CommandType,
-  EventType,
-  MessageType,
-  ReactionType,
-  UserType
->) => {
+}: GetParameters<At, Ch, Co, Ev, Me, Re, Us>) => {
   const channel = client.channel(type, id);
   await channel.watch();
   return channel;

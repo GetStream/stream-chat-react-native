@@ -8,25 +8,17 @@ type Parameters = {
 };
 
 export const useConnectionRecovered = <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   setForceUpdate,
 }: Parameters) => {
-  const { client } = useChatContext<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
     const handleEvent = () => {

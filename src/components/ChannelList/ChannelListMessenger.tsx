@@ -1,25 +1,181 @@
-import React, { useContext } from 'react';
-import { FlatList } from 'react-native';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { FlatList, FlatListProps } from 'react-native';
+import type { Channel, LiteralStringForUnion, UnknownType } from 'stream-chat';
 
 import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
-import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
+import ChannelListHeaderErrorIndicator, {
+  HeaderErrorProps,
+} from './ChannelListHeaderErrorIndicator';
 import ChannelListHeaderNetworkDownIndicator from './ChannelListHeaderNetworkDownIndicator';
-
 import ChannelPreview from '../ChannelPreview/ChannelPreview';
 import ChannelPreviewMessenger from '../ChannelPreview/ChannelPreviewMessenger';
-import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
-import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
-import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
+import EmptyStateIndicatorDefault, {
+  EmptyStateProps,
+} from '../Indicators/EmptyStateIndicator';
+import LoadingErrorIndicatorDefault, {
+  LoadingErrorProps,
+} from '../Indicators/LoadingErrorIndicator';
+import LoadingIndicatorDefault, {
+  LoadingProps,
+} from '../Indicators/LoadingIndicator';
 
-import { ChatContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+
+export type ListMessengerProps<
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
+> = {
+  /**
+   * Channels can be either an array of channels or a promise which resolves to an array of channels
+   */
+  channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
+  /**
+   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
+   * additional props to the underlying React Native FlatList.
+   *
+   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+   *
+   * **EXAMPLE:**
+   *
+   * ```
+   * <ChannelListMessenger
+   *  channels={channels}
+   *  additionalFlatListProps={{ bounces: true }}
+   * />
+   * ```
+   *
+   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
+   */
+  additionalFlatListProps?: FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Custom indicator to use when channel list is empty
+   *
+   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
+   * */
+  EmptyStateIndicator?: React.ComponentType<Partial<EmptyStateProps>>;
+  /**
+   * Error in channels query, if any
+   * */
+  error?: boolean;
+  /**
+   * Custom loading indicator to display at bottom of the list, while loading further pages
+   *
+   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
+   */
+  FooterLoadingIndicator?: React.ComponentType;
+  /**
+   * Incremental number change to force update the FlatList
+   */
+  forceUpdate?: number;
+  /**
+   * Whether or not the FlatList has another page to render
+   */
+  hasNextPage?: boolean;
+  /**
+   * Custom indicator to display error at top of list, if loading/pagination error occurs
+   *
+   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
+   */
+  HeaderErrorIndicator?: React.ComponentType<Partial<HeaderErrorProps>>;
+  /**
+   * Custom indicator to display network-down error at top of list, if there is connectivity issue
+   *
+   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
+   */
+  HeaderNetworkDownIndicator?: React.ComponentType;
+  /**
+   * Initial channels query loading state, triggers the LoadingIndicator
+   */
+  loadingChannels?: boolean;
+  /**
+   * Custom indicator to use when there is error in fetching channels
+   *
+   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
+   * */
+  LoadingErrorIndicator?: React.ComponentType<Partial<LoadingErrorProps>>;
+  /**
+   * Custom loading indicator to use
+   *
+   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
+   * */
+  LoadingIndicator?: React.ComponentType<Partial<LoadingProps>>;
+  /**
+   * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
+   * */
+  loadingNextPage?: boolean;
+  /**
+   * The React Native FlatList threshold to fetch more data
+   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
+   * */
+  loadMoreThreshold?: number;
+  /**
+   * Loads the next page of `channels`, which is present as a required prop
+   * */
+  loadNextPage?: () => Promise<void> | null;
+  /**
+   * Custom UI component to display individual channel list items
+   *
+   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
+   * */
+  Preview?: React.ComponentType; // TODO: add Partial<ChannelPreviewProps>
+  /**
+   * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
+   * */
+  refreshing?: boolean;
+  /**
+   * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
+   * from UI before loading the new ones
+   */
+  refreshList?: () => Promise<void>;
+
+  /**
+   * Removes all the existing channels from UI and loads fresh channels
+   * */
+  reloadList?: () => Promise<void>;
+  /**
+   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
+   *
+   * @param channel A channel object
+   * */
+  setActiveChannel?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * Function to gain access to the inner FlatList ref
+   *
+   * **Example:**
+   *
+   * ```
+   * <ChannelListMessenger
+   *  setFlatListRef={(ref) => {
+   *    // Use ref for your own good
+   *  }}
+   * ```
+   */
+  setFlatListRef?: (
+    ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
+  ) => void;
+};
 
 /**
  * This UI component displays the preview list of channels and handles Channel navigation.
  *
  * @example ../docs/ChannelListMessenger.md
  */
-const ChannelListMessenger = (props) => {
+const ChannelListMessenger = <
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
+>(
+  props: ListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const {
     additionalFlatListProps = {},
     channels,
@@ -37,7 +193,7 @@ const ChannelListMessenger = (props) => {
     setFlatListRef,
   } = props;
 
-  const { isOnline } = useContext(ChatContext);
+  const { isOnline } = useChatContext();
 
   const renderLoading = () => {
     const { LoadingIndicator = LoadingIndicatorDefault } = props;
@@ -71,6 +227,7 @@ const ChannelListMessenger = (props) => {
     } else if (error) {
       return <HeaderErrorIndicator onPress={refreshList} />;
     }
+    return null;
   };
 
   const renderChannels = () => {
@@ -123,150 +280,5 @@ const ChannelListMessenger = (props) => {
     return renderChannels();
   }
 };
-
-/* eslint-disable */
-ChannelListMessenger.propTypes = {
-  /**
-   * Channels can be either an array of channels or a promise which resolves to an array of channels
-   */
-  channels: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.objectOf({
-      then: PropTypes.func,
-    }),
-  ]).isRequired,
-  /**
-   * Besides the existing default behavior of the ChannelListMessenger component, you can attach
-   * additional props to the underlying React Native FlatList.
-   *
-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-   *
-   * **Example:**
-   *
-   * ```
-   * <ChannelListMessenger
-   *  channels={channels}
-   *  additionalFlatListProps={{ bounces: true }}
-   * />
-   * ```
-   *
-   * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
-   */
-  additionalFlatListProps: PropTypes.object,
-  /**
-   * Error in channels query, if any
-   * */
-  error: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-  /**
-   * Initial channels query loading state, triggers the LoadingIndicator
-   */
-  loadingChannels: PropTypes.bool,
-  /**
-   * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
-   * */
-  loadingNextPage: PropTypes.bool,
-  /**
-   * The React Native FlatList threshold to fetch more data
-   * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
-   * */
-  loadMoreThreshold: PropTypes.number,
-  /**
-   * Loads the next page of `channels`, which is present as a required prop
-   * */
-  loadNextPage: PropTypes.func,
-  /**
-   * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
-   * */
-  refreshing: PropTypes.bool,
-  /**
-   * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
-   * from UI before loading the new ones
-   */
-  refreshList: PropTypes.func,
-  /**
-   * Removes all the existing channels from UI and loads fresh channels
-   * */
-  reloadList: PropTypes.func,
-  /**
-   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
-   *
-   * @param channel A channel object
-   * */
-  setActiveChannel: PropTypes.func,
-  /**
-   * Function to gain access to the inner FlatList ref
-   *
-   * **Example:**
-   *
-   * ```
-   * <ChannelListMessenger
-   *  setFlatListRef={(ref) => {
-   *    // Use ref for your own good
-   *  }}
-   * ```
-   */
-  setFlatListRef: PropTypes.func,
-  /**
-   * Custom indicator to use when channel list is empty
-   *
-   * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
-   * */
-  EmptyStateIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom loading indicator to display at bottom of the list, while loading further pages
-   *
-   * Default: [ChannelListFooterLoadingIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListFooterLoadingIndicator)
-   */
-  FooterLoadingIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom indicator to display error at top of list, if loading/pagination error occurs
-   *
-   * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
-   */
-  HeaderErrorIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom indicator to display network-down error at top of list, if there is connectivity issue
-   *
-   * Default: [ChannelListHeaderNetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderNetworkDownIndicator)
-   */
-  HeaderNetworkDownIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom indicator to use when there is error in fetching channels
-   *
-   * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
-   * */
-  LoadingErrorIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom loading indicator to use
-   *
-   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
-   * */
-  LoadingIndicator: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component to display individual channel list items
-   *
-   * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
-   * */
-  Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-};
-/* eslint-enable */
 
 export default ChannelListMessenger;

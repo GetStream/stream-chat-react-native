@@ -11,95 +11,41 @@ import { getChannel } from '../../utils';
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 type Parameters<
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 > = {
-  onMessageNew: (
-    setChannels: React.Dispatch<
-      React.SetStateAction<
-        Channel<
-          AttachmentType,
-          ChannelType,
-          CommandType,
-          EventType,
-          MessageType,
-          ReactionType,
-          UserType
-        >[]
-      >
-    >,
-    e: Event<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >,
-  ) => void;
   setChannels: React.Dispatch<
-    React.SetStateAction<
-      Channel<
-        AttachmentType,
-        ChannelType,
-        CommandType,
-        EventType,
-        MessageType,
-        ReactionType,
-        UserType
-      >[]
-    >
+    React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
   >;
+  onMessageNew?: (
+    setChannels: React.Dispatch<
+      React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
+    >,
+    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
 };
 
 export const useNewMessageNotification = <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   onMessageNew,
   setChannels,
-}: Parameters<
-  AttachmentType,
-  ChannelType,
-  CommandType,
-  EventType,
-  MessageType,
-  ReactionType,
-  UserType
->) => {
-  const { client } = useChatContext<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >();
+}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = async (
-      e: Event<
-        AttachmentType,
-        ChannelType,
-        CommandType,
-        EventType,
-        MessageType,
-        ReactionType,
-        UserType
-      >,
-    ) => {
+    const handleEvent = async (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (typeof onMessageNew === 'function') {
         onMessageNew(setChannels, e);
       } else {

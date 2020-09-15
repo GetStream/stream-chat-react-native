@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import type {
   Channel,
   ChannelFilters,
@@ -10,6 +9,7 @@ import type {
 } from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
@@ -17,48 +17,32 @@ const wait = (ms: number) =>
   });
 
 type Parameters<
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  UserType extends UnknownType = UnknownType
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Us extends UnknownType = UnknownType
 > = {
-  filters: ChannelFilters<ChannelType, CommandType, UserType>;
+  filters: ChannelFilters<Ch, Co, Us>;
   options: ChannelOptions;
-  sort: ChannelSort<ChannelType>;
+  sort: ChannelSort<Ch>;
 };
 
 export const usePaginatedChannels = <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >({
   filters = {},
   options = {},
   sort = {},
-}: Parameters<ChannelType, CommandType, UserType>) => {
-  const { client } = useChatContext<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >();
+}: Parameters<Ch, Co, Us>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const [channels, setChannels] = useState<
-    Channel<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >[]
+    Channel<At, Ch, Co, Ev, Me, Re, Us>[]
   >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);

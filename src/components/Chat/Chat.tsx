@@ -22,24 +22,16 @@ import type { Streami18n } from '../../utils/Streami18n';
 import { version } from '../../../package.json';
 
 type Props<
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 > = {
   /** The StreamChat client object */
-  client: StreamChat<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
-  >;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
@@ -113,39 +105,19 @@ type Props<
  * @example ./Chat.md
  */
 const Chat = <
-  AttachmentType extends UnknownType = UnknownType,
-  ChannelType extends UnknownType = UnknownType,
-  CommandType extends string = LiteralStringForUnion,
-  EventType extends UnknownType = UnknownType,
-  MessageType extends UnknownType = UnknownType,
-  ReactionType extends UnknownType = UnknownType,
-  UserType extends UnknownType = UnknownType
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
 >(
-  props: PropsWithChildren<
-    Props<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >
-  >,
+  props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const { children, client, i18nInstance, logger = () => null } = props;
 
-  const [channel, setChannel] = useState<
-    Channel<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >
-  >();
+  const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
@@ -156,13 +128,13 @@ const Chat = <
 
   // Setup connection event listeners
   const { connectionRecovering, isOnline } = useIsOnline<
-    AttachmentType,
-    ChannelType,
-    CommandType,
-    EventType,
-    MessageType,
-    ReactionType,
-    UserType
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
   >({
     client,
   });
@@ -171,17 +143,8 @@ const Chat = <
     client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
   }, []);
 
-  const setActiveChannel = (
-    newChannel?: Channel<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >,
-  ) => setChannel(newChannel);
+  const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
+    setChannel(newChannel);
 
   if (!translators.t) return null;
 
@@ -195,17 +158,7 @@ const Chat = <
   };
 
   return (
-    <ChatProvider<
-      AttachmentType,
-      ChannelType,
-      CommandType,
-      EventType,
-      MessageType,
-      ReactionType,
-      UserType
-    >
-      value={chatContext}
-    >
+    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
       <TranslationProvider value={translators}>{children}</TranslationProvider>
     </ChatProvider>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useTranslationContext } from '../../contexts/TranslationContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
@@ -24,17 +24,16 @@ const RetryText = styled.Text`
   ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
 `;
 
-type Props = {
+export type LoadingErrorProps = {
   listType: 'channel' | 'message' | 'default';
   error?: boolean;
   loadNextPage?: () => Promise<void> | null;
   retry?: () => Promise<void>;
 };
 
-const LoadingErrorIndicator: React.FC<Props> & { themePath: string } = ({
-  listType,
-  retry = () => null,
-}) => {
+const LoadingErrorIndicator: React.FC<LoadingErrorProps> & {
+  themePath: string;
+} = ({ listType, retry = () => null }) => {
   const { t } = useTranslationContext();
 
   switch (listType) {
