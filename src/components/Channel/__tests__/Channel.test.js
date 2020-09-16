@@ -76,7 +76,7 @@ describe('Channel', () => {
     cleanup();
   });
 
-  it('should render simple text if the channel prop is not provided', async () => {
+  it('should render a simple text error if the channel id does not exist', async () => {
     const nullChannel = { ...channel, cid: null };
     const { getByTestId } = renderComponent({ channel: nullChannel });
 
