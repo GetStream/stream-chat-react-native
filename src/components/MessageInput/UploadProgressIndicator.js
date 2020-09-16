@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, Image, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, View } from 'react-native';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
@@ -28,44 +28,53 @@ const Overlay = styled.View`
   ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
 `;
 
+const ActivityIndicatorContainer = styled.View`
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
+const RetryButtonContainer = styled.TouchableOpacity`
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
 const UploadProgressIndicator = ({ action, active, children, type }) =>
   !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
-    <TouchableOpacity
-      onPress={action}
-      testID='active-upload-progress-indicator'
-    >
+    <View testID='active-upload-progress-indicator'>
       {children}
       <Overlay />
       <Container>
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <View
-            style={{
-              alignItems: 'center',
-              bottom: 0,
-              justifyContent: 'center',
-              left: 0,
-              position: 'absolute',
-              right: 0,
-              top: 0,
-            }}
-          >
+          <ActivityIndicatorContainer>
             <ActivityIndicator
-              color='white'
+              color='grey'
               testID='upload-progress-indicator'
             />
-          </View>
+          </ActivityIndicatorContainer>
         )}
         {type === ProgressIndicatorTypes.RETRY && (
-          <Image
-            source={iconReload}
-            style={{ height: 18, width: 18 }}
-            testID='retry-upload-progress-indicator'
-          />
+          <RetryButtonContainer onPress={action}>
+            <Image
+              source={iconReload}
+              style={{ height: 18, width: 18 }}
+              testID='retry-upload-progress-indicator'
+            />
+          </RetryButtonContainer>
         )}
       </Container>
-    </TouchableOpacity>
+    </View>
   );
 
 UploadProgressIndicator.propTypes = {

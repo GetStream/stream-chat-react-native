@@ -264,33 +264,32 @@ export interface MessageInputProps
     SuggestionsContextValue,
     TranslationContextValue,
     StyledComponentProps {
+  ActionSheetAttachment?: React.ElementType<ActionSheetAttachmentProps>;
+  /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
+  actionSheetStyles?: object;
+  additionalTextInputProps?: object;
+  AttachButton?: React.ElementType<AttachButtonProps>;
+  AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
+  compressImageQuality?: number;
+  /** Override file upload request */
+  doFileUploadRequest?(file: File): Promise<FileUploadResponse>;
+  /** Override image upload request */
+  doImageUploadRequest?(file: File): Promise<FileUploadResponse>;
+  FileUploadPreview?: React.ElementType<FileUploadPreviewProps>;
+  hasFilePicker?: boolean;
+  hasImagePicker?: boolean;
+  ImageUploadPreview?: React.ElementType<ImageUploadPreviewProps>;
+  initialValue?: string;
+  /** The parent message object when replying on a thread */
+  /** The component handling how the input is rendered */
+  Input?: React.ElementType<InputUIComponentProps>;
+  maxNumberOfFiles?: number;
   /** Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler. */
   onChangeText?(newText: string): void;
   /** Initial value to set on input */
-  initialValue?: string;
-  /** The parent message object when replying on a thread */
   parent?: Client.Message | null;
-
-  /** The component handling how the input is rendered */
-  Input?: React.ElementType<InputUIComponentProps>;
-
-  /** Override image upload request */
-  doImageUploadRequest?(file: File): Promise<FileUploadResponse>;
-
-  /** Override file upload request */
-  doFileUploadRequest?(file: File): Promise<FileUploadResponse>;
-  maxNumberOfFiles?: number;
-  hasImagePicker?: boolean;
-  hasFilePicker?: boolean;
-  focus?: boolean;
-  sendImageAsync?: boolean;
-  /** https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js */
-  actionSheetStyles?: object;
-  AttachmentFileIcon?: React.ElementType<FileIconUIComponentProps>;
-  AttachButton?: React.ElementType<AttachButtonProps>;
-  ActionSheetAttachment?: React.ElementType<ActionSheetAttachmentProps>;
   SendButton: React.ElementType<SendButtonProps>;
-  additionalTextInputProps?: object;
+  sendImageAsync?: boolean;
 }
 
 export interface DocumentPickerFile {
