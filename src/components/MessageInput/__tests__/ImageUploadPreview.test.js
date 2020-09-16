@@ -49,13 +49,6 @@ describe('ImageUploadPreview', () => {
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('active-upload-progress-indicator')[0]);
-
-    await waitFor(() => {
-      expect(removeImage).toHaveBeenCalledTimes(1);
-      expect(retryUpload).toHaveBeenCalledTimes(1);
-    });
-
     rerender(
       <ImageUploadPreview
         imageUploads={imageUploads.map((image, index) => ({
@@ -170,7 +163,7 @@ describe('ImageUploadPreview', () => {
       expect(retryUpload).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getAllByTestId('active-upload-progress-indicator')[0]);
+    fireEvent.press(getAllByTestId('retry-upload-progress-indicator')[0]);
 
     await waitFor(() => {
       expect(removeImage).toHaveBeenCalledTimes(1);

@@ -69,7 +69,11 @@ const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
     return (
       <ItemContainer>
         <UploadProgressIndicator
-          action={() => (retryUpload ? retryUpload(item.id) : null)}
+          action={() => {
+            if (retryUpload) {
+              retryUpload(item.id);
+            }
+          }}
           active={item.state !== FileState.UPLOADED}
           type={type}
         >
@@ -79,7 +83,11 @@ const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
           />
         </UploadProgressIndicator>
         <Dismiss
-          onPress={() => removeImage(item.id)}
+          onPress={() => {
+            if (removeImage) {
+              removeImage(item.id);
+            }
+          }}
           testID='remove-image-upload-preview'
         >
           <DismissImage source={closeRound} />

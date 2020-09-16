@@ -2,21 +2,6 @@
 
 exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgressIndicator 1`] = `
 <View
-  accessible={true}
-  focusable={true}
-  isTVSelectable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    Object {
-      "opacity": 1,
-    }
-  }
   testID="active-upload-progress-indicator"
 >
   <View
@@ -50,20 +35,22 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
   >
     <View
       style={
-        Object {
-          "alignItems": "center",
-          "bottom": 0,
-          "justifyContent": "center",
-          "left": 0,
-          "position": "absolute",
-          "right": 0,
-          "top": 0,
-        }
+        Array [
+          Object {
+            "alignItems": "center",
+            "bottom": 0,
+            "justifyContent": "center",
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+        ]
       }
     >
       <ActivityIndicator
         animating={true}
-        color="white"
+        color="grey"
         hidesWhenStopped={true}
         size="small"
         testID="upload-progress-indicator"
@@ -75,21 +62,6 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
 
 exports[`UploadProgressIndicator should render an active RETRY UploadProgressIndicator 1`] = `
 <View
-  accessible={true}
-  focusable={true}
-  isTVSelectable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
-  style={
-    Object {
-      "opacity": 1,
-    }
-  }
   testID="active-upload-progress-indicator"
 >
   <View
@@ -121,20 +93,45 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
       ]
     }
   >
-    <Image
-      source={
-        Object {
-          "testUri": "../../../src/images/reload1.png",
-        }
-      }
+    <View
+      accessible={true}
+      focusable={true}
+      isTVSelectable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "height": 18,
-          "width": 18,
+          "alignItems": "center",
+          "bottom": 0,
+          "justifyContent": "center",
+          "left": 0,
+          "opacity": 1,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
         }
       }
-      testID="retry-upload-progress-indicator"
-    />
+    >
+      <Image
+        source={
+          Object {
+            "testUri": "../../../src/images/reload1.png",
+          }
+        }
+        style={
+          Object {
+            "height": 18,
+            "width": 18,
+          }
+        }
+        testID="retry-upload-progress-indicator"
+      />
+    </View>
   </View>
 </View>
 `;
