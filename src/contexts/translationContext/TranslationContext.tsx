@@ -2,6 +2,8 @@ import React, { useContext } from 'react';
 import Dayjs from 'dayjs';
 import type { Moment } from 'moment';
 
+import { getDisplayName } from '../utils/getDisplayName';
+
 export type TranslationContextValue = {
   t: (key: string) => string;
   tDateTimeParser: (
@@ -24,10 +26,16 @@ export const TranslationProvider: React.FC<{
 
 export const useTranslationContext = () => useContext(TranslationContext);
 
-export const withTranslationContext = <P extends object>(
+export const withTranslationContext = <P extends Record<string, unknown>>(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof TranslationContextValue>> => (props) => {
-  const translationContext = useTranslationContext();
+): React.FC<Omit<P, keyof TranslationContextValue>> => {
+  const TranslatedComponent = (
+    props: Omit<P, keyof TranslationContextValue>,
+  ) => {
+    const translationContext = useTranslationContext();
 
-  return <Component {...(props as P)} {...translationContext} />;
+    return <Component {...(props as P)} {...translationContext} />;
+  };
+  TranslatedComponent.displayName = `Translated${getDisplayName(Component)}`;
+  return TranslatedComponent;
 };

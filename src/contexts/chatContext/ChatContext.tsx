@@ -6,6 +6,8 @@ import type {
   UnknownType,
 } from 'stream-chat';
 
+import { getDisplayName } from '../utils/getDisplayName';
+
 export type ChatContextValue<
   At extends UnknownType = UnknownType,
   Ch extends UnknownType = UnknownType,
@@ -69,7 +71,7 @@ export const useChatContext = <
  * wrapped component must be provided as the first generic.
  */
 export const withChatContext = <
-  P extends object,
+  P extends Record<string, unknown>,
   At extends UnknownType = UnknownType,
   Ch extends UnknownType = UnknownType,
   Co extends string = LiteralStringForUnion,
@@ -79,10 +81,16 @@ export const withChatContext = <
   Us extends UnknownType = UnknownType
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => (
-  props,
-) => {
-  const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+  const WithChatContextComponent = (
+    props: Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+  ) => {
+    const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return <Component {...(props as P)} {...chatContext} />;
+    return <Component {...(props as P)} {...chatContext} />;
+  };
+  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(
+    Component,
+  )}`;
+  return WithChatContextComponent;
 };
