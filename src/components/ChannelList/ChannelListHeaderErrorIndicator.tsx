@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { styled } from '../../styles/styledComponents';
 
-import { TranslationContext } from '../../context';
+import type { GestureResponderEvent } from 'react-native';
+
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -21,8 +22,15 @@ const ErrorText = styled.Text`
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
 `;
 
-const ChannelListHeaderErrorIndicator = ({ onPress = () => {} }) => {
-  const { t } = useContext(TranslationContext);
+export type HeaderErrorProps = {
+  onPress?: (event: GestureResponderEvent) => Promise<void> | null;
+};
+
+const ChannelListHeaderErrorIndicator = ({
+  onPress = () => null,
+}: HeaderErrorProps) => {
+  const { t } = useTranslationContext();
+
   return (
     <Container onPress={onPress}>
       <ErrorText testID='channel-loading-error'>
@@ -30,10 +38,6 @@ const ChannelListHeaderErrorIndicator = ({ onPress = () => {} }) => {
       </ErrorText>
     </Container>
   );
-};
-
-ChannelListHeaderErrorIndicator.propTypes = {
-  onPress: PropTypes.func,
 };
 
 export default ChannelListHeaderErrorIndicator;

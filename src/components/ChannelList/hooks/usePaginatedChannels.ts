@@ -1,20 +1,50 @@
 import { useEffect, useState } from 'react';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  LiteralStringForUnion,
+  UnknownType,
+} from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms) => {
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
+const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+
+type Parameters<
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Us extends UnknownType = UnknownType
+> = {
+  filters: ChannelFilters<Ch, Co, Us>;
+  options: ChannelOptions;
+  sort: ChannelSort<Ch>;
 };
 
-export const usePaginatedChannels = ({
-  client,
+export const usePaginatedChannels = <
+  At extends UnknownType = UnknownType,
+  Ch extends UnknownType = UnknownType,
+  Co extends string = LiteralStringForUnion,
+  Ev extends UnknownType = UnknownType,
+  Me extends UnknownType = UnknownType,
+  Re extends UnknownType = UnknownType,
+  Us extends UnknownType = UnknownType
+>({
   filters = {},
   options = {},
   sort = {},
-}) => {
-  const [channels, setChannels] = useState([]);
+}: Parameters<Ch, Co, Us>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const [channels, setChannels] = useState<
+    Channel<At, Ch, Co, Ev, Me, Re, Us>[]
+  >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loadingChannels, setLoadingChannels] = useState(false);
@@ -22,7 +52,10 @@ export const usePaginatedChannels = ({
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (queryType = '', retryCount = 0) => {
+  const queryChannels = async (
+    queryType = '',
+    retryCount = 0,
+  ): Promise<void> => {
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
@@ -76,9 +109,7 @@ export const usePaginatedChannels = ({
     setRefreshing(false);
   };
 
-  const loadNextPage = () => {
-    if (hasNextPage) return queryChannels();
-  };
+  const loadNextPage = () => (hasNextPage ? queryChannels() : null);
   const refreshList = () => queryChannels('refresh');
   const reloadList = () => queryChannels('reload');
 

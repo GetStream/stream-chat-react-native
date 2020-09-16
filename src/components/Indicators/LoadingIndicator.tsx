@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
 import Spinner from '../Spinner/Spinner';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
@@ -19,7 +19,7 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css};
 `;
 
-type Props = {
+export type LoadingProps = {
   listType?: 'channel' | 'message' | 'default';
   loadingText?: string;
 };
@@ -29,11 +29,11 @@ type Props = {
  *
  * @example ./LoadingIndicator.md
  */
-const LoadingIndicator: React.FC<Props> & { themePath: string } = ({
+const LoadingIndicator: React.FC<LoadingProps> & { themePath: string } = ({
   listType,
   loadingText,
 }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
   let indicatorText = '';
 
   switch (listType) {
