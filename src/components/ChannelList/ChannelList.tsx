@@ -131,7 +131,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
@@ -142,7 +142,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
@@ -153,7 +153,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function to customize behavior when a channel gets truncated
@@ -164,7 +164,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function that overrides default behavior when a channel gets updated
@@ -175,7 +175,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function that overrides default behavior when new message is received on channel not currently being watched
@@ -186,7 +186,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Function that overrides default behavior when a user gets removed from a channel
@@ -197,7 +197,7 @@ type Props<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
    * Object containing channel query options
