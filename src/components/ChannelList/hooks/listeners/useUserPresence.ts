@@ -36,13 +36,13 @@ export const useUserPresence = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setChannels((channels) => {
         const newChannels = channels.map((channel) => {
-          if (!e.user?.id || !channel.state.members[e.user?.id]) {
+          if (!event.user?.id || !channel.state.members[event.user?.id]) {
             return channel;
           } else {
-            channel.state.members.setIn([e.user.id, 'user'], e.user);
+            channel.state.members.setIn([event.user.id, 'user'], event.user);
             return channel;
           }
         });

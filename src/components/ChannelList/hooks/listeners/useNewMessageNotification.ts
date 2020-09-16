@@ -8,6 +8,7 @@ import type {
 } from 'stream-chat';
 
 import { getChannel } from '../../utils';
+
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 type Parameters<
@@ -26,7 +27,7 @@ type Parameters<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
 
@@ -45,15 +46,15 @@ export const useNewMessageNotification = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = async (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = async (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (typeof onMessageNew === 'function') {
-        onMessageNew(setChannels, e);
+        onMessageNew(setChannels, event);
       } else {
-        if (e.channel?.id && e.channel?.type) {
+        if (event.channel?.id && event.channel?.type) {
           const channel = await getChannel({
             client,
-            id: e.channel.id,
-            type: e.channel.type,
+            id: event.channel.id,
+            type: event.channel.type,
           });
           setChannels((channels) => uniqBy([channel, ...channels], 'cid'));
         }

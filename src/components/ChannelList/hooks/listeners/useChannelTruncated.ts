@@ -25,7 +25,7 @@ type Parameters<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
 
@@ -45,9 +45,9 @@ export const useChannelTruncated = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (typeof onChannelTruncated === 'function') {
-        onChannelTruncated(setChannels, e);
+        onChannelTruncated(setChannels, event);
       }
       setForceUpdate((count) => count + 1);
     };

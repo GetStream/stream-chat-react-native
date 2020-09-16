@@ -24,7 +24,7 @@ type Parameters<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
 
@@ -43,16 +43,16 @@ export const useChannelUpdated = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (typeof onChannelUpdated === 'function') {
-        onChannelUpdated(setChannels, e);
+        onChannelUpdated(setChannels, event);
       } else {
         setChannels((channels) => {
           const index = channels.findIndex(
-            (c) => c.cid === (e.cid || e.channel?.cid),
+            (channel) => channel.cid === (event.cid || event.channel?.cid),
           );
-          if (index >= 0 && e.channel) {
-            channels[index].data = e.channel;
+          if (index >= 0 && event.channel) {
+            channels[index].data = event.channel;
           }
           return [...channels];
         });

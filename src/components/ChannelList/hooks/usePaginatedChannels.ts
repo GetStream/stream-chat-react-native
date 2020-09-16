@@ -9,6 +9,7 @@ import type {
 } from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
+
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 const wait = (ms: number) =>
@@ -108,10 +109,7 @@ export const usePaginatedChannels = <
     setRefreshing(false);
   };
 
-  const loadNextPage = () => {
-    if (hasNextPage) return queryChannels();
-    return null;
-  };
+  const loadNextPage = () => (hasNextPage ? queryChannels() : null);
   const refreshList = () => queryChannels('refresh');
   const reloadList = () => queryChannels('reload');
 

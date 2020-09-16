@@ -24,7 +24,7 @@ type Parameters<
     setChannels: React.Dispatch<
       React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
     >,
-    e: Event<At, Ch, Co, Ev, Me, Re, Us>,
+    event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
 };
 
@@ -43,12 +43,14 @@ export const useRemovedFromChannelNotification = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (typeof onRemovedFromChannel === 'function') {
-        onRemovedFromChannel(setChannels, e);
+        onRemovedFromChannel(setChannels, event);
       } else {
         setChannels((channels) => {
-          const newChannels = channels.filter((c) => c.cid !== e.channel?.cid);
+          const newChannels = channels.filter(
+            (channel) => channel.cid !== event.channel?.cid,
+          );
           return [...newChannels];
         });
       }

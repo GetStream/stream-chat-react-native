@@ -251,8 +251,8 @@ const ChannelList = <
   props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
-    List = ChannelListMessenger,
     filters = {},
+    List = ChannelListMessenger,
     lockChannelOrder = false,
     onAddedToChannel,
     onChannelDeleted,

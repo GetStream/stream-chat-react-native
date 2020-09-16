@@ -7,6 +7,7 @@ import type {
 } from 'stream-chat';
 
 import { moveChannelUp } from '../../utils';
+
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
 type Parameters<
@@ -39,12 +40,12 @@ export const useNewMessage = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   useEffect(() => {
-    const handleEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setChannels((channels) => {
-        if (!lockChannelOrder && e.cid)
+        if (!lockChannelOrder && event.cid)
           return moveChannelUp<At, Ch, Co, Ev, Me, Re, Us>({
             channels,
-            cid: e.cid,
+            cid: event.cid,
           });
         return [...channels];
       });

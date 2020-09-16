@@ -1,6 +1,8 @@
 import React from 'react';
 import { styled } from '../../styles/styledComponents';
 
+import type { GestureResponderEvent } from 'react-native';
+
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
@@ -21,7 +23,7 @@ const ErrorText = styled.Text`
 `;
 
 export type HeaderErrorProps = {
-  onPress?: () => Promise<void> | null;
+  onPress?: (event: GestureResponderEvent) => Promise<void> | null;
 };
 
 const ChannelListHeaderErrorIndicator = ({
