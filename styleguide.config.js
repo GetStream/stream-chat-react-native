@@ -126,7 +126,7 @@ const sections = [
         name: 'ChatContext',
       },
       {
-        content: 'src/components/docs/withChatContext.md',
+        content: 'src/contexts/chatContext/withChatContext.md',
         name: 'withChatContext',
       },
       {
@@ -138,11 +138,11 @@ const sections = [
         name: 'withChannelContext',
       },
       {
-        content: 'src/components/docs/KeyboardContext.md',
+        content: 'src/contexts/keyboardContext/KeyboardContext.md',
         name: 'KeyboardContext',
       },
       {
-        content: 'src/components/docs/withKeyboardContext.md',
+        content: 'src/contexts/chatContext/withKeyboardContext.md',
         name: 'withKeyboardContext',
       },
       {
