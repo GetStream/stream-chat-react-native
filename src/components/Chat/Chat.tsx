@@ -1,12 +1,7 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
-import type {
-  Channel,
-  LiteralStringForUnion,
-  StreamChat,
-  UnknownType,
-} from 'stream-chat';
+import type { Channel, StreamChat, UnknownType } from 'stream-chat';
 
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
@@ -21,14 +16,24 @@ import type { Streami18n } from '../../utils/Streami18n';
 
 import { version } from '../../../package.json';
 
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
+
 type Props<
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /** The StreamChat client object */
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
@@ -105,13 +110,13 @@ type Props<
  * @example ./Chat.md
  */
 const Chat = <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {

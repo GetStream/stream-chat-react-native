@@ -6,12 +6,11 @@ import type {
   ChannelOptions,
   ChannelSort,
   Event,
-  LiteralStringForUnion,
   UnknownType,
 } from 'stream-chat';
 
 import ChannelListMessenger, {
-  ListMessengerProps,
+  ChannelListMessengerProps,
 } from './ChannelListMessenger';
 
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
@@ -27,18 +26,29 @@ import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedF
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
 import type { HeaderErrorProps } from './ChannelListHeaderErrorIndicator';
+import type { ChannelPreviewMessengerProps } from '../ChannelPreview/ChannelPreviewMessenger';
 import type { EmptyStateProps } from '../Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
 
-type Props<
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
+
+export type ChannelListProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
@@ -99,7 +109,7 @@ type Props<
    * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/#channellistmessenger)
    */
   List?: React.ComponentType<
-    Partial<ListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>
+    Partial<ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   /**
    * Custom indicator to use when there is error in fetching channels
@@ -209,7 +219,9 @@ type Props<
    *
    * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
    * */
-  Preview?: React.ComponentType; // TODO: add Partial<Props>
+  Preview?: React.ComponentType<
+    Partial<ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
   /**
    * Function to gain access to the inner FlatList ref
    *
@@ -240,15 +252,15 @@ type Props<
  * @example ../docs/ChannelList.md
  */
 const ChannelList = <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
     filters = {},

@@ -1,8 +1,66 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import type {
+  Channel,
+  ChannelState,
+  MessageResponse,
+  UnknownType,
+} from 'stream-chat';
+import type { Immutable } from 'seamless-immutable';
 
-import { TranslationContext } from '../../../context';
+import {
+  isDayOrMoment,
+  TDateTimeParser,
+  useTranslationContext,
+} from '../../../contexts/translationContext/TranslationContext';
 
-const getLatestMessageDisplayText = (message, t) => {
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+export type LatestMessagePreview<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> =
+  | {
+      created_at: string;
+      messageObject: undefined;
+      text: string;
+    }
+  | {
+      created_at: string | number | Date;
+      messageObject: Immutable<
+        ReturnType<
+          ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
+        >
+      >;
+      text: string;
+    };
+
+const getLatestMessageDisplayText = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  message: Immutable<
+    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  >,
+  t: (key: string) => string,
+) => {
   if (!message) {
     return t('Nothing yet...');
   }
@@ -15,27 +73,57 @@ const getLatestMessageDisplayText = (message, t) => {
   if (message.command) {
     return '/' + message.command;
   }
-  if (message.attachments.length) {
+  if (message.attachments?.length) {
     return t('🏙 Attachment...');
   }
   return t('Empty message...');
 };
 
-const getLatestMessageDisplayDate = (message, tDateTimeParser) => {
-  if (tDateTimeParser(message.created_at).isSame(new Date(), 'day'))
-    return tDateTimeParser(message.created_at).format('LT');
-  else {
-    return tDateTimeParser(message.created_at).format('L');
+const getLatestMessageDisplayDate = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  message: Immutable<
+    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  >,
+  tDateTimeParser: TDateTimeParser,
+) => {
+  const parserOutput = tDateTimeParser(message.created_at.asMutable());
+  if (isDayOrMoment(parserOutput)) {
+    if (parserOutput.isSame(new Date(), 'day'))
+      return parserOutput.format('LT');
+    else {
+      return parserOutput.format('L');
+    }
+  } else {
+    return parserOutput;
   }
 };
 
-const getLatestMessagePreview = (channel, t, tDateTimeParser) => {
-  const messages = channel && channel.state && channel.state.messages;
+const getLatestMessagePreview = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  t: (key: string) => string,
+  tDateTimeParser: TDateTimeParser,
+) => {
+  const messages = channel?.state?.messages;
 
   if (!messages || !messages.length) {
     return {
       created_at: '',
-      messageObject: {},
+      messageObject: undefined,
       text: '',
     };
   } else {
@@ -56,8 +144,23 @@ const getLatestMessagePreview = (channel, t, tDateTimeParser) => {
  *
  * @returns {object} latest message preview e.g.. { text: 'this was last message ...', created_at: '11/12/2020', messageObject: { originalMessageObject } }
  */
-export const useLatestMessagePreview = (channel, lastMessage) => {
-  const { t, tDateTimeParser } = useContext(TranslationContext);
+export const useLatestMessagePreview = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  lastMessage:
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | MessageResponse<At, Ch, Co, Me, Re, Us>
+    | undefined,
+) => {
+  const { t, tDateTimeParser } = useTranslationContext();
+
   const [latestMessagePreview, setLatestMessagePreview] = useState(
     getLatestMessagePreview(channel, t, tDateTimeParser),
   );

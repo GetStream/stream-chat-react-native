@@ -3,23 +3,28 @@ import type {
   NetInfoState,
   NetInfoSubscription,
 } from '@react-native-community/netinfo';
-import type {
-  Event,
-  LiteralStringForUnion,
-  StreamChat,
-  UnknownType,
-} from 'stream-chat';
+import type { Event, StreamChat, UnknownType } from 'stream-chat';
 
 import { NetInfo } from '../../../native';
 
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
 export const useIsOnline = <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   client,
 }: {

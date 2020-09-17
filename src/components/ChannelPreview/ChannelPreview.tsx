@@ -1,22 +1,73 @@
-import React, { useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import type {
+  Channel,
+  ChannelState,
+  Event,
+  MessageResponse,
+  UnknownType,
+} from 'stream-chat';
 
+import ChannelPreviewMessenger from './ChannelPreviewMessenger';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
-import { ChatContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
-const ChannelPreview = (props) => {
-  const { channel, Preview, setActiveChannel } = props;
-  const { client } = useContext(ChatContext);
-  const [lastMessage, setLastMessage] = useState({});
+import type { ChannelListMessengerProps } from '../ChannelList/ChannelListMessenger';
+
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
+
+export type ChannelPreviewProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  /**
+   * The previewed channel
+   */
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+};
+
+const ChannelPreview = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel, Preview = ChannelPreviewMessenger } = props;
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const [lastMessage, setLastMessage] = useState<
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | MessageResponse<At, Ch, Co, Me, Re, Us>
+  >();
   const [unread, setUnread] = useState(channel.countUnread());
-  const latestMessage = useLatestMessagePreview(channel, lastMessage);
+
+  const latestMessagePreview = useLatestMessagePreview(channel, lastMessage);
 
   useEffect(() => {
-    const handleEvent = (e) => {
-      setLastMessage(e.message);
+    const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+      if (event.message) {
+        setLastMessage(event.message);
+      }
 
-      if (e.type === 'message.new') {
+      if (event.type === 'message.new') {
         setUnread(channel.countUnread());
       }
     };
@@ -33,8 +84,8 @@ const ChannelPreview = (props) => {
   }, []);
 
   useEffect(() => {
-    const handleReadEvent = (e) => {
-      if (e.user.id === client.userID) {
+    const handleReadEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+      if (event.user?.id === client.userID) {
         setUnread(0);
       }
     };
@@ -44,20 +95,31 @@ const ChannelPreview = (props) => {
   }, []);
 
   return (
-    <Preview
+    <Preview<At, Ch, Co, Ev, Me, Re, Us>
       {...props}
       lastMessage={lastMessage}
-      latestMessage={latestMessage}
-      setActiveChannel={setActiveChannel}
+      latestMessagePreview={latestMessagePreview}
       unread={unread}
     />
   );
 };
 
-ChannelPreview.propTypes = {
-  channel: PropTypes.object.isRequired,
-  Preview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  setActiveChannel: PropTypes.func,
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { last_message_at: previousLast } = prevProps.channel.state;
+  const { last_message_at: nextLast } = nextProps.channel.state;
+
+  return previousLast === nextLast;
 };
 
-export default React.memo(ChannelPreview);
+export default React.memo(ChannelPreview, areEqual) as typeof ChannelPreview;
