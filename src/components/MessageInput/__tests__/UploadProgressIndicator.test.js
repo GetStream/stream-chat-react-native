@@ -55,7 +55,7 @@ describe('UploadProgressIndicator', () => {
   it('should render an active IN_PROGRESS UploadProgressIndicator', async () => {
     const action = jest.fn();
 
-    const { getByTestId, queryByTestId, toJSON } = render(
+    const { queryByTestId, toJSON } = render(
       <UploadProgressIndicator
         action={action}
         active
@@ -66,12 +66,10 @@ describe('UploadProgressIndicator', () => {
     await waitFor(() => {
       expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
       expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(queryByTestId('upload-progress-indicator')).toBeTruthy();
+      expect(queryByTestId('retry-upload-progress-indicator')).toBeFalsy();
       expect(action).toHaveBeenCalledTimes(0);
     });
-
-    fireEvent.press(getByTestId('active-upload-progress-indicator'));
-
-    await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
 
     const snapshot = toJSON();
 
@@ -94,10 +92,12 @@ describe('UploadProgressIndicator', () => {
     await waitFor(() => {
       expect(queryByTestId('active-upload-progress-indicator')).toBeTruthy();
       expect(queryByTestId('inactive-upload-progress-indicator')).toBeFalsy();
+      expect(queryByTestId('upload-progress-indicator')).toBeFalsy();
+      expect(queryByTestId('retry-upload-progress-indicator')).toBeTruthy();
       expect(action).toHaveBeenCalledTimes(0);
     });
 
-    fireEvent.press(getByTestId('active-upload-progress-indicator'));
+    fireEvent.press(getByTestId('retry-upload-progress-indicator'));
 
     await waitFor(() => expect(action).toHaveBeenCalledTimes(1));
 

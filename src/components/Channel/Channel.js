@@ -11,7 +11,8 @@ import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
-import SuggestionsProvider from '../SuggestionsProvider/SuggestionsProvider';
+
+import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 
 import {
   ChannelContext,

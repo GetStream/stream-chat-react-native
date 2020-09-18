@@ -4,13 +4,20 @@ import type { Moment } from 'moment';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+export const isDayOrMoment = (
+  output: TDateTimeParserOutput,
+): output is Dayjs.Dayjs | Moment =>
+  (output as Dayjs.Dayjs | Moment).isSame != null;
+
 export type TDateTimeParserInput = string | number | Date;
+
 export type TDateTimeParserOutput =
   | string
   | number
   | Date
   | Dayjs.Dayjs
   | Moment;
+
 export type TDateTimeParser = (
   input?: TDateTimeParserInput,
 ) => TDateTimeParserOutput;

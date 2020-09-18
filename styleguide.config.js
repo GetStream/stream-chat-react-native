@@ -11,7 +11,7 @@ const notBabeledDeps = [
 
 const sections = [
   {
-    components: ['src/components/Chat/Chat.js'],
+    components: ['src/components/Chat/Chat.tsx'],
     exampleMode: 'collapse',
     name: 'Top Level Component',
     usageMode: 'expand',
@@ -30,10 +30,10 @@ const sections = [
   },
   {
     components: [
-      'src/components/ChannelList/ChannelList.js',
-      'src/components/ChannelList/ChannelListMessenger.js',
-      'src/components/ChannelPreview/ChannelPreview.js',
-      'src/components/ChannelPreview/ChannelPreviewMessenger.js',
+      'src/components/ChannelList/ChannelList.tsx',
+      'src/components/ChannelList/ChannelListMessenger.tsx',
+      'src/components/ChannelPreview/ChannelPreview.tsx',
+      'src/components/ChannelPreview/ChannelPreviewMessenger.tsx',
     ],
     exampleMode: 'collapse',
     name: 'ChannelList Components',
@@ -76,10 +76,10 @@ const sections = [
       'src/components/AutoCompleteInput/AutoCompleteInput.js',
       'src/components/MessageInput/ActionSheetAttachment.js',
       'src/components/MessageInput/AttachButton.js',
-      'src/components/AutoCompleteInput/CommandsItem.js',
+      'src/components/AutoCompleteInput/CommandsItem.tsx',
       'src/components/MessageInput/FileUploadPreview.js',
       'src/components/MessageInput/ImageUploadPreview.js',
-      'src/components/AutoCompleteInput/MentionsItem.js',
+      'src/components/AutoCompleteInput/MentionsItem.tsx',
       'src/components/MessageInput/MessageInput.js',
       'src/components/MessageInput/SendButton.js',
       'src/components/MessageInput/UploadProgressIndicator.js',
@@ -96,12 +96,11 @@ const sections = [
       'src/components/IconBadge.js',
       'src/components/IconSquare.js',
       'src/components/KeyboardCompatibleView/KeyboardCompatibleView.js',
-      'src/components/Indicators/LoadingIndicator.js',
+      'src/components/Indicators/LoadingIndicator.tsx',
       'src/components/Reaction/ReactionList.js',
       'src/components/Reaction/ReactionPicker.js',
       'src/components/Reaction/ReactionPickerWrapper.js',
       'src/components/Spinner/Spinner.tsx',
-      'src/components/SuggestionsProvider/SuggestionsProvider.js',
     ],
     exampleMode: 'collapse',
     name: 'Miscellaneous',
@@ -142,7 +141,7 @@ const sections = [
         name: 'KeyboardContext',
       },
       {
-        content: 'src/contexts/chatContext/withKeyboardContext.md',
+        content: 'src/contexts/keyboardContext/withKeyboardContext.md',
         name: 'withKeyboardContext',
       },
       {
@@ -154,11 +153,11 @@ const sections = [
         name: 'withMessagesContext',
       },
       {
-        content: 'src/components/docs/SuggestionsContext.md',
+        content: 'src/contexts/suggestionsContext/SuggestionsContext.md',
         name: 'SuggestionsContext',
       },
       {
-        content: 'src/components/docs/withSuggestionsContext.md',
+        content: 'src/contexts/suggestionsContext/withSuggestionsContext.md',
         name: 'withSuggestionsContext',
       },
       {

@@ -238,8 +238,10 @@ export type Theme = {
       attachmentContainerView: CSS;
       attachmentView: CSS;
       container: CSS;
-      dismissText: CSS;
+      dismiss: CSS;
+      dismissImage: CSS;
       filenameText: CSS;
+      itemContainer: CSS;
     };
     imageUploadPreview: {
       container: CSS;
@@ -504,8 +506,10 @@ export const defaultTheme: Theme = {
       attachmentContainerView: {},
       attachmentView: {},
       container: {},
-      dismissText: {},
+      dismiss: {},
+      dismissImage: {},
       filenameText: {},
+      itemContainer: {},
     },
     imageUploadPreview: {
       container: {},

@@ -8,8 +8,8 @@ import { logChatPromiseExecution } from 'stream-chat';
 
 import ActionSheetAttachmentDefault from './ActionSheetAttachment';
 import AttachButtonDefault from './AttachButton';
-import FileUploadPreview from './FileUploadPreview';
-import ImageUploadPreview from './ImageUploadPreview';
+import FileUploadPreviewDefault from './FileUploadPreview';
+import ImageUploadPreviewDefault from './ImageUploadPreview';
 import SendButtonDefault from './SendButton';
 
 import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
@@ -23,10 +23,10 @@ import {
   ChatContext,
   KeyboardContext,
   MessagesContext,
-  SuggestionsContext,
   ThreadContext,
   TranslationContext,
 } from '../../context';
+import { SuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
@@ -123,8 +123,10 @@ const MessageInput = (props) => {
     compressImageQuality,
     doDocUploadRequest,
     doImageUploadRequest,
+    FileUploadPreview = FileUploadPreviewDefault,
     hasFilePicker = true,
     hasImagePicker = true,
+    ImageUploadPreview = ImageUploadPreviewDefault,
     initialValue,
     Input,
     maxNumberOfFiles,
@@ -870,10 +872,26 @@ MessageInput.propTypes = {
    * @param channel Current channel object
    * */
   doImageUploadRequest: PropTypes.func,
+  /**
+   * Custom UI component for FileUploadPreview.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.js
+   */
+  FileUploadPreview: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
   /** If component should have file picker functionality  */
   hasFilePicker: PropTypes.bool,
   /** If component should have image picker functionality  */
   hasImagePicker: PropTypes.bool,
+  /**
+   * Custom UI component for ImageUploadPreview.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.js
+   */
+  ImageUploadPreview: PropTypes.oneOfType([
+    PropTypes.node,
+    PropTypes.elementType,
+  ]),
   /** Initial value to set on input */
   initialValue: PropTypes.string,
   /** Limit on allowed number of files to attach at a time. */
