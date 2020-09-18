@@ -39,6 +39,10 @@ export type ChannelPreviewProps<
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
 };
 
+/**
+ * This component manages state for the ChannelPreviewMessenger UI component and receives
+ * all props from the ChannelListMessenger component.
+ */
 const ChannelPreview = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,

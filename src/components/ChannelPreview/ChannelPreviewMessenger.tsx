@@ -90,18 +90,19 @@ export type ChannelPreviewMessengerProps<
    * default formatted date. This default logic is part of ChannelPreview component.
    */
   formatLatestMessageDate?: (date: string) => string;
-  /** Most recent message on a channel */
+  /** Most recent message on the channel */
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
   /** Length at which latest message should be truncated */
   latestMessageLength?: number;
-  /** Number of unread messages on channel */
+  /** Number of unread messages on the channel */
   unread?: number;
 };
 
 /**
- * ChannelPreviewMessenger - UI component for individual item in list of channels.
+ * This UI component displays an individual preview item for each channel in a list. It also receives all props
+ * from the ChannelPreview component.
  *
  * @example ./ChannelPreviewMessenger.md
  */

@@ -91,6 +91,8 @@
 
 - We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
 
+- We renamed the `latestMessage` prop on the `ChannelPreviewMessenger` component to `latestMessagePreview`. This name change is more semantic to what the prop does and reduces confusion with the `lastMessage` prop.
+
 - We have also dropped support for the following `MessageList` props:
   - `dateSeparator` (use DateSeparator instead)
   - `headerComponent` (use HeaderComponent instead)
