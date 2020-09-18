@@ -14,20 +14,20 @@ import type {
 } from '../../../types/types';
 
 const getChannelPreviewDisplayAvatar = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Ev extends DefaultEventType = DefaultEventType,
+  Me extends DefaultMessageType = DefaultMessageType,
+  Re extends DefaultReactionType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const currentUserId = client.user?.id;
   const channelName = channel.data?.name;
-  const channelImage = channel.data?.image as string;
+  const channelImage = channel.data?.image;
 
   if (channelImage) {
     return {
@@ -42,7 +42,7 @@ const getChannelPreviewDisplayAvatar = <
 
     if (otherMembers.length === 1) {
       return {
-        image: otherMembers[0].user?.image.asMutable() as string,
+        image: otherMembers[0].user?.image,
         name: channelName || otherMembers[0].user?.name,
       };
     }
