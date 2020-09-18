@@ -1,4 +1,4 @@
-All props available in the [ChannelList](#channellist) component are passed along to List component. Additionally, following props are also provided to List component:
+All props available in the [ChannelList](#channellist) component are passed along to the List component. Additionally, the following props are provided to the List component:
 
 - `error` {boolean} Error in channels query, if any
 - `channels` {array} List of channel objects
