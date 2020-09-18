@@ -10,6 +10,8 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 
+type ComponentType = string | React.ReactElement<{ item: Suggestion }>;
+
 export const isSuggestionUser = (
   suggestion: Suggestion,
 ): suggestion is SuggestionUser => 'id' in suggestion;
@@ -32,10 +34,7 @@ export type Suggestions = {
 
 export type SuggestionsContextValue = {
   closeSuggestions: () => void;
-  openSuggestions: (
-    title: string,
-    component: string | React.ReactElement<{ item: Suggestion }>,
-  ) => void;
+  openSuggestions: (title: string, component: ComponentType) => Promise<void>;
   setInputBoxContainerRef: (ref: View) => void;
   updateSuggestions: (newSuggestions: Suggestions) => void;
 };
@@ -57,9 +56,7 @@ type MeasureLayout = () => Promise<{
 export const SuggestionsProvider: React.FC<{
   value: SuggestionsContextValue;
 }> = ({ children, value }) => {
-  const [componentType, setComponentType] = useState<
-    string | React.ReactElement<{ item: Suggestion }>
-  >('');
+  const [componentType, setComponentType] = useState<ComponentType>('');
   const [suggestions, setSuggestions] = useState<Suggestions>();
   const [suggestionsBackdropHeight, setSuggestionsBackdropHeight] = useState(0);
   const [suggestionsLeftMargin, setSuggestionsLeftMargin] = useState(0);
@@ -70,10 +67,7 @@ export const SuggestionsProvider: React.FC<{
   const messageInputBox = useRef<View | null>(null);
   const rootView = useRef<View>(null);
 
-  const openSuggestions = async (
-    title: string,
-    component: string | React.ReactElement<{ item: Suggestion }>,
-  ) => {
+  const openSuggestions = async (title: string, component: ComponentType) => {
     const inputBoxPosition = await getInputBoxPosition();
 
     setComponentType(component);

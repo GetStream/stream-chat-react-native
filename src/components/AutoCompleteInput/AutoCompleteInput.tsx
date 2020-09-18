@@ -43,10 +43,6 @@ const isCommand = (text: string) => {
   return true;
 };
 
-// const isString = (
-//   component: string | React.ReactElement<{ item: Suggestion }>,
-// ): component is string => typeof component === 'string';
-
 type Props = {
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
@@ -107,7 +103,6 @@ const AutoCompleteInput: React.FC<Props> = ({
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
     const { component: Component, title } = triggerSettings[trigger];
-    // openSuggestions(title, isString(Component) ? Component : <Component />);
     openSuggestions(title, Component);
   };
 
