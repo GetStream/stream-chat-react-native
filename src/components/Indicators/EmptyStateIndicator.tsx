@@ -1,11 +1,11 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-type Props = {
+export type EmptyStateProps = {
   listType: 'channel' | 'message' | 'default';
 };
 
-const EmptyStateIndicator: React.FC<Props> = ({ listType }) => {
+const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => {
   switch (listType) {
     case 'channel':
       return (

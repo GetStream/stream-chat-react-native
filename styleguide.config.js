@@ -11,7 +11,7 @@ const notBabeledDeps = [
 
 const sections = [
   {
-    components: ['src/components/Chat/Chat.js'],
+    components: ['src/components/Chat/Chat.tsx'],
     exampleMode: 'collapse',
     name: 'Top Level Component',
     usageMode: 'expand',
@@ -30,10 +30,10 @@ const sections = [
   },
   {
     components: [
-      'src/components/ChannelList/ChannelList.js',
-      'src/components/ChannelList/ChannelListMessenger.js',
-      'src/components/ChannelPreview/ChannelPreview.js',
-      'src/components/ChannelPreview/ChannelPreviewMessenger.js',
+      'src/components/ChannelList/ChannelList.tsx',
+      'src/components/ChannelList/ChannelListMessenger.tsx',
+      'src/components/ChannelPreview/ChannelPreview.tsx',
+      'src/components/ChannelPreview/ChannelPreviewMessenger.tsx',
     ],
     exampleMode: 'collapse',
     name: 'ChannelList Components',
@@ -96,7 +96,7 @@ const sections = [
       'src/components/IconBadge.js',
       'src/components/IconSquare.js',
       'src/components/KeyboardCompatibleView/KeyboardCompatibleView.js',
-      'src/components/Indicators/LoadingIndicator.js',
+      'src/components/Indicators/LoadingIndicator.tsx',
       'src/components/Reaction/ReactionList.js',
       'src/components/Reaction/ReactionPicker.js',
       'src/components/Reaction/ReactionPickerWrapper.js',

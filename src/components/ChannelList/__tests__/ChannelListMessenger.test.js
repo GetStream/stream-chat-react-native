@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { ThemeProvider } from 'styled-components/native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
@@ -12,31 +11,22 @@ import ChannelListMessenger from '../ChannelListMessenger';
 
 import Chat from '../../Chat/Chat';
 
-import { TranslationContext } from '../../../context';
-import { defaultTheme } from '../../../styles/themeConstants';
-
 let mockChannels;
 let chatClient;
 
-const t = jest.fn((key) => key);
-
 const Component = ({ channels, error = false, loadingChannels = false }) => (
-  <ThemeProvider theme={defaultTheme}>
-    <TranslationContext.Provider value={{ t }}>
-      <Chat client={chatClient}>
-        <ChannelListMessenger
-          channels={channels}
-          error={error}
-          loadingChannels={loadingChannels}
-          LoadingIndicator={() => (
-            <View testID='loading-indicator'>
-              <Text>Loading Indicator</Text>
-            </View>
-          )}
-        />
-      </Chat>
-    </TranslationContext.Provider>
-  </ThemeProvider>
+  <Chat client={chatClient}>
+    <ChannelListMessenger
+      channels={channels}
+      error={error}
+      loadingChannels={loadingChannels}
+      LoadingIndicator={() => (
+        <View testID='loading-indicator'>
+          <Text>Loading Indicator</Text>
+        </View>
+      )}
+    />
+  </Chat>
 );
 
 describe('ChannelListMessenger', () => {
