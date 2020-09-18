@@ -129,11 +129,11 @@ const sections = [
         name: 'withChatContext',
       },
       {
-        content: 'src/components/docs/ChannelContext.md',
+        content: 'src/contexts/channelContext/ChannelContext.md',
         name: 'ChannelContext',
       },
       {
-        content: 'src/components/docs/withChannelContext.md',
+        content: 'src/contexts/channelContext/withChannelContext.md',
         name: 'withChannelContext',
       },
       {
