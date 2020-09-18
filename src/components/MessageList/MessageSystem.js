@@ -46,7 +46,11 @@ const DateText = styled.Text`
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = ({ message }) => {
+const MessageSystem = (props) => {
+  const {
+    message,
+    formatDate,
+  } = props;
   const { tDateTimeParser } = useContext(TranslationContext);
   return (
     <Container testID='message-system'>
@@ -54,9 +58,13 @@ const MessageSystem = ({ message }) => {
       <TextContainer>
         <Text>{message.text.toUpperCase()}</Text>
         <DateText>
-          {tDateTimeParser(message.created_at)
+          {formatDate ? (
+            formatDate(message.date)
+          ) : (
+            tDateTimeParser(message.created_at)
             .calendar()
-            .toUpperCase()}
+            .toUpperCase()
+          )}
         </DateText>
       </TextContainer>
       <Line />
@@ -67,6 +75,13 @@ const MessageSystem = ({ message }) => {
 MessageSystem.propTypes = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object.isRequired,
+  /**
+   * Formatter function for date object.
+   *
+   * @param date Date object of message
+   * @returns string
+   */
+  formatDate: PropTypes.func,
 };
 
 export default MessageSystem;
