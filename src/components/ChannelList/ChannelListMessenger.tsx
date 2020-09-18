@@ -167,8 +167,8 @@ const ChannelListMessenger = <
         onEndReached={loadNextPage}
         onEndReachedThreshold={loadMoreThreshold}
         onRefresh={refreshList}
-        ref={(flRef) => {
-          setFlatListRef && setFlatListRef(flRef);
+        ref={(flatListRef) => {
+          setFlatListRef && setFlatListRef(flatListRef);
         }}
         refreshing={refreshing}
         renderItem={({ item }) => renderItem(item)}
