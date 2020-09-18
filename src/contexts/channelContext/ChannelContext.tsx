@@ -74,11 +74,11 @@ export const useChannelContext = <
     Us
   >;
 
-// /**
-//  * Typescript currently does not support partial inference so if ChatContext
-//  * typing is desired while using the HOC withChannelContext the Props for the
-//  * wrapped component must be provided as the first generic.
-//  */
+/**
+ * Typescript currently does not support partial inference so if ChatContext
+ * typing is desired while using the HOC withChannelContext the Props for the
+ * wrapped component must be provided as the first generic.
+ */
 export const withChannelContext = <
   P extends Record<string, unknown>,
   At extends UnknownType = UnknownType,

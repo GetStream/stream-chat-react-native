@@ -146,11 +146,11 @@ const sections = [
         name: 'withKeyboardContext',
       },
       {
-        content: 'src/components/docs/MessagesContext.md',
+        content: 'src/contexts/messagesContext/MessagesContext.md',
         name: 'MessagesContext',
       },
       {
-        content: 'src/components/docs/withMessagesContext.md',
+        content: 'src/contexts/messagesContext/withMessagesContext.md',
         name: 'withMessagesContext',
       },
       {

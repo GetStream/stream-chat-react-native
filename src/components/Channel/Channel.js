@@ -43,7 +43,7 @@ const Channel = (props) => {
   const { client } = useContext(ChatContext);
   const { t } = useContext(TranslationContext);
 
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
   const [eventHistory, setEventHistory] = useState({});
   /**
