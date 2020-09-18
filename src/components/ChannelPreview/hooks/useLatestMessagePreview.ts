@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+
+import type { Immutable } from 'seamless-immutable';
 import type {
   Channel,
   ChannelState,
   MessageResponse,
   UnknownType,
 } from 'stream-chat';
-import type { Immutable } from 'seamless-immutable';
 
 import {
   isDayOrMoment,
