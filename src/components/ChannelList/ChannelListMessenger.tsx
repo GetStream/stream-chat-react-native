@@ -99,7 +99,8 @@ export type ChannelListMessengerProps<
 };
 
 /**
- * This UI component displays the preview list of channels and handles Channel navigation.
+ * This UI component displays the preview list of channels and handles Channel navigation. It
+ * receives all props from the ChannelList component.
  *
  * @example ./ChannelListMessenger.md
  */
