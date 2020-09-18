@@ -2,11 +2,27 @@ import React, { useContext } from 'react';
 import Dayjs from 'dayjs';
 import type { Moment } from 'moment';
 
+export const isDayOrMoment = (
+  output: TDateTimeParserOutput,
+): output is Dayjs.Dayjs | Moment =>
+  (output as Dayjs.Dayjs | Moment).isSame != null;
+
+export type TDateTimeParserInput = string | number | Date;
+
+export type TDateTimeParserOutput =
+  | string
+  | number
+  | Date
+  | Dayjs.Dayjs
+  | Moment;
+
+export type TDateTimeParser = (
+  input?: TDateTimeParserInput,
+) => TDateTimeParserOutput;
+
 export type TranslationContextValue = {
   t: (key: string) => string;
-  tDateTimeParser: (
-    input?: string | number | Date,
-  ) => string | number | Date | Dayjs.Dayjs | Moment;
+  tDateTimeParser: TDateTimeParser;
 };
 
 export const TranslationContext = React.createContext<TranslationContextValue>({

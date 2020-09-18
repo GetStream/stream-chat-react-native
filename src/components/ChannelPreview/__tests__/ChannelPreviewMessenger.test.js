@@ -25,7 +25,7 @@ describe('ChannelPreviewMessenger', () => {
       <ChannelPreviewMessenger
         channel={channel}
         client={chatClient}
-        latestMessage={generateMessage()}
+        latestMessagePreview={generateMessage()}
         setActiveChannel={jest.fn()}
         {...props}
       />

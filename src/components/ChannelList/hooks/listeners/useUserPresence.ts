@@ -1,21 +1,26 @@
 import { useEffect } from 'react';
-import type {
-  Channel,
-  Event,
-  LiteralStringForUnion,
-  UnknownType,
-} from 'stream-chat';
+import type { Channel, Event, UnknownType } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../../types/types';
+
 type Parameters<
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   setChannels: React.Dispatch<
     React.SetStateAction<Channel<At, Ch, Co, Ev, Me, Re, Us>[]>
@@ -23,13 +28,13 @@ type Parameters<
 };
 
 export const useUserPresence = <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   setChannels,
 }: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
@@ -39,7 +44,7 @@ export const useUserPresence = <
     const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       setChannels((channels) => {
         const newChannels = channels.map((channel) => {
-          if (!event.user?.id || !channel.state.members[event.user?.id]) {
+          if (!event.user?.id || !channel.state.members[event.user.id]) {
             return channel;
           } else {
             channel.state.members.setIn([event.user.id, 'user'], event.user);

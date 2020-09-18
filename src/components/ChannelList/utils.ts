@@ -1,31 +1,36 @@
+import type { Channel, StreamChat, UnknownType } from 'stream-chat';
+
 import type {
-  Channel,
-  LiteralStringForUnion,
-  StreamChat,
-  UnknownType,
-} from 'stream-chat';
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
 
 type MoveParameters<
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
   cid: string;
 };
 
 export const moveChannelUp = <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   cid,
   channels = [],
@@ -43,13 +48,13 @@ export const moveChannelUp = <
 };
 
 type GetParameters<
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   id: string;
@@ -57,13 +62,13 @@ type GetParameters<
 };
 
 export const getChannel = async <
-  At extends UnknownType = UnknownType,
-  Ch extends UnknownType = UnknownType,
-  Co extends string = LiteralStringForUnion,
-  Ev extends UnknownType = UnknownType,
-  Me extends UnknownType = UnknownType,
-  Re extends UnknownType = UnknownType,
-  Us extends UnknownType = UnknownType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   client,
   id,
