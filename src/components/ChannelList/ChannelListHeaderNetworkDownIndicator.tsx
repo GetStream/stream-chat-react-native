@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import styled from 'styled-components/native';
+import React from 'react';
+import { styled } from '../../styles/styledComponents';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.View`
   align-items: center;
@@ -21,7 +21,8 @@ const ErrorText = styled.Text`
 `;
 
 const ChannelListHeaderNetworkDownIndicator = () => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
+
   return (
     <Container>
       <ErrorText>{t('Connection failure, reconnecting now ...')}</ErrorText>

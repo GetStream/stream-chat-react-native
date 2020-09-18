@@ -1,20 +1,59 @@
 import { useEffect, useState } from 'react';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  UnknownType,
+} from 'stream-chat';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms) => {
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+
+type Parameters<
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  filters: ChannelFilters<Ch, Co, Us>;
+  options: ChannelOptions;
+  sort: ChannelSort<Ch>;
 };
 
-export const usePaginatedChannels = ({
-  client,
+export const usePaginatedChannels = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>({
   filters = {},
   options = {},
   sort = {},
-}) => {
-  const [channels, setChannels] = useState([]);
+}: Parameters<Ch, Co, Us>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const [channels, setChannels] = useState<
+    Channel<At, Ch, Co, Ev, Me, Re, Us>[]
+  >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [loadingChannels, setLoadingChannels] = useState(false);
@@ -22,7 +61,10 @@ export const usePaginatedChannels = ({
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
-  const queryChannels = async (queryType = '', retryCount = 0) => {
+  const queryChannels = async (
+    queryType = '',
+    retryCount = 0,
+  ): Promise<void> => {
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
@@ -76,9 +118,7 @@ export const usePaginatedChannels = ({
     setRefreshing(false);
   };
 
-  const loadNextPage = () => {
-    if (hasNextPage) return queryChannels();
-  };
+  const loadNextPage = () => (hasNextPage ? queryChannels() : null);
   const refreshList = () => queryChannels('refresh');
   const reloadList = () => queryChannels('reload');
 

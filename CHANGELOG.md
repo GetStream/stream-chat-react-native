@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0] 2020-09-11 (UNPUBLISHED)
+## [1.3.0] 2020-09-16 (UNPUBLISHED)
 
 **BREAKING CHANGES**
 
@@ -74,11 +74,24 @@
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or the `useContext` hook (ex: `const { messages } = useContext(MessagesContext);`)
 
+*FileUploadPreview*
+
+- We fixed a bug for being unable to remove a file from the `MessageInput` and made it consistent to `ImageUploadPreview`
+- We have removed support for the `fileUploadPreview.dismissText` theme value
+- We have added support for `fileUploadPreview.dismiss`, `fileUploadPreview.dismissImage`, and `fileUploadPreview.imageContainer` theme values
+
+*MessageInput*
+
+- We replaced the default image picker [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) for [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) and added `compressImageQuality` prop to support image compression out-of-the-box
+- Added `FileUploadPreview` and `ImageUploadPreview` props to support custom overrides to those components
+
 *Deprecated Props*
 
 - We have removed support for the `MessageList` component's `onMessageTouch` prop. Since this prop no longer exists, we have also removed `dismissKeyboardOnMessageTouch`. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
 
 - We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
+
+- We renamed the `latestMessage` prop on the `ChannelPreviewMessenger` component to `latestMessagePreview`. This name change is more semantic to what the prop does and reduces confusion with the `lastMessage` prop.
 
 - We have also dropped support for the following `MessageList` props:
   - `dateSeparator` (use DateSeparator instead)
