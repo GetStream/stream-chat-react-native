@@ -96,14 +96,13 @@ export const SuggestionsProvider: React.FC<{
   const getInputBoxPosition: MeasureLayout = () =>
     new Promise((resolve) => {
       const nodeHandleRoot = findNodeHandle(rootView.current) || 0;
-      messageInputBox.current &&
-        messageInputBox.current.measureLayout(
-          nodeHandleRoot,
-          (x, y, width, height) => {
-            resolve({ height, width, x, y });
-          },
-          () => resolve({ height: 0, width: 0, x: 0, y: 0 }),
-        );
+      messageInputBox?.current?.measureLayout(
+        nodeHandleRoot,
+        (x, y, width, height) => {
+          resolve({ height, width, x, y });
+        },
+        () => resolve({ height: 0, width: 0, x: 0, y: 0 }),
+      );
     });
 
   const suggestionsContext = {

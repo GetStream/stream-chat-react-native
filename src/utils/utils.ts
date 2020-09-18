@@ -70,14 +70,7 @@ const getCommands = <
   Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const config = channel.getConfig();
-
-  if (!config || !config.commands) return [];
-
-  const allCommands = config.commands;
-  return allCommands;
-};
+) => channel.getConfig()?.commands || [];
 
 const getMembers = <
   At extends UnknownType = DefaultAttachmentType,
@@ -157,6 +150,7 @@ const queryMembers = async <
 ): Promise<void> => {
   const isString = (string: string | undefined): string is string =>
     typeof string === 'string';
+
   if (isString(query)) {
     const response = (await ((channel as unknown) as Channel).queryMembers({
       name: { $autocomplete: query },
@@ -257,14 +251,13 @@ export const ACITriggerSettings = <
       }
 
       const selectedCommands = getCommands(channel).filter(
-        (command) =>
-          command.name && query && command.name.indexOf(query) !== -1,
+        (command) => query && command?.name?.indexOf(query) !== -1,
       );
 
       // sort alphabetically unless the you're matching the first char
       selectedCommands.sort((a, b) => {
-        let nameA = a.name ? a.name.toLowerCase() : '';
-        let nameB = b.name ? b.name.toLowerCase() : '';
+        let nameA = a?.name?.toLowerCase() || '';
+        let nameB = b?.name?.toLowerCase() || '';
         if (query && nameA.indexOf(query) === 0) {
           nameA = `0${nameA}`;
         }
@@ -283,7 +276,7 @@ export const ACITriggerSettings = <
 
       const result = selectedCommands.slice(0, 10);
 
-      onReady && onReady(result, query);
+      onReady?.(result, query);
 
       return result;
     },
@@ -323,9 +316,10 @@ export const ACITriggerSettings = <
             return false;
           }
         });
+
         const data = matchingUsers.slice(0, 10);
 
-        onReady && onReady(data, query);
+        onReady?.(data, query);
 
         return data;
       }
@@ -358,7 +352,7 @@ export const makeImageCompatibleUrl = (url: string) => {
   if (!url) return url;
 
   let newUrl = url;
-  if (url.indexOf('//') === 0) newUrl = 'https:' + url;
+  if (url.indexOf('//') === 0) newUrl = `https:${url}`;
 
   return newUrl.trim();
 };
