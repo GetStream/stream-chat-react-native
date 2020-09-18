@@ -121,7 +121,7 @@ const getLatestMessagePreview = <
 ) => {
   const messages = channel?.state?.messages;
 
-  if (!messages || !messages.length) {
+  if (!messages?.length) {
     return {
       created_at: '',
       messageObject: undefined,
@@ -155,10 +155,9 @@ export const useLatestMessagePreview = <
   Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  lastMessage:
+  lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>
-    | undefined,
+    | MessageResponse<At, Ch, Co, Me, Re, Us>,
 ) => {
   const { t, tDateTimeParser } = useTranslationContext();
 

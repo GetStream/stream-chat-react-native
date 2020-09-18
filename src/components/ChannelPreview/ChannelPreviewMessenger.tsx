@@ -103,7 +103,7 @@ export type ChannelPreviewMessengerProps<
 /**
  * ChannelPreviewMessenger - UI component for individual item in list of channels.
  *
- * @example ../docs/ChannelPreviewMessenger.md
+ * @example ./ChannelPreviewMessenger.md
  */
 const ChannelPreviewMessenger = <
   At extends UnknownType = DefaultAttachmentType,

@@ -249,7 +249,7 @@ export type ChannelListProps<
  * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
  * provided to the ChannelList component as a prop. By default, the ChannelListMessenger component is used as the list UI.
  *
- * @example ../docs/ChannelList.md
+ * @example ./ChannelList.md
  */
 const ChannelList = <
   At extends UnknownType = DefaultAttachmentType,

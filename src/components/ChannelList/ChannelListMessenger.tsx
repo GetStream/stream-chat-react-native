@@ -101,7 +101,7 @@ export type ChannelListMessengerProps<
 /**
  * This UI component displays the preview list of channels and handles Channel navigation.
  *
- * @example ../docs/ChannelListMessenger.md
+ * @example ./ChannelListMessenger.md
  */
 const ChannelListMessenger = <
   At extends UnknownType = DefaultAttachmentType,
