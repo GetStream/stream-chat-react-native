@@ -1,8 +1,15 @@
 import React, { PropsWithChildren, useContext } from 'react';
+
 import type {
   GestureResponderEvent,
   TouchableOpacityProps,
 } from 'react-native';
+import type { UnknownType } from 'stream-chat';
+
+import { getDisplayName } from '../utils/getDisplayName';
+
+import type { MessageWithDates } from '../messagesContext/MessagesContext';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -10,11 +17,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
-} from 'src/types/types';
-import type { UnknownType } from 'stream-chat';
-
-import type { MessageWithDates } from '../messagesContext/MessagesContext';
-import { getDisplayName } from '../utils/getDisplayName';
+} from '../../types/types';
 
 export type MessageContentContextValue<
   At extends UnknownType = DefaultAttachmentType,

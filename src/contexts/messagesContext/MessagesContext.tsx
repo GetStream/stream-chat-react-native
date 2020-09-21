@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useContext } from 'react';
+
 import type { DebouncedFunc } from 'lodash';
 import type {
   ChannelState,
@@ -10,6 +11,7 @@ import type {
 } from 'stream-chat';
 
 import { getDisplayName } from '../utils/getDisplayName';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -18,7 +20,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
-} from 'src/types/types';
+} from '../../types/types';
 
 export type Alignment = 'right' | 'left';
 
