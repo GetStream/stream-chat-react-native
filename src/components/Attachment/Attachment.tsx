@@ -12,6 +12,7 @@ import DefaultGallery, { GalleryProps } from './Gallery';
 
 import { themed } from '../../styles/theme';
 
+import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
 import type { DefaultAttachmentType } from '../../types/types';
 
 export type ActionHandler =
@@ -72,7 +73,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
    */
-  FileAttachmentGroup?: React.ComponentType<any>; // TODO - add FileAttachmentGroup props
+  FileAttachmentGroup?: React.ComponentType<FileAttachmentGroupProps>;
   /**
    * Custom UI component to display image attachments.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js

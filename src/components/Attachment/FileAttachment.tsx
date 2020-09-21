@@ -8,7 +8,6 @@ import { styled } from '../../styles/styledComponents';
 import type { ActionHandler, GroupStyle } from './Attachment';
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileIconProps } from './FileIcon';
-
 import type { DefaultAttachmentType } from '../../types/types';
 
 const FileContainer = styled.View<{ alignment: string; groupStyle?: string }>`

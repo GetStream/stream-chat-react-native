@@ -1,12 +1,13 @@
 import * as React from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import styled from 'styled-components/native';
+import type { ImageRequireSource } from 'react-native';
 
-const iconPDF: ImageSourcePropType = require('../../images/PDF.png');
-const iconDOC: ImageSourcePropType = require('../../images/DOC.png');
-const iconPPT: ImageSourcePropType = require('../../images/PPT.png');
-const iconXLS: ImageSourcePropType = require('../../images/XLS.png');
-const iconTAR: ImageSourcePropType = require('../../images/TAR.png');
+import { styled } from '../../styles/styledComponents';
+
+const iconPDF: ImageRequireSource = require('../../images/PDF.png');
+const iconDOC: ImageRequireSource = require('../../images/DOC.png');
+const iconPPT: ImageRequireSource = require('../../images/PPT.png');
+const iconXLS: ImageRequireSource = require('../../images/XLS.png');
+const iconTAR: ImageRequireSource = require('../../images/TAR.png');
 
 const Icon = styled.Image`
   ${({ theme }) => theme.message.file.icon.css};
@@ -169,7 +170,7 @@ const codeFileTypes = [
   'application/x-shellscript',
 ];
 
-const mimeTypeToIconMap: Record<string, ImageSourcePropType> = {
+const mimeTypeToIconMap: Record<string, ImageRequireSource> = {
   'application/pdf': iconPDF,
 };
 
@@ -193,7 +194,7 @@ for (const type of codeFileTypes) {
   mimeTypeToIconMap[type] = iconDOC;
 }
 
-function mimeTypeToIcon(mimeType?: string): ImageSourcePropType {
+function mimeTypeToIcon(mimeType?: string): ImageRequireSource {
   if (!mimeType) return iconDOC;
 
   const icon = mimeTypeToIconMap[mimeType];

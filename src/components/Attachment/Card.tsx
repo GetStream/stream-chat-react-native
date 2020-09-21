@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ImageSourcePropType, Linking, View } from 'react-native';
+import { ImageRequireSource, Linking, View } from 'react-native';
 import type { Attachment, UnknownType } from 'stream-chat';
 
 import { MessageContentContext } from '../../context';
@@ -9,7 +9,7 @@ import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { DefaultAttachmentType } from '../../types/types';
 
-const giphyLogo: ImageSourcePropType = require('../../assets/Poweredby_100px-White_VertText.png');
+const giphyLogo: ImageRequireSource = require('../../assets/Poweredby_100px-White_VertText.png');
 
 const Container = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
   background-color: ${({ theme }) => theme.colors.light};

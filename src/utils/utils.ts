@@ -348,7 +348,7 @@ export const MESSAGE_ACTIONS = {
   reply: 'reply',
 };
 
-export const makeImageCompatibleUrl = (url: string) => {
+export const makeImageCompatibleUrl = (url?: string) => {
   if (!url) return url;
 
   let newUrl = url;
