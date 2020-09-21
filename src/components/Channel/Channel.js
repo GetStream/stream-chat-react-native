@@ -37,7 +37,10 @@ const Channel = (props) => {
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     emojiData = emojiDataDefault,
+    EmptyStateIndicator = EmptyStateIndicatorDefault,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
+    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
+    LoadingIndicator = LoadingIndicatorDefault,
   } = props;
 
   const { client } = useContext(ChatContext);
@@ -74,10 +77,7 @@ const Channel = (props) => {
   const [threadHasMore, setThreadHasMore] = useState(true);
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState(
-    (channel.state &&
-      channel.state.threads &&
-      channel.state.threads[props.thread && props.thread.id]) ||
-      [],
+    channel?.state?.threads?.[props.thread?.id] || [],
   );
   const [typing, setTyping] = useState(Immutable({}));
   const [watcherCount, setWatcherCount] = useState();
@@ -88,7 +88,7 @@ const Channel = (props) => {
 
     return () => {
       client.off('connection.recovered', handleEvent);
-      channel.off && channel.off(handleEvent);
+      channel?.off?.(handleEvent);
       handleEventStateThrottled.cancel();
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
@@ -198,8 +198,8 @@ const Channel = (props) => {
 
   const initChannel = async () => {
     let initError = false;
-
-    if (!channel.initialized) {
+    setError(false);
+    if (!channel.initialized && channel.cid) {
       try {
         await channel.watch();
       } catch (e) {
@@ -463,9 +463,8 @@ const Channel = (props) => {
 
   const channelContext = {
     channel,
-    disabled: channel.data && channel.data.frozen && disableIfFrozenChannel,
-    EmptyStateIndicator:
-      props.EmptyStateIndicator || EmptyStateIndicatorDefault,
+    disabled: channel?.data?.frozen && disableIfFrozenChannel,
+    EmptyStateIndicator,
     error,
     eventHistory,
     lastRead,
@@ -507,7 +506,11 @@ const Channel = (props) => {
     threadMessages,
   };
 
-  if (!(channel && channel.cid) || !channel.watch) {
+  if (!channel || error) {
+    return <LoadingErrorIndicator error={error} listType='message' />;
+  }
+
+  if (!channel?.cid || !channel.watch) {
     return (
       <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
         {t('Please select a channel first')}
@@ -515,13 +518,7 @@ const Channel = (props) => {
     );
   }
 
-  if (error) {
-    const { LoadingErrorIndicator = LoadingErrorIndicatorDefault } = props;
-    return <LoadingErrorIndicator error={error} listType='message' />;
-  }
-
   if (loading) {
-    const { LoadingIndicator = LoadingIndicatorDefault } = props;
     return <LoadingIndicator listType='message' />;
   }
 

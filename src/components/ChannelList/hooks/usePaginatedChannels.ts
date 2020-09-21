@@ -68,7 +68,6 @@ export const usePaginatedChannels = <
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
-      setChannels([]);
       setLoadingChannels(true);
     } else if (queryType === 'refresh') {
       setRefreshing(true);
@@ -100,12 +99,12 @@ export const usePaginatedChannels = <
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
     } catch (e) {
-      setLoadingChannels(false);
-      setLoadingNextPage(false);
-      setRefreshing(false);
       await wait(2000);
 
       if (retryCount === 3) {
+        setLoadingChannels(false);
+        setLoadingNextPage(false);
+        setRefreshing(false);
         console.warn(e);
         return setError(true);
       }

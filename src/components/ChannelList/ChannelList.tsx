@@ -244,6 +244,10 @@ export type ChannelListProps<
   sort?: ChannelSort<Ch>;
 };
 
+const DEFAULT_FILTERS = {};
+const DEFAULT_OPTIONS = {};
+const DEFAULT_SORT = {};
+
 /**
  * This component fetches a list of channels, allowing you to select the channel you want to open.
  * The ChannelList doesn't provide any UI for the underlying React Native FlatList. UI is determined by the `List` component which is
@@ -263,7 +267,7 @@ const ChannelList = <
   props: PropsWithChildren<ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
-    filters = {},
+    filters = DEFAULT_FILTERS,
     List = ChannelListMessenger,
     lockChannelOrder = false,
     onAddedToChannel,
@@ -274,9 +278,9 @@ const ChannelList = <
     onMessageNew,
     onRemovedFromChannel,
     onSelect,
-    options = {},
+    options = DEFAULT_OPTIONS,
     setFlatListRef,
-    sort = {},
+    sort = DEFAULT_SORT,
   } = props;
 
   const listRef = useRef<FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null>(
