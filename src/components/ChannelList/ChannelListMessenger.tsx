@@ -179,7 +179,9 @@ const ChannelListMessenger = <
     </>
   );
 
-  if (error && !refreshing && !(channels && channels.length)) {
+  if (loadingChannels) {
+    return <LoadingIndicator listType='channel' />;
+  } else if (error && !refreshing && !channels?.length) {
     return (
       <LoadingErrorIndicator
         error={error}
@@ -188,8 +190,6 @@ const ChannelListMessenger = <
         retry={reloadList}
       />
     );
-  } else if (loadingChannels) {
-    return <LoadingIndicator listType='channel' />;
   } else {
     return renderChannels();
   }

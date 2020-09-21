@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
@@ -43,8 +43,7 @@ const AutoCompleteInput = ({
   const { t } = useContext(TranslationContext);
 
   const isTrackingStarted = useRef(false);
-
-  const [selectionEnd, setSelectionEnd] = useState(0);
+  const selectionEnd = useRef(0);
 
   useEffect(() => {
     handleChange(value, true);
@@ -72,7 +71,6 @@ const AutoCompleteInput = ({
         if (query !== queryCallback) {
           return;
         }
-
         updateSuggestionsContext({
           data,
           onSelect: (item) => onSelectSuggestion({ item, trigger }),
@@ -94,7 +92,7 @@ const AutoCompleteInput = ({
       selection: { end },
     },
   }) => {
-    setSelectionEnd(end);
+    selectionEnd.current = end;
   };
 
   const onSelectSuggestion = ({ item, trigger }) => {
@@ -104,7 +102,7 @@ const AutoCompleteInput = ({
       return;
     }
 
-    const textToModify = value.slice(0, selectionEnd);
+    const textToModify = value.slice(0, selectionEnd.current);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -128,7 +126,7 @@ const AutoCompleteInput = ({
     stopTracking();
     onChange(value.replace(textToModify, modifiedText));
 
-    setSelectionEnd(newCaretPosition || 0);
+    selectionEnd.current = newCaretPosition || 0;
 
     if (triggerSettings[trigger].callback) {
       triggerSettings[trigger].callback(item);
@@ -190,12 +188,12 @@ const AutoCompleteInput = ({
   const handleSuggestions = (text) => {
     setTimeout(async () => {
       if (
-        text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
+        text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
         !isTrackingStarted.current
       ) {
         stopTracking();
       } else if (!(await handleCommand(text))) {
-        handleMentions({ selectionEnd, text });
+        handleMentions({ selectionEnd: selectionEnd.current, text });
       }
     }, 100);
   };
