@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import type {
   NativeSyntheticEvent,
@@ -59,7 +59,7 @@ type Props = {
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: React.MutableRefObject<TextInput | null>;
+  setInputBoxRef: React.RefObject<TextInput>;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
@@ -85,8 +85,7 @@ const AutoCompleteInput: React.FC<Props> = ({
   const { t } = useContext(TranslationContext);
 
   const isTrackingStarted = useRef(false);
-
-  const [selectionEnd, setSelectionEnd] = useState(0);
+  const selectionEnd = useRef(0);
 
   const handleChange = (text: string, fromUpdate = false) => {
     if (!fromUpdate) {
@@ -158,7 +157,7 @@ const AutoCompleteInput: React.FC<Props> = ({
       selection: { end },
     },
   }) => {
-    setSelectionEnd(end);
+    selectionEnd.current = end;
   };
 
   const onSelectSuggestion = ({
@@ -183,7 +182,7 @@ const AutoCompleteInput: React.FC<Props> = ({
       return;
     }
 
-    const textToModify = value.slice(0, selectionEnd);
+    const textToModify = value.slice(0, selectionEnd.current);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -205,7 +204,7 @@ const AutoCompleteInput: React.FC<Props> = ({
     stopTracking();
     onChange(value.replace(textToModify, modifiedText));
 
-    setSelectionEnd(newCaretPosition || 0);
+    selectionEnd.current = newCaretPosition || 0;
 
     if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
       triggerSettings[trigger].callback(item);
@@ -273,12 +272,12 @@ const AutoCompleteInput: React.FC<Props> = ({
   const handleSuggestions = (text: string) => {
     setTimeout(async () => {
       if (
-        text.slice(selectionEnd - 1, selectionEnd) === ' ' &&
+        text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
         !isTrackingStarted.current
       ) {
         stopTracking();
       } else if (!(await handleCommand(text))) {
-        handleMentions({ selectionEnd, text });
+        handleMentions({ selectionEnd: selectionEnd.current, text });
       }
     }, 100);
   };
