@@ -1,12 +1,62 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 
 import ReactionPickerDefault from './ReactionPicker';
 
+import type { LatestReactions, Reaction } from './ReactionList';
+import type { ReactionPickerProps } from './ReactionPicker';
+
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
-const ReactionPickerWrapper = (props) => {
+import type {
+  Alignment,
+  MessageWithDates,
+} from '../../contexts/messagesContext/MessagesContext';
+
+type Props = {
+  alignment: Alignment;
+  customMessageContent: boolean;
+  dismissReactionPicker: () => void;
+  /**
+   * @deprecated
+   * emojiData is deprecated. But going to keep it for now
+   * to have backward compatibility. Please use supportedReactions instead.
+   * TODO: Remove following prop in 1.x.x
+   */
+  emojiData: Reaction[];
+  handleReaction: (id: Reaction['id']) => void;
+  hideReactionCount: boolean;
+  hideReactionOwners: boolean;
+  message: MessageWithDates;
+  offset: { left: number; right: number; top: number };
+  openReactionPicker: () => void;
+  ReactionPicker: React.ComponentType<Partial<ReactionPickerProps>>;
+  reactionPickerVisible: boolean;
+  /**
+   * e.g.,
+   * [
+   *  {
+   *    id: 'like',
+   *    icon: '👍',
+   *  },
+   *  {
+   *    id: 'love',
+   *    icon: '❤️️',
+   *  },
+   *  {
+   *    id: 'haha',
+   *    icon: '😂',
+   *  },
+   *  {
+   *    id: 'wow',
+   *    icon: '😮',
+   *  },
+   * ]
+   */
+  supportedReactions: Reaction[];
+};
+
+const ReactionPickerWrapper: React.FC<Props> = (props) => {
   const {
     alignment,
     children,
@@ -24,10 +74,10 @@ const ReactionPickerWrapper = (props) => {
     supportedReactions = emojiDataDefault,
   } = props;
 
-  const messageContainer = useRef();
-  const [rpLeft, setRPLeft] = useState();
-  const [rpRight, setRPRight] = useState();
-  const [rpTop, setRPTop] = useState();
+  const messageContainer = useRef<TouchableOpacity>(null);
+  const [rpLeft, setRPLeft] = useState<number>();
+  const [rpRight, setRPRight] = useState<number>();
+  const [rpTop, setRPTop] = useState<number>();
 
   useEffect(() => {
     if (reactionPickerVisible) {
@@ -39,13 +89,13 @@ const ReactionPickerWrapper = (props) => {
     if (messageContainer.current) {
       setTimeout(
         () => {
-          messageContainer.current.measureInWindow((x, y, width) => {
-            setRPLeft(alignment === 'left' ? x - 10 + offset.left : null);
+          messageContainer?.current?.measureInWindow((x, y, width) => {
+            setRPLeft(alignment === 'left' ? x - 10 + offset.left : undefined);
             setRPRight(
               alignment === 'right'
                 ? Math.round(Dimensions.get('window').width) -
                     (x + width + offset.right)
-                : null,
+                : undefined,
             );
             setRPTop(y - 60 + offset.top);
           });
@@ -68,7 +118,7 @@ const ReactionPickerWrapper = (props) => {
         handleReaction={handleReaction}
         hideReactionCount={hideReactionCount}
         hideReactionOwners={hideReactionOwners}
-        latestReactions={message.latest_reactions}
+        latestReactions={message.latest_reactions as LatestReactions}
         reactionCounts={message.reaction_counts}
         reactionPickerVisible={reactionPickerVisible}
         rpLeft={rpLeft}
@@ -78,52 +128,6 @@ const ReactionPickerWrapper = (props) => {
       />
     </TouchableOpacity>
   );
-};
-
-ReactionPickerWrapper.propTypes = {
-  alignment: PropTypes.oneOf(['left', 'right']),
-  /**
-   * Whether or not the app is using a custom MessageContent component
-   */
-  customMessageContent: PropTypes.bool,
-  dismissReactionPicker: PropTypes.func,
-  /**
-   * @deprecated
-   * emojiData is deprecated. But going to keep it for now
-   * to have backward compatibility. Please use supportedReactions instead.
-   * TODO: Remove following prop in 1.x.x
-   */
-  emojiData: PropTypes.array,
-  handleReaction: PropTypes.func,
-  hideReactionCount: PropTypes.bool,
-  hideReactionOwners: PropTypes.bool,
-  message: PropTypes.object,
-  offset: PropTypes.object,
-  openReactionPicker: PropTypes.func,
-  ReactionPicker: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  reactionPickerVisible: PropTypes.bool,
-  /**
-   * e.g.,
-   * [
-   *  {
-   *    id: 'like',
-   *    icon: '👍',
-   *  },
-   *  {
-   *    id: 'love',
-   *    icon: '❤️️',
-   *  },
-   *  {
-   *    id: 'haha',
-   *    icon: '😂',
-   *  },
-   *  {
-   *    id: 'wow',
-   *    icon: '😮',
-   *  },
-   * ]
-   */
-  supportedReactions: PropTypes.array,
 };
 
 export default ReactionPickerWrapper;

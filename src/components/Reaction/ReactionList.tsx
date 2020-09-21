@@ -1,19 +1,64 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
 
 import { renderReactions } from './utils/renderReactions';
 
-import leftTail from '../../images/reactionlist/left-tail.png';
-import leftCenter from '../../images/reactionlist/left-center.png';
-import leftEnd from '../../images/reactionlist/left-end.png';
-
-import rightTail from '../../images/reactionlist/right-tail.png';
-import rightCenter from '../../images/reactionlist/right-center.png';
-import rightEnd from '../../images/reactionlist/right-end.png';
-
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
+
+import type {
+  Alignment,
+  MessageWithDates,
+} from '../../contexts/messagesContext/MessagesContext';
+
+const leftTail = require('../../images/reactionlist/left-tail.png');
+const leftCenter = require('../../images/reactionlist/left-center.png');
+const leftEnd = require('../../images/reactionlist/left-end.png');
+
+const rightTail = require('../../images/reactionlist/right-tail.png');
+const rightCenter = require('../../images/reactionlist/right-center.png');
+const rightEnd = require('../../images/reactionlist/right-end.png');
+
+export type LatestReactions = MessageWithDates['latest_reactions'];
+
+export type Reaction = {
+  icon: string;
+  id: string;
+};
+
+type Props = {
+  alignment: Alignment;
+  getTotalReactionCount: (
+    arg: {
+      icon: string;
+      id: string;
+    }[],
+  ) => number;
+  latestReactions: LatestReactions;
+  /**
+   * e.g.,
+   * [
+   *  {
+   *    id: 'like',
+   *    icon: '👍',
+   *  },
+   *  {
+   *    id: 'love',
+   *    icon: '❤️️',
+   *  },
+   *  {
+   *    id: 'haha',
+   *    icon: '😂',
+   *  },
+   *  {
+   *    id: 'wow',
+   *    icon: '😮',
+   *  },
+   * ]
+   */
+  supportedReactions: Reaction[];
+  visible: boolean;
+};
 
 const Container = styled.View`
   align-items: center;
@@ -44,7 +89,7 @@ const LeftTail = styled.Image`
   width: 25px;
 `;
 
-const ReactionCount = styled.Text`
+const ReactionCount = styled.Text<{ reactionCounts: number }>`
   color: white;
   font-size: 12px;
   ${({ reactionCounts }) => (reactionCounts < 10 ? null : 'min-width: 20px;')}
@@ -70,35 +115,33 @@ const RightTail = styled.Image`
   width: 25px;
 `;
 
-const TouchableWrapper = styled.View`
+const TouchableWrapper = styled.View<{ alignment: Alignment }>`
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   height: 28px;
   position: relative;
-  ${({ alignment }) =>
-    alignment === 'left' ? 'left: -10px;' : 'right: -10px;'}
+  ${({ alignment }) => `${alignment === 'left' ? 'left' : 'right'}: -10px`}
   z-index: 10;
 `;
 
 /**
- * @example ../docs/ReactionList.md
+ * @example ./ReactionList.md
  */
-const ReactionList = ({
+const ReactionList: React.FC<Props> & { themePath: string } = ({
   alignment,
   getTotalReactionCount,
   latestReactions,
   supportedReactions = emojiData,
   visible,
 }) => (
-  <TouchableWrapper
-    activeOpacity={1}
-    alignment={alignment}
-    testID='reaction-list'
-  >
+  <TouchableWrapper alignment={alignment} testID='reaction-list'>
     {visible && (
       <Container>
         <Reactions>
-          {renderReactions(latestReactions, supportedReactions)}
+          {renderReactions(
+            latestReactions as LatestReactions,
+            supportedReactions,
+          )}
         </Reactions>
         <ReactionCount
           reactionCounts={getTotalReactionCount(supportedReactions)}
@@ -128,34 +171,5 @@ const ReactionList = ({
 );
 
 ReactionList.themePath = 'message.reactionList';
-
-ReactionList.propTypes = {
-  alignment: PropTypes.oneOf(['left', 'right']),
-  getTotalReactionCount: PropTypes.func,
-  latestReactions: PropTypes.array,
-  /**
-   * e.g.,
-   * [
-   *  {
-   *    id: 'like',
-   *    icon: '👍',
-   *  },
-   *  {
-   *    id: 'love',
-   *    icon: '❤️️',
-   *  },
-   *  {
-   *    id: 'haha',
-   *    icon: '😂',
-   *  },
-   *  {
-   *    id: 'wow',
-   *    icon: '😮',
-   *  },
-   * ]
-   */
-  supportedReactions: PropTypes.array,
-  visible: PropTypes.bool,
-};
 
 export default themed(ReactionList);
