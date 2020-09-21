@@ -2,9 +2,7 @@ import React, { useContext } from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import SuggestionsProvider from '../SuggestionsProvider';
-
-import { SuggestionsContext } from '../../../context';
+import { SuggestionsContext, SuggestionsProvider } from '../SuggestionsContext';
 
 const SuggestionsContextConsumer = ({ fn }) => {
   fn(useContext(SuggestionsContext));

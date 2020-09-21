@@ -1,8 +1,10 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
+import type { ChannelState, UnknownType } from 'stream-chat';
 
 import { getDisplayName } from '../utils/getDisplayName';
+
+import type { MessageWithDates } from '../messagesContext/MessagesContext';
 
 import type {
   DefaultAttachmentType,
@@ -14,7 +16,7 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-export type ChatContextValue<
+export type ThreadContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -23,17 +25,21 @@ export type ChatContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  connectionRecovering: boolean;
-  isOnline: boolean;
-  logger: (message?: string | undefined) => void;
-  setActiveChannel: (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  closeThread: () => void;
+  loadMoreThread: () => Promise<void>;
+  openThread: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
+  thread:
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | MessageWithDates<At, Ch, Co, Me, Re, Us>
+    | null;
+  threadHasMore: boolean;
+  threadLoadingMore: boolean;
+  threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];
 };
 
-export const ChatContext = React.createContext({} as ChatContextValue);
+export const ThreadContext = React.createContext({} as ThreadContextValue);
 
-export const ChatProvider = <
+export const ThreadProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -45,14 +51,14 @@ export const ChatProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
+  <ThreadContext.Provider value={(value as unknown) as ThreadContextValue}>
     {children}
-  </ChatContext.Provider>
+  </ThreadContext.Provider>
 );
 
-export const useChatContext = <
+export const useThreadContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -61,7 +67,7 @@ export const useChatContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() =>
-  (useContext(ChatContext) as unknown) as ChatContextValue<
+  (useContext(ThreadContext) as unknown) as ThreadContextValue<
     At,
     Ch,
     Co,
@@ -72,11 +78,11 @@ export const useChatContext = <
   >;
 
 /**
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChatContext the Props for the
+ * Typescript currently does not support partial inference so if MessageContentContext
+ * typing is desired while using the HOC withMessageContentContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withChatContext = <
+export const withThreadContext = <
   P extends Record<string, unknown>,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -87,16 +93,16 @@ export const withChatContext = <
   Us extends UnknownType = DefaultUserType
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
-  const WithChatContextComponent = (
-    props: Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+): React.FC<Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+  const WithThreadContextComponent = (
+    props: Omit<P, keyof ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const threadContext = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-    return <Component {...(props as P)} {...chatContext} />;
+    return <Component {...(props as P)} {...threadContext} />;
   };
-  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(
+  WithThreadContextComponent.displayName = `WithThreadContext${getDisplayName(
     Component,
   )}`;
-  return WithChatContextComponent;
+  return WithThreadContextComponent;
 };

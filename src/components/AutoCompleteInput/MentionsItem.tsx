@@ -1,10 +1,11 @@
 import React from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
 
 import Avatar from '../Avatar/Avatar';
 
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
+
+import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
 
 const Container = styled.View`
   align-items: center;
@@ -20,32 +21,28 @@ const Name = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
+type Props = {
+  /**
+   * A UserResponse of suggested UserTypes with these properties
+   *
+   * - id: User ID of the suggested mention user
+   * - image: Image to be shown as the Avatar for the user
+   * - name: Name of the suggested mention user
+   */
+  item: SuggestionUser;
+};
+
 /**
- * @example ../docs/MentionsItem.md
+ * @example ./MentionsItem.md
  */
-const MentionsItem = ({ item: { id, image, name } }) => (
+const MentionsItem: React.FC<Props> & { themePath: string } = ({
+  item: { id, image, name },
+}) => (
   <Container>
     <Avatar image={image} name={name} />
     <Name testID='mentions-item-name'>{name || id}</Name>
   </Container>
 );
-
-MentionsItem.propTypes = {
-  item: PropTypes.shape({
-    /**
-     * User ID of the suggested mention user
-     */
-    id: PropTypes.string,
-    /**
-     * Image to be shown as the Avatar for the user
-     */
-    image: PropTypes.string,
-    /**
-     * Name of the suggested mention user
-     */
-    name: PropTypes.string,
-  }),
-};
 
 MentionsItem.themePath = 'messageInput.suggestions.mention';
 

@@ -11,7 +11,7 @@ import AutoCompleteInput from '../AutoCompleteInput';
 
 import Chat from '../../Chat/Chat';
 
-import { SuggestionsContext } from '../../../context';
+import { SuggestionsContext } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { ACITriggerSettings } from '../../../utils/utils';
 
 describe('AutoCompleteInput', () => {

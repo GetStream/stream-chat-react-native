@@ -1,8 +1,23 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
+import React, { useEffect, useRef } from 'react';
 
-import { SuggestionsContext, TranslationContext } from '../../context';
+import type {
+  NativeSyntheticEvent,
+  TextInput,
+  TextInputProps,
+  TextInputSelectionChangeEventData,
+} from 'react-native';
+
+import {
+  isSuggestionUser,
+  Suggestion,
+  useSuggestionsContext,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { styled } from '../../styles/styledComponents';
+
+import { isMentionTrigger } from '../../utils/utils';
+
+import type { Trigger, TriggerSettings } from '../../utils/utils';
 
 const InputBox = styled.TextInput`
   flex: 1;
@@ -11,10 +26,10 @@ const InputBox = styled.TextInput`
   ${({ theme }) => theme.messageInput.inputBox.css}
 `;
 
-const computeCaretPosition = (token, startOfTokenPosition) =>
+const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
   startOfTokenPosition + token.length;
 
-const isCommand = (text) => {
+const isCommand = (text: string) => {
   if (text[0] !== '/') {
     return false;
   }
@@ -28,7 +43,34 @@ const isCommand = (text) => {
   return true;
 };
 
-const AutoCompleteInput = ({
+type Props = {
+  /**
+   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
+   *
+   * @see See https://reactnative.dev/docs/textinput#reference
+   */
+  additionalTextInputProps: TextInputProps;
+  /**
+   * Handling text change events in the parent
+   *
+   * @param {string} text
+   */
+  onChange: (text: string) => void;
+  /**
+   * Ref callback to set reference on input box
+   */
+  setInputBoxRef: React.RefObject<TextInput>;
+  /**
+   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
+   */
+  triggerSettings: TriggerSettings;
+  /**
+   * Text value of the TextInput
+   */
+  value: string;
+};
+
+const AutoCompleteInput: React.FC<Props> = ({
   additionalTextInputProps,
   onChange,
   setInputBoxRef,
@@ -39,47 +81,13 @@ const AutoCompleteInput = ({
     closeSuggestions,
     openSuggestions,
     updateSuggestions: updateSuggestionsContext,
-  } = useContext(SuggestionsContext);
-  const { t } = useContext(TranslationContext);
+  } = useSuggestionsContext();
+  const { t } = useTranslationContext();
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
 
-  useEffect(() => {
-    handleChange(value, true);
-  }, [handleChange, value]);
-
-  const startTracking = (trigger) => {
-    isTrackingStarted.current = true;
-    const { component: Component, title } = triggerSettings[trigger];
-    openSuggestions(
-      title,
-      typeof Component === 'string' ? Component : <Component />,
-    );
-  };
-
-  const stopTracking = () => {
-    isTrackingStarted.current = false;
-    closeSuggestions();
-  };
-
-  const updateSuggestions = async ({ query, trigger }) => {
-    await triggerSettings[trigger].dataProvider(
-      query,
-      value,
-      (data, queryCallback) => {
-        if (query !== queryCallback) {
-          return;
-        }
-        updateSuggestionsContext({
-          data,
-          onSelect: (item) => onSelectSuggestion({ item, trigger }),
-        });
-      },
-    );
-  };
-
-  const handleChange = (text, fromUpdate = false) => {
+  const handleChange = (text: string, fromUpdate = false) => {
     if (!fromUpdate) {
       onChange(text);
     } else {
@@ -87,7 +95,64 @@ const AutoCompleteInput = ({
     }
   };
 
-  const handleSelectionChange = ({
+  useEffect(() => {
+    handleChange(value, true);
+  }, [handleChange, value]);
+
+  const startTracking = (trigger: Trigger) => {
+    isTrackingStarted.current = true;
+    const { component: Component, title } = triggerSettings[trigger];
+    openSuggestions(title, Component);
+  };
+
+  const stopTracking = () => {
+    isTrackingStarted.current = false;
+    closeSuggestions();
+  };
+
+  const updateSuggestions = async ({
+    query,
+    trigger,
+  }: {
+    query: Suggestion['name'];
+    trigger: Trigger;
+  }) => {
+    if (isMentionTrigger(trigger)) {
+      await triggerSettings[trigger].dataProvider(
+        query,
+        value,
+        (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
+
+          updateSuggestionsContext({
+            data,
+            onSelect: (item) => onSelectSuggestion({ item, trigger }),
+          });
+        },
+      );
+    } else {
+      await triggerSettings[trigger].dataProvider(
+        query,
+        value,
+        (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
+
+          updateSuggestionsContext({
+            data,
+            onSelect: (item) => onSelectSuggestion({ item, trigger }),
+          });
+        },
+      );
+    }
+  };
+
+  const handleSelectionChange: (
+    e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
+  ) => void = ({
     nativeEvent: {
       selection: { end },
     },
@@ -95,8 +160,23 @@ const AutoCompleteInput = ({
     selectionEnd.current = end;
   };
 
-  const onSelectSuggestion = ({ item, trigger }) => {
-    const newToken = triggerSettings[trigger].output(item);
+  const onSelectSuggestion = ({
+    item,
+    trigger,
+  }: {
+    item: Suggestion;
+    trigger: Trigger;
+  }) => {
+    let newTokenString = '';
+    if (isMentionTrigger(trigger)) {
+      if (isSuggestionUser(item)) {
+        newTokenString = `${triggerSettings[trigger].output(item).text} `;
+      }
+    } else {
+      if (!isSuggestionUser(item)) {
+        newTokenString = `${triggerSettings[trigger].output(item).text} `;
+      }
+    }
 
     if (!trigger) {
       return;
@@ -110,8 +190,6 @@ const AutoCompleteInput = ({
        */
       new RegExp(`\\${trigger}${`[^\\${trigger}${'\\s'}]`}*$`),
     );
-
-    const newTokenString = `${newToken.text} `;
 
     const newCaretPosition = computeCaretPosition(
       newTokenString,
@@ -128,12 +206,12 @@ const AutoCompleteInput = ({
 
     selectionEnd.current = newCaretPosition || 0;
 
-    if (triggerSettings[trigger].callback) {
+    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
       triggerSettings[trigger].callback(item);
     }
   };
 
-  const handleCommand = async (text) => {
+  const handleCommand = async (text: string) => {
     if (!isCommand(text)) {
       return false;
     }
@@ -147,7 +225,13 @@ const AutoCompleteInput = ({
     return true;
   };
 
-  const handleMentions = ({ selectionEnd: selectionEndProp, text }) => {
+  const handleMentions = ({
+    selectionEnd: selectionEndProp,
+    text,
+  }: {
+    selectionEnd: number;
+    text: string;
+  }) => {
     const minChar = 0;
 
     const tokenMatch = text
@@ -185,7 +269,7 @@ const AutoCompleteInput = ({
     updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleSuggestions = (text) => {
+  const handleSuggestions = (text: string) => {
     setTimeout(async () => {
       if (
         text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
@@ -212,33 +296,6 @@ const AutoCompleteInput = ({
       {...additionalTextInputProps}
     />
   );
-};
-
-AutoCompleteInput.propTypes = {
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
-  additionalTextInputProps: PropTypes.object,
-  /**
-   * Handling text change events in the parent
-   *
-   * @param text string
-   */
-  onChange: PropTypes.func,
-  /**
-   * Ref callback to set reference on input box
-   */
-  setInputBoxRef: PropTypes.func,
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: PropTypes.object,
-  /**
-   * Text value of the TextInput
-   */
-  value: PropTypes.string,
 };
 
 export default AutoCompleteInput;

@@ -23,10 +23,10 @@ import {
   ChatContext,
   KeyboardContext,
   MessagesContext,
-  SuggestionsContext,
   ThreadContext,
   TranslationContext,
 } from '../../context';
+import { SuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
