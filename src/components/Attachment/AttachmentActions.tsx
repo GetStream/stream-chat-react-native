@@ -1,9 +1,12 @@
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
+import type { Attachment, UnknownType } from 'stream-chat';
 
+import type { ActionHandler } from './Attachment';
+
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
+
+import type { DefaultAttachmentType } from '../../types/types';
 
 const Container = styled.View`
   flex-direction: row;
@@ -12,9 +15,7 @@ const Container = styled.View`
   ${({ theme }) => theme.message.actions.container.css}
 `;
 
-const ActionButton = styled(({ buttonStyle, ...rest }) => (
-  <TouchableOpacity {...rest} />
-))`
+const ActionButton = styled.TouchableOpacity<{ buttonStyle?: string }>`
   background-color: ${({ buttonStyle, theme }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.button.primaryBackgroundColor
@@ -30,9 +31,7 @@ const ActionButton = styled(({ buttonStyle, ...rest }) => (
   ${({ theme }) => theme.message.actions.button.css}
 `;
 
-const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
-  <Text {...rest} />
-))`
+const ActionButtonText = styled.Text<{ buttonStyle?: string }>`
   color: ${({ buttonStyle, theme }) =>
     buttonStyle === 'primary'
       ? theme.message.actions.buttonText.primaryColor
@@ -40,19 +39,33 @@ const ActionButtonText = styled(({ buttonStyle, ...rest }) => (
   ${({ theme }) => theme.message.actions.buttonText.css}
 `;
 
+export type AttachmentActionsProps<
+  At extends UnknownType = DefaultAttachmentType
+> = Attachment<At> & {
+  /** The handler to execute after selecting an action */
+  actionHandler?: ActionHandler;
+};
+
 /**
  * AttachmentActions - The actions you can take on an attachment.
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
  *
  * @example ../docs/AttachmentActions.md
  */
-const AttachmentActions = ({ actionHandler, actions, id }) => (
+const AttachmentActions = <At extends UnknownType = DefaultAttachmentType>({
+  actionHandler,
+  actions,
+}: AttachmentActionsProps<At> & { themePath?: string }) => (
   <Container testID='attachment-actions'>
-    {actions.map((action) => (
+    {actions?.map((action, index) => (
       <ActionButton
         buttonStyle={action.style}
-        key={`${id}-${action.value}`}
-        onPress={() => actionHandler(action.name, action.value)}
+        key={`${index}-${action.value}`}
+        onPress={() => {
+          if (action.name && action.value && actionHandler) {
+            actionHandler(action.name, action.value);
+          }
+        }}
         testID={`attachment-actions-button-${action.name}`}
       >
         <ActionButtonText buttonStyle={action.style}>
@@ -63,17 +76,6 @@ const AttachmentActions = ({ actionHandler, actions, id }) => (
   </Container>
 );
 
-AttachmentActions.propTypes = {
-  /** The handler to execute after selecting an action */
-  actionHandler: PropTypes.func.isRequired,
-  /** A list of actions */
-  actions: PropTypes.array.isRequired,
-  // /** The id of the form input */
-  id: PropTypes.string,
-  /** The text for the form input */
-  text: PropTypes.string,
-};
-
 AttachmentActions.themePath = 'message.actions';
 
-export default themed(AttachmentActions);
+export default themed(AttachmentActions) as typeof AttachmentActions;

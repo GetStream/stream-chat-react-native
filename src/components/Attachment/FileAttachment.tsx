@@ -1,13 +1,17 @@
 import React, { useContext } from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
-
-import AttachmentActions from './AttachmentActions';
+import type { Attachment, UnknownType } from 'stream-chat';
 
 import { MessageContentContext } from '../../context';
+import { styled } from '../../styles/styledComponents';
 
-const FileContainer = styled.View`
+import type { ActionHandler, GroupStyle } from './Attachment';
+import type { AttachmentActionsProps } from './AttachmentActions';
+import type { FileIconProps } from './FileIcon';
+
+import type { DefaultAttachmentType } from '../../types/types';
+
+const FileContainer = styled.View<{ alignment: string; groupStyle?: string }>`
   align-items: center;
   background-color: #ebebeb;
   border-radius: ${({ groupStyle }) => {
@@ -41,7 +45,8 @@ const FileTitle = styled.Text`
   ${({ theme }) => theme.message.file.title.css}
 `;
 
-const goToURL = (url) => {
+const goToURL = (url?: string) => {
+  if (!url) return;
   Linking.canOpenURL(url).then((supported) => {
     if (supported) {
       Linking.openURL(url);
@@ -51,13 +56,46 @@ const goToURL = (url) => {
   });
 };
 
-const FileAttachment = ({
+export type FileAttachmentProps<
+  At extends UnknownType = DefaultAttachmentType
+> = {
+  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+  actionHandler: ActionHandler;
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: 'right' | 'left';
+  /** The attachment to render */
+  attachment: Attachment<At>;
+  /**
+   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   */
+  AttachmentActions: React.ComponentType<Partial<AttachmentActionsProps>>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyle?: GroupStyle;
+};
+
+const FileAttachment = <
+  At extends DefaultAttachmentType = DefaultAttachmentType
+>({
   actionHandler,
   alignment,
   attachment,
+  AttachmentActions,
   AttachmentFileIcon,
   groupStyle,
-}) => {
+}: FileAttachmentProps<At>) => {
   const { additionalTouchableProps, onLongPress } = useContext(
     MessageContentContext,
   );
@@ -65,69 +103,22 @@ const FileAttachment = ({
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
-      onPress={() => {
-        goToURL(attachment.asset_url);
-      }}
+      onPress={() => goToURL(attachment.asset_url)}
       testID='file-attachment'
       {...additionalTouchableProps}
     >
       <FileContainer alignment={alignment} groupStyle={groupStyle}>
-        <AttachmentFileIcon
-          filename={attachment.title}
-          mimeType={attachment.mime_type}
-        />
+        <AttachmentFileIcon mimeType={attachment.mime_type} />
         <FileDetails>
           <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
           <FileSize>{attachment.file_size} KB</FileSize>
         </FileDetails>
       </FileContainer>
-      {attachment.actions && attachment.actions.length ? (
-        <AttachmentActions
-          actionHandler={actionHandler}
-          key={`key-actions-${attachment.id}`}
-          {...attachment}
-        />
+      {attachment.actions?.length ? (
+        <AttachmentActions actionHandler={actionHandler} {...attachment} />
       ) : null}
     </TouchableOpacity>
   );
-};
-
-FileAttachment.propTypes = {
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  actionHandler: PropTypes.func,
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  /**
-   * Position of message. 'right' | 'left'
-   * 'right' message belongs with current user while 'left' message belongs to other users.
-   * */
-  alignment: PropTypes.string,
-  /** The attachment to render */
-  attachment: PropTypes.object.isRequired,
-  AttachmentActions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
-  /** Handler for long press event on attachment */
-  onLongPress: PropTypes.func,
 };
 
 export default FileAttachment;

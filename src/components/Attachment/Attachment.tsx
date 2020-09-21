@@ -1,41 +1,131 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View } from 'react-native';
-import PropTypes from 'prop-types';
+import type { Attachment as AttachmentType, UnknownType } from 'stream-chat';
 
-import AttachmentActions from './AttachmentActions';
-import Card from './Card';
-import FileAttachment from './FileAttachment';
-import FileIcon from './FileIcon';
-import Gallery from './Gallery';
+import DefaultAttachmentActions, {
+  AttachmentActionsProps,
+} from './AttachmentActions';
+import DefaultCard, { CardProps } from './Card';
+import DefaultFileAttachment, { FileAttachmentProps } from './FileAttachment';
+import DefaultFileIcon, { FileIconProps } from './FileIcon';
+import DefaultGallery, { GalleryProps } from './Gallery';
 
-import { MessageContentContext } from '../../context';
 import { themed } from '../../styles/theme';
+
+import type { DefaultAttachmentType } from '../../types/types';
+
+export type ActionHandler =
+  | ((name: string, value: string) => Promise<void>)
+  | ((arg1: unknown, arg2: unknown) => unknown);
+
+export type GroupStyle = 'single' | 'top' | 'middle' | 'bottom';
+
+export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
+  /**
+   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
+   */
+  actionHandler: ActionHandler;
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: 'right' | 'left';
+  /**
+   * The attachment to render
+   */
+  attachment: AttachmentType<At>;
+  /**
+   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   */
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps>>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Custom UI component to display generic media type e.g. giphy, url preview etc
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  Card?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to override default cover (between Header and Footer) of Card component.
+   * Accepts the same props as Card component.
+   */
+  CardCover?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to override default Footer of Card component.
+   * Accepts the same props as Card component.
+   */
+  CardFooter?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to override default header of Card component.
+   * Accepts the same props as Card component.
+   */
+  CardHeader?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to display File type attachment.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   */
+  FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
+  /**
+   * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+   */
+  FileAttachmentGroup?: React.ComponentType<any>; // TODO - add FileAttachmentGroup props
+  /**
+   * Custom UI component to display image attachments.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+   */
+  Gallery?: React.ComponentType<GalleryProps<At>>;
+  /**
+   * Custom UI component to display Giphy image.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  Giphy?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyle?: GroupStyle;
+  /**
+   * Custom UI component to display enriched url preview.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   */
+  UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
+};
 
 /**
  * Attachment - The message attachment
  *
  * @example ../docs/Attachment.md
  */
-const Attachment = (props) => {
+const Attachment = <At extends UnknownType = DefaultAttachmentType>(
+  props: AttachmentProps<At> & { themePath?: string },
+) => {
   const {
     actionHandler,
     alignment,
     attachment,
-    AttachmentActions,
-    Card,
+    AttachmentActions = DefaultAttachmentActions,
+    AttachmentFileIcon = DefaultFileIcon,
+    Card = DefaultCard,
     CardCover,
     CardFooter,
     CardHeader,
-    FileAttachment,
-    Gallery,
+    FileAttachment = DefaultFileAttachment,
+    Gallery = DefaultGallery,
+    groupStyle,
   } = props;
 
   if (!attachment) {
     return null;
   }
 
-  const Giphy = props && props.Giphy ? props.Giphy : Card;
-  const UrlPreview = props && props.UrlPreview ? props.UrlPreview : Card;
+  const Giphy = props?.Giphy ? props.Giphy : Card;
+  const UrlPreview = props?.UrlPreview ? props.UrlPreview : Card;
   const cardProps = {
     Cover: CardCover ? CardCover : undefined,
     Footer: CardFooter ? CardFooter : undefined,
@@ -61,13 +151,14 @@ const Attachment = (props) => {
     type = 'card';
   }
 
-  const hasAttachmentActions = attachment.actions && attachment.actions.length;
+  const hasAttachmentActions = !!attachment.actions?.length;
+
   if (type === 'image') {
     return (
       <>
-        <Gallery alignment={alignment} images={[attachment]} />
+        <Gallery<At> alignment={alignment} images={[attachment]} />
         {hasAttachmentActions && (
-          <AttachmentActions
+          <AttachmentActions<At>
             actionHandler={actionHandler}
             key={`key-actions-${attachment.id}`}
             {...attachment}
@@ -81,8 +172,8 @@ const Attachment = (props) => {
     if (hasAttachmentActions) {
       return (
         <View>
-          <Giphy alignment={alignment} {...attachment} {...cardProps} />
-          <AttachmentActions
+          <Giphy<At> alignment={alignment} {...attachment} {...cardProps} />
+          <AttachmentActions<At>
             actionHandler={actionHandler}
             key={`key-actions-${attachment.id}`}
             {...attachment}
@@ -90,7 +181,7 @@ const Attachment = (props) => {
         </View>
       );
     } else {
-      return <Giphy alignment={alignment} {...attachment} {...cardProps} />;
+      return <Giphy<At> alignment={alignment} {...attachment} {...cardProps} />;
     }
   }
 
@@ -98,8 +189,8 @@ const Attachment = (props) => {
     if (hasAttachmentActions) {
       return (
         <View>
-          <Card alignment={alignment} {...attachment} {...cardProps} />
-          <AttachmentActions
+          <Card<At> alignment={alignment} {...attachment} {...cardProps} />
+          <AttachmentActions<At>
             actionHandler={actionHandler}
             key={`key-actions-${attachment.id}`}
             {...attachment}
@@ -107,26 +198,25 @@ const Attachment = (props) => {
         </View>
       );
     } else {
-      return <Card alignment={alignment} {...attachment} />;
+      return <Card<At> alignment={alignment} {...attachment} />;
     }
   }
 
   if (type === 'urlPreview') {
-    return <UrlPreview alignment={alignment} {...attachment} {...cardProps} />;
+    return (
+      <UrlPreview<At> alignment={alignment} {...attachment} {...cardProps} />
+    );
   }
 
   if (type === 'file') {
-    const { AttachmentFileIcon, groupStyle } = props;
-    const { onLongPress } = useContext(MessageContentContext);
-
     return (
-      <FileAttachment
+      <FileAttachment<At>
         actionHandler={actionHandler}
         alignment={alignment}
         attachment={attachment}
+        AttachmentActions={AttachmentActions}
         AttachmentFileIcon={AttachmentFileIcon}
         groupStyle={groupStyle}
-        onLongPress={onLongPress}
       />
     );
   }
@@ -134,111 +224,13 @@ const Attachment = (props) => {
   if (type === 'media' && attachment.asset_url && attachment.image_url) {
     return (
       // TODO: Put in video component
-      <Card alignment={alignment} {...attachment} {...cardProps} />
+      <Card<At> alignment={alignment} {...attachment} {...cardProps} />
     );
   }
 
-  return false;
-};
-
-Attachment.propTypes = {
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  actionHandler: PropTypes.func,
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  /**
-   * Position of message. 'right' | 'left'
-   * 'right' message belongs with current user while 'left' message belongs to other users.
-   * */
-  alignment: PropTypes.string,
-  /** The attachment to render */
-  attachment: PropTypes.object.isRequired,
-  /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
-   */
-  AttachmentActions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default cover (between Header and Footer) of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardCover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default Footer of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default header of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
-   */
-  FileAttachmentGroup: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component to display image attachments.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
-   */
-  Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display Giphy image.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyle: PropTypes.oneOf(['single', 'top', 'middle', 'bottom']),
-  /** Handler for long press event on attachment */
-  onLongPress: PropTypes.func,
-  /**
-   * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-};
-
-Attachment.defaultProps = {
-  AttachmentActions,
-  AttachmentFileIcon: FileIcon,
-  Card,
-  FileAttachment,
-  Gallery,
+  return null;
 };
 
 Attachment.themePath = 'attachment';
 
-export default themed(Attachment);
+export default themed(Attachment) as typeof Attachment;

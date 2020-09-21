@@ -1,14 +1,17 @@
 import React, { useContext } from 'react';
-import { Linking, View } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
+import { ImageSourcePropType, Linking, View } from 'react-native';
+import type { Attachment, UnknownType } from 'stream-chat';
 
-import giphyLogo from '../../assets/Poweredby_100px-White_VertText.png';
 import { MessageContentContext } from '../../context';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
-const Container = styled.TouchableOpacity`
+import type { DefaultAttachmentType } from '../../types/types';
+
+const giphyLogo: ImageSourcePropType = require('../../assets/Poweredby_100px-White_VertText.png');
+
+const Container = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
   background-color: ${({ theme }) => theme.colors.light};
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2}px;
@@ -49,7 +52,7 @@ const FooterTitle = styled.Text`
   ${({ theme }) => theme.message.card.footer.title.css}
 `;
 
-const trimUrl = (url) => {
+const trimUrl = (url?: string) => {
   let trimmedUrl;
   if (url !== undefined && url !== null) {
     trimmedUrl = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
@@ -57,7 +60,8 @@ const trimUrl = (url) => {
   return trimmedUrl;
 };
 
-const goToURL = (url) => {
+const goToURL = (url?: string) => {
+  if (!url) return;
   Linking.canOpenURL(url).then((supported) => {
     if (supported) {
       Linking.openURL(url);
@@ -67,12 +71,38 @@ const goToURL = (url) => {
   });
 };
 
+export type CardProps<
+  At extends UnknownType = DefaultAttachmentType
+> = Attachment<At> & {
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: 'right' | 'left';
+  /**
+   * Custom UI component to override default cover (between Header and Footer) of Card component.
+   * Accepts the same props as Card component.
+   */
+  Cover?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to override default Footer of Card component.
+   * Accepts the same props as Card component.
+   */
+  Footer?: React.ComponentType<Partial<CardProps<At>>>;
+  /**
+   * Custom UI component to override default header of Card component.
+   * Accepts the same props as Card component.
+   */
+  Header?: React.ComponentType<Partial<CardProps<At>>>;
+};
+
 /**
  * UI component for card in attachments.
  *
  * @example ../docs/Card.md
  */
-const Card = (props) => {
+const Card = <At extends UnknownType = DefaultAttachmentType>(
+  props: CardProps<At>,
+) => {
   const {
     alignment,
     Cover,
@@ -122,32 +152,6 @@ const Card = (props) => {
   );
 };
 
-Card.propTypes = {
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  alignment: PropTypes.string,
-  Cover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  Footer: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  Header: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** The url of the full sized image */
-  image_url: PropTypes.string,
-  /** The scraped url, used as a fallback if the OG-data doesn't include a link */
-  og_scrape_url: PropTypes.string,
-  onLongPress: PropTypes.func,
-  /** Description returned by the OG scraper */
-  text: PropTypes.string,
-  /** The url for thumbnail sized image*/
-  thumb_url: PropTypes.string,
-  /** Title returned by the OG scraper */
-  title: PropTypes.string,
-  /** Link returned by the OG scraper */
-  title_link: PropTypes.string,
-  type: PropTypes.string,
-};
-
 Card.themePath = 'card';
 
-export default themed(Card);
+export default themed(Card) as typeof Card;

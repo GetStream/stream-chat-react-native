@@ -8,14 +8,17 @@ import {
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import styled from 'styled-components/native';
+import type { Attachment, UnknownType } from 'stream-chat';
 
 import CloseButton from '../CloseButton/CloseButton';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { MessageContentContext } from '../../context';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
+
+import type { DefaultAttachmentType } from '../../types/types';
 
 const Single = styled.TouchableOpacity<{ alignment?: string }>`
   border-top-left-radius: 16px;
@@ -30,7 +33,10 @@ const Single = styled.TouchableOpacity<{ alignment?: string }>`
   ${({ theme }) => theme.message.gallery.single.css}
 `;
 
-const GalleryContainer = styled.View<{ alignment?: string; length?: number }>`
+const GalleryContainer = styled.View<{
+  alignment: 'right' | 'left';
+  length?: number;
+}>`
   border-radius: 16px;
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2}px;
@@ -91,13 +97,15 @@ const GalleryHeader = ({
   </HeaderContainer>
 );
 
-type Props = {
-  alignment: string;
-  /** The images to render */
-  images: Array<{
-    image_url: string;
-    thumb_url: string;
-  }>;
+export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: 'right' | 'left';
+  /**
+   * The image attachments to render
+   */
+  images: Attachment<At>[];
 };
 
 /**
@@ -105,9 +113,10 @@ type Props = {
  *
  * @example ../docs/Gallery.md
  */
-const Gallery: React.FC<Props> & {
-  themePath: string;
-} = ({ alignment, images }) => {
+const Gallery = <At extends UnknownType = DefaultAttachmentType>({
+  alignment,
+  images,
+}: GalleryProps<At>) => {
   const { additionalTouchableProps, onLongPress } = useContext(
     MessageContentContext,
   );
