@@ -1,35 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
-import type { Immutable } from 'seamless-immutable';
-import type { ChannelState, UnknownType } from 'stream-chat';
-
 import ReactionPickerDefault from './ReactionPicker';
 
-import type { Alignment, LatestReactions, Reaction } from './ReactionList';
+import type { LatestReactions, Reaction } from './ReactionList';
 import type { ReactionPickerProps } from './ReactionPicker';
 
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-} from '../../types/types';
+  Alignment,
+  MessageWithDates,
+} from '../../contexts/messagesContext/MessagesContext';
 
-type Props<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = {
+type Props = {
   alignment: Alignment;
   customMessageContent: boolean;
   dismissReactionPicker: () => void;
@@ -43,9 +27,7 @@ type Props<
   handleReaction: (id: Reaction['id']) => void;
   hideReactionCount: boolean;
   hideReactionOwners: boolean;
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-  >;
+  message: MessageWithDates;
   offset: { left: number; right: number; top: number };
   openReactionPicker: () => void;
   ReactionPicker: React.ComponentType<Partial<ReactionPickerProps>>;

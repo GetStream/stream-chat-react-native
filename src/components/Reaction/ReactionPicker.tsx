@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 
-import type { MessageResponse, UnknownType, UserResponse } from 'stream-chat';
+import type { UnknownType, UserResponse } from 'stream-chat';
 
 import type { LatestReactions, Reaction } from './ReactionList';
 
@@ -10,7 +10,8 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
-import type { DefaultMessageType, DefaultUserType } from '../../types/types';
+import type { MessageWithDates } from '../../contexts/messagesContext/MessagesContext';
+import type { DefaultUserType } from '../../types/types';
 
 const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
@@ -63,14 +64,14 @@ const getUsersPerReaction = (reactions: LatestReactions, type: string) => {
   return filtered;
 };
 
-export type ReactionPickerProps<Me extends UnknownType = DefaultMessageType> = {
+export type ReactionPickerProps = {
   handleDismiss: () => void;
   handleReaction: (arg: string) => void;
   hideReactionCount: boolean;
   hideReactionOwners: boolean;
   latestReactions: LatestReactions;
   reactionPickerVisible: boolean;
-  reactionCounts?: MessageResponse<Me>['reaction_counts'];
+  reactionCounts?: MessageWithDates['reaction_counts'];
   rpLeft?: number;
   rpRight?: number;
   rpTop?: number;

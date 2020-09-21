@@ -1,14 +1,15 @@
 import React from 'react';
 
-import type { MessageResponse, UnknownType } from 'stream-chat';
-
 import { renderReactions } from './utils/renderReactions';
 
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
-import type { DefaultMessageType } from '../../types/types';
+import type {
+  Alignment,
+  MessageWithDates,
+} from '../../contexts/messagesContext/MessagesContext';
 
 const leftTail = require('../../images/reactionlist/left-tail.png');
 const leftCenter = require('../../images/reactionlist/left-center.png');
@@ -18,11 +19,7 @@ const rightTail = require('../../images/reactionlist/right-tail.png');
 const rightCenter = require('../../images/reactionlist/right-center.png');
 const rightEnd = require('../../images/reactionlist/right-end.png');
 
-export type Alignment = 'left' | 'right';
-
-export type LatestReactions<
-  Me extends UnknownType = DefaultMessageType
-> = MessageResponse<Me>['latest_reactions'];
+export type LatestReactions = MessageWithDates['latest_reactions'];
 
 export type Reaction = {
   icon: string;
