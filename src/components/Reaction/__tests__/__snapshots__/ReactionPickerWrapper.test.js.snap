@@ -22,7 +22,6 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
   <Modal
     animationType="fade"
     hardwareAccelerated={false}
-    onShow={[Function]}
     testID="reaction-picker"
     transparent={true}
     visible={true}
@@ -403,7 +402,6 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
   <Modal
     animationType="fade"
     hardwareAccelerated={false}
-    onShow={[Function]}
     testID="reaction-picker"
     transparent={true}
     visible={true}

@@ -105,7 +105,7 @@
     "seamless-immutable": "^7.1.4",
     "stream-chat": "2.3.1",
     "styled-components": "^5.1.1",
-    "uuid": "^8.3.0"
+    "uuid": "^3.4.0"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
@@ -131,7 +131,7 @@
     "@types/jest": "^26.0.13",
     "@types/lodash": "^4.14.161",
     "@types/react": "^16.8.23",
-    "@types/react-native": "^0.63.14",
+    "@types/react-native": "^0.63.20",
     "@types/react-test-renderer": "^16.9.3",
     "@types/styled-components": "^5.1.2",
     "@typescript-eslint/eslint-plugin": "^3.7.1",

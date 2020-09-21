@@ -2,7 +2,6 @@
 
 exports[`ReactionList should render left aligned ReactionList 1`] = `
 <View
-  activeOpacity={1}
   alignment="left"
   style={
     Array [
@@ -133,7 +132,6 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
 
 exports[`ReactionList should render not visible ReactionList 1`] = `
 <View
-  activeOpacity={1}
   style={
     Array [
       Object {
@@ -151,7 +149,6 @@ exports[`ReactionList should render not visible ReactionList 1`] = `
 
 exports[`ReactionList should render right aligned ReactionList 1`] = `
 <View
-  activeOpacity={1}
   alignment="right"
   style={
     Array [

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
+import type { Channel, ChannelState, Event, UnknownType } from 'stream-chat';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -14,7 +14,7 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-export type ChatContextValue<
+export type ChannelContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -23,17 +23,25 @@ export type ChatContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  connectionRecovering: boolean;
-  isOnline: boolean;
-  logger: (message?: string | undefined) => void;
-  setActiveChannel: (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  EmptyStateIndicator: React.ComponentType<{ listType?: string }>;
+  error: boolean;
+  eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
+  loading: boolean;
+  markRead: () => void;
+  members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
+  read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
+  setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
+  watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  disabled?: boolean;
+  lastRead?: Date;
+  watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 };
 
-export const ChatContext = React.createContext({} as ChatContextValue);
+export const ChannelContext = React.createContext({} as ChannelContextValue);
 
-export const ChatProvider = <
+export const ChannelProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -45,14 +53,14 @@ export const ChatProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
+  <ChannelContext.Provider value={(value as unknown) as ChannelContextValue}>
     {children}
-  </ChatContext.Provider>
+  </ChannelContext.Provider>
 );
 
-export const useChatContext = <
+export const useChannelContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -61,7 +69,7 @@ export const useChatContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() =>
-  (useContext(ChatContext) as unknown) as ChatContextValue<
+  (useContext(ChannelContext) as unknown) as ChannelContextValue<
     At,
     Ch,
     Co,
@@ -73,10 +81,10 @@ export const useChatContext = <
 
 /**
  * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChatContext the Props for the
+ * typing is desired while using the HOC withChannelContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withChatContext = <
+export const withChannelContext = <
   P extends Record<string, unknown>,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -87,16 +95,16 @@ export const withChatContext = <
   Us extends UnknownType = DefaultUserType
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
-  const WithChatContextComponent = (
-    props: Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+): React.FC<Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
+  const WithChannelContextComponent = (
+    props: Omit<P, keyof ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
   ) => {
-    const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const channelContext = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-    return <Component {...(props as P)} {...chatContext} />;
+    return <Component {...(props as P)} {...channelContext} />;
   };
-  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(
+  WithChannelContextComponent.displayName = `WithChannelContext${getDisplayName(
     Component,
   )}`;
-  return WithChatContextComponent;
+  return WithChannelContextComponent;
 };

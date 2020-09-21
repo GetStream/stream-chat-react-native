@@ -62,7 +62,7 @@ const MessageSimple = (props) => {
     ...props,
     alignment,
     customMessageContent,
-    groupStyles: hasReactions ? ['bottom'] : groupStyles,
+    groupStyles: hasReactions && props.ReactionList ? ['bottom'] : groupStyles,
   };
 
   return (
