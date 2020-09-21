@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
-const wait = (ms) => {
+const wait = (ms) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-};
 
 export const usePaginatedChannels = ({
   client,
@@ -26,7 +25,6 @@ export const usePaginatedChannels = ({
     if (loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
-      setChannels([]);
       setLoadingChannels(true);
     } else if (queryType === 'refresh') {
       setRefreshing(true);
@@ -58,12 +56,12 @@ export const usePaginatedChannels = ({
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
     } catch (e) {
-      setLoadingChannels(false);
-      setLoadingNextPage(false);
-      setRefreshing(false);
       await wait(2000);
 
       if (retryCount === 3) {
+        setLoadingChannels(false);
+        setLoadingNextPage(false);
+        setRefreshing(false);
         console.warn(e);
         return setError(true);
       }

@@ -115,10 +115,10 @@ const ChannelListMessenger = (props) => {
     );
   };
 
-  if (error && !refreshing && !(channels && channels.length)) {
-    return renderLoadingError();
-  } else if (loadingChannels) {
+  if (loadingChannels) {
     return renderLoading();
+  } else if (error && !refreshing && !(channels && channels.length)) {
+    return renderLoadingError();
   } else {
     return renderChannels();
   }
