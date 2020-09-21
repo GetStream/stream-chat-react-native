@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
-import { v5 as uuidv5 } from 'uuid';
+import uuidv5 from 'uuid/v5';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';
