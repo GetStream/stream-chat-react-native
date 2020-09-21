@@ -399,6 +399,21 @@ const MessageContent = (props) => {
 
 MessageContent.themePath = 'message.content';
 
+MessageContent.defaultProps = {
+  ActionSheet: DefaultActionSheet,
+  enableLongPress: true,
+  FileAttachment: DefaultFileAttachment,
+  FileAttachmentGroup: DefaultFileAttachmentGroup,
+  Gallery: DefaultGallery,
+  hideReactionCount: false,
+  hideReactionOwners: false,
+  MessageReplies: DefaultMessageReplies,
+  ReactionList: DefaultReactionList,
+  reactionsEnabled: true,
+  repliesEnabled: true,
+  supportedReactions: emojiData,
+};
+
 MessageContent.propTypes = {
   /**
    * Custom UI component for the action sheet that appears on long press of a Message.
