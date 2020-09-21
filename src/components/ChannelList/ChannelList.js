@@ -24,10 +24,14 @@ import { ChatContext } from '../../context';
  *
  * @example ../docs/ChannelList.md
  */
+const DEFAULT_FILTERS = {};
+const DEFAULT_OPTIONS = {};
+const DEFAULT_SORT = {};
+
 const ChannelList = (props) => {
   const {
     List = ChannelListMessenger,
-    filters = {},
+    filters = DEFAULT_FILTERS,
     lockChannelOrder = false,
     onAddedToChannel,
     onChannelDeleted,
@@ -37,9 +41,9 @@ const ChannelList = (props) => {
     onMessageNew,
     onRemovedFromChannel,
     onSelect,
-    options = {},
+    options = DEFAULT_OPTIONS,
     setFlatListRef,
-    sort = {},
+    sort = DEFAULT_SORT,
   } = props;
 
   const { client } = useContext(ChatContext);
