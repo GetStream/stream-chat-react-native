@@ -1,42 +1,45 @@
 import React, { PropsWithChildren, useContext } from 'react';
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
-
+import type {
+  GestureResponderEvent,
+  TouchableOpacityProps,
+} from 'react-native';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
   DefaultCommandType,
-  DefaultEventType,
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
-} from '../../types/types';
+} from 'src/types/types';
+import type { UnknownType } from 'stream-chat';
 
+import type { MessageWithDates } from '../messagesContext/MessagesContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-export type ChatContextValue<
+export type MessageContentContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  connectionRecovering: boolean;
-  isOnline: boolean;
-  logger: (message?: string | undefined) => void;
-  setActiveChannel: (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  onLongPress: (
+    message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
+    event: GestureResponderEvent,
+  ) => void;
+  additionalTouchableProps?: TouchableOpacityProps;
+  disabled?: boolean;
 };
 
-export const ChatContext = React.createContext({} as ChatContextValue);
+export const MessageContentContext = React.createContext(
+  {} as MessageContentContextValue,
+);
 
-export const ChatProvider = <
+export const MessageContentProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
@@ -44,58 +47,66 @@ export const ChatProvider = <
   children,
   value,
 }: PropsWithChildren<{
-  value: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+  value: MessageContentContextValue<At, Ch, Co, Me, Re, Us>;
 }>) => (
-  <ChatContext.Provider value={(value as unknown) as ChatContextValue}>
+  <MessageContentContext.Provider
+    value={(value as unknown) as MessageContentContextValue}
+  >
     {children}
-  </ChatContext.Provider>
+  </MessageContentContext.Provider>
 );
 
-export const useChatContext = <
+export const useMessageContentContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >() =>
-  (useContext(ChatContext) as unknown) as ChatContextValue<
+  (useContext(MessageContentContext) as unknown) as MessageContentContextValue<
     At,
     Ch,
     Co,
-    Ev,
     Me,
     Re,
     Us
   >;
 
 /**
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChatContext the Props for the
+ * Typescript currently does not support partial inference so if MessageContentContext
+ * typing is desired while using the HOC withMessageContentContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withChatContext = <
+export const withMessageContentContext = <
   P extends Record<string, unknown>,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>> => {
-  const WithChatContextComponent = (
-    props: Omit<P, keyof ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>>,
+): React.FC<
+  Omit<P, keyof MessageContentContextValue<At, Ch, Co, Me, Re, Us>>
+> => {
+  const WithMessageContentContextComponent = (
+    props: Omit<P, keyof MessageContentContextValue<At, Ch, Co, Me, Re, Us>>,
   ) => {
-    const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+    const messageContentContext = useMessageContentContext<
+      At,
+      Ch,
+      Co,
+      Me,
+      Re,
+      Us
+    >();
 
-    return <Component {...(props as P)} {...chatContext} />;
+    return <Component {...(props as P)} {...messageContentContext} />;
   };
-  WithChatContextComponent.displayName = `WithChatContext${getDisplayName(
+  WithMessageContentContextComponent.displayName = `WithMessageContentContext${getDisplayName(
     Component,
   )}`;
-  return WithChatContextComponent;
+  return WithMessageContentContextComponent;
 };
