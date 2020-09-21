@@ -162,11 +162,11 @@ const sections = [
         name: 'withSuggestionsContext',
       },
       {
-        content: 'src/components/docs/ThreadContext.md',
+        content: 'src/contexts/threadContext/ThreadContext.md',
         name: 'ThreadContext',
       },
       {
-        content: 'src/components/docs/withThreadContext.md',
+        content: 'src/contexts/threadContext/withThreadContext.md',
         name: 'withThreadContext',
       },
     ],
