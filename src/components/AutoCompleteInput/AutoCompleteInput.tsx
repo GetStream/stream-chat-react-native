@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import type {
   NativeSyntheticEvent,
@@ -10,9 +10,9 @@ import type {
 import {
   isSuggestionUser,
   Suggestion,
-  SuggestionsContext,
+  useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
-import { TranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
 import { isMentionTrigger } from '../../utils/utils';
@@ -81,8 +81,8 @@ const AutoCompleteInput: React.FC<Props> = ({
     closeSuggestions,
     openSuggestions,
     updateSuggestions: updateSuggestionsContext,
-  } = useContext(SuggestionsContext);
-  const { t } = useContext(TranslationContext);
+  } = useSuggestionsContext();
+  const { t } = useTranslationContext();
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
