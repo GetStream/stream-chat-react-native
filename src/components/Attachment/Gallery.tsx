@@ -1,16 +1,23 @@
 import React, { useContext, useState } from 'react';
-import { Image, Modal, SafeAreaView, Text, View } from 'react-native';
-import PropTypes from 'prop-types';
+import {
+  GestureResponderEvent,
+  Image,
+  Modal,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import styled from 'styled-components/native';
 
 import CloseButton from '../CloseButton/CloseButton';
 
-import { MessageContentContext, TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { MessageContentContext } from '../../context';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
-const Single = styled.TouchableOpacity`
+const Single = styled.TouchableOpacity<{ alignment?: string }>`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
@@ -23,7 +30,7 @@ const Single = styled.TouchableOpacity`
   ${({ theme }) => theme.message.gallery.single.css}
 `;
 
-const GalleryContainer = styled.View`
+const GalleryContainer = styled.View<{ alignment?: string; length?: number }>`
   border-radius: 16px;
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2}px;
@@ -32,7 +39,7 @@ const GalleryContainer = styled.View`
   flex-direction: row;
   flex-wrap: wrap;
   height: ${({ length, theme }) =>
-    length >= 4
+    length && length >= 4
       ? theme.message.gallery.doubleSize
       : length === 3
       ? theme.message.gallery.halfSize
@@ -42,7 +49,7 @@ const GalleryContainer = styled.View`
   ${({ theme }) => theme.message.gallery.galleryContainer.css}
 `;
 
-const ImageContainer = styled.TouchableOpacity`
+const ImageContainer = styled.TouchableOpacity<{ length?: number }>`
   height: ${({ length, theme }) =>
     length !== 3
       ? theme.message.gallery.size
@@ -72,7 +79,11 @@ const HeaderButton = styled.TouchableOpacity`
   ${({ theme }) => theme.message.gallery.header.button.css}
 `;
 
-const GalleryHeader = ({ handleDismiss }) => (
+const GalleryHeader = ({
+  handleDismiss,
+}: {
+  handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
+}) => (
   <HeaderContainer>
     <HeaderButton onPress={handleDismiss}>
       <CloseButton />
@@ -80,21 +91,32 @@ const GalleryHeader = ({ handleDismiss }) => (
   </HeaderContainer>
 );
 
+type Props = {
+  alignment: string;
+  /** The images to render */
+  images: Array<{
+    image_url: string;
+    thumb_url: string;
+  }>;
+};
+
 /**
  * UI component for card in attachments.
  *
  * @example ../docs/Gallery.md
  */
-const Gallery = ({ alignment, images }) => {
+const Gallery: React.FC<Props> & {
+  themePath: string;
+} = ({ alignment, images }) => {
   const { additionalTouchableProps, onLongPress } = useContext(
     MessageContentContext,
   );
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
 
-  if (!images || !images.length) return null;
+  if (!images?.length) return null;
 
   const galleryImages = [...images].map((image) => ({
     url: makeImageCompatibleUrl(image.image_url || image.thumb_url),
@@ -223,23 +245,6 @@ const Gallery = ({ alignment, images }) => {
   );
 };
 
-Gallery.propTypes = {
-  /**
-   * Provide any additional props for child `TouchableOpacity`.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  alignment: PropTypes.string,
-  /** The images to render */
-  images: PropTypes.arrayOf(
-    PropTypes.shape({
-      image_url: PropTypes.string,
-      thumb_url: PropTypes.string,
-    }),
-  ),
-  onLongPress: PropTypes.func,
-};
-
 Gallery.themePath = 'message.gallery';
 
-export default themed(Gallery);
+export default themed(Gallery) as typeof Gallery;
