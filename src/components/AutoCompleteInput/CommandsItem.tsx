@@ -1,8 +1,9 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
 
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
+
+import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 
 const CommandArgs = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.command.args.css}
@@ -28,10 +29,23 @@ const Top = styled.View`
   ${({ theme }) => theme.messageInput.suggestions.command.top.css}
 `;
 
+type Props = {
+  /**
+   * A CommandResponse of suggested CommandTypes with these properties
+   *
+   * - args: Arguments which can be passed to the command
+   * - description: Description of the command
+   * - name: Name of the command
+   */
+  item: SuggestionCommand;
+};
+
 /**
- * @example ../docs/CommandsItem.md
+ * @example ./CommandsItem.md
  */
-const CommandsItem = ({ item: { args, description, name } }) => (
+const CommandsItem: React.FC<Props> & { themePath: string } = ({
+  item: { args, description, name },
+}) => (
   <Container>
     <Top>
       <Title testID='commands-item-title'>/{name} </Title>
@@ -42,23 +56,6 @@ const CommandsItem = ({ item: { args, description, name } }) => (
     </CommandDescription>
   </Container>
 );
-
-CommandsItem.propTypes = {
-  item: PropTypes.shape({
-    /**
-     * Arguments which can be passed to the command
-     */
-    args: PropTypes.string,
-    /**
-     * Description of the command
-     */
-    description: PropTypes.string,
-    /**
-     * Name of the command
-     */
-    name: PropTypes.string,
-  }),
-};
 
 CommandsItem.themePath = 'messageInput.suggestions.command';
 
