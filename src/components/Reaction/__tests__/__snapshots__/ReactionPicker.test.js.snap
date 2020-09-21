@@ -4,7 +4,6 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
 <Modal
   animationType="fade"
   hardwareAccelerated={false}
-  onShow={[Function]}
   testID="reaction-picker"
   transparent={true}
   visible={true}

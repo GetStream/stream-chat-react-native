@@ -1,13 +1,18 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
+
+import type { MessageResponse, UnknownType, UserResponse } from 'stream-chat';
+
+import type { LatestReactions, Reaction } from './ReactionList';
 
 import Avatar from '../Avatar/Avatar';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
-const Container = styled.TouchableOpacity`
+import type { DefaultMessageType, DefaultUserType } from '../../types/types';
+
+const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
   flex: 1;
   ${({ theme }) => theme.message.reactionPicker.container.css}
@@ -41,22 +46,39 @@ const ReactionCount = styled.Text`
   ${({ theme }) => theme.message.reactionPicker.text.css}
 `;
 
-const getLatestUser = (reactions, type) => {
+const getLatestUser = <Us extends UnknownType = DefaultUserType>(
+  reactions: LatestReactions,
+  type: string,
+) => {
   const filtered = getUsersPerReaction(reactions, type);
   if (filtered && filtered[0] && filtered[0].user) {
-    return filtered[0].user;
+    return filtered[0].user as UserResponse<Us>;
   } else {
     return 'NotFound';
   }
 };
 
-const getUsersPerReaction = (reactions, type) => {
-  const filtered = reactions && reactions.filter((item) => item.type === type);
+const getUsersPerReaction = (reactions: LatestReactions, type: string) => {
+  const filtered = reactions?.filter((item) => item.type === type);
   return filtered;
 };
 
+export type ReactionPickerProps<Me extends UnknownType = DefaultMessageType> = {
+  handleDismiss: () => void;
+  handleReaction: (arg: string) => void;
+  hideReactionCount: boolean;
+  hideReactionOwners: boolean;
+  latestReactions: LatestReactions;
+  reactionPickerVisible: boolean;
+  reactionCounts?: MessageResponse<Me>['reaction_counts'];
+  rpLeft?: number;
+  rpRight?: number;
+  rpTop?: number;
+  supportedReactions?: Reaction[];
+};
+
 // TODO: change from using Modal to reanimated view to save on rendering and performance
-const ReactionPicker = ({
+const ReactionPicker: React.FC<ReactionPickerProps> & { themePath: string } = ({
   handleDismiss,
   handleReaction,
   hideReactionCount = false,
@@ -73,7 +95,6 @@ const ReactionPicker = ({
     <Modal
       animationType='fade'
       onRequestClose={handleDismiss}
-      onShow={() => {}}
       testID='reaction-picker'
       transparent
       visible={reactionPickerVisible}
@@ -92,21 +113,14 @@ const ReactionPicker = ({
         >
           {supportedReactions.map(({ icon, id }) => {
             const latestUser = getLatestUser(latestReactions, id);
-            const count = reactionCounts && reactionCounts[id];
+            const count = reactionCounts?.[id] || 0;
             return (
               <Column key={id} testID={id}>
                 {latestUser !== 'NotFound' && !hideReactionOwners ? (
                   <Avatar
-                    alt={latestUser.id}
                     image={latestUser.image}
                     name={latestUser.name || latestUser.id}
                     size={18}
-                    style={{
-                      image: {
-                        borderColor: 'white',
-                        borderWidth: 1,
-                      },
-                    }}
                   />
                 ) : (
                   !hideReactionOwners && (
@@ -133,19 +147,5 @@ const ReactionPicker = ({
   ) : null;
 
 ReactionPicker.themePath = 'message.reactionPicker';
-
-ReactionPicker.propTypes = {
-  handleDismiss: PropTypes.func,
-  handleReaction: PropTypes.func,
-  hideReactionCount: PropTypes.bool,
-  hideReactionOwners: PropTypes.bool,
-  latestReactions: PropTypes.array,
-  reactionCounts: PropTypes.object,
-  reactionPickerVisible: PropTypes.bool,
-  rpLeft: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  rpRight: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  rpTop: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  supportedReactions: PropTypes.array,
-};
 
 export default themed(ReactionPicker);
