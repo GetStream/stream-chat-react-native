@@ -5,7 +5,7 @@ import throttle from 'lodash/throttle';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import { logChatPromiseExecution } from 'stream-chat';
-import { v4 as uuidv4 } from 'uuid';
+import uuidv4 from 'uuid/v4';
 
 import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
