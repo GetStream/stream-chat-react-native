@@ -11,7 +11,8 @@ import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
-import SuggestionsProvider from '../SuggestionsProvider/SuggestionsProvider';
+
+import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 
 import {
   ChannelContext,
@@ -46,7 +47,7 @@ const Channel = (props) => {
   const { client } = useContext(ChatContext);
   const { t } = useContext(TranslationContext);
 
-  const [editing, setEditing] = useState(null);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
   const [eventHistory, setEventHistory] = useState({});
   /**

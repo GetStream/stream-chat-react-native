@@ -3,7 +3,7 @@ import { Animated, Keyboard, LayoutChangeEvent, View } from 'react-native';
 
 import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
 
-import { KeyboardContext } from '../../context';
+import { KeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),

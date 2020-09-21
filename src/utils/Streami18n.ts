@@ -29,6 +29,8 @@ import 'dayjs/locale/tr';
 // to make sure I don't mess up language at other places in app.
 import 'dayjs/locale/en';
 
+import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
+
 Dayjs.extend(updateLocale);
 
 Dayjs.updateLocale('en', {
@@ -320,9 +322,7 @@ export class Streami18n {
   initialized = false;
 
   t: TFunction = (key: string) => key;
-  tDateTimeParser: (
-    input?: string | number | Date,
-  ) => string | number | Date | Dayjs.Dayjs | moment.Moment;
+  tDateTimeParser: TDateTimeParser;
 
   translations: {
     [key: string]: {

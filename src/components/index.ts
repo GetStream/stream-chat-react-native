@@ -64,8 +64,8 @@ import { renderReactions } from './Reaction/utils/renderReactions';
 
 import Spinner from './Spinner/Spinner';
 
-import SuggestionsList from './SuggestionsProvider/SuggestionsList';
-import SuggestionsProvider from './SuggestionsProvider/SuggestionsProvider';
+import { SuggestionsProvider } from '../contexts/suggestionsContext/SuggestionsContext';
+import SuggestionsList from '../contexts/suggestionsContext/SuggestionsList';
 
 import Thread from './Thread/Thread';
 
