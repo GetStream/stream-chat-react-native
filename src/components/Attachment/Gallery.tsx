@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
+
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 import type { Attachment, UnknownType } from 'stream-chat';
 
