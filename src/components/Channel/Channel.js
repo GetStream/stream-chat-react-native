@@ -35,7 +35,6 @@ const Channel = (props) => {
     channel,
     children,
     disableIfFrozenChannel = true,
-    disableKeyboardCompatibleView = false,
     emojiData = emojiDataDefault,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
@@ -518,8 +517,17 @@ const Channel = (props) => {
     return <LoadingIndicator listType='message' />;
   }
 
+  const {
+    disableKeyboardCompatibleView,
+    keyboardBehavior,
+    keyboardVerticalOffset,
+  } = props;
   return (
-    <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
+    <KeyboardCompatibleView
+      behavior={keyboardBehavior}
+      enabled={!disableKeyboardCompatibleView}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+    >
       <ChannelContext.Provider value={channelContext}>
         <MessagesContext.Provider value={messagesContext}>
           <ThreadContext.Provider value={threadContext}>
