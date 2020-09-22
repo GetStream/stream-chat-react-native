@@ -72,7 +72,7 @@ export type MessagesContextValue<
   retrySendMessage: (
     message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
-  sendMessage: (messagge: {
+  sendMessage: (message: {
     attachments?: Message<At, Me, Us>['attachments'];
     extraFields?: Partial<Message<At, Me, Us>>;
     mentioned_users?: Message<At, Me, Us>['mentioned_users'];
