@@ -194,6 +194,8 @@ const Channel = (props) => {
   const initChannel = async () => {
     let initError = false;
     setError(false);
+    setLoading(true);
+
     if (!channel.initialized && channel.cid) {
       try {
         await channel.watch();
