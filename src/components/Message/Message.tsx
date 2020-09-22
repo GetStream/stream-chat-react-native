@@ -1,22 +1,91 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import PropTypes from 'prop-types';
 
-import MessageSimple from './MessageSimple/MessageSimple';
+import type {
+  Channel,
+  ChannelState,
+  MessageResponse,
+  Reaction,
+  ReactionResponse,
+  StreamChat,
+  UnknownType,
+  UserResponse,
+} from 'stream-chat';
 
+import DefaultMessageSimple from './MessageSimple/MessageSimple';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-} from '../../context';
+  MessageWithDates,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+
+import type { GroupStyle } from '../Attachment/Attachment';
+import type { FileIconProps } from '../Attachment/FileIcon';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
+
+type ActionProps = {
+  reactionsEnabled?: boolean;
+  repliesEnabled?: boolean;
+};
+
+type PropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us> | undefined;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+  disabled: boolean | undefined;
+  dismissKeyboard: () => void;
+  editing: boolean | MessageWithDates<At, Ch, Co, Me, Re, Us>;
+  emojiData: {
+    icon: string;
+    id: string;
+  }[];
+  removeMessage: (message: {
+    id: string;
+    parent_id?: string | undefined;
+  }) => void;
+  retrySendMessage: (
+    message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
+  ) => Promise<void>;
+  setEditingState: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
+  updateMessage: (
+    updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+  ) => void;
+};
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual Message component.
  */
-const DefaultMessageWithContext = React.memo((props) => {
+const DefaultMessageWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const {
     channel,
     client,
@@ -24,7 +93,7 @@ const DefaultMessageWithContext = React.memo((props) => {
     dismissKeyboard,
     emojiData,
     message,
-    Message = MessageSimple,
+    Message: MessageSimple = DefaultMessageSimple,
     removeMessage,
     retrySendMessage,
     setEditingState,
@@ -34,40 +103,50 @@ const DefaultMessageWithContext = React.memo((props) => {
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
-  const isMyMessage = (message) => client.user.id === message.user.id;
+  const isMyMessage = () => client.user?.id === message.user?.id;
 
   const isAdmin = () =>
-    client.user.role === 'admin' ||
-    (channel.state &&
-      channel.state.membership &&
-      channel.state.membership.role === 'admin');
+    client.user?.role === 'admin' ||
+    (channel?.state &&
+      channel?.state.membership &&
+      channel?.state.membership.role === 'admin');
 
   const isOwner = () =>
-    channel.state &&
-    channel.state.membership &&
-    channel.state.membership.role === 'owner';
+    channel?.state &&
+    channel?.state.membership &&
+    channel?.state.membership.role === 'owner';
 
   const isModerator = () =>
-    channel.state &&
-    channel.state.membership &&
-    (channel.state.membership.role === 'channel_moderator' ||
-      channel.state.membership.role === 'moderator');
+    channel?.state &&
+    channel?.state.membership &&
+    (channel?.state.membership.role === 'channel_moderator' ||
+      channel?.state.membership.role === 'moderator');
 
   const canEditMessage = () =>
-    isMyMessage(message) || isModerator() || isOwner() || isAdmin();
+    isMyMessage() || isModerator() || isOwner() || isAdmin();
 
   const canDeleteMessage = () => canEditMessage();
 
   const handleEdit = () => setEditingState(message);
 
   const handleDelete = async () => {
-    const data = await client.deleteMessage(message.id);
-    updateMessage(data.message);
+    if (message.id) {
+      const data = await client.deleteMessage(message.id);
+      updateMessage(data.message);
+    }
   };
 
   // TODO: add flag/mute functionality to SDK
-  const handleFlag = async () => await client.flagMessage(message.id);
-  const handleMute = async () => await client.muteUser(message.user.id);
+  const handleFlag = async () => {
+    if (message.id) {
+      await client.flagMessage(message.id);
+    }
+  };
+  const handleMute = async () => {
+    if (message.user?.id) {
+      await client.muteUser(message.user.id);
+    }
+  };
 
   const showActionSheet = async () => {
     await dismissKeyboard();
@@ -87,23 +166,25 @@ const DefaultMessageWithContext = React.memo((props) => {
 
   const dismissReactionPicker = () => setReactionPickerVisible(false);
 
-  const handleReaction = async (reactionType) => {
+  const handleReaction = async (reactionType: string) => {
     let userExistingReaction;
 
-    for (const reaction of message.own_reactions) {
-      /**
-       * Own user should only ever contain the current user id, just in
-       * case we check to prevent bugs with message updates from breaking reactions
-       */
-      if (
-        client.userID === reaction.user.id &&
-        reaction.type === reactionType
-      ) {
-        userExistingReaction = reaction;
-      } else if (client.userID !== reaction.user.id) {
-        console.warn(
-          `message.own_reactions contained reactions from a different user, this indicates a bug`,
-        );
+    if (Array.isArray(message.own_reactions)) {
+      for (const reaction of message.own_reactions) {
+        /**
+         * Own user should only ever contain the current user id, just in
+         * case we check to prevent bugs with message updates from breaking reactions
+         */
+        if (
+          client.userID === reaction.user?.id &&
+          reaction.type === reactionType
+        ) {
+          userExistingReaction = reaction;
+        } else if (client.userID !== reaction.user?.id) {
+          console.warn(
+            `message.own_reactions contained reactions from a different user, this indicates a bug`,
+          );
+        }
       }
     }
 
@@ -112,38 +193,54 @@ const DefaultMessageWithContext = React.memo((props) => {
       setReactionPickerVisible(false);
 
       if (userExistingReaction) {
-        channel.state.removeReaction(userExistingReaction);
-        await channel.deleteReaction(message.id, userExistingReaction.type);
+        channel?.state.removeReaction(userExistingReaction);
+        if (message.id) {
+          await channel?.deleteReaction(message.id, userExistingReaction.type);
+        }
       } else {
         const tmpReaction = {
           created_at: new Date(),
           message_id: message.id,
           type: reactionType,
+          updated_at: new Date(),
           user: client.user,
         };
 
-        channel.state.addReaction(tmpReaction);
-        await channel.sendReaction(message.id, { type: reactionType });
+        channel?.state.addReaction(
+          (tmpReaction as unknown) as ReactionResponse<Re, Us>,
+        );
+        if (message.id) {
+          await channel?.sendReaction(message.id, {
+            type: reactionType,
+          } as Reaction<Re, Us>);
+        }
       }
     } catch (e) {
       setReactionPickerVisible(true);
-      updateMessage(message);
+      updateMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
     }
   };
 
-  const handleAction = async (name, value) => {
-    const data = await channel.sendAction(message.id, { name: value });
-    if (data && data.message) {
-      updateMessage(data.message);
-    } else {
-      removeMessage(message);
+  const handleAction = async (name: string, value: string) => {
+    if (message.id) {
+      const data = await channel?.sendAction(message.id, { [name]: value });
+      if (data?.message) {
+        updateMessage(data.message);
+      } else {
+        removeMessage({ id: message.id, parent_id: message.parent_id });
+      }
     }
   };
 
-  const handleRetry = async (message) => await retrySendMessage(message);
+  const handleRetry = async () => await retrySendMessage(message);
 
-  const getTotalReactionCount = (supportedReactions) => {
-    let count;
+  const getTotalReactionCount = (
+    supportedReactions: {
+      icon: string;
+      id: string;
+    }[],
+  ) => {
+    let count = 0;
     if (!supportedReactions) {
       supportedReactions = emojiData;
     }
@@ -151,7 +248,6 @@ const DefaultMessageWithContext = React.memo((props) => {
     const reactionCounts = message.reaction_counts;
 
     if (reactionCounts && Object.keys(reactionCounts).length > 0) {
-      count = 0;
       Object.keys(reactionCounts).map((key) => {
         if (supportedReactions.find((e) => e.id === key)) {
           count += reactionCounts[key];
@@ -165,16 +261,16 @@ const DefaultMessageWithContext = React.memo((props) => {
   const actionsEnabled =
     message.type === 'regular' && message.status === 'received';
 
-  const actionProps = {};
+  const actionProps: ActionProps = {};
 
-  if (channel && channel.getConfig()) {
-    actionProps.reactionsEnabled = channel.getConfig().reactions;
-    actionProps.repliesEnabled = channel.getConfig().reactions;
+  if (channel && typeof channel.getConfig === 'function') {
+    actionProps.reactionsEnabled = channel.getConfig()?.reactions;
+    actionProps.repliesEnabled = channel.getConfig()?.reactions;
   }
 
   return (
     <TouchableOpacity activeOpacity={1} testID='message-wrapper'>
-      <Message
+      <MessageSimple
         {...props}
         {...actionProps}
         actionsEnabled={actionsEnabled}
@@ -200,9 +296,87 @@ const DefaultMessageWithContext = React.memo((props) => {
       />
     </TouchableOpacity>
   );
-});
+};
 
-DefaultMessageWithContext.displayName = 'messageWithContext';
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { updated_at: previousLast } = prevProps.message;
+  const { updated_at: nextLast } = nextProps.message;
+
+  return previousLast === nextLast;
+};
+
+const MemoizedDefaultMessage = React.memo(
+  DefaultMessageWithContext,
+  areEqual,
+) as typeof DefaultMessageWithContext;
+
+export type MessageProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  /**
+   * Style object for action sheet (used to message actions).
+   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+   */
+  actionSheetStyles: UnknownType; // TODO - check this is the correct type
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: GroupStyle;
+  /**
+   * Latest message id on current channel
+   */
+  lastReceivedId: string;
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message: React.ComponentType<Partial<any>>; // TODO - add MessageSimpleProps
+  /**
+   * Current [message object](https://getstream.io/chat/docs/#message_format)
+   */
+  message: MessageWithDates<At, Ch, Co, Me, Re, Us>;
+  /**
+   * Handler to open the thread on message. This is callback for touch event for replies button.
+   *
+   * @param message A message object to open the thread upon.
+   */
+  onThreadSelect: (
+    message: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'][0],
+  ) => void;
+  /**
+   * A list of users that have read this message
+   **/
+  readBy: UserResponse<Us>[];
+  /**
+   * Whether or not the MessageList is part of a Thread
+   */
+  threadList: boolean;
+};
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -210,10 +384,20 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
  *
  * @example ../docs/Message.md
  */
-const DefaultMessage = (props) => {
-  const { channel, disabled } = useContext(ChannelContext);
-  const { client } = useContext(ChatContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
+const DefaultMessage = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel, disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { dismissKeyboard } = useKeyboardContext();
   const {
     editing,
     emojiData,
@@ -221,10 +405,10 @@ const DefaultMessage = (props) => {
     retrySendMessage,
     setEditingState,
     updateMessage,
-  } = useContext(MessagesContext);
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
-    <DefaultMessageWithContext
+    <MemoizedDefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
       {...props}
       {...{
         channel,
@@ -240,48 +424,6 @@ const DefaultMessage = (props) => {
       }}
     />
   );
-};
-
-DefaultMessage.propTypes = {
-  /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles: PropTypes.object,
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: PropTypes.array,
-  /** Latest message id on current channel */
-  lastReceivedId: PropTypes.string,
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object.isRequired,
-  /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
-   *
-   * @param message A message object to open the thread upon.
-   */
-  onThreadSelect: PropTypes.func,
-  /** A list of users that have read this message **/
-  readBy: PropTypes.array,
-  /** Whether or not the MessageList is part of a Thread */
-  threadList: PropTypes.bool,
 };
 
 DefaultMessage.themePath = 'message';

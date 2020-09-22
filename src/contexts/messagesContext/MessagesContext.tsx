@@ -40,7 +40,7 @@ export type AttachmentProps = {
   // TODO - Add attachment props when it is typed
 };
 
-export type MessageProps = {
+export type MessageSimpleProps = {
   // TODO - Add attachment props when it is typed
 };
 
@@ -66,7 +66,7 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
-  Message: React.ComponentType<MessageProps>;
+  Message: React.ComponentType<MessageSimpleProps>;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   retrySendMessage: (
@@ -80,7 +80,9 @@ export type MessagesContextValue<
     text?: Message<At, Me, Us>['text'];
   }) => Promise<void>;
   setEditingState: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
-  updateMessage: (updatedMessage: Message<At, Me, Us>) => void;
+  updateMessage: (
+    updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+  ) => void;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);
