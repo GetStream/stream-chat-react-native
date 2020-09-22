@@ -128,7 +128,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
 
   if (!images?.length) return null;
 
-  const galleryImages = [...images].map((image) => {
+  const unfilteredImages = [...images].map((image) => {
     const url = image.image_url || image.thumb_url;
     if (url) {
       return {
@@ -138,11 +138,9 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
     return undefined;
   });
 
-  galleryImages.forEach((image, index) => {
-    if (!image || !image.url) {
-      galleryImages.splice(index, 1);
-    }
-  });
+  const galleryImages = unfilteredImages.filter(
+    (image) => !!image,
+  ) as IImageInfo[];
 
   if (galleryImages.length === 1) {
     return (
@@ -171,11 +169,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
               // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
               // opens up popup menu to with an option "Save to the album", which basically does nothing.
               enableSwipeDown
-              imageUrls={
-                galleryImages.length
-                  ? (galleryImages as IImageInfo[])
-                  : undefined
-              }
+              imageUrls={galleryImages}
               onCancel={() => setViewerModalOpen(false)}
               renderHeader={() => (
                 <GalleryHeader
@@ -257,9 +251,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
             // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
             // opens up popup menu to with an option "Save to the album", which basically does nothing.
             enableSwipeDown
-            imageUrls={
-              galleryImages.length ? (galleryImages as IImageInfo[]) : undefined
-            }
+            imageUrls={galleryImages}
             index={viewerModalImageIndex}
             onCancel={() => setViewerModalOpen(false)}
             renderHeader={() => (
