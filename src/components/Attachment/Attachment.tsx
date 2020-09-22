@@ -13,6 +13,7 @@ import DefaultGallery, { GalleryProps } from './Gallery';
 import { themed } from '../../styles/theme';
 
 import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
+import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 export type ActionHandler =
@@ -29,7 +30,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   /**
    * The attachment to render
    */

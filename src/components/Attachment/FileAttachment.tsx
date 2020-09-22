@@ -8,9 +8,13 @@ import { styled } from '../../styles/styledComponents';
 import type { ActionHandler, GroupStyle } from './Attachment';
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileIconProps } from './FileIcon';
+import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
-const FileContainer = styled.View<{ alignment: string; groupStyle?: string }>`
+const FileContainer = styled.View<{
+  alignment: Alignment;
+  groupStyle?: string;
+}>`
   align-items: center;
   background-color: #ebebeb;
   border-radius: ${({ groupStyle }) => {
@@ -63,7 +67,7 @@ export type FileAttachmentProps<
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   /** The attachment to render */
   attachment: Attachment<At>;
   /**

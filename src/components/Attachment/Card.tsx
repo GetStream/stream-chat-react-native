@@ -7,11 +7,12 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 const giphyLogo: ImageRequireSource = require('../../assets/Poweredby_100px-White_VertText.png');
 
-const Container = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
+const Container = styled.TouchableOpacity<{ alignment: Alignment }>`
   background-color: ${({ theme }) => theme.colors.light};
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2}px;
@@ -77,7 +78,7 @@ export type CardProps<
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.

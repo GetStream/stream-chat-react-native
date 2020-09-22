@@ -19,9 +19,10 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
-const Single = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
+const Single = styled.TouchableOpacity<{ alignment: Alignment }>`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
@@ -35,7 +36,7 @@ const Single = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
 `;
 
 const GalleryContainer = styled.View<{
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   length?: number;
 }>`
   border-radius: 16px;
@@ -102,7 +103,7 @@ export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   /**
    * The image attachments to render
    */

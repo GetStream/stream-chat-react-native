@@ -8,7 +8,7 @@ import { styled } from '../../styles/styledComponents';
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileAttachmentProps } from './FileAttachment';
 import type { FileIconProps } from './FileIcon';
-
+import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 const Container = styled.View`
@@ -21,7 +21,7 @@ export type FileAttachmentGroupProps<
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: 'right' | 'left';
+  alignment: Alignment;
   /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
