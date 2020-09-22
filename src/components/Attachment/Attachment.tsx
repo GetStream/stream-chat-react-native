@@ -126,7 +126,7 @@ const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     return null;
   }
 
-  const Giphy = props?.Giphy ? props.Giphy : Card;
+  const Giphy = props?.Giphy || Card;
   const UrlPreview = props?.UrlPreview ? props.UrlPreview : Card;
   const cardProps = {
     Cover: CardCover ? CardCover : undefined,
