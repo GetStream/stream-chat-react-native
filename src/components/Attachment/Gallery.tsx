@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   GestureResponderEvent,
   Image,
@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 import type { Attachment, UnknownType } from 'stream-chat';
 
 import CloseButton from '../CloseButton/CloseButton';
@@ -19,9 +20,8 @@ import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { DefaultAttachmentType } from '../../types/types';
-import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 
-const Single = styled.TouchableOpacity<{ alignment?: string }>`
+const Single = styled.TouchableOpacity<{ alignment: 'right' | 'left' }>`
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
@@ -126,18 +126,20 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
 
   if (!images?.length) return null;
 
-  const galleryImages: IImageInfo[] = [...images].map((image) => {
-    if (image.image_url) {
+  const galleryImages = [...images].map((image) => {
+    const url = image.image_url || image.thumb_url;
+    if (url) {
       return {
-        url: makeImageCompatibleUrl(image.image_url),
-      };
-    }
-    if (image.thumb_url) {
-      return {
-        url: makeImageCompatibleUrl(image.thumb_url),
+        url: makeImageCompatibleUrl(url),
       };
     }
     return undefined;
+  });
+
+  galleryImages.forEach((image, index) => {
+    if (!image || !image.url) {
+      galleryImages.splice(index, 1);
+    }
   });
 
   if (galleryImages.length === 1) {
@@ -167,7 +169,11 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
               // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
               // opens up popup menu to with an option "Save to the album", which basically does nothing.
               enableSwipeDown
-              imageUrls={galleryImages.length ? galleryImages : undefined}
+              imageUrls={
+                galleryImages.length
+                  ? (galleryImages as IImageInfo[])
+                  : undefined
+              }
               onCancel={() => setViewerModalOpen(false)}
               renderHeader={() => (
                 <GalleryHeader
@@ -206,7 +212,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
               <View style={{ flex: 1 }}>
                 <Image
                   resizeMode='cover'
-                  source={{ uri: galleryImages[3].url }}
+                  source={{ uri: galleryImages[3]?.url }}
                   style={{ flex: 1 }}
                 />
                 <View
@@ -231,7 +237,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
             ) : (
               <Image
                 resizeMode='cover'
-                source={{ uri: image.url }}
+                source={{ uri: image?.url }}
                 style={{ flex: 1 }}
               />
             )}
@@ -249,7 +255,9 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
             // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
             // opens up popup menu to with an option "Save to the album", which basically does nothing.
             enableSwipeDown
-            imageUrls={galleryImages}
+            imageUrls={
+              galleryImages.length ? (galleryImages as IImageInfo[]) : undefined
+            }
             index={viewerModalImageIndex}
             onCancel={() => setViewerModalOpen(false)}
             renderHeader={() => (

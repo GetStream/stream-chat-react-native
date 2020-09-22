@@ -119,7 +119,10 @@ const Card = <At extends UnknownType = DefaultAttachmentType>(
 
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
-  const uri = makeImageCompatibleUrl(image_url || thumb_url);
+  const uri = image_url || thumb_url;
+  if (uri) {
+    makeImageCompatibleUrl(uri);
+  }
 
   return (
     <Container
