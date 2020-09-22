@@ -4,33 +4,11 @@ import type {
   GestureResponderEvent,
   TouchableOpacityProps,
 } from 'react-native';
-import type { UnknownType } from 'stream-chat';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { MessageWithDates } from '../messagesContext/MessagesContext';
-
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-} from '../../types/types';
-
-export type MessageContentContextValue<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = {
-  onLongPress: (
-    message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
-    event: GestureResponderEvent,
-  ) => void;
+export type MessageContentContextValue = {
+  onLongPress: (event: GestureResponderEvent) => void;
   additionalTouchableProps?: TouchableOpacityProps;
   disabled?: boolean;
 };
@@ -39,18 +17,11 @@ export const MessageContentContext = React.createContext(
   {} as MessageContentContextValue,
 );
 
-export const MessageContentProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->({
+export const MessageContentProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value: MessageContentContextValue<At, Ch, Co, Me, Re, Us>;
+  value: MessageContentContextValue;
 }>) => (
   <MessageContentContext.Provider
     value={(value as unknown) as MessageContentContextValue}
@@ -59,52 +30,21 @@ export const MessageContentProvider = <
   </MessageContentContext.Provider>
 );
 
-export const useMessageContentContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->() =>
-  (useContext(MessageContentContext) as unknown) as MessageContentContextValue<
-    At,
-    Ch,
-    Co,
-    Me,
-    Re,
-    Us
-  >;
+export const useMessageContentContext = () =>
+  (useContext(MessageContentContext) as unknown) as MessageContentContextValue;
 
 /**
  * Typescript currently does not support partial inference so if MessageContentContext
  * typing is desired while using the HOC withMessageContentContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessageContentContext = <
-  P extends Record<string, unknown>,
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
+export const withMessageContentContext = <P extends Record<string, unknown>>(
   Component: React.ComponentType<P>,
-): React.FC<
-  Omit<P, keyof MessageContentContextValue<At, Ch, Co, Me, Re, Us>>
-> => {
+): React.FC<Omit<P, keyof MessageContentContextValue>> => {
   const WithMessageContentContextComponent = (
-    props: Omit<P, keyof MessageContentContextValue<At, Ch, Co, Me, Re, Us>>,
+    props: Omit<P, keyof MessageContentContextValue>,
   ) => {
-    const messageContentContext = useMessageContentContext<
-      At,
-      Ch,
-      Co,
-      Me,
-      Re,
-      Us
-    >();
+    const messageContentContext = useMessageContentContext();
 
     return <Component {...(props as P)} {...messageContentContext} />;
   };
