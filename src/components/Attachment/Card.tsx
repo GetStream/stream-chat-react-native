@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { ImageRequireSource, Linking, View } from 'react-native';
 import type { Attachment, UnknownType } from 'stream-chat';
 
-import { MessageContentContext } from '../../context';
+import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
@@ -117,9 +117,7 @@ const Card = <At extends UnknownType = DefaultAttachmentType>(
     type,
   } = props;
 
-  const { additionalTouchableProps, onLongPress } = useContext(
-    MessageContentContext,
-  );
+  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
   const uri = makeImageCompatibleUrl(image_url || thumb_url);
 
@@ -127,9 +125,7 @@ const Card = <At extends UnknownType = DefaultAttachmentType>(
     <Container
       alignment={alignment}
       onLongPress={onLongPress}
-      onPress={() => {
-        goToURL(og_scrape_url || image_url || thumb_url);
-      }}
+      onPress={() => goToURL(og_scrape_url || image_url || thumb_url)}
       testID='card-attachment'
       {...additionalTouchableProps}
     >

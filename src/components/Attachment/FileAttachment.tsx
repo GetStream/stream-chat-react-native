@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
 import type { Attachment, UnknownType } from 'stream-chat';
 
-import { MessageContentContext } from '../../context';
+import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
 
 import type { ActionHandler, GroupStyle } from './Attachment';
@@ -95,9 +95,7 @@ const FileAttachment = <
   AttachmentFileIcon,
   groupStyle,
 }: FileAttachmentProps<At>) => {
-  const { additionalTouchableProps, onLongPress } = useContext(
-    MessageContentContext,
-  );
+  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
   return (
     <TouchableOpacity

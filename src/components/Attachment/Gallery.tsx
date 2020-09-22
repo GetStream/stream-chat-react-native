@@ -12,13 +12,14 @@ import type { Attachment, UnknownType } from 'stream-chat';
 
 import CloseButton from '../CloseButton/CloseButton';
 
+import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { MessageContentContext } from '../../context';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { DefaultAttachmentType } from '../../types/types';
+import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 
 const Single = styled.TouchableOpacity<{ alignment?: string }>`
   border-top-left-radius: 16px;
@@ -117,9 +118,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
   alignment,
   images,
 }: GalleryProps<At>) => {
-  const { additionalTouchableProps, onLongPress } = useContext(
-    MessageContentContext,
-  );
+  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
   const { t } = useTranslationContext();
 
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
@@ -127,9 +126,19 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
 
   if (!images?.length) return null;
 
-  const galleryImages = [...images].map((image) => ({
-    url: makeImageCompatibleUrl(image.image_url || image.thumb_url),
-  }));
+  const galleryImages: IImageInfo[] = [...images].map((image) => {
+    if (image.image_url) {
+      return {
+        url: makeImageCompatibleUrl(image.image_url),
+      };
+    }
+    if (image.thumb_url) {
+      return {
+        url: makeImageCompatibleUrl(image.thumb_url),
+      };
+    }
+    return undefined;
+  });
 
   if (galleryImages.length === 1) {
     return (
@@ -143,7 +152,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
         >
           <Image
             resizeMode='cover'
-            source={{ uri: galleryImages[0].url }}
+            source={{ uri: galleryImages[0]?.url }}
             style={{ flex: 1 }}
           />
         </Single>
@@ -158,7 +167,7 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
               // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
               // opens up popup menu to with an option "Save to the album", which basically does nothing.
               enableSwipeDown
-              imageUrls={galleryImages}
+              imageUrls={galleryImages.length ? galleryImages : undefined}
               onCancel={() => setViewerModalOpen(false)}
               renderHeader={() => (
                 <GalleryHeader
