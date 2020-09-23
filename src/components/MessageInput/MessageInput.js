@@ -25,8 +25,8 @@ import {
   MessagesContext,
 } from '../../context';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
+import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { SuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
@@ -105,7 +105,7 @@ const MessageInput = (props) => {
     sendMessage: sendMessageContext,
   } = messagesContext;
 
-  const suggestionsContext = useContext(SuggestionsContext);
+  const suggestionsContext = useSuggestionsContext();
   const { setInputBoxContainerRef } = suggestionsContext;
 
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
