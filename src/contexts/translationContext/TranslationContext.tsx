@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import Dayjs from 'dayjs';
+import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
 import { getDisplayName } from '../utils/getDisplayName';
@@ -23,7 +24,7 @@ export type TDateTimeParser = (
 ) => TDateTimeParserOutput;
 
 export type TranslationContextValue = {
-  t: (key: string) => string;
+  t: TFunction | ((key: string) => string);
   tDateTimeParser: TDateTimeParser;
 };
 

@@ -139,7 +139,7 @@ export type Theme = {
     card: {
       container: CSS;
       cover: CSS;
-      footer: {
+      footer: CSS & {
         description: CSS;
         link: CSS;
         logo: CSS;

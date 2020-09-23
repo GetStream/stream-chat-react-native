@@ -9,7 +9,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 export type MessageContentContextValue = {
   onLongPress: (event: GestureResponderEvent) => void;
-  additionalTouchableProps?: TouchableOpacityProps;
+  additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
   disabled?: boolean;
 };
 
