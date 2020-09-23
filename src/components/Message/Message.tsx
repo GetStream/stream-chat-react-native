@@ -330,7 +330,7 @@ export type MessageProps<
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
-  actionSheetStyles: UnknownType; // TODO - check this is the correct type
+  actionSheetStyles: ActionSheetStyles; // TODO - check this is the correct type
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js

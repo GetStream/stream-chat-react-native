@@ -1,5 +1,6 @@
 import React from 'react';
 
+import type { TouchableOpacityProps } from 'react-native';
 import type { UnknownType } from 'stream-chat';
 
 import DefaultMessageAvatar from './MessageAvatar';
@@ -10,6 +11,11 @@ import { themed } from '../../../styles/theme';
 import { styled } from '../../../styles/styledComponents';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 
+import type { AttachmentActionsProps } from '../../Attachment/AttachmentActions';
+import type { CardProps } from '../../Attachment/Card';
+import type { FileAttachmentProps } from '../../Attachment/FileAttachment';
+import type { FileAttachmentGroupProps } from '../../Attachment/FileAttachmentGroup';
+import type { GalleryProps } from '../../Attachment/Gallery';
 import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type { ActionProps, MessageProps } from '../Message';
 import type {
@@ -130,17 +136,19 @@ export type MessageSimpleProps<
      * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
      * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
      */
-    additionalTouchableProps?: any;
+    additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
     /**
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
      */
-    AttachmentActions?: any;
+    AttachmentActions?: React.ComponentType<
+      Partial<AttachmentActionsProps<At>>
+    >;
     /**
      * Custom UI component to display generic media type e.g. giphy, url preview etc
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
-    Card?: any;
+    Card?: React.ComponentType<Partial<CardProps<At>>>;
     /**
      * Custom UI component to override default cover (between Header and Footer) of Card component.
      * Accepts the same props as Card component.
@@ -164,12 +172,14 @@ export type MessageSimpleProps<
      * Custom UI component to display File type attachment.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
      */
-    FileAttachment?: any;
+    FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
     /**
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
      */
-    FileAttachmentGroup?: any;
+    FileAttachmentGroup?: React.ComponentType<
+      Partial<FileAttachmentGroupProps<At>>
+    >;
     /**
      * Force alignment of message to left or right - 'left' | 'right'
      * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
@@ -180,7 +190,7 @@ export type MessageSimpleProps<
      * Custom UI component to display image attachments.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
      */
-    Gallery?: any;
+    Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
 
     /**
      * Custom UI component to display Giphy image.
@@ -317,7 +327,7 @@ export type MessageSimpleProps<
      * Custom UI component to display enriched url preview.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
-    UrlPreview?: any;
+    UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
   };
 
 /**
