@@ -1,15 +1,32 @@
-import React, { useContext } from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
+import React from 'react';
+
+import type { UnknownType } from 'stream-chat';
 
 import DefaultMessageAvatar from './MessageAvatar';
 import DefaultMessageContent from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
-import { ChannelContext } from '../../../context';
+import { styled } from '../../../styles/styledComponents';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 
-const Container = styled.View`
+import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
+import type { ActionProps, MessageProps } from '../Message';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+const Container = styled.View<{
+  alignment: Alignment;
+  hasMarginBottom: boolean;
+  isVeryLastMessage?: boolean;
+}>`
   align-items: flex-end;
   flex-direction: row;
   justify-content: ${({ alignment }) =>
@@ -19,13 +36,307 @@ const Container = styled.View`
   ${({ theme }) => theme.message.container.css}
 `;
 
+export type MessageSimpleProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = ActionProps &
+  MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
+    /**
+     * Whether or not user actions are enabled
+     */
+    actionsEnabled: boolean;
+    /**
+     * Whether or not to show the action sheet
+     */
+    actionSheetVisible: boolean;
+    /**
+     * Function that returns a boolean indicating whether or not the user can delete the message.
+     */
+    canDeleteMessage: () => boolean | undefined;
+    /**
+     * Function that returns a boolean indicating whether or not the user can edit the message.
+     */
+    canEditMessage: () => boolean | undefined;
+
+    /** Dismiss the reaction picker */
+    dismissReactionPicker: () => void;
+    /**
+     * Get the total number of reactions on a message
+     */
+    getTotalReactionCount: (
+      supportedReactions: {
+        icon: string;
+        id: string;
+      }[],
+    ) => number;
+
+    /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
+    handleAction: (name: string, value: string) => Promise<void>;
+    /**
+     * Handler to delete a current message.
+     */
+    handleDelete: () => Promise<void>;
+    /**
+     * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
+     * The `editing` prop is used by the MessageInput component to switch to edit mode.
+     */
+    handleEdit: () => void;
+    /** Handler to flag the message */
+    handleFlag: () => Promise<void>;
+    /** Handler to mute the user */
+    handleMute: () => Promise<void>;
+    /** Handler to process a reaction */
+    handleReaction: (reactionType: string) => Promise<void>;
+    /** Handler to resend the message */
+    handleRetry: () => Promise<void>;
+    /**
+     * Returns true if the current user has admin privileges
+     */
+    isAdmin: () => boolean | undefined;
+    /**
+     * Returns true if the current user is a moderator
+     */
+    isModerator: () => boolean | undefined;
+    /**
+     * Returns true if message belongs to current user, else false
+     */
+    isMyMessage: () => boolean;
+
+    /** Opens the reaction picker */
+    openReactionPicker: () => Promise<void>;
+    /** Whether or not the reaction picker is visible */
+    reactionPickerVisible: boolean;
+    /**
+     * React useState hook setter function that toggles action sheet visibility
+     */
+    setActionSheetVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    /**
+     * Opens the action sheet
+     */
+    showActionSheet: () => Promise<void>;
+    /**
+     * Custom UI component for the action sheet that appears on long press of a Message.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
+     *
+     * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
+     */
+    ActionSheet?: any;
+    /**
+     * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
+     * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+     */
+    additionalTouchableProps?: any;
+    /**
+     * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+     */
+    AttachmentActions?: any;
+    /**
+     * Custom UI component to display generic media type e.g. giphy, url preview etc
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    Card?: any;
+    /**
+     * Custom UI component to override default cover (between Header and Footer) of Card component.
+     * Accepts the same props as Card component.
+     */
+    CardCover?: any;
+    /**
+     * Custom UI component to override default Footer of Card component.
+     * Accepts the same props as Card component.
+     */
+    CardFooter?: any;
+    /**
+     * Custom UI component to override default header of Card component.
+     * Accepts the same props as Card component.
+     */
+    CardHeader?: any;
+    /**
+     * Whether or not users are able to long press messages.
+     */
+    enableLongPress?: boolean;
+    /**
+     * Custom UI component to display File type attachment.
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+     */
+    FileAttachment?: any;
+    /**
+     * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+     */
+    FileAttachmentGroup?: any;
+    /**
+     * Force alignment of message to left or right - 'left' | 'right'
+     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
+     * */
+    forceAlign?: Alignment | boolean;
+    formatDate?: (date: string) => void;
+    /**
+     * Custom UI component to display image attachments.
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+     */
+    Gallery?: any;
+
+    /**
+     * Custom UI component to display Giphy image.
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    Giphy?: any;
+    /** enable hiding reaction count from reaction picker  */
+    hideReactionCount?: boolean;
+    /** enable hiding reaction owners from reaction picker */
+    hideReactionOwners?: boolean;
+    /** Boolean if current message is part of thread */
+    isThreadList?: boolean;
+
+    /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
+    markdownRules?: any;
+
+    /**
+     * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
+     * If all the actions need to be disabled, empty array or false should be provided as value of prop.
+     * */
+    messageActions?: boolean | string[];
+    /**
+     * Custom UI component for the avatar next to a message
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.js
+     * */
+    MessageAvatar?: any;
+    /**
+     * Custom UI component for message content
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
+     * */
+    MessageContent?: any;
+    /**
+     * Custom UI component for message status (delivered/read)
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.js
+     *
+     * */
+    MessageStatus?: any;
+    /** Custom UI component for message text */
+    MessageText?: any;
+    /**
+     * Function that overrides default behaviour when message is long pressed
+     * e.g. if you would like to open reaction picker on message long press:
+     *
+     * ```
+     * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
+     * ...
+     * const MessageUIComponent = (props) => {
+     *  return (
+     *    <MessageSimple
+     *      {...props}
+     *      onLongPress={(message, e) => {
+     *        props.openReactionPicker();
+     *        // Or if you want to open action sheet
+     *        // props.showActionSheet();
+     *      }}
+     *  )
+     * }
+     * ```
+     *
+     * Similarly, you can call other methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+     *
+     * By default, we show the action sheet with all the message actions on long press.
+     *
+     * @param message Message object which was long pressed
+     * @param e       Event object for onLongPress event
+     * */
+    onLongPress?: any;
+    /**
+     * Function that overrides default behaviour when message is pressed/touched
+     * e.g. if you would like to open reaction picker on message press:
+     *
+     * ```
+     * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
+     * ...
+     * const MessageUIComponent = (props) => {
+     *  return (
+     *    <MessageSimple
+     *      {...props}
+     *      onPress={(message, e) => {
+     *        props.openReactionPicker();
+     *        // Or if you want to open action sheet
+     *        // props.showActionSheet();
+     *      }}
+     *  )
+     * }
+     * ```
+     *
+     * Similarly, you can call other methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+     *
+     * By default, messages do not have an on press action.
+     *
+     * @param message Message object which was pressed
+     * @param e       Event object for onPress event
+     * */
+    onPress?: any;
+    /**
+     * Custom UI component to display reaction list.
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+     */
+    ReactionList?: any;
+    showMessageStatus?: boolean;
+    /**
+     * e.g.,
+     * [
+     *  {
+     *    id: 'like',
+     *    icon: '👍',
+     *  },
+     *  {
+     *    id: 'love',
+     *    icon: '❤️️',
+     *  },
+     *  {
+     *    id: 'haha',
+     *    icon: '😂',
+     *  },
+     *  {
+     *    id: 'wow',
+     *    icon: '😮',
+     *  },
+     * ]
+     */
+    supportedReactions?: {
+      icon: string;
+      id: string;
+    }[];
+    /**
+     * Custom UI component to display enriched url preview.
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     */
+    UrlPreview?: any;
+  };
+
 /**
  *
  * Message UI component
  *
- * @example ../../docs/MessageSimple.md
+ * @example ./MessageSimple.md
  */
-const MessageSimple = (props) => {
+const MessageSimple = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const {
     forceAlign = false,
     groupStyles,
@@ -38,18 +349,19 @@ const MessageSimple = (props) => {
     showMessageStatus = true,
   } = props;
 
-  const { channel } = useContext(ChannelContext);
+  const { channel } = useChannelContext();
 
   const customMessageContent = !!props.MessageContent;
 
-  let alignment;
+  let alignment: Alignment;
   if (forceAlign && (forceAlign === 'left' || forceAlign === 'right')) {
     alignment = forceAlign;
   } else {
-    alignment = isMyMessage(message) ? 'right' : 'left';
+    alignment = isMyMessage() ? 'right' : 'left';
   }
 
-  const lastMessage = channel.state.messages[channel.state.messages.length - 1];
+  const lastMessage =
+    channel?.state.messages[channel?.state.messages.length - 1];
   const isVeryLastMessage = lastMessage && lastMessage.id === message.id;
   const hasMarginBottom =
     groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
@@ -88,294 +400,6 @@ const MessageSimple = (props) => {
   );
 };
 
-MessageSimple.propTypes = {
-  /**
-   * Custom UI component for the action sheet that appears on long press of a Message.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
-   *
-   * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
-   */
-  ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles: PropTypes.object,
-  /**
-   * Whether or not to show the action sheet
-   */
-  actionSheetVisible: PropTypes.bool,
-  /**
-   * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
-   */
-  AttachmentActions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Function that returns a boolean indicating whether or not the user can delete the message.
-   */
-  canDeleteMessage: PropTypes.func,
-  /**
-   * Function that returns a boolean indicating whether or not the user can edit the message.
-   */
-  canEditMessage: PropTypes.func,
-  /**
-   * Custom UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default cover (between Header and Footer) of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardCover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default Footer of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default header of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Dismiss the reaction picker */
-  dismissReactionPicker: PropTypes.func,
-  /**
-   * Whether or not users are able to long press messages.
-   */
-  enableLongPress: PropTypes.bool,
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
-   */
-  FileAttachmentGroup: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Force alignment of message to left or right - 'left' | 'right'
-   * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
-   * */
-  forceAlign: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  formatDate: PropTypes.func,
-  /**
-   * Custom UI component to display image attachments.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
-   */
-  Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display Giphy image.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: PropTypes.array,
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  handleAction: PropTypes.func,
-  /**
-   * Handler to delete a current message.
-   */
-  handleDelete: PropTypes.func,
-  /**
-   * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
-   * The `editing` prop is used by the MessageInput component to switch to edit mode.
-   */
-  handleEdit: PropTypes.func,
-  /** Handler to flag the message */
-  handleFlag: PropTypes.func,
-  /** Handler to mute the user */
-  handleMute: PropTypes.func,
-  /** Handler to resend the message */
-  handleRetry: PropTypes.func,
-  /** enable hiding reaction count from reaction picker  */
-  hideReactionCount: PropTypes.bool,
-  /** enable hiding reaction owners from reaction picker */
-  hideReactionOwners: PropTypes.bool,
-  /**
-   * Returns true if message (param) belongs to current user, else false
-   *
-   * @param message
-   * */
-  isMyMessage: PropTypes.func,
-  /** Boolean if current message is part of thread */
-  isThreadList: PropTypes.bool,
-  /** Latest message id on current channel */
-  lastReceivedId: PropTypes.string,
-  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules: PropTypes.object,
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object,
-  /**
-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
-   * */
-  messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
-  /**
-   * Custom UI component for the avatar next to a message
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.js
-   * */
-  MessageAvatar: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component for message content
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
-   * */
-  MessageContent: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component for message status (delivered/read)
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.js
-   *
-   * */
-  MessageStatus: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Custom UI component for message text */
-  MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Function that overrides default behaviour when message is long pressed
-   * e.g. if you would like to open reaction picker on message long press:
-   *
-   * ```
-   * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
-   * ...
-   * const MessageUIComponent = (props) => {
-   *  return (
-   *    <MessageSimple
-   *      {...props}
-   *      onLongPress={(message, e) => {
-   *        props.openReactionPicker();
-   *        // Or if you want to open action sheet
-   *        // props.showActionSheet();
-   *      }}
-   *  )
-   * }
-   * ```
-   *
-   * Similarly, you can call other methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
-   *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
-   *
-   * By default, we show the action sheet with all the message actions on long press.
-   *
-   * @param message Message object which was long pressed
-   * @param e       Event object for onLongPress event
-   * */
-  onLongPress: PropTypes.func,
-  /**
-   * Function that overrides default behaviour when message is pressed/touched
-   * e.g. if you would like to open reaction picker on message press:
-   *
-   * ```
-   * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
-   * ...
-   * const MessageUIComponent = (props) => {
-   *  return (
-   *    <MessageSimple
-   *      {...props}
-   *      onPress={(message, e) => {
-   *        props.openReactionPicker();
-   *        // Or if you want to open action sheet
-   *        // props.showActionSheet();
-   *      }}
-   *  )
-   * }
-   * ```
-   *
-   * Similarly, you can call other methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
-   *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
-   *
-   * By default, messages do not have an on press action.
-   *
-   * @param message Message object which was pressed
-   * @param e       Event object for onPress event
-   * */
-  onPress: PropTypes.func,
-  /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
-   *
-   * @param message A message object to open the thread upon.
-   */
-  onThreadSelect: PropTypes.func,
-  /** Open the reaction picker */
-  openReactionPicker: PropTypes.func,
-  /**
-   * Custom UI component to display reaction list.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
-   */
-  ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Whether or not the reaction picker is visible */
-  reactionPickerVisible: PropTypes.bool,
-  /** enabled reactions, this is usually set by the parent component based on channel configs */
-  reactionsEnabled: PropTypes.bool,
-  /** A list of users who have read the message */
-  readBy: PropTypes.array,
-  /** enabled replies, this is usually set by the parent component based on channel configs */
-  repliesEnabled: PropTypes.bool,
-  /**
-   * React useState hook setter function that toggles action sheet visibility
-   */
-  setActionSheetVisible: PropTypes.func,
-  /**
-   * Opens the action sheet
-   */
-  showActionSheet: PropTypes.func,
-  showMessageStatus: PropTypes.bool,
-  showReactionsList: PropTypes.bool,
-  /**
-   * e.g.,
-   * [
-   *  {
-   *    id: 'like',
-   *    icon: '👍',
-   *  },
-   *  {
-   *    id: 'love',
-   *    icon: '❤️️',
-   *  },
-   *  {
-   *    id: 'haha',
-   *    icon: '😂',
-   *  },
-   *  {
-   *    id: 'wow',
-   *    icon: '😮',
-   *  },
-   * ]
-   */
-  supportedReactions: PropTypes.array,
-  /**
-   * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-};
-
 MessageSimple.themePath = 'message';
 
-export default themed(MessageSimple);
+export default themed(MessageSimple) as typeof MessageSimple;

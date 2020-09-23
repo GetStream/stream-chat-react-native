@@ -103,7 +103,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
 /**
  * Attachment - The message attachment
  *
- * @example ../docs/Attachment.md
+ * @example ./Attachment.md
  */
 const Attachment = <At extends UnknownType = DefaultAttachmentType>(
   props: AttachmentProps<At> & { themePath?: string },

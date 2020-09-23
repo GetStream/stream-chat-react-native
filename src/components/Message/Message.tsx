@@ -12,7 +12,9 @@ import type {
   UserResponse,
 } from 'stream-chat';
 
-import DefaultMessageSimple from './MessageSimple/MessageSimple';
+import DefaultMessageSimple, {
+  MessageSimpleProps,
+} from './MessageSimple/MessageSimple';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -34,12 +36,12 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-type ActionProps = {
+export type ActionProps = {
   reactionsEnabled?: boolean;
   repliesEnabled?: boolean;
 };
 
-type PropsWithContext<
+export type MessagePropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -52,7 +54,6 @@ type PropsWithContext<
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   disabled: boolean | undefined;
   dismissKeyboard: () => void;
-  editing: boolean | MessageWithDates<At, Ch, Co, Me, Re, Us>;
   emojiData: {
     icon: string;
     id: string;
@@ -84,7 +85,7 @@ const DefaultMessageWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     channel,
@@ -98,6 +99,7 @@ const DefaultMessageWithContext = <
     retrySendMessage,
     setEditingState,
     updateMessage,
+    ...rest
   } = props;
 
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
@@ -106,21 +108,13 @@ const DefaultMessageWithContext = <
   const isMyMessage = () => client.user?.id === message.user?.id;
 
   const isAdmin = () =>
-    client.user?.role === 'admin' ||
-    (channel?.state &&
-      channel?.state.membership &&
-      channel?.state.membership.role === 'admin');
+    client.user?.role === 'admin' || channel?.state.membership.role === 'admin';
 
-  const isOwner = () =>
-    channel?.state &&
-    channel?.state.membership &&
-    channel?.state.membership.role === 'owner';
+  const isOwner = () => channel?.state.membership.role === 'owner';
 
   const isModerator = () =>
-    channel?.state &&
-    channel?.state.membership &&
-    (channel?.state.membership.role === 'channel_moderator' ||
-      channel?.state.membership.role === 'moderator');
+    channel?.state.membership.role === 'channel_moderator' ||
+    channel?.state.membership.role === 'moderator';
 
   const canEditMessage = () =>
     isMyMessage() || isModerator() || isOwner() || isAdmin();
@@ -261,7 +255,7 @@ const DefaultMessageWithContext = <
   const actionsEnabled =
     message.type === 'regular' && message.status === 'received';
 
-  const actionProps: ActionProps = {};
+  const actionProps = {} as ActionProps;
 
   if (channel && typeof channel.getConfig === 'function') {
     actionProps.reactionsEnabled = channel.getConfig()?.reactions;
@@ -270,8 +264,8 @@ const DefaultMessageWithContext = <
 
   return (
     <TouchableOpacity activeOpacity={1} testID='message-wrapper'>
-      <MessageSimple
-        {...props}
+      <MessageSimple<At, Ch, Co, Ev, Me, Re, Us>
+        {...rest}
         {...actionProps}
         actionsEnabled={actionsEnabled}
         actionSheetVisible={actionSheetVisible}
@@ -289,6 +283,8 @@ const DefaultMessageWithContext = <
         isAdmin={isAdmin}
         isModerator={isModerator}
         isMyMessage={isMyMessage}
+        message={message}
+        Message={MessageSimple}
         openReactionPicker={openReactionPicker}
         reactionPickerVisible={reactionPickerVisible}
         setActionSheetVisible={setActionSheetVisible}
@@ -307,8 +303,8 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  prevProps: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: PropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { updated_at: previousLast } = prevProps.message;
   const { updated_at: nextLast } = nextProps.message;
@@ -355,7 +351,7 @@ export type MessageProps<
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
-  Message: React.ComponentType<Partial<any>>; // TODO - add MessageSimpleProps
+  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>; // TODO - add MessageSimpleProps
   /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
@@ -399,7 +395,6 @@ const DefaultMessage = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const {
-    editing,
     emojiData,
     removeMessage,
     retrySendMessage,
@@ -415,7 +410,6 @@ const DefaultMessage = <
         client,
         disabled,
         dismissKeyboard,
-        editing,
         emojiData,
         removeMessage,
         retrySendMessage,

@@ -1,5 +1,5 @@
 ```js
-const data = require('./data');
+const data = require('../docs/data.js');
 const View = require('react-native').View;
 
 <View

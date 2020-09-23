@@ -12,6 +12,8 @@ import type {
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { AttachmentProps } from '../../components/Attachment/Attachment';
+import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -36,14 +38,6 @@ export type MessageWithDates<
   readBy: UserResponse<Us>[];
 };
 
-export type AttachmentProps = {
-  // TODO - Add attachment props when it is typed
-};
-
-export type MessageSimpleProps = {
-  // TODO - Add attachment props when it is typed
-};
-
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -53,7 +47,7 @@ export type MessagesContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  Attachment: React.ComponentType<AttachmentProps>;
+  Attachment: React.ComponentType<AttachmentProps<At>>;
   clearEditingState: () => void;
   editing: boolean | MessageWithDates<At, Ch, Co, Me, Re, Us>;
   editMessage: (
@@ -66,7 +60,7 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
-  Message: React.ComponentType<MessageSimpleProps>;
+  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   retrySendMessage: (
