@@ -1,11 +1,11 @@
 import type { LiteralStringForUnion, UnknownType } from 'stream-chat';
 
-export type DefaultAttachmentType = {
+export type DefaultAttachmentType = UnknownType & {
   file_size?: string;
   mime_type?: string;
 };
 
-export type DefaultChannelType = {
+export type DefaultChannelType = UnknownType & {
   image?: string;
 };
 
@@ -17,6 +17,6 @@ export type DefaultMessageType = UnknownType;
 
 export type DefaultReactionType = UnknownType;
 
-export type DefaultUserType = {
+export type DefaultUserType = UnknownType & {
   image?: string;
 };
