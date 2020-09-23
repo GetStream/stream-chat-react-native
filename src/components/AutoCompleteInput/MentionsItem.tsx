@@ -6,6 +6,7 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultUserType } from '../../types/types';
 
 const Container = styled.View`
   align-items: center;
@@ -21,7 +22,7 @@ const Name = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
 `;
 
-type Props = {
+export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   /**
    * A UserResponse of suggested UserTypes with these properties
    *
@@ -29,15 +30,15 @@ type Props = {
    * - image: Image to be shown as the Avatar for the user
    * - name: Name of the suggested mention user
    */
-  item: SuggestionUser;
+  item: SuggestionUser<Us>;
 };
 
 /**
  * @example ./MentionsItem.md
  */
-const MentionsItem: React.FC<Props> & { themePath: string } = ({
+const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   item: { id, image, name },
-}) => (
+}: MentionsItemProps<Us>) => (
   <Container>
     <Avatar image={image} name={name} />
     <Name testID='mentions-item-name'>{name || id}</Name>

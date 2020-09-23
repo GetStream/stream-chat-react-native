@@ -3,11 +3,17 @@ import { FlatList, GestureResponderEvent } from 'react-native';
 
 import { isSuggestionUser } from './SuggestionsContext';
 
-import type { Suggestion, Suggestions } from './SuggestionsContext';
+import type {
+  Suggestion,
+  SuggestionComponentType,
+  Suggestions,
+} from './SuggestionsContext';
 
 import CommandsItem from '../../components/AutoCompleteInput/CommandsItem';
 import MentionsItem from '../../components/AutoCompleteInput/MentionsItem';
 import { styled } from '../../styles/styledComponents';
+
+import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 
 const Wrapper = styled.TouchableOpacity`
   position: absolute;
@@ -56,34 +62,41 @@ const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => (
   <Title>{title}</Title>
 );
 
-const isString = (
-  component: string | React.ReactElement<{ item: Suggestion }>,
+const isString = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  component: SuggestionComponentType<Co, Us>,
 ): component is string => typeof component === 'string';
 
-type Props = {
+type Props<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = {
   active: boolean;
   backdropHeight: number | string;
-  componentType: string | React.ReactElement<{ item: Suggestion }>;
+  componentType: SuggestionComponentType<Co, Us>;
   handleDismiss: (event?: GestureResponderEvent) => void;
   marginLeft: number;
-  suggestions: Suggestions;
+  suggestions: Suggestions<Co, Us>;
   suggestionsTitle: string;
   width: number | string;
 };
 
-const SuggestionsList: React.FC<Props> = (props) => {
-  const {
-    active,
-    backdropHeight,
-    componentType: Component,
-    handleDismiss,
-    marginLeft,
-    suggestions: { data, onSelect },
-    suggestionsTitle,
-    width,
-  } = props;
-
-  const renderItem = ({ item }: { item: Suggestion }) => {
+const SuggestionsList = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>({
+  active,
+  backdropHeight,
+  componentType: Component,
+  handleDismiss,
+  marginLeft,
+  suggestions: { data, onSelect },
+  suggestionsTitle,
+  width,
+}: Props<Co, Us>) => {
+  const renderItem = ({ item }: { item: Suggestion<Co, Us> }) => {
     let render;
 
     if (isString(Component)) {

@@ -4,6 +4,7 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
 import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultCommandType } from '../../types/types';
 
 const CommandArgs = styled.Text`
   ${({ theme }) => theme.messageInput.suggestions.command.args.css}
@@ -29,7 +30,9 @@ const Top = styled.View`
   ${({ theme }) => theme.messageInput.suggestions.command.top.css}
 `;
 
-type Props = {
+export type CommandsItemProps<
+  Co extends DefaultCommandType = DefaultCommandType
+> = {
   /**
    * A CommandResponse of suggested CommandTypes with these properties
    *
@@ -37,15 +40,15 @@ type Props = {
    * - description: Description of the command
    * - name: Name of the command
    */
-  item: SuggestionCommand;
+  item: SuggestionCommand<Co>;
 };
 
 /**
  * @example ./CommandsItem.md
  */
-const CommandsItem: React.FC<Props> & { themePath: string } = ({
+const CommandsItem = <Co extends DefaultCommandType = DefaultCommandType>({
   item: { args, description, name },
-}) => (
+}: CommandsItemProps<Co>) => (
   <Container>
     <Top>
       <Title testID='commands-item-title'>/{name} </Title>

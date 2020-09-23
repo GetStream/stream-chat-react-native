@@ -1,25 +1,30 @@
 import React, { useEffect, useRef } from 'react';
+import { TextInput } from 'react-native';
 
 import type {
   NativeSyntheticEvent,
-  TextInput,
   TextInputProps,
   TextInputSelectionChangeEventData,
+  TextInput as TextInputType,
 } from 'react-native';
 
 import {
   isSuggestionUser,
-  Suggestion,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-
 import { isMentionTrigger } from '../../utils/utils';
 
+import type {
+  Suggestion,
+  SuggestionCommand,
+  SuggestionUser,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
+import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 import type { Trigger, TriggerSettings } from '../../utils/utils';
 
-const InputBox = styled.TextInput`
+const InputBox = styled(TextInput)`
   flex: 1;
   margin: -5px;
   max-height: 60px;
@@ -43,7 +48,10 @@ const isCommand = (text: string) => {
   return true;
 };
 
-type Props = {
+type Props<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = {
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
    *
@@ -59,29 +67,32 @@ type Props = {
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: React.RefObject<TextInput>;
+  setInputBoxRef: React.RefObject<TextInputType>;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
-  triggerSettings: TriggerSettings;
+  triggerSettings: TriggerSettings<Co, Us>;
   /**
    * Text value of the TextInput
    */
   value: string;
 };
 
-const AutoCompleteInput: React.FC<Props> = ({
+const AutoCompleteInput = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>({
   additionalTextInputProps,
   onChange,
   setInputBoxRef,
   triggerSettings,
   value,
-}) => {
+}: Props<Co, Us>) => {
   const {
     closeSuggestions,
     openSuggestions,
     updateSuggestions: updateSuggestionsContext,
-  } = useSuggestionsContext();
+  } = useSuggestionsContext<Co, Us>();
   const { t } = useTranslationContext();
 
   const isTrackingStarted = useRef(false);
@@ -102,7 +113,10 @@ const AutoCompleteInput: React.FC<Props> = ({
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
     const { component: Component, title } = triggerSettings[trigger];
-    openSuggestions(title, Component);
+    openSuggestions(
+      title,
+      typeof Component === 'string' ? Component : <Component />,
+    );
   };
 
   const stopTracking = () => {
@@ -119,22 +133,20 @@ const AutoCompleteInput: React.FC<Props> = ({
   }) => {
     if (isMentionTrigger(trigger)) {
       await triggerSettings[trigger].dataProvider(
-        query,
+        query as SuggestionUser<Us>['name'],
         value,
         (data, queryCallback) => {
-          if (query !== queryCallback) {
-            return;
+          if (query === queryCallback) {
+            updateSuggestionsContext({
+              data,
+              onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            });
           }
-
-          updateSuggestionsContext({
-            data,
-            onSelect: (item) => onSelectSuggestion({ item, trigger }),
-          });
         },
       );
     } else {
       await triggerSettings[trigger].dataProvider(
-        query,
+        query as SuggestionCommand<Co>['name'],
         value,
         (data, queryCallback) => {
           if (query !== queryCallback) {
@@ -164,16 +176,16 @@ const AutoCompleteInput: React.FC<Props> = ({
     item,
     trigger,
   }: {
-    item: Suggestion;
+    item: Suggestion<Co, Us>;
     trigger: Trigger;
   }) => {
     let newTokenString = '';
     if (isMentionTrigger(trigger)) {
-      if (isSuggestionUser(item)) {
+      if (isSuggestionUser<Co, Us>(item)) {
         newTokenString = `${triggerSettings[trigger].output(item).text} `;
       }
     } else {
-      if (!isSuggestionUser(item)) {
+      if (!isSuggestionUser<Co, Us>(item)) {
         newTokenString = `${triggerSettings[trigger].output(item).text} `;
       }
     }
@@ -206,7 +218,7 @@ const AutoCompleteInput: React.FC<Props> = ({
 
     selectionEnd.current = newCaretPosition || 0;
 
-    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
+    if (isMentionTrigger(trigger) && isSuggestionUser<Co, Us>(item)) {
       triggerSettings[trigger].callback(item);
     }
   };

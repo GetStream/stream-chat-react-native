@@ -1,8 +1,7 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import { findNodeHandle, View } from 'react-native';
 
-import type { Immutable } from 'seamless-immutable';
-import type { CommandResponse, UnknownType, UserResponse } from 'stream-chat';
+import type { CommandResponse, UserResponse } from 'stream-chat';
 
 import SuggestionsList from './SuggestionsList';
 
@@ -10,33 +9,50 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 
-type ComponentType = string | React.ReactElement<{ item: Suggestion }>;
+export type SuggestionComponentType<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = string | React.ReactElement<{ item: Suggestion<Co, Us> }>;
 
-export const isSuggestionUser = (
-  suggestion: Suggestion,
-): suggestion is SuggestionUser => 'id' in suggestion;
+export const isSuggestionUser = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  suggestion: Suggestion<Co, Us>,
+): suggestion is SuggestionUser<Us> => 'id' in suggestion;
 
-export type Suggestion = SuggestionCommand | SuggestionUser;
+export type Suggestion<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = SuggestionCommand<Co> | SuggestionUser<Us>;
 
 export type SuggestionCommand<
-  Co extends string = DefaultCommandType
+  Co extends DefaultCommandType = DefaultCommandType
 > = CommandResponse<Co>;
 
-export type SuggestionUser<Us extends UnknownType = DefaultUserType> =
-  | UserResponse<Us>
-  | Immutable<UserResponse<Us>>
-  | Immutable<Immutable<UserResponse<Us>>>;
+export type SuggestionUser<
+  Us extends DefaultUserType = DefaultUserType
+> = UserResponse<Us>;
 
-export type Suggestions = {
-  data: Suggestion[];
-  onSelect: (item: Suggestion) => void;
+export type Suggestions<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = {
+  data: Suggestion<Co, Us>[];
+  onSelect: (item: Suggestion<Co, Us>) => void;
 };
 
-export type SuggestionsContextValue = {
+export type SuggestionsContextValue<
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+> = {
   closeSuggestions: () => void;
-  openSuggestions: (title: string, component: ComponentType) => Promise<void>;
+  openSuggestions: (
+    title: string,
+    component: SuggestionComponentType<Co, Us>,
+  ) => Promise<void>;
   setInputBoxContainerRef: (ref: View) => void;
-  updateSuggestions: (newSuggestions: Suggestions) => void;
+  updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
 };
 
 export const SuggestionsContext = React.createContext(
@@ -53,11 +69,17 @@ type MeasureLayout = () => Promise<{
 /**
  * This provider component exposes the properties stored within the SuggestionsContext.
  */
-export const SuggestionsProvider: React.FC<{
-  value: SuggestionsContextValue;
-}> = ({ children, value }) => {
-  const [componentType, setComponentType] = useState<ComponentType>('');
-  const [suggestions, setSuggestions] = useState<Suggestions>();
+export const SuggestionsProvider = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>({
+  children,
+  value,
+}: PropsWithChildren<{ value: SuggestionsContextValue<Co, Us> }>) => {
+  const [componentType, setComponentType] = useState<
+    SuggestionComponentType<Co, Us>
+  >('');
+  const [suggestions, setSuggestions] = useState<Suggestions<Co, Us>>();
   const [suggestionsBackdropHeight, setSuggestionsBackdropHeight] = useState(0);
   const [suggestionsLeftMargin, setSuggestionsLeftMargin] = useState(0);
   const [suggestionsTitle, setSuggestionsTitle] = useState('');
@@ -67,7 +89,10 @@ export const SuggestionsProvider: React.FC<{
   const messageInputBox = useRef<View | null>(null);
   const rootView = useRef<View>(null);
 
-  const openSuggestions = async (title: string, component: ComponentType) => {
+  const openSuggestions = async (
+    title: string,
+    component: SuggestionComponentType<Co, Us>,
+  ) => {
     const inputBoxPosition = await getInputBoxPosition();
 
     setComponentType(component);
@@ -78,7 +103,7 @@ export const SuggestionsProvider: React.FC<{
     setSuggestionsWidth(inputBoxPosition.width);
   };
 
-  const updateSuggestions = (newSuggestions: Suggestions) => {
+  const updateSuggestions = (newSuggestions: Suggestions<Co, Us>) => {
     setSuggestions(newSuggestions);
     setSuggestionsViewActive(!!componentType);
   };
@@ -106,17 +131,19 @@ export const SuggestionsProvider: React.FC<{
     });
 
   const suggestionsContext = {
-    closeSuggestions: (value && value.closeSuggestions) || closeSuggestions,
-    openSuggestions: (value && value.openSuggestions) || openSuggestions,
+    closeSuggestions: value?.closeSuggestions || closeSuggestions,
+    openSuggestions: value?.openSuggestions || openSuggestions,
     setInputBoxContainerRef:
-      (value && value.setInputBoxContainerRef) || setInputBoxContainerRef,
-    updateSuggestions: (value && value.updateSuggestions) || updateSuggestions,
+      value?.setInputBoxContainerRef || setInputBoxContainerRef,
+    updateSuggestions: value?.updateSuggestions || updateSuggestions,
   };
   return (
-    <SuggestionsContext.Provider value={suggestionsContext}>
+    <SuggestionsContext.Provider
+      value={(suggestionsContext as unknown) as SuggestionsContextValue}
+    >
       {/** TODO: Support dynamic item view for different type of suggestions */}
       {suggestions && (
-        <SuggestionsList
+        <SuggestionsList<Co, Us>
           active={suggestionsViewActive}
           backdropHeight={suggestionsBackdropHeight}
           componentType={componentType}
@@ -134,15 +161,26 @@ export const SuggestionsProvider: React.FC<{
   );
 };
 
-export const useSuggestionsContext = () => useContext(SuggestionsContext);
+export const useSuggestionsContext = <
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>() =>
+  (useContext(SuggestionsContext) as unknown) as SuggestionsContextValue<
+    Co,
+    Us
+  >;
 
-export const withSuggestionsContext = <P extends Record<string, unknown>>(
+export const withSuggestionsContext = <
+  P extends Record<string, unknown>,
+  Co extends DefaultCommandType = DefaultCommandType,
+  Us extends DefaultUserType = DefaultUserType
+>(
   Component: React.ComponentType<P>,
-): React.FC<Omit<P, keyof SuggestionsContextValue>> => {
+): React.FC<Omit<P, keyof SuggestionsContextValue<Co, Us>>> => {
   const WithSuggestionsContextComponent = (
-    props: Omit<P, keyof SuggestionsContextValue>,
+    props: Omit<P, keyof SuggestionsContextValue<Co, Us>>,
   ) => {
-    const suggestionsContext = useSuggestionsContext();
+    const suggestionsContext = useSuggestionsContext<Co, Us>();
 
     return <Component {...(props as P)} {...suggestionsContext} />;
   };
