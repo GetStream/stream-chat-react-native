@@ -8,8 +8,9 @@ import { getTestClient } from 'mock-builders/mock';
 
 import Chat from '../Chat';
 
-import { ChatContext, TranslationContext } from '../../../context';
+import { ChatContext } from '../../../context';
 import { Streami18n } from '../../../utils/Streami18n';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 const ChatContextConsumer = ({ fn }) => {
   fn(useContext(ChatContext));
@@ -17,7 +18,7 @@ const ChatContextConsumer = ({ fn }) => {
 };
 
 const TranslationContextConsumer = ({ fn }) => {
-  fn(useContext(TranslationContext));
+  fn(useTranslationContext());
   return <View testID='children' />;
 };
 

@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 
-import { TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -29,7 +29,7 @@ const MessageNotificationText = styled.Text`
  * @example ../docs/MessageNotification.md
  */
 const MessageNotification = ({ onPress, showNotification = true }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
   const opacity = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(opacity, {

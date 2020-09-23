@@ -6,7 +6,8 @@ import styled from 'styled-components/native';
 
 import CloseButton from '../CloseButton/CloseButton';
 
-import { MessageContentContext, TranslationContext } from '../../context';
+import { MessageContentContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -89,7 +90,7 @@ const Gallery = ({ alignment, images }) => {
   const { additionalTouchableProps, onLongPress } = useContext(
     MessageContentContext,
   );
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);

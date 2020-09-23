@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.View`
   align-items: center;
@@ -47,7 +47,7 @@ const DateText = styled.Text`
  * in message list as (type) system message.
  */
 const MessageSystem = ({ message }) => {
-  const { tDateTimeParser } = useContext(TranslationContext);
+  const { tDateTimeParser } = useTranslationContext();
   return (
     <Container testID='message-system'>
       <Line />

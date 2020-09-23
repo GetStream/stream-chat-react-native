@@ -8,7 +8,7 @@ import {
 
 import MessageNotification from '../MessageNotification';
 
-import { TranslationContext } from '../../../context';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
@@ -18,9 +18,9 @@ describe('MessageNotification', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <MessageNotification onPress={() => null} showNotification={false} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -32,9 +32,9 @@ describe('MessageNotification', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <MessageNotification onPress={() => null} showNotification={true} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -47,9 +47,9 @@ describe('MessageNotification', () => {
     const translators = await i18nInstance.getTranslators();
     const onPress = jest.fn();
     const { getByTestId } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <MessageNotification onPress={onPress} showNotification={true} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
     fireEvent.press(getByTestId('message-notification'));
     expect(onPress).toHaveBeenCalledTimes(1);
@@ -60,13 +60,13 @@ describe('MessageNotification', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { getByText } = render(
-      <TranslationContext.Provider value={{ ...translators, t }}>
+      <TranslationProvider value={{ ...translators, t }}>
         <MessageNotification
           onPress={() => null}
           showNotification={true}
           t={t}
         />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
     expect(t).toHaveBeenCalledWith('New Messages');
     await waitFor(() => {
@@ -78,9 +78,9 @@ describe('MessageNotification', () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { toJSON } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <MessageNotification onPress={() => null} showNotification={true} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     /**

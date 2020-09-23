@@ -20,8 +20,8 @@ import {
   ChatContext,
   MessagesContext,
   ThreadContext,
-  TranslationContext,
 } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const ListContainer = styled.FlatList`
   flex: 1;
@@ -86,7 +86,7 @@ const MessageList = (props) => {
     Message: MessageFromContext,
   } = useContext(MessagesContext);
   const { loadMoreThread } = useContext(ThreadContext);
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   const Message = MessageFromProps || MessageFromContext;
   const messageList = useMessageList({ noGroupByUser, threadList });

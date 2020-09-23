@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 
-import { TranslationContext } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
@@ -42,7 +42,7 @@ const Date = styled.Text`
  */
 const DateSeparator = (props) => {
   const { formatDate, message } = props;
-  const { tDateTimeParser } = useContext(TranslationContext);
+  const { tDateTimeParser } = useTranslationContext();
 
   return (
     <Container testID='date-separator'>

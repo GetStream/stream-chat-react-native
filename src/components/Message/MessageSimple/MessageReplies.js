@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 
-import { TranslationContext } from '../../../context';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import iconPath from '../../../images/icons/icon_path.png';
 
 const Container = styled.TouchableOpacity`
@@ -26,7 +26,7 @@ const MessageRepliesText = styled.Text`
 `;
 
 const MessageReplies = ({ alignment, isThreadList, message, openThread }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
   if (isThreadList || !message.reply_count) return null;
 
   return (

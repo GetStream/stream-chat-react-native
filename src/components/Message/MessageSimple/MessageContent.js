@@ -19,8 +19,8 @@ import {
   MessageContentContext,
   MessagesContext,
   ThreadContext,
-  TranslationContext,
 } from '../../../context';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
@@ -158,7 +158,7 @@ const MessageContentWithContext = React.memo((props) => {
   } = props;
 
   const { openThread } = useContext(ThreadContext);
-  const { t, tDateTimeParser } = useContext(TranslationContext);
+  const { t, tDateTimeParser } = useTranslationContext();
 
   const actionSheetRef = useRef(null);
 

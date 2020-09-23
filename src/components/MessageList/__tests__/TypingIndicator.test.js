@@ -9,7 +9,8 @@ import TypingIndicator from '../TypingIndicator';
 
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext, TranslationContext } from '../../../context';
+import { ChannelContext } from '../../../context';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
@@ -29,11 +30,11 @@ describe('TypingIndicator', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
     expect(t).toHaveBeenCalledWith(
@@ -59,11 +60,11 @@ describe('TypingIndicator', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
     expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
@@ -85,11 +86,11 @@ describe('TypingIndicator', () => {
 
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator Avatar={View} />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
     expect(t).toHaveBeenCalledWith('{{ user }} is typing...', {
@@ -115,11 +116,11 @@ describe('TypingIndicator', () => {
 
     const { getByTestId } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator Avatar={View} />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
 
@@ -140,11 +141,11 @@ describe('TypingIndicator', () => {
 
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator Avatar={View} />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
 
@@ -168,11 +169,11 @@ describe('TypingIndicator', () => {
 
     const { toJSON } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ t }}>
+        <TranslationProvider value={{ t }}>
           <ChannelContext.Provider value={{ typing }}>
             <TypingIndicator />
           </ChannelContext.Provider>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
     await waitFor(() => {

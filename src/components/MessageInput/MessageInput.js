@@ -24,8 +24,8 @@ import {
   KeyboardContext,
   MessagesContext,
   ThreadContext,
-  TranslationContext,
 } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { SuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
@@ -111,7 +111,7 @@ const MessageInput = (props) => {
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
   const threadContext = useContext(ThreadContext);
 
-  const translationContext = useContext(TranslationContext);
+  const translationContext = useTranslationContext();
   const { t } = translationContext;
 
   const {

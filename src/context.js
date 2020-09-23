@@ -10,9 +10,6 @@ export const MessageContentContext = React.createContext({});
 export const MessagesContext = React.createContext({});
 export const SuggestionsContext = React.createContext({});
 export const ThreadContext = React.createContext({});
-export const TranslationContext = React.createContext({
-  t: (arg) => arg || 'Value not found', // TODO: remove this little workaround when context builds out
-});
 
 export function withChannelContext(OriginalComponent) {
   return getContextAwareComponent(ChannelContext, OriginalComponent);
@@ -40,14 +37,6 @@ export function withSuggestionsContext(OriginalComponent) {
 
 export function withThreadContext(OriginalComponent) {
   return getContextAwareComponent(ThreadContext, OriginalComponent);
-}
-
-export function withTranslationContext(OriginalComponent) {
-  const ContextAwareComponent = getContextAwareComponent(
-    TranslationContext,
-    OriginalComponent,
-  );
-  return ContextAwareComponent;
 }
 
 const getContextAwareComponent = function (context, originalComponent) {

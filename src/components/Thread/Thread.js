@@ -11,8 +11,8 @@ import {
   ChatContext,
   MessagesContext,
   ThreadContext,
-  TranslationContext,
 } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 
 const NewThread = styled.View`
@@ -41,7 +41,7 @@ const NewThreadText = styled.Text`
  * @example ../docs/Thread.md
  */
 const Thread = (props) => {
-  const translationContext = useContext(TranslationContext);
+  const translationContext = useTranslationContext();
   const { t } = translationContext;
   const channelContext = useContext(ChannelContext);
   const { channel } = channelContext;

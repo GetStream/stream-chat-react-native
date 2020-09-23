@@ -19,8 +19,8 @@ import {
   ChatContext,
   MessagesContext,
   ThreadContext,
-  TranslationContext,
 } from '../../context';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 /**
@@ -45,7 +45,7 @@ const Channel = (props) => {
   } = props;
 
   const { client } = useContext(ChatContext);
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
