@@ -3,9 +3,13 @@ import debounce from 'lodash/debounce';
 import type {
   Channel,
   ChannelMemberAPIResponse,
+  ChannelMemberResponse,
   UnknownType,
+  UserResponse,
 } from 'stream-chat';
 
+import type { CommandsItemProps } from '../components/AutoCompleteInput/CommandsItem';
+import type { MentionsItemProps } from '../components/AutoCompleteInput/MentionsItem';
 import type {
   SuggestionCommand,
   SuggestionUser,
@@ -60,6 +64,10 @@ export const ProgressIndicatorTypes = Object.freeze({
   RETRY: 'retry',
 });
 
+const isUserResponse = <Us extends DefaultUserType = DefaultUserType>(
+  user: SuggestionUser<Us> | undefined,
+): user is SuggestionUser<Us> => (user as SuggestionUser<Us>) !== undefined;
+
 const getCommands = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -83,7 +91,9 @@ const getMembers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const members = channel.state.members;
+  const members = (channel.state.members as unknown) as ChannelMemberResponse<
+    Us
+  >[];
   return members && Object.values(members).length
     ? Object.values(members)
         .filter((member) => member.user)
@@ -102,7 +112,7 @@ const getWatchers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const watchers = channel.state.watchers;
+  const watchers = (channel.state.watchers as unknown) as UserResponse<Us>[];
   return watchers && Object.values(watchers).length
     ? [...Object.values(watchers)]
     : [];
@@ -119,11 +129,14 @@ const getMembersAndWatchers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const users = [...getMembers(channel), ...getWatchers(channel)];
+  const users = [
+    ...getMembers<At, Ch, Co, Ev, Me, Re, Us>(channel),
+    ...getWatchers<At, Ch, Co, Ev, Me, Re, Us>(channel),
+  ];
 
   // make sure we don't list users twice
   const uniqueUsers: {
-    [key: string]: SuggestionUser;
+    [key: string]: SuggestionUser<Us>;
   } = {};
   for (const user of users) {
     if (user !== undefined && !uniqueUsers[user.id]) {
@@ -135,6 +148,7 @@ const getMembersAndWatchers = <
   return usersArray;
 };
 
+// TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -145,53 +159,50 @@ const queryMembers = async <
   Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  query: SuggestionUser['name'],
-  onReady?: (users: SuggestionUser[]) => void,
+  query: SuggestionUser<Us>['name'],
+  onReady: (users: SuggestionUser<Us>[]) => void,
 ): Promise<void> => {
-  const isString = (string: string | undefined): string is string =>
-    typeof string === 'string';
+  await debounce(
+    async () => {
+      if (typeof query === 'string') {
+        const response = (await ((channel as unknown) as Channel).queryMembers({
+          name: { $autocomplete: query },
+        })) as ChannelMemberAPIResponse<Us>;
 
-  if (isString(query)) {
-    const response = (await ((channel as unknown) as Channel).queryMembers({
-      name: { $autocomplete: query },
-    })) as ChannelMemberAPIResponse<Us>;
-
-    const isUserResponse = (
-      user: SuggestionUser | undefined,
-    ): user is SuggestionUser => (user as SuggestionUser) !== undefined;
-
-    const users: SuggestionUser[] = [];
-    response.members.forEach(
-      (member) => isUserResponse(member.user) && users.push(member.user),
-    );
-    if (onReady && users) {
-      onReady(users);
-    }
-  }
+        const users: SuggestionUser<Us>[] = [];
+        response.members.forEach(
+          (member) => isUserResponse(member.user) && users.push(member.user),
+        );
+        if (onReady && users) {
+          onReady(users);
+        }
+      }
+    },
+    200,
+    { leading: false, trailing: true },
+  );
 };
-
-const queryMembersDebounced = debounce(queryMembers, 200, {
-  leading: false,
-  trailing: true,
-});
 
 export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
   trigger === '@';
 
 export type Trigger = '/' | '@';
-export type TriggerSettings = {
+export type TriggerSettings<
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
+> = {
   '/': {
-    component: string;
+    component: string | React.ComponentType<Partial<CommandsItemProps<Co>>>;
     dataProvider: (
-      query: SuggestionCommand['name'],
+      query: SuggestionCommand<Co>['name'],
       text: string,
       onReady: (
-        data: SuggestionCommand[],
-        query: SuggestionCommand['name'],
+        data: SuggestionCommand<Co>[],
+        query: SuggestionCommand<Co>['name'],
       ) => void,
-    ) => SuggestionCommand[];
+    ) => SuggestionCommand<Co>[];
     output: (
-      entity: SuggestionCommand,
+      entity: SuggestionCommand<Co>,
     ) => {
       caretPosition: string;
       key: string;
@@ -200,15 +211,18 @@ export type TriggerSettings = {
     title: string;
   };
   '@': {
-    callback: (item: SuggestionUser) => void;
-    component: string;
+    callback: (item: SuggestionUser<Us>) => void;
+    component: string | React.ComponentType<Partial<MentionsItemProps<Us>>>;
     dataProvider: (
-      query: SuggestionUser['name'],
+      query: SuggestionUser<Us>['name'],
       _: string,
-      onReady: (data: SuggestionUser[], query: SuggestionUser['name']) => void,
-    ) => SuggestionUser[] | Promise<void> | undefined;
+      onReady: (
+        data: SuggestionUser<Us>[],
+        query: SuggestionUser<Us>['name'],
+      ) => void,
+    ) => SuggestionUser<Us>[] | Promise<void>;
     output: (
-      entity: SuggestionUser,
+      entity: SuggestionUser<Us>,
     ) => {
       caretPosition: string;
       key: string;
@@ -241,8 +255,8 @@ export const ACITriggerSettings = <
   t = (msg) => msg,
 }: {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-  onMentionSelectItem: (item: SuggestionUser) => void;
-} & Pick<TranslationContextValue, 't'>): TriggerSettings => ({
+  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
+} & Pick<TranslationContextValue, 't'>): TriggerSettings<Co, Us> => ({
   '/': {
     component: 'CommandsItem',
     dataProvider: (query, text, onReady) => {
@@ -250,9 +264,9 @@ export const ACITriggerSettings = <
         return [];
       }
 
-      const selectedCommands = getCommands(channel).filter(
-        (command) => query && command?.name?.indexOf(query) !== -1,
-      );
+      const selectedCommands = getCommands<At, Ch, Co, Ev, Me, Re, Us>(
+        channel,
+      ).filter((command) => query && command?.name?.indexOf(query) !== -1);
 
       // sort alphabetically unless the you're matching the first char
       selectedCommands.sort((a, b) => {
@@ -276,7 +290,7 @@ export const ACITriggerSettings = <
 
       const result = selectedCommands.slice(0, 10);
 
-      onReady?.(result, query);
+      onReady(result, query);
 
       return result;
     },
@@ -299,7 +313,9 @@ export const ACITriggerSettings = <
       // then all the members are already available on client side and we don't need to
       // make any api call to queryMembers endpoint.
       if (!query || Object.values(members).length < 100) {
-        const users = getMembersAndWatchers(channel);
+        const users = getMembersAndWatchers<At, Ch, Co, Ev, Me, Re, Us>(
+          channel,
+        );
 
         const matchingUsers = users.filter((user) => {
           if (!query) return true;
@@ -319,13 +335,13 @@ export const ACITriggerSettings = <
 
         const data = matchingUsers.slice(0, 10);
 
-        onReady?.(data, query);
+        onReady(data, query);
 
         return data;
       }
 
-      return queryMembersDebounced(
-        (channel as unknown) as Channel,
+      return queryMembers<At, Ch, Co, Ev, Me, Re, Us>(
+        channel,
         query,
         (data) => {
           onReady(data, query);
