@@ -4,6 +4,7 @@ import type {
   Channel,
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
+  UnknownType,
   UserResponse,
 } from 'stream-chat';
 
@@ -68,25 +69,25 @@ const isUserResponse = <Us extends DefaultUserType = DefaultUserType>(
 ): user is SuggestionUser<Us> => (user as SuggestionUser<Us>) !== undefined;
 
 const getCommands = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => channel.getConfig()?.commands || [];
 
 const getMembers = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -101,13 +102,13 @@ const getMembers = <
 };
 
 const getWatchers = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -118,13 +119,13 @@ const getWatchers = <
 };
 
 const getMembersAndWatchers = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -149,13 +150,13 @@ const getMembersAndWatchers = <
 
 // TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
@@ -187,8 +188,8 @@ export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
 
 export type Trigger = '/' | '@';
 export type TriggerSettings<
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 > = {
   '/': {
     component: string | React.ComponentType<Partial<CommandsItemProps<Co>>>;
@@ -241,13 +242,13 @@ export type TriggerSettings<
 // previous call without waiting for a1. So in this case, we want to execute onReady, when trailing
 // end of debounce executes.
 export const ACITriggerSettings = <
-  At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Ev extends DefaultEventType = DefaultEventType,
-  Me extends DefaultMessageType = DefaultMessageType,
-  Re extends DefaultReactionType = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   channel,
   onMentionSelectItem,

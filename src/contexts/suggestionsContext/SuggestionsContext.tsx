@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import { findNodeHandle, View } from 'react-native';
 
-import type { CommandResponse, UserResponse } from 'stream-chat';
+import type { CommandResponse, UnknownType, UserResponse } from 'stream-chat';
 
 import SuggestionsList from './SuggestionsList';
 
@@ -10,41 +10,41 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 
 export type SuggestionComponentType<
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 > = string | React.ReactElement<{ item: Suggestion<Co, Us> }>;
 
 export const isSuggestionUser = <
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 >(
   suggestion: Suggestion<Co, Us>,
 ): suggestion is SuggestionUser<Us> => 'id' in suggestion;
 
 export type Suggestion<
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 > = SuggestionCommand<Co> | SuggestionUser<Us>;
 
 export type SuggestionCommand<
-  Co extends DefaultCommandType = DefaultCommandType
+  Co extends string = DefaultCommandType
 > = CommandResponse<Co>;
 
 export type SuggestionUser<
-  Us extends DefaultUserType = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 > = UserResponse<Us>;
 
 export type Suggestions<
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 > = {
   data: Suggestion<Co, Us>[];
   onSelect: (item: Suggestion<Co, Us>) => void;
 };
 
 export type SuggestionsContextValue<
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 > = {
   closeSuggestions: () => void;
   openSuggestions: (
@@ -70,8 +70,8 @@ type MeasureLayout = () => Promise<{
  * This provider component exposes the properties stored within the SuggestionsContext.
  */
 export const SuggestionsProvider = <
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 >({
   children,
   value,
@@ -162,8 +162,8 @@ export const SuggestionsProvider = <
 };
 
 export const useSuggestionsContext = <
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 >() =>
   (useContext(SuggestionsContext) as unknown) as SuggestionsContextValue<
     Co,
@@ -172,8 +172,8 @@ export const useSuggestionsContext = <
 
 export const withSuggestionsContext = <
   P extends Record<string, unknown>,
-  Co extends DefaultCommandType = DefaultCommandType,
-  Us extends DefaultUserType = DefaultUserType
+  Co extends string = DefaultCommandType,
+  Us extends UnknownType = DefaultUserType
 >(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof SuggestionsContextValue<Co, Us>>> => {

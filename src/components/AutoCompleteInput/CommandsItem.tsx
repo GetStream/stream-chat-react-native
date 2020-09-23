@@ -30,9 +30,7 @@ const Top = styled.View`
   ${({ theme }) => theme.messageInput.suggestions.command.top.css}
 `;
 
-export type CommandsItemProps<
-  Co extends DefaultCommandType = DefaultCommandType
-> = {
+export type CommandsItemProps<Co extends string = DefaultCommandType> = {
   /**
    * A CommandResponse of suggested CommandTypes with these properties
    *
@@ -46,7 +44,7 @@ export type CommandsItemProps<
 /**
  * @example ./CommandsItem.md
  */
-const CommandsItem = <Co extends DefaultCommandType = DefaultCommandType>({
+const CommandsItem = <Co extends string = DefaultCommandType>({
   item: { args, description, name },
 }: CommandsItemProps<Co>) => (
   <Container>
