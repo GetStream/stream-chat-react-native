@@ -20,12 +20,13 @@ import { useChannelContext } from '../../contexts/channelContext/ChannelContext'
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import {
+  GroupType,
   MessageWithDates,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
-import type { GroupStyle } from '../Attachment/Attachment';
 import type { FileIconProps } from '../Attachment/FileIcon';
+import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -327,58 +328,58 @@ export type MessageProps<
   Us extends UnknownType = DefaultUserType
 > = {
   /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles: ActionSheetStyles; // TODO - check this is the correct type
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
-  /**
    * Position of message in group - top, bottom, middle, single.
    *
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
-  groupStyles: GroupStyle;
-  /**
-   * Latest message id on current channel
-   */
-  lastReceivedId: string;
+  groupStyles: GroupType;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    * */
-  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>; // TODO - add MessageSimpleProps
+  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
   message: MessageWithDates<At, Ch, Co, Me, Re, Us>;
   /**
+   * A list of users that have read this message
+   **/
+  readBy: UserResponse<Us>[] | [];
+  /**
+   * Style object for action sheet (used to message actions).
+   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+   */
+  actionSheetStyles?: ActionSheetStyles;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Latest message id on current channel
+   */
+  lastReceivedId?: string;
+  /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
    * @param message A message object to open the thread upon.
    */
-  onThreadSelect: (
+  onThreadSelect?: (
     message: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'][0],
   ) => void;
   /**
-   * A list of users that have read this message
-   **/
-  readBy: UserResponse<Us>[];
-  /**
    * Whether or not the MessageList is part of a Thread
    */
-  threadList: boolean;
+  threadList?: boolean;
 };
 
 /**
  * Message - A high level component which implements all the logic required for a message.
  * The actual rendering of the message is delegated via the "Message" property
  *
- * @example ../docs/Message.md
+ * @example ./Message.md
  */
 const DefaultMessage = <
   At extends UnknownType = DefaultAttachmentType,

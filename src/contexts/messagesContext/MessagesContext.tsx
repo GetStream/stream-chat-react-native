@@ -26,6 +26,8 @@ import type {
 
 export type Alignment = 'right' | 'left';
 
+export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
+
 export type MessageWithDates<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -34,7 +36,7 @@ export type MessageWithDates<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = MessageResponse<At, Ch, Co, Me, Re, Us> & {
-  groupStyles: string[];
+  groupStyles: GroupType[];
   readBy: UserResponse<Us>[];
 };
 

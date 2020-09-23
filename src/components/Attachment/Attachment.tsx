@@ -14,14 +14,15 @@ import DefaultGallery, { GalleryProps } from './Gallery';
 import { themed } from '../../styles/theme';
 
 import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  GroupType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 export type ActionHandler =
   | ((name: string, value: string) => Promise<void>)
   | ((arg1: unknown, arg2: unknown) => unknown);
-
-export type GroupStyle = 'single' | 'top' | 'middle' | 'bottom';
 
 export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
@@ -92,7 +93,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
-  groupStyle?: GroupStyle;
+  groupStyle?: GroupType;
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js

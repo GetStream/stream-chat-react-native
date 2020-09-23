@@ -5,10 +5,13 @@ import type { Attachment, UnknownType } from 'stream-chat';
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
 
-import type { ActionHandler, GroupStyle } from './Attachment';
+import type { ActionHandler } from './Attachment';
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileIconProps } from './FileIcon';
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  GroupType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 const FileContainer = styled.View<{
@@ -86,7 +89,7 @@ export type FileAttachmentProps<
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
-  groupStyle?: GroupStyle;
+  groupStyle?: GroupType;
 };
 
 const FileAttachment = <

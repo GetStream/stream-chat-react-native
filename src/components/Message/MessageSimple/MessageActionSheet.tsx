@@ -5,6 +5,7 @@ import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import { TranslationContext } from '../../../context';
 import { MESSAGE_ACTIONS } from '../../../utils/utils';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
@@ -46,6 +47,19 @@ const ActionSheetTitleText = styled.Text`
   color: #757575;
   ${({ theme }) => theme.message.actionSheet.titleText.css};
 `;
+
+export type ActionSheetStyles = {
+  body?: StyleProp<ViewStyle>;
+  buttonBox?: StyleProp<ViewStyle>;
+  buttonText?: StyleProp<TextStyle>;
+  cancelButtonBox?: StyleProp<ViewStyle>;
+  messageBox?: StyleProp<ViewStyle>;
+  messageText?: StyleProp<TextStyle>;
+  overlay?: StyleProp<TextStyle>;
+  titleBox?: StyleProp<ViewStyle>;
+  titleText?: StyleProp<TextStyle>;
+  wrapper?: StyleProp<ViewStyle>;
+};
 
 const MessageActionSheet = React.forwardRef((props, actionSheetRef) => {
   const {

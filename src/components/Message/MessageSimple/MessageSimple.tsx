@@ -31,7 +31,7 @@ import type {
 const Container = styled.View<{
   alignment: Alignment;
   hasMarginBottom: boolean;
-  isVeryLastMessage?: boolean;
+  isVeryLastMessage: boolean;
 }>`
   align-items: flex-end;
   flex-direction: row;
@@ -153,17 +153,17 @@ export type MessageSimpleProps<
      * Custom UI component to override default cover (between Header and Footer) of Card component.
      * Accepts the same props as Card component.
      */
-    CardCover?: any;
+    CardCover?: React.ComponentType<Partial<CardProps<At>>>;
     /**
      * Custom UI component to override default Footer of Card component.
      * Accepts the same props as Card component.
      */
-    CardFooter?: any;
+    CardFooter?: React.ComponentType<Partial<CardProps<At>>>;
     /**
      * Custom UI component to override default header of Card component.
      * Accepts the same props as Card component.
      */
-    CardHeader?: any;
+    CardHeader?: React.ComponentType<Partial<CardProps<At>>>;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -191,12 +191,11 @@ export type MessageSimpleProps<
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
      */
     Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
-
     /**
      * Custom UI component to display Giphy image.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
      */
-    Giphy?: any;
+    Giphy?: React.ComponentType<Partial<CardProps<At>>>;
     /** enable hiding reaction count from reaction picker  */
     hideReactionCount?: boolean;
     /** enable hiding reaction owners from reaction picker */
@@ -359,7 +358,7 @@ const MessageSimple = <
     showMessageStatus = true,
   } = props;
 
-  const { channel } = useChannelContext();
+  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const customMessageContent = !!props.MessageContent;
 
@@ -372,7 +371,7 @@ const MessageSimple = <
 
   const lastMessage =
     channel?.state.messages[channel?.state.messages.length - 1];
-  const isVeryLastMessage = lastMessage && lastMessage.id === message.id;
+  const isVeryLastMessage = lastMessage?.id === message.id;
   const hasMarginBottom =
     groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
   const hasReactions =
