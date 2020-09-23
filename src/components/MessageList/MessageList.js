@@ -15,12 +15,8 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import DefaultMessage from '../Message/Message';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-} from '../../context';
+import { ChannelContext, ChatContext, MessagesContext } from '../../context';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const ListContainer = styled.FlatList`
@@ -85,7 +81,7 @@ const MessageList = (props) => {
     loadMore: mainLoadMore,
     Message: MessageFromContext,
   } = useContext(MessagesContext);
-  const { loadMoreThread } = useContext(ThreadContext);
+  const { loadMoreThread } = useThreadContext();
   const { t } = useTranslationContext();
 
   const Message = MessageFromProps || MessageFromContext;

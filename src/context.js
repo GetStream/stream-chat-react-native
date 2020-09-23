@@ -9,7 +9,6 @@ export const KeyboardContext = React.createContext({
 export const MessageContentContext = React.createContext({});
 export const MessagesContext = React.createContext({});
 export const SuggestionsContext = React.createContext({});
-export const ThreadContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {
   return getContextAwareComponent(ChannelContext, OriginalComponent);
@@ -33,10 +32,6 @@ export function withMessagesContext(OriginalComponent) {
 
 export function withSuggestionsContext(OriginalComponent) {
   return getContextAwareComponent(SuggestionsContext, OriginalComponent);
-}
-
-export function withThreadContext(OriginalComponent) {
-  return getContextAwareComponent(ThreadContext, OriginalComponent);
 }
 
 const getContextAwareComponent = function (context, originalComponent) {

@@ -14,12 +14,8 @@ import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCom
 
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-} from '../../context';
+import { ChannelContext, ChatContext, MessagesContext } from '../../context';
+import { ThreadProvider } from '../../contexts/contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
@@ -527,9 +523,9 @@ const Channel = (props) => {
     <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
       <ChannelContext.Provider value={channelContext}>
         <MessagesContext.Provider value={messagesContext}>
-          <ThreadContext.Provider value={threadContext}>
+          <ThreadProvider value={threadContext}>
             <SuggestionsProvider>{children}</SuggestionsProvider>
-          </ThreadContext.Provider>
+          </ThreadProvider>
         </MessagesContext.Provider>
       </ChannelContext.Provider>
     </KeyboardCompatibleView>

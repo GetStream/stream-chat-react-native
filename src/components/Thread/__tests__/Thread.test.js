@@ -18,7 +18,8 @@ import Thread from '../Thread';
 import Channel from '../../Channel/Channel';
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext, ThreadContext } from '../../../context';
+import { ChannelContext } from '../../../context';
+import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 

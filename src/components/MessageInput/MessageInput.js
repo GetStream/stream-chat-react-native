@@ -23,8 +23,8 @@ import {
   ChatContext,
   KeyboardContext,
   MessagesContext,
-  ThreadContext,
 } from '../../context';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { SuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import iconClose from '../../images/icons/icon_close.png';
@@ -109,7 +109,7 @@ const MessageInput = (props) => {
   const { setInputBoxContainerRef } = suggestionsContext;
 
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
-  const threadContext = useContext(ThreadContext);
+  const threadContext = useThreadContext();
 
   const translationContext = useTranslationContext();
   const { t } = translationContext;

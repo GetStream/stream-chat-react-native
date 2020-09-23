@@ -6,12 +6,8 @@ import DefaultMessage from '../Message/Message';
 import DefaultMessageInput from '../MessageInput/MessageInput';
 import DefaultMessageList from '../MessageList/MessageList';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-} from '../../context';
+import { ChannelContext, ChatContext, MessagesContext } from '../../context';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
 
@@ -52,7 +48,7 @@ const Thread = (props) => {
     threadHasMore = true,
     threadLoadingMore,
     threadMessages,
-  } = useContext(ThreadContext);
+  } = useThreadContext();
   const chatContext = useContext(ChatContext);
   const {
     autoFocus = true,
