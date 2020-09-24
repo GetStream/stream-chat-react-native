@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-react-native",
-  "version": "1.3.0-kcv.0",
+  "version": "1.3.0-kcv.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -10,7 +10,7 @@
   "types": "types/index.d.ts",
   "dependencies": {
     "es6-symbol": "^3.1.3",
-    "stream-chat-react-native-core": "v1.3.0-kcv.0"
+    "stream-chat-react-native-core": "v1.3.0-kcv.1"
   },
   "peerDependencies": {
     "@react-native-community/netinfo": ">=2.0.7",
