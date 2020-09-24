@@ -377,7 +377,6 @@ const MessageList = <
             return uuidv4();
           }}
           ListFooterComponent={HeaderComponent}
-          // @ts-ignore update @types/react-native in deps when https://github.com/DefinitelyTyped/DefinitelyTyped/pull/48114 is merged and published
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,
