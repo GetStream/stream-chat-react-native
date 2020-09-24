@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, GestureResponderEvent } from 'react-native';
 
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
