@@ -1,15 +1,13 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-} from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
+import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -211,9 +209,9 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
  * @example ../docs/Message.md
  */
 const DefaultMessage = (props) => {
-  const { channel, disabled } = useContext(ChannelContext);
-  const { client } = useContext(ChatContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
+  const { channel, disabled } = useChannelContext();
+  const { client } = useChatContext();
+  const { dismissKeyboard } = useKeyboardContext();
   const {
     editing,
     emojiData,
@@ -221,7 +219,7 @@ const DefaultMessage = (props) => {
     retrySendMessage,
     setEditingState,
     updateMessage,
-  } = useContext(MessagesContext);
+  } = useMessagesContext();
 
   return (
     <DefaultMessageWithContext

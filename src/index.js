@@ -1,6 +1,6 @@
 export * from './components';
 export { registerNativeHandlers, NetInfo } from './native';
-export * from './context';
+export * from './contexts';
 
 export * from './utils/Streami18n';
 export * from './utils/utils';

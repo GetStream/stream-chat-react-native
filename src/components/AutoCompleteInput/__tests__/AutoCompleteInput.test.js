@@ -11,7 +11,7 @@ import AutoCompleteInput from '../AutoCompleteInput';
 
 import Chat from '../../Chat/Chat';
 
-import { SuggestionsContext } from '../../../contexts/suggestionsContext/SuggestionsContext';
+import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { ACITriggerSettings } from '../../../utils/utils';
 
 describe('AutoCompleteInput', () => {
@@ -21,7 +21,7 @@ describe('AutoCompleteInput', () => {
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
-      <SuggestionsContext.Provider value={props}>
+      <SuggestionsProvider value={props}>
         <AutoCompleteInput
           onChange={jest.fn}
           triggerSettings={ACITriggerSettings({
@@ -31,7 +31,7 @@ describe('AutoCompleteInput', () => {
           })}
           value={props.value}
         />
-      </SuggestionsContext.Provider>
+      </SuggestionsProvider>
     </Chat>
   );
 

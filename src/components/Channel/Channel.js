@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -12,13 +12,12 @@ import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
-import { ChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { ChatContext } from '../../contexts/chatContext/ChatContext';
-import { MessagesContext } from '../../contexts/messagesContext/MessagesContext';
+import { ChannelProvider } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
-import { ThreadContext } from '../../contexts/threadContext/ThreadContext';
-import { TranslationContext } from '../../contexts/translationContext/TranslationContext';
-
+import { ThreadProvider } from '../../contexts/contexts/threadContext/ThreadContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 /**
@@ -42,8 +41,8 @@ const Channel = (props) => {
     LoadingIndicator = LoadingIndicatorDefault,
   } = props;
 
-  const { client } = useContext(ChatContext);
-  const { t } = useContext(TranslationContext);
+  const { client } = useChatContext();
+  const { t } = useTranslationContext();
 
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState(false);
@@ -523,13 +522,13 @@ const Channel = (props) => {
 
   return (
     <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
-      <ChannelContext.Provider value={channelContext}>
-        <MessagesContext.Provider value={messagesContext}>
-          <ThreadContext.Provider value={threadContext}>
+      <ChannelProvider value={channelContext}>
+        <MessagesProvider value={messagesContext}>
+          <ThreadProvider value={threadContext}>
             <SuggestionsProvider>{children}</SuggestionsProvider>
-          </ThreadContext.Provider>
-        </MessagesContext.Provider>
-      </ChannelContext.Provider>
+          </ThreadProvider>
+        </MessagesProvider>
+      </ChannelProvider>
     </KeyboardCompatibleView>
   );
 };

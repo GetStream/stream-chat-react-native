@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import styled from 'styled-components/native';
@@ -14,13 +14,11 @@ import DefaultGallery from '../../Attachment/Gallery';
 import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
-import {
-  ChannelContext,
-  MessageContentContext,
-  MessagesContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../../context';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
@@ -157,8 +155,8 @@ const MessageContentWithContext = React.memo((props) => {
     threadList,
   } = props;
 
-  const { openThread } = useContext(ThreadContext);
-  const { t, tDateTimeParser } = useContext(TranslationContext);
+  const { openThread } = useThreadContext();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   const actionSheetRef = useRef(null);
 
@@ -235,7 +233,7 @@ const MessageContentWithContext = React.memo((props) => {
   };
 
   return (
-    <MessageContentContext.Provider value={context}>
+    <MessageContentProvider value={context}>
       <Container
         {...contentProps}
         error={message.type === 'error' || message.status === 'failed'}
@@ -372,7 +370,7 @@ const MessageContentWithContext = React.memo((props) => {
           />
         )}
       </Container>
-    </MessageContentContext.Provider>
+    </MessageContentProvider>
   );
 });
 
@@ -382,12 +380,12 @@ MessageContentWithContext.displayName = 'message.contentWithContext';
  * Child of MessageSimple that displays a message's content.
  */
 const MessageContent = (props) => {
-  const { disabled } = useContext(ChannelContext);
+  const { disabled } = useChannelContext();
   const {
     Attachment = DefaultAttachment,
     Message,
     retrySendMessage,
-  } = useContext(MessagesContext);
+  } = useMessagesContext();
 
   return (
     <MessageContentWithContext

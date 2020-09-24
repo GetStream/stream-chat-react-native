@@ -10,7 +10,7 @@ import { generateStaticUser } from 'mock-builders/generator/user';
 
 import MessageSystem from '../MessageSystem';
 
-import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { defaultTheme } from '../../../styles/themeConstants';
 import { Streami18n } from '../../../utils/Streami18n';
 
@@ -23,9 +23,9 @@ describe('MessageSystem', () => {
     const message = generateMessage();
     const { queryByTestId } = render(
       <ThemeProvider theme={defaultTheme}>
-        <TranslationContext.Provider value={translators}>
+        <TranslationProvider value={translators}>
           <MessageSystem message={message} />
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </ThemeProvider>,
     );
 
@@ -41,9 +41,9 @@ describe('MessageSystem', () => {
     const message = generateStaticMessage('Hello World', { user });
     const { toJSON } = render(
       <ThemeProvider theme={defaultTheme}>
-        <TranslationContext.Provider value={translators}>
+        <TranslationProvider value={translators}>
           <MessageSystem message={message} />
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </ThemeProvider>,
     );
 

@@ -1,11 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { SuggestionsContext, SuggestionsProvider } from '../SuggestionsContext';
+import {
+  SuggestionsProvider,
+  useSuggestionsContext,
+} from '../SuggestionsContext';
 
 const SuggestionsContextConsumer = ({ fn }) => {
-  fn(useContext(SuggestionsContext));
+  fn(useSuggestionsContext());
   return <View testID='children' />;
 };
 

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -18,15 +18,13 @@ import { generateRandomId } from './utils/generateRandomId';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-  SuggestionsContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
+import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
+import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
+import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { themed } from '../../styles/theme';
@@ -88,16 +86,16 @@ const InputBoxContainer = styled.View`
  * @example ../docs/MessageInput.md
  */
 const MessageInput = (props) => {
-  const channelContext = useContext(ChannelContext);
+  const channelContext = useChannelContext();
   const { channel, disabled = false, members, watchers } = channelContext;
 
-  const chatContext = useContext(ChatContext);
+  const chatContext = useChatContext();
   const { client } = chatContext;
 
-  const keyboardContext = useContext(KeyboardContext);
+  const keyboardContext = useKeyboardContext();
   const { dismissKeyboard } = keyboardContext;
 
-  const messagesContext = useContext(MessagesContext);
+  const messagesContext = useMessagesContext();
   const {
     clearEditingState,
     editing,
@@ -105,13 +103,13 @@ const MessageInput = (props) => {
     sendMessage: sendMessageContext,
   } = messagesContext;
 
-  const suggestionsContext = useContext(SuggestionsContext);
+  const suggestionsContext = useSuggestionsContext();
   const { setInputBoxContainerRef } = suggestionsContext;
 
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
-  const threadContext = useContext(ThreadContext);
+  const threadContext = useThreadContext();
 
-  const translationContext = useContext(TranslationContext);
+  const translationContext = useTranslationContext();
   const { t } = translationContext;
 
   const {
