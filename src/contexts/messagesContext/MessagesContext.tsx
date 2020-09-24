@@ -12,6 +12,7 @@ import type {
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -38,10 +39,6 @@ export type MessageWithDates<
   readBy: UserResponse<Us>[];
 };
 
-export type AttachmentProps = {
-  // TODO - Add attachment props when it is typed
-};
-
 export type MessageProps = {
   // TODO - Add attachment props when it is typed
 };
@@ -55,12 +52,12 @@ export type MessagesContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  Attachment: React.ComponentType<AttachmentProps>;
+  Attachment: React.ComponentType<AttachmentProps<At>>;
   clearEditingState: () => void;
   editing: boolean | MessageWithDates<At, Ch, Co, Me, Re, Us>;
   editMessage: (
     updatedMessage: MessageWithDates<At, Ch, Co, Me, Re, Us>,
-  ) => StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
+  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData: Array<{
     icon: string;
     id: string;

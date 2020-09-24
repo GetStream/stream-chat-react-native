@@ -16,11 +16,9 @@ import Channel from '../Channel';
 import Attachment from '../../Attachment/Attachment';
 import Chat from '../../Chat/Chat';
 
-import {
-  ChannelContext,
-  MessagesContext,
-  ThreadContext,
-} from '../../../context';
+import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { MessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.

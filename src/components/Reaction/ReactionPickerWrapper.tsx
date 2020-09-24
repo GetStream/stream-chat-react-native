@@ -3,7 +3,7 @@ import { Dimensions, TouchableOpacity } from 'react-native';
 
 import ReactionPickerDefault from './ReactionPicker';
 
-import type { LatestReactions, Reaction } from './ReactionList';
+import type { Reaction } from './ReactionList';
 import type { ReactionPickerProps } from './ReactionPicker';
 
 import { emojiData as emojiDataDefault } from '../../utils/utils';

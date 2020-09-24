@@ -17,7 +17,7 @@ const sections = [
     usageMode: 'expand',
   },
   {
-    components: ['src/components/Channel/Channel.js'],
+    components: ['src/components/Channel/Channel.tsx'],
     exampleMode: 'collapse',
     name: 'Channel Component',
     usageMode: 'expand',

@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 export type EmptyStateProps = {
-  listType: 'channel' | 'message' | 'default';
+  listType?: 'channel' | 'message' | 'default';
 };
 
 const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => {

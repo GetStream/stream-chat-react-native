@@ -21,13 +21,13 @@ import { KeyboardContext } from '../../contexts/keyboardContext/KeyboardContext'
  * ```
  */
 
-type Props = {
+export type KeyboardCompatibleViewProps = {
   enabled?: boolean;
   keyboardDismissAnimationDuration?: number;
   keyboardOpenAnimationDuration?: number;
 };
 
-export const KeyboardCompatibleView: React.FC<Props> = ({
+export const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
   children,
   enabled = true,
   keyboardDismissAnimationDuration = 500,
