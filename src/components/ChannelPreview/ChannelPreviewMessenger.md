@@ -1,7 +1,7 @@
 Unread channel preview:
 
 ```js
-const data = require('../docs/data.js');
+const data = require('../docs/data');
 
 <ChannelPreviewMessenger
   {...data.channelContext}
@@ -13,7 +13,7 @@ const data = require('../docs/data.js');
 Read channel preview:
 
 ```js
-const data = require('../docs/data.js');
+const data = require('../docs/data');
 
 <ChannelPreviewMessenger
   {...data.channelContext}

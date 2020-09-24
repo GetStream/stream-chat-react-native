@@ -41,7 +41,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
           },
         ]
       }
-      testID="avatar-image"
+      testID="typing-avatar-0"
     />
   </View>
   <View
@@ -72,7 +72,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
           },
         ]
       }
-      testID="avatar-image"
+      testID="typing-avatar-1"
     />
   </View>
   <Text

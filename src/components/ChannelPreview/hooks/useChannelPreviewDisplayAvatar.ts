@@ -25,9 +25,9 @@ const getChannelPreviewDisplayAvatar = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const currentUserId = client.user?.id;
-  const channelName = channel.data?.name;
-  const channelImage = channel.data?.image;
+  const currentUserId = client?.user?.id;
+  const channelName = channel?.data?.name;
+  const channelImage = channel?.data?.image;
 
   if (channelImage) {
     return {

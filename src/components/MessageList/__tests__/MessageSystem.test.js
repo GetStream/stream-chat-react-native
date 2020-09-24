@@ -10,7 +10,7 @@ import { generateStaticUser } from 'mock-builders/generator/user';
 
 import MessageSystem from '../MessageSystem';
 
-import { TranslationContext } from '../../../context';
+import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { defaultTheme } from '../../../styles/themeConstants';
 import { Streami18n } from '../../../utils/Streami18n';
 

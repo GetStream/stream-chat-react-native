@@ -121,39 +121,40 @@ export default function Slot(
     fills = [...fills, { id: 'rsg-styles', render: StylesTab }];
   }
 
-  const rendered = fills.map((Fill, index) => {
-    // { id: 'pizza', render: ({ foo }) => <div>{foo}</div> }
-    const { id, render } = Fill;
-    let fillProps = props;
-    if (id && render) {
-      // Render only specified fill
-      if (onlyActive && id !== active) {
-        return null;
+  const rendered = fills
+    .map((Fill, index) => {
+      // { id: 'pizza', render: ({ foo }) => <div>{foo}</div> }
+      const { id, render } = Fill;
+      let fillProps = props;
+      if (id && render) {
+        // Render only specified fill
+        if (onlyActive && id !== active) {
+          return null;
+        }
+
+        const { onClick } = props;
+        fillProps = {
+          ...props,
+          // Set active prop to active fill
+          active: active && id === active,
+          name: id,
+          // Pass fill ID to onClick event handler
+          // eslint-disable-next-line react/prop-types
+          onClick: onClick && ((...attrs) => onClick(id, ...attrs)),
+        };
+
+        return <render key={index} {...fillProps} />;
       }
 
-      const { onClick } = props;
-      fillProps = {
-        ...props,
-        // Set active prop to active fill
-        active: active && id === active,
-        name: id,
-        // Pass fill ID to onClick event handler
-        // eslint-disable-next-line react/prop-types
-        onClick: onClick && ((...attrs) => onClick(id, ...attrs)),
-      };
+      return <Fill key={index} {...fillProps} />;
+    })
+    .filter(Boolean);
 
-      Fill = render;
-    }
-
-    return <Fill key={index} {...fillProps} />;
-  });
-
-  const filtered = rendered.filter(Boolean);
-  if (filtered.length === 0) {
+  if (rendered.length === 0) {
     return null;
   }
 
-  return <div className={className}>{filtered}</div>;
+  return <div className={className}>{rendered}</div>;
 }
 
 Slot.propTypes = {

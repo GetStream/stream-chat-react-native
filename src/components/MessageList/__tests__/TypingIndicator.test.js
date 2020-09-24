@@ -9,7 +9,8 @@ import TypingIndicator from '../TypingIndicator';
 
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext, TranslationContext } from '../../../context';
+import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);

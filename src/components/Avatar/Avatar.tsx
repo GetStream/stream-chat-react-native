@@ -44,13 +44,14 @@ const getInitials = (fullName?: string) =>
         .map((name) => name.charAt(0))
     : null;
 
-type Props = {
+export type AvatarProps = {
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
   name?: string;
   /** size in pixels */
   size?: number;
+  testID?: string;
 };
 
 /**
@@ -58,10 +59,11 @@ type Props = {
  *
  * @example ./Avatar.md
  */
-const Avatar: React.FC<Props> & { themePath: string } = ({
+const Avatar: React.FC<AvatarProps> & { themePath: string } = ({
   image,
   name,
   size = BASE_AVATAR_SIZE,
+  testID,
 }) => {
   const [imageError, setImageError] = useState(false);
 
@@ -80,11 +82,11 @@ const Avatar: React.FC<Props> & { themePath: string } = ({
           resizeMethod='resize'
           size={size}
           source={{ uri: image }}
-          testID='avatar-image'
+          testID={testID || 'avatar-image'}
         />
       ) : (
         <AvatarFallback size={size}>
-          <AvatarText fontSize={fontSize} testID='avatar-text'>
+          <AvatarText fontSize={fontSize} testID={testID || 'avatar-text'}>
             {initials}
           </AvatarText>
         </AvatarFallback>
