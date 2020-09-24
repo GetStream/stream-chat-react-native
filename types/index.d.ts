@@ -211,7 +211,7 @@ export interface ChannelProps
    */
   KeyboardCompatibleView?: React.ElementType<KeyboardCompatibleViewProps>;
   keyboardVerticalOffset?: number;
-  keyboardBehavior?: 'height' | 'position' | 'padding';
+  keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
   disableIfFrozenChannel?: boolean;
 }
 
