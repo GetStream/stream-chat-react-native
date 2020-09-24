@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
@@ -6,7 +6,7 @@ import DefaultMessage from '../Message/Message';
 import DefaultMessageInput from '../MessageInput/MessageInput';
 import DefaultMessageList from '../MessageList/MessageList';
 
-import { ChannelContext } from '../../context';
+import { useChannelContext } from 'src/contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -41,7 +41,7 @@ const NewThreadText = styled.Text`
 const Thread = (props) => {
   const translationContext = useTranslationContext();
   const { t } = translationContext;
-  const channelContext = useContext(ChannelContext);
+  const channelContext = useChannelContext();
   const { channel } = channelContext;
   const { Message: MessageFromContext } = useMessagesContext();
   const {

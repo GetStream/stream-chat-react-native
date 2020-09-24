@@ -9,7 +9,7 @@ import TypingIndicator from '../TypingIndicator';
 
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext } from '../../../context';
+import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
@@ -31,9 +31,9 @@ describe('TypingIndicator', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );
@@ -61,9 +61,9 @@ describe('TypingIndicator', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );
@@ -87,9 +87,9 @@ describe('TypingIndicator', () => {
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator Avatar={View} />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );
@@ -117,9 +117,9 @@ describe('TypingIndicator', () => {
     const { getByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator Avatar={View} />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );
@@ -142,9 +142,9 @@ describe('TypingIndicator', () => {
     const { getByTestId, queryByTestId } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator Avatar={View} />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );
@@ -170,9 +170,9 @@ describe('TypingIndicator', () => {
     const { toJSON } = render(
       <Chat client={chatClient}>
         <TranslationProvider value={{ t }}>
-          <ChannelContext.Provider value={{ typing }}>
+          <ChannelProvider value={{ typing }}>
             <TypingIndicator />
-          </ChannelContext.Provider>
+          </ChannelProvider>
         </TranslationProvider>
       </Chat>,
     );

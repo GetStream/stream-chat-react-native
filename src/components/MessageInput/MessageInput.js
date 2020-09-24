@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components/native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -18,7 +18,7 @@ import { generateRandomId } from './utils/generateRandomId';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import { ChannelContext } from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
@@ -86,7 +86,7 @@ const InputBoxContainer = styled.View`
  * @example ../docs/MessageInput.md
  */
 const MessageInput = (props) => {
-  const channelContext = useContext(ChannelContext);
+  const channelContext = useChannelContext();
   const { channel, disabled = false, members, watchers } = channelContext;
 
   const chatContext = useChatContext();

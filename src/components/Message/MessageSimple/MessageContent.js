@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'seamless-immutable';
 import styled from 'styled-components/native';
@@ -14,7 +14,7 @@ import DefaultGallery from '../../Attachment/Gallery';
 import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
-import { ChannelContext } from '../../../context';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
@@ -380,7 +380,7 @@ MessageContentWithContext.displayName = 'message.contentWithContext';
  * Child of MessageSimple that displays a message's content.
  */
 const MessageContent = (props) => {
-  const { disabled } = useContext(ChannelContext);
+  const { disabled } = useChannelContext();
   const {
     Attachment = DefaultAttachment,
     Message,

@@ -14,7 +14,7 @@ import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCom
 
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 
-import { ChannelContext } from '../../context';
+import { ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadProvider } from '../../contexts/contexts/threadContext/ThreadContext';
@@ -523,13 +523,13 @@ const Channel = (props) => {
 
   return (
     <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
-      <ChannelContext.Provider value={channelContext}>
+      <ChannelProvider value={channelContext}>
         <MessagesProvider value={messagesContext}>
           <ThreadProvider value={threadContext}>
             <SuggestionsProvider>{children}</SuggestionsProvider>
           </ThreadProvider>
         </MessagesProvider>
-      </ChannelContext.Provider>
+      </ChannelProvider>
     </KeyboardCompatibleView>
   );
 };

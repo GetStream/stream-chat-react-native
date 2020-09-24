@@ -1,13 +1,11 @@
-import { useContext } from 'react';
-
-import { ChannelContext } from '../../../context';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
 export const useTypingString = () => {
   const { client } = useChatContext();
   const { t } = useTranslationContext();
-  const { typing } = useContext(ChannelContext);
+  const { typing } = useChannelContext();
 
   const typingKeys = Object.keys(typing);
   const nonSelfUsers = [];

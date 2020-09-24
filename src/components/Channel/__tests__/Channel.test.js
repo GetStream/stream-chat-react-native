@@ -16,7 +16,10 @@ import Channel from '../Channel';
 import Attachment from '../../Attachment/Attachment';
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext } from '../../../context';
+import {
+  ChannelContext,
+  ChannelProvider,
+} from '../../../contexts/channelContext/ChannelContext';
 import {
   MessagesContext,
   MessagesProvider,
@@ -324,9 +327,9 @@ describe('Channel', () => {
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ChannelContext.Provider>
+        <ChannelProvider>
           <View testID='children' />
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -343,14 +346,14 @@ describe('Channel', () => {
       };
 
       render(
-        <ChannelContext.Provider value={mockContext}>
+        <ChannelProvider value={mockContext}>
           <ContextConsumer
             context={ChannelContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => {

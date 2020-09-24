@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
@@ -15,7 +15,7 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import DefaultMessage from '../Message/Message';
 
-import { ChannelContext } from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -73,9 +73,12 @@ const MessageList = (props) => {
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
-  const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
-    ChannelContext,
-  );
+  const {
+    channel,
+    disabled,
+    EmptyStateIndicator,
+    markRead,
+  } = useChannelContext();
   const { client, isOnline } = useChatContext();
   const {
     clearEditingState,

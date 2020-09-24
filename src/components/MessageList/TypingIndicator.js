@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
@@ -6,7 +6,7 @@ import { useTypingString } from './hooks/useTypingString';
 
 import DefaultAvatar from '../Avatar/Avatar';
 
-import { ChannelContext } from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { themed } from '../../styles/theme';
 
@@ -27,7 +27,7 @@ const TypingText = styled.Text`
 const TypingIndicator = (props) => {
   const { Avatar = DefaultAvatar } = props;
   const { client } = useChatContext();
-  const { typing } = useContext(ChannelContext);
+  const { typing } = useChannelContext();
   const typingString = useTypingString();
   const typingUsers = Object.values(typing);
 

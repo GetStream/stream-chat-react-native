@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 
-import { ChannelContext } from '../../context';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
 const Container = styled.View`
@@ -16,7 +16,7 @@ const Container = styled.View`
 
 const TypingIndicatorContainer = ({ children }) => {
   const { client } = useChatContext();
-  const { typing } = useContext(ChannelContext);
+  const { typing } = useChannelContext();
   const typingUsers = Object.values(typing);
 
   if (
