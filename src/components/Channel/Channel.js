@@ -12,15 +12,13 @@ import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
+import { ChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { ChatContext } from '../../contexts/chatContext/ChatContext';
+import { MessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { ThreadContext } from '../../contexts/threadContext/ThreadContext';
+import { TranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../context';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 /**

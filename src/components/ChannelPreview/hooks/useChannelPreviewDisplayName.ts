@@ -25,8 +25,8 @@ const getChannelPreviewDisplayName = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const currentUserId = client.user?.id;
-  const channelName = channel.data?.name;
+  const currentUserId = client?.user?.id;
+  const channelName = channel?.data?.name;
 
   if (channelName) {
     return channelName;

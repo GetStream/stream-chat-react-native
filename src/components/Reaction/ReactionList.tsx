@@ -10,6 +10,14 @@ import type {
   Alignment,
   MessageWithDates,
 } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
 
 const leftTail = require('../../images/reactionlist/left-tail.png');
 const leftCenter = require('../../images/reactionlist/left-center.png');
@@ -19,14 +27,28 @@ const rightTail = require('../../images/reactionlist/right-tail.png');
 const rightCenter = require('../../images/reactionlist/right-center.png');
 const rightEnd = require('../../images/reactionlist/right-end.png');
 
-export type LatestReactions = MessageWithDates['latest_reactions'];
+export type LatestReactions<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = MessageWithDates<At, Ch, Co, Me, Re, Us>['latest_reactions'];
 
 export type Reaction = {
   icon: string;
   id: string;
 };
 
-type Props = {
+export type ReactionListProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
   alignment: Alignment;
   getTotalReactionCount: (
     arg: {
@@ -34,7 +56,7 @@ type Props = {
       id: string;
     }[],
   ) => number;
-  latestReactions: LatestReactions;
+  latestReactions: LatestReactions<At, Ch, Co, Me, Re, Us>;
   /**
    * e.g.,
    * [
@@ -127,19 +149,26 @@ const TouchableWrapper = styled.View<{ alignment: Alignment }>`
 /**
  * @example ./ReactionList.md
  */
-const ReactionList: React.FC<Props> & { themePath: string } = ({
+const ReactionList = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>({
   alignment,
   getTotalReactionCount,
   latestReactions,
   supportedReactions = emojiData,
   visible,
-}) => (
+}: ReactionListProps<At, Ch, Co, Me, Re, Us>) => (
   <TouchableWrapper alignment={alignment} testID='reaction-list'>
     {visible && (
       <Container>
         <Reactions>
-          {renderReactions(
-            latestReactions as LatestReactions,
+          {renderReactions<At, Ch, Co, Me, Re, Us>(
+            latestReactions,
             supportedReactions,
           )}
         </Reactions>

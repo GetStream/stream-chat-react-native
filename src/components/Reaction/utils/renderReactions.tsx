@@ -1,20 +1,28 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import type { ReactionResponse, UnknownType } from 'stream-chat';
+import type { ReactionResponse } from 'stream-chat';
 
 import type { LatestReactions, Reaction } from '../ReactionList';
 
 import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
 
 export const renderReactions = <
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
 >(
-  reactions: LatestReactions,
+  reactions: LatestReactions<At, Ch, Co, Me, Re, Us>,
   supportedReactions: Reaction[],
 ) => {
   const reactionsByType: {

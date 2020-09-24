@@ -25,7 +25,7 @@ import MessageList from '../MessageList';
 import Channel from '../../Channel/Channel';
 import Chat from '../../Chat/Chat';
 
-import { ChatContext } from '../../../context';
+import { ChatContext } from '../../../contexts/chatContext/ChatContext';
 
 describe('MessageList', () => {
   afterEach(cleanup);

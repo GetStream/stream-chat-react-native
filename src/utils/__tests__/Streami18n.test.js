@@ -174,7 +174,7 @@ describe('Streami18n instance - with custom translations', () => {
   });
 });
 
-describe('registerTranslation - register new language `mr` (Marathi) ', () => {
+describe('registerTranslation - register new language `mr` (Marathi)', () => {
   const streami18nOptions = {
     disableDateTimeTranslations: false,
     language: 'en',

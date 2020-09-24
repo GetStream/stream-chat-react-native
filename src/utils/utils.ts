@@ -160,7 +160,7 @@ const queryMembers = async <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
-  onReady: (users: SuggestionUser<Us>[]) => void,
+  onReady?: (users: SuggestionUser<Us>[]) => void,
 ): Promise<void> => {
   await debounce(
     async () => {
@@ -171,7 +171,8 @@ const queryMembers = async <
 
         const users: SuggestionUser<Us>[] = [];
         response.members.forEach(
-          (member) => isUserResponse(member.user) && users.push(member.user),
+          (member) =>
+            isUserResponse<Us>(member.user) && users.push(member.user),
         );
         if (onReady && users) {
           onReady(users);
@@ -196,9 +197,9 @@ export type TriggerSettings<
     dataProvider: (
       query: SuggestionCommand<Co>['name'],
       text: string,
-      onReady: (
+      onReady?: (
         data: SuggestionCommand<Co>[],
-        query: SuggestionCommand<Co>['name'],
+        q: SuggestionCommand<Co>['name'],
       ) => void,
     ) => SuggestionCommand<Co>[];
     output: (
@@ -216,9 +217,9 @@ export type TriggerSettings<
     dataProvider: (
       query: SuggestionUser<Us>['name'],
       _: string,
-      onReady: (
+      onReady?: (
         data: SuggestionUser<Us>[],
-        query: SuggestionUser<Us>['name'],
+        q: SuggestionUser<Us>['name'],
       ) => void,
     ) => SuggestionUser<Us>[] | Promise<void>;
     output: (
@@ -290,7 +291,7 @@ export const ACITriggerSettings = <
 
       const result = selectedCommands.slice(0, 10);
 
-      onReady(result, query);
+      onReady?.(result, query);
 
       return result;
     },
@@ -335,7 +336,7 @@ export const ACITriggerSettings = <
 
         const data = matchingUsers.slice(0, 10);
 
-        onReady(data, query);
+        onReady?.(data, query);
 
         return data;
       }
@@ -344,7 +345,7 @@ export const ACITriggerSettings = <
         channel,
         query,
         (data) => {
-          onReady(data, query);
+          onReady?.(data, query);
         },
       );
     },
