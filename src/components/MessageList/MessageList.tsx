@@ -130,7 +130,7 @@ export type MessageListProps<
    * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    */
-  messageActions?: boolean | ('delete' | 'edit' | 'reactions' | 'reply')[];
+  messageActions?: boolean | string[];
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
