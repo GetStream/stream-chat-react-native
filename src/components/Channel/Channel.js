@@ -13,13 +13,7 @@ import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import SuggestionsProvider from '../SuggestionsProvider/SuggestionsProvider';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../context';
+import { ChannelContext, ChatContext, TranslationContext } from '../../context';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 /**
@@ -459,48 +453,42 @@ const Channel = (props) => {
   };
 
   const channelContext = {
-    channel,
-    disabled: channel?.data?.frozen && disableIfFrozenChannel,
-    EmptyStateIndicator,
-    error,
-    eventHistory,
-    lastRead,
-    loading,
-    markRead: markReadThrottled,
-    members,
-    read,
-    setLastRead,
-    typing,
-    watcherCount,
-    watchers,
-  };
-
-  const messagesContext = {
     Attachment: props.Attachment,
+    channel,
     clearEditingState,
+    closeThread,
+    disabled: channel?.data?.frozen && disableIfFrozenChannel,
     editing,
     editMessage,
     emojiData,
+    EmptyStateIndicator,
+    error,
+    eventHistory,
     hasMore,
+    lastRead,
+    loading,
     loadingMore,
     loadMore: loadMoreThrottled,
+    loadMoreThread,
+    markRead: markReadThrottled,
+    members,
     Message: props.Message,
     messages,
+    openThread,
+    read,
     removeMessage,
     retrySendMessage,
     sendMessage,
     setEditingState,
-    updateMessage,
-  };
-
-  const threadContext = {
-    closeThread,
-    loadMoreThread,
-    openThread,
+    setLastRead,
     thread,
     threadHasMore,
     threadLoadingMore,
     threadMessages,
+    typing,
+    updateMessage,
+    watcherCount,
+    watchers,
   };
 
   if (!channel || error) {
@@ -531,11 +519,7 @@ const Channel = (props) => {
       keyboardVerticalOffset={keyboardVerticalOffset}
     >
       <ChannelContext.Provider value={channelContext}>
-        <MessagesContext.Provider value={messagesContext}>
-          <ThreadContext.Provider value={threadContext}>
-            <SuggestionsProvider>{children}</SuggestionsProvider>
-          </ThreadContext.Provider>
-        </MessagesContext.Provider>
+        <SuggestionsProvider>{children}</SuggestionsProvider>
       </ChannelContext.Provider>
     </KeyboardCompatibleView>
   );

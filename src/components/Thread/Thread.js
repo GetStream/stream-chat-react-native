@@ -6,13 +6,7 @@ import DefaultMessage from '../Message/Message';
 import DefaultMessageInput from '../MessageInput/MessageInput';
 import DefaultMessageList from '../MessageList/MessageList';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../context';
+import { ChannelContext, ChatContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 
 const NewThread = styled.View`
@@ -44,18 +38,19 @@ const Thread = (props) => {
   const translationContext = useContext(TranslationContext);
   const { t } = translationContext;
   const channelContext = useContext(ChannelContext);
-  const { channel } = channelContext;
-  const { Message } = useContext(MessagesContext);
   const {
+    channel,
     loadMoreThread,
+    Message: MessageFromContext,
     thread,
     threadHasMore = true,
     threadLoadingMore,
     threadMessages,
-  } = useContext(ThreadContext);
+  } = channelContext;
   const chatContext = useContext(ChatContext);
   const {
     autoFocus = true,
+    Message: MessageFromProps,
     MessageList = DefaultMessageList,
     MessageInput = DefaultMessageInput,
     additionalParentMessageProps,
@@ -63,6 +58,8 @@ const Thread = (props) => {
     additionalMessageListProps,
     additionalMessageInputProps,
   } = props;
+
+  const Message = MessageFromProps || MessageFromContext;
 
   /**
    * TODO: This should be removed when possible along with the spread into Message
@@ -164,6 +161,11 @@ Thread.propTypes = {
    * */
   /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
   disabled: PropTypes.bool,
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   MessageInput: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /**
    * **Customized MessageList component to used within Thread instead of default MessageList
