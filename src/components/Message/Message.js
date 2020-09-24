@@ -4,15 +4,10 @@ import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-} from '../../context';
+import { ChannelContext, ChatContext, KeyboardContext } from '../../context';
 
 /**
- * Since this component doesn't consume `messages` from `MessagesContext`,
+ * Since this component doesn't consume `messages` from `ChannelContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual Message component.
  */
@@ -211,17 +206,18 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
  * @example ../docs/Message.md
  */
 const DefaultMessage = (props) => {
-  const { channel, disabled } = useContext(ChannelContext);
   const { client } = useContext(ChatContext);
   const { dismissKeyboard } = useContext(KeyboardContext);
   const {
+    channel,
+    disabled,
     editing,
     emojiData,
     removeMessage,
     retrySendMessage,
     setEditingState,
     updateMessage,
-  } = useContext(MessagesContext);
+  } = useContext(ChannelContext);
 
   return (
     <DefaultMessageWithContext

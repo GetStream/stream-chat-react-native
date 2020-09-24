@@ -22,9 +22,7 @@ import {
   ChannelContext,
   ChatContext,
   KeyboardContext,
-  MessagesContext,
   SuggestionsContext,
-  ThreadContext,
   TranslationContext,
 } from '../../context';
 import iconClose from '../../images/icons/icon_close.png';
@@ -80,16 +78,13 @@ const InputBoxContainer = styled.View`
  * [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext),
  * [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext),
  * [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext),
- * [Messages Context](https://getstream.github.io/stream-chat-react-native/#messagescontext),
  * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext),
- * [Thread Context](https://getstream.github.io/stream-chat-react-native/#threadcontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
  * @example ../docs/MessageInput.md
  */
 const MessageInput = (props) => {
   const channelContext = useContext(ChannelContext);
-  const { channel, disabled = false, members, watchers } = channelContext;
 
   const chatContext = useContext(ChatContext);
   const { client } = chatContext;
@@ -97,19 +92,19 @@ const MessageInput = (props) => {
   const keyboardContext = useContext(KeyboardContext);
   const { dismissKeyboard } = keyboardContext;
 
-  const messagesContext = useContext(MessagesContext);
   const {
+    channel,
     clearEditingState,
+    disabled = false,
     editing,
     editMessage,
+    members,
     sendMessage: sendMessageContext,
-  } = messagesContext;
+    watchers,
+  } = channelContext;
 
   const suggestionsContext = useContext(SuggestionsContext);
   const { setInputBoxContainerRef } = suggestionsContext;
-
-  // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
-  const threadContext = useContext(ThreadContext);
 
   const translationContext = useContext(TranslationContext);
   const { t } = translationContext;
@@ -144,9 +139,7 @@ const MessageInput = (props) => {
     ...channelContext,
     ...chatContext,
     ...keyboardContext,
-    ...messagesContext,
     ...suggestionsContext,
-    ...threadContext,
     ...translationContext,
   };
 

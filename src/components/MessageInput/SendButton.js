@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from '@stream-io/styled-components';
 import PropTypes from 'prop-types';
 
-import { MessagesContext } from '../../context';
+import { ChannelContext } from '../../context';
 import iconEdit from '../../images/icons/icon_edit.png';
 import iconSendNewMessage from '../../images/icons/icon_new_message.png';
 import { themed } from '../../styles/theme';
@@ -24,7 +24,7 @@ const SendButtonIcon = styled.Image`
  * @example ../docs/SendButton.md
  */
 const SendButton = ({ disabled = false, sendMessage }) => {
-  const { editing } = useContext(MessagesContext);
+  const { editing } = useContext(ChannelContext);
   return (
     <Container disabled={disabled} onPress={sendMessage} testID='send-button'>
       <SendButtonIcon source={editing ? iconEdit : iconSendNewMessage} />

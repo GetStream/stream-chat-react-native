@@ -17,8 +17,6 @@ import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 import {
   ChannelContext,
   MessageContentContext,
-  MessagesContext,
-  ThreadContext,
   TranslationContext,
 } from '../../../context';
 import { themed } from '../../../styles/theme';
@@ -95,7 +93,7 @@ const MetaText = styled.Text`
 `;
 
 /**
- * Since this component doesn't consume `messages` from `MessagesContext`,
+ * Since this component doesn't consume `messages` from `ChannelContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual MessageContent component.
  */
@@ -157,7 +155,7 @@ const MessageContentWithContext = React.memo((props) => {
     threadList,
   } = props;
 
-  const { openThread } = useContext(ThreadContext);
+  const { openThread } = useContext(ChannelContext);
   const { t, tDateTimeParser } = useContext(TranslationContext);
 
   const actionSheetRef = useRef(null);
@@ -382,12 +380,12 @@ MessageContentWithContext.displayName = 'message.contentWithContext';
  * Child of MessageSimple that displays a message's content.
  */
 const MessageContent = (props) => {
-  const { disabled } = useContext(ChannelContext);
   const {
     Attachment = DefaultAttachment,
+    disabled,
     Message,
     retrySendMessage,
-  } = useContext(MessagesContext);
+  } = useContext(ChannelContext);
 
   return (
     <MessageContentWithContext
