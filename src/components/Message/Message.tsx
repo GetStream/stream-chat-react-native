@@ -21,11 +21,11 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import {
   GroupType,
-  MessageWithDates,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
 import type { FileIconProps } from '../Attachment/FileIcon';
+import type { Message } from '../MessageList/utils/insertDates';
 import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type {
   DefaultAttachmentType,
@@ -64,9 +64,9 @@ export type MessagePropsWithContext<
     parent_id?: string | undefined;
   }) => void;
   retrySendMessage: (
-    message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
   ) => Promise<void>;
-  setEditingState: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
+  setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => void;
@@ -333,7 +333,7 @@ export type MessageProps<
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
-  groupStyles: GroupType;
+  groupStyles: GroupType[];
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -342,7 +342,7 @@ export type MessageProps<
   /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
-  message: MessageWithDates<At, Ch, Co, Me, Re, Us>;
+  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * A list of users that have read this message
    **/
@@ -361,6 +361,10 @@ export type MessageProps<
    * Latest message id on current channel
    */
   lastReceivedId?: string;
+  /**
+   * Custom message actions to display on open of the action sheet
+   */
+  messageActions?: boolean | string[];
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
