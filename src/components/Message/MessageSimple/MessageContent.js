@@ -14,7 +14,8 @@ import DefaultGallery from '../../Attachment/Gallery';
 import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
-import { ChannelContext, MessageContentContext } from '../../../context';
+import { ChannelContext } from '../../../context';
+import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
@@ -232,7 +233,7 @@ const MessageContentWithContext = React.memo((props) => {
   };
 
   return (
-    <MessageContentContext.Provider value={context}>
+    <MessageContentProvider value={context}>
       <Container
         {...contentProps}
         error={message.type === 'error' || message.status === 'failed'}
@@ -369,7 +370,7 @@ const MessageContentWithContext = React.memo((props) => {
           />
         )}
       </Container>
-    </MessageContentContext.Provider>
+    </MessageContentProvider>
   );
 });
 
