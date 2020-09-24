@@ -1,20 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
+import { Animated, GestureResponderEvent } from 'react-native';
 
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
-  justify-content: center;
+  background-color: ${({ theme }) => theme.colors.primary};
+  border-radius: 13px;
   height: 27px;
+  justify-content: center;
+  transform: translateY(9px);
   width: 112px;
   z-index: 10;
-  border-radius: 13px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  transform: translateY(9px);
   ${({ theme }) => theme.messageList.messageNotification.container.css}
 `;
 
@@ -25,12 +24,21 @@ const MessageNotificationText = styled.Text`
   ${({ theme }) => theme.messageList.messageNotification.text.css}
 `;
 
+type Props = {
+  /** onPress handler */
+  onPress: (event: GestureResponderEvent) => void;
+  /** If we should show the notification or not */
+  showNotification?: boolean;
+};
+
 /**
- * @example ../docs/MessageNotification.md
+ * @example ./MessageNotification.md
  */
-const MessageNotification = ({ onPress, showNotification = true }) => {
+const MessageNotification = ({ onPress, showNotification = true }: Props) => {
   const { t } = useTranslationContext();
+
   const opacity = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     Animated.timing(opacity, {
       duration: 500,
@@ -39,11 +47,7 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
     }).start();
   }, [showNotification]);
 
-  if (!showNotification) {
-    return null;
-  }
-
-  return (
+  return showNotification ? (
     <Animated.View
       style={{
         bottom: 0,
@@ -56,16 +60,9 @@ const MessageNotification = ({ onPress, showNotification = true }) => {
         <MessageNotificationText>{t('New Messages')}</MessageNotificationText>
       </Container>
     </Animated.View>
-  );
+  ) : null;
 };
 
 MessageNotification.themePath = 'messageList.messageNotification';
-
-MessageNotification.propTypes = {
-  /** Onclick handler */
-  onPress: PropTypes.func.isRequired,
-  /** If we should show the notification or not */
-  showNotification: PropTypes.bool,
-};
 
 export default themed(MessageNotification);

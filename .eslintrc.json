@@ -31,6 +31,7 @@
     "default-case": 2,
     "eqeqeq": [2, "smart"],
     "jest/expect-expect": 0,
+    "jest/no-conditional-expect": 0,
     "jsx-quotes": ["error", "prefer-single"],
     "linebreak-style": [2, "unix"],
     "no-console": 0,

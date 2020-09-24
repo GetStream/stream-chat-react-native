@@ -1,7 +1,7 @@
 Unread channel preview:
 
 ```js
-const data = require('./data');
+const data = require('../docs/data');
 const View = require('react-native').View;
 
 <View

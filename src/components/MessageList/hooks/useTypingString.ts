@@ -2,20 +2,40 @@ import { useChannelContext } from '../../../contexts/channelContext/ChannelConte
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
-export const useTypingString = () => {
-  const { client } = useChatContext();
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+export const useTypingString = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>() => {
+  const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
-  const { typing } = useChannelContext();
 
   const typingKeys = Object.keys(typing);
-  const nonSelfUsers = [];
-  typingKeys.forEach((item, i) => {
-    if (client.user.id === typing[typingKeys[i]].user.id) {
+  const nonSelfUsers: string[] = [];
+  typingKeys.forEach((_, i) => {
+    if (client?.user?.id === typing?.[typingKeys[i]]?.user?.id) {
       return;
     }
-    nonSelfUsers.push(
-      typing[typingKeys[i]].user.name || typing[typingKeys[i]].user.id,
-    );
+    const user =
+      typing?.[typingKeys[i]]?.user?.name || typing?.[typingKeys[i]]?.user?.id;
+    if (user) {
+      nonSelfUsers.push(user);
+    }
   });
 
   let outStr = '';

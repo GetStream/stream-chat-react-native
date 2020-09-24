@@ -270,6 +270,7 @@ DefaultMessage.propTypes = {
   Message: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: PropTypes.object.isRequired,
+  messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *

@@ -1,8 +1,6 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 
-import type { UnknownType, UserResponse } from 'stream-chat';
-
 import type { LatestReactions, Reaction } from './ReactionList';
 
 import Avatar from '../Avatar/Avatar';
@@ -11,7 +9,14 @@ import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
 import type { MessageWithDates } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultUserType } from '../../types/types';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
 
 const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
@@ -47,31 +52,57 @@ const ReactionCount = styled.Text`
   ${({ theme }) => theme.message.reactionPicker.text.css}
 `;
 
-const getLatestUser = <Us extends UnknownType = DefaultUserType>(
-  reactions: LatestReactions,
+const getLatestUser = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
   type: string,
+  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
 ) => {
-  const filtered = getUsersPerReaction(reactions, type);
-  if (filtered && filtered[0] && filtered[0].user) {
-    return filtered[0].user as UserResponse<Us>;
+  const filtered = getUsersPerReaction(type, reactions);
+  if (filtered?.[0]?.user) {
+    return filtered[0].user;
   } else {
     return 'NotFound';
   }
 };
 
-const getUsersPerReaction = (reactions: LatestReactions, type: string) => {
+const getUsersPerReaction = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  type: string,
+  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
+) => {
   const filtered = reactions?.filter((item) => item.type === type);
   return filtered;
 };
 
-export type ReactionPickerProps = {
+export type ReactionPickerProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
   handleDismiss: () => void;
   handleReaction: (arg: string) => void;
   hideReactionCount: boolean;
   hideReactionOwners: boolean;
-  latestReactions: LatestReactions;
-  reactionPickerVisible: boolean;
-  reactionCounts?: MessageWithDates['reaction_counts'];
+  latestReactions?: LatestReactions<At, Ch, Co, Me, Re, Us>;
+  reactionCounts?:
+    | MessageWithDates<At, Ch, Co, Me, Re, Us>['reaction_counts']
+    | null;
+  reactionPickerVisible?: boolean;
   rpLeft?: number;
   rpRight?: number;
   rpTop?: number;
@@ -79,7 +110,14 @@ export type ReactionPickerProps = {
 };
 
 // TODO: change from using Modal to reanimated view to save on rendering and performance
-const ReactionPicker: React.FC<ReactionPickerProps> & { themePath: string } = ({
+const ReactionPicker = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>({
   handleDismiss,
   handleReaction,
   hideReactionCount = false,
@@ -91,7 +129,7 @@ const ReactionPicker: React.FC<ReactionPickerProps> & { themePath: string } = ({
   rpRight = 10,
   rpTop = 40,
   supportedReactions = emojiData,
-}) =>
+}: ReactionPickerProps<At, Ch, Co, Me, Re, Us>) =>
   reactionPickerVisible ? (
     <Modal
       animationType='fade'
@@ -113,7 +151,10 @@ const ReactionPicker: React.FC<ReactionPickerProps> & { themePath: string } = ({
           }}
         >
           {supportedReactions.map(({ icon, id }) => {
-            const latestUser = getLatestUser(latestReactions, id);
+            const latestUser = getLatestUser<At, Ch, Co, Me, Re, Us>(
+              id,
+              latestReactions,
+            );
             const count = reactionCounts?.[id] || 0;
             return (
               <Column key={id} testID={id}>
@@ -149,4 +190,4 @@ const ReactionPicker: React.FC<ReactionPickerProps> & { themePath: string } = ({
 
 ReactionPicker.themePath = 'message.reactionPicker';
 
-export default themed(ReactionPicker);
+export default themed(ReactionPicker) as typeof ReactionPicker;

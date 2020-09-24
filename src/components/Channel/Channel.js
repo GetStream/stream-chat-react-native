@@ -12,11 +12,10 @@ import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
-import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
-
 import { ChannelProvider } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
+import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { ThreadProvider } from '../../contexts/contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { emojiData as emojiDataDefault } from '../../utils/utils';
