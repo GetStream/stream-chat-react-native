@@ -6,7 +6,8 @@ import { useTypingString } from './hooks/useTypingString';
 
 import DefaultAvatar from '../Avatar/Avatar';
 
-import { ChannelContext, ChatContext } from '../../context';
+import { ChannelContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { themed } from '../../styles/theme';
 
 const Container = styled.View`
@@ -25,7 +26,7 @@ const TypingText = styled.Text`
 
 const TypingIndicator = (props) => {
   const { Avatar = DefaultAvatar } = props;
-  const { client } = useContext(ChatContext);
+  const { client } = useChatContext();
   const { typing } = useContext(ChannelContext);
   const typingString = useTypingString();
   const typingUsers = Object.values(typing);

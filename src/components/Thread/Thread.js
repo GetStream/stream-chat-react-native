@@ -6,7 +6,8 @@ import DefaultMessage from '../Message/Message';
 import DefaultMessageInput from '../MessageInput/MessageInput';
 import DefaultMessageList from '../MessageList/MessageList';
 
-import { ChannelContext, ChatContext } from '../../context';
+import { ChannelContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -50,7 +51,7 @@ const Thread = (props) => {
     threadLoadingMore,
     threadMessages,
   } = useThreadContext();
-  const chatContext = useContext(ChatContext);
+  const chatContext = useChatContext();
   const {
     autoFocus = true,
     Message: MessageFromProps,

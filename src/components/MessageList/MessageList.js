@@ -15,7 +15,8 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import DefaultMessage from '../Message/Message';
 
-import { ChannelContext, ChatContext } from '../../context';
+import { ChannelContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -75,7 +76,7 @@ const MessageList = (props) => {
   const { channel, disabled, EmptyStateIndicator, markRead } = useContext(
     ChannelContext,
   );
-  const { client, isOnline } = useContext(ChatContext);
+  const { client, isOnline } = useChatContext();
   const {
     clearEditingState,
     editing,

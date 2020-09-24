@@ -1,15 +1,9 @@
 import React from 'react';
-import { Keyboard } from 'react-native';
 
 export const ChannelContext = React.createContext({});
-export const ChatContext = React.createContext({ client: null });
 
 export function withChannelContext(OriginalComponent) {
   return getContextAwareComponent(ChannelContext, OriginalComponent);
-}
-
-export function withChatContext(OriginalComponent) {
-  return getContextAwareComponent(ChatContext, OriginalComponent);
 }
 
 const getContextAwareComponent = function (context, originalComponent) {

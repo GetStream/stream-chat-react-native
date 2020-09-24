@@ -25,7 +25,10 @@ import MessageList from '../MessageList';
 import Channel from '../../Channel/Channel';
 import Chat from '../../Chat/Chat';
 
-import { ChatContext } from '../../../context';
+import {
+  ChatContext,
+  ChatProvider,
+} from '../../../contexts/chatContext/ChatContext';
 
 describe('MessageList', () => {
   afterEach(cleanup);
@@ -142,11 +145,11 @@ describe('MessageList', () => {
       <Chat client={chatClient}>
         <ChatContext.Consumer>
           {(context) => (
-            <ChatContext.Provider value={{ ...context, isOnline: false }}>
+            <ChatProvider value={{ ...context, isOnline: false }}>
               <Channel channel={channel}>
                 <MessageList />
               </Channel>
-            </ChatContext.Provider>
+            </ChatProvider>
           )}
         </ChatContext.Consumer>
       </Chat>,

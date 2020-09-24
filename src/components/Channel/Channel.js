@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -14,7 +14,8 @@ import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCom
 
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 
-import { ChannelContext, ChatContext } from '../../context';
+import { ChannelContext } from '../../context';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { MessagesProvider } from '../../contexts/messagesContext/MessagesContext';
 import { ThreadProvider } from '../../contexts/contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -41,7 +42,7 @@ const Channel = (props) => {
     LoadingIndicator = LoadingIndicatorDefault,
   } = props;
 
-  const { client } = useContext(ChatContext);
+  const { client } = useChatContext();
   const { t } = useTranslationContext();
 
   const [editing, setEditing] = useState(false);
