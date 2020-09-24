@@ -9,7 +9,7 @@ import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 
 import DateSeparator from '../DateSeparator';
 
-import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
@@ -21,9 +21,9 @@ describe('DateSeparator', () => {
     const user = generateUser();
     const message = generateMessage({ user });
     const { queryByTestId } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <DateSeparator message={message} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -37,12 +37,12 @@ describe('DateSeparator', () => {
     const user = generateUser();
     const message = generateMessage({ user });
     const { getByText } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <DateSeparator
           formatDate={(date) => date}
           message={{ ...message, date: 'Hello World' }}
         />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -56,9 +56,9 @@ describe('DateSeparator', () => {
     const user = generateStaticUser(0);
     const message = generateStaticMessage('Hello World', { user });
     const { toJSON } = render(
-      <TranslationContext.Provider value={translators}>
+      <TranslationProvider value={translators}>
         <DateSeparator message={{ ...message, date: message.created_at }} />
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {

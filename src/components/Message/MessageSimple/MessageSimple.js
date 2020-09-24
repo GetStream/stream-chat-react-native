@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 
@@ -7,7 +7,7 @@ import DefaultMessageContent from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
-import { ChannelContext } from '../../../context';
+import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 
 const Container = styled.View`
   align-items: flex-end;
@@ -38,7 +38,7 @@ const MessageSimple = (props) => {
     showMessageStatus = true,
   } = props;
 
-  const { channel } = useContext(ChannelContext);
+  const { channel } = useChannelContext();
 
   const customMessageContent = !!props.MessageContent;
 

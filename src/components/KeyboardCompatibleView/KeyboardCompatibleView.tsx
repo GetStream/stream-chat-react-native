@@ -3,7 +3,7 @@ import { Animated, Keyboard, LayoutChangeEvent, View } from 'react-native';
 
 import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
 
-import { KeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
+import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
 
 /**
  * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
@@ -111,13 +111,13 @@ export const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
 
   if (!enabled) {
     return (
-      <KeyboardContext.Provider
+      <KeyboardProvider
         value={{
           dismissKeyboard,
         }}
       >
         {children}
-      </KeyboardContext.Provider>
+      </KeyboardProvider>
     );
   }
 
@@ -128,11 +128,11 @@ export const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
         height: initialHeight ? heightAnim : undefined,
       }}
     >
-      <KeyboardContext.Provider value={{ dismissKeyboard }}>
+      <KeyboardProvider value={{ dismissKeyboard }}>
         <View collapsable={false} ref={rootChannelView}>
           {children}
         </View>
-      </KeyboardContext.Provider>
+      </KeyboardProvider>
     </Animated.View>
   );
 };

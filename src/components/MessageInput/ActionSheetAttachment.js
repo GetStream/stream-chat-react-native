@@ -1,11 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from 'styled-components/native';
 import { ActionSheetCustom } from 'react-native-actionsheet';
 
 import { IconSquare } from '../IconSquare';
 
-import { TranslationContext } from '../../context';
-
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import iconGallery from '../../images/icons/icon_attach-media.png';
 import iconClose from '../../images/icons/icon_close.png';
 import iconFolder from '../../images/icons/icon_folder.png';
@@ -45,7 +44,7 @@ const ActionSheet = ({
   setAttachActionSheetRef,
   styles,
 }) => {
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
 
   return (
     <ActionSheetCustom

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
 
@@ -8,17 +8,17 @@ import { getTestClient } from 'mock-builders/mock';
 
 import Chat from '../Chat';
 
-import { ChatContext } from '../../../contexts/chatContext/ChatContext';
-import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 const ChatContextConsumer = ({ fn }) => {
-  fn(useContext(ChatContext));
+  fn(useChatContext());
   return <View testID='children' />;
 };
 
 const TranslationContextConsumer = ({ fn }) => {
-  fn(useContext(TranslationContext));
+  fn(useTranslationContext());
   return <View testID='children' />;
 };
 

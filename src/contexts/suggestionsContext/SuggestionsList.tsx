@@ -1,11 +1,8 @@
 import React from 'react';
 import { FlatList, GestureResponderEvent } from 'react-native';
 
-import type { UnknownType } from 'stream-chat';
-
-import { isSuggestionUser } from './SuggestionsContext';
-
-import type {
+import {
+  isSuggestionUser,
   Suggestion,
   SuggestionComponentType,
   Suggestions,
@@ -66,14 +63,14 @@ const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => (
 
 const isString = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends Record<string, unknown> = DefaultUserType
 >(
   component: SuggestionComponentType<Co, Us>,
 ): component is string => typeof component === 'string';
 
 type Props<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends Record<string, unknown> = DefaultUserType
 > = {
   active: boolean;
   backdropHeight: number | string;
@@ -87,7 +84,7 @@ type Props<
 
 const SuggestionsList = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends Record<string, unknown> = DefaultUserType
 >({
   active,
   backdropHeight,

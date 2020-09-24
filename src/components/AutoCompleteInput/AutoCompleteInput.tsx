@@ -7,21 +7,18 @@ import type {
   TextInputSelectionChangeEventData,
   TextInput as TextInputType,
 } from 'react-native';
-import type { UnknownType } from 'stream-chat';
 
 import {
   isSuggestionUser,
+  Suggestion,
+  SuggestionCommand,
+  SuggestionUser,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { isMentionTrigger } from '../../utils/utils';
 
-import type {
-  Suggestion,
-  SuggestionCommand,
-  SuggestionUser,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 import type { Trigger, TriggerSettings } from '../../utils/utils';
 
@@ -51,7 +48,7 @@ const isCommand = (text: string) => {
 
 type Props<
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends Record<string, unknown> = DefaultUserType
 > = {
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
@@ -81,7 +78,7 @@ type Props<
 
 const AutoCompleteInput = <
   Co extends string = DefaultCommandType,
-  Us extends UnknownType = DefaultUserType
+  Us extends Record<string, unknown> = DefaultUserType
 >({
   additionalTextInputProps,
   onChange,
