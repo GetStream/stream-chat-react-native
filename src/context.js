@@ -7,9 +7,7 @@ export const KeyboardContext = React.createContext({
   dismissKeyboard: Keyboard.dismiss,
 });
 export const MessageContentContext = React.createContext({});
-export const MessagesContext = React.createContext({});
 export const SuggestionsContext = React.createContext({});
-export const ThreadContext = React.createContext({});
 export const TranslationContext = React.createContext({
   t: () => 'Value not found',
 });
@@ -30,16 +28,8 @@ export function withMessageContentContext(OriginalComponent) {
   return getContextAwareComponent(MessageContentContext, OriginalComponent);
 }
 
-export function withMessagesContext(OriginalComponent) {
-  return getContextAwareComponent(MessagesContext, OriginalComponent);
-}
-
 export function withSuggestionsContext(OriginalComponent) {
   return getContextAwareComponent(SuggestionsContext, OriginalComponent);
-}
-
-export function withThreadContext(OriginalComponent) {
-  return getContextAwareComponent(ThreadContext, OriginalComponent);
 }
 
 export function withTranslationContext(OriginalComponent) {

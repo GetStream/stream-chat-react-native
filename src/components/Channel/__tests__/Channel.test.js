@@ -13,14 +13,9 @@ import { getTestClientWithUser } from 'mock-builders/mock';
 
 import Channel from '../Channel';
 
-import Attachment from '../../Attachment/Attachment';
 import Chat from '../../Chat/Chat';
 
-import {
-  ChannelContext,
-  MessagesContext,
-  ThreadContext,
-} from '../../../context';
+import { ChannelContext } from '../../../context';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -173,17 +168,13 @@ describe('Channel', () => {
     const hasThread = jest.fn();
     // this renders Channel, calls openThread from a child context consumer with a message,
     // and then calls hasThread with the thread id if it was set.
-    renderComponent(
-      { channel },
-      ({ openThread, thread }) => {
-        if (!thread) {
-          openThread(threadMessage);
-        } else {
-          hasThread(thread.id);
-        }
-      },
-      ThreadContext,
-    );
+    renderComponent({ channel }, ({ openThread, thread }) => {
+      if (!thread) {
+        openThread(threadMessage);
+      } else {
+        hasThread(thread.id);
+      }
+    });
     await waitFor(() =>
       expect(hasThread).toHaveBeenCalledWith(threadMessage.id),
     );
@@ -220,7 +211,6 @@ describe('Channel', () => {
           channelHasMore = hasMore;
         }
       },
-      MessagesContext,
     );
     await waitFor(() => expect(channelHasMore).toBe(false));
   });
@@ -230,14 +220,10 @@ describe('Channel', () => {
 
     const newMessages = [generateMessage()];
 
-    renderComponent(
-      { channel },
-      ({ loadMore }) => {
-        useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-        loadMore(limit);
-      },
-      MessagesContext,
-    );
+    renderComponent({ channel }, ({ loadMore }) => {
+      useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
+      loadMore(limit);
+    });
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
   });
@@ -246,16 +232,12 @@ describe('Channel', () => {
     const queryPromise = new Promise(() => {});
     let isLoadingMore = false;
 
-    renderComponent(
-      { channel },
-      ({ loadingMore, loadMore }) => {
-        // return a promise that hasn't resolved yet, so loadMore will be stuck in the 'await' part of the function
-        jest.spyOn(channel, 'query').mockImplementationOnce(() => queryPromise);
-        loadMore();
-        isLoadingMore = loadingMore;
-      },
-      MessagesContext,
-    );
+    renderComponent({ channel }, ({ loadingMore, loadMore }) => {
+      // return a promise that hasn't resolved yet, so loadMore will be stuck in the 'await' part of the function
+      jest.spyOn(channel, 'query').mockImplementationOnce(() => queryPromise);
+      loadMore();
+      isLoadingMore = loadingMore;
+    });
 
     await waitFor(() => expect(isLoadingMore).toBe(true));
   });
@@ -265,13 +247,9 @@ describe('Channel', () => {
     const updatedMessage = { ...messages[0], text: newText };
     const clientUpdateMessageSpy = jest.spyOn(chatClient, 'updateMessage');
 
-    renderComponent(
-      { channel },
-      ({ editMessage }) => {
-        editMessage(updatedMessage);
-      },
-      MessagesContext,
-    );
+    renderComponent({ channel }, ({ editMessage }) => {
+      editMessage(updatedMessage);
+    });
 
     await waitFor(() =>
       expect(clientUpdateMessageSpy).toHaveBeenCalledWith(updatedMessage),
@@ -280,13 +258,9 @@ describe('Channel', () => {
 
   it('should use doUpdateMessageRequest for the editMessage callback if provided', async () => {
     const doUpdateMessageRequest = jest.fn((channelId, message) => message);
-    renderComponent(
-      { channel, doUpdateMessageRequest },
-      ({ editMessage }) => {
-        editMessage(messages[0]);
-      },
-      MessagesContext,
-    );
+    renderComponent({ channel, doUpdateMessageRequest }, ({ editMessage }) => {
+      editMessage(messages[0]);
+    });
 
     await waitFor(() =>
       expect(doUpdateMessageRequest).toHaveBeenCalledWith(
@@ -311,7 +285,6 @@ describe('Channel', () => {
           allMessagesRemoved = true;
         }
       },
-      MessagesContext,
     );
 
     await waitFor(() => {
@@ -358,90 +331,6 @@ describe('Channel', () => {
         expect(context.client).toBeInstanceOf(StreamChat);
         expect(context.markRead).toBeInstanceOf(Function);
         expect(context.watcherCount).toBe(5);
-      });
-    });
-  });
-
-  describe('MessagesContext', () => {
-    it('renders children without crashing', async () => {
-      const { getByTestId } = render(
-        <MessagesContext.Provider>
-          <View testID='children' />
-        </MessagesContext.Provider>,
-      );
-
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-    });
-
-    it('exposes the messages context', async () => {
-      let context;
-
-      const mockContext = {
-        Attachment,
-        editing: false,
-        messages,
-        sendMessage: () => {},
-      };
-
-      render(
-        <MessagesContext.Provider value={mockContext}>
-          <ContextConsumer
-            context={MessagesContext}
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ContextConsumer>
-        </MessagesContext.Provider>,
-      );
-
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.Attachment).toBeInstanceOf(Function);
-        expect(context.editing).toBe(false);
-        expect(context.messages).toBeInstanceOf(Array);
-        expect(context.sendMessage).toBeInstanceOf(Function);
-      });
-    });
-  });
-
-  describe('ThreadContext', () => {
-    it('renders children without crashing', async () => {
-      const { getByTestId } = render(
-        <ThreadContext.Provider>
-          <View testID='children' />
-        </ThreadContext.Provider>,
-      );
-
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-    });
-
-    it('exposes the thread context', async () => {
-      let context;
-
-      const mockContext = {
-        openThread: () => {},
-        thread: {},
-        threadHasMore: true,
-        threadLoadingMore: false,
-      };
-
-      render(
-        <ThreadContext.Provider value={mockContext}>
-          <ContextConsumer
-            context={ThreadContext}
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></ContextConsumer>
-        </ThreadContext.Provider>,
-      );
-
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.openThread).toBeInstanceOf(Function);
-        expect(context.thread).toBeInstanceOf(Object);
-        expect(context.threadHasMore).toBe(true);
-        expect(context.threadLoadingMore).toBe(false);
       });
     });
   });

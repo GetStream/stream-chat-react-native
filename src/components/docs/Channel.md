@@ -15,7 +15,7 @@
 ></div>
 ```
 
-**Note:** The Channel component provides access to the values stored in [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
+**Note:** The Channel component provides access to the values stored in [ChannelContext](#channelcontext) and exposes the [withChannelContext](#withchannelcontext) higher order components.
 
 The example below shows how to write a component that consumes a context through a higher order component.
 

@@ -6,13 +6,7 @@ import DefaultMessage from '../Message/Message';
 import DefaultMessageInput from '../MessageInput/MessageInput';
 import DefaultMessageList from '../MessageList/MessageList';
 
-import {
-  ChannelContext,
-  ChatContext,
-  MessagesContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../context';
+import { ChannelContext, ChatContext, TranslationContext } from '../../context';
 import { themed } from '../../styles/theme';
 
 const NewThread = styled.View`
@@ -44,15 +38,15 @@ const Thread = (props) => {
   const translationContext = useContext(TranslationContext);
   const { t } = translationContext;
   const channelContext = useContext(ChannelContext);
-  const { channel } = channelContext;
-  const { Message: MessageFromContext } = useContext(MessagesContext);
   const {
+    channel,
     loadMoreThread,
+    Message: MessageFromContext,
     thread,
     threadHasMore = true,
     threadLoadingMore,
     threadMessages,
-  } = useContext(ThreadContext);
+  } = channelContext;
   const chatContext = useContext(ChatContext);
   const {
     autoFocus = true,
