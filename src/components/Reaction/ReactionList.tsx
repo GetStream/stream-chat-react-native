@@ -41,7 +41,7 @@ export type Reaction = {
   id: string;
 };
 
-type Props<
+export type ReactionListProps<
   At extends Record<string, unknown> = DefaultAttachmentType,
   Ch extends Record<string, unknown> = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -162,7 +162,7 @@ const ReactionList = <
   latestReactions,
   supportedReactions = emojiData,
   visible,
-}: Props<At, Ch, Co, Me, Re, Us>) => (
+}: ReactionListProps<At, Ch, Co, Me, Re, Us>) => (
   <TouchableWrapper alignment={alignment} testID='reaction-list'>
     {visible && (
       <Container>

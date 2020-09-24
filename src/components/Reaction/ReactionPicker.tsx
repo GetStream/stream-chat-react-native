@@ -1,8 +1,6 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 
-import type { UserResponse } from 'stream-chat';
-
 import type { LatestReactions, Reaction } from './ReactionList';
 
 import Avatar from '../Avatar/Avatar';
@@ -62,12 +60,12 @@ const getLatestUser = <
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
 >(
-  reactions: LatestReactions<At, Ch, Co, Me, Re, Us>,
   type: string,
+  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
 ) => {
-  const filtered = getUsersPerReaction(reactions, type);
-  if (filtered && filtered[0] && filtered[0].user) {
-    return filtered[0].user as UserResponse<Us>;
+  const filtered = getUsersPerReaction(type, reactions);
+  if (filtered?.[0]?.user) {
+    return filtered[0].user;
   } else {
     return 'NotFound';
   }
@@ -81,8 +79,8 @@ const getUsersPerReaction = <
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
 >(
-  reactions: LatestReactions<At, Ch, Co, Me, Re, Us>,
   type: string,
+  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
 ) => {
   const filtered = reactions?.filter((item) => item.type === type);
   return filtered;
@@ -100,9 +98,11 @@ export type ReactionPickerProps<
   handleReaction: (arg: string) => void;
   hideReactionCount: boolean;
   hideReactionOwners: boolean;
-  latestReactions: LatestReactions<At, Ch, Co, Me, Re, Us>;
-  reactionPickerVisible: boolean;
-  reactionCounts?: MessageWithDates<At, Ch, Co, Me, Re, Us>['reaction_counts'];
+  latestReactions?: LatestReactions<At, Ch, Co, Me, Re, Us>;
+  reactionCounts?:
+    | MessageWithDates<At, Ch, Co, Me, Re, Us>['reaction_counts']
+    | null;
+  reactionPickerVisible?: boolean;
   rpLeft?: number;
   rpRight?: number;
   rpTop?: number;
@@ -152,8 +152,8 @@ const ReactionPicker = <
         >
           {supportedReactions.map(({ icon, id }) => {
             const latestUser = getLatestUser<At, Ch, Co, Me, Re, Us>(
-              latestReactions,
               id,
+              latestReactions,
             );
             const count = reactionCounts?.[id] || 0;
             return (
@@ -190,4 +190,4 @@ const ReactionPicker = <
 
 ReactionPicker.themePath = 'message.reactionPicker';
 
-export default themed(ReactionPicker);
+export default themed(ReactionPicker) as typeof ReactionPicker;

@@ -138,25 +138,14 @@ const ReactionPickerWrapper = <
       testID='reaction-picker-wrapper'
     >
       {children}
-      <ReactionPicker
+      <ReactionPicker<At, Ch, Co, Me, Re, Us>
         {...props}
         handleDismiss={dismissReactionPicker}
         handleReaction={handleReaction}
         hideReactionCount={hideReactionCount}
         hideReactionOwners={hideReactionOwners}
-        latestReactions={
-          message.latest_reactions as LatestReactions<At, Ch, Co, Me, Re, Us>
-        }
-        reactionCounts={
-          message.reaction_counts as MessageWithDates<
-            At,
-            Ch,
-            Co,
-            Me,
-            Re,
-            Us
-          >['reaction_counts']
-        }
+        latestReactions={message.latest_reactions}
+        reactionCounts={message.reaction_counts}
         reactionPickerVisible={reactionPickerVisible}
         rpLeft={rpLeft}
         rpRight={rpRight}
