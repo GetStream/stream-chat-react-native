@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import { ChannelContext, ChatContext, KeyboardContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
+import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 
 /**
@@ -209,7 +210,7 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
 const DefaultMessage = (props) => {
   const { channel, disabled } = useContext(ChannelContext);
   const { client } = useContext(ChatContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
+  const { dismissKeyboard } = useKeyboardContext();
   const {
     editing,
     emojiData,

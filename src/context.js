@@ -3,10 +3,6 @@ import { Keyboard } from 'react-native';
 
 export const ChannelContext = React.createContext({});
 export const ChatContext = React.createContext({ client: null });
-export const KeyboardContext = React.createContext({
-  dismissKeyboard: Keyboard.dismiss,
-});
-export const MessageContentContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {
   return getContextAwareComponent(ChannelContext, OriginalComponent);
@@ -14,14 +10,6 @@ export function withChannelContext(OriginalComponent) {
 
 export function withChatContext(OriginalComponent) {
   return getContextAwareComponent(ChatContext, OriginalComponent);
-}
-
-export function withKeyboardContext(OriginalComponent) {
-  return getContextAwareComponent(KeyboardContext, OriginalComponent);
-}
-
-export function withMessageContentContext(OriginalComponent) {
-  return getContextAwareComponent(MessageContentContext, OriginalComponent);
 }
 
 const getContextAwareComponent = function (context, originalComponent) {

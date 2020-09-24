@@ -18,7 +18,8 @@ import { generateRandomId } from './utils/generateRandomId';
 import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import { ChannelContext, ChatContext, KeyboardContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
+import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
@@ -90,7 +91,7 @@ const MessageInput = (props) => {
   const chatContext = useContext(ChatContext);
   const { client } = chatContext;
 
-  const keyboardContext = useContext(KeyboardContext);
+  const keyboardContext = useKeyboardContext();
   const { dismissKeyboard } = keyboardContext;
 
   const messagesContext = useMessagesContext();
