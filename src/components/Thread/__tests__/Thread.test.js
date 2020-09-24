@@ -18,11 +18,7 @@ import Thread from '../Thread';
 import Channel from '../../Channel/Channel';
 import Chat from '../../Chat/Chat';
 
-import {
-  ChannelContext,
-  ThreadContext,
-  TranslationContext,
-} from '../../../context';
+import { ChannelContext, TranslationContext } from '../../../context';
 import { Streami18n } from '../../../utils/Streami18n';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
@@ -61,12 +57,12 @@ describe('Thread', () => {
       <Chat client={chatClient}>
         <TranslationContext.Provider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread}>
-            <ThreadContext.Consumer>
+            <ChannelContext.Consumer>
               {(c) => {
                 openThread = c.openThread;
                 return <Thread thread={thread} />;
               }}
-            </ThreadContext.Consumer>
+            </ChannelContext.Consumer>
           </Channel>
         </TranslationContext.Provider>
       </Chat>,

@@ -13,7 +13,7 @@ Disabled send button
 Send edited message button
 
 ```js
-<MessagesContext.Provider value={{ editing: true }}>
+<ChannelContext.Provider value={{ editing: true }}>
   <SendButton sendMessage={() => {}} />
-</MessagesContext.Provider>
+</ChannelContext.Provider>
 ```
