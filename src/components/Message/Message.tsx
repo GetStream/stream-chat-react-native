@@ -3,7 +3,6 @@ import { TouchableOpacity } from 'react-native';
 
 import type {
   Channel,
-  ChannelState,
   MessageResponse,
   Reaction,
   ReactionResponse,
@@ -370,9 +369,7 @@ export type MessageProps<
    *
    * @param message A message object to open the thread upon.
    */
-  onThreadSelect?: (
-    message: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'][0],
-  ) => void;
+  onThreadSelect?: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /**
    * Whether or not the MessageList is part of a Thread
    */

@@ -5,6 +5,7 @@ import type { ChannelState, UnknownType } from 'stream-chat';
 import { getDisplayName } from '../utils/getDisplayName';
 
 import type { MessageWithDates } from '../messagesContext/MessagesContext';
+import type { Message } from '../../components/MessageList/utils/insertDates';
 
 import type {
   DefaultAttachmentType,
@@ -27,7 +28,7 @@ export type ThreadContextValue<
 > = {
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
-  openThread: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
+  openThread: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   thread:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
     | MessageWithDates<At, Ch, Co, Me, Re, Us>

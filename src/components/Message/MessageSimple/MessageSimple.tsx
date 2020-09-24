@@ -1,10 +1,12 @@
 import React from 'react';
 
-import type { TouchableOpacityProps } from 'react-native';
-import type { UnknownType } from 'stream-chat';
+import type {
+  GestureResponderEvent,
+  TouchableOpacityProps,
+} from 'react-native';
 
 import DefaultMessageAvatar from './MessageAvatar';
-import DefaultMessageContent from './MessageContent';
+import DefaultMessageContent, { MessageContentProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
@@ -16,8 +18,13 @@ import type { CardProps } from '../../Attachment/Card';
 import type { FileAttachmentProps } from '../../Attachment/FileAttachment';
 import type { FileAttachmentGroupProps } from '../../Attachment/FileAttachmentGroup';
 import type { GalleryProps } from '../../Attachment/Gallery';
-import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
+import type { Message } from '../../../components/MessageList/utils/insertDates';
+import type {
+  Alignment,
+  GroupType,
+} from '../../../contexts/messagesContext/MessagesContext';
 import type { ActionProps, MessageProps } from '../Message';
+import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -43,13 +50,13 @@ const Container = styled.View<{
 `;
 
 export type MessageSimpleProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
 > = ActionProps &
   MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
     /**
@@ -127,7 +134,7 @@ export type MessageSimpleProps<
     showActionSheet: () => Promise<void>;
     /**
      * Custom UI component for the action sheet that appears on long press of a Message.
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.tsx
      *
      * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
      */
@@ -139,14 +146,14 @@ export type MessageSimpleProps<
     additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
     /**
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.tsx
      */
     AttachmentActions?: React.ComponentType<
       Partial<AttachmentActionsProps<At>>
     >;
     /**
      * Custom UI component to display generic media type e.g. giphy, url preview etc
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
      */
     Card?: React.ComponentType<Partial<CardProps<At>>>;
     /**
@@ -170,12 +177,12 @@ export type MessageSimpleProps<
     enableLongPress?: boolean;
     /**
      * Custom UI component to display File type attachment.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.tsx
      */
     FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
     /**
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.tsx
      */
     FileAttachmentGroup?: React.ComponentType<
       Partial<FileAttachmentGroupProps<At>>
@@ -185,15 +192,18 @@ export type MessageSimpleProps<
      * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
      * */
     forceAlign?: Alignment | boolean;
+    /**
+     * Optional function to custom format the message date
+     */
     formatDate?: (date: string) => void;
     /**
      * Custom UI component to display image attachments.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.tsx
      */
     Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
     /**
      * Custom UI component to display Giphy image.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
      */
     Giphy?: React.ComponentType<Partial<CardProps<At>>>;
     /** enable hiding reaction count from reaction picker  */
@@ -202,10 +212,8 @@ export type MessageSimpleProps<
     hideReactionOwners?: boolean;
     /** Boolean if current message is part of thread */
     isThreadList?: boolean;
-
     /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-    markdownRules?: any;
-
+    markdownRules?: Record<string, unknown>;
     /**
      * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
      * If all the actions need to be disabled, empty array or false should be provided as value of prop.
@@ -213,24 +221,26 @@ export type MessageSimpleProps<
     messageActions?: boolean | string[];
     /**
      * Custom UI component for the avatar next to a message
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.js
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.tsx
      * */
     MessageAvatar?: any;
     /**
      * Custom UI component for message content
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.js
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.tsx
      * */
-    MessageContent?: any;
+    MessageContent?: React.ComponentType<
+      Partial<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /**
      * Custom UI component for message status (delivered/read)
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.js
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.tsx
      *
      * */
     MessageStatus?: any;
     /** Custom UI component for message text */
     MessageText?: any;
     /**
-     * Function that overrides default behaviour when message is long pressed
+     * Function that overrides default behavior when message is long pressed
      * e.g. if you would like to open reaction picker on message long press:
      *
      * ```
@@ -252,16 +262,19 @@ export type MessageSimpleProps<
      * Similarly, you can call other methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
      *
      * By default, we show the action sheet with all the message actions on long press.
      *
      * @param message Message object which was long pressed
-     * @param e       Event object for onLongPress event
+     * @param event   Event object for onLongPress event
      * */
-    onLongPress?: any;
+    onLongPress?: (
+      message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
     /**
-     * Function that overrides default behaviour when message is pressed/touched
+     * Function that overrides default behavior when message is pressed/touched
      * e.g. if you would like to open reaction picker on message press:
      *
      * ```
@@ -283,19 +296,24 @@ export type MessageSimpleProps<
      * Similarly, you can call other methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
      *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
      *
      * By default, messages do not have an on press action.
      *
-     * @param message Message object which was pressed
-     * @param e       Event object for onPress event
+     * @param message Message object which was long pressed
+     * @param event   Event object for onLongPress event
      * */
-    onPress?: any;
+    onPress?: (
+      message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
     /**
      * Custom UI component to display reaction list.
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.tsx
      */
-    ReactionList?: any;
+    ReactionList?: React.ComponentType<
+      Partial<ReactionListProps<At, Ch, Co, Me, Re, Us>>
+    >;
     showMessageStatus?: boolean;
     /**
      * e.g.,
@@ -324,7 +342,7 @@ export type MessageSimpleProps<
     }[];
     /**
      * Custom UI component to display enriched url preview.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
      */
     UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
   };
@@ -336,13 +354,13 @@ export type MessageSimpleProps<
  * @example ./MessageSimple.md
  */
 const MessageSimple = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
 >(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -383,7 +401,10 @@ const MessageSimple = <
     ...props,
     alignment,
     customMessageContent,
-    groupStyles: hasReactions && props.ReactionList ? ['bottom'] : groupStyles,
+    groupStyles:
+      hasReactions && props.ReactionList
+        ? (['bottom'] as GroupType[])
+        : groupStyles,
   };
 
   return (
@@ -395,14 +416,14 @@ const MessageSimple = <
     >
       {alignment === 'right' ? (
         <>
-          <MessageContent {...forwardedProps} />
+          <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
           <MessageAvatar {...forwardedProps} />
           {showMessageStatus && <MessageStatus {...forwardedProps} />}
         </>
       ) : (
         <>
           <MessageAvatar {...forwardedProps} />
-          <MessageContent {...forwardedProps} />
+          <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
         </>
       )}
     </Container>
