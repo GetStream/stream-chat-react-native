@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
 import ReactionPickerDefault from './ReactionPicker';
@@ -12,8 +12,23 @@ import type {
   Alignment,
   MessageWithDates,
 } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
 
-type Props = {
+type Props<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
   alignment: Alignment;
   customMessageContent: boolean;
   dismissReactionPicker: () => void;
@@ -27,10 +42,12 @@ type Props = {
   handleReaction: (id: Reaction['id']) => void;
   hideReactionCount: boolean;
   hideReactionOwners: boolean;
-  message: MessageWithDates;
+  message: MessageWithDates<At, Ch, Co, Me, Re, Us>;
   offset: { left: number; right: number; top: number };
   openReactionPicker: () => void;
-  ReactionPicker: React.ComponentType<Partial<ReactionPickerProps>>;
+  ReactionPicker: React.ComponentType<
+    Partial<ReactionPickerProps<At, Ch, Co, Me, Re, Us>>
+  >;
   reactionPickerVisible: boolean;
   /**
    * e.g.,
@@ -56,7 +73,16 @@ type Props = {
   supportedReactions: Reaction[];
 };
 
-const ReactionPickerWrapper: React.FC<Props> = (props) => {
+const ReactionPickerWrapper = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  props: PropsWithChildren<Props<At, Ch, Co, Me, Re, Us>>,
+) => {
   const {
     alignment,
     children,
@@ -118,8 +144,19 @@ const ReactionPickerWrapper: React.FC<Props> = (props) => {
         handleReaction={handleReaction}
         hideReactionCount={hideReactionCount}
         hideReactionOwners={hideReactionOwners}
-        latestReactions={message.latest_reactions as LatestReactions}
-        reactionCounts={message.reaction_counts}
+        latestReactions={
+          message.latest_reactions as LatestReactions<At, Ch, Co, Me, Re, Us>
+        }
+        reactionCounts={
+          message.reaction_counts as MessageWithDates<
+            At,
+            Ch,
+            Co,
+            Me,
+            Re,
+            Us
+          >['reaction_counts']
+        }
         reactionPickerVisible={reactionPickerVisible}
         rpLeft={rpLeft}
         rpRight={rpRight}

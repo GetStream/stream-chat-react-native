@@ -85,6 +85,10 @@
 - We replaced the default image picker [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) for [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) and added `compressImageQuality` prop to support image compression out-of-the-box
 - Added `FileUploadPreview` and `ImageUploadPreview` props to support custom overrides to those components
 
+*MessageSystem*
+
+- Added `formatDate` prop to support custom date formatting
+
 *Deprecated Props*
 
 - We have removed support for the `MessageList` component's `onMessageTouch` prop. Since this prop no longer exists, we have also removed `dismissKeyboardOnMessageTouch`. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.

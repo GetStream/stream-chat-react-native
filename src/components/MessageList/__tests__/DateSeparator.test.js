@@ -9,7 +9,7 @@ import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 
 import DateSeparator from '../DateSeparator';
 
-import { TranslationContext } from '../../../context';
+import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);

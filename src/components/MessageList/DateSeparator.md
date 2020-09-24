@@ -3,7 +3,7 @@ Here's what it looks like for today.
 
 ```js
 const date = new Date();
-const data = require('./data');
+const data = require('../docs/data');
 
 <Chat client={data.client}>
   <DateSeparator {...data.translationContext} message={{ date }} />
@@ -23,7 +23,7 @@ const data = require('./data');
 and for a date in the past:
 
 ```js
-const data = require('./data');
+const data = require('../docs/data');
 
 const date = new Date('December 17, 1995 03:24:00');
 <Chat client={data.client}>
@@ -44,7 +44,7 @@ const date = new Date('December 17, 1995 03:24:00');
 and adding custom date formatting:
 
 ```js
-const data = require('./data');
+const data = require('../docs/data');
 
 const date = new Date('December 17, 1995 03:24:00');
 

@@ -1,6 +1,33 @@
-export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
+import { InsertDatesResponse, isDateSeparator } from './insertDates';
+
+import type { GroupType } from '../../../contexts/messagesContext/MessagesContext';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+export const getGroupStyles = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>({
+  messagesWithDates,
+  noGroupByUser,
+}: {
+  messagesWithDates: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>;
+  noGroupByUser?: boolean;
+}) => {
   const numberOfMessages = messagesWithDates.length;
-  const messageGroupStyles = {};
+  const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
   const messages = [...messagesWithDates];
 
@@ -8,7 +35,7 @@ export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
     const previousMessage = messages[i - 1];
     const message = messages[i];
     const nextMessage = messages[i + 1];
-    const groupStyles = [];
+    const groupStyles: GroupType[] = [];
 
     /**
      * Skip event and date messages
@@ -17,38 +44,38 @@ export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
       continue;
     }
 
-    if (message.type === 'message.date') {
+    if (isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       continue;
     }
 
-    const userId = message.user ? message.user.id : null;
+    const userId = message?.user?.id || null;
 
     /**
      * Determine top message
      */
     const isTopMessage =
       !previousMessage ||
-      previousMessage.type === 'message.date' ||
+      isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(previousMessage) ||
       previousMessage.type === 'system' ||
       previousMessage.type === 'channel.event' ||
       (previousMessage.attachments &&
         previousMessage.attachments.length !== 0) ||
-      userId !== previousMessage.user.id ||
+      userId !== previousMessage?.user?.id ||
       previousMessage.type === 'error' ||
-      previousMessage.deleted_at;
+      !!previousMessage.deleted_at;
 
     /**
      * Determine bottom message
      */
     const isBottomMessage =
       !nextMessage ||
-      nextMessage.type === 'message.date' ||
+      isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(nextMessage) ||
       nextMessage.type === 'system' ||
       nextMessage.type === 'channel.event' ||
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
-      userId !== nextMessage.user.id ||
+      userId !== nextMessage?.user?.id ||
       nextMessage.type === 'error' ||
-      nextMessage.deleted_at;
+      !!nextMessage.deleted_at;
 
     /**
      * Add group styles key for top message
@@ -90,7 +117,7 @@ export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
     /**
      * If there are attachments add the key for single
      */
-    if (message.attachments.length !== 0) {
+    if (message.attachments && message.attachments.length !== 0) {
       groupStyles.splice(0, groupStyles.length);
       groupStyles.push('single');
     }
@@ -103,7 +130,9 @@ export const getGroupStyles = ({ messagesWithDates, noGroupByUser }) => {
       groupStyles.push('single');
     }
 
-    messageGroupStyles[message.id] = groupStyles;
+    if (message.id) {
+      messageGroupStyles[message.id] = groupStyles;
+    }
   }
 
   return messageGroupStyles;

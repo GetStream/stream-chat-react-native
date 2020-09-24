@@ -41,12 +41,12 @@ const sections = [
   },
   {
     components: [
-      'src/components/MessageList/DateSeparator.js',
-      'src/components/MessageList/EventIndicator.js',
-      'src/components/MessageList/MessageList.js',
-      'src/components/MessageList/MessageNotification.js',
-      'src/components/MessageList/MessageSystem.js',
-      'src/components/MessageList/TypingIndicator.js',
+      'src/components/MessageList/DateSeparator.tsx',
+      'src/components/MessageList/MessageList.tsx',
+      'src/components/MessageList/MessageNotification.tsx',
+      'src/components/MessageList/MessageSystem.tsx',
+      'src/components/MessageList/TypingIndicator.tsx',
+      'src/components/MessageList/TypingIndicatorContainer.tsx',
     ],
     exampleMode: 'collapse',
     name: 'MessageList Components',
@@ -54,10 +54,13 @@ const sections = [
   },
   {
     components: [
-      'src/components/Attachment/Attachment.js',
-      'src/components/Attachment/Card.js',
-      'src/components/Attachment/FileAttachmentGroup.js',
-      'src/components/Attachment/Gallery.js',
+      'src/components/Attachment/Attachment.tsx',
+      'src/components/Attachment/AttachmentActions.tsx',
+      'src/components/Attachment/Card.tsx',
+      'src/components/Attachment/FileAttachment.tsx',
+      'src/components/Attachment/FileAttachmentGroup.tsx',
+      'src/components/Attachment/FileIcon.tsx',
+      'src/components/Attachment/Gallery.tsx',
       'src/components/Message/Message.js',
       'src/components/Message/MessageSimple/index.js',
       'src/components/Message/MessageSimple/MessageActionSheet.js',
@@ -73,7 +76,7 @@ const sections = [
   },
   {
     components: [
-      'src/components/AutoCompleteInput/AutoCompleteInput.js',
+      'src/components/AutoCompleteInput/AutoCompleteInput.tsx',
       'src/components/MessageInput/ActionSheetAttachment.js',
       'src/components/MessageInput/AttachButton.js',
       'src/components/AutoCompleteInput/CommandsItem.tsx',
@@ -91,11 +94,10 @@ const sections = [
   {
     components: [
       'src/components/Avatar/Avatar.tsx',
-      'src/components/CloseButton/CloseButton.js',
-      'src/components/FileIcon.js',
-      'src/components/IconBadge.js',
-      'src/components/IconSquare.js',
-      'src/components/KeyboardCompatibleView/KeyboardCompatibleView.js',
+      'src/components/CloseButton/CloseButton.tsx',
+      'src/components/IconBadge.tsx',
+      'src/components/IconSquare.tsx',
+      'src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx',
       'src/components/Indicators/LoadingIndicator.tsx',
       'src/components/Reaction/ReactionList.tsx',
       'src/components/Reaction/ReactionPicker.tsx',

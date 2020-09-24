@@ -1059,6 +1059,7 @@ export interface MessageSystemProps
   extends StyledComponentProps,
     TranslationContextValue {
   message: Client.MessageResponse;
+  formatDate?: (date: string) => string;
 }
 
 export interface ReactionListProps extends StyledComponentProps {

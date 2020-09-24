@@ -8,7 +8,8 @@ import { getTestClient } from 'mock-builders/mock';
 
 import Chat from '../Chat';
 
-import { ChatContext, TranslationContext } from '../../../context';
+import { ChatContext } from '../../../contexts/chatContext/ChatContext';
+import { TranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 const ChatContextConsumer = ({ fn }) => {
