@@ -4,12 +4,13 @@ import { getGroupStyles } from '../utils/getGroupStyles';
 import { getReadStates } from '../utils/getReadStates';
 import { insertDates } from '../utils/insertDates';
 
-import { ChannelContext, MessagesContext } from '../../../context';
+import { ChannelContext } from '../../../context';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
 export const useMessageList = ({ noGroupByUser, threadList }) => {
   const { read } = useContext(ChannelContext);
-  const { messages } = useContext(MessagesContext);
+  const { messages } = useMessagesContext;
   const { threadMessages } = useThreadContext();
 
   const messageList = threadList ? threadMessages : messages;

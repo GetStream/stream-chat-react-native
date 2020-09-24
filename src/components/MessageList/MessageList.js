@@ -15,7 +15,8 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import DefaultMessage from '../Message/Message';
 
-import { ChannelContext, ChatContext, MessagesContext } from '../../context';
+import { ChannelContext, ChatContext } from '../../context';
+import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
@@ -80,7 +81,7 @@ const MessageList = (props) => {
     editing,
     loadMore: mainLoadMore,
     Message: MessageFromContext,
-  } = useContext(MessagesContext);
+  } = useMessagesContext();
   const { loadMoreThread } = useThreadContext();
   const { t } = useTranslationContext();
 

@@ -14,11 +14,8 @@ import DefaultGallery from '../../Attachment/Gallery';
 import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
-import {
-  ChannelContext,
-  MessageContentContext,
-  MessagesContext,
-} from '../../../context';
+import { ChannelContext, MessageContentContext } from '../../../context';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { themed } from '../../../styles/theme';
@@ -387,7 +384,7 @@ const MessageContent = (props) => {
     Attachment = DefaultAttachment,
     Message,
     retrySendMessage,
-  } = useContext(MessagesContext);
+  } = useMessagesContext();
 
   return (
     <MessageContentWithContext

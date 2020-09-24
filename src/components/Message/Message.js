@@ -4,12 +4,8 @@ import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
 
-import {
-  ChannelContext,
-  ChatContext,
-  KeyboardContext,
-  MessagesContext,
-} from '../../context';
+import { ChannelContext, ChatContext, KeyboardContext } from '../../context';
+import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
@@ -221,7 +217,7 @@ const DefaultMessage = (props) => {
     retrySendMessage,
     setEditingState,
     updateMessage,
-  } = useContext(MessagesContext);
+  } = useMessagesContext();
 
   return (
     <DefaultMessageWithContext

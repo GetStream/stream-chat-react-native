@@ -16,7 +16,11 @@ import Channel from '../Channel';
 import Attachment from '../../Attachment/Attachment';
 import Chat from '../../Chat/Chat';
 
-import { ChannelContext, MessagesContext } from '../../../context';
+import { ChannelContext } from '../../../context';
+import {
+  MessagesContext,
+  MessagesProvider,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
@@ -362,9 +366,9 @@ describe('Channel', () => {
   describe('MessagesContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <MessagesContext.Provider>
+        <MessagesProvider>
           <View testID='children' />
-        </MessagesContext.Provider>,
+        </MessagesProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -381,14 +385,14 @@ describe('Channel', () => {
       };
 
       render(
-        <MessagesContext.Provider value={mockContext}>
+        <MessagesProvider value={mockContext}>
           <ContextConsumer
             context={MessagesContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </MessagesContext.Provider>,
+        </MessagesProvider>,
       );
 
       await waitFor(() => {

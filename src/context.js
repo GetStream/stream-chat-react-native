@@ -7,7 +7,6 @@ export const KeyboardContext = React.createContext({
   dismissKeyboard: Keyboard.dismiss,
 });
 export const MessageContentContext = React.createContext({});
-export const MessagesContext = React.createContext({});
 
 export function withChannelContext(OriginalComponent) {
   return getContextAwareComponent(ChannelContext, OriginalComponent);
@@ -23,10 +22,6 @@ export function withKeyboardContext(OriginalComponent) {
 
 export function withMessageContentContext(OriginalComponent) {
   return getContextAwareComponent(MessageContentContext, OriginalComponent);
-}
-
-export function withMessagesContext(OriginalComponent) {
-  return getContextAwareComponent(MessagesContext, OriginalComponent);
 }
 
 const getContextAwareComponent = function (context, originalComponent) {
