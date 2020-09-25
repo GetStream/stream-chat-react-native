@@ -11,6 +11,7 @@ import type {
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
 import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
+import type { Theme } from '../../../styles/themeConstants';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -63,6 +64,27 @@ const TextContainer = styled.View<{
   ${({ theme }) => theme.message.content.textContainer.css}
 `;
 
+export type MessageTextProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  renderText: ({
+    markdownRules,
+    markdownStyles,
+    message,
+  }: {
+    markdownRules: any;
+    markdownStyles: any;
+    message: any;
+  }) => JSX.Element | null;
+  theme: Theme;
+};
+
 export type MessageTextContainerProps<
   At extends Record<string, unknown> = DefaultAttachmentType,
   Ch extends Record<string, unknown> = DefaultChannelType,
@@ -111,7 +133,9 @@ export type MessageTextContainerProps<
   /**
    * Custom UI component for message text
    */
-  MessageText?: React.ComponentType<Partial<any>>;
+  MessageText?: React.ComponentType<
+    Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
 };
 
 const MessageTextContainer = <

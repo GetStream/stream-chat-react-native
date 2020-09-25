@@ -5,7 +5,7 @@ import type {
   TouchableOpacityProps,
 } from 'react-native';
 
-import DefaultMessageAvatar from './MessageAvatar';
+import DefaultMessageAvatar, { MessageAvatarProps } from './MessageAvatar';
 import DefaultMessageContent, { MessageContentProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
@@ -36,6 +36,7 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
+import type { MessageTextProps } from './MessageTextContainer';
 
 const Container = styled.View<{
   alignment: Alignment;
@@ -225,7 +226,9 @@ export type MessageSimpleProps<
      * Custom UI component for the avatar next to a message
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.tsx
      * */
-    MessageAvatar?: any;
+    MessageAvatar?: React.ComponentType<
+      Partial<MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /**
      * Custom UI component for message content
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.tsx
@@ -240,7 +243,9 @@ export type MessageSimpleProps<
      * */
     MessageStatus?: any;
     /** Custom UI component for message text */
-    MessageText?: any;
+    MessageText?: React.ComponentType<
+      Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /**
      * Function that overrides default behavior when message is long pressed
      * e.g. if you would like to open reaction picker on message long press:
@@ -419,12 +424,12 @@ const MessageSimple = <
       {alignment === 'right' ? (
         <>
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
-          <MessageAvatar {...forwardedProps} />
+          <MessageAvatar<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
           {showMessageStatus && <MessageStatus {...forwardedProps} />}
         </>
       ) : (
         <>
-          <MessageAvatar {...forwardedProps} />
+          <MessageAvatar<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
         </>
       )}
