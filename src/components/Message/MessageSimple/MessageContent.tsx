@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import type { GestureResponderEvent, View } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 import Immutable from 'seamless-immutable';
 
 import DefaultActionSheet from './MessageActionSheet';
@@ -16,6 +16,7 @@ import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import {
   Alignment,
   GroupType,
@@ -24,7 +25,6 @@ import {
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { styled } from '../../../styles/styledComponents';
-import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
@@ -148,7 +148,7 @@ const MessageContentWithContext = <
 ) => {
   const {
     ActionSheet = DefaultActionSheet,
-    Attachment,
+    Attachment = DefaultAttachment,
     AttachmentActions,
     AttachmentFileIcon,
     Card,
@@ -509,11 +509,15 @@ const MessageContent = <
   props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    Attachment = DefaultAttachment,
-    Message,
-    retrySendMessage,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Attachment, Message, retrySendMessage } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   return (
     <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>

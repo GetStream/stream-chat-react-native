@@ -3,12 +3,15 @@ import { Dimensions, TouchableOpacity } from 'react-native';
 
 import ReactionPickerDefault from './ReactionPicker';
 
-import type { Reaction } from './ReactionList';
+import type { LatestReactions, Reaction } from './ReactionList';
 import type { ReactionPickerProps } from './ReactionPicker';
 
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  MessageWithDates,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { Message } from '../../components/MessageList/utils/insertDates';
 import type {
   DefaultAttachmentType,
@@ -145,8 +148,19 @@ const ReactionPickerWrapper = <
         handleReaction={handleReaction}
         hideReactionCount={hideReactionCount}
         hideReactionOwners={hideReactionOwners}
-        latestReactions={message.latest_reactions}
-        reactionCounts={message.reaction_counts}
+        latestReactions={
+          message.latest_reactions as LatestReactions<At, Ch, Co, Me, Re, Us>
+        }
+        reactionCounts={
+          message.reaction_counts as MessageWithDates<
+            At,
+            Ch,
+            Co,
+            Me,
+            Re,
+            Us
+          >['reaction_counts']
+        }
         reactionPickerVisible={reactionPickerVisible}
         rpLeft={rpLeft}
         rpRight={rpRight}
