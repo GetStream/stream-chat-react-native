@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { GestureResponderEvent } from 'react-native';
-import Immutable from 'seamless-immutable';
+
+import type { ActionSheetCustom } from 'react-native-actionsheet';
 
 import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies from './MessageReplies';
@@ -45,6 +46,7 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
+import type MessageActionSheet from './MessageActionSheet';
 
 /**
  * Border radii are useful for the case of error message types only.
@@ -212,7 +214,7 @@ const MessageContentWithContext = <
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
-  const actionSheetRef = useRef<any>(); // TODO - add ActionSheet type
+  const actionSheetRef = useRef<ActionSheetCustom>();
 
   const onOpenThread = () => {
     if (onThreadSelect) {
