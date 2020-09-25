@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components/native';
 import PropTypes from 'prop-types';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
-import { TranslationContext } from '../../../context';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { MESSAGE_ACTIONS } from '../../../utils/utils';
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 
@@ -77,7 +77,7 @@ const MessageActionSheet = React.forwardRef((props, actionSheetRef) => {
     threadList,
   } = props;
 
-  const { t } = useContext(TranslationContext);
+  const { t } = useTranslationContext();
   const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
 
   useEffect(() => {

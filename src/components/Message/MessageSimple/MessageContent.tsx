@@ -23,8 +23,8 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { MessageContentContext } from '../../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../../styles/styledComponents';
+import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
@@ -286,7 +286,7 @@ const MessageContentWithContext = <
   };
 
   return (
-    <MessageContentContext.Provider value={context}>
+    <MessageContentProvider value={context}>
       <Container
         {...contentProps}
         error={message.type === 'error' || message.status === 'failed'}
@@ -424,7 +424,7 @@ const MessageContentWithContext = <
           />
         )}
       </Container>
-    </MessageContentContext.Provider>
+    </MessageContentProvider>
   );
 };
 

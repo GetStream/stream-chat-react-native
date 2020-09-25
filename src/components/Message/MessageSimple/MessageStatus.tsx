@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components/native';
 
 import Avatar from '../../Avatar/Avatar';
 
-import { ChatContext } from '../../../context';
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
 import loadingGif from '../../../images/loading.gif';
 
@@ -64,7 +64,7 @@ const MessageStatus = ({
   readBy = [],
   threadList,
 }) => {
-  const { client } = useContext(ChatContext);
+  const { client } = useChatContext();
   const justReadByMe = readBy.length === 1 && readBy[0].id === client.user.id;
 
   const Status = () => {

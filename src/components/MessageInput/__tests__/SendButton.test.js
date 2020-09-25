@@ -3,16 +3,16 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import SendButton from '../SendButton';
 
-import { MessagesContext } from '../../../context';
+import { MessageProvider } from '../../../contexts/messagesContext/MessagesContext';
 
 describe('SendButton', () => {
   it('should render a non-editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <MessagesContext.Provider value={{ editing: false }}>
+      <MessageProvider value={{ editing: false }}>
         <SendButton sendMessage={sendMessage} />
-      </MessagesContext.Provider>,
+      </MessageProvider>,
     );
 
     await waitFor(() => {
@@ -35,9 +35,9 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <MessagesContext.Provider value={{ editing: false }}>
+      <MessageProvider value={{ editing: false }}>
         <SendButton disabled sendMessage={sendMessage} />
-      </MessagesContext.Provider>,
+      </MessageProvider>,
     );
 
     await waitFor(() => {
@@ -60,9 +60,9 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <MessagesContext.Provider value={{ editing: true }}>
+      <MessageProvider value={{ editing: true }}>
         <SendButton sendMessage={sendMessage} />
-      </MessagesContext.Provider>,
+      </MessageProvider>,
     );
 
     await waitFor(() => {
@@ -85,9 +85,9 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <MessagesContext.Provider value={{ editing: true }}>
+      <MessageProvider value={{ editing: true }}>
         <SendButton disabled sendMessage={sendMessage} />
-      </MessagesContext.Provider>,
+      </MessageProvider>,
     );
 
     await waitFor(() => {

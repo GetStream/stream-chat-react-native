@@ -18,9 +18,13 @@ import Chat from '../../Chat/Chat';
 
 import {
   ChannelContext,
+  ChannelProvider,
+} from '../../../contexts/channelContext/ChannelContext';
+import {
   MessagesContext,
-  ThreadContext,
-} from '../../../context';
+  MessagesProvider,
+} from '../../../contexts/messagesContext/MessagesContext';
+import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -323,9 +327,9 @@ describe('Channel', () => {
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ChannelContext.Provider>
+        <ChannelProvider>
           <View testID='children' />
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -342,14 +346,14 @@ describe('Channel', () => {
       };
 
       render(
-        <ChannelContext.Provider value={mockContext}>
+        <ChannelProvider value={mockContext}>
           <ContextConsumer
             context={ChannelContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => {
@@ -365,9 +369,9 @@ describe('Channel', () => {
   describe('MessagesContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <MessagesContext.Provider>
+        <MessagesProvider>
           <View testID='children' />
-        </MessagesContext.Provider>,
+        </MessagesProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -384,14 +388,14 @@ describe('Channel', () => {
       };
 
       render(
-        <MessagesContext.Provider value={mockContext}>
+        <MessagesProvider value={mockContext}>
           <ContextConsumer
             context={MessagesContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </MessagesContext.Provider>,
+        </MessagesProvider>,
       );
 
       await waitFor(() => {
@@ -407,9 +411,9 @@ describe('Channel', () => {
   describe('ThreadContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ThreadContext.Provider>
+        <ThreadProvider>
           <View testID='children' />
-        </ThreadContext.Provider>,
+        </ThreadProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -426,14 +430,14 @@ describe('Channel', () => {
       };
 
       render(
-        <ThreadContext.Provider value={mockContext}>
+        <ThreadProvider value={mockContext}>
           <ContextConsumer
             context={ThreadContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </ThreadContext.Provider>,
+        </ThreadProvider>,
       );
 
       await waitFor(() => {
