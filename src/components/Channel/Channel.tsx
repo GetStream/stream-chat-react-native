@@ -15,19 +15,16 @@ import {
 } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
-import AttachmentDefault, { AttachmentProps } from '../Attachment/Attachment';
+import AttachmentDefault from '../Attachment/Attachment';
 import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import MessageDefault from '../Message/Message';
 
-import type { EmptyStateProps } from '../Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
-import type { Message as InsertMessageType } from '../MessageList/utils/insertDates';
-import type { Reaction } from '../Reaction/ReactionList';
 
 import {
   ChannelContextValue,
@@ -37,12 +34,8 @@ import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   MessagesContextValue,
   MessagesProvider,
-  MessageWithDates,
 } from '../../contexts/messagesContext/MessagesContext';
-import {
-  SuggestionCommand,
-  SuggestionsProvider,
-} from '../../contexts/suggestionsContext/SuggestionsContext';
+import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
 import {
   ThreadContextValue,
   ThreadProvider,
@@ -60,6 +53,113 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../types/types';
+
+export type ChannelProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
+  /**
+   * The currently active channel
+   */
+  channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>;
+  /**
+   * Custom UI component to display attachments on individual messages
+   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+   */
+  Attachment?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Attachment'];
+  /**
+   * Disables the channel UI if the channel is frozen
+   */
+  disableIfFrozenChannel?: boolean;
+  /**
+   * When true, disables the KeyboardCompatibleView wrapper
+   *
+   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
+   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
+   * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
+   */
+  disableKeyboardCompatibleView?: boolean;
+  /**
+   * Overrides the Stream default mark channel read request (Advanced usage only)
+   * @param channel Channel object
+   */
+  doMarkReadRequest?: (
+    channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
+  /**
+   * Overrides the Stream default send message request (Advanced usage only)
+   * @param channelId
+   * @param messageData Message object
+   */
+  doSendMessageRequest?: (
+    channelId: string,
+    messageData: MessageType<At, Me, Us>,
+  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+  /**
+   * Overrides the Stream default update message request (Advanced usage only)
+   * @param channelId
+   * @param updatedMessage UpdatedMessage object
+   */
+  doUpdateMessageRequest?: (
+    channelId: string,
+    updatedMessage: MessageType<At, Me, Us>,
+  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+  emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
+  /**
+   * Custom empty state indicator to override the Stream default
+   */
+  EmptyStateIndicator?: ChannelContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['EmptyStateIndicator'];
+  /**
+   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
+   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   *
+   * **Example:**
+   *
+   * ```
+   * <Channel
+   *  channel={channel}
+   *  KeyboardCompatibleView={(props) => {
+   *    return (
+   *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
+   *        {props.children}
+   *      </KeyboardCompatibleView>
+   *    )
+   *  }}
+   * />
+   * ```
+   */
+  KeyboardCompatibleView?: React.ComponentType<
+    Partial<KeyboardCompatibleViewProps>
+  >;
+  /**
+   * Custom loading error indicator to override the Stream default
+   */
+  LoadingErrorIndicator?: React.ComponentType<Partial<LoadingErrorProps>>;
+  /**
+   * Custom loading indicator to override the Stream default
+   */
+  LoadingIndicator?: React.ComponentType<Partial<LoadingProps>>;
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   */
+  Message?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Message'];
+  thread?: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'];
+};
 
 /**
  *
@@ -116,11 +216,13 @@ const Channel = <
    *   ]
    * }
    */
-  const [eventHistory, setEventHistory] = useState<{
-    [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[];
-  }>({});
+  const [eventHistory, setEventHistory] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['eventHistory']
+  >({});
   const [hasMore, setHasMore] = useState(true);
-  const [lastRead, setLastRead] = useState<Date>();
+  const [lastRead, setLastRead] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
+  >();
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [members, setMembers] = useState<
@@ -146,7 +248,9 @@ const Channel = <
   const [typing, setTyping] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']);
-  const [watcherCount, setWatcherCount] = useState<number>();
+  const [watcherCount, setWatcherCount] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
+  >();
   const [watchers, setWatchers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
@@ -176,7 +280,15 @@ const Channel = <
    * CHANNEL METHODS
    */
 
-  const markRead = () => {
+  const markRead: ChannelContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['markRead'] = () => {
     if (channel.disconnected || !channel?.getConfig?.()?.read_events) {
       return;
     }
@@ -290,25 +402,16 @@ const Channel = <
    * MESSAGE METHODS
    */
 
-  const updateMessage = (
-    updatedMessage: MessageType<At, Me, Us>,
-    extraState: {
-      commands?: SuggestionCommand<Co>[];
-      messageInput?: string;
-      threadMessages?: ChannelState<
-        At,
-        Ch,
-        Co,
-        Ev,
-        Me,
-        Re,
-        Us
-      >['threads'][string];
-    } = {},
-  ) => {
-    channel.state.addMessageSorted(
-      updatedMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
+  const updateMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['updateMessage'] = (updatedMessage, extraState = {}) => {
+    channel.state.addMessageSorted(updatedMessage);
 
     if (thread && updatedMessage.parent_id) {
       extraState.threadMessages =
@@ -331,7 +434,7 @@ const Channel = <
     mentioned_users?: MessageType<At, Me, Us>['mentioned_users'];
     parent?: MessageType<At, Me, Us>['parent_id'];
     text?: MessageType<At, Me, Us>['text'];
-  }): MessageType<At, Me, Us> => {
+  }) => {
     const message = {
       __html: text,
       attachments,
@@ -351,10 +454,12 @@ const Channel = <
       ...extraFields,
     };
 
-    return (message as unknown) as MessageType<At, Me, Us>;
+    return (message as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>;
   };
 
-  const sendMessageRequest = async (message: MessageType<At, Me, Us>) => {
+  const sendMessageRequest = async (
+    message: MessageResponse<At, Ch, Co, Me, Re, Us>,
+  ) => {
     const {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       __html,
@@ -403,26 +508,29 @@ const Channel = <
 
       if (messageResponse.message) {
         messageResponse.message.status = 'received';
-        updateMessage(messageResponse.message as MessageType<At, Me, Us>);
+        updateMessage(messageResponse.message);
       }
     } catch (err) {
       console.log(err);
-      updateMessage({ ...message, status: 'failed' });
+      message.status = 'failed';
+      updateMessage(message);
     }
   };
 
-  const sendMessage = async ({
+  const sendMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['sendMessage'] = async ({
     attachments = [],
     mentioned_users,
     parent,
     text,
     ...extraFields
-  }: {
-    attachments?: MessageType<At, Me, Us>['attachments'];
-    extraFields?: Partial<MessageType<At, Me, Us>>;
-    mentioned_users?: MessageType<At, Me, Us>['mentioned_users'];
-    parent?: MessageType<At, Me, Us>['parent_id'];
-    text?: MessageType<At, Me, Us>['text'];
   }) => {
     channel.state.filterErrorMessages();
 
@@ -442,12 +550,20 @@ const Channel = <
     await sendMessageRequest(messagePreview);
   };
 
-  const retrySendMessage = async (
-    message: MessageResponse<At, Ch, Co, Me, Re, Us>,
-  ) => {
-    message.status = 'sending';
-    updateMessage(message as MessageType<At, Me, Us>);
-    await sendMessageRequest(message as MessageType<At, Me, Us>);
+  const retrySendMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['retrySendMessage'] = async (message) => {
+    message = { ...message, status: 'sending' };
+    updateMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
+    await sendMessageRequest(
+      message as MessageResponse<At, Ch, Co, Me, Re, Us>,
+    );
   };
 
   const loadMoreFinished = (
@@ -495,31 +611,63 @@ const Channel = <
     }
   };
 
-  const loadMoreThrottled = throttle(loadMore, 2000, {
+  const loadMoreThrottled: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMore'] = throttle(loadMore, 2000, {
     leading: true,
     trailing: true,
   });
 
-  const editMessage = (
-    updatedMessage: MessageWithDates<At, Ch, Co, Me, Re, Us>,
-  ) => {
+  const editMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['editMessage'] = (updatedMessage) => {
     if (doUpdateMessageRequest) {
-      return doUpdateMessageRequest(
-        channel.cid,
-        updatedMessage as MessageType<At, Me, Us>,
-      );
+      return doUpdateMessageRequest(channel.cid, updatedMessage);
     }
     return client.updateMessage(updatedMessage as MessageType<At, Me, Us>);
   };
 
-  const setEditingState = (message: InsertMessageType) => setEditing(!!message);
+  const setEditingState: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['setEditingState'] = (message) => setEditing(!!message);
 
-  const clearEditingState = () => setEditing(false);
+  const clearEditingState: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['clearEditingState'] = () => setEditing(false);
 
-  const removeMessage = (message: {
-    id: string;
-    parent_id?: string | undefined;
-  }) => {
+  const removeMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['removeMessage'] = (message) => {
     channel.state.removeMessage(message);
     setMessages(channel.state.messages);
   };
@@ -528,7 +676,15 @@ const Channel = <
    * THREAD METHODS
    */
 
-  const openThread = (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => {
+  const openThread: ThreadContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['openThread'] = (message) => {
     const newThreadMessages = message?.id
       ? channel.state.threads[message.id] || []
       : [];
@@ -546,7 +702,15 @@ const Channel = <
     );
   };
 
-  const closeThread = () => {
+  const closeThread: ThreadContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['closeThread'] = () => {
     setThread(null);
     setThreadMessages(Immutable([]));
   };
@@ -578,7 +742,15 @@ const Channel = <
     },
   );
 
-  const loadMoreThread = async () => {
+  const loadMoreThread: ThreadContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMoreThread'] = async () => {
     if (threadLoadingMore || !(thread && thread.id)) return;
     setThreadLoadingMore(true);
 
@@ -669,105 +841,6 @@ const Channel = <
       </ChannelProvider>
     </KeyboardCompatibleView>
   );
-};
-
-export type ChannelProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
-> = {
-  /**
-   * The currently active channel
-   */
-  channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Custom UI component to display attachments on individual messages
-   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
-   */
-  Attachment?: React.ComponentType<AttachmentProps<At>>;
-  /**
-   * Disables the channel UI if the channel is frozen
-   */
-  disableIfFrozenChannel?: boolean;
-  /**
-   * When true, disables the KeyboardCompatibleView wrapper
-   *
-   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
-   * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
-   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
-   * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
-   */
-  disableKeyboardCompatibleView?: boolean;
-  /**
-   * Overrides the Stream default mark channel read request (Advanced usage only)
-   * @param channel Channel object
-   */
-  doMarkReadRequest?: (
-    channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
-  /**
-   * Overrides the Stream default send message request (Advanced usage only)
-   * @param channelId
-   * @param messageData Message object
-   */
-  doSendMessageRequest?: (
-    channelId: string,
-    messageData: MessageType<At, Me, Us>,
-  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
-  /**
-   * Overrides the Stream default update message request (Advanced usage only)
-   * @param channelId
-   * @param updatedMessage UpdatedMessage object
-   */
-  doUpdateMessageRequest?: (
-    channelId: string,
-    updatedMessage: MessageType<At, Me, Us>,
-  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
-  emojiData?: Reaction[];
-  /**
-   * Custom empty state indicator to override the Stream default
-   */
-  EmptyStateIndicator?: React.ComponentType<Partial<EmptyStateProps>>;
-  /**
-   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
-   *
-   * **Example:**
-   *
-   * ```
-   * <Channel
-   *  channel={channel}
-   *  KeyboardCompatibleView={(props) => {
-   *    return (
-   *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
-   *        {props.children}
-   *      </KeyboardCompatibleView>
-   *    )
-   *  }}
-   * />
-   * ```
-   */
-  KeyboardCompatibleView?: React.ComponentType<
-    Partial<KeyboardCompatibleViewProps>
-  >;
-  /**
-   * Custom loading error indicator to override the Stream default
-   */
-  LoadingErrorIndicator?: React.ComponentType<Partial<LoadingErrorProps>>;
-  /**
-   * Custom loading indicator to override the Stream default
-   */
-  LoadingIndicator?: React.ComponentType<Partial<LoadingProps>>;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   */
-  Message?: React.ComponentType<Partial<unknown>>; // TODO: type when Message component is done
-  thread?: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'];
 };
 
 export default Channel;

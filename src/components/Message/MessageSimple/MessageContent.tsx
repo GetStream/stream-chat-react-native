@@ -1,13 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+import type { GestureResponderEvent, View } from 'react-native';
 import Immutable from 'seamless-immutable';
-import styled from 'styled-components/native';
 
 import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies from './MessageReplies';
 import MessageTextContainer from './MessageTextContainer';
 
-import DefaultAttachment from '../../Attachment/Attachment';
+import DefaultAttachment, {
+  AttachmentProps,
+} from '../../Attachment/Attachment';
 import DefaultFileAttachment from '../../Attachment/FileAttachment';
 import DefaultFileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
 import DefaultGallery from '../../Attachment/Gallery';
@@ -15,18 +16,38 @@ import DefaultReactionList from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import {
+  Alignment,
+  GroupType,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import { styled } from '../../../styles/styledComponents';
+import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
+
+import type { MessageSimpleProps } from './MessageSimple';
+import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
 
 /**
  * Border radii are useful for the case of error message types only.
  * Otherwise background is transparent, so border radius is not really visible.
  */
-const Container = styled.TouchableOpacity`
+const Container = styled.TouchableOpacity<{
+  alignment: string;
+  error: boolean;
+}>`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   background-color: ${({ error, theme }) =>
@@ -52,13 +73,13 @@ const Container = styled.TouchableOpacity`
   ${({ theme }) => theme.message.content.container.css};
 `;
 
-const ContainerInner = styled.View`
+const ContainerInner = styled.View<{ alignment: string }>`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
-const DeletedContainer = styled.View`
+const DeletedContainer = styled.View<{ alignment: string }>`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
@@ -85,19 +106,46 @@ const MetaContainer = styled.View`
   ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
-const MetaText = styled.Text`
+const MetaText = styled.Text<{ alignment: string }>`
   color: ${({ theme }) => theme.colors.textGrey};
   font-size: 11px;
   text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
   ${({ theme }) => theme.message.content.metaText.css};
 `;
 
+type MessageContentWithContextProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = MessageContentProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  Attachment: React.ComponentType<AttachmentProps<At>>;
+  disabled: boolean | undefined;
+  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  retrySendMessage: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+};
+
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual MessageContent component.
  */
-const MessageContentWithContext = React.memo((props) => {
+const MessageContentWithContext = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  props: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const {
     ActionSheet = DefaultActionSheet,
     Attachment,
@@ -155,10 +203,10 @@ const MessageContentWithContext = React.memo((props) => {
     threadList,
   } = props;
 
-  const { openThread } = useThreadContext();
+  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
-  const actionSheetRef = useRef(null);
+  const actionSheetRef = useRef<any>(); // TODO - add ActionSheet type
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -189,12 +237,15 @@ const MessageContentWithContext = React.memo((props) => {
     message.latest_reactions.length > 0;
   const images =
     hasAttachment &&
+    Array.isArray(message.attachments) &&
     message.attachments.filter(
       (item) =>
         item.type === 'image' && !item.title_link && !item.og_scrape_url,
     );
   const files =
-    hasAttachment && message.attachments.filter((item) => item.type === 'file');
+    hasAttachment &&
+    Array.isArray(message.attachments) &&
+    message.attachments?.filter((item) => item.type === 'file');
 
   if (message.deleted_at) {
     return (
@@ -213,17 +264,19 @@ const MessageContentWithContext = React.memo((props) => {
     hasReactions,
     onLongPress:
       onLongPress && !disabled
-        ? (e) => onLongPress(message, e)
+        ? (event: GestureResponderEvent) => onLongPress(message, event)
         : enableLongPress
         ? showActionSheet
         : () => null,
-    onPress: onPress ? (e) => onPress(message, e) : () => null,
+    onPress: onPress
+      ? (event: GestureResponderEvent) => onPress(message, event)
+      : () => null,
     status: message.status,
     ...additionalTouchableProps,
   };
 
   if (message.status === 'failed') {
-    contentProps.onPress = () => retrySendMessage(Immutable(message));
+    contentProps.onPress = () => retrySendMessage(message);
   }
 
   const context = {
@@ -248,7 +301,7 @@ const MessageContentWithContext = React.memo((props) => {
           </FailedText>
         ) : null}
         {reactionsEnabled && ReactionList && (
-          <ReactionPickerWrapper
+          <ReactionPickerWrapper<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             customMessageContent={customMessageContent}
             dismissReactionPicker={dismissReactionPicker}
@@ -267,7 +320,7 @@ const MessageContentWithContext = React.memo((props) => {
           >
             {message.latest_reactions &&
               message.latest_reactions.length > 0 && (
-                <ReactionList
+                <ReactionList<At, Ch, Co, Me, Re, Us>
                   alignment={alignment}
                   getTotalReactionCount={getTotalReactionCount}
                   latestReactions={message.latest_reactions}
@@ -281,6 +334,7 @@ const MessageContentWithContext = React.memo((props) => {
         {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
         <ContainerInner alignment={alignment} collapsable={false}>
           {hasAttachment &&
+            Array.isArray(message.attachments) &&
             message.attachments.map((attachment, index) => {
               // We handle files separately
               if (attachment.type === 'file') return null;
@@ -291,7 +345,7 @@ const MessageContentWithContext = React.memo((props) => {
               )
                 return null;
               return (
-                <Attachment
+                <Attachment<At>
                   actionHandler={handleAction}
                   alignment={alignment}
                   attachment={attachment}
@@ -308,7 +362,7 @@ const MessageContentWithContext = React.memo((props) => {
               );
             })}
           {files && files.length > 0 && (
-            <FileAttachmentGroup
+            <FileAttachmentGroup<At>
               alignment={alignment}
               AttachmentActions={AttachmentActions}
               AttachmentFileIcon={AttachmentFileIcon}
@@ -319,7 +373,7 @@ const MessageContentWithContext = React.memo((props) => {
             />
           )}
           {images && images.length > 0 && (
-            <Gallery alignment={alignment} images={images} />
+            <Gallery<At> alignment={alignment} images={images} />
           )}
           <MessageTextContainer
             alignment={alignment}
@@ -372,23 +426,97 @@ const MessageContentWithContext = React.memo((props) => {
       </Container>
     </MessageContentProvider>
   );
-});
+};
 
-MessageContentWithContext.displayName = 'message.contentWithContext';
+const areEqual = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  prevProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { updated_at: previousLast } = prevProps.message;
+  const { updated_at: nextLast } = nextProps.message;
+
+  return previousLast === nextLast;
+};
+
+const MemoizedMessageContent = React.memo(
+  MessageContentWithContext,
+  areEqual,
+) as typeof MessageContentWithContext;
+
+export type MessageContentProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: Alignment;
+  /**
+   * Whether or not the app is using a custom MessageContent component
+   */
+  customMessageContent: boolean;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: GroupType[];
+  /**
+   * Custom message footer component
+   */
+  MessageFooter?: React.ComponentType<
+    Record<string, unknown> & { testID: string }
+  >;
+  /**
+   * Custom message header component
+   */
+  MessageHeader?: React.ComponentType<
+    Record<string, unknown> & { testID: string }
+  >;
+  /**
+   * Custom message replies component
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
+   */
+  MessageReplies?: React.ComponentType;
+};
 
 /**
- * Child of MessageSimple that displays a message's content.
+ * Child of MessageSimple that displays a message's content
  */
-const MessageContent = (props) => {
-  const { disabled } = useChannelContext();
+const MessageContent = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     Attachment = DefaultAttachment,
     Message,
     retrySendMessage,
-  } = useMessagesContext();
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
-    <MessageContentWithContext
+    <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
       {...props}
       {...{ Attachment, disabled, Message, retrySendMessage }}
     />
@@ -397,275 +525,4 @@ const MessageContent = (props) => {
 
 MessageContent.themePath = 'message.content';
 
-MessageContent.defaultProps = {
-  ActionSheet: DefaultActionSheet,
-  enableLongPress: true,
-  FileAttachment: DefaultFileAttachment,
-  FileAttachmentGroup: DefaultFileAttachmentGroup,
-  Gallery: DefaultGallery,
-  hideReactionCount: false,
-  hideReactionOwners: false,
-  MessageReplies: DefaultMessageReplies,
-  ReactionList: DefaultReactionList,
-  reactionsEnabled: true,
-  repliesEnabled: true,
-  supportedReactions: emojiData,
-};
-
-MessageContent.propTypes = {
-  /**
-   * Custom UI component for the action sheet that appears on long press of a Message.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageActionSheet.js
-   *
-   * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
-   */
-  ActionSheet: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles: PropTypes.object,
-  /**
-   * Whether or not to show the action sheet
-   */
-  actionSheetVisible: PropTypes.bool,
-  /**
-   * Provide any additional props for `TouchableOpacity` which wraps `MessageContent` component here.
-   * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
-   */
-  additionalTouchableProps: PropTypes.object,
-  /** Position of message. 'right' | 'left' */
-  alignment: PropTypes.oneOf(['right', 'left']),
-  /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
-   */
-  AttachmentActions: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Function that returns a boolean indicating whether or not the user can delete the message.
-   */
-  canDeleteMessage: PropTypes.func,
-  /**
-   * Function that returns a boolean indicating whether or not the user can edit the message.
-   */
-  canEditMessage: PropTypes.func,
-  /**
-   * Custom UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Card: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default cover (between Header and Footer) of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardCover: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default Footer of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to override default header of Card component.
-   * Accepts the same props as Card component.
-   */
-  CardHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Whether or not the app is using a custom MessageContent component
-   */
-  customMessageContent: PropTypes.bool,
-  /** Dismiss the reaction picker */
-  dismissReactionPicker: PropTypes.func,
-  /**
-   * Whether or not users are able to long press messages.
-   */
-  enableLongPress: PropTypes.bool,
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
-   */
-  FileAttachmentGroup: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  formatDate: PropTypes.func,
-  /**
-   * Custom UI component to display image attachments.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
-   */
-  Gallery: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component to display Giphy image.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  Giphy: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: PropTypes.array,
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  handleAction: PropTypes.func,
-  /**
-   * Handler to delete a current message.
-   */
-  handleDelete: PropTypes.func,
-  /**
-   * Handler to edit a current message. This message simply sets current message as value of `editing` property of channel context.
-   * `editing` prop is then used by MessageInput component to switch to edit mode.
-   */
-  handleEdit: PropTypes.func,
-  // enable hiding reaction count from reaction picker
-  hideReactionCount: PropTypes.bool,
-  // enable hiding reaction owners from reaction picker
-  hideReactionOwners: PropTypes.bool,
-  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules: PropTypes.object,
-  /**
-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
-   * */
-  messageActions: PropTypes.oneOfType([PropTypes.bool, PropTypes.array]),
-  MessageFooter: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  MessageHeader: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  MessageReplies: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Custom UI component for message text */
-  MessageText: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Function that overrides default behaviour when message is long pressed
-   * e.g. if you would like to open reaction picker on message long press:
-   *
-   * ```
-   * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
-   * ...
-   * const MessageUIComponent = (props) => {
-   *  return (
-   *    <MessageSimple
-   *      {...props}
-   *      onLongPress={(message, e) => {
-   *        props.openReactionPicker();
-   *        // Or if you want to open action sheet
-   *        // props.showActionSheet();
-   *      }}
-   *  )
-   * }
-   * ```
-   *
-   * Similarly, you can call other methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
-   *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
-   *
-   * By default, we show the action sheet with all the message actions on long press.
-   *
-   * @param message Message object which was long pressed
-   * @param e       Event object for onLongPress event
-   * */
-  onLongPress: PropTypes.func,
-  /**
-   * Function that overrides default behaviour when message is pressed/touched
-   * e.g. if you would like to open reaction picker on message press:
-   *
-   * ```
-   * import { MessageSimple } from 'stream-chat-react-native' // or 'stream-chat-expo'
-   * ...
-   * const MessageUIComponent = (props) => {
-   *  return (
-   *    <MessageSimple
-   *      {...props}
-   *      onPress={(message, e) => {
-   *        props.openReactionPicker();
-   *        // Or if you want to open action sheet
-   *        // props.showActionSheet();
-   *      }}
-   *  )
-   * }
-   * ```
-   *
-   * Similarly, you can call other methods available on the Message
-   * component such as handleEdit, handleDelete, handleAction etc.
-   *
-   * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.js)
-   *
-   * By default, messages do not have an on press action.
-   *
-   * @param message Message object which was pressed
-   * @param e       Event object for onPress event
-   * */
-  onPress: PropTypes.func,
-  /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
-   *
-   * @param message A message object to open the thread upon.
-   * */
-  onThreadSelect: PropTypes.func,
-  /** Open the reaction picker */
-  openReactionPicker: PropTypes.func,
-  /**
-   * Custom UI component to display reaction list.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.js
-   */
-  ReactionList: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /** Whether or not the reaction picker is visible */
-  reactionPickerVisible: PropTypes.bool,
-  /** enabled reactions, this is usually set by the parent component based on channel configs */
-  reactionsEnabled: PropTypes.bool.isRequired,
-  /** enabled replies, this is usually set by the parent component based on channel configs */
-  repliesEnabled: PropTypes.bool.isRequired,
-  /**
-   * React useState hook setter function that toggles action sheet visibility
-   */
-  setActionSheetVisible: PropTypes.func,
-  /**
-   * Opens the action sheet
-   */
-  showActionSheet: PropTypes.func,
-  /**
-   * e.g.,
-   * [
-   *  {
-   *    id: 'like',
-   *    icon: '👍',
-   *  },
-   *  {
-   *    id: 'love',
-   *    icon: '❤️️',
-   *  },
-   *  {
-   *    id: 'haha',
-   *    icon: '😂',
-   *  },
-   *  {
-   *    id: 'wow',
-   *    icon: '😮',
-   *  },
-   * ]
-   */
-  supportedReactions: PropTypes.array,
-  /** Whether or not the MessageList is part of a Thread */
-  threadList: PropTypes.bool,
-  /**
-   * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
-   */
-  UrlPreview: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-};
-
-export default themed(MessageContent);
+export default themed(MessageContent) as typeof MessageContent;

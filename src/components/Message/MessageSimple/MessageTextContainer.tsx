@@ -5,7 +5,12 @@ import styled, { ThemeContext } from 'styled-components/native';
 import { capitalize } from './utils/capitalize';
 import { renderText } from './utils/renderText';
 
-const TextContainer = styled.View`
+const TextContainer = styled.View<{
+  alignment: string;
+  groupStyle: string;
+  status: string;
+  type: string;
+}>`
   align-self: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   background-color: ${({ alignment, status, theme, type }) =>

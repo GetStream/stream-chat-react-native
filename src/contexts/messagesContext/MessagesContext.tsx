@@ -3,9 +3,9 @@ import React, { PropsWithChildren, useContext } from 'react';
 import type { DebouncedFunc } from 'lodash';
 import type {
   ChannelState,
-  Message,
   MessageResponse,
   StreamChat,
+  Message as StreamMessage,
   UnknownType,
   UserResponse,
 } from 'stream-chat';
@@ -13,6 +13,10 @@ import type {
 import { getDisplayName } from '../utils/getDisplayName';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
+import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
+import type { Message } from '../../components/MessageList/utils/insertDates';
+
+import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -39,10 +43,6 @@ export type MessageWithDates<
   readBy: UserResponse<Us>[];
 };
 
-export type MessageProps = {
-  // TODO - Add attachment props when it is typed
-};
-
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -65,21 +65,36 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
-  Message: React.ComponentType<MessageProps>;
+  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   retrySendMessage: (
-    message: MessageWithDates<At, Ch, Co, Me, Re, Us>,
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
   ) => Promise<void>;
   sendMessage: (message: {
-    attachments?: Message<At, Me, Us>['attachments'];
-    extraFields?: Partial<Message<At, Me, Us>>;
-    mentioned_users?: Message<At, Me, Us>['mentioned_users'];
-    parent?: Message<At, Me, Us>['parent_id'];
-    text?: Message<At, Me, Us>['text'];
+    attachments?: StreamMessage<At, Me, Us>['attachments'];
+    extraFields?: Partial<StreamMessage<At, Me, Us>>;
+    mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
+    parent?: StreamMessage<At, Me, Us>['parent_id'];
+    text?: StreamMessage<At, Me, Us>['text'];
   }) => Promise<void>;
-  setEditingState: (message: MessageWithDates<At, Ch, Co, Me, Re, Us>) => void;
-  updateMessage: (updatedMessage: Message<At, Me, Us>) => void;
+  setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  updateMessage: (
+    updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    extraState?: {
+      commands?: SuggestionCommand<Co>[];
+      messageInput?: string;
+      threadMessages?: ChannelState<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >['threads'][string];
+    },
+  ) => void;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

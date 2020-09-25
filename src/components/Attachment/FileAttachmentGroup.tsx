@@ -48,7 +48,7 @@ export type FileAttachmentGroupProps<
   /**
    * The unique id for the message with file attachments
    */
-  messageId: string;
+  messageId?: string;
 };
 
 const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(

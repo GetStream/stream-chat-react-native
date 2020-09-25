@@ -28,7 +28,7 @@ export type DateSeparator<
   type: 'message.date';
 };
 
-export type InsertDate<
+export type MessageOrDate<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -48,7 +48,7 @@ export type InsertDatesResponse<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = InsertDate<At, Ch, Co, Ev, Me, Re, Us>[];
+> = MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>[];
 
 export const isDateSeparator = <
   At extends UnknownType = DefaultAttachmentType,
@@ -59,7 +59,7 @@ export const isDateSeparator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  message: InsertDate<At, Ch, Co, Ev, Me, Re, Us>,
+  message: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>,
 ): message is DateSeparator<At, Ch, Co, Ev, Me, Re, Us> =>
   message.type === 'message.date';
 
