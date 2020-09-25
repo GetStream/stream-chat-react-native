@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0] 2020-09-16 (UNPUBLISHED)
+## [1.3.0] 2020-09-25
 
 **BREAKING CHANGES**
 
