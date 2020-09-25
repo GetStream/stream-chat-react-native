@@ -23,7 +23,9 @@ import type {
   Alignment,
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
+import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 import type { ActionProps, MessageProps } from '../Message';
+import type { MessageActionSheetProps } from './MessageActionSheet';
 import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
   DefaultAttachmentType,
@@ -138,7 +140,7 @@ export type MessageSimpleProps<
      *
      * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
      */
-    ActionSheet?: any;
+    ActionSheet?: React.ComponentType<Partial<MessageActionSheetProps>>;
     /**
      * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
      * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -195,7 +197,7 @@ export type MessageSimpleProps<
     /**
      * Optional function to custom format the message date
      */
-    formatDate?: (date: string) => void;
+    formatDate?: (date: TDateTimeParserInput) => string;
     /**
      * Custom UI component to display image attachments.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.tsx

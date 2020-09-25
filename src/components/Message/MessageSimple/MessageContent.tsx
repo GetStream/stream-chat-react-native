@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { GestureResponderEvent } from 'react-native';
-import Immutable from 'seamless-immutable';
+
+import type { ActionSheetCustom } from 'react-native-actionsheet';
 
 import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies from './MessageReplies';
@@ -12,7 +13,9 @@ import DefaultAttachment, {
 import DefaultFileAttachment from '../../Attachment/FileAttachment';
 import DefaultFileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
 import DefaultGallery from '../../Attachment/Gallery';
-import DefaultReactionList from '../../Reaction/ReactionList';
+import DefaultReactionList, {
+  LatestReactions,
+} from '../../Reaction/ReactionList';
 import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
@@ -23,7 +26,11 @@ import {
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import {
+  isDayOrMoment,
+  TDateTimeParserInput,
+  useTranslationContext,
+} from '../../../contexts/translationContext/TranslationContext';
 import { styled } from '../../../styles/styledComponents';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
@@ -39,6 +46,7 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
+import type MessageActionSheet from './MessageActionSheet';
 
 /**
  * Border radii are useful for the case of error message types only.
@@ -206,7 +214,7 @@ const MessageContentWithContext = <
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
-  const actionSheetRef = useRef<any>(); // TODO - add ActionSheet type
+  const actionSheetRef = useRef<ActionSheetCustom>();
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -285,6 +293,28 @@ const MessageContentWithContext = <
     onLongPress: contentProps.onLongPress,
   };
 
+  const getDateText = (formatter?: (date: TDateTimeParserInput) => string) => {
+    if (!message.created_at) return '';
+
+    if (formatter) {
+      if (typeof message.created_at === 'string') {
+        return formatter(message.created_at);
+      } else {
+        return formatter(message.created_at.asMutable());
+      }
+    }
+
+    if (typeof message.created_at === 'string') {
+      return tDateTimeParser(message.created_at);
+    } else {
+      const parserOutput = tDateTimeParser(message.created_at.asMutable());
+      if (isDayOrMoment(parserOutput)) {
+        return parserOutput.format('LT');
+      }
+      return '';
+    }
+  };
+
   return (
     <MessageContentProvider value={context}>
       <Container
@@ -323,7 +353,16 @@ const MessageContentWithContext = <
                 <ReactionList<At, Ch, Co, Me, Re, Us>
                   alignment={alignment}
                   getTotalReactionCount={getTotalReactionCount}
-                  latestReactions={message.latest_reactions}
+                  latestReactions={
+                    message.latest_reactions as LatestReactions<
+                      At,
+                      Ch,
+                      Co,
+                      Me,
+                      Re,
+                      Us
+                    >
+                  }
                   supportedReactions={supportedReactions}
                   visible={!reactionPickerVisible}
                 />
@@ -399,11 +438,7 @@ const MessageContentWithContext = <
         {MessageFooter && <MessageFooter testID='message-footer' {...props} />}
         {!MessageFooter && showTime ? (
           <MetaContainer testID='show-time'>
-            <MetaText alignment={alignment}>
-              {formatDate
-                ? formatDate(message.created_at)
-                : tDateTimeParser(message.created_at).format('LT')}
-            </MetaText>
+            <MetaText alignment={alignment}>{getDateText(formatDate)}</MetaText>
           </MetaContainer>
         ) : null}
         {actionSheetVisible && enableLongPress && (
