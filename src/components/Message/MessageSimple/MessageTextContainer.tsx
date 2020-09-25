@@ -11,7 +11,7 @@ import type {
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
 import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
-import type { Theme } from '../../../styles/themeConstants';
+import type { MarkdownStyle, Theme } from '../../../styles/themeConstants';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -78,9 +78,9 @@ export type MessageTextProps<
     markdownStyles,
     message,
   }: {
-    markdownRules: any;
-    markdownStyles: any;
-    message: any;
+    markdownRules: Record<string, unknown>;
+    markdownStyles: MarkdownStyle;
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   }) => JSX.Element | null;
   theme: Theme;
 };
@@ -180,7 +180,11 @@ const MessageTextContainer = <
       {MessageText ? (
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
-        renderText({ markdownRules, markdownStyles, message })
+        renderText<At, Ch, Co, Ev, Me, Re, Us>({
+          markdownRules,
+          markdownStyles,
+          message,
+        })
       )}
     </TextContainer>
   );
