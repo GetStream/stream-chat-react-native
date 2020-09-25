@@ -201,4 +201,4 @@ const ReactionList = <
 
 ReactionList.themePath = 'message.reactionList';
 
-export default themed(ReactionList);
+export default themed(ReactionList) as typeof ReactionList;
