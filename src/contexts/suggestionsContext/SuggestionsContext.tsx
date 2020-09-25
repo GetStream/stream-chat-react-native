@@ -75,7 +75,7 @@ export const SuggestionsProvider = <
 >({
   children,
   value,
-}: PropsWithChildren<{ value: SuggestionsContextValue<Co, Us> }>) => {
+}: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
   const [componentType, setComponentType] = useState<
     SuggestionComponentType<Co, Us>
   >('');

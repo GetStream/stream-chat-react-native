@@ -23,6 +23,7 @@ import type {
   Alignment,
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
+import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 import type { ActionProps, MessageProps } from '../Message';
 import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
@@ -195,7 +196,7 @@ export type MessageSimpleProps<
     /**
      * Optional function to custom format the message date
      */
-    formatDate?: (date: string) => void;
+    formatDate?: (date: TDateTimeParserInput) => string;
     /**
      * Custom UI component to display image attachments.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.tsx

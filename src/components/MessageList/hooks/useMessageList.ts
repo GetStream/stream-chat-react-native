@@ -1,10 +1,10 @@
 import { getGroupStyles } from '../utils/getGroupStyles';
 import { getReadStates } from '../utils/getReadStates';
 import {
-  InsertDate,
   insertDates,
   InsertDatesResponse,
   isDateSeparator,
+  MessageOrDate,
 } from '../utils/insertDates';
 
 import {
@@ -32,7 +32,7 @@ export type MessageList<
   Me extends Record<string, unknown> = DefaultMessageType,
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
-> = InsertDate<At, Ch, Co, Ev, Me, Re, Us>;
+> = MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>;
 
 export const useMessageList = <
   At extends Record<string, unknown> = DefaultAttachmentType,

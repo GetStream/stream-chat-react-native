@@ -1,14 +1,17 @@
 import React from 'react';
 import type { Attachment as AttachmentType, UnknownType } from 'stream-chat';
 
-import Attachment, { ActionHandler, GroupStyle } from './Attachment';
+import Attachment, { ActionHandler } from './Attachment';
 
 import { styled } from '../../styles/styledComponents';
 
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileAttachmentProps } from './FileAttachment';
 import type { FileIconProps } from './FileIcon';
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  GroupType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 const Container = styled.View`
@@ -68,7 +71,7 @@ const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(
     <Container>
       {files.length &&
         files.map((file, index) => {
-          let groupStyle: GroupStyle = 'single';
+          let groupStyle: GroupType = 'single';
 
           if (files.length === 1) {
             groupStyle = 'single';
