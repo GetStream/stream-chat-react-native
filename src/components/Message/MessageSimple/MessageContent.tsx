@@ -46,7 +46,6 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
-import type MessageActionSheet from './MessageActionSheet';
 
 /**
  * Border radii are useful for the case of error message types only.
@@ -414,7 +413,7 @@ const MessageContentWithContext = <
           {images && images.length > 0 && (
             <Gallery<At> alignment={alignment} images={images} />
           )}
-          <MessageTextContainer
+          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             disabled={message.status === 'failed' || message.type === 'error'}
             groupStyles={groupStyles}
