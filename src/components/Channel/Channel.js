@@ -29,7 +29,6 @@ const Channel = (props) => {
     channel,
     children,
     disableIfFrozenChannel = true,
-    disableKeyboardCompatibleView = false,
     emojiData = emojiDataDefault,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
@@ -189,6 +188,8 @@ const Channel = (props) => {
   const initChannel = async () => {
     let initError = false;
     setError(false);
+    setLoading(true);
+
     if (!channel.initialized && channel.cid) {
       try {
         await channel.watch();
@@ -506,8 +507,17 @@ const Channel = (props) => {
     return <LoadingIndicator listType='message' />;
   }
 
+  const {
+    disableKeyboardCompatibleView,
+    keyboardBehavior,
+    keyboardVerticalOffset,
+  } = props;
   return (
-    <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
+    <KeyboardCompatibleView
+      behavior={keyboardBehavior}
+      enabled={!disableKeyboardCompatibleView}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+    >
       <ChannelContext.Provider value={channelContext}>
         <SuggestionsProvider>{children}</SuggestionsProvider>
       </ChannelContext.Provider>

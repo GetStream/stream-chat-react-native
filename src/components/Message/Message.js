@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Keyboard, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
 import MessageSimple from './MessageSimple/MessageSimple';
@@ -16,7 +16,6 @@ const DefaultMessageWithContext = React.memo((props) => {
     channel,
     client,
     disabled,
-    dismissKeyboard,
     emojiData,
     message,
     Message = MessageSimple,
@@ -28,7 +27,6 @@ const DefaultMessageWithContext = React.memo((props) => {
 
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
-
   const isMyMessage = (message) => client.user.id === message.user.id;
 
   const isAdmin = () =>
@@ -65,12 +63,15 @@ const DefaultMessageWithContext = React.memo((props) => {
   const handleMute = async () => await client.muteUser(message.user.id);
 
   const showActionSheet = async () => {
+    const { dismissKeyboard } = props;
     await dismissKeyboard();
     setActionSheetVisible(true);
   };
 
   const openReactionPicker = async () => {
     if (disabled) return;
+
+    const { dismissKeyboard } = props;
     /**
      * Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
      * So we need to postpone the calculation for the reaction picker position until after the keyboard closes.
@@ -167,8 +168,17 @@ const DefaultMessageWithContext = React.memo((props) => {
     actionProps.repliesEnabled = channel.getConfig().reactions;
   }
 
+  const onPress = () => {
+    if (props.dismissKeyboardOnMessageTouch) {
+      Keyboard.dismiss();
+    }
+  };
   return (
-    <TouchableOpacity activeOpacity={1} testID='message-wrapper'>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={onPress}
+      testID='message-wrapper'
+    >
       <Message
         {...props}
         {...actionProps}
@@ -188,6 +198,7 @@ const DefaultMessageWithContext = React.memo((props) => {
         isAdmin={isAdmin}
         isModerator={isModerator}
         isMyMessage={isMyMessage}
+        onPress={onPress}
         openReactionPicker={openReactionPicker}
         reactionPickerVisible={reactionPickerVisible}
         setActionSheetVisible={setActionSheetVisible}
@@ -207,7 +218,6 @@ DefaultMessageWithContext.displayName = 'messageWithContext';
  */
 const DefaultMessage = (props) => {
   const { client } = useContext(ChatContext);
-  const { dismissKeyboard } = useContext(KeyboardContext);
   const {
     channel,
     disabled,
@@ -218,6 +228,7 @@ const DefaultMessage = (props) => {
     setEditingState,
     updateMessage,
   } = useContext(ChannelContext);
+  const { dismissKeyboard } = useContext(KeyboardContext);
 
   return (
     <DefaultMessageWithContext

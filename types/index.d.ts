@@ -1,7 +1,11 @@
 // TypeScript Version: 2.8
 
 import * as React from 'react';
-import { FlatList, GestureResponderEvent } from 'react-native';
+import {
+  FlatList,
+  GestureResponderEvent,
+  KeyboardAvoidingViewProps,
+} from 'react-native';
 import * as Client from 'stream-chat';
 import * as SeamlessImmutable from 'seamless-immutable';
 import * as i18next from 'i18next';
@@ -206,6 +210,8 @@ export interface ChannelProps
    * />
    */
   KeyboardCompatibleView?: React.ElementType<KeyboardCompatibleViewProps>;
+  keyboardVerticalOffset?: number;
+  keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
   disableIfFrozenChannel?: boolean;
 }
 
@@ -1008,13 +1014,8 @@ export interface ImageUploadPreviewProps extends StyledComponentProps {
   removeImage?(id: string): void;
   retryUpload?(id: string): Promise<any>;
 }
-export interface KeyboardCompatibleViewProps extends StyledComponentProps {
-  // Default: 500
-  keyboardDismissAnimationDuration?: number;
-  // Default: 500
-  keyboardOpenAnimationDuration?: number;
-  enabled?: boolean;
-}
+export interface KeyboardCompatibleViewProps
+  extends KeyboardAvoidingViewProps {}
 
 export interface EmptyStateIndicatorProps extends StyledComponentProps {
   listType?: listType;

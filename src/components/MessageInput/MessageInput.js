@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Keyboard } from 'react-native';
 import styled from '@stream-io/styled-components';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
@@ -90,7 +91,6 @@ const MessageInput = (props) => {
   const { client } = chatContext;
 
   const keyboardContext = useContext(KeyboardContext);
-  const { dismissKeyboard } = keyboardContext;
 
   const {
     channel,
@@ -402,7 +402,7 @@ const MessageInput = (props) => {
               getUsers={getUsers}
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
-                  await dismissKeyboard();
+                  await Keyboard.dismiss();
                   attachActionSheet.current.show();
                 } else if (hasImagePicker && !hasFilePicker) pickImage();
                 else if (!hasImagePicker && hasFilePicker) pickFile();
@@ -430,7 +430,7 @@ const MessageInput = (props) => {
                   disabled={disabled}
                   handleOnPress={async () => {
                     if (hasImagePicker && hasFilePicker) {
-                      await dismissKeyboard();
+                      await Keyboard.dismiss();
                       attachActionSheet.current.show();
                     } else if (hasImagePicker && !hasFilePicker) pickImage();
                     else if (!hasImagePicker && hasFilePicker) {

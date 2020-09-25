@@ -66,6 +66,7 @@ const MessageList = (props) => {
     setFlatListRef,
     threadList,
     TypingIndicator = DefaultTypingIndicator,
+    dismissKeyboardOnMessageTouch = true,
   } = props;
 
   const {
@@ -133,6 +134,7 @@ const MessageList = (props) => {
         <DefaultMessage
           actionSheetStyles={actionSheetStyles}
           AttachmentFileIcon={AttachmentFileIcon}
+          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
           groupStyles={message.groupStyles}
           lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
           Message={Message}
@@ -287,6 +289,8 @@ MessageList.propTypes = {
    * */
   DateSeparator: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
   disableWhileEditing: PropTypes.bool,
+  /** Should keyboard be dismissed when messaged is touched */
+  dismissKeyboardOnMessageTouch: PropTypes.bool,
   /**
    * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.

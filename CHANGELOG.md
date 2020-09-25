@@ -4,7 +4,26 @@
 
 **BREAKING CHANGES**
 
-*ChannelList*
+## MessageInput
+
+- Replaced the default image picker [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) for [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) and added `compressImageQuality` prop to support image compression out-of-the-box
+- Added `FileUploadPreview` and `ImageUploadPreview` props to support custom overrides to those components
+
+## KeyboardCompatibleView and Channel component
+
+Implementation of internal KeyboardCompatibleView has been changed so as to make animations smoother and fix existing issues with keyboard behavior.
+Support for following props have been dropped from Channel and KeyboardCompatibleView
+
+- keyboardDismissAnimationDuration
+- keyboardOpenAnimationDuration
+
+Following new props have been introduced on `Channel` component. They are the same props accepted by KeyboardAvoidingView of react-native.
+
+- keyboardBehavior ['height' | 'position' | 'padding']
+- keyboardVerticalOffset
+
+
+## ChannelList
 
 - We converted the ChannelList component from a class to a function and abstracted the event listener logic into custom hooks. The default event handlers can still be overridden by providing custom prop functions to the ChannelList component. Custom logic can be provided for the following events:
 
@@ -21,22 +40,31 @@
   - 1st argument: `setChannels` reference to the `useState` hook that sets the `channels` in the React Native FlatList
   - 2nd argument: `event` object returned by the StreamChat instance
 
+e.g.,
+
+```js
+// In following example we will override the default handler for notification.added_to_channel
+<ChannelList
+  filters={}
+  onAddedToChannel={(setChannels, event) => {
+    setChannels(channels => {
+      // Do additional actions on channels array.
+      return channels;
+    })
+  }}
+>
+```
 - On upgrading to this release, ensure events and any custom handling functions (ex: `onAddedToChannel` or `onMessageNew`) are properly processed and update the list UI as expected.
 
-*FileUploadPreview*
+## FileUploadPreview
 
 - We fixed a bug for being unable to remove a file from the `MessageInput` and made it consistent to `ImageUploadPreview`
 - We have removed support for the `fileUploadPreview.dismissText` theme value
 - We have added support for `fileUploadPreview.dismiss`, `fileUploadPreview.dismissImage`, and `fileUploadPreview.imageContainer` theme values
 
-*MessageInput*
+## Deprecated Props
 
-- We replaced the default image picker [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) for [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) and added `compressImageQuality` prop to support image compression out-of-the-box
-- Added `FileUploadPreview` and `ImageUploadPreview` props to support custom overrides to those components
-
-*Deprecated Props*
-
-- We have removed support for the `MessageList` component's `onMessageTouch` prop. Since this prop no longer exists, we have also removed `dismissKeyboardOnMessageTouch`. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
+- We have removed support for the `MessageList` component's `onMessageTouch` prop. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
 
 - We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
 
@@ -44,11 +72,11 @@
   - `dateSeparator` (use DateSeparator instead)
   - `headerComponent` (use HeaderComponent instead)
 
-*this Reference Removal*
+## this Reference Removal
 
 - We have removed the `this` class component reference from the prop functions in `MessageSimple`. For example, if you wish to override the SDK's standard long press behavior on a message, the `onLongPress` function passed in to `MessageSimple` no longer takes the `this` component reference as it's first argument. The message and the event object become the first and second arguments, respectively.
 
-*renderText Function*
+## renderText Function
 
 - The `renderText` function utilized in the `MessageTextContainer` component now accepts a single object containing `markdownRules`, `markdownStyles`, and `message`. Previously each value was a separate function parameter.
 
