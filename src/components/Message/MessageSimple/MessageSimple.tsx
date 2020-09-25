@@ -5,8 +5,8 @@ import type {
   TouchableOpacityProps,
 } from 'react-native';
 
-import DefaultMessageAvatar, { MessageAvatarProps } from './MessageAvatar';
-import DefaultMessageContent, { MessageContentProps } from './MessageContent';
+import DefaultMessageAvatar from './MessageAvatar';
+import DefaultMessageContent, { ForwardedMessageProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
@@ -26,6 +26,7 @@ import type {
 import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 import type { ActionProps, MessageProps } from '../Message';
 import type { MessageActionSheetProps } from './MessageActionSheet';
+import type { MessageTextProps } from './MessageTextContainer';
 import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
   DefaultAttachmentType,
@@ -36,7 +37,6 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
-import type { MessageTextProps } from './MessageTextContainer';
 
 const Container = styled.View<{
   alignment: Alignment;
@@ -227,21 +227,23 @@ export type MessageSimpleProps<
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.tsx
      * */
     MessageAvatar?: React.ComponentType<
-      Partial<MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>>
-    >;
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+    > & { showAvatar?: boolean };
     /**
      * Custom UI component for message content
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.tsx
      * */
     MessageContent?: React.ComponentType<
-      Partial<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
      * Custom UI component for message status (delivered/read)
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.tsx
      *
      * */
-    MessageStatus?: any;
+    MessageStatus?: React.ComponentType<
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /** Custom UI component for message text */
     MessageText?: React.ComponentType<
       Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
@@ -425,7 +427,9 @@ const MessageSimple = <
         <>
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
           <MessageAvatar<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
-          {showMessageStatus && <MessageStatus {...forwardedProps} />}
+          {showMessageStatus && (
+            <MessageStatus<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
+          )}
         </>
       ) : (
         <>

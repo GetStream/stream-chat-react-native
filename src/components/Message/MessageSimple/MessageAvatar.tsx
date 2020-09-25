@@ -4,7 +4,7 @@ import Avatar from '../../Avatar/Avatar';
 
 import { styled } from '../../../styles/styledComponents';
 
-import type { MessageSimpleProps } from './MessageSimple';
+import type { ForwardedMessageProps } from './MessageContent';
 import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
@@ -28,29 +28,6 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-export type MessageAvatarProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends DefaultUserType = DefaultUserType
-> = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  /**
-   * Avatar alignment: 'left' or 'right'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the app is using a custom MessageContent component
-   */
-  customMessageContent: boolean;
-  /**
-   * Whether or not to show the user's image avatar
-   */
-  showAvatar?: boolean;
-};
-
 const MessageAvatar = <
   At extends Record<string, unknown> = DefaultAttachmentType,
   Ch extends Record<string, unknown> = DefaultChannelType,
@@ -64,7 +41,9 @@ const MessageAvatar = <
   groupStyles,
   message,
   showAvatar,
-}: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+}: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  showAvatar?: boolean;
+}) => {
   const visible =
     typeof showAvatar === 'boolean'
       ? showAvatar
