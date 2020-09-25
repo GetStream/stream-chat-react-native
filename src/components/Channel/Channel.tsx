@@ -634,7 +634,10 @@ const Channel = <
     Us
   >['editMessage'] = (updatedMessage) => {
     if (doUpdateMessageRequest) {
-      return doUpdateMessageRequest(channel.cid, updatedMessage);
+      return doUpdateMessageRequest(
+        channel.cid,
+        updatedMessage as MessageType<At, Me, Us>,
+      );
     }
     return client.updateMessage(updatedMessage as MessageType<At, Me, Us>);
   };

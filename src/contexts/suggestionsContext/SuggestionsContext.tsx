@@ -46,13 +46,13 @@ export type SuggestionsContextValue<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
-  closeSuggestions?: () => void;
-  openSuggestions?: (
+  closeSuggestions: () => void;
+  openSuggestions: (
     title: string,
     component: SuggestionComponentType<Co, Us>,
   ) => Promise<void>;
-  setInputBoxContainerRef?: (ref: View) => void;
-  updateSuggestions?: (newSuggestions: Suggestions<Co, Us>) => void;
+  setInputBoxContainerRef: (ref: View) => void;
+  updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
 };
 
 export const SuggestionsContext = React.createContext(
@@ -75,7 +75,7 @@ export const SuggestionsProvider = <
 >({
   children,
   value,
-}: PropsWithChildren<{ value?: SuggestionsContextValue<Co, Us> }>) => {
+}: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
   const [componentType, setComponentType] = useState<
     SuggestionComponentType<Co, Us>
   >('');
