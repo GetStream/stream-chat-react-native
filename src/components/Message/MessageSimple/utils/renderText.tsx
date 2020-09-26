@@ -1,9 +1,48 @@
 import React from 'react';
+// @ts-expect-error
 import Markdown from '@stream-io/react-native-simple-markdown';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
 
-export const renderText = ({ markdownRules, markdownStyles, message }) => {
+import type { MarkdownStyle } from '../../../../styles/themeConstants';
+import type { Message } from '../../../MessageList/utils/insertDates';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../../types/types';
+
+type Parameters<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
+  markdownRules: Record<string, unknown>;
+  markdownStyles: MarkdownStyle;
+  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+};
+
+export const renderText = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>({
+  markdownRules,
+  markdownStyles,
+  message,
+}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
   // take the @ mentions and turn them into markdown?
   // translate links
   const { mentioned_users = [], text } = message;

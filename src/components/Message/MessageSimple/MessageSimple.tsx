@@ -6,7 +6,7 @@ import type {
 } from 'react-native';
 
 import DefaultMessageAvatar from './MessageAvatar';
-import DefaultMessageContent, { MessageContentProps } from './MessageContent';
+import DefaultMessageContent, { ForwardedMessageProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
 import { themed } from '../../../styles/theme';
@@ -26,6 +26,7 @@ import type {
 import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 import type { ActionProps, MessageProps } from '../Message';
 import type { MessageActionSheetProps } from './MessageActionSheet';
+import type { MessageTextProps } from './MessageTextContainer';
 import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
   DefaultAttachmentType,
@@ -225,22 +226,28 @@ export type MessageSimpleProps<
      * Custom UI component for the avatar next to a message
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.tsx
      * */
-    MessageAvatar?: any;
+    MessageAvatar?: React.ComponentType<
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+    > & { showAvatar?: boolean };
     /**
      * Custom UI component for message content
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.tsx
      * */
     MessageContent?: React.ComponentType<
-      Partial<MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>>
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
      * Custom UI component for message status (delivered/read)
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.tsx
      *
      * */
-    MessageStatus?: any;
+    MessageStatus?: React.ComponentType<
+      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /** Custom UI component for message text */
-    MessageText?: any;
+    MessageText?: React.ComponentType<
+      Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
     /**
      * Function that overrides default behavior when message is long pressed
      * e.g. if you would like to open reaction picker on message long press:
@@ -419,12 +426,14 @@ const MessageSimple = <
       {alignment === 'right' ? (
         <>
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
-          <MessageAvatar {...forwardedProps} />
-          {showMessageStatus && <MessageStatus {...forwardedProps} />}
+          <MessageAvatar<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
+          {showMessageStatus && (
+            <MessageStatus<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
+          )}
         </>
       ) : (
         <>
-          <MessageAvatar {...forwardedProps} />
+          <MessageAvatar<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
         </>
       )}

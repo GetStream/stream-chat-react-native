@@ -4,7 +4,7 @@ import type { GestureResponderEvent } from 'react-native';
 import type { ActionSheetCustom } from 'react-native-actionsheet';
 
 import DefaultActionSheet from './MessageActionSheet';
-import DefaultMessageReplies from './MessageReplies';
+import DefaultMessageReplies, { MessageRepliesProps } from './MessageReplies';
 import MessageTextContainer from './MessageTextContainer';
 
 import DefaultAttachment, {
@@ -46,7 +46,6 @@ import type {
   DefaultReactionType,
   DefaultUserType,
 } from '../../../types/types';
-import type MessageActionSheet from './MessageActionSheet';
 
 /**
  * Border radii are useful for the case of error message types only.
@@ -129,7 +128,7 @@ type MessageContentWithContextProps<
   Me extends Record<string, unknown> = DefaultMessageType,
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
-> = MessageContentProps<At, Ch, Co, Ev, Me, Re, Us> & {
+> = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
   Attachment: React.ComponentType<AttachmentProps<At>>;
   disabled: boolean | undefined;
   Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
@@ -414,7 +413,7 @@ const MessageContentWithContext = <
           {images && images.length > 0 && (
             <Gallery<At> alignment={alignment} images={images} />
           )}
-          <MessageTextContainer
+          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             disabled={message.status === 'failed' || message.type === 'error'}
             groupStyles={groupStyles}
@@ -486,7 +485,7 @@ const MemoizedMessageContent = React.memo(
   areEqual,
 ) as typeof MessageContentWithContext;
 
-export type MessageContentProps<
+export type ForwardedMessageProps<
   At extends Record<string, unknown> = DefaultAttachmentType,
   Ch extends Record<string, unknown> = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -526,7 +525,9 @@ export type MessageContentProps<
    * Custom message replies component
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
    */
-  MessageReplies?: React.ComponentType;
+  MessageReplies?: React.ComponentType<
+    Partial<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
 };
 
 /**
@@ -541,7 +542,7 @@ const MessageContent = <
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
 >(
-  props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { Attachment, Message, retrySendMessage } = useMessagesContext<

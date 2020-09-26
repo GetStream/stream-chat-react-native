@@ -1,7 +1,7 @@
 import type { LiteralStringForUnion, UnknownType } from 'stream-chat';
 
 export type DefaultAttachmentType = UnknownType & {
-  file_size?: string;
+  file_size?: number | string;
   mime_type?: string;
 };
 

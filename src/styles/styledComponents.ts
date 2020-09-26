@@ -9,6 +9,7 @@ const {
   css,
   default: styled,
   ThemeConsumer,
+  ThemeContext,
   ThemeProvider,
   useTheme,
   withTheme,
@@ -16,4 +17,12 @@ const {
   Theme
 >;
 
-export { css, styled, ThemeConsumer, ThemeProvider, useTheme, withTheme };
+export {
+  css,
+  styled,
+  ThemeConsumer,
+  ThemeContext,
+  ThemeProvider,
+  useTheme,
+  withTheme,
+};
