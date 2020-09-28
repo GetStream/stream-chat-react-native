@@ -430,7 +430,7 @@ const MessageContentWithContext = <
           />
         </ContainerInner>
         {repliesEnabled ? (
-          <MessageReplies
+          <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             isThreadList={!!threadList}
             message={message}
@@ -482,11 +482,13 @@ const areEqual = <
 
   const actionSheetEqual = prevAS === nextAS;
   const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
+  // TODO - check and see if reactions/replies change update_at time
   const reactionsEqual =
     prevMessage.latest_reactions?.length ===
     nextMessage.latest_reactions?.length;
+  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
 
-  return actionSheetEqual && messageEqual && reactionsEqual;
+  return actionSheetEqual && messageEqual && reactionsEqual && repliesEqual;
 };
 
 const MemoizedMessageContent = React.memo(
