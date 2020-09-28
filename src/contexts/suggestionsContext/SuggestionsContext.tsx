@@ -51,7 +51,7 @@ export type SuggestionsContextValue<
     title: string,
     component: SuggestionComponentType<Co, Us>,
   ) => Promise<void>;
-  setInputBoxContainerRef: (ref: View) => void;
+  setInputBoxContainerRef: (ref: View | null) => void;
   updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
 };
 

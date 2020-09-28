@@ -46,7 +46,7 @@ const isCommand = (text: string) => {
   return true;
 };
 
-type Props<
+export type AutoCompleteInputProps<
   Co extends string = DefaultCommandType,
   Us extends Record<string, unknown> = DefaultUserType
 > = {
@@ -65,7 +65,7 @@ type Props<
   /**
    * Ref callback to set reference on input box
    */
-  setInputBoxRef: React.RefObject<TextInputType>;
+  setInputBoxRef: (ref: TextInputType | null) => void;
   /**
    * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
    */
@@ -85,7 +85,7 @@ const AutoCompleteInput = <
   setInputBoxRef,
   triggerSettings,
   value,
-}: Props<Co, Us>) => {
+}: AutoCompleteInputProps<Co, Us>) => {
   const {
     closeSuggestions,
     openSuggestions,

@@ -10,8 +10,9 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
-  Message as MessageType,
+  SendMessageAPIResponse,
   StreamChat,
+  Message as StreamMessage,
 } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
@@ -24,6 +25,7 @@ import MessageDefault from '../Message/Message';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
+import type { Message as MessageType } from '../MessageList/utils/insertDates';
 import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
 import {
@@ -66,7 +68,7 @@ export type ChannelProps<
   /**
    * The currently active channel
    */
-  channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>;
+  channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
   /**
    * Custom UI component to display attachments on individual messages
    * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
@@ -99,8 +101,8 @@ export type ChannelProps<
    */
   doSendMessageRequest?: (
     channelId: string,
-    messageData: MessageType<At, Me, Us>,
-  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+    messageData: StreamMessage<At, Me, Us>,
+  ) => Promise<SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>>;
   /**
    * Overrides the Stream default update message request (Advanced usage only)
    * @param channelId
@@ -108,7 +110,7 @@ export type ChannelProps<
    */
   doUpdateMessageRequest?: (
     channelId: string,
-    updatedMessage: MessageType<At, Me, Us>,
+    updatedMessage: StreamMessage<At, Me, Us>,
   ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
   /**
@@ -197,7 +199,9 @@ const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState<
+    boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
+  >(false);
   const [error, setError] = useState(false);
   /**
    * We save the events in state so that we can display event message
@@ -270,7 +274,7 @@ const Channel = <
   useEffect(() => {
     if (threadProps) {
       setThread(threadProps);
-      if (threadProps?.id) {
+      if (channel && threadProps?.id) {
         setThreadMessages(channel.state.threads?.[threadProps.id] || []);
       }
     }
@@ -289,7 +293,7 @@ const Channel = <
     Re,
     Us
   >['markRead'] = () => {
-    if (channel.disconnected || !channel?.getConfig?.()?.read_events) {
+    if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
       return;
     }
 
@@ -307,15 +311,17 @@ const Channel = <
 
   const copyChannelState = () => {
     setLoading(false);
-    setMembers(channel.state.members);
-    setMessages(channel.state.messages);
-    setRead(channel.state.read);
-    setTyping(channel.state.typing);
-    setWatcherCount(channel.state.watcher_count);
-    setWatchers(channel.state.watchers);
+    if (channel) {
+      setMembers(channel.state.members);
+      setMessages(channel.state.messages);
+      setRead(channel.state.read);
+      setTyping(channel.state.typing);
+      setWatcherCount(channel.state.watcher_count);
+      setWatchers(channel.state.watchers);
 
-    if (channel.countUnread() > 0) {
-      markReadThrottled();
+      if (channel.countUnread() > 0) {
+        markReadThrottled();
+      }
     }
   };
 
@@ -356,11 +362,12 @@ const Channel = <
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (e) => {
     if (thread) {
       const updatedThreadMessages =
-        (thread.id && channel.state.threads[thread.id]) || threadMessages;
+        (thread.id && channel && channel.state.threads[thread.id]) ||
+        threadMessages;
       setThreadMessages(updatedThreadMessages);
     }
 
-    if (thread && e.message && e.message.id === thread.id) {
+    if (channel && thread && e.message && e.message.id === thread.id) {
       const updatedThread = channel.state.messageToImmutable(e.message);
       setThread(updatedThread);
     }
@@ -368,20 +375,22 @@ const Channel = <
     if (e.type === 'member.added') addToEventHistory(e);
     if (e.type === 'member.removed') addToEventHistory(e);
 
-    handleEventStateThrottled(channel.state);
+    if (channel) {
+      handleEventStateThrottled(channel.state);
+    }
   };
 
   const listenToChanges = () => {
     // The more complex sync logic is done in Chat.js
     // listen to client.connection.recovered and all channel events
     client.on('connection.recovered', handleEvent);
-    channel.on(handleEvent);
+    channel?.on(handleEvent);
   };
 
   const initChannel = async () => {
     let initError = false;
     setError(false);
-    if (!channel.initialized && channel.cid) {
+    if (channel && !channel.initialized && channel.cid) {
       try {
         await channel.watch();
       } catch (e) {
@@ -411,15 +420,16 @@ const Channel = <
     Re,
     Us
   >['updateMessage'] = (updatedMessage, extraState = {}) => {
-    channel.state.addMessageSorted(updatedMessage);
+    if (channel) {
+      channel.state.addMessageSorted(updatedMessage);
+      if (thread && updatedMessage.parent_id) {
+        extraState.threadMessages =
+          channel.state.threads[updatedMessage.parent_id] || [];
+        setThreadMessages(extraState.threadMessages);
+      }
 
-    if (thread && updatedMessage.parent_id) {
-      extraState.threadMessages =
-        channel.state.threads[updatedMessage.parent_id] || [];
-      setThreadMessages(extraState.threadMessages);
+      setMessages(channel.state.messages);
     }
-
-    setMessages(channel.state.messages);
   };
 
   const createMessagePreview = ({
@@ -429,12 +439,12 @@ const Channel = <
     parent,
     text,
   }: {
-    attachments?: MessageType<At, Me, Us>['attachments'];
-    extraFields?: Partial<MessageType<At, Me, Us>>;
-    mentioned_users?: MessageType<At, Me, Us>['mentioned_users'];
-    parent?: MessageType<At, Me, Us>['parent_id'];
-    text?: MessageType<At, Me, Us>['text'];
-  }) => {
+    attachments?: StreamMessage<At, Me, Us>['attachments'];
+    extraFields?: Partial<StreamMessage<At, Me, Us>>;
+    mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
+    parent?: StreamMessage<At, Me, Us>['parent_id'];
+    text?: StreamMessage<At, Me, Us>['text'];
+  }): MessageResponse<At, Ch, Co, Me, Re, Us> => {
     const message = {
       __html: text,
       attachments,
@@ -490,20 +500,25 @@ const Channel = <
       parent_id,
       text,
       ...extraFields,
-    };
+    } as StreamMessage<At, Me, Us>;
 
     try {
-      let messageResponse;
+      let messageResponse = {} as SendMessageAPIResponse<
+        At,
+        Ch,
+        Co,
+        Me,
+        Re,
+        Us
+      >;
 
       if (doSendMessageRequest) {
         messageResponse = await doSendMessageRequest(
-          channel.cid,
-          messageData as MessageType<At, Me, Us>,
+          channel?.cid || '',
+          messageData,
         );
-      } else {
-        messageResponse = await channel.sendMessage(
-          messageData as MessageType<At, Me, Us>,
-        );
+      } else if (channel) {
+        messageResponse = await channel.sendMessage(messageData);
       }
 
       if (messageResponse.message) {
@@ -532,11 +547,11 @@ const Channel = <
     text,
     ...extraFields
   }) => {
-    channel.state.filterErrorMessages();
+    channel?.state?.filterErrorMessages();
 
     const messagePreview = createMessagePreview({
       attachments,
-      extraFields: extraFields as Partial<MessageType<At, Me, Us>>,
+      extraFields: extraFields as Partial<StreamMessage<At, Me, Us>>,
       mentioned_users,
       parent,
       text,
@@ -560,10 +575,8 @@ const Channel = <
     Us
   >['retrySendMessage'] = async (message) => {
     message = { ...message, status: 'sending' };
-    updateMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-    await sendMessageRequest(
-      message as MessageResponse<At, Ch, Co, Me, Re, Us>,
-    );
+    updateMessage(message);
+    await sendMessageRequest(message);
   };
 
   const loadMoreFinished = (
@@ -599,12 +612,14 @@ const Channel = <
     const limit = 100;
 
     try {
-      const queryResponse = await channel.query({
-        messages: { id_lt: oldestID, limit },
-      });
+      if (channel) {
+        const queryResponse = await channel.query({
+          messages: { id_lt: oldestID, limit },
+        });
 
-      const updatedHasMore = queryResponse.messages.length === limit;
-      loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+        const updatedHasMore = queryResponse.messages.length === limit;
+        loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+      }
     } catch (e) {
       console.warn('Message pagination request failed with error', e);
       return setLoadingMore(false);
@@ -634,12 +649,9 @@ const Channel = <
     Us
   >['editMessage'] = (updatedMessage) => {
     if (doUpdateMessageRequest) {
-      return doUpdateMessageRequest(
-        channel.cid,
-        updatedMessage as MessageType<At, Me, Us>,
-      );
+      return doUpdateMessageRequest(channel?.cid || '', updatedMessage);
     }
-    return client.updateMessage(updatedMessage as MessageType<At, Me, Us>);
+    return client.updateMessage(updatedMessage);
   };
 
   const setEditingState: MessagesContextValue<
@@ -650,7 +662,9 @@ const Channel = <
     Me,
     Re,
     Us
-  >['setEditingState'] = (message) => setEditing(!!message);
+  >['setEditingState'] = (message) => {
+    setEditing(message);
+  };
 
   const clearEditingState: MessagesContextValue<
     At,
@@ -671,8 +685,10 @@ const Channel = <
     Re,
     Us
   >['removeMessage'] = (message) => {
-    channel.state.removeMessage(message);
-    setMessages(channel.state.messages);
+    if (channel) {
+      channel.state.removeMessage(message);
+      setMessages(channel.state.messages);
+    }
   };
 
   /**
@@ -689,7 +705,7 @@ const Channel = <
     Us
   >['openThread'] = (message) => {
     const newThreadMessages = message?.id
-      ? channel.state.threads[message.id] || []
+      ? channel?.state?.threads[message.id] || []
       : [];
     setThread(message);
     setThreadMessages(
@@ -757,19 +773,22 @@ const Channel = <
     if (threadLoadingMore || !(thread && thread.id)) return;
     setThreadLoadingMore(true);
 
-    const parentID = thread.id;
-    const oldMessages = channel.state.threads[parentID] || [];
-    const oldestMessageID = oldMessages && oldMessages[0] && oldMessages[0].id;
+    if (channel) {
+      const parentID = thread.id;
 
-    const limit = 50;
-    const queryResponse = await channel.getReplies(parentID, {
-      id_lt: oldestMessageID,
-      limit,
-    });
+      const oldMessages = channel.state.threads[parentID] || [];
+      const oldestMessageID = oldMessages?.[0]?.id;
 
-    const updatedHasMore = queryResponse.messages.length === limit;
-    const updatedThreadMessages = channel.state.threads[parentID] || [];
-    loadMoreThreadFinishedDebounced(updatedHasMore, updatedThreadMessages);
+      const limit = 50;
+      const queryResponse = await channel.getReplies(parentID, {
+        id_lt: oldestMessageID,
+        limit,
+      });
+
+      const updatedHasMore = queryResponse.messages.length === limit;
+      const updatedThreadMessages = channel.state.threads[parentID] || [];
+      loadMoreThreadFinishedDebounced(updatedHasMore, updatedThreadMessages);
+    }
   };
 
   const channelContext: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us> = {

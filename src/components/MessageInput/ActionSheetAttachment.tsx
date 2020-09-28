@@ -1,13 +1,22 @@
 import React from 'react';
-import styled from 'styled-components/native';
 import { ActionSheetCustom } from 'react-native-actionsheet';
+
+import type {
+  ImageSourcePropType,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 
 import { IconSquare } from '../IconSquare';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import iconGallery from '../../images/icons/icon_attach-media.png';
-import iconClose from '../../images/icons/icon_close.png';
-import iconFolder from '../../images/icons/icon_folder.png';
+
+import { styled } from '../../styles/styledComponents';
+
+const iconGallery: ImageSourcePropType = require('../../images/icons/icon_attach-media.png');
+const iconClose: ImageSourcePropType = require('../../images/icons/icon_close.png');
+const iconFolder: ImageSourcePropType = require('../../images/icons/icon_folder.png');
 
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
@@ -37,13 +46,34 @@ const ActionSheetTitleText = styled.Text`
   ${({ theme }) => theme.messageInput.actionSheet.titleText.css};
 `;
 
+export type ActionSheetStyles = {
+  body?: StyleProp<ViewStyle>;
+  buttonBox?: StyleProp<ViewStyle>;
+  buttonText?: StyleProp<TextStyle>;
+  cancelButtonBox?: StyleProp<ViewStyle>;
+  messageBox?: StyleProp<ViewStyle>;
+  messageText?: StyleProp<TextStyle>;
+  overlay?: StyleProp<TextStyle>;
+  titleBox?: StyleProp<ViewStyle>;
+  titleText?: StyleProp<TextStyle>;
+  wrapper?: StyleProp<ViewStyle>;
+};
+
+export type ActionSheetProps = {
+  closeAttachActionSheet: () => void;
+  pickFile: () => Promise<void>;
+  pickImage: () => Promise<void>;
+  setAttachActionSheetRef: (ref: ActionSheetCustom | null) => void;
+  styles?: ActionSheetStyles;
+};
+
 const ActionSheet = ({
   closeAttachActionSheet,
   pickFile,
   pickImage,
   setAttachActionSheetRef,
   styles,
-}) => {
+}: ActionSheetProps) => {
   const { t } = useTranslationContext();
 
   return (
@@ -90,7 +120,19 @@ const ActionSheet = ({
 
 ActionSheet.themePath = 'messageInput.actionSheet';
 
-const AttachmentActionSheetItem = ({ icon, key, testID, text }) => (
+type AttachmentActionSheetItemProps = {
+  icon: ImageSourcePropType;
+  key: string | number;
+  text: string;
+  testID?: string;
+};
+
+const AttachmentActionSheetItem = ({
+  icon,
+  key,
+  testID,
+  text,
+}: AttachmentActionSheetItemProps) => (
   <ActionSheetButtonContainer key={key} testID={testID}>
     <IconSquare icon={icon} />
     <ActionSheetButtonText>{text}</ActionSheetButtonText>
