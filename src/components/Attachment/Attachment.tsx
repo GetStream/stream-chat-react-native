@@ -26,22 +26,22 @@ export type ActionHandler =
 
 export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
-   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
-   */
-  actionHandler: ActionHandler;
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
    * The attachment to render
    */
   attachment: AttachmentType<At>;
   /**
+   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
+   */
+  actionHandler?: ActionHandler;
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment?: Alignment;
+  /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
    */
-  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps>>;
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
@@ -71,17 +71,19 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
    */
-  FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
+  FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
   /**
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
    */
-  FileAttachmentGroup?: React.ComponentType<FileAttachmentGroupProps>;
+  FileAttachmentGroup?: React.ComponentType<
+    Partial<FileAttachmentGroupProps<At>>
+  >;
   /**
    * Custom UI component to display image attachments.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
    */
-  Gallery?: React.ComponentType<GalleryProps<At>>;
+  Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
   /**
    * Custom UI component to display Giphy image.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
@@ -111,7 +113,7 @@ const Attachment = <At extends UnknownType = DefaultAttachmentType>(
 ) => {
   const {
     actionHandler,
-    alignment,
+    alignment = 'right',
     attachment,
     AttachmentActions = DefaultAttachmentActions,
     AttachmentFileIcon = DefaultFileIcon,

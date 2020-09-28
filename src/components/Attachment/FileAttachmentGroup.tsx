@@ -26,21 +26,6 @@ export type FileAttachmentGroupProps<
    */
   alignment: Alignment;
   /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
-   */
-  AttachmentActions: React.ComponentType<Partial<AttachmentActionsProps>>;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: React.ComponentType<Partial<FileAttachmentProps<At>>>;
-  /**
    * The files attached to a message
    */
   files: AttachmentType<At>[];
@@ -48,6 +33,21 @@ export type FileAttachmentGroupProps<
    * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
    */
   handleAction: ActionHandler;
+  /**
+   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   */
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Custom UI component to display File type attachment.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   */
+  FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
   /**
    * The unique id for the message with file attachments
    */
