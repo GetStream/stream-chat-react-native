@@ -6,7 +6,10 @@ import { useMessageContentContext } from '../../contexts/messageContentContext/M
 import { styled } from '../../styles/styledComponents';
 
 import type { ActionHandler } from './Attachment';
-import type { AttachmentActionsProps } from './AttachmentActions';
+import DefaultAttachmentActions, {
+  AttachmentActionsProps,
+} from './AttachmentActions';
+import DefaultFileIcon from './FileIcon';
 import type { FileIconProps } from './FileIcon';
 import type {
   Alignment,
@@ -65,24 +68,24 @@ const goToURL = (url?: string) => {
 export type FileAttachmentProps<
   At extends UnknownType = DefaultAttachmentType
 > = {
+  /** The attachment to render */
+  attachment: Attachment<At>;
   /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  actionHandler: ActionHandler;
+  actionHandler?: ActionHandler;
   /**
    * Position of the message, either 'right' or 'left'
    */
-  alignment: Alignment;
-  /** The attachment to render */
-  attachment: Attachment<At>;
+  alignment?: Alignment;
   /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
    */
-  AttachmentActions: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
    */
-  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -96,10 +99,10 @@ const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType
 >({
   actionHandler,
-  alignment,
+  alignment = 'right',
   attachment,
-  AttachmentActions,
-  AttachmentFileIcon,
+  AttachmentActions = DefaultAttachmentActions,
+  AttachmentFileIcon = DefaultFileIcon,
   groupStyle,
 }: FileAttachmentProps<At>) => {
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();

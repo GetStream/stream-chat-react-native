@@ -182,7 +182,7 @@ export type MessageSimpleProps<
      * Custom UI component to display File type attachment.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.tsx
      */
-    FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
+    FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
     /**
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.tsx
