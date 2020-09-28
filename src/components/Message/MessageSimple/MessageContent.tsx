@@ -227,12 +227,12 @@ const MessageContentWithContext = <
     if (actionSheetVisible && actionSheetRef.current) {
       setTimeout(
         () => {
-          actionSheetRef.current?.show();
+          actionSheetRef.current?.show?.();
         },
         customMessageContent ? 10 : 0,
       );
     }
-  }, [actionSheetRef.current, actionSheetVisible]);
+  }, [actionSheetVisible]);
 
   const hasAttachment = Boolean(
     message && message.attachments && message.attachments.length,
@@ -477,10 +477,16 @@ const areEqual = <
   prevProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { updated_at: previousLast } = prevProps.message;
-  const { updated_at: nextLast } = nextProps.message;
+  const { actionSheetVisible: prevAS, message: prevMessage } = prevProps;
+  const { actionSheetVisible: nextAS, message: nextMessage } = nextProps;
 
-  return previousLast === nextLast;
+  const actionSheetEqual = prevAS === nextAS;
+  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
+  const reactionsEqual =
+    prevMessage.latest_reactions?.length ===
+    nextMessage.latest_reactions?.length;
+
+  return actionSheetEqual && messageEqual && reactionsEqual;
 };
 
 const MemoizedMessageContent = React.memo(
