@@ -1,10 +1,11 @@
 import React from 'react';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
 
-import iconAddAttachment from '../../images/icons/plus-outline.png';
+import type { GestureResponderEvent, ImageSourcePropType } from 'react-native';
 
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
+
+const iconAddAttachment: ImageSourcePropType = require('../../images/icons/plus-outline.png');
 
 const AttachButtonIcon = styled.Image`
   height: 15px;
@@ -17,21 +18,26 @@ const Container = styled.TouchableOpacity`
   ${({ theme }) => theme.messageInput.attachButton.css};
 `;
 
+export type AttachButtonProps = {
+  /** Disables the button */
+  disabled?: boolean;
+  /** Function that opens an attachment action sheet */
+  handleOnPress?: (event: GestureResponderEvent) => void;
+};
+
 /**
  * UI Component for attach button in MessageInput component.
  *
- * @example ../docs/AttachButton.md
+ * @example ./AttachButton.md
  */
-const AttachButton = ({ disabled = false, handleOnPress }) => (
+const AttachButton = ({
+  disabled = false,
+  handleOnPress,
+}: AttachButtonProps) => (
   <Container disabled={disabled} onPress={handleOnPress} testID='attach-button'>
     <AttachButtonIcon source={iconAddAttachment} />
   </Container>
 );
-
-AttachButton.propTypes = {
-  disabled: PropTypes.bool,
-  handleOnPress: PropTypes.func,
-};
 
 AttachButton.themePath = 'messageInput';
 

@@ -59,7 +59,10 @@ export const FileState = Object.freeze({
   UPLOADING: 'uploading',
 });
 
-export const ProgressIndicatorTypes = Object.freeze({
+export const ProgressIndicatorTypes: {
+  IN_PROGRESS: 'in_progress';
+  RETRY: 'retry';
+} = Object.freeze({
   IN_PROGRESS: 'in_progress',
   RETRY: 'retry',
 });
@@ -253,7 +256,7 @@ export const ACITriggerSettings = <
 >({
   channel,
   onMentionSelectItem,
-  t = (msg) => msg,
+  t = (msg: string) => msg,
 }: {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   onMentionSelectItem: (item: SuggestionUser<Us>) => void;

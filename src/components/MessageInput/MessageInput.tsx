@@ -1,36 +1,84 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components/native';
+import {
+  ImageSourcePropType,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
-import PropTypes from 'prop-types';
-import Immutable from 'seamless-immutable';
-import { logChatPromiseExecution } from 'stream-chat';
+import {
+  Attachment,
+  logChatPromiseExecution,
+  Message,
+  SendFileAPIResponse,
+  UserResponse,
+} from 'stream-chat';
 
-import ActionSheetAttachmentDefault from './ActionSheetAttachment';
-import AttachButtonDefault from './AttachButton';
-import FileUploadPreviewDefault from './FileUploadPreview';
-import ImageUploadPreviewDefault from './ImageUploadPreview';
-import SendButtonDefault from './SendButton';
+import type { ActionSheetCustom } from 'react-native-actionsheet';
 
-import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
+import ActionSheetAttachmentDefault, {
+  ActionSheetProps,
+  ActionSheetStyles,
+} from './ActionSheetAttachment';
+import AttachButtonDefault, { AttachButtonProps } from './AttachButton';
+import FileUploadPreviewDefault, {
+  FileUploadPreviewProps,
+} from './FileUploadPreview';
+import ImageUploadPreviewDefault, {
+  ImageUploadPreviewProps,
+} from './ImageUploadPreview';
+import SendButtonDefault, { SendButtonProps } from './SendButton';
+
+import {
+  FileUpload,
+  ImageUpload,
+  useMessageDetailsForState,
+} from './hooks/useMessageDetailsForState';
 import { generateRandomId } from './utils/generateRandomId';
 
-import AutoCompleteInput from '../AutoCompleteInput/AutoCompleteInput';
+import AutoCompleteInput, {
+  AutoCompleteInputProps,
+} from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import type { FileIconProps } from '../Attachment/FileIcon';
+
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
-import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
+import {
+  isEditingBoolean,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import iconClose from '../../images/icons/icon_close.png';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
-import { ACITriggerSettings, FileState } from '../../utils/utils';
+import {
+  ACITriggerSettings,
+  FileState,
+  TriggerSettings,
+} from '../../utils/utils';
 
-const Container = styled.View`
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../types/types';
+
+const iconClose: ImageSourcePropType = require('../../images/icons/icon_close.png');
+
+const Container = styled.View<{ imageUploads: ImageUpload[] }>`
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 10px;
   margin-horizontal: 10px;
@@ -63,7 +111,8 @@ const EditingBoxHeaderTitle = styled.Text`
   ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css};
 `;
 
-const InputBoxContainer = styled.View`
+// have to wrap the react-native View because styled-components don't work well with ref setting
+const InputBoxContainer = styled(View)`
   align-items: center;
   flex-direction: row;
   padding-horizontal: 10px;
@@ -71,6 +120,145 @@ const InputBoxContainer = styled.View`
   min-height: 46px;
   ${({ theme }) => theme.messageInput.inputBoxContainer.css};
 `;
+
+export type MessageInputProps<
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+> = {
+  /**
+   * Custom UI component for ActionSheetAttachment.
+   *
+   * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
+   */
+  ActionSheetAttachment?: React.ComponentType<Partial<ActionSheetProps>>;
+  /**
+   * Style object for actionsheet (used for option to choose file attachment or photo attachment).
+   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
+   */
+  actionSheetStyles?: ActionSheetStyles;
+  /**
+   * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
+   *
+   * @see See https://reactnative.dev/docs/textinput#reference
+   */
+  additionalTextInputProps?: TextInputProps;
+  /**
+   * Custom UI component for attach button.
+   *
+   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
+   */
+  AttachButton?: React.ComponentType<Partial<AttachButtonProps>>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment in preview.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Compress image with quality (from 0 to 1, where 1 is best quality).
+   * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
+   * while a value of 0.8 will reduce the file size by about half or less compared to a value of 1.
+   * Image picker defaults to 0.8 for iOS and 1 for Android
+   */
+  compressImageQuality?: number;
+  /**
+   * Override file upload request
+   *
+   * @param file    File object - { uri: '', name: '' }
+   * @param channel Current channel object
+   */
+  doDocUploadRequest?: (
+    file: {
+      name: string;
+      size?: string | number;
+      type?: string;
+      uri?: string;
+    },
+    channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'],
+  ) => Promise<SendFileAPIResponse>;
+  /**
+   * Override image upload request
+   *
+   * @param file    File object - { uri: '' }
+   * @param channel Current channel object
+   */
+  doImageUploadRequest?: (
+    file: {
+      name?: string;
+      uri?: string;
+    },
+    channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'],
+  ) => Promise<SendFileAPIResponse>;
+  /**
+   * Custom UI component for FileUploadPreview.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
+   */
+  FileUploadPreview?: React.ComponentType<Partial<FileUploadPreviewProps>>;
+  /** If component should have file picker functionality */
+  hasFilePicker?: boolean;
+  /** If component should have image picker functionality */
+  hasImagePicker?: boolean;
+  ImageUploadPreview?: React.ComponentType<Partial<ImageUploadPreviewProps>>;
+  /** Initial value to set on input */
+  initialValue?: string;
+  /**
+   * Custom UI component for AutoCompleteInput.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AutoCompleteInput/AutoCompleteInput.tsx
+   */
+  Input?: React.ComponentType<
+    Partial<
+      AutoCompleteInputProps<Co, Us> & {
+        _pickFile: () => Promise<void>;
+        _pickImage: () => Promise<void>;
+        _removeFile: FileUploadPreviewProps['removeFile'];
+        _removeImage: ImageUploadPreviewProps['removeImage'];
+        _uploadFile: FileUploadPreviewProps['retryUpload'];
+        _uploadImage: ImageUploadPreviewProps['retryUpload'];
+        appendText: (newText: string) => void;
+        closeAttachActionSheet: () => void;
+        disabled: boolean;
+        getUsers: () => UserResponse<Us>[];
+        handleOnPress: () => Promise<void>;
+        isValidMessage: () => boolean;
+        onSelectItem: (item: UserResponse<Us>) => void;
+        sendMessage: () => Promise<void>;
+        setInputBoxContainerRef: (ref: View | null) => void;
+        updateMessage: () => Promise<void>;
+        uploadNewFile: (file: {
+          name: string;
+          size?: number | string;
+          type?: string;
+          uri?: string;
+        }) => Promise<void>;
+        uploadNewImage: (image: { uri?: string }) => Promise<void>;
+      }
+    >
+  >;
+  /** Limit on allowed number of files to attach at a time. */
+  maxNumberOfFiles?: number;
+  /**
+   * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
+   *
+   * @param newText
+   */
+  onChangeText?: (newText: string) => void;
+  /** Parent message object - in case of thread */
+  parent?: Message<At, Me, Us>['parent_id'];
+  /**
+   * Custom UI component for send button.
+   *
+   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
+   */
+  SendButton?: React.ComponentType<Partial<SendButtonProps>>;
+  /**
+   * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
+   */
+  sendImageAsync?: boolean;
+};
 
 /**
  * UI Component for message input
@@ -83,19 +271,29 @@ const InputBoxContainer = styled.View`
  * [Thread Context](https://getstream.github.io/stream-chat-react-native/#threadcontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
- * @example ../docs/MessageInput.md
+ * @example ./MessageInput.md
  */
-const MessageInput = (props) => {
-  const channelContext = useChannelContext();
+const MessageInput = <
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends Record<string, unknown> = DefaultUserType
+>(
+  props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const channelContext = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { channel, disabled = false, members, watchers } = channelContext;
 
-  const chatContext = useChatContext();
+  const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = chatContext;
 
   const keyboardContext = useKeyboardContext();
   const { dismissKeyboard } = keyboardContext;
 
-  const messagesContext = useMessagesContext();
+  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     clearEditingState,
     editing,
@@ -103,11 +301,11 @@ const MessageInput = (props) => {
     sendMessage: sendMessageContext,
   } = messagesContext;
 
-  const suggestionsContext = useSuggestionsContext();
+  const suggestionsContext = useSuggestionsContext<Co, Us>();
   const { setInputBoxContainerRef } = suggestionsContext;
 
   // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
-  const threadContext = useThreadContext();
+  const threadContext = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const translationContext = useTranslationContext();
   const { t } = translationContext;
@@ -148,12 +346,17 @@ const MessageInput = (props) => {
     ...translationContext,
   };
 
-  const attachActionSheet = useRef();
-  const inputBox = useRef();
+  const attachActionSheet = useRef<ActionSheetCustom | null>(null);
+  const inputBox = useRef<TextInput | null>();
   const sending = useRef(false);
 
-  const [asyncIds, setAsyncIds] = useState(Immutable([]));
-  const [asyncUploads, setAsyncUploads] = useState(Immutable([]));
+  const [asyncIds, setAsyncIds] = useState<string[]>([]);
+  const [asyncUploads, setAsyncUploads] = useState<{
+    [key: string]: {
+      state: string;
+      url: string;
+    };
+  }>({});
   const {
     fileUploads,
     imageUploads,
@@ -165,7 +368,10 @@ const MessageInput = (props) => {
     setNumberOfUploads,
     setText,
     text,
-  } = useMessageDetailsForState(editing, initialValue);
+  } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(
+    editing,
+    initialValue,
+  );
 
   useEffect(() => {
     if (editing) {
@@ -174,6 +380,43 @@ const MessageInput = (props) => {
       }
     }
   }, [editing]);
+
+  const sendMessageAsync = (id: string) => {
+    const image = asyncUploads[id];
+    if (!image || image.state === FileState.UPLOAD_FAILED) {
+      return;
+    }
+
+    if (image.state === FileState.UPLOADED) {
+      const attachments = [
+        {
+          image_url: image.url,
+          type: 'image',
+        },
+      ] as Message<At, Me, Us>['attachments'];
+
+      try {
+        sendMessageContext({
+          attachments,
+          mentioned_users: [],
+          parent,
+          text: '' as Message<At, Me, Us>['text'],
+        });
+
+        setAsyncIds((prevAsyncIds) =>
+          prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1),
+        );
+        setAsyncUploads((prevAsyncUploads) => {
+          delete prevAsyncUploads[id];
+          return prevAsyncUploads;
+        });
+
+        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
+      } catch (err) {
+        console.log('Failed');
+      }
+    }
+  };
 
   useEffect(() => {
     if (Object.keys(asyncUploads).length) {
@@ -187,18 +430,23 @@ const MessageInput = (props) => {
     }
   }, [asyncIds, asyncUploads, sending, sendMessageAsync]);
 
-  const appendText = (newText) => {
+  const appendText = (newText: string) => {
     setText((prevText) => `${prevText}${newText}`);
   };
 
   const closeAttachActionSheet = () => {
-    attachActionSheet.current.hide();
+    if (attachActionSheet.current) {
+      // @ts-expect-error hide doesn't exist until we bump @types/react-native-actionsheet from this PR being merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/48275
+      attachActionSheet.current.hide();
+    }
   };
 
   const getMembers = () => {
-    const result = [];
+    const result: UserResponse<Us>[] = [];
     if (members && Object.values(members).length) {
-      Object.values(members).forEach((member) => result.push(member.user));
+      Object.values(members).forEach((member) =>
+        result.push(member.user as UserResponse<Us>),
+      );
     }
 
     return result;
@@ -208,10 +456,10 @@ const MessageInput = (props) => {
     const users = [...getMembers(), ...getWatchers()];
 
     // make sure we don't list users twice
-    const uniqueUsers = {};
+    const uniqueUsers: { [key: string]: UserResponse<Us> } = {};
     for (const user of users) {
       if (user !== undefined && !uniqueUsers[user.id]) {
-        uniqueUsers[user.id] = user;
+        uniqueUsers[user.id] = user as UserResponse<Us>;
       }
     }
     const usersArray = Object.values(uniqueUsers);
@@ -220,9 +468,9 @@ const MessageInput = (props) => {
   };
 
   const getWatchers = () => {
-    const result = [];
+    const result: UserResponse<Us>[] = [];
     if (watchers && Object.values(watchers).length) {
-      result.push(...Object.values(watchers));
+      result.push(...(Object.values(watchers) as UserResponse<Us>[]));
     }
 
     return result;
@@ -261,13 +509,13 @@ const MessageInput = (props) => {
     return false;
   };
 
-  const onChangeText = (newText) => {
+  const onChangeText = (newText: string) => {
     if (sending.current) {
       return;
     }
     setText(newText);
 
-    if (newText) {
+    if (newText && channel) {
       logChatPromiseExecution(channel.keystroke(), 'start typing event');
     }
 
@@ -276,7 +524,7 @@ const MessageInput = (props) => {
     }
   };
 
-  const onSelectItem = (item) => {
+  const onSelectItem = (item: UserResponse<Us>) => {
     setMentionedUsers((prevMentionedUsers) => [...prevMentionedUsers, item.id]);
   };
 
@@ -288,7 +536,6 @@ const MessageInput = (props) => {
     const result = await pickDocument({ maxNumberOfFiles });
     if (!result.cancelled) {
       if (result.docs) {
-        // condition to support react-native-image-crop-picker
         result.docs.forEach((doc) => {
           const mimeType = lookup(doc.name);
 
@@ -298,15 +545,6 @@ const MessageInput = (props) => {
             uploadNewFile(doc);
           }
         });
-      } else {
-        // condition to support react-native-image-crop-picker
-        const mimeType = lookup(result.name);
-
-        if (mimeType && mimeType.startsWith('image/')) {
-          uploadNewImage(result);
-        } else {
-          uploadNewFile(result);
-        }
       }
     }
   };
@@ -320,18 +558,14 @@ const MessageInput = (props) => {
       maxNumberOfFiles,
     });
 
-    if (!result.cancelled) {
-      if (result.images) {
-        result.images.forEach((image) => {
-          uploadNewImage(image);
-        });
-      } else {
-        uploadNewImage(result);
-      }
+    if (!result.cancelled && result.images) {
+      result.images.forEach((image) => {
+        uploadNewImage(image);
+      });
     }
   };
 
-  const removeFile = (id) => {
+  const removeFile = (id: string) => {
     const fileExists = fileUploads.some((file) => file.id === id);
     if (fileExists) {
       setFileUploads((prevFileUploads) =>
@@ -341,7 +575,7 @@ const MessageInput = (props) => {
     }
   };
 
-  const removeImage = (id) => {
+  const removeImage = (id: string) => {
     const imageExists = imageUploads.some((image) => image.id === id);
     if (imageExists) {
       setImageUploads((prevImageUploads) =>
@@ -408,7 +642,9 @@ const MessageInput = (props) => {
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
                   await dismissKeyboard();
-                  attachActionSheet.current.show();
+                  if (attachActionSheet?.current) {
+                    attachActionSheet.current.show();
+                  }
                 } else if (hasImagePicker && !hasFilePicker) pickImage();
                 else if (!hasImagePicker && hasFilePicker) pickFile();
               }}
@@ -418,11 +654,15 @@ const MessageInput = (props) => {
               sendMessage={sendMessage}
               setInputBoxContainerRef={setInputBoxContainerRef}
               setInputBoxRef={setInputBoxRef}
-              triggerSettings={ACITriggerSettings({
-                channel,
-                onMentionSelectItem: onSelectItem,
-                t,
-              })}
+              triggerSettings={
+                channel
+                  ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+                      channel,
+                      onMentionSelectItem: onSelectItem,
+                      t,
+                    })
+                  : ({} as TriggerSettings<Co, Us>)
+              }
               updateMessage={updateMessage}
               uploadNewFile={uploadNewFile}
               uploadNewImage={uploadNewImage}
@@ -436,7 +676,9 @@ const MessageInput = (props) => {
                   handleOnPress={async () => {
                     if (hasImagePicker && hasFilePicker) {
                       await dismissKeyboard();
-                      attachActionSheet.current.show();
+                      if (attachActionSheet.current) {
+                        attachActionSheet.current.show();
+                      }
                     } else if (hasImagePicker && !hasFilePicker) pickImage();
                     else if (!hasImagePicker && hasFilePicker) {
                       pickFile();
@@ -444,20 +686,23 @@ const MessageInput = (props) => {
                   }}
                 />
               )}
-              <AutoCompleteInput
-                additionalTextInputProps={additionalTextInputProps}
+              <AutoCompleteInput<Co, Us>
+                additionalTextInputProps={additionalTextInputProps || {}}
                 onChange={onChangeText}
                 setInputBoxRef={setInputBoxRef}
-                triggerSettings={ACITriggerSettings({
-                  channel,
-                  onMentionSelectItem: onSelectItem,
-                  t,
-                })}
+                triggerSettings={
+                  channel
+                    ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+                        channel,
+                        onMentionSelectItem: onSelectItem,
+                        t,
+                      })
+                    : ({} as TriggerSettings<Co, Us>)
+                }
                 value={text}
               />
-              <SendButton
+              <SendButton<At, Ch, Co, Ev, Me, Re, Us>
                 disabled={disabled || sending.current || !isValidMessage()}
-                editing={editing}
                 sendMessage={sendMessage}
               />
             </>
@@ -479,7 +724,7 @@ const MessageInput = (props) => {
       inputBox.current.clear();
     }
 
-    const attachments = [];
+    const attachments = [] as Message<At, Me, Us>['attachments'];
     for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
@@ -499,12 +744,12 @@ const MessageInput = (props) => {
         }
       }
 
-      if (image.state === FileState.UPLOADED) {
+      if (image.state === FileState.UPLOADED && attachments) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
           type: 'image',
-        });
+        } as Attachment<At>);
       }
     }
 
@@ -514,30 +759,32 @@ const MessageInput = (props) => {
       }
       if (file.state === FileState.UPLOADING) {
         // TODO: show error to user that they should wait until image is uploaded
-        return (sending.current = false);
+        sending.current = false;
+        return;
       }
-      if (file.state === FileState.UPLOADED) {
+      if (file.state === FileState.UPLOADED && attachments) {
         attachments.push({
           asset_url: file.url,
           file_size: file.file.size,
           mime_type: file.file.type,
           title: file.file.name,
           type: 'file',
-        });
+        } as Attachment<At>);
       }
     }
 
     // Disallow sending message if its empty.
-    if (!prevText && attachments.length === 0) {
-      return (sending.current = false);
+    if (!prevText && (!attachments || attachments.length === 0)) {
+      sending.current = false;
+      return;
     }
 
-    if (editing) {
-      const updatedMessage = { ...editing };
+    if (editing && !isEditingBoolean(editing)) {
+      const updatedMessage = { ...editing } as Message<At, Me, Us>;
 
-      updatedMessage.text = prevText;
       updatedMessage.attachments = attachments;
-      updatedMessage.mentioned_users = mentionedUsers.map((mu) => mu.id);
+      updatedMessage.mentioned_users = mentionedUsers;
+      updatedMessage.text = prevText;
       // TODO: Remove this line and show an error when submit fails
       clearEditingState();
 
@@ -553,15 +800,16 @@ const MessageInput = (props) => {
           attachments,
           mentioned_users: uniq(mentionedUsers),
           parent,
-          text: prevText,
+          text: prevText as Message<At, Me, Us>['text'],
         });
 
         sending.current = false;
-        setFileUploads(Immutable([]));
-        setImageUploads(Immutable([]));
+        setFileUploads([]);
+        setImageUploads([]);
         setMentionedUsers([]);
         setNumberOfUploads(
-          (prevNumberOfUploads) => prevNumberOfUploads - attachments.length,
+          (prevNumberOfUploads) =>
+            prevNumberOfUploads - (attachments?.length || 0),
         );
         setText('');
       } catch (err) {
@@ -572,50 +820,22 @@ const MessageInput = (props) => {
     }
   };
 
-  const sendMessageAsync = (id) => {
-    const image = asyncUploads[id];
-    if (!image || image.state === FileState.UPLOAD_FAILED) {
-      return;
-    }
-
-    if (image.state === FileState.UPLOADED) {
-      const attachments = [
-        {
-          image_url: image.url,
-          type: 'image',
-        },
-      ];
-
-      try {
-        sendMessageContext({
-          attachments,
-          mentioned_users: [],
-          parent,
-          text: '',
-        });
-
-        setAsyncIds((prevAsyncIds) =>
-          prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1),
-        );
-        setAsyncUploads((prevAsyncUploads) => prevAsyncUploads.without([id]));
-
-        setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      } catch (err) {
-        console.log('Failed');
-      }
-    }
+  const setAttachActionSheetRef = (o: ActionSheetCustom | null) => {
+    attachActionSheet.current = o;
   };
 
-  const setAttachActionSheetRef = (o) => (attachActionSheet.current = o);
-
-  const setInputBoxRef = (o) => (inputBox.current = o);
+  const setInputBoxRef = (o: TextInput | null) => {
+    inputBox.current = o;
+  };
 
   const updateMessage = async () => {
     try {
-      await client.editMessage({
-        ...editing,
-        text,
-      });
+      if (!isEditingBoolean(editing)) {
+        await client.updateMessage({
+          ...editing,
+          text,
+        } as Message<At, Me, Us>);
+      }
 
       setText('');
       clearEditingState();
@@ -624,7 +844,7 @@ const MessageInput = (props) => {
     }
   };
 
-  const uploadFile = async ({ newFile }) => {
+  const uploadFile = async ({ newFile }: { newFile: FileUpload }) => {
     if (!newFile) {
       return;
     }
@@ -642,12 +862,11 @@ const MessageInput = (props) => {
       }),
     );
 
-    let response = {};
-    response = {};
+    let response: SendFileAPIResponse = {} as SendFileAPIResponse;
     try {
       if (doDocUploadRequest) {
         response = await doDocUploadRequest(file, channel);
-      } else {
+      } else if (channel) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (e) {
@@ -685,7 +904,7 @@ const MessageInput = (props) => {
     );
   };
 
-  const uploadImage = async ({ newImage }) => {
+  const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
     const { file } = newImage || {};
     if (!file) {
       return;
@@ -693,9 +912,9 @@ const MessageInput = (props) => {
 
     const id = newImage.id;
 
-    let response;
+    let response: SendFileAPIResponse = {} as SendFileAPIResponse;
 
-    const filename = (file.name || file.uri).replace(
+    const filename = (file?.name || file?.uri || '').replace(
       /^(file:\/\/|content:\/\/)/,
       '',
     );
@@ -704,15 +923,18 @@ const MessageInput = (props) => {
     try {
       if (doImageUploadRequest) {
         response = await doImageUploadRequest(file, channel);
-      } else if (sendImageAsync) {
-        channel.sendImage(file.uri, null, contentType).then((res) => {
+      } else if (sendImageAsync && channel) {
+        channel.sendImage(file.uri, undefined, contentType).then((res) => {
           if (asyncIds.includes(id)) {
             // Evaluates to true if user hit send before image successfully uploaded
-            setAsyncUploads((prevAsyncUploads) =>
-              prevAsyncUploads
-                .setIn([id, 'state'], FileState.UPLOADED)
-                .setIn([id, 'url'], res.file),
-            );
+            setAsyncUploads((prevAsyncUploads) => {
+              prevAsyncUploads[id] = {
+                ...prevAsyncUploads[id],
+                state: FileState.UPLOADED,
+                url: res.file,
+              };
+              return prevAsyncUploads;
+            });
           } else {
             setImageUploads((prevImageUploads) =>
               prevImageUploads.map((imageUpload) => {
@@ -728,11 +950,11 @@ const MessageInput = (props) => {
             );
           }
         });
-      } else {
-        response = await channel.sendImage(file.uri, null, contentType);
+      } else if (channel) {
+        response = await channel.sendImage(file.uri, undefined, contentType);
       }
 
-      if (response) {
+      if (Object.keys(response).length) {
         setImageUploads((prevImageUploads) =>
           prevImageUploads.map((imageUpload) => {
             if (imageUpload.id === id) {
@@ -767,11 +989,16 @@ const MessageInput = (props) => {
     }
   };
 
-  const uploadNewFile = async (file) => {
+  const uploadNewFile = async (file: {
+    name: string;
+    size?: number | string;
+    type?: string;
+    uri?: string;
+  }) => {
     const id = generateRandomId();
     const mimeType = lookup(file.name);
     const newFile = {
-      file: { ...file, type: mimeType },
+      file: { ...file, type: mimeType || file?.type },
       id,
       state: FileState.UPLOADING,
     };
@@ -783,7 +1010,7 @@ const MessageInput = (props) => {
     uploadFile({ newFile });
   };
 
-  const uploadNewImage = async (image) => {
+  const uploadNewImage = async (image: { uri?: string }) => {
     const id = generateRandomId();
     const newImage = {
       file: image,
@@ -817,101 +1044,6 @@ const MessageInput = (props) => {
   ) : (
     renderInputContainer()
   );
-};
-
-MessageInput.propTypes = {
-  /**
-   * Custom UI component for ActionSheetAttachment.
-   *
-   * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
-   */
-  ActionSheetAttachment: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * Style object for actionsheet (used for option to choose file attachment or photo attachment).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles: PropTypes.object,
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
-  additionalTextInputProps: PropTypes.object,
-  /**
-   * Custom UI component for attach button.
-   *
-   * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
-   */
-  AttachButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment in preview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /** Compress image with quality (from 0 to 1, where 1 is best quality). On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images, while a value of 0.8 will reduce the file size by about half or less compared to a value of 1. Image picker defaults to 0.8 for iOS and 1 for Android */
-  compressImageQuality: PropTypes.number,
-  /**
-   * Override file upload request
-   *
-   * @param file    File object - { uri: '', name: '' }
-   * @param channel Current channel object
-   * */
-  doDocUploadRequest: PropTypes.func,
-  /**
-   * Override image upload request
-   *
-   * @param file    File object - { uri: '' }
-   * @param channel Current channel object
-   * */
-  doImageUploadRequest: PropTypes.func,
-  /**
-   * Custom UI component for FileUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.js
-   */
-  FileUploadPreview: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /** If component should have file picker functionality  */
-  hasFilePicker: PropTypes.bool,
-  /** If component should have image picker functionality  */
-  hasImagePicker: PropTypes.bool,
-  /**
-   * Custom UI component for ImageUploadPreview.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.js
-   */
-  ImageUploadPreview: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /** Initial value to set on input */
-  initialValue: PropTypes.string,
-  /** Limit on allowed number of files to attach at a time. */
-  maxNumberOfFiles: PropTypes.number,
-  /**
-   * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-   *
-   * @param newText
-   */
-  onChangeText: PropTypes.func,
-  /** Parent message object - in case of thread */
-  parent: PropTypes.object,
-  /**
-   * Custom UI component for send button.
-   *
-   * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
-   */
-  SendButton: PropTypes.oneOfType([PropTypes.node, PropTypes.elementType]),
-  /**
-   * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
-   */
-  sendImageAsync: PropTypes.bool,
 };
 
 MessageInput.themePath = 'messageInput';

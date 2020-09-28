@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 
 import type {
-  Channel,
   MessageResponse,
   Reaction,
   ReactionResponse,
-  StreamChat,
   UnknownType,
   UserResponse,
 } from 'stream-chat';
@@ -15,11 +13,21 @@ import DefaultMessageSimple, {
   MessageSimpleProps,
 } from './MessageSimple/MessageSimple';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
+  ChatContextValue,
+  useChatContext,
+} from '../../contexts/chatContext/ChatContext';
+import {
+  KeyboardContextValue,
+  useKeyboardContext,
+} from '../../contexts/keyboardContext/KeyboardContext';
 import {
   GroupType,
+  MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
@@ -50,25 +58,47 @@ export type MessagePropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us> | undefined;
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-  disabled: boolean | undefined;
-  dismissKeyboard: () => void;
-  emojiData: {
-    icon: string;
-    id: string;
-  }[];
-  removeMessage: (message: {
-    id: string;
-    parent_id?: string | undefined;
-  }) => void;
-  retrySendMessage: (
-    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
-  setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  updateMessage: (
-    updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
-  ) => void;
+  channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
+  client: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>['client'];
+  disabled: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['disabled'];
+  dismissKeyboard: KeyboardContextValue['dismissKeyboard'];
+  emojiData: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
+  removeMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['removeMessage'];
+  retrySendMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['retrySendMessage'];
+  setEditingState: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['setEditingState'];
+  updateMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['updateMessage'];
 };
 
 /**
@@ -228,7 +258,8 @@ const DefaultMessageWithContext = <
     }
   };
 
-  const handleRetry = async () => await retrySendMessage(message);
+  const handleRetry = async () =>
+    await retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const getTotalReactionCount = (
     supportedReactions: {
