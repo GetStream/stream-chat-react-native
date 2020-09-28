@@ -102,8 +102,6 @@ const DefaultMessageWithContext = <
     ...rest
   } = props;
 
-  console.log('hiiiii');
-
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 

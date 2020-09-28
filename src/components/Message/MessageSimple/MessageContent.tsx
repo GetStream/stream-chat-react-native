@@ -303,15 +303,18 @@ const MessageContentWithContext = <
       }
     }
 
+    let parserOutput;
+
     if (typeof message.created_at === 'string') {
-      return tDateTimeParser(message.created_at);
+      parserOutput = tDateTimeParser(message.created_at);
     } else {
-      const parserOutput = tDateTimeParser(message.created_at.asMutable());
-      if (isDayOrMoment(parserOutput)) {
-        return parserOutput.format('LT');
-      }
-      return '';
+      parserOutput = tDateTimeParser(message.created_at.asMutable());
     }
+
+    if (isDayOrMoment(parserOutput)) {
+      return parserOutput.format('LT');
+    }
+    return message.created_at;
   };
 
   return (
