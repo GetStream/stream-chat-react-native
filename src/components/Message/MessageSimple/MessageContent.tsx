@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 
+import type { MessageResponse } from 'stream-chat';
+
 import type { ActionSheetCustom } from 'react-native-actionsheet';
 
 import DefaultActionSheet from './MessageActionSheet';
@@ -23,6 +25,7 @@ import { MessageContentProvider } from '../../../contexts/messageContentContext/
 import {
   Alignment,
   GroupType,
+  MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
@@ -36,7 +39,6 @@ import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
 import type { MessageSimpleProps } from './MessageSimple';
-import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -132,9 +134,15 @@ type MessageContentWithContextProps<
   Attachment: React.ComponentType<AttachmentProps<At>>;
   disabled: boolean | undefined;
   Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  retrySendMessage: (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => Promise<void>;
+  retrySendMessage: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['retrySendMessage'];
 };
 
 /**
@@ -283,7 +291,8 @@ const MessageContentWithContext = <
   };
 
   if (message.status === 'failed') {
-    contentProps.onPress = () => retrySendMessage(message);
+    contentProps.onPress = () =>
+      retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
   }
 
   const context = {

@@ -79,7 +79,10 @@ export type MessagesContextValue<
   loadMore: DebouncedFunc<() => Promise<void>>;
   Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
-  removeMessage: (message: { id: string; parent_id?: string }) => void;
+  removeMessage: (message: {
+    id: string;
+    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
+  }) => void;
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
@@ -87,7 +90,7 @@ export type MessagesContextValue<
     attachments?: StreamMessage<At, Me, Us>['attachments'];
     extraFields?: Partial<StreamMessage<At, Me, Us>>;
     mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
-    parent?: StreamMessage<At, Me, Us>['parent_id'];
+    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
     text?: StreamMessage<At, Me, Us>['text'];
   }) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;

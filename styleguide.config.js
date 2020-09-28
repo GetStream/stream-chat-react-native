@@ -23,7 +23,7 @@ const sections = [
     usageMode: 'expand',
   },
   {
-    components: ['src/components/Thread/Thread.js'],
+    components: ['src/components/Thread/Thread.tsx'],
     exampleMode: 'collapse',
     name: 'Thread Component',
     usageMode: 'expand',

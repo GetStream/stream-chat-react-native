@@ -62,7 +62,7 @@ describe('Thread', () => {
             <ThreadContext.Consumer>
               {(c) => {
                 openThread = c.openThread;
-                return <Thread thread={thread} />;
+                return <Thread />;
               }}
             </ThreadContext.Consumer>
           </Channel>
@@ -84,7 +84,7 @@ describe('Thread', () => {
       <Chat client={chatClient}>
         <TranslationProvider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread2}>
-            <Thread thread={thread2} />
+            <Thread />
           </Channel>
         </TranslationProvider>
       </Chat>,
@@ -158,7 +158,7 @@ describe('Thread', () => {
           <ChannelContext.Consumer>
             {(c) => {
               setLastRead = c.setLastRead;
-              return <Thread thread={thread} />;
+              return <Thread />;
             }}
           </ChannelContext.Consumer>
         </Channel>

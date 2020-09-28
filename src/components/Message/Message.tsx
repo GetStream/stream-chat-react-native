@@ -5,6 +5,7 @@ import type {
   MessageResponse,
   Reaction,
   ReactionResponse,
+  Message as StreamMessage,
   UnknownType,
   UserResponse,
 } from 'stream-chat';
@@ -132,8 +133,6 @@ const DefaultMessageWithContext = <
     ...rest
   } = props;
 
-  console.log('hiiiii');
-
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
@@ -253,7 +252,14 @@ const DefaultMessageWithContext = <
       if (data?.message) {
         updateMessage(data.message);
       } else {
-        removeMessage({ id: message.id, parent_id: message.parent_id });
+        removeMessage({
+          id: message.id,
+          parent_id: message.parent_id as StreamMessage<
+            At,
+            Me,
+            Us
+          >['parent_id'],
+        });
       }
     }
   };
