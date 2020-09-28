@@ -102,6 +102,8 @@ const DefaultMessageWithContext = <
     ...rest
   } = props;
 
+  console.log('hiiiii');
+
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
@@ -334,18 +336,9 @@ export type MessageProps<
    */
   groupStyles: GroupType[];
   /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * A list of users that have read this message
-   **/
-  readBy: UserResponse<Us>[] | [];
   /**
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
@@ -361,6 +354,11 @@ export type MessageProps<
    */
   lastReceivedId?: string;
   /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
    * Custom message actions to display on open of the action sheet
    */
   messageActions?: boolean | string[];
@@ -370,6 +368,10 @@ export type MessageProps<
    * @param message A message object to open the thread upon.
    */
   onThreadSelect?: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * A list of users that have read this message
+   **/
+  readBy?: UserResponse<Us>[] | [];
   /**
    * Whether or not the MessageList is part of a Thread
    */
