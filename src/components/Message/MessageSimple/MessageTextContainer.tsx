@@ -120,16 +120,16 @@ export type MessageTextContainerProps<
    */
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
    * Handler to open and navigate into a message thread
    */
   openThread: () => void;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: Record<string, unknown>;
+  /**
+   * Custom UI component to display a message in MessageList component
+   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
+   * */
+  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component for message text
    */

@@ -5,6 +5,7 @@ import type {
   MessageResponse,
   Reaction,
   ReactionResponse,
+  Message as StreamMessage,
   UnknownType,
   UserResponse,
 } from 'stream-chat';
@@ -135,7 +136,7 @@ const DefaultMessageWithContext = <
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
-  const isMyMessage = () => client.user?.id === message.user?.id;
+  const isMyMessage = () => client && client.user?.id === message.user?.id;
 
   const isAdmin = () =>
     client.user?.role === 'admin' || channel?.state.membership.role === 'admin';
@@ -251,7 +252,14 @@ const DefaultMessageWithContext = <
       if (data?.message) {
         updateMessage(data.message);
       } else {
-        removeMessage({ id: message.id, parent_id: message.parent_id });
+        removeMessage({
+          id: message.id,
+          parent_id: message.parent_id as StreamMessage<
+            At,
+            Me,
+            Us
+          >['parent_id'],
+        });
       }
     }
   };

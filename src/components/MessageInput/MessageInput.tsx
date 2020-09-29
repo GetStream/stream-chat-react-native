@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ImageSourcePropType,
+  ImageRequireSource,
   TextInput,
   TextInputProps,
   View,
@@ -10,8 +10,8 @@ import { lookup } from 'mime-types';
 import {
   Attachment,
   logChatPromiseExecution,
-  Message,
   SendFileAPIResponse,
+  Message as StreamMessage,
   UserResponse,
 } from 'stream-chat';
 
@@ -76,7 +76,7 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-const iconClose: ImageSourcePropType = require('../../images/icons/icon_close.png');
+const iconClose: ImageRequireSource = require('../../images/icons/icon_close.png');
 
 const Container = styled.View<{ imageUploads: ImageUpload[] }>`
   background-color: rgba(0, 0, 0, 0.05);
@@ -246,8 +246,8 @@ export type MessageInputProps<
    * @param newText
    */
   onChangeText?: (newText: string) => void;
-  /** Parent message object - in case of thread */
-  parent?: Message<At, Me, Us>['parent_id'];
+  /** Parent message id - in case of thread */
+  parent_id?: StreamMessage<At, Me, Us>['parent_id'];
   /**
    * Custom UI component for send button.
    *
@@ -327,7 +327,7 @@ const MessageInput = <
     Input,
     maxNumberOfFiles,
     onChangeText: onChangeTextProp,
-    parent,
+    parent_id,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
   } = props;
@@ -393,14 +393,14 @@ const MessageInput = <
           image_url: image.url,
           type: 'image',
         },
-      ] as Message<At, Me, Us>['attachments'];
+      ] as StreamMessage<At, Me, Us>['attachments'];
 
       try {
         sendMessageContext({
           attachments,
           mentioned_users: [],
-          parent,
-          text: '' as Message<At, Me, Us>['text'],
+          parent_id,
+          text: '' as StreamMessage<At, Me, Us>['text'],
         });
 
         setAsyncIds((prevAsyncIds) =>
@@ -724,7 +724,7 @@ const MessageInput = <
       inputBox.current.clear();
     }
 
-    const attachments = [] as Message<At, Me, Us>['attachments'];
+    const attachments = [] as StreamMessage<At, Me, Us>['attachments'];
     for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
@@ -780,7 +780,7 @@ const MessageInput = <
     }
 
     if (editing && !isEditingBoolean(editing)) {
-      const updatedMessage = { ...editing } as Message<At, Me, Us>;
+      const updatedMessage = { ...editing } as StreamMessage<At, Me, Us>;
 
       updatedMessage.attachments = attachments;
       updatedMessage.mentioned_users = mentionedUsers;
@@ -799,8 +799,8 @@ const MessageInput = <
         sendMessageContext({
           attachments,
           mentioned_users: uniq(mentionedUsers),
-          parent,
-          text: prevText as Message<At, Me, Us>['text'],
+          parent_id,
+          text: prevText as StreamMessage<At, Me, Us>['text'],
         });
 
         sending.current = false;
@@ -834,7 +834,7 @@ const MessageInput = <
         await client.updateMessage({
           ...editing,
           text,
-        } as Message<At, Me, Us>);
+        } as StreamMessage<At, Me, Us>);
       }
 
       setText('');
@@ -1048,4 +1048,4 @@ const MessageInput = <
 
 MessageInput.themePath = 'messageInput';
 
-export default themed(MessageInput);
+export default themed(MessageInput) as typeof MessageInput;

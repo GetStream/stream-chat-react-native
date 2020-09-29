@@ -23,7 +23,7 @@ const sections = [
     usageMode: 'expand',
   },
   {
-    components: ['src/components/Thread/Thread.js'],
+    components: ['src/components/Thread/Thread.tsx'],
     exampleMode: 'collapse',
     name: 'Thread Component',
     usageMode: 'expand',
@@ -107,7 +107,7 @@ const sections = [
     name: 'Miscellaneous',
     sections: [
       {
-        content: 'src/components/docs/renderText.md',
+        content: 'src/components/Message/MessageSimple/utils/renderText.md',
         name: 'renderText',
       },
       {
@@ -189,7 +189,7 @@ const sections = [
         name: 'Message (in MessageList)',
       },
       {
-        content: 'src/components/docs/MessageText.md',
+        content: 'src/components/Message/MessageSimple/MessageText.md',
         name: 'MessageText (in MessageSimple)',
       },
       {

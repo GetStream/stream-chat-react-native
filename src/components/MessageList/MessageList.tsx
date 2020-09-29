@@ -122,7 +122,7 @@ export type MessageListProps<
    * used in MessageList. Its footer instead of header, since message list is inverted.
    *
    */
-  HeaderComponent?: React.ComponentType;
+  HeaderComponent?: React.ReactElement;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)

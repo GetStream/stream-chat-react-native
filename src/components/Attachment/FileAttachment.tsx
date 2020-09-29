@@ -107,6 +107,8 @@ const FileAttachment = <
 }: FileAttachmentProps<At>) => {
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
+  const AttachmentActionsComponent = AttachmentActions as typeof DefaultAttachmentActions;
+
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
@@ -122,7 +124,10 @@ const FileAttachment = <
         </FileDetails>
       </FileContainer>
       {attachment.actions?.length ? (
-        <AttachmentActions<At> actionHandler={actionHandler} {...attachment} />
+        <AttachmentActionsComponent<At>
+          actionHandler={actionHandler}
+          {...attachment}
+        />
       ) : null}
     </TouchableOpacity>
   );

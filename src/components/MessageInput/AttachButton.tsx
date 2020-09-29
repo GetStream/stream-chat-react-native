@@ -1,11 +1,11 @@
 import React from 'react';
 
-import type { GestureResponderEvent, ImageSourcePropType } from 'react-native';
+import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
 
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
-const iconAddAttachment: ImageSourcePropType = require('../../images/icons/plus-outline.png');
+const iconAddAttachment: ImageRequireSource = require('../../images/icons/plus-outline.png');
 
 const AttachButtonIcon = styled.Image`
   height: 15px;

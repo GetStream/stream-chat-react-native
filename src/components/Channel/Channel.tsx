@@ -21,7 +21,6 @@ import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
-import MessageDefault from '../Message/Message';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
@@ -193,7 +192,7 @@ const Channel = <
   KeyboardCompatibleView = KeyboardCompatibleViewDefault,
   LoadingErrorIndicator = LoadingErrorIndicatorDefault,
   LoadingIndicator = LoadingIndicatorDefault,
-  Message = MessageDefault,
+  Message,
   thread: threadProps,
 }: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -436,13 +435,13 @@ const Channel = <
     attachments,
     extraFields,
     mentioned_users,
-    parent,
+    parent_id,
     text,
   }: {
     attachments?: StreamMessage<At, Me, Us>['attachments'];
     extraFields?: Partial<StreamMessage<At, Me, Us>>;
     mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
-    parent?: StreamMessage<At, Me, Us>['parent_id'];
+    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
     text?: StreamMessage<At, Me, Us>['text'];
   }): MessageResponse<At, Ch, Co, Me, Re, Us> => {
     const message = {
@@ -452,7 +451,7 @@ const Channel = <
       html: text,
       id: `${client.userID}-${uuidv4()}`,
       mentioned_users,
-      parent_id: parent,
+      parent_id,
       reactions: [],
       status: 'sending',
       text,
@@ -543,7 +542,7 @@ const Channel = <
   >['sendMessage'] = async ({
     attachments = [],
     mentioned_users,
-    parent,
+    parent_id,
     text,
     ...extraFields
   }) => {
@@ -553,7 +552,7 @@ const Channel = <
       attachments,
       extraFields: extraFields as Partial<StreamMessage<At, Me, Us>>,
       mentioned_users,
-      parent,
+      parent_id,
       text,
     });
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, ImageSourcePropType } from 'react-native';
+import { FlatList, ImageRequireSource } from 'react-native';
 
 import UploadProgressIndicator from './UploadProgressIndicator';
 
@@ -9,7 +9,7 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
-const closeRound: ImageSourcePropType = require('../../images/icons/close-round.png');
+const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
 
 const Container = styled.View`
   height: 70px;

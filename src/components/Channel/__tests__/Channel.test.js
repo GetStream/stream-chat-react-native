@@ -24,7 +24,10 @@ import {
   MessagesContext,
   MessagesProvider,
 } from '../../../contexts/messagesContext/MessagesContext';
-import { ThreadContext, ThreadProvider } from '../../../contexts/threadContext';
+import {
+  ThreadContext,
+  ThreadProvider,
+} from '../../../contexts/threadContext/ThreadContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
