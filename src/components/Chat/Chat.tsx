@@ -178,4 +178,4 @@ const Chat = <
 
 Chat.themePath = '';
 
-export default themed(Chat);
+export default themed(Chat) as typeof Chat;

@@ -235,12 +235,12 @@ const MessageContentWithContext = <
     if (actionSheetVisible && actionSheetRef.current) {
       setTimeout(
         () => {
-          actionSheetRef.current?.show();
+          actionSheetRef.current?.show?.();
         },
         customMessageContent ? 10 : 0,
       );
     }
-  }, [actionSheetRef.current, actionSheetVisible]);
+  }, [actionSheetVisible]);
 
   const hasAttachment = Boolean(
     message && message.attachments && message.attachments.length,
@@ -312,15 +312,18 @@ const MessageContentWithContext = <
       }
     }
 
+    let parserOutput;
+
     if (typeof message.created_at === 'string') {
-      return tDateTimeParser(message.created_at);
+      parserOutput = tDateTimeParser(message.created_at);
     } else {
-      const parserOutput = tDateTimeParser(message.created_at.asMutable());
-      if (isDayOrMoment(parserOutput)) {
-        return parserOutput.format('LT');
-      }
-      return '';
+      parserOutput = tDateTimeParser(message.created_at.asMutable());
     }
+
+    if (isDayOrMoment(parserOutput)) {
+      return parserOutput.format('LT');
+    }
+    return message.created_at;
   };
 
   return (
@@ -436,7 +439,7 @@ const MessageContentWithContext = <
           />
         </ContainerInner>
         {repliesEnabled ? (
-          <MessageReplies
+          <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             isThreadList={!!threadList}
             message={message}
@@ -483,10 +486,18 @@ const areEqual = <
   prevProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { updated_at: previousLast } = prevProps.message;
-  const { updated_at: nextLast } = nextProps.message;
+  const { actionSheetVisible: prevAS, message: prevMessage } = prevProps;
+  const { actionSheetVisible: nextAS, message: nextMessage } = nextProps;
 
-  return previousLast === nextLast;
+  const actionSheetEqual = prevAS === nextAS;
+  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
+  // TODO - check and see if reactions/replies change update_at time
+  const reactionsEqual =
+    prevMessage.latest_reactions?.length ===
+    nextMessage.latest_reactions?.length;
+  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+
+  return actionSheetEqual && messageEqual && reactionsEqual && repliesEqual;
 };
 
 const MemoizedMessageContent = React.memo(
