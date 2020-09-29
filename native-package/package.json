@@ -17,5 +17,9 @@
     "react-native-document-picker": ">=3.2.0",
     "react-native-image-crop-picker": ">=0.33.2",
     "react-native": ">=0.59.0"
+  },
+  "scripts": {
+    "prepack": " cp ../README.md .",
+    "postpack": "rm README.md"
   }
 }
