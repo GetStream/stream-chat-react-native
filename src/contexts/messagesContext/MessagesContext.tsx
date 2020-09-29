@@ -77,7 +77,6 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
-  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   removeMessage: (message: {
     id: string;
@@ -110,6 +109,7 @@ export type MessagesContextValue<
       >['threads'][string];
     },
   ) => void;
+  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

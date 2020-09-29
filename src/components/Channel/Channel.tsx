@@ -21,7 +21,6 @@ import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
-import MessageDefault from '../Message/Message';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
@@ -193,7 +192,7 @@ const Channel = <
   KeyboardCompatibleView = KeyboardCompatibleViewDefault,
   LoadingErrorIndicator = LoadingErrorIndicatorDefault,
   LoadingIndicator = LoadingIndicatorDefault,
-  Message = MessageDefault,
+  Message,
   thread: threadProps,
 }: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();

@@ -30,11 +30,11 @@ import type {
 } from '../../types/types';
 
 const NewThread = styled.View`
-  padding: 8px;
-  background-color: #f4f9ff;
-  margin: 10px;
-  border-radius: 4;
   align-items: center;
+  background-color: #f4f9ff;
+  border-radius: 4px;
+  margin: 10px;
+  padding: 8px;
   ${({ theme }) => theme.thread.newThread.css};
 `;
 

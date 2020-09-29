@@ -114,7 +114,7 @@ exports[`Thread should match thread snapshot 1`] = `
               },
               Object {
                 "date": 2020-05-05T14:50:00.000Z,
-                "groupStyles": undefined,
+                "groupStyles": Array [],
                 "readBy": Array [],
                 "type": "message.date",
               },
@@ -164,8 +164,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   "flexBasis": 0,
                   "flexGrow": 1,
                   "flexShrink": 1,
-                  "paddingLeft": 10,
-                  "paddingRight": 10,
+                  "paddingHorizontal": 10,
                   "width": "100%",
                 },
               ],
@@ -1270,7 +1269,7 @@ exports[`Thread should match thread snapshot 1`] = `
         style={
           Array [
             Object {
-              "backgroundColor": "rgba(0,0,0,0.05)",
+              "backgroundColor": "rgba(0, 0, 0, 0.05)",
               "borderRadius": 10,
               "marginHorizontal": 10,
               "paddingTop": 0,
@@ -1623,6 +1622,8 @@ exports[`Thread should match thread snapshot 1`] = `
           </View>
           <TextInput
             allowFontScaling={true}
+            autoFocus={true}
+            editable={true}
             multiline={true}
             onChangeText={[Function]}
             onSelectionChange={[Function]}
