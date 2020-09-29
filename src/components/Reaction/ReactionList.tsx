@@ -1,5 +1,7 @@
 import React from 'react';
 
+import type { ImageRequireSource } from 'react-native';
+
 import { renderReactions } from './utils/renderReactions';
 
 import { styled } from '../../styles/styledComponents';
@@ -19,13 +21,13 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-const leftTail = require('../../images/reactionlist/left-tail.png');
-const leftCenter = require('../../images/reactionlist/left-center.png');
-const leftEnd = require('../../images/reactionlist/left-end.png');
+const leftTail: ImageRequireSource = require('../../images/reactionlist/left-tail.png');
+const leftCenter: ImageRequireSource = require('../../images/reactionlist/left-center.png');
+const leftEnd: ImageRequireSource = require('../../images/reactionlist/left-end.png');
 
-const rightTail = require('../../images/reactionlist/right-tail.png');
-const rightCenter = require('../../images/reactionlist/right-center.png');
-const rightEnd = require('../../images/reactionlist/right-end.png');
+const rightTail: ImageRequireSource = require('../../images/reactionlist/right-tail.png');
+const rightCenter: ImageRequireSource = require('../../images/reactionlist/right-center.png');
+const rightEnd: ImageRequireSource = require('../../images/reactionlist/right-end.png');
 
 export type LatestReactions<
   At extends Record<string, unknown> = DefaultAttachmentType,
@@ -98,7 +100,7 @@ const ImageWrapper = styled.View`
 
 const LeftCenter = styled.Image`
   flex: 1;
-  height: 33;
+  height: 33px;
 `;
 
 const LeftEnd = styled.Image`
@@ -124,7 +126,7 @@ const Reactions = styled.View`
 
 const RightCenter = styled.Image`
   flex: 1;
-  height: 33;
+  height: 33px;
 `;
 
 const RightEnd = styled.Image`
@@ -201,4 +203,4 @@ const ReactionList = <
 
 ReactionList.themePath = 'message.reactionList';
 
-export default themed(ReactionList);
+export default themed(ReactionList) as typeof ReactionList;

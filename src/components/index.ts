@@ -64,7 +64,6 @@ import { renderReactions } from './Reaction/utils/renderReactions';
 
 import Spinner from './Spinner/Spinner';
 
-import { SuggestionsProvider } from '../contexts/suggestionsContext/SuggestionsContext';
 import SuggestionsList from '../contexts/suggestionsContext/SuggestionsList';
 
 import Thread from './Thread/Thread';
@@ -119,7 +118,6 @@ export {
   SendButton,
   Spinner,
   SuggestionsList,
-  SuggestionsProvider,
   Thread,
   TypingIndicator,
   TypingIndicatorContainer,

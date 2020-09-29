@@ -1,13 +1,15 @@
 import React from 'react';
-import { FlatList } from 'react-native';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
+import { FlatList, ImageRequireSource } from 'react-native';
 
 import UploadProgressIndicator from './UploadProgressIndicator';
 
-import closeRound from '../../images/icons/close-round.png';
+import type { ImageUpload } from './hooks/useMessageDetailsForState';
+
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+
+const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
 
 const Container = styled.View`
   height: 70px;
@@ -49,13 +51,52 @@ const Upload = styled.Image`
   ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
 `;
 
+export type ImageUploadPreviewProps = {
+  /**
+   * An array of image objects which are set for upload. It has the following structure:
+   *
+   * ```json
+   *  [
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_1",
+   *      "state": "uploading" // or "finished",
+   *    },
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_2",
+   *      "state": "uploading" // or "finished",
+   *    },
+   *  ]
+   * ```
+   *
+   */
+  imageUploads: ImageUpload[];
+  /**
+   * Function for removing an image from the upload preview
+   *
+   * @param id string ID of image in `imageUploads` object in state of MessageInput
+   */
+  removeImage: (id: string) => void;
+  /**
+   * Function for attempting to upload an image
+   *
+   * @param id string ID of image in `imageUploads` object in state of MessageInput
+   */
+  retryUpload: ({ newImage }: { newImage: ImageUpload }) => Promise<void>;
+};
+
 /**
  * UI Component to preview the images set for upload
  *
- * @example ../docs/ImageUploadPreview.md
+ * @example ./ImageUploadPreview.md
  */
-const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
-  const renderItem = ({ item }) => {
+const ImageUploadPreview = ({
+  imageUploads,
+  removeImage,
+  retryUpload,
+}: ImageUploadPreviewProps) => {
+  const renderItem = ({ item }: { item: ImageUpload }) => {
     let type;
 
     if (item.state === FileState.UPLOADING) {
@@ -71,7 +112,7 @@ const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
         <UploadProgressIndicator
           action={() => {
             if (retryUpload) {
-              retryUpload(item.id);
+              retryUpload({ newImage: item });
             }
           }}
           active={item.state !== FileState.UPLOADED}
@@ -107,41 +148,6 @@ const ImageUploadPreview = ({ imageUploads, removeImage, retryUpload }) => {
       />
     </Container>
   ) : null;
-};
-
-ImageUploadPreview.propTypes = {
-  /**
-   * An array of image objects which are set for upload. It has the following structure:
-   *
-   * ```json
-   *  [
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_1",
-   *      "state": "uploading" // or "finished",
-   *    },
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_2",
-   *      "state": "uploading" // or "finished",
-   *    },
-   *  ]
-   * ```
-   *
-   */
-  imageUploads: PropTypes.array.isRequired,
-  /**
-   * Function for removing an image from the upload preview
-   *
-   * @param id string ID of image in `imageUploads` object in state of MessageInput
-   */
-  removeImage: PropTypes.func,
-  /**
-   * Function for attempting to upload an image
-   *
-   * @param id string ID of image in `imageUploads` object in state of MessageInput
-   */
-  retryUpload: PropTypes.func,
 };
 
 ImageUploadPreview.themePath = 'messageInput.imageUploadPreview';

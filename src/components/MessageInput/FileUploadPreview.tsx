@@ -1,15 +1,17 @@
 import React from 'react';
-import { FlatList } from 'react-native';
-import styled from 'styled-components/native';
-import PropTypes from 'prop-types';
+import { FlatList, ImageRequireSource } from 'react-native';
 
 import UploadProgressIndicator from './UploadProgressIndicator';
 
-import FileIcon from '../Attachment/FileIcon';
+import type { FileUpload } from './hooks/useMessageDetailsForState';
 
-import closeRound from '../../images/icons/close-round.png';
+import FileIcon, { FileIconProps } from '../Attachment/FileIcon';
+
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+
+const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
 
 const FILE_PREVIEW_HEIGHT = 50;
 const FILE_PREVIEW_PADDING = 10;
@@ -33,7 +35,7 @@ const AttachmentView = styled.View`
   ${({ theme }) => theme.messageInput.fileUploadPreview.attachmentView.css};
 `;
 
-const Container = styled.View`
+const Container = styled.View<{ fileUploadsLength: number }>`
   height: ${({ fileUploadsLength }) =>
     fileUploadsLength * (FILE_PREVIEW_HEIGHT + 5)}px;
   margin-horizontal: 10px;
@@ -64,19 +66,61 @@ const FilenameText = styled.Text`
   ${({ theme }) => theme.messageInput.fileUploadPreview.filenameText.css};
 `;
 
+export type FileUploadPreviewProps = {
+  /**
+   * An array of file objects which are set for upload. It has the following structure:
+   *
+   * ```json
+   *  [
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_1",
+   *      "state": "uploading" // or "finished",
+   *      "url": "https://url1.com",
+   *    },
+   *    {
+   *      "file": // File object,
+   *      "id": "randomly_generated_temp_id_2",
+   *      "state": "uploading" // or "finished",
+   *      "url": "https://url1.com",
+   *    },
+   *  ]
+   * ```
+   *
+   */
+  fileUploads: FileUpload[];
+  /**
+   * Function for removing a file from the upload preview
+   *
+   * @param id string ID of file in `fileUploads` object in state of MessageInput
+   */
+  removeFile: (id: string) => void;
+  /**
+   * Function for attempting to upload a file
+   *
+   * @param id string ID of file in `fileUploads` object in state of MessageInput
+   */
+  retryUpload: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+};
+
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
  *
- * @example ../docs/FileUploadPreview.md
+ * @example ./FileUploadPreview.md
  */
 const FileUploadPreview = ({
   AttachmentFileIcon = FileIcon,
   fileUploads,
   removeFile,
   retryUpload,
-}) => {
-  const renderItem = ({ item }) => {
+}: FileUploadPreviewProps) => {
+  const renderItem = ({ item }: { item: FileUpload }) => {
     let type;
 
     if (item.state === FileState.UPLOADING) {
@@ -92,7 +136,7 @@ const FileUploadPreview = ({
         <UploadProgressIndicator
           action={() => {
             if (retryUpload) {
-              retryUpload(item.id);
+              retryUpload({ newFile: item });
             }
           }}
           active={item.state !== FileState.UPLOADED}
@@ -102,9 +146,11 @@ const FileUploadPreview = ({
             <AttachmentView>
               <AttachmentFileIcon mimeType={item.file.type} size={20} />
               <FilenameText>
-                {item.file.name.length > 35
-                  ? item.file.name.substring(0, 35).concat('...')
-                  : item.file.name}
+                {item.file.name
+                  ? item.file.name.length > 35
+                    ? item.file.name.substring(0, 35).concat('...')
+                    : item.file.name
+                  : ''}
               </FilenameText>
             </AttachmentView>
           </AttachmentContainerView>
@@ -133,51 +179,6 @@ const FileUploadPreview = ({
       />
     </Container>
   ) : null;
-};
-
-FileUploadPreview.propTypes = {
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: PropTypes.oneOfType([
-    PropTypes.node,
-    PropTypes.elementType,
-  ]),
-  /**
-   * An array of file objects which are set for upload. It has the following structure:
-   *
-   * ```json
-   *  [
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_1",
-   *      "state": "uploading" // or "finished",
-   *      "url": "https://url1.com",
-   *    },
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_2",
-   *      "state": "uploading" // or "finished",
-   *      "url": "https://url1.com",
-   *    },
-   *  ]
-   * ```
-   *
-   */
-  fileUploads: PropTypes.array.isRequired,
-  /**
-   * Function for removing a file from the upload preview
-   *
-   * @param id string ID of file in `fileUploads` object in state of MessageInput
-   */
-  removeFile: PropTypes.func,
-  /**
-   * Function for attempting to upload a file
-   *
-   * @param id string ID of file in `fileUploads` object in state of MessageInput
-   */
-  retryUpload: PropTypes.func,
 };
 
 FileUploadPreview.themePath = 'messageInput.fileUploadPreview';

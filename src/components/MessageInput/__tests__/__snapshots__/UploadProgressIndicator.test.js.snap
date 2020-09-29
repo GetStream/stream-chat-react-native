@@ -9,7 +9,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(0,0,0,0.3)",
+          "backgroundColor": "rgba(0, 0, 0, 0.3)",
           "height": "100%",
           "justifyContent": "center",
           "opacity": 0,
@@ -24,7 +24,7 @@ exports[`UploadProgressIndicator should render an active IN_PROGRESS UploadProgr
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(255,255,255,0)",
+          "backgroundColor": "rgba(255, 255, 255, 0)",
           "height": "100%",
           "justifyContent": "center",
           "position": "absolute",
@@ -69,7 +69,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(0,0,0,0.3)",
+          "backgroundColor": "rgba(0, 0, 0, 0.3)",
           "height": "100%",
           "justifyContent": "center",
           "opacity": 0,
@@ -84,7 +84,7 @@ exports[`UploadProgressIndicator should render an active RETRY UploadProgressInd
       Array [
         Object {
           "alignItems": "center",
-          "backgroundColor": "rgba(255,255,255,0)",
+          "backgroundColor": "rgba(255, 255, 255, 0)",
           "height": "100%",
           "justifyContent": "center",
           "position": "absolute",

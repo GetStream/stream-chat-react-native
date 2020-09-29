@@ -1,8 +1,4 @@
-import type {
-  NetInfoChangeHandler,
-  NetInfoState,
-  NetInfoSubscription,
-} from '@react-native-community/netinfo';
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
   throw Error(
@@ -12,11 +8,9 @@ const fail = () => {
 
 type NetInfo = {
   addEventListener: (
-    listener: NetInfoChangeHandler,
+    listener: (isConnected: boolean) => void,
   ) => NetInfoSubscription | never;
-  fetch: (
-    requestedInterface?: string | undefined,
-  ) => Promise<NetInfoState> | never;
+  fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
 };
 
 export let NetInfo: NetInfo = {
@@ -24,14 +18,28 @@ export let NetInfo: NetInfo = {
   fetch: fail,
 };
 
-type PickImage = () => Promise<{ cancelled?: boolean; uri?: string }> | never;
+type PickImage = ({
+  compressImageQuality,
+  maxNumberOfFiles,
+}: {
+  compressImageQuality?: number;
+  maxNumberOfFiles?: number;
+}) => Promise<{ cancelled: boolean; images?: { uri: string }[] }> | never;
 export let pickImage: PickImage = fail;
 
-type PickDocument = () =>
+type PickDocument = ({
+  maxNumberOfFiles,
+}: {
+  maxNumberOfFiles?: number;
+}) =>
   | Promise<{
       cancelled: boolean;
-      name?: string;
-      uri?: string;
+      docs?: {
+        name: string;
+        size?: number | string;
+        type?: string;
+        uri?: string;
+      }[];
     }>
   | never;
 export let pickDocument: PickDocument = fail;

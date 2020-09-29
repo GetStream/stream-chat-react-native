@@ -152,7 +152,7 @@ const Chat = <
   });
 
   useEffect(() => {
-    client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+    client?.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
   }, []);
 
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
@@ -178,4 +178,4 @@ const Chat = <
 
 Chat.themePath = '';
 
-export default themed(Chat);
+export default themed(Chat) as typeof Chat;

@@ -57,7 +57,6 @@ describe('Message', () => {
   });
 
   it('renders the Message and MessageSimple components', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId } = renderMessage({ message });
@@ -69,13 +68,13 @@ describe('Message', () => {
   });
 
   it('opens the action sheet on long press', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId, queryAllByTestId } = renderMessage({ message });
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
       expect(queryAllByTestId('cancel-button')).toHaveLength(0);
     });
@@ -89,7 +88,6 @@ describe('Message', () => {
   });
 
   it('opens the action sheet and gives the option to add a reaction', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId, getByText, queryAllByTestId } = renderMessage({
@@ -98,6 +96,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
@@ -110,7 +109,6 @@ describe('Message', () => {
   });
 
   it('closes the action sheet on press of the cancel button', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const { getByTestId, queryAllByTestId } = renderMessage({
@@ -119,6 +117,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
@@ -137,7 +136,6 @@ describe('Message', () => {
   });
 
   it('toggles edit message ability based on `isMyMessage` prop', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const {
@@ -152,16 +150,20 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
     fireEvent(getByTestId('message-content-wrapper'), 'longPress');
 
     await waitFor(() => {
-      expect(queryAllByText('Edit Message')).toHaveLength(0);
+      expect(getByText('Edit Message')).toBeTruthy();
     });
 
-    const message2 = generateMessage({ user: { ...user, id: 'id' } });
+    const message2 = generateMessage({
+      updated_at: 'newMessage',
+      user: { ...user, id: 'newUser' },
+    });
 
     rerender(
       <Chat client={chatClient}>
@@ -174,13 +176,12 @@ describe('Message', () => {
     fireEvent(getByTestId('message-content-wrapper'), 'longPress');
 
     await waitFor(() => {
-      expect(getByText('Edit Message')).toBeTruthy();
+      expect(queryAllByText('Edit Message')).toHaveLength(0);
     });
   });
 
   it('edits a message when selected from the action sheet', async () => {
-    const user = generateUser();
-    const message = generateMessage({ user: { ...user, id: 'id' } });
+    const message = generateMessage({ user });
     const clientOnSpy = jest.spyOn(chatClient, 'updateMessage');
 
     const { getByTestId, queryAllByTestId, queryAllByText } = renderMessage({
@@ -189,6 +190,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
@@ -212,7 +214,6 @@ describe('Message', () => {
   });
 
   it('toggles delete message ability based on `isMyMessage` prop', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
 
     const {
@@ -227,16 +228,20 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
     fireEvent(getByTestId('message-content-wrapper'), 'longPress');
 
     await waitFor(() => {
-      expect(queryAllByText('Delete Message')).toHaveLength(0);
+      expect(getByText('Delete Message')).toBeTruthy();
     });
 
-    const message2 = generateMessage({ user: { ...user, id: 'id' } });
+    const message2 = generateMessage({
+      updated_at: 'newMessage',
+      user: { ...user, id: 'newUser' },
+    });
 
     rerender(
       <Chat client={chatClient}>
@@ -249,13 +254,12 @@ describe('Message', () => {
     fireEvent(getByTestId('message-content-wrapper'), 'longPress');
 
     await waitFor(() => {
-      expect(getByText('Delete Message')).toBeTruthy();
+      expect(queryAllByText('Delete Message')).toHaveLength(0);
     });
   });
 
   it('deletes a message when selected from the action sheet', async () => {
-    const user = generateUser();
-    const message = generateMessage({ user: { ...user, id: 'id' } });
+    const message = generateMessage({ user });
     const clientOnSpy = jest.spyOn(chatClient, 'deleteMessage');
 
     const { getByTestId, queryAllByTestId, queryAllByText } = renderMessage({
@@ -264,6 +268,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
@@ -281,7 +286,6 @@ describe('Message', () => {
   });
 
   it('calls the `onThreadSelect` prop from the action sheet to navigate into a thread', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
     const onThreadSelect = jest.fn();
     const MessageComponent = () => (
@@ -302,6 +306,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-simple-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-container')).toHaveLength(0);
     });
 
@@ -319,7 +324,6 @@ describe('Message', () => {
   });
 
   it('calls the `onLongPress` prop function if it exists', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
     const onLongPress = jest.fn();
 
@@ -338,7 +342,6 @@ describe('Message', () => {
   });
 
   it('renders a custom action sheet when the `ActionSheet` prop exists', async () => {
-    const user = generateUser();
     const message = generateMessage({ user });
     // eslint-disable-next-line
     const ActionSheet = React.forwardRef((props, ref) => (
@@ -352,6 +355,7 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(getByTestId('message-wrapper')).toBeTruthy();
+      expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(queryAllByTestId('action-sheet-prop')).toHaveLength(0);
     });
 

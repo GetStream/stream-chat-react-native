@@ -99,7 +99,7 @@ export type CardProps<
 /**
  * UI component for card in attachments.
  *
- * @example ../docs/Card.md
+ * @example ./Card.md
  */
 const Card = <At extends UnknownType = DefaultAttachmentType>(
   props: CardProps<At>,

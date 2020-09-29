@@ -21,7 +21,7 @@ import TypingIndicatorContainer from './TypingIndicatorContainer';
 
 import { useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
-import { InsertDate, isDateSeparator } from './utils/insertDates';
+import { isDateSeparator, MessageOrDate } from './utils/insertDates';
 
 import DefaultMessage from '../Message/Message';
 
@@ -37,6 +37,8 @@ import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
+import type { ActionSheetStyles } from '../Message/MessageSimple/MessageActionSheet';
+import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -82,7 +84,7 @@ export type MessageListProps<
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
    */
-  actionSheetStyles?: { [key: string]: unknown };
+  actionSheetStyles?: ActionSheetStyles;
   /**
    * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
    * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -98,7 +100,7 @@ export type MessageListProps<
    * ```
    */
   additionalFlatListProps?: FlatListProps<
-    InsertDate<At, Ch, Co, Ev, Me, Re, Us>
+    MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
@@ -120,12 +122,12 @@ export type MessageListProps<
    * used in MessageList. Its footer instead of header, since message list is inverted.
    *
    */
-  HeaderComponent?: React.ComponentType;
+  HeaderComponent?: React.ReactElement;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
    */
-  Message?: React.ComponentType<Partial<unknown>>; // TODO: type with Message props
+  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
@@ -158,7 +160,7 @@ export type MessageListProps<
    * ```
    */
   setFlatListRef?: (
-    ref: FlatList<InsertDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ref: FlatList<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
   /** Whether or not the MessageList is part of a Thread */
   threadList?: boolean;
@@ -228,7 +230,7 @@ const MessageList = <
   });
 
   const flatListRef = useRef<FlatList<
-    InsertDate<At, Ch, Co, Ev, Me, Re, Us>
+    MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
 
@@ -288,18 +290,20 @@ const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
-  const renderItem = (message: InsertDate<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const renderItem = (message: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       return <DateSeparator message={message} />;
     } else if (message.type === 'system') {
       return <MessageSystem message={message} />;
     } else if (message.type !== 'message.read') {
       return (
-        <DefaultMessage
+        <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
           actionSheetStyles={actionSheetStyles}
           AttachmentFileIcon={AttachmentFileIcon}
           groupStyles={message.groupStyles as GroupType[]}
-          lastReceivedId={lastReceivedId === message.id ? lastReceivedId : null}
+          lastReceivedId={
+            lastReceivedId === message.id ? lastReceivedId : undefined
+          }
           Message={Message}
           message={message}
           messageActions={messageActions}

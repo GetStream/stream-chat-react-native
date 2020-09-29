@@ -3,7 +3,7 @@
 Message with text content
 
 ```js
-const data = require('./data');
+const data = require('../../docs/data');
 
 const readBy = [
   {
@@ -32,7 +32,7 @@ const readBy = [
 Message with images
 
 ```js
-const data = require('./data');
+const data = require('../../docs/data');
 <Message
   message={data.messageWithImages}
   readBy={[]}
@@ -46,7 +46,7 @@ const data = require('./data');
 Message with attachment
 
 ```js
-const data = require('./data');
+const data = require('../../docs/data');
 <Message
   message={data.messageWithUrlPreview}
   readBy={[]}

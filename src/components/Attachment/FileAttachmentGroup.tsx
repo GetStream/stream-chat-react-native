@@ -1,14 +1,17 @@
 import React from 'react';
 import type { Attachment as AttachmentType, UnknownType } from 'stream-chat';
 
-import Attachment, { ActionHandler, GroupStyle } from './Attachment';
+import Attachment, { ActionHandler } from './Attachment';
 
 import { styled } from '../../styles/styledComponents';
 
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileAttachmentProps } from './FileAttachment';
 import type { FileIconProps } from './FileIcon';
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  GroupType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 const Container = styled.View`
@@ -23,21 +26,6 @@ export type FileAttachmentGroupProps<
    */
   alignment: Alignment;
   /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
-   */
-  AttachmentActions: React.ComponentType<Partial<AttachmentActionsProps>>;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
-   */
-  AttachmentFileIcon: React.ComponentType<Partial<FileIconProps>>;
-  /**
-   * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
-   */
-  FileAttachment: React.ComponentType<Partial<FileAttachmentProps<At>>>;
-  /**
    * The files attached to a message
    */
   files: AttachmentType<At>[];
@@ -46,9 +34,24 @@ export type FileAttachmentGroupProps<
    */
   handleAction: ActionHandler;
   /**
+   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   */
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
+  /**
+   * Custom UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   */
+  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /**
+   * Custom UI component to display File type attachment.
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   */
+  FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
+  /**
    * The unique id for the message with file attachments
    */
-  messageId: string;
+  messageId?: string;
 };
 
 const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(
@@ -68,7 +71,7 @@ const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(
     <Container>
       {files.length &&
         files.map((file, index) => {
-          let groupStyle: GroupStyle = 'single';
+          let groupStyle: GroupType = 'single';
 
           if (files.length === 1) {
             groupStyle = 'single';

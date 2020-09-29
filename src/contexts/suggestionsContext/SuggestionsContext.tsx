@@ -51,7 +51,7 @@ export type SuggestionsContextValue<
     title: string,
     component: SuggestionComponentType<Co, Us>,
   ) => Promise<void>;
-  setInputBoxContainerRef: (ref: View) => void;
+  setInputBoxContainerRef: (ref: View | null) => void;
   updateSuggestions: (newSuggestions: Suggestions<Co, Us>) => void;
 };
 
@@ -75,7 +75,7 @@ export const SuggestionsProvider = <
 >({
   children,
   value,
-}: PropsWithChildren<{ value: SuggestionsContextValue<Co, Us> }>) => {
+}: PropsWithChildren<{ value?: Partial<SuggestionsContextValue<Co, Us>> }>) => {
   const [componentType, setComponentType] = useState<
     SuggestionComponentType<Co, Us>
   >('');

@@ -14,33 +14,34 @@ import DefaultGallery, { GalleryProps } from './Gallery';
 import { themed } from '../../styles/theme';
 
 import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  Alignment,
+  GroupType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType } from '../../types/types';
 
 export type ActionHandler =
   | ((name: string, value: string) => Promise<void>)
   | ((arg1: unknown, arg2: unknown) => unknown);
 
-export type GroupStyle = 'single' | 'top' | 'middle' | 'bottom';
-
 export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
-  /**
-   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
-   */
-  actionHandler: ActionHandler;
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
   /**
    * The attachment to render
    */
   attachment: AttachmentType<At>;
   /**
+   * Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
+   */
+  actionHandler?: ActionHandler;
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment?: Alignment;
+  /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
    */
-  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps>>;
+  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
@@ -70,17 +71,19 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
    */
-  FileAttachment?: React.ComponentType<Partial<FileAttachmentProps<At>>>;
+  FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
   /**
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
    */
-  FileAttachmentGroup?: React.ComponentType<FileAttachmentGroupProps>;
+  FileAttachmentGroup?: React.ComponentType<
+    Partial<FileAttachmentGroupProps<At>>
+  >;
   /**
    * Custom UI component to display image attachments.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
    */
-  Gallery?: React.ComponentType<GalleryProps<At>>;
+  Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
   /**
    * Custom UI component to display Giphy image.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
@@ -92,7 +95,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
-  groupStyle?: GroupStyle;
+  groupStyle?: GroupType;
   /**
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
@@ -103,14 +106,14 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
 /**
  * Attachment - The message attachment
  *
- * @example ../docs/Attachment.md
+ * @example ./Attachment.md
  */
 const Attachment = <At extends UnknownType = DefaultAttachmentType>(
   props: AttachmentProps<At> & { themePath?: string },
 ) => {
   const {
     actionHandler,
-    alignment,
+    alignment = 'right',
     attachment,
     AttachmentActions = DefaultAttachmentActions,
     AttachmentFileIcon = DefaultFileIcon,

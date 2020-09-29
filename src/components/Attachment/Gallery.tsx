@@ -114,7 +114,7 @@ export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
 /**
  * UI component for card in attachments.
  *
- * @example ../docs/Gallery.md
+ * @example ./Gallery.md
  */
 const Gallery = <At extends UnknownType = DefaultAttachmentType>({
   alignment,

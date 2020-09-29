@@ -1,12 +1,23 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
 
 import Avatar from '../../Avatar/Avatar';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-import iconDeliveredUnseen from '../../../images/icons/delivered_unseen.png';
-import loadingGif from '../../../images/loading.gif';
+import { styled } from '../../../styles/styledComponents';
+
+import type { ForwardedMessageProps } from './MessageContent';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+} from '../../../types/types';
+
+const iconDeliveredUnseen = require('../../../images/icons/delivered_unseen.png');
+const loadingGif = require('../../../images/loading.gif');
 
 const CheckMark = styled.Image`
   height: 6px;
@@ -42,7 +53,7 @@ const SendingContainer = styled.View`
   ${({ theme }) => theme.message.status.sendingContainer.css};
 `;
 
-const SendingImage = styled.View`
+const SendingImage = styled.Image`
   height: 10px;
   width: 10px;
   ${({ theme }) => theme.message.status.sendingImage.css};
@@ -58,14 +69,22 @@ const StatusContainer = styled.View`
   width: 20px;
 `;
 
-const MessageStatus = ({
+const MessageStatus = <
+  At extends Record<string, unknown> = DefaultAttachmentType,
+  Ch extends Record<string, unknown> = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends Record<string, unknown> = DefaultEventType,
+  Me extends Record<string, unknown> = DefaultMessageType,
+  Re extends Record<string, unknown> = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>({
   lastReceivedId,
   message,
   readBy = [],
   threadList,
-}) => {
-  const { client } = useChatContext();
-  const justReadByMe = readBy.length === 1 && readBy[0].id === client.user.id;
+}: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const justReadByMe = readBy.length === 1 && readBy[0].id === client.user?.id;
 
   const Status = () => {
     if (message.status === 'sending') {
@@ -83,7 +102,7 @@ const MessageStatus = ({
       !justReadByMe
     ) {
       const lastReadUser = readBy.filter(
-        (item) => item.id !== client.user.id,
+        (item) => item.id !== client.user?.id,
       )[0];
       return (
         <ReadByContainer testID='read-by-container'>
@@ -119,17 +138,6 @@ const MessageStatus = ({
       <Status />
     </StatusContainer>
   );
-};
-
-MessageStatus.propTypes = {
-  /** Latest message id on current channel */
-  lastReceivedId: PropTypes.string,
-  /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: PropTypes.object.isRequired,
-  /** A list of users who have read the message */
-  readBy: PropTypes.array,
-  /** Whether or not the MessageList is part of a Thread */
-  threadList: PropTypes.bool,
 };
 
 export default MessageStatus;

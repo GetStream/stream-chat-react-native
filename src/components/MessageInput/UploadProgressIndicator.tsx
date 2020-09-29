@@ -1,11 +1,27 @@
-import React from 'react';
-import { ActivityIndicator, Image, View } from 'react-native';
-import PropTypes from 'prop-types';
-import styled from 'styled-components/native';
+import React, { PropsWithChildren } from 'react';
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  Image,
+  ImageRequireSource,
+  View,
+} from 'react-native';
 
-import iconReload from '../../images/reload1.png';
+import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { ProgressIndicatorTypes } from '../../utils/utils';
+
+const iconReload: ImageRequireSource = require('../../images/reload1.png');
+
+const ActivityIndicatorContainer = styled.View`
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
 
 const Container = styled.View`
   align-items: center;
@@ -28,16 +44,6 @@ const Overlay = styled.View`
   ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
 `;
 
-const ActivityIndicatorContainer = styled.View`
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
 const RetryButtonContainer = styled.TouchableOpacity`
   align-items: center;
   bottom: 0;
@@ -48,7 +54,21 @@ const RetryButtonContainer = styled.TouchableOpacity`
   top: 0;
 `;
 
-const UploadProgressIndicator = ({ action, active, children, type }) =>
+export type UploadProgressIndicatorProps = {
+  /** Action triggered when clicked indicator */
+  action?: (event: GestureResponderEvent) => void;
+  /** Boolean status of upload progress */
+  active?: boolean;
+  /** Type of active indicator */
+  type?: 'in_progress' | 'retry';
+};
+
+const UploadProgressIndicator = ({
+  action,
+  active,
+  children,
+  type,
+}: PropsWithChildren<UploadProgressIndicatorProps>) =>
   !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
@@ -76,18 +96,6 @@ const UploadProgressIndicator = ({ action, active, children, type }) =>
       </Container>
     </View>
   );
-
-UploadProgressIndicator.propTypes = {
-  /** Action triggered when clicked indicator */
-  action: PropTypes.func,
-  /** Boolean status of upload progress */
-  active: PropTypes.bool,
-  /** Type of active indicator */
-  type: PropTypes.oneOf([
-    ProgressIndicatorTypes.IN_PROGRESS,
-    ProgressIndicatorTypes.RETRY,
-  ]),
-};
 
 UploadProgressIndicator.themePath = 'messageInput.uploadProgressIndicator';
 
