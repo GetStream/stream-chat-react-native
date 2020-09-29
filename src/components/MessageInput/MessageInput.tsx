@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  ImageSourcePropType,
+  ImageRequireSource,
   TextInput,
   TextInputProps,
   View,
@@ -76,7 +76,7 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-const iconClose: ImageSourcePropType = require('../../images/icons/icon_close.png');
+const iconClose: ImageRequireSource = require('../../images/icons/icon_close.png');
 
 const Container = styled.View<{ imageUploads: ImageUpload[] }>`
   background-color: rgba(0, 0, 0, 0.05);

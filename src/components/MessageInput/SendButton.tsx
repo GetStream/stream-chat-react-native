@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { GestureResponderEvent, ImageSourcePropType } from 'react-native';
+import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
 
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { styled } from '../../styles/styledComponents';
@@ -16,8 +16,8 @@ import type {
   DefaultUserType,
 } from '../../types/types';
 
-const iconEdit: ImageSourcePropType = require('../../images/icons/icon_edit.png');
-const iconSendNewMessage: ImageSourcePropType = require('../../images/icons/icon_new_message.png');
+const iconEdit: ImageRequireSource = require('../../images/icons/icon_edit.png');
+const iconSendNewMessage: ImageRequireSource = require('../../images/icons/icon_new_message.png');
 
 const Container = styled.TouchableOpacity`
   margin-left: 8px;

@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  ImageSourcePropType,
-} from 'react-native';
+import { GestureResponderEvent, Image, ImageRequireSource } from 'react-native';
 import { styled } from '../styles/styledComponents';
 
 const StyledTouchableOpacity = styled.TouchableOpacity`
@@ -21,7 +17,7 @@ const StyledView = styled.View`
 `;
 
 type Props = {
-  icon: ImageSourcePropType;
+  icon: ImageRequireSource;
   onPress?: (event: GestureResponderEvent) => void;
 };
 

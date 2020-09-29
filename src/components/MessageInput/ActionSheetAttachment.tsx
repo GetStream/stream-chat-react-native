@@ -2,7 +2,7 @@ import React from 'react';
 import { ActionSheetCustom } from 'react-native-actionsheet';
 
 import type {
-  ImageSourcePropType,
+  ImageRequireSource,
   StyleProp,
   TextStyle,
   ViewStyle,
@@ -14,9 +14,9 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { styled } from '../../styles/styledComponents';
 
-const iconGallery: ImageSourcePropType = require('../../images/icons/icon_attach-media.png');
-const iconClose: ImageSourcePropType = require('../../images/icons/icon_close.png');
-const iconFolder: ImageSourcePropType = require('../../images/icons/icon_folder.png');
+const iconGallery: ImageRequireSource = require('../../images/icons/icon_attach-media.png');
+const iconClose: ImageRequireSource = require('../../images/icons/icon_close.png');
+const iconFolder: ImageRequireSource = require('../../images/icons/icon_folder.png');
 
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
@@ -121,7 +121,7 @@ const ActionSheet = ({
 ActionSheet.themePath = 'messageInput.actionSheet';
 
 type AttachmentActionSheetItemProps = {
-  icon: ImageSourcePropType;
+  icon: ImageRequireSource;
   key: string | number;
   text: string;
   testID?: string;

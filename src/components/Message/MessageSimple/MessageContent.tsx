@@ -133,7 +133,6 @@ type MessageContentWithContextProps<
 > = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
   Attachment: React.ComponentType<AttachmentProps<At>>;
   disabled: boolean | undefined;
-  Message: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   retrySendMessage: MessagesContextValue<
     At,
     Ch,
@@ -143,6 +142,7 @@ type MessageContentWithContextProps<
     Re,
     Us
   >['retrySendMessage'];
+  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
 };
 
 /**

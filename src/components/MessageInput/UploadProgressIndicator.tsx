@@ -3,7 +3,7 @@ import {
   ActivityIndicator,
   GestureResponderEvent,
   Image,
-  ImageSourcePropType,
+  ImageRequireSource,
   View,
 } from 'react-native';
 
@@ -11,7 +11,7 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
-const iconReload: ImageSourcePropType = require('../../images/reload1.png');
+const iconReload: ImageRequireSource = require('../../images/reload1.png');
 
 const ActivityIndicatorContainer = styled.View`
   align-items: center;
