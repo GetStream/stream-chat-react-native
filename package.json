@@ -8,7 +8,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
-  "react-native": "src/index.js",
+  "react-native": "src/index.ts",
   "types": "types/index.d.ts",
   "files": [
     "src",
