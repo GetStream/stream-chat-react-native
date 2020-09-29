@@ -4,6 +4,7 @@ import type { Channel, ChannelState, Event, UnknownType } from 'stream-chat';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -23,7 +24,7 @@ export type ChannelContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  EmptyStateIndicator: React.ComponentType<{ listType?: string }>;
+  EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
   loading: boolean;

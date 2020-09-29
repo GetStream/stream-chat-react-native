@@ -16,6 +16,7 @@ import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { Message } from '../../components/MessageList/utils/insertDates';
 
+import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -42,6 +43,18 @@ export type MessageWithDates<
   readBy: UserResponse<Us>[];
 };
 
+export const isEditingBoolean = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  editing: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
+): editing is boolean => typeof editing === 'boolean';
+
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -53,10 +66,10 @@ export type MessagesContextValue<
 > = {
   Attachment: React.ComponentType<AttachmentProps<At>>;
   clearEditingState: () => void;
-  editing: boolean | MessageWithDates<At, Ch, Co, Me, Re, Us>;
+  editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: (
-    updatedMessage: MessageWithDates<At, Ch, Co, Me, Re, Us>,
-  ) => StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
+    updatedMessage: StreamMessage<At, Me, Us>,
+  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData: Array<{
     icon: string;
     id: string;
@@ -68,7 +81,7 @@ export type MessagesContextValue<
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   removeMessage: (message: { id: string; parent_id?: string }) => void;
   retrySendMessage: (
-    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+    message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
   sendMessage: (message: {
     attachments?: StreamMessage<At, Me, Us>['attachments'];
@@ -80,6 +93,19 @@ export type MessagesContextValue<
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
+    extraState?: {
+      commands?: SuggestionCommand<Co>[];
+      messageInput?: string;
+      threadMessages?: ChannelState<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >['threads'][string];
+    },
   ) => void;
 };
 

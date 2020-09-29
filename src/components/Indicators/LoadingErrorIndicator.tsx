@@ -25,8 +25,8 @@ const RetryText = styled.Text`
 `;
 
 export type LoadingErrorProps = {
-  listType: 'channel' | 'message' | 'default';
   error?: boolean;
+  listType?: 'channel' | 'message' | 'default';
   loadNextPage?: () => Promise<void> | null;
   retry?: () => Promise<void>;
 };

@@ -24,14 +24,28 @@ export let NetInfo: NetInfo = {
   fetch: fail,
 };
 
-type PickImage = () => Promise<{ cancelled?: boolean; uri?: string }> | never;
+type PickImage = ({
+  compressImageQuality,
+  maxNumberOfFiles,
+}: {
+  compressImageQuality?: number;
+  maxNumberOfFiles?: number;
+}) => Promise<{ cancelled: boolean; images?: { uri: string }[] }> | never;
 export let pickImage: PickImage = fail;
 
-type PickDocument = () =>
+type PickDocument = ({
+  maxNumberOfFiles,
+}: {
+  maxNumberOfFiles?: number;
+}) =>
   | Promise<{
       cancelled: boolean;
-      name?: string;
-      uri?: string;
+      docs?: {
+        name: string;
+        size?: number | string;
+        type?: string;
+        uri?: string;
+      }[];
     }>
   | never;
 export let pickDocument: PickDocument = fail;

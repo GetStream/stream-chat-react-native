@@ -143,7 +143,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -158,7 +158,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -416,7 +416,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -431,7 +431,7 @@ exports[`FileUploadPreview should render FileUploadPreview with 1 uploading, 1 u
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -673,7 +673,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -688,7 +688,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -852,7 +852,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -867,7 +867,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -1031,7 +1031,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -1046,7 +1046,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all failed files
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -1696,7 +1696,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -1711,7 +1711,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -1859,7 +1859,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -1874,7 +1874,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",
@@ -2022,7 +2022,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(0,0,0,0.3)",
+                  "backgroundColor": "rgba(0, 0, 0, 0.3)",
                   "height": "100%",
                   "justifyContent": "center",
                   "opacity": 0,
@@ -2037,7 +2037,7 @@ exports[`FileUploadPreview should render FileUploadPreview with all uploading fi
               Array [
                 Object {
                   "alignItems": "center",
-                  "backgroundColor": "rgba(255,255,255,0)",
+                  "backgroundColor": "rgba(255, 255, 255, 0)",
                   "height": "100%",
                   "justifyContent": "center",
                   "position": "absolute",

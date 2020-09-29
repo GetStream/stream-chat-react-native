@@ -54,7 +54,12 @@ registerNativeHandlers({
 
       return {
         cancelled: false,
-        docs: res.map(({ name, uri }) => ({ name, uri })),
+        docs: res.map(({ name, size, type, uri }) => ({
+          name,
+          size,
+          type,
+          uri,
+        })),
       };
     } catch (err) {
       return {
@@ -98,7 +103,7 @@ if (Platform.OS === 'android') {
   if (typeof Symbol === 'undefined') {
     require('es6-symbol/implement');
     if (Array.prototype[Symbol.iterator] === undefined) {
-      Array.prototype[Symbol.iterator] = function() {
+      Array.prototype[Symbol.iterator] = function () {
         let i = 0;
         return {
           next: () => ({
