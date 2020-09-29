@@ -1,8 +1,4 @@
-import type {
-  NetInfoChangeHandler,
-  NetInfoState,
-  NetInfoSubscription,
-} from '@react-native-community/netinfo';
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
   throw Error(
@@ -12,11 +8,9 @@ const fail = () => {
 
 type NetInfo = {
   addEventListener: (
-    listener: NetInfoChangeHandler,
+    listener: (isConnected: boolean) => void,
   ) => NetInfoSubscription | never;
-  fetch: (
-    requestedInterface?: string | undefined,
-  ) => Promise<NetInfoState> | never;
+  fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
 };
 
 export let NetInfo: NetInfo = {

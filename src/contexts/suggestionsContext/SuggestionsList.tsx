@@ -14,13 +14,6 @@ import { styled } from '../../styles/styledComponents';
 
 import type { DefaultCommandType, DefaultUserType } from '../../types/types';
 
-const Wrapper = styled.TouchableOpacity`
-  position: absolute;
-  width: 100%;
-  z-index: 90;
-  ${({ theme }) => theme.messageInput.suggestions.wrapper.css};
-`;
-
 const Container = styled.View<{ length: number }>`
   background-color: white;
   border-top-left-radius: 10px;
@@ -55,6 +48,13 @@ const Title = styled.Text`
   font-weight: bold;
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.title.css};
+`;
+
+const Wrapper = styled.TouchableOpacity`
+  position: absolute;
+  width: 100%;
+  z-index: 90;
+  ${({ theme }) => theme.messageInput.suggestions.wrapper.css};
 `;
 
 const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => (

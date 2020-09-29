@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import type {
-  NetInfoState,
-  NetInfoSubscription,
-} from '@react-native-community/netinfo';
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
 import type { Event, StreamChat, UnknownType } from 'stream-chat';
 
 import { NetInfo } from '../../../native';
@@ -44,9 +41,9 @@ export const useIsOnline = <
 
     const handleRecoveredEvent = () => setConnectionRecovering(false);
 
-    const notifyChatClient = (netInfoState: NetInfoState) => {
-      if (client && client.wsConnection) {
-        if (netInfoState?.isConnected) {
+    const notifyChatClient = (netInfoState: boolean) => {
+      if (client?.wsConnection) {
+        if (netInfoState) {
           client.wsConnection.onlineStatusChanged({
             type: 'online',
           });
