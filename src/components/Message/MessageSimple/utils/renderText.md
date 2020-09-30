@@ -1,4 +1,4 @@
-[src/components/MessageSimple/utils/renderText.js](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/utils/renderText.js)
+[src/components/Message/MessageSimple/utils/renderText.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/utils/renderText.ts)
 
 Function that handles markdown and parsing for the text of message.
 

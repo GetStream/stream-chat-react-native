@@ -39,17 +39,17 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   alignment?: Alignment;
   /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
    */
   AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
   AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
   /**
    * Custom UI component to display generic media type e.g. giphy, url preview etc
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
   Card?: React.ComponentType<Partial<CardProps<At>>>;
   /**
@@ -69,24 +69,24 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   CardHeader?: React.ComponentType<Partial<CardProps<At>>>;
   /**
    * Custom UI component to display File type attachment.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
    */
   FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
   /**
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx
    */
   FileAttachmentGroup?: React.ComponentType<
     Partial<FileAttachmentGroupProps<At>>
   >;
   /**
    * Custom UI component to display image attachments.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx
    */
   Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
   /**
    * Custom UI component to display Giphy image.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
   Giphy?: React.ComponentType<Partial<CardProps<At>>>;
   /**
@@ -98,7 +98,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   groupStyle?: GroupType;
   /**
    * Custom UI component to display enriched url preview.
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.js
+   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
   UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
 };

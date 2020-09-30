@@ -155,14 +155,14 @@ export type MessageSimpleProps<
     Attachment?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Attachment'];
     /**
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentActions.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
      */
     AttachmentActions?: React.ComponentType<
       Partial<AttachmentActionsProps<At>>
     >;
     /**
      * Custom UI component to display generic media type e.g. giphy, url preview etc
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
     Card?: React.ComponentType<Partial<CardProps<At>>>;
     /**
@@ -186,12 +186,12 @@ export type MessageSimpleProps<
     enableLongPress?: boolean;
     /**
      * Custom UI component to display File type attachment.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachment.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
      */
     FileAttachment?: React.ComponentType<FileAttachmentProps<At>>;
     /**
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileAttachmentGroup.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx
      */
     FileAttachmentGroup?: React.ComponentType<
       Partial<FileAttachmentGroupProps<At>>
@@ -207,12 +207,12 @@ export type MessageSimpleProps<
     formatDate?: (date: TDateTimeParserInput) => string;
     /**
      * Custom UI component to display image attachments.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Gallery.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx
      */
     Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
     /**
      * Custom UI component to display Giphy image.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
     Giphy?: React.ComponentType<Partial<CardProps<At>>>;
     /** enable hiding reaction count from reaction picker  */
@@ -230,21 +230,21 @@ export type MessageSimpleProps<
     messageActions?: boolean | string[];
     /**
      * Custom UI component for the avatar next to a message
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageAvatar.tsx
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx
      * */
     MessageAvatar?: React.ComponentType<
       Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
     > & { showAvatar?: boolean };
     /**
      * Custom UI component for message content
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageContent.tsx
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx
      * */
     MessageContent?: React.ComponentType<
       Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
     >;
     /**
      * Custom UI component for message status (delivered/read)
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageStatus.tsx
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageStatus.tsx
      *
      * */
     MessageStatus?: React.ComponentType<
@@ -324,7 +324,7 @@ export type MessageSimpleProps<
     ) => void;
     /**
      * Custom UI component to display reaction list.
-     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ReactionList.tsx
+     * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx
      */
     ReactionList?: React.ComponentType<
       Partial<ReactionListProps<At, Ch, Co, Me, Re, Us>>
@@ -357,7 +357,7 @@ export type MessageSimpleProps<
     }[];
     /**
      * Custom UI component to display enriched url preview.
-     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Card.tsx
+     * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
     UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
   };

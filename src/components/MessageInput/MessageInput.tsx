@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ImageRequireSource,
+  Keyboard,
   TextInput,
   TextInputProps,
   View,
@@ -291,7 +292,6 @@ const MessageInput = <
   const { client } = chatContext;
 
   const keyboardContext = useKeyboardContext();
-  const { dismissKeyboard } = keyboardContext;
 
   const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
@@ -641,7 +641,7 @@ const MessageInput = <
               getUsers={getUsers}
               handleOnPress={async () => {
                 if (hasImagePicker && hasFilePicker) {
-                  await dismissKeyboard();
+                  await Keyboard.dismiss();
                   if (attachActionSheet?.current) {
                     attachActionSheet.current.show();
                   }
@@ -675,7 +675,7 @@ const MessageInput = <
                   disabled={disabled}
                   handleOnPress={async () => {
                     if (hasImagePicker && hasFilePicker) {
-                      await dismissKeyboard();
+                      await Keyboard.dismiss();
                       if (attachActionSheet.current) {
                         attachActionSheet.current.show();
                       }
