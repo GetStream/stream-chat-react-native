@@ -25,7 +25,6 @@ import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCom
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
 import type { Message as MessageType } from '../MessageList/utils/insertDates';
-import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
 import {
   ChannelContextValue,
@@ -145,7 +144,7 @@ export type ChannelProps<
    * ```
    */
   KeyboardCompatibleView?: React.ComponentType<
-    Partial<KeyboardCompatibleViewProps>
+    Partial<KeyboardAvoidingViewProps>
   >;
   keyboardVerticalOffset?: number;
   /**

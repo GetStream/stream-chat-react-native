@@ -2,6 +2,7 @@
 
 exports[`MessageInput should render MessageInput 1`] = `
 <View
+  keyboardVerticalOffset={66.5}
   onLayout={[Function]}
   style={
     Object {
