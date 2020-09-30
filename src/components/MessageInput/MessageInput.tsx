@@ -64,6 +64,7 @@ import {
 } from '../../utils/utils';
 
 import type { ActionSheetCustom } from 'react-native-actionsheet';
+
 import type { FileIconProps } from '../Attachment/FileIcon';
 import type {
   DefaultAttachmentType,

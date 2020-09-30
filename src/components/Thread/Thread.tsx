@@ -18,6 +18,7 @@ import { themed } from '../../styles/theme';
 import type { Message as StreamMessage } from 'stream-chat';
 
 import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

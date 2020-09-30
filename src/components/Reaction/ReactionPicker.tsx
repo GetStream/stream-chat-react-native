@@ -7,6 +7,7 @@ import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
 import type { LatestReactions, Reaction } from './ReactionList';
+
 import type { MessageWithDates } from '../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,

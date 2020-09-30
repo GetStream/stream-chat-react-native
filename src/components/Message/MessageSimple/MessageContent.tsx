@@ -31,8 +31,8 @@ import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
 import type { GestureResponderEvent } from 'react-native';
-import type { MessageResponse } from 'stream-chat';
 import type { ActionSheetCustom } from 'react-native-actionsheet';
+import type { MessageResponse } from 'stream-chat';
 
 import type { MessageSimpleProps } from './MessageSimple';
 import type {
