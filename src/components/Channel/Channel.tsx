@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { KeyboardAvoidingViewProps, Text } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
@@ -80,7 +80,7 @@ export type ChannelProps<
   /**
    * When true, disables the KeyboardCompatibleView wrapper
    *
-   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
    * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
    * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
    * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
@@ -124,9 +124,10 @@ export type ChannelProps<
     Re,
     Us
   >['EmptyStateIndicator'];
+  keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
   /**
    * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView.js)
+   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
    *
    * **Example:**
    *
@@ -135,7 +136,7 @@ export type ChannelProps<
    *  channel={channel}
    *  KeyboardCompatibleView={(props) => {
    *    return (
-   *      <KeyboardCompatibleView keyboardDismissAnimationDuration={200} keyboardOpenAnimationDuration={200}>
+   *      <KeyboardCompatibleView>
    *        {props.children}
    *      </KeyboardCompatibleView>
    *    )
@@ -146,6 +147,7 @@ export type ChannelProps<
   KeyboardCompatibleView?: React.ComponentType<
     Partial<KeyboardCompatibleViewProps>
   >;
+  keyboardVerticalOffset?: number;
   /**
    * Custom loading error indicator to override the Stream default
    */
@@ -189,7 +191,9 @@ const Channel = <
   doUpdateMessageRequest,
   emojiData = emojiDataDefault,
   EmptyStateIndicator = EmptyStateIndicatorDefault,
+  keyboardBehavior,
   KeyboardCompatibleView = KeyboardCompatibleViewDefault,
+  keyboardVerticalOffset,
   LoadingErrorIndicator = LoadingErrorIndicatorDefault,
   LoadingIndicator = LoadingIndicatorDefault,
   Message,
@@ -389,6 +393,8 @@ const Channel = <
   const initChannel = async () => {
     let initError = false;
     setError(false);
+    setLoading(true);
+
     if (channel && !channel.initialized && channel.cid) {
       try {
         await channel.watch();
@@ -852,7 +858,11 @@ const Channel = <
   }
 
   return (
-    <KeyboardCompatibleView enabled={!disableKeyboardCompatibleView}>
+    <KeyboardCompatibleView
+      behavior={keyboardBehavior}
+      enabled={!disableKeyboardCompatibleView}
+      keyboardVerticalOffset={keyboardVerticalOffset}
+    >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
         <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
           <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>

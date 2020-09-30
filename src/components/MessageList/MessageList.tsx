@@ -104,7 +104,7 @@ export type MessageListProps<
   >;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
   AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
   /**
@@ -116,6 +116,8 @@ export type MessageListProps<
     DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   disableWhileEditing?: boolean;
+  /** Should keyboard be dismissed when messaged is touched */
+  dismissKeyboardOnMessageTouch?: boolean;
   /**
    * UI component for header of message list. By default message list doesn't have any header.
    * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -197,6 +199,7 @@ const MessageList = <
   AttachmentFileIcon,
   DateSeparator = DefaultDateSeparator,
   disableWhileEditing = true,
+  dismissKeyboardOnMessageTouch = true,
   HeaderComponent,
   Message: MessageFromProps,
   MessageSystem = DefaultMessageSystem,
@@ -300,6 +303,7 @@ const MessageList = <
         <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
           actionSheetStyles={actionSheetStyles}
           AttachmentFileIcon={AttachmentFileIcon}
+          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
           groupStyles={message.groupStyles as GroupType[]}
           lastReceivedId={
             lastReceivedId === message.id ? lastReceivedId : undefined

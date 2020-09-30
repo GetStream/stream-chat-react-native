@@ -1,140 +1,252 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Keyboard, LayoutChangeEvent, View } from 'react-native';
-
-import { useKeyboardCompatibleHeight } from './hooks/useKeyboardCompatibleHeight';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  AppState,
+  AppStateStatus,
+  EmitterSubscription,
+  Keyboard,
+  KeyboardAvoidingViewProps,
+  KeyboardEvent,
+  KeyboardEventListener,
+  LayoutAnimation,
+  LayoutChangeEvent,
+  LayoutRectangle,
+  Platform,
+  ScreenRect,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
 
-/**
- * KeyboardCompatibleView is HOC component similar to [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview),
- * designed to work with MessageInput and MessageList component.
- *
- * Main motivation of writing our own component was to get rid of issues that come with KeyboardAvoidingView from react-native
- * when used with components of fixed height. [Channel](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelInner.js) component
- * uses `KeyboardCompatibleView` internally, so you don't need to explicitly add it.
- *
- * ```json
- * <KeyboardCompatibleView>
- *  <MessageList />
- *  <MessageInput />
- * </KeyboardCompatibleView>
- * ```
- */
-
 export type KeyboardCompatibleViewProps = {
+  behavior?: KeyboardAvoidingViewProps['behavior'];
+  contentContainerStyle?: StyleProp<ViewStyle>;
   enabled?: boolean;
-  keyboardDismissAnimationDuration?: number;
-  keyboardOpenAnimationDuration?: number;
+  keyboardVerticalOffset?: number;
+  style?: StyleProp<ViewStyle>;
 };
 
-export const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
+/**
+ * View that moves out of the way when the keyboard appears by automatically
+ * adjusting its height, position, or bottom padding.
+ *
+ * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
+ */
+const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
+  behavior = Platform.OS === 'ios' ? 'padding' : 'position',
   children,
+  contentContainerStyle,
   enabled = true,
-  keyboardDismissAnimationDuration = 500,
-  keyboardOpenAnimationDuration = 500,
+  keyboardVerticalOffset = 66.5,
+  style,
+  ...props
 }) => {
-  const heightAnim = useRef(new Animated.Value(0)).current;
-  const rootChannelView = useRef<View>(null);
+  const frame = useRef<LayoutRectangle>();
+  const initialFrameHeight = useRef(0);
+  const keyboardEvent = useRef<KeyboardEvent>();
+  const subscriptions = useRef<EmitterSubscription[]>([]);
+  const viewRef = useRef<View | null>(null);
 
-  const [initialHeight, setInitialHeight] = useState(0);
-
-  const {
-    height: channelHeight,
-    keyboardOpen: isKeyboardOpen,
-  } = useKeyboardCompatibleHeight({
-    enabled,
-    initialHeight,
-    rootChannelView,
-  });
+  const [appState, setAppState] = useState<AppStateStatus>(
+    AppState.currentState,
+  );
+  const [bottom, setBottom] = useState(0);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   useEffect(() => {
-    Animated.timing(heightAnim, {
-      duration: isKeyboardOpen
-        ? keyboardDismissAnimationDuration
-        : keyboardOpenAnimationDuration,
-      toValue: channelHeight,
-      useNativeDriver: false,
-    }).start();
-  }, [
-    channelHeight,
-    heightAnim,
-    isKeyboardOpen,
-    keyboardDismissAnimationDuration,
-    keyboardOpenAnimationDuration,
-  ]);
+    const handleAppStateChange: (state: AppStateStatus) => void = (
+      nextAppState,
+    ) => {
+      if (appState.match(/inactive|background/) && nextAppState === 'active') {
+        setKeyboardListeners();
+      }
 
-  const dismissKeyboard = useCallback(() => {
-    Keyboard.dismiss();
+      if (nextAppState.match(/inactive|background/)) {
+        unsetKeyboardListeners();
+      }
+
+      setAppState(nextAppState);
+    };
+
+    const onKeyboardChange: KeyboardEventListener = (event) => {
+      keyboardEvent.current = event;
+    };
+
+    const setKeyboardListeners = () => {
+      if (Platform.OS === 'ios') {
+        subscriptions.current = [
+          Keyboard.addListener('keyboardWillChangeFrame', onKeyboardChange),
+          Keyboard.addListener('keyboardDidHide', () => {
+            setIsKeyboardOpen(false);
+          }),
+          Keyboard.addListener('keyboardDidShow', () => {
+            setIsKeyboardOpen(true);
+          }),
+        ];
+      } else {
+        subscriptions.current = [
+          Keyboard.addListener('keyboardDidHide', (event) => {
+            onKeyboardChange(event);
+            setIsKeyboardOpen(false);
+          }),
+          Keyboard.addListener('keyboardDidShow', (event) => {
+            onKeyboardChange(event);
+            setIsKeyboardOpen(true);
+          }),
+        ];
+      }
+    };
+
+    const unsetKeyboardListeners = () => {
+      subscriptions.current.forEach((subscription) => {
+        subscription.remove();
+      });
+    };
+
+    AppState.addEventListener('change', handleAppStateChange);
+    setKeyboardListeners();
+
+    return () => {
+      AppState.removeEventListener('change', handleAppStateChange);
+      unsetKeyboardListeners();
+    };
+  }, []);
+
+  useEffect(() => {
+    updateBottomIfNecessary();
+  }, [keyboardEvent.current]);
+
+  const dismissKeyboard = () => {
+    if (!isKeyboardOpen) {
+      return;
+    }
 
     return new Promise((resolve) => {
-      if (!isKeyboardOpen) {
-        // If channel height is already at full length, then don't do anything.
+      const subscription = Keyboard.addListener('keyboardDidHide', () => {
         resolve();
-      } else {
-        // Bring the channel height to its full length state.
-        Animated.timing(heightAnim, {
-          duration: keyboardDismissAnimationDuration,
-          toValue: initialHeight,
-          useNativeDriver: false,
-        }).start(resolve);
-      }
+        subscription.remove();
+      });
+
+      Keyboard.dismiss();
     });
-  }, [
-    heightAnim,
-    initialHeight,
-    isKeyboardOpen,
-    keyboardDismissAnimationDuration,
-  ]);
+  };
 
-  const onLayout: (event: LayoutChangeEvent) => void = useCallback(
-    ({
-      nativeEvent: {
-        layout: { height },
-      },
-    }) => {
-      if (!enabled) {
-        return;
+  const onLayout: (event: LayoutChangeEvent) => void = (event) => {
+    frame.current = event.nativeEvent.layout;
+    if (!initialFrameHeight.current) {
+      // save the initial frame height, before the keyboard is visible
+      initialFrameHeight.current = frame.current.height;
+    }
+
+    updateBottomIfNecessary();
+  };
+
+  const relativeKeyboardHeight = (keyboardFrame: ScreenRect) => {
+    if (!frame.current || !keyboardFrame) {
+      return 0;
+    }
+
+    const keyboardY = keyboardFrame.screenY - keyboardVerticalOffset;
+
+    // Calculate the displacement needed for the view such that it
+    // no longer overlaps with the keyboard
+    return Math.max(frame.current.y + frame.current.height - keyboardY, 0);
+  };
+
+  const updateBottomIfNecessary = () => {
+    if (!keyboardEvent.current) {
+      setBottom(0);
+      return;
+    }
+
+    const { duration, easing, endCoordinates } = keyboardEvent.current;
+    const height = relativeKeyboardHeight(endCoordinates);
+
+    if (bottom === height) {
+      return;
+    }
+
+    if (duration && easing) {
+      LayoutAnimation.configureNext({
+        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+        duration: duration > 10 ? duration : 10,
+        update: {
+          duration: duration > 10 ? duration : 10,
+          type: LayoutAnimation.Types[easing] || 'keyboard',
+        },
+      });
+    }
+    setBottom(height);
+  };
+
+  const bottomHeight = enabled ? bottom : 0;
+  switch (behavior) {
+    case 'height':
+      // eslint-disable-next-line no-case-declarations
+      let heightStyle;
+      if (frame.current && bottom > 0) {
+        // Note that we only apply a height change when there is keyboard present,
+        // i.e. this.state.bottom is greater than 0. If we remove that condition,
+        // this.frame.height will never go back to its original value.
+        // When height changes, we need to disable flex.
+        heightStyle = {
+          flex: 0,
+          height: initialFrameHeight.current - bottomHeight,
+        };
       }
+      return (
+        <KeyboardProvider value={{ dismissKeyboard }}>
+          <View
+            onLayout={onLayout}
+            ref={viewRef}
+            style={StyleSheet.compose(style, heightStyle)}
+            {...props}
+          >
+            {children}
+          </View>
+        </KeyboardProvider>
+      );
 
-      // Not to set initial height again.
-      if (!initialHeight) {
-        setInitialHeight(height);
-        Animated.timing(heightAnim, {
-          duration: 10,
-          toValue: height,
-          useNativeDriver: false,
-        }).start();
-      }
-    },
-    [enabled, heightAnim, initialHeight],
-  );
+    case 'position':
+      return (
+        <KeyboardProvider value={{ dismissKeyboard }}>
+          <View onLayout={onLayout} ref={viewRef} style={style} {...props}>
+            <View
+              style={StyleSheet.compose(contentContainerStyle, {
+                bottom: bottomHeight,
+              })}
+            >
+              {children}
+            </View>
+          </View>
+        </KeyboardProvider>
+      );
 
-  if (!enabled) {
-    return (
-      <KeyboardProvider
-        value={{
-          dismissKeyboard,
-        }}
-      >
-        {children}
-      </KeyboardProvider>
-    );
+    case 'padding':
+      return (
+        <KeyboardProvider value={{ dismissKeyboard }}>
+          <View
+            onLayout={onLayout}
+            ref={viewRef}
+            style={StyleSheet.compose(style, { paddingBottom: bottomHeight })}
+            {...props}
+          >
+            {children}
+          </View>
+        </KeyboardProvider>
+      );
+
+    default:
+      return (
+        <KeyboardProvider value={{ dismissKeyboard }}>
+          <View onLayout={onLayout} ref={viewRef} style={style} {...props}>
+            {children}
+          </View>
+        </KeyboardProvider>
+      );
   }
-
-  return (
-    <Animated.View
-      onLayout={onLayout}
-      style={{
-        height: initialHeight ? heightAnim : undefined,
-      }}
-    >
-      <KeyboardProvider value={{ dismissKeyboard }}>
-        <View collapsable={false} ref={rootChannelView}>
-          {children}
-        </View>
-      </KeyboardProvider>
-    </Animated.View>
-  );
 };
 
 export default KeyboardCompatibleView;
