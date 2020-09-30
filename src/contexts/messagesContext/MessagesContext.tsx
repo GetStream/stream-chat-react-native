@@ -63,7 +63,6 @@ export type MessagesContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  Attachment: React.ComponentType<AttachmentProps<At>>;
   clearEditingState: () => void;
   editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: (
@@ -108,6 +107,7 @@ export type MessagesContextValue<
       >['threads'][string];
     },
   ) => void;
+  Attachment?: React.ComponentType<AttachmentProps<At>>;
   Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
 };
 

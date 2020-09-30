@@ -16,7 +16,6 @@ import {
 } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
-import AttachmentDefault from '../Attachment/Attachment';
 import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
@@ -43,7 +42,6 @@ import { emojiData as emojiDataDefault } from '../../utils/utils';
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
 import type { Message as MessageType } from '../MessageList/utils/insertDates';
-import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -145,7 +143,7 @@ export type ChannelProps<
    * ```
    */
   KeyboardCompatibleView?: React.ComponentType<
-    Partial<KeyboardCompatibleViewProps>
+    Partial<KeyboardAvoidingViewProps>
   >;
   keyboardVerticalOffset?: number;
   /**
@@ -181,7 +179,7 @@ const Channel = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >({
-  Attachment = AttachmentDefault,
+  Attachment,
   channel,
   children,
   disableIfFrozenChannel = true,

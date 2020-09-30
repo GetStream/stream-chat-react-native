@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import {
   AppState,
   AppStateStatus,
@@ -12,21 +12,11 @@ import {
   LayoutRectangle,
   Platform,
   ScreenRect,
-  StyleProp,
   StyleSheet,
   View,
-  ViewStyle,
 } from 'react-native';
 
 import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext';
-
-export type KeyboardCompatibleViewProps = {
-  behavior?: KeyboardAvoidingViewProps['behavior'];
-  contentContainerStyle?: StyleProp<ViewStyle>;
-  enabled?: boolean;
-  keyboardVerticalOffset?: number;
-  style?: StyleProp<ViewStyle>;
-};
 
 /**
  * View that moves out of the way when the keyboard appears by automatically
@@ -34,137 +24,73 @@ export type KeyboardCompatibleViewProps = {
  *
  * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
  */
-const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
-  behavior = Platform.OS === 'ios' ? 'padding' : 'position',
-  children,
-  contentContainerStyle,
-  enabled = true,
-  keyboardVerticalOffset = 66.5,
-  style,
-  ...props
-}) => {
-  const frame = useRef<LayoutRectangle>();
-  const initialFrameHeight = useRef(0);
-  const keyboardEvent = useRef<KeyboardEvent>();
-  const subscriptions = useRef<EmitterSubscription[]>([]);
-  const viewRef = useRef<View | null>(null);
-
-  const [appState, setAppState] = useState<AppStateStatus>(
-    AppState.currentState,
-  );
-  const [bottom, setBottom] = useState(0);
-  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-
-  useEffect(() => {
-    const handleAppStateChange: (state: AppStateStatus) => void = (
-      nextAppState,
-    ) => {
-      if (appState.match(/inactive|background/) && nextAppState === 'active') {
-        setKeyboardListeners();
-      }
-
-      if (nextAppState.match(/inactive|background/)) {
-        unsetKeyboardListeners();
-      }
-
-      setAppState(nextAppState);
-    };
-
-    const onKeyboardChange: KeyboardEventListener = (event) => {
-      keyboardEvent.current = event;
-    };
-
-    const setKeyboardListeners = () => {
-      if (Platform.OS === 'ios') {
-        subscriptions.current = [
-          Keyboard.addListener('keyboardWillChangeFrame', onKeyboardChange),
-          Keyboard.addListener('keyboardDidHide', () => {
-            setIsKeyboardOpen(false);
-          }),
-          Keyboard.addListener('keyboardDidShow', () => {
-            setIsKeyboardOpen(true);
-          }),
-        ];
-      } else {
-        subscriptions.current = [
-          Keyboard.addListener('keyboardDidHide', (event) => {
-            onKeyboardChange(event);
-            setIsKeyboardOpen(false);
-          }),
-          Keyboard.addListener('keyboardDidShow', (event) => {
-            onKeyboardChange(event);
-            setIsKeyboardOpen(true);
-          }),
-        ];
-      }
-    };
-
-    const unsetKeyboardListeners = () => {
-      subscriptions.current.forEach((subscription) => {
-        subscription.remove();
-      });
-    };
-
-    AppState.addEventListener('change', handleAppStateChange);
-    setKeyboardListeners();
-
-    return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
-      unsetKeyboardListeners();
-    };
-  }, []);
-
-  useEffect(() => {
-    updateBottomIfNecessary();
-  }, [keyboardEvent.current]);
-
-  const dismissKeyboard = () => {
-    if (!isKeyboardOpen) {
-      return;
-    }
-
-    return new Promise((resolve) => {
-      const subscription = Keyboard.addListener('keyboardDidHide', () => {
-        resolve();
-        subscription.remove();
-      });
-
-      Keyboard.dismiss();
-    });
+class KeyboardCompatibleView extends React.Component<
+  KeyboardAvoidingViewProps,
+  { appState: AppStateStatus; bottom: number; isKeyboardOpen: boolean }
+> {
+  static defaultProps: Pick<
+    KeyboardAvoidingViewProps,
+    'behavior' | 'enabled' | 'keyboardVerticalOffset'
+  > = {
+    behavior: Platform.OS === 'ios' ? 'padding' : 'position',
+    enabled: true,
+    keyboardVerticalOffset: 66.5, // default MessageInput height
   };
 
-  const onLayout: (event: LayoutChangeEvent) => void = (event) => {
-    frame.current = event.nativeEvent.layout;
-    if (!initialFrameHeight.current) {
-      // save the initial frame height, before the keyboard is visible
-      initialFrameHeight.current = frame.current.height;
-    }
+  _frame: LayoutRectangle | null = null;
+  _keyboardEvent: KeyboardEvent | null = null;
+  _subscriptions: EmitterSubscription[] = [];
+  viewRef: React.RefObject<View>;
+  _initialFrameHeight = 0;
+  constructor(props: KeyboardAvoidingViewProps) {
+    super(props);
+    this.state = {
+      appState: AppState.currentState,
+      bottom: 0,
+      isKeyboardOpen: false,
+    };
+    this.viewRef = React.createRef();
+  }
 
-    updateBottomIfNecessary();
-  };
-
-  const relativeKeyboardHeight = (keyboardFrame: ScreenRect) => {
-    if (!frame.current || !keyboardFrame) {
+  _relativeKeyboardHeight(keyboardFrame: ScreenRect) {
+    const frame = this._frame;
+    if (!frame || !keyboardFrame) {
       return 0;
     }
 
-    const keyboardY = keyboardFrame.screenY - keyboardVerticalOffset;
+    const keyboardY =
+      keyboardFrame.screenY - (this.props.keyboardVerticalOffset as number);
 
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
-    return Math.max(frame.current.y + frame.current.height - keyboardY, 0);
+    return Math.max(frame.y + frame.height - keyboardY, 0);
+  }
+
+  _onKeyboardChange: KeyboardEventListener = (event) => {
+    this._keyboardEvent = event;
+    this._updateBottomIfNecessary();
   };
 
-  const updateBottomIfNecessary = () => {
-    if (!keyboardEvent.current) {
-      setBottom(0);
+  _onLayout: (event: LayoutChangeEvent) => void = (event) => {
+    this._frame = event.nativeEvent.layout;
+    if (!this._initialFrameHeight) {
+      // save the initial frame height, before the keyboard is visible
+      this._initialFrameHeight = this._frame.height;
+    }
+
+    this._updateBottomIfNecessary();
+  };
+
+  _updateBottomIfNecessary = () => {
+    if (this._keyboardEvent === null) {
+      this.setState({ bottom: 0 });
       return;
     }
 
-    const { duration, easing, endCoordinates } = keyboardEvent.current;
-    const height = relativeKeyboardHeight(endCoordinates);
+    const { duration, easing, endCoordinates } = this._keyboardEvent;
+    const height = this._relativeKeyboardHeight(endCoordinates);
 
-    if (bottom === height) {
+    if (this.state.bottom === height) {
       return;
     }
 
@@ -178,75 +104,163 @@ const KeyboardCompatibleView: React.FC<KeyboardCompatibleViewProps> = ({
         },
       });
     }
-    setBottom(height);
+    this.setState({ bottom: height });
   };
 
-  const bottomHeight = enabled ? bottom : 0;
-  switch (behavior) {
-    case 'height':
-      // eslint-disable-next-line no-case-declarations
-      let heightStyle;
-      if (frame.current && bottom > 0) {
-        // Note that we only apply a height change when there is keyboard present,
-        // i.e. this.state.bottom is greater than 0. If we remove that condition,
-        // this.frame.height will never go back to its original value.
-        // When height changes, we need to disable flex.
-        heightStyle = {
-          flex: 0,
-          height: initialFrameHeight.current - bottomHeight,
-        };
-      }
-      return (
-        <KeyboardProvider value={{ dismissKeyboard }}>
-          <View
-            onLayout={onLayout}
-            ref={viewRef}
-            style={StyleSheet.compose(style, heightStyle)}
-            {...props}
-          >
-            {children}
-          </View>
-        </KeyboardProvider>
-      );
+  _handleAppStateChange = (nextAppState: AppStateStatus) => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      this.setKeyboardListeners();
+    }
 
-    case 'position':
-      return (
-        <KeyboardProvider value={{ dismissKeyboard }}>
-          <View onLayout={onLayout} ref={viewRef} style={style} {...props}>
+    if (nextAppState.match(/inactive|background/)) {
+      this.unsetKeyboardListeners();
+    }
+
+    this.setState({ appState: nextAppState });
+  };
+
+  setKeyboardListeners = () => {
+    if (Platform.OS === 'ios') {
+      this._subscriptions = [
+        Keyboard.addListener('keyboardWillChangeFrame', this._onKeyboardChange),
+      ];
+    } else {
+      this._subscriptions = [
+        Keyboard.addListener('keyboardDidHide', this._onKeyboardChange),
+        Keyboard.addListener('keyboardDidShow', this._onKeyboardChange),
+      ];
+    }
+
+    this._subscriptions.push(
+      Keyboard.addListener('keyboardDidHide', () => {
+        this.setState({ isKeyboardOpen: false });
+      }),
+      Keyboard.addListener('keyboardDidShow', () => {
+        this.setState({ isKeyboardOpen: true });
+      }),
+    );
+  };
+
+  unsetKeyboardListeners = () => {
+    this._subscriptions.forEach((subscription) => {
+      subscription.remove();
+    });
+  };
+
+  dismissKeyboard = () => {
+    if (!this.state.isKeyboardOpen) {
+      return;
+    }
+
+    return new Promise((resolve) => {
+      const subscription = Keyboard.addListener('keyboardDidHide', () => {
+        resolve();
+        subscription.remove();
+      });
+
+      Keyboard.dismiss();
+    });
+  };
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+    this.setKeyboardListeners();
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+    this.unsetKeyboardListeners();
+  }
+
+  render() {
+    const {
+      behavior,
+      children,
+      contentContainerStyle,
+      enabled,
+      style,
+      ...props
+    } = this.props;
+    const bottomHeight = enabled ? this.state.bottom : 0;
+    switch (behavior) {
+      case 'height':
+        // eslint-disable-next-line no-case-declarations
+        let heightStyle;
+        if (this._frame !== null && this.state.bottom > 0) {
+          // Note that we only apply a height change when there is keyboard present,
+          // i.e. this.state.bottom is greater than 0. If we remove that condition,
+          // this.frame.height will never go back to its original value.
+          // When height changes, we need to disable flex.
+          heightStyle = {
+            flex: 0,
+            height: this._initialFrameHeight - bottomHeight,
+          };
+        }
+        return (
+          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
             <View
-              style={StyleSheet.compose(contentContainerStyle, {
-                bottom: bottomHeight,
-              })}
+              onLayout={this._onLayout}
+              ref={this.viewRef}
+              style={StyleSheet.compose(style, heightStyle)}
+              {...props}
             >
               {children}
             </View>
-          </View>
-        </KeyboardProvider>
-      );
+          </KeyboardProvider>
+        );
 
-    case 'padding':
-      return (
-        <KeyboardProvider value={{ dismissKeyboard }}>
-          <View
-            onLayout={onLayout}
-            ref={viewRef}
-            style={StyleSheet.compose(style, { paddingBottom: bottomHeight })}
-            {...props}
-          >
-            {children}
-          </View>
-        </KeyboardProvider>
-      );
+      case 'position':
+        return (
+          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+            <View
+              onLayout={this._onLayout}
+              ref={this.viewRef}
+              style={style}
+              {...props}
+            >
+              <View
+                style={StyleSheet.compose(contentContainerStyle, {
+                  bottom: bottomHeight,
+                })}
+              >
+                {children}
+              </View>
+            </View>
+          </KeyboardProvider>
+        );
 
-    default:
-      return (
-        <KeyboardProvider value={{ dismissKeyboard }}>
-          <View onLayout={onLayout} ref={viewRef} style={style} {...props}>
-            {children}
-          </View>
-        </KeyboardProvider>
-      );
+      case 'padding':
+        return (
+          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+            <View
+              onLayout={this._onLayout}
+              ref={this.viewRef}
+              style={StyleSheet.compose(style, { paddingBottom: bottomHeight })}
+              {...props}
+            >
+              {children}
+            </View>
+          </KeyboardProvider>
+        );
+
+      default:
+        return (
+          <KeyboardProvider value={{ dismissKeyboard: this.dismissKeyboard }}>
+            <View
+              onLayout={this._onLayout}
+              ref={this.viewRef}
+              style={style}
+              {...props}
+            >
+              {children}
+            </View>
+          </KeyboardProvider>
+        );
+    }
   }
-};
+}
 
 export default KeyboardCompatibleView;

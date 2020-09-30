@@ -2,6 +2,7 @@
 
 exports[`MessageList should render the message list and match snapshot 1`] = `
 <View
+  keyboardVerticalOffset={66.5}
   onLayout={[Function]}
   style={
     Object {

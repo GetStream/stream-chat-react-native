@@ -4,9 +4,7 @@ import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies, { MessageRepliesProps } from './MessageReplies';
 import MessageTextContainer from './MessageTextContainer';
 
-import DefaultAttachment, {
-  AttachmentProps,
-} from '../../Attachment/Attachment';
+import DefaultAttachment from '../../Attachment/Attachment';
 import DefaultFileAttachment from '../../Attachment/FileAttachment';
 import DefaultFileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
 import DefaultGallery from '../../Attachment/Gallery';
@@ -20,7 +18,6 @@ import { MessageContentProvider } from '../../../contexts/messageContentContext/
 import {
   Alignment,
   GroupType,
-  MessagesContextValue,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
@@ -122,7 +119,7 @@ const MetaText = styled.Text<{ alignment: string }>`
   ${({ theme }) => theme.message.content.metaText.css};
 `;
 
-type MessageContentWithContextProps<
+export type ForwardedMessageProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -130,27 +127,43 @@ type MessageContentWithContextProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  Attachment: React.ComponentType<AttachmentProps<At>>;
-  disabled: boolean | undefined;
-  retrySendMessage: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['retrySendMessage'];
-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
+> = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  /**
+   * Position of the message, either 'right' or 'left'
+   */
+  alignment: Alignment;
+  /**
+   * Whether or not the app is using a custom MessageContent component
+   */
+  customMessageContent: boolean;
+  /**
+   * Position of message in group - top, bottom, middle, single.
+   *
+   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
+   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
+   */
+  groupStyles: GroupType[];
+  /**
+   * Custom message footer component
+   */
+  MessageFooter?: React.ComponentType<UnknownType & { testID: string }>;
+  /**
+   * Custom message header component
+   */
+  MessageHeader?: React.ComponentType<UnknownType & { testID: string }>;
+  /**
+   * Custom message replies component
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
+   */
+  MessageReplies?: React.ComponentType<
+    Partial<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
 };
 
 /**
- * Since this component doesn't consume `messages` from `MessagesContext`,
- * we memoized and broke it up to prevent new messages from re-rendering
- * each individual MessageContent component.
+ * Child of MessageSimple that displays a message's content
  */
-const MessageContentWithContext = <
+const MessageContent = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -159,11 +172,11 @@ const MessageContentWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     ActionSheet = DefaultActionSheet,
-    Attachment = DefaultAttachment,
+    Attachment: PropsAttachment,
     AttachmentActions,
     AttachmentFileIcon,
     Card,
@@ -174,7 +187,6 @@ const MessageContentWithContext = <
     FileAttachmentGroup = DefaultFileAttachmentGroup,
     Gallery = DefaultGallery,
     Giphy,
-    Message,
     MessageFooter,
     MessageHeader,
     MessageReplies = DefaultMessageReplies,
@@ -188,7 +200,6 @@ const MessageContentWithContext = <
     canDeleteMessage,
     canEditMessage,
     customMessageContent,
-    disabled,
     dismissReactionPicker,
     enableLongPress = true,
     formatDate,
@@ -211,15 +222,22 @@ const MessageContentWithContext = <
     reactionPickerVisible,
     reactionsEnabled = true,
     repliesEnabled = true,
-    retrySendMessage,
     setActionSheetVisible,
     showActionSheet,
     supportedReactions = emojiData,
     threadList,
   } = props;
 
+  const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    Attachment: ContextAttachment,
+    Message,
+    retrySendMessage,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
+
+  const Attachment = PropsAttachment || ContextAttachment || DefaultAttachment;
 
   const actionSheetRef = useRef<ActionSheetCustom>();
 
@@ -471,111 +489,6 @@ const MessageContentWithContext = <
         )}
       </Container>
     </MessageContentProvider>
-  );
-};
-
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const { actionSheetVisible: prevAS, message: prevMessage } = prevProps;
-  const { actionSheetVisible: nextAS, message: nextMessage } = nextProps;
-
-  const actionSheetEqual = prevAS === nextAS;
-  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
-  // TODO - check and see if reactions/replies change update_at time
-  const reactionsEqual =
-    prevMessage.latest_reactions?.length ===
-    nextMessage.latest_reactions?.length;
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
-
-  return actionSheetEqual && messageEqual && reactionsEqual && repliesEqual;
-};
-
-const MemoizedMessageContent = React.memo(
-  MessageContentWithContext,
-  areEqual,
-) as typeof MessageContentWithContext;
-
-export type ForwardedMessageProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the app is using a custom MessageContent component
-   */
-  customMessageContent: boolean;
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: GroupType[];
-  /**
-   * Custom message footer component
-   */
-  MessageFooter?: React.ComponentType<UnknownType & { testID: string }>;
-  /**
-   * Custom message header component
-   */
-  MessageHeader?: React.ComponentType<UnknownType & { testID: string }>;
-  /**
-   * Custom message replies component
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageReplies.tsx
-   */
-  MessageReplies?: React.ComponentType<
-    Partial<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>
-  >;
-};
-
-/**
- * Child of MessageSimple that displays a message's content
- */
-const MessageContent = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { Attachment, Message, retrySendMessage } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-
-  return (
-    <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
-      {...props}
-      {...{ Attachment, disabled, Message, retrySendMessage }}
-    />
   );
 };
 

@@ -357,10 +357,16 @@ const areEqual = <
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { updated_at: previousLast } = prevProps.message;
-  const { updated_at: nextLast } = nextProps.message;
+  const { message: prevMessage } = prevProps;
+  const { message: nextMessage } = nextProps;
 
-  return previousLast === nextLast;
+  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
+  const reactionsEqual =
+    prevMessage.latest_reactions?.length ===
+    nextMessage.latest_reactions?.length;
+  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+
+  return messageEqual && reactionsEqual && repliesEqual;
 };
 
 const MemoizedDefaultMessage = React.memo(
