@@ -55,6 +55,8 @@
   },
   "include": ["./src/**/*"],
   "exclude": [
+    "./src/mock-builders",
+    "./src/styleguideComponents",
     "node_modules",
     "babel.config.js",
     "metro.config.js",
