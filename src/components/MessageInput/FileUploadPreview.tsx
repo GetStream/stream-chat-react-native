@@ -103,7 +103,7 @@ export type FileUploadPreviewProps = {
   retryUpload: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
   AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
 };

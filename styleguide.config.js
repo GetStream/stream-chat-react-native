@@ -87,7 +87,7 @@ const sections = [
       'src/components/MessageInput/UploadProgressIndicator.tsx',
     ],
     exampleMode: 'collapse',
-    name: 'Message Input',
+    name: 'MessageInput Components',
     usageMode: 'expand',
   },
   {
@@ -174,7 +174,7 @@ const sections = [
   },
   {
     exampleMode: 'collapse',
-    name: 'Custom UI component props',
+    name: 'Custom UI Component Props',
     sections: [
       {
         content: 'src/components/docs/AttachmentProps.md',

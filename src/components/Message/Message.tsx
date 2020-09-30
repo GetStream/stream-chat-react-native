@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { Keyboard, TouchableOpacity } from 'react-native';
 
 import type {
   MessageResponse,
@@ -122,6 +122,7 @@ const DefaultMessageWithContext = <
     client,
     disabled,
     dismissKeyboard,
+    dismissKeyboardOnMessageTouch,
     emojiData,
     message,
     Message: MessageSimple = DefaultMessageSimple,
@@ -300,8 +301,18 @@ const DefaultMessageWithContext = <
     actionProps.repliesEnabled = channel.getConfig()?.reactions;
   }
 
+  const onPress = () => {
+    if (dismissKeyboardOnMessageTouch) {
+      Keyboard.dismiss();
+    }
+  };
+
   return (
-    <TouchableOpacity activeOpacity={1} testID='message-wrapper'>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={onPress}
+      testID='message-wrapper'
+    >
       <MessageSimple<At, Ch, Co, Ev, Me, Re, Us>
         {...rest}
         {...actionProps}
@@ -323,6 +334,7 @@ const DefaultMessageWithContext = <
         isMyMessage={isMyMessage}
         message={message}
         Message={MessageSimple}
+        onPress={onPress}
         openReactionPicker={openReactionPicker}
         reactionPickerVisible={reactionPickerVisible}
         setActionSheetVisible={setActionSheetVisible}
@@ -388,9 +400,11 @@ export type MessageProps<
   actionSheetStyles?: ActionSheetStyles;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/FileIcon.js
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
   AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  /** Should keyboard be dismissed when messaged is touched */
+  dismissKeyboardOnMessageTouch?: boolean;
   /**
    * Latest message id on current channel
    */
