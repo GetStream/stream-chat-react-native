@@ -199,7 +199,7 @@ const Thread = <
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
         {...additionalMessageInputProps}
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
-        parent_id={thread.parent_id as StreamMessage<At, Me, Us>['parent_id']}
+        parent_id={thread.id as StreamMessage<At, Me, Us>['parent_id']}
       />
     </React.Fragment>
   );
