@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import { Keyboard, TouchableOpacity } from 'react-native';
 
-import type {
-  MessageResponse,
-  Reaction,
-  ReactionResponse,
-  Message as StreamMessage,
-  UnknownType,
-  UserResponse,
-} from 'stream-chat';
-
 import DefaultMessageSimple, {
   MessageSimpleProps,
 } from './MessageSimple/MessageSimple';
@@ -32,9 +23,17 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
+import type {
+  MessageResponse,
+  Reaction,
+  ReactionResponse,
+  Message as StreamMessage,
+  UserResponse,
+} from 'stream-chat';
+
+import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type { FileIconProps } from '../Attachment/FileIcon';
 import type { Message } from '../MessageList/utils/insertDates';
-import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -43,6 +42,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ActionProps = {

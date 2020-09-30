@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
+
+import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
+
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
 import type {
   Channel,
   ChannelFilters,
   ChannelOptions,
   ChannelSort,
-  UnknownType,
 } from 'stream-chat';
-
-import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
-
-import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 
 import type {
   DefaultAttachmentType,
@@ -19,6 +19,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 const wait = (ms: number) =>

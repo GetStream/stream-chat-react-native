@@ -1,4 +1,4 @@
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
+import type { Channel, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -8,6 +8,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 type MoveParameters<

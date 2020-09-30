@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlatList } from 'react-native';
-import type { Channel, UnknownType } from 'stream-chat';
 
 import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
 import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
@@ -12,6 +11,8 @@ import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
+import type { Channel } from 'stream-chat';
+
 import type { ChannelListProps } from './ChannelList';
 
 import type {
@@ -22,6 +23,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChannelListMessengerProps<

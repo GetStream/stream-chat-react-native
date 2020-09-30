@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, ChannelState, Event, UnknownType } from 'stream-chat';
-
 import { getDisplayName } from '../utils/getDisplayName';
+
+import type { Channel, ChannelState, Event } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type {
@@ -13,6 +13,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChannelContextValue<
@@ -86,7 +87,7 @@ export const useChannelContext = <
  * wrapped component must be provided as the first generic.
  */
 export const withChannelContext = <
-  P extends Record<string, unknown>,
+  P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

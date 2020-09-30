@@ -1,9 +1,10 @@
 import React from 'react';
-import type { Attachment as AttachmentType, UnknownType } from 'stream-chat';
 
 import Attachment, { ActionHandler } from './Attachment';
 
 import { styled } from '../../styles/styledComponents';
+
+import type { Attachment as AttachmentType } from 'stream-chat';
 
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileAttachmentProps } from './FileAttachment';
@@ -12,7 +13,7 @@ import type {
   Alignment,
   GroupType,
 } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const Container = styled.View`
   align-items: stretch;

@@ -1,6 +1,6 @@
-import type { UnknownType, UserResponse } from 'stream-chat';
-
 import { InsertDatesResponse, isDateSeparator } from '../utils/insertDates';
+
+import type { UserResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type {
@@ -11,6 +11,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export const getReadStates = <

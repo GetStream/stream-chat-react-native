@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 
-import type { Message as StreamMessage } from 'stream-chat';
-
 import DefaultMessage from '../Message/Message';
 import DefaultMessageInput, {
   MessageInputProps,
@@ -10,8 +8,6 @@ import DefaultMessageList, {
   MessageListProps,
 } from '../MessageList/MessageList';
 
-import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
-
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
@@ -19,6 +15,9 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
+import type { Message as StreamMessage } from 'stream-chat';
+
+import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -27,6 +26,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const NewThread = styled.View`
@@ -43,13 +43,13 @@ const NewThreadText = styled.Text`
 `;
 
 export type ThreadProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Additional props for underlying MessageInput component.
@@ -110,13 +110,13 @@ export type ThreadProps<
  * @example ./Thread.md
  */
 const Thread = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

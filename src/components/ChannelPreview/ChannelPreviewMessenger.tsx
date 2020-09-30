@@ -1,6 +1,5 @@
 import React from 'react';
 import truncate from 'lodash/truncate';
-import type { ChannelState, MessageResponse, UnknownType } from 'stream-chat';
 
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
@@ -10,9 +9,10 @@ import Avatar from '../Avatar/Avatar';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
+import type { ChannelState, MessageResponse } from 'stream-chat';
+
 import type { ChannelPreviewProps } from './ChannelPreview';
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -21,6 +21,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const Container = styled.TouchableOpacity`

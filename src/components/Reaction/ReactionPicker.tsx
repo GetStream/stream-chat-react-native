@@ -1,13 +1,12 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 
-import type { LatestReactions, Reaction } from './ReactionList';
-
 import Avatar from '../Avatar/Avatar';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
+import type { LatestReactions, Reaction } from './ReactionList';
 import type { MessageWithDates } from '../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
@@ -16,6 +15,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
@@ -53,12 +53,12 @@ const ReactionCount = styled.Text`
 `;
 
 const getLatestUser = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   type: string,
   reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
@@ -72,12 +72,12 @@ const getLatestUser = <
 };
 
 const getUsersPerReaction = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   type: string,
   reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
@@ -87,12 +87,12 @@ const getUsersPerReaction = <
 };
 
 export type ReactionPickerProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   handleDismiss: () => void;
   handleReaction: (arg: string) => void;
@@ -111,11 +111,11 @@ export type ReactionPickerProps<
 
 // TODO: change from using Modal to reanimated view to save on rendering and performance
 const ReactionPicker = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >({
   handleDismiss,

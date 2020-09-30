@@ -1,12 +1,12 @@
 import React from 'react';
 
-import type { ImageRequireSource } from 'react-native';
-
 import { renderReactions } from './utils/renderReactions';
 
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
+
+import type { ImageRequireSource } from 'react-native';
 
 import type {
   Alignment,
@@ -19,6 +19,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const leftTail: ImageRequireSource = require('../../images/reactionlist/left-tail.png');
@@ -30,12 +31,12 @@ const rightCenter: ImageRequireSource = require('../../images/reactionlist/right
 const rightEnd: ImageRequireSource = require('../../images/reactionlist/right-end.png');
 
 export type LatestReactions<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = MessageWithDates<At, Ch, Co, Me, Re, Us>['latest_reactions'];
 
 export type Reaction = {
@@ -44,12 +45,12 @@ export type Reaction = {
 };
 
 export type ReactionListProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   alignment: Alignment;
   getTotalReactionCount: (
@@ -152,12 +153,12 @@ const TouchableWrapper = styled.View<{ alignment: Alignment }>`
  * @example ./ReactionList.md
  */
 const ReactionList = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   alignment,
   getTotalReactionCount,

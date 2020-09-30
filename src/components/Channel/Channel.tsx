@@ -22,11 +22,6 @@ import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
 import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
-import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
-import type { LoadingProps } from '../Indicators/LoadingIndicator';
-import type { Message as MessageType } from '../MessageList/utils/insertDates';
-import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
-
 import {
   ChannelContextValue,
   ChannelProvider,
@@ -45,6 +40,10 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
+import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
+import type { LoadingProps } from '../Indicators/LoadingIndicator';
+import type { Message as MessageType } from '../MessageList/utils/insertDates';
+import type { KeyboardCompatibleViewProps } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -53,16 +52,17 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChannelProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * The currently active channel
@@ -173,13 +173,13 @@ export type ChannelProps<
  * @example ./Channel.md
  */
 const Channel = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   Attachment = AttachmentDefault,
   channel,

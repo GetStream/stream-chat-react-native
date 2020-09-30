@@ -4,7 +4,6 @@ import { Text } from 'react-native';
 import type { ReactionResponse } from 'stream-chat';
 
 import type { LatestReactions, Reaction } from '../ReactionList';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -12,15 +11,16 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export const renderReactions = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   reactions: LatestReactions<At, Ch, Co, Me, Re, Us>,
   supportedReactions: Reaction[],

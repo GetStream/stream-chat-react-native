@@ -19,7 +19,11 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { styled } from '../../styles/styledComponents';
 import { isMentionTrigger } from '../../utils/utils';
 
-import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import type {
+  DefaultCommandType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 import type { Trigger, TriggerSettings } from '../../utils/utils';
 
 const InputBox = styled(TextInput)`
@@ -48,7 +52,7 @@ const isCommand = (text: string) => {
 
 export type AutoCompleteInputProps<
   Co extends string = DefaultCommandType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
@@ -78,7 +82,7 @@ export type AutoCompleteInputProps<
 
 const AutoCompleteInput = <
   Co extends string = DefaultCommandType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 >({
   additionalTextInputProps,
   onChange,

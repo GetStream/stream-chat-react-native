@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import type {
-  Channel,
-  ChannelState,
-  Event,
-  MessageResponse,
-  UnknownType,
-} from 'stream-chat';
 
 import ChannelPreviewMessenger from './ChannelPreviewMessenger';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
-import type { ChannelListMessengerProps } from '../ChannelList/ChannelListMessenger';
+import type {
+  Channel,
+  ChannelState,
+  Event,
+  MessageResponse,
+} from 'stream-chat';
 
+import type { ChannelListMessengerProps } from '../ChannelList/ChannelListMessenger';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,6 +21,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChannelPreviewProps<

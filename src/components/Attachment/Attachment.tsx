@@ -1,8 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import type { Attachment as AttachmentType, UnknownType } from 'stream-chat';
-
 import DefaultAttachmentActions, {
   AttachmentActionsProps,
 } from './AttachmentActions';
@@ -13,12 +11,14 @@ import DefaultGallery, { GalleryProps } from './Gallery';
 
 import { themed } from '../../styles/theme';
 
+import type { Attachment as AttachmentType } from 'stream-chat';
+
 import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
 import type {
   Alignment,
   GroupType,
 } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 export type ActionHandler =
   | ((name: string, value: string) => Promise<void>)

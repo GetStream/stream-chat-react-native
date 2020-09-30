@@ -1,9 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import type { GestureResponderEvent } from 'react-native';
-
-import type { MessageResponse } from 'stream-chat';
-
-import type { ActionSheetCustom } from 'react-native-actionsheet';
 
 import DefaultActionSheet from './MessageActionSheet';
 import DefaultMessageReplies, { MessageRepliesProps } from './MessageReplies';
@@ -38,6 +33,10 @@ import { styled } from '../../../styles/styledComponents';
 import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
+import type { GestureResponderEvent } from 'react-native';
+import type { MessageResponse } from 'stream-chat';
+import type { ActionSheetCustom } from 'react-native-actionsheet';
+
 import type { MessageSimpleProps } from './MessageSimple';
 import type {
   DefaultAttachmentType,
@@ -47,6 +46,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 /**
@@ -123,13 +123,13 @@ const MetaText = styled.Text<{ alignment: string }>`
 `;
 
 type MessageContentWithContextProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
   Attachment: React.ComponentType<AttachmentProps<At>>;
   disabled: boolean | undefined;
@@ -151,13 +151,13 @@ type MessageContentWithContextProps<
  * each individual MessageContent component.
  */
 const MessageContentWithContext = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -475,13 +475,13 @@ const MessageContentWithContext = <
 };
 
 const areEqual = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   prevProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageContentWithContextProps<At, Ch, Co, Ev, Me, Re, Us>,
@@ -506,13 +506,13 @@ const MemoizedMessageContent = React.memo(
 ) as typeof MessageContentWithContext;
 
 export type ForwardedMessageProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us> & {
   /**
    * Position of the message, either 'right' or 'left'
@@ -532,15 +532,11 @@ export type ForwardedMessageProps<
   /**
    * Custom message footer component
    */
-  MessageFooter?: React.ComponentType<
-    Record<string, unknown> & { testID: string }
-  >;
+  MessageFooter?: React.ComponentType<UnknownType & { testID: string }>;
   /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<
-    Record<string, unknown> & { testID: string }
-  >;
+  MessageHeader?: React.ComponentType<UnknownType & { testID: string }>;
   /**
    * Custom message replies component
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageReplies.tsx
@@ -554,13 +550,13 @@ export type ForwardedMessageProps<
  * Child of MessageSimple that displays a message's content
  */
 const MessageContent = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

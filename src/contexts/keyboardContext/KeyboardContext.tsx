@@ -3,6 +3,8 @@ import { Keyboard } from 'react-native';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { UnknownType } from '../../types/types';
+
 export type KeyboardContextValue = {
   dismissKeyboard: () => void;
 };
@@ -19,7 +21,7 @@ export const KeyboardProvider: React.FC<{
 
 export const useKeyboardContext = () => useContext(KeyboardContext);
 
-export const withKeyboardContext = <P extends Record<string, unknown>>(
+export const withKeyboardContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof KeyboardContextValue>> => {
   const WithKeyboardContextComponent = (

@@ -1,11 +1,12 @@
 import React from 'react';
-import type { Attachment, UnknownType } from 'stream-chat';
 
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 
+import type { Attachment } from 'stream-chat';
+
 import type { ActionHandler } from './Attachment';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const Container = styled.View`
   flex-direction: row;

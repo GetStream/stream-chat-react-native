@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
-
 import { getDisplayName } from '../utils/getDisplayName';
+
+import type { Channel, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -12,6 +12,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChatContextValue<
@@ -77,7 +78,7 @@ export const useChatContext = <
  * wrapped component must be provided as the first generic.
  */
 export const withChatContext = <
-  P extends Record<string, unknown>,
+  P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

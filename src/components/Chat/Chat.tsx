@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
 
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
@@ -12,10 +11,12 @@ import {
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
 import { themed } from '../../styles/theme';
-import type { Streami18n } from '../../utils/Streami18n';
 
 import { version } from '../../../package.json';
 
+import type { Channel, StreamChat } from 'stream-chat';
+
+import type { Streami18n } from '../../utils/Streami18n';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -24,6 +25,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 type Props<

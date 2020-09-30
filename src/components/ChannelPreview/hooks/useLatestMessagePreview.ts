@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import type { Immutable } from 'seamless-immutable';
-import type {
-  Channel,
-  ChannelState,
-  MessageResponse,
-  UnknownType,
-} from 'stream-chat';
-
 import {
   isDayOrMoment,
   TDateTimeParser,
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
+
+import type { Immutable } from 'seamless-immutable';
+import type { Channel, ChannelState, MessageResponse } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -22,6 +17,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export type LatestMessagePreview<

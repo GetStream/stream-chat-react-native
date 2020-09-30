@@ -1,10 +1,5 @@
 import React from 'react';
 
-import type {
-  GestureResponderEvent,
-  TouchableOpacityProps,
-} from 'react-native';
-
 import DefaultMessageAvatar from './MessageAvatar';
 import DefaultMessageContent, { ForwardedMessageProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
@@ -12,6 +7,11 @@ import DefaultMessageStatus from './MessageStatus';
 import { themed } from '../../../styles/theme';
 import { styled } from '../../../styles/styledComponents';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
+
+import type {
+  GestureResponderEvent,
+  TouchableOpacityProps,
+} from 'react-native';
 
 import type { AttachmentActionsProps } from '../../Attachment/AttachmentActions';
 import type { CardProps } from '../../Attachment/Card';
@@ -36,6 +36,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 const Container = styled.View<{
@@ -53,13 +54,13 @@ const Container = styled.View<{
 `;
 
 export type MessageSimpleProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = ActionProps &
   MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
     /**
@@ -216,7 +217,7 @@ export type MessageSimpleProps<
     /** Boolean if current message is part of thread */
     isThreadList?: boolean;
     /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-    markdownRules?: Record<string, unknown>;
+    markdownRules?: UnknownType;
     /**
      * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
      * If all the actions need to be disabled, empty array or false should be provided as value of prop.
@@ -363,13 +364,13 @@ export type MessageSimpleProps<
  * @example ./MessageSimple.md
  */
 const MessageSimple = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

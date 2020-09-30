@@ -3,11 +3,10 @@ import { Dimensions, TouchableOpacity } from 'react-native';
 
 import ReactionPickerDefault from './ReactionPicker';
 
-import type { LatestReactions, Reaction } from './ReactionList';
-import type { ReactionPickerProps } from './ReactionPicker';
-
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
+import type { LatestReactions, Reaction } from './ReactionList';
+import type { ReactionPickerProps } from './ReactionPicker';
 import type {
   Alignment,
   MessageWithDates,
@@ -21,16 +20,17 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 type Props<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   alignment: Alignment;
   customMessageContent: boolean;
@@ -77,13 +77,13 @@ type Props<
 };
 
 const ReactionPickerWrapper = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {

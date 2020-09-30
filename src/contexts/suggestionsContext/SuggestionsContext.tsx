@@ -1,13 +1,17 @@
 import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import { findNodeHandle, View } from 'react-native';
 
-import type { CommandResponse, UnknownType, UserResponse } from 'stream-chat';
-
 import SuggestionsList from './SuggestionsList';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import type { CommandResponse, UserResponse } from 'stream-chat';
+
+import type {
+  DefaultCommandType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 export type SuggestionComponentType<
   Co extends string = DefaultCommandType,
@@ -171,7 +175,7 @@ export const useSuggestionsContext = <
   >;
 
 export const withSuggestionsContext = <
-  P extends Record<string, unknown>,
+  P extends UnknownType,
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 >(
