@@ -180,6 +180,7 @@ const MessageContent = <
 ) => {
   const {
     ActionSheet = DefaultActionSheet,
+    Attachment: PropsAttachment,
     AttachmentActions,
     AttachmentFileIcon,
     Card,
@@ -233,12 +234,14 @@ const MessageContent = <
 
   const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    Attachment = DefaultAttachment,
+    Attachment: ContextAttachment,
     Message,
     retrySendMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
+
+  const Attachment = PropsAttachment || ContextAttachment || DefaultAttachment;
 
   const actionSheetRef = useRef<ActionSheetCustom>();
 
