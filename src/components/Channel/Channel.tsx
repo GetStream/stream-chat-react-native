@@ -16,7 +16,6 @@ import {
 } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
-import AttachmentDefault from '../Attachment/Attachment';
 import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
 import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
 import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
@@ -180,7 +179,7 @@ const Channel = <
   Re extends Record<string, unknown> = DefaultReactionType,
   Us extends Record<string, unknown> = DefaultUserType
 >({
-  Attachment = AttachmentDefault,
+  Attachment,
   channel,
   children,
   disableIfFrozenChannel = true,

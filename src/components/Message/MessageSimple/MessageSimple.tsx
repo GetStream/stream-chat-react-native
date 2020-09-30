@@ -22,6 +22,7 @@ import type { Message } from '../../../components/MessageList/utils/insertDates'
 import type {
   Alignment,
   GroupType,
+  MessagesContextValue,
 } from '../../../contexts/messagesContext/MessagesContext';
 import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
 import type { ActionProps, MessageProps } from '../Message';
@@ -147,6 +148,11 @@ export type MessageSimpleProps<
      * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
      */
     additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
+    /**
+     * Custom UI component to display attachments on individual messages
+     * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
+     */
+    Attachment?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Attachment'];
     /**
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
