@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import type { Channel, StreamChat, UnknownType } from 'stream-chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
+
+import type { Channel, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -11,6 +12,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 const getChannelPreviewDisplayName = <

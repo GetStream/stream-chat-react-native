@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import type { UnknownType } from 'stream-chat';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
 
@@ -11,6 +10,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../../types/types';
 
 type Parameters = {

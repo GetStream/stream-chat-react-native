@@ -7,6 +7,8 @@ import type {
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { UnknownType } from '../../types/types';
+
 export type MessageContentContextValue = {
   onLongPress: (event: GestureResponderEvent) => void;
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
@@ -38,7 +40,7 @@ export const useMessageContentContext = () =>
  * typing is desired while using the HOC withMessageContentContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
-export const withMessageContentContext = <P extends Record<string, unknown>>(
+export const withMessageContentContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof MessageContentContextValue>> => {
   const WithMessageContentContextComponent = (

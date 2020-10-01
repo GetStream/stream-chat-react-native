@@ -4,7 +4,6 @@ import type {
   Channel,
   ChannelMemberAPIResponse,
   ChannelMemberResponse,
-  UnknownType,
   UserResponse,
 } from 'stream-chat';
 
@@ -23,6 +22,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../types/types';
 
 export const emojiData = [

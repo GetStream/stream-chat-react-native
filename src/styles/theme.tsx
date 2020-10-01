@@ -8,6 +8,8 @@ import lodashSet from 'lodash/set';
 import { ThemeConsumer, ThemeProvider } from './styledComponents';
 import { defaultTheme } from './themeConstants';
 
+import type { UnknownType } from '../types/types';
+
 // replaces
 // { 'avatar.fallback': 'background-color: red;' }
 // with
@@ -40,9 +42,7 @@ const replaceCssShorthand = (
   return style;
 };
 
-export const themed = <
-  P extends Record<string, unknown> = Record<string, unknown>
->(
+export const themed = <P extends UnknownType = UnknownType>(
   OriginalComponent: React.ComponentType<P> & {
     themePath: string;
     extraThemePaths?: string[];

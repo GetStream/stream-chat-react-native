@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import type { Attachment, UserResponse } from 'stream-chat';
-
 import { generateRandomId } from '../utils/generateRandomId';
 
 import {
   isEditingBoolean,
   MessagesContextValue,
 } from '../../../contexts/messagesContext/MessagesContext';
+
+import type { Attachment, UserResponse } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -17,6 +17,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export type FileUpload = {
@@ -43,12 +44,12 @@ export type ImageUpload = {
 
 export const useMessageDetailsForState = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   message: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
   initialValue?: string,

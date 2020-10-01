@@ -1,12 +1,11 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
-import type { ChannelState, UnknownType } from 'stream-chat';
-
 import { getDisplayName } from '../utils/getDisplayName';
+
+import type { ChannelState } from 'stream-chat';
 
 import type { MessageWithDates } from '../messagesContext/MessagesContext';
 import type { Message } from '../../components/MessageList/utils/insertDates';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -15,6 +14,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ThreadContextValue<
@@ -84,7 +84,7 @@ export const useThreadContext = <
  * wrapped component must be provided as the first generic.
  */
 export const withThreadContext = <
-  P extends Record<string, unknown>,
+  P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

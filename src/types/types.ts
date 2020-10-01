@@ -1,4 +1,4 @@
-import type { LiteralStringForUnion, UnknownType } from 'stream-chat';
+import type { LiteralStringForUnion } from 'stream-chat';
 
 export type DefaultAttachmentType = UnknownType & {
   file_size?: number | string;
@@ -20,3 +20,5 @@ export type DefaultReactionType = UnknownType;
 export type DefaultUserType = UnknownType & {
   image?: string;
 };
+
+export type UnknownType = Record<string, unknown>;

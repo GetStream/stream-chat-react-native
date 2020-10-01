@@ -9,8 +9,6 @@ import {
 } from 'react-native';
 import uuidv4 from 'uuid/v4';
 
-import type { UserResponse } from 'stream-chat';
-
 import DefaultDateSeparator, { DateSeparatorProps } from './DateSeparator';
 import MessageNotification from './MessageNotification';
 import DefaultMessageSystem, { MessageSystemProps } from './MessageSystem';
@@ -25,8 +23,6 @@ import { isDateSeparator, MessageOrDate } from './utils/insertDates';
 
 import DefaultMessage from '../Message/Message';
 
-import type { FileIconProps } from '../Attachment/FileIcon';
-
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
@@ -37,6 +33,9 @@ import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
+import type { UserResponse } from 'stream-chat';
+
+import type { FileIconProps } from '../Attachment/FileIcon';
 import type { ActionSheetStyles } from '../Message/MessageSimple/MessageActionSheet';
 import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
 import type {
@@ -47,6 +46,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const ListContainer = (styled(FlatList)`
@@ -72,13 +72,13 @@ const ErrorNotification = styled.View`
 `;
 
 export type MessageListProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Style object for action sheet (used to message actions).
@@ -186,13 +186,13 @@ export type MessageListProps<
  * @example ./MessageList.md
  */
 const MessageList = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   actionSheetStyles,
   additionalFlatListProps,

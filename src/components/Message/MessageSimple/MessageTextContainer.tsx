@@ -20,6 +20,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 const TextContainer = styled.View<{
@@ -65,20 +66,20 @@ const TextContainer = styled.View<{
 `;
 
 export type MessageTextProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us> & {
   renderText: ({
     markdownRules,
     markdownStyles,
     message,
   }: {
-    markdownRules: Record<string, unknown>;
+    markdownRules: UnknownType;
     markdownStyles: MarkdownStyle;
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   }) => JSX.Element | null;
@@ -86,13 +87,13 @@ export type MessageTextProps<
 };
 
 export type MessageTextContainerProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Position of the message, either 'right' or 'left'
@@ -124,7 +125,7 @@ export type MessageTextContainerProps<
    */
   openThread: () => void;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules?: Record<string, unknown>;
+  markdownRules?: UnknownType;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -139,13 +140,13 @@ export type MessageTextContainerProps<
 };
 
 const MessageTextContainer = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

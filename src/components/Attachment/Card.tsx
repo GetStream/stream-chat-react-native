@@ -1,14 +1,15 @@
 import React from 'react';
 import { ImageRequireSource, Linking, View } from 'react-native';
-import type { Attachment, UnknownType } from 'stream-chat';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { Attachment } from 'stream-chat';
+
 import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const giphyLogo: ImageRequireSource = require('../../assets/Poweredby_100px-White_VertText.png');
 

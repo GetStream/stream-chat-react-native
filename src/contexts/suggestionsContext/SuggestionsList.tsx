@@ -12,7 +12,11 @@ import CommandsItem from '../../components/AutoCompleteInput/CommandsItem';
 import MentionsItem from '../../components/AutoCompleteInput/MentionsItem';
 import { styled } from '../../styles/styledComponents';
 
-import type { DefaultCommandType, DefaultUserType } from '../../types/types';
+import type {
+  DefaultCommandType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const Container = styled.View<{ length: number }>`
   background-color: white;
@@ -63,14 +67,14 @@ const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => (
 
 const isString = <
   Co extends string = DefaultCommandType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 >(
   component: SuggestionComponentType<Co, Us>,
 ): component is string => typeof component === 'string';
 
 type Props<
   Co extends string = DefaultCommandType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 > = {
   active: boolean;
   backdropHeight: number | string;
@@ -84,7 +88,7 @@ type Props<
 
 const SuggestionsList = <
   Co extends string = DefaultCommandType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Us extends UnknownType = DefaultUserType
 >({
   active,
   backdropHeight,

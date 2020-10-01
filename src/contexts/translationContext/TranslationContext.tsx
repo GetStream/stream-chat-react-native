@@ -1,9 +1,12 @@
 import React, { useContext } from 'react';
 import Dayjs from 'dayjs';
+
+import { getDisplayName } from '../utils/getDisplayName';
+
 import type { TFunction } from 'i18next';
 import type { Moment } from 'moment';
 
-import { getDisplayName } from '../utils/getDisplayName';
+import type { UnknownType } from '../../types/types';
 
 export const isDayOrMoment = (
   output: TDateTimeParserOutput,
@@ -43,7 +46,7 @@ export const TranslationProvider: React.FC<{
 
 export const useTranslationContext = () => useContext(TranslationContext);
 
-export const withTranslationContext = <P extends Record<string, unknown>>(
+export const withTranslationContext = <P extends UnknownType>(
   Component: React.ComponentType<P>,
 ): React.FC<Omit<P, keyof TranslationContextValue>> => {
   const WithTranslationContextComponent = (

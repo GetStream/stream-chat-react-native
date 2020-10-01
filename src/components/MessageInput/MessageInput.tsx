@@ -16,8 +16,6 @@ import {
   UserResponse,
 } from 'stream-chat';
 
-import type { ActionSheetCustom } from 'react-native-actionsheet';
-
 import ActionSheetAttachmentDefault, {
   ActionSheetProps,
   ActionSheetStyles,
@@ -43,8 +41,6 @@ import AutoCompleteInput, {
 } from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
-import type { FileIconProps } from '../Attachment/FileIcon';
-
 import {
   ChannelContextValue,
   useChannelContext,
@@ -67,6 +63,9 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
+import type { ActionSheetCustom } from 'react-native-actionsheet';
+
+import type { FileIconProps } from '../Attachment/FileIcon';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -75,6 +74,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const iconClose: ImageRequireSource = require('../../images/icons/icon_close.png');
@@ -123,13 +123,13 @@ const InputBoxContainer = styled(View)`
 `;
 
 export type MessageInputProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Custom UI component for ActionSheetAttachment.
@@ -276,12 +276,12 @@ export type MessageInputProps<
  */
 const MessageInput = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

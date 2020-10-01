@@ -1,13 +1,4 @@
 import React, { PropsWithChildren, useRef, useState } from 'react';
-import type { FlatList, FlatListProps } from 'react-native';
-import type {
-  Channel,
-  ChannelFilters,
-  ChannelOptions,
-  ChannelSort,
-  Event,
-  UnknownType,
-} from 'stream-chat';
 
 import ChannelListMessenger, {
   ChannelListMessengerProps,
@@ -25,6 +16,15 @@ import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
+import type { FlatList, FlatListProps } from 'react-native';
+import type {
+  Channel,
+  ChannelFilters,
+  ChannelOptions,
+  ChannelSort,
+  Event,
+} from 'stream-chat';
+
 import type { HeaderErrorProps } from './ChannelListHeaderErrorIndicator';
 import type { ChannelPreviewMessengerProps } from '../ChannelPreview/ChannelPreviewMessenger';
 import type { EmptyStateProps } from '../Indicators/EmptyStateIndicator';
@@ -39,6 +39,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ChannelListProps<

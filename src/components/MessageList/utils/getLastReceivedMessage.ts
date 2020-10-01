@@ -8,16 +8,17 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export const getLastReceivedMessage = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

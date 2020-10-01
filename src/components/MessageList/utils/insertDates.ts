@@ -1,4 +1,4 @@
-import type { ChannelState, UnknownType } from 'stream-chat';
+import type { ChannelState } from 'stream-chat';
 
 import type {
   MessagesContextValue,
@@ -13,6 +13,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export type DateSeparator<

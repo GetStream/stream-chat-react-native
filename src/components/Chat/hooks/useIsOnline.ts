@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import type { NetInfoSubscription } from '@react-native-community/netinfo';
-import type { Event, StreamChat, UnknownType } from 'stream-chat';
 
 import { NetInfo } from '../../../native';
+
+import type { NetInfoSubscription } from '@react-native-community/netinfo';
+import type { Event, StreamChat } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -12,6 +13,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../types/types';
 
 export const useIsOnline = <

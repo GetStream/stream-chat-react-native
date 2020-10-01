@@ -1,9 +1,10 @@
 import React from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
-import type { Attachment, UnknownType } from 'stream-chat';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
+
+import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from './Attachment';
 import DefaultAttachmentActions, {
@@ -15,7 +16,7 @@ import type {
   Alignment,
   GroupType,
 } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const FileContainer = styled.View<{
   alignment: Alignment;

@@ -1,22 +1,20 @@
 import React, { PropsWithChildren, useContext } from 'react';
 
+import { getDisplayName } from '../utils/getDisplayName';
+
 import type { DebouncedFunc } from 'lodash';
 import type {
   ChannelState,
   MessageResponse,
   StreamChat,
   Message as StreamMessage,
-  UnknownType,
   UserResponse,
 } from 'stream-chat';
 
-import { getDisplayName } from '../utils/getDisplayName';
-
+import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { Message } from '../../components/MessageList/utils/insertDates';
-
-import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,6 +23,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type Alignment = 'right' | 'left';
@@ -158,7 +157,7 @@ export const useMessagesContext = <
  * wrapped component must be provided as the first generic.
  */
 export const withMessagesContext = <
-  P extends Record<string, unknown>,
+  P extends UnknownType,
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,

@@ -1,7 +1,5 @@
 import React from 'react';
 
-import type { DateSeparator as DateSeparatorType } from './utils/insertDates';
-
 import {
   isDayOrMoment,
   TDateTimeParserInput,
@@ -9,6 +7,8 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
+
+import type { DateSeparator as DateSeparatorType } from './utils/insertDates';
 
 import type {
   DefaultAttachmentType,
@@ -18,6 +18,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 const Container = styled.View`
@@ -53,13 +54,13 @@ const Line = styled.View`
 `;
 
 export type DateSeparatorProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   message: DateSeparatorType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
@@ -75,13 +76,13 @@ export type DateSeparatorProps<
  * @example ./DateSeparator.md
  */
 const DateSeparator = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >({
   formatDate,
   message,

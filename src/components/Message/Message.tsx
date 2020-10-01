@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { Keyboard, TouchableOpacity } from 'react-native';
 
-import type {
-  MessageResponse,
-  Reaction,
-  ReactionResponse,
-  Message as StreamMessage,
-  UserResponse,
-} from 'stream-chat';
-
 import DefaultMessageSimple, {
   MessageSimpleProps,
 } from './MessageSimple/MessageSimple';
@@ -31,9 +23,17 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
+import type {
+  MessageResponse,
+  Reaction,
+  ReactionResponse,
+  Message as StreamMessage,
+  UserResponse,
+} from 'stream-chat';
+
+import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type { FileIconProps } from '../Attachment/FileIcon';
 import type { Message } from '../MessageList/utils/insertDates';
-import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -42,6 +42,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../types/types';
 
 export type ActionProps = {
@@ -50,13 +51,13 @@ export type ActionProps = {
 };
 
 export type MessagePropsWithContext<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
   channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
   client: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>['client'];
@@ -107,13 +108,13 @@ export type MessagePropsWithContext<
  * each individual Message component.
  */
 const DefaultMessageWithContext = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -345,13 +346,13 @@ const DefaultMessageWithContext = <
 };
 
 const areEqual = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
@@ -374,13 +375,13 @@ const MemoizedDefaultMessage = React.memo(
 ) as typeof DefaultMessageWithContext;
 
 export type MessageProps<
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 > = {
   /**
    * Position of message in group - top, bottom, middle, single.
@@ -441,13 +442,13 @@ export type MessageProps<
  * @example ./Message.md
  */
 const DefaultMessage = <
-  At extends Record<string, unknown> = DefaultAttachmentType,
-  Ch extends Record<string, unknown> = DefaultChannelType,
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
-  Ev extends Record<string, unknown> = DefaultEventType,
-  Me extends Record<string, unknown> = DefaultMessageType,
-  Re extends Record<string, unknown> = DefaultReactionType,
-  Us extends Record<string, unknown> = DefaultUserType
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {

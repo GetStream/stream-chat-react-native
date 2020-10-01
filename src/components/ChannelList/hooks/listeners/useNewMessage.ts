@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import type { Channel, Event, UnknownType } from 'stream-chat';
 
 import { moveChannelUp } from '../../utils';
 
 import { useChatContext } from '../../../../contexts/chatContext/ChatContext';
+
+import type { Channel, Event } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -13,6 +14,7 @@ import type {
   DefaultMessageType,
   DefaultReactionType,
   DefaultUserType,
+  UnknownType,
 } from '../../../../types/types';
 
 type Parameters<

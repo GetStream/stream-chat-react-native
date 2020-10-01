@@ -9,9 +9,6 @@ import {
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
-import type { Attachment, UnknownType } from 'stream-chat';
-
 import CloseButton from '../CloseButton/CloseButton';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
@@ -20,8 +17,11 @@ import { styled } from '../../styles/styledComponents';
 import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
+import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
+import type { Attachment } from 'stream-chat';
+
 import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType } from '../../types/types';
+import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const Single = styled.TouchableOpacity<{ alignment: Alignment }>`
   border-top-left-radius: 16px;

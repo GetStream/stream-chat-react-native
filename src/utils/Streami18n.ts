@@ -5,7 +5,6 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import updateLocale from 'dayjs/plugin/updateLocale';
 import i18n, { TFunction } from 'i18next';
-import type moment from 'moment';
 
 import enTranslations from '../i18n/en.json';
 import frTranslations from '../i18n/fr.json';
@@ -29,7 +28,10 @@ import 'dayjs/locale/tr';
 // to make sure I don't mess up language at other places in app.
 import 'dayjs/locale/en';
 
+import type moment from 'moment';
+
 import type { TDateTimeParser } from '../contexts/translationContext/TranslationContext';
+import type { UnknownType } from '../types/types';
 
 Dayjs.extend(updateLocale);
 
@@ -326,7 +328,7 @@ export class Streami18n {
 
   translations: {
     [key: string]: {
-      [key: string]: typeof enTranslations | Record<string, unknown>;
+      [key: string]: typeof enTranslations | UnknownType;
     };
   } = {
     en: { [defaultNS]: enTranslations },
