@@ -6,11 +6,11 @@ import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { ThemeProvider } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
-import { themed } from '../../styles/theme';
 
 import { version } from '../../../package.json';
 
@@ -92,6 +92,7 @@ type Props<
    */
   i18nInstance?: typeof Streami18n;
   logger?: (message?: string) => void;
+  style?: { [key: string]: string };
 };
 
 /**
@@ -129,7 +130,7 @@ const Chat = <
 >(
   props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, logger = () => null } = props;
+  const { children, client, i18nInstance, logger = () => null, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -173,11 +174,11 @@ const Chat = <
 
   return (
     <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
-      <TranslationProvider value={translators}>{children}</TranslationProvider>
+      <TranslationProvider value={translators}>
+        <ThemeProvider style={style}>{children}</ThemeProvider>
+      </TranslationProvider>
     </ChatProvider>
   );
 };
 
-Chat.themePath = '';
-
-export default themed(Chat) as typeof Chat;
+export default Chat;

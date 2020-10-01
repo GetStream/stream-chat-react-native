@@ -3,7 +3,6 @@ import React from 'react';
 import { renderReactions } from './utils/renderReactions';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
 import type { ImageRequireSource } from 'react-native';
@@ -202,6 +201,4 @@ const ReactionList = <
   </TouchableWrapper>
 );
 
-ReactionList.themePath = 'message.reactionList';
-
-export default themed(ReactionList) as typeof ReactionList;
+export default ReactionList;

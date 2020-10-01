@@ -24,10 +24,6 @@ const FileContainer = styled.View<{
 }>`
   align-items: center;
   background-color: #ebebeb;
-  border-radius: ${({ groupStyle }) => {
-    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
-    return 16;
-  }}px;
   border-bottom-left-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
     return alignment === 'right' ? 16 : 2;
@@ -35,6 +31,14 @@ const FileContainer = styled.View<{
   border-bottom-right-radius: ${({ alignment, groupStyle }) => {
     if (groupStyle === 'top' || groupStyle === 'middle') return 0;
     return alignment === 'left' ? 16 : 2;
+  }}px;
+  border-top-left-radius: ${({ groupStyle }) => {
+    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
+    return 16;
+  }}px;
+  border-top-right-radius: ${({ groupStyle }) => {
+    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
+    return 16;
   }}px;
   flex-direction: row;
   padding: 10px;

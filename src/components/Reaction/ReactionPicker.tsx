@@ -3,7 +3,6 @@ import { Modal, View } from 'react-native';
 
 import Avatar from '../Avatar/Avatar';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { emojiData } from '../../utils/utils';
 
 import type { LatestReactions, Reaction } from './ReactionList';
@@ -189,6 +188,4 @@ const ReactionPicker = <
     </Modal>
   ) : null;
 
-ReactionPicker.themePath = 'message.reactionPicker';
-
-export default themed(ReactionPicker) as typeof ReactionPicker;
+export default ReactionPicker;

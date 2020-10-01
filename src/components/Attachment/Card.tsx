@@ -3,7 +3,6 @@ import { ImageRequireSource, Linking, View } from 'react-native';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { Attachment } from 'stream-chat';
@@ -153,6 +152,4 @@ const Card = <At extends UnknownType = DefaultAttachmentType>(
   );
 };
 
-Card.themePath = 'card';
-
-export default themed(Card) as typeof Card;
+export default Card;

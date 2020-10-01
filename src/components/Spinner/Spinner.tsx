@@ -2,8 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
 import { styled } from '../../styles/styledComponents';
 
-import { themed } from '../../styles/theme';
-
 const AnimatedView = Animated.createAnimatedComponent(Animated.View);
 
 const Circle = styled(AnimatedView)`
@@ -21,7 +19,7 @@ const Circle = styled(AnimatedView)`
 /**
  * @example ./Spinner.md
  */
-const Spinner: React.FC & { themePath: string } = () => {
+const Spinner: React.FC = () => {
   const rotateValue = useRef(new Animated.Value(0));
 
   const loop = Animated.loop(
@@ -54,6 +52,4 @@ const Spinner: React.FC & { themePath: string } = () => {
   );
 };
 
-Spinner.themePath = 'spinner';
-
-export default themed(Spinner);
+export default Spinner;

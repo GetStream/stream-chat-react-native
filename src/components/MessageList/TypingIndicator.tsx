@@ -7,7 +7,6 @@ import DefaultAvatar, { AvatarProps } from '../Avatar/Avatar';
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type {
   DefaultAttachmentType,
@@ -76,6 +75,4 @@ const TypingIndicator = <
   );
 };
 
-TypingIndicator.themePath = 'typingIndicator';
-
-export default themed(TypingIndicator) as typeof TypingIndicator;
+export default TypingIndicator;

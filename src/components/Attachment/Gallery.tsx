@@ -14,7 +14,6 @@ import CloseButton from '../CloseButton/CloseButton';
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
@@ -24,12 +23,12 @@ import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
 const Single = styled.TouchableOpacity<{ alignment: Alignment }>`
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2}px;
   border-bottom-right-radius: ${({ alignment }) =>
     alignment === 'left' ? 16 : 2}px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   height: 200px;
   overflow: hidden;
   width: ${({ theme }) => theme.message.gallery.width}px;
@@ -40,11 +39,12 @@ const GalleryContainer = styled.View<{
   alignment: Alignment;
   length?: number;
 }>`
-  border-radius: 16px;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2}px;
   border-bottom-left-radius: ${({ alignment }) =>
     alignment === 'right' ? 16 : 2}px;
+  border-bottom-right-radius: ${({ alignment }) =>
+    alignment === 'left' ? 16 : 2}px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
   flex-direction: row;
   flex-wrap: wrap;
   height: ${({ length, theme }) =>
@@ -265,6 +265,4 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
   );
 };
 
-Gallery.themePath = 'message.gallery';
-
-export default themed(Gallery) as typeof Gallery;
+export default Gallery;

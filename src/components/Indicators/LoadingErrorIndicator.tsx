@@ -2,7 +2,6 @@ import React from 'react';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -31,9 +30,10 @@ export type LoadingErrorProps = {
   retry?: () => Promise<void>;
 };
 
-const LoadingErrorIndicator: React.FC<LoadingErrorProps> & {
-  themePath: string;
-} = ({ listType, retry = () => null }) => {
+const LoadingErrorIndicator: React.FC<LoadingErrorProps> = ({
+  listType,
+  retry = () => null,
+}) => {
   const { t } = useTranslationContext();
 
   switch (listType) {
@@ -63,6 +63,4 @@ const LoadingErrorIndicator: React.FC<LoadingErrorProps> & {
   }
 };
 
-LoadingErrorIndicator.themePath = 'loadingErrorIndicator';
-
-export default themed(LoadingErrorIndicator);
+export default LoadingErrorIndicator;

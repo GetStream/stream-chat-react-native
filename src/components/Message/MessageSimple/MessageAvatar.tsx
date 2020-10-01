@@ -18,8 +18,8 @@ import type {
 } from '../../../types/types';
 
 const Container = styled.View<{ alignment: Alignment }>`
-  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;
   margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)}px;
+  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;
   ${({ theme }) => theme.message.avatarWrapper.container.css}
 `;
 

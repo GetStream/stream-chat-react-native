@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
 const iconReload: ImageRequireSource = require('../../images/reload1.png');
@@ -97,6 +96,4 @@ const UploadProgressIndicator = ({
     </View>
   );
 
-UploadProgressIndicator.themePath = 'messageInput.uploadProgressIndicator';
-
-export default themed(UploadProgressIndicator);
+export default UploadProgressIndicator;

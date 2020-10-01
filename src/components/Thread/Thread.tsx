@@ -13,7 +13,6 @@ import { useMessagesContext } from '../../contexts/messagesContext/MessagesConte
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { Message as StreamMessage } from 'stream-chat';
 
@@ -206,6 +205,4 @@ const Thread = <
   );
 };
 
-Thread.themePath = 'thread';
-
-export default themed(Thread) as typeof Thread;
+export default Thread;

@@ -44,8 +44,8 @@ const ActionSheetTitleContainer = styled.View`
 `;
 
 const ActionSheetTitleText = styled.Text`
-  font-size: 14px;
   color: #757575;
+  font-size: 14px;
   ${({ theme }) => theme.message.actionSheet.titleText.css};
 `;
 

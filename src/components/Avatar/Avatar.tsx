@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;
@@ -59,7 +58,7 @@ export type AvatarProps = {
  *
  * @example ./Avatar.md
  */
-const Avatar: React.FC<AvatarProps> & { themePath: string } = ({
+const Avatar: React.FC<AvatarProps> = ({
   image,
   name,
   size = BASE_AVATAR_SIZE,
@@ -95,7 +94,4 @@ const Avatar: React.FC<AvatarProps> & { themePath: string } = ({
   );
 };
 
-Avatar.themePath = 'avatar';
-
-// TODO: remove HOC and use a theme context provider
-export default themed(Avatar);
+export default Avatar;

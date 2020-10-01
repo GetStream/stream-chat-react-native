@@ -56,7 +56,6 @@ import { useSuggestionsContext } from '../../contexts/suggestionsContext/Suggest
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import {
   ACITriggerSettings,
   FileState,
@@ -116,9 +115,9 @@ const EditingBoxHeaderTitle = styled.Text`
 const InputBoxContainer = styled(View)`
   align-items: center;
   flex-direction: row;
-  padding-horizontal: 10px;
   margin: 10px;
   min-height: 46px;
+  padding-horizontal: 10px;
   ${({ theme }) => theme.messageInput.inputBoxContainer.css};
 `;
 
@@ -1046,6 +1045,4 @@ const MessageInput = <
   );
 };
 
-MessageInput.themePath = 'messageInput';
-
-export default themed(MessageInput) as typeof MessageInput;
+export default MessageInput;
