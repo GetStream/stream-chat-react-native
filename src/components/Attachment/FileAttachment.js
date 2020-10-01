@@ -54,15 +54,11 @@ const goToURL = (url) => {
 const getFileSizeDisplayText = (size) => {
   if (!size) return;
 
-  if (size < 1000) {
-    return `${size} KB`;
-  }
-
   if (size < 1000 * 1000) {
-    return `${size / 1000} MB`;
+    return `${Math.floor(size / 10) / 100} KB`;
   }
 
-  return `${size / (1000 * 1000)} GB`;
+  return `${Math.floor(size / 10000) / 100} MB`;
 };
 
 const FileAttachment = ({
