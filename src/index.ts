@@ -2,6 +2,10 @@ export * from './components';
 export { registerNativeHandlers, NetInfo } from './native';
 export * from './contexts';
 
+export * from './styles/styledComponents';
+export * from './styles/theme';
+export * from './styles/themeConstants';
+
 export * from './utils/Streami18n';
 export * from './utils/utils';
 
