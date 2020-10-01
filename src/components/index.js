@@ -68,6 +68,8 @@ import SuggestionsList from './SuggestionsProvider/SuggestionsList';
 import SuggestionsProvider from './SuggestionsProvider/SuggestionsProvider';
 
 import Thread from './Thread/Thread';
+import IconBadge from './IconBadge';
+import IconSquare from './IconSquare';
 
 export {
   ActionSheetAttachment,
@@ -124,4 +126,6 @@ export {
   TypingIndicator,
   TypingIndicatorContainer,
   UploadProgressIndicator,
+  IconBadge,
+  IconSquare,
 };

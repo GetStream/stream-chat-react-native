@@ -30,21 +30,17 @@ const UnreadCount = styled.Text`
   ${({ theme }) => theme.iconBadge.unreadCount.css};
 `;
 
-export class IconBadge extends React.Component {
-  render() {
-    const { children, showNumber, unread } = this.props;
+const IconBadge = ({ children, showNumber, unread }) => (
+  <Container>
+    {children}
+    {unread > 0 && (
+      <Icon>
+        <IconInner>
+          {showNumber && <UnreadCount>{unread}</UnreadCount>}
+        </IconInner>
+      </Icon>
+    )}
+  </Container>
+);
 
-    return (
-      <Container>
-        {children}
-        {unread > 0 && (
-          <Icon>
-            <IconInner>
-              {showNumber && <UnreadCount>{unread}</UnreadCount>}
-            </IconInner>
-          </Icon>
-        )}
-      </Container>
-    );
-  }
-}
+export default IconBadge;
