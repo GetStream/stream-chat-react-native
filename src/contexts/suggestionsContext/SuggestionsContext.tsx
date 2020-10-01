@@ -1,5 +1,11 @@
-import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
-import { findNodeHandle, View } from 'react-native';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { findNodeHandle, Keyboard, View } from 'react-native';
 
 import SuggestionsList from './SuggestionsList';
 
@@ -92,6 +98,24 @@ export const SuggestionsProvider = <
 
   const messageInputBox = useRef<View | null>(null);
   const rootView = useRef<View>(null);
+
+  // For the time being, we will just dismiss the suggestions view when keyboard is dismissed.
+  // TODO: Ideally SuggestionsView should update the position as per keyboard status (open/closed).
+  // Lets handle it after stream-chat-react-native@2.0.0 is published
+  useEffect(() => {
+    const onKeyboardHidden = () => {
+      setSuggestionsViewActive(false);
+    };
+
+    const subscription = Keyboard.addListener(
+      'keyboardDidHide',
+      onKeyboardHidden,
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const openSuggestions = async (
     title: string,
