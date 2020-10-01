@@ -67,8 +67,9 @@ import Spinner from './Spinner/Spinner';
 import SuggestionsList from '../contexts/suggestionsContext/SuggestionsList';
 
 import Thread from './Thread/Thread';
-import IconBadge from './IconBadge';
-import IconSquare from './IconSquare';
+
+import { IconBadge } from './IconBadge';
+import { IconSquare } from './IconSquare';
 
 export {
   ActionSheetAttachment,
@@ -96,6 +97,8 @@ export {
   FileIcon,
   FileUploadPreview,
   Gallery,
+  IconBadge,
+  IconSquare,
   ImageUploadPreview,
   KeyboardCompatibleView,
   LoadingErrorIndicator,
@@ -124,6 +127,4 @@ export {
   TypingIndicator,
   TypingIndicatorContainer,
   UploadProgressIndicator,
-  IconBadge,
-  IconSquare,
 };
