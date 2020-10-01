@@ -55,6 +55,19 @@ const FileTitle = styled.Text`
   ${({ theme }) => theme.message.file.title.css}
 `;
 
+const getFileSizeDisplayText = (size?: number | string) => {
+  if (!size) return;
+  if (typeof size === 'string') {
+    size = parseFloat(size);
+  }
+
+  if (size < 1000 * 1000) {
+    return `${Math.floor(size / 10) / 100} KB`;
+  }
+
+  return `${Math.floor(size / 10000) / 100} MB`;
+};
+
 const goToURL = (url?: string) => {
   if (!url) return;
   Linking.canOpenURL(url).then((supported) => {
@@ -121,7 +134,7 @@ const FileAttachment = <
         <AttachmentFileIcon mimeType={attachment.mime_type} />
         <FileDetails>
           <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
-          <FileSize>{attachment.file_size} KB</FileSize>
+          <FileSize>{getFileSizeDisplayText(attachment.file_size)}</FileSize>
         </FileDetails>
       </FileContainer>
       {attachment.actions?.length ? (
