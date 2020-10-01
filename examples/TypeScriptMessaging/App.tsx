@@ -22,7 +22,7 @@ import {
 enableScreens();
 
 type LocalAttachmentType = {};
-type LocalChannelType = { dummyProp: string };
+type LocalChannelType = {};
 type LocalCommandType = '';
 type LocalEventType = {};
 type LocalMessageType = {};
@@ -104,8 +104,8 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
         LocalUserType
       >
         client={chatClient}
-        style={theme}
         i18nInstance={streami18n}
+        style={theme}
       >
         <View style={{ height: '100%', padding: 10 }}>
           <ChannelList<
@@ -118,12 +118,12 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
             LocalUserType
           >
             filters={filters}
-            sort={sort}
-            options={options}
             onSelect={(channel) => {
               setChannel(channel);
               navigation.navigate('Channel');
             }}
+            options={options}
+            sort={sort}
           />
         </View>
       </Chat>
