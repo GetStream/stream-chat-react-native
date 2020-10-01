@@ -54,7 +54,12 @@ registerNativeHandlers({
 
       return {
         cancelled: false,
-        docs: res.map(({ name, uri }) => ({ name, uri })),
+        docs: res.map(({ name, size, type, uri }) => ({
+          name,
+          size,
+          type,
+          uri,
+        })),
       };
     } catch (err) {
       return {
