@@ -51,6 +51,20 @@ const goToURL = (url) => {
   });
 };
 
+const getFileSizeDisplayText = (size) => {
+  if (!size) return;
+
+  if (size < 1000) {
+    return `${size} KB`;
+  }
+
+  if (size < 1000 * 1000) {
+    return `${size / 1000} MB`;
+  }
+
+  return `${size / (1000 * 1000)} GB`;
+};
+
 const FileAttachment = ({
   actionHandler,
   alignment,
@@ -78,7 +92,7 @@ const FileAttachment = ({
         />
         <FileDetails>
           <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
-          <FileSize>{attachment.file_size} KB</FileSize>
+          <FileSize>{getFileSizeDisplayText(attachment.file_size)}</FileSize>
         </FileDetails>
       </FileContainer>
       {attachment.actions && attachment.actions.length ? (
