@@ -173,6 +173,7 @@ describe('Thread', () => {
 
     const snapshot = toJSON();
     snapshot.children[0].children[0].children[0].children[0].props.ListFooterComponent = null;
+    snapshot.children[0].children[0].children[0].props.ListFooterComponent = null;
 
     await waitFor(() => {
       expect(snapshot).toMatchSnapshot();
