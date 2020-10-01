@@ -138,11 +138,11 @@ const FS = require('fs'),
 const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
+  new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
   new RegExp(repoDir + '/examples/NativeMessaging/.*'),
-  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
-  new RegExp(repoDir + '/native-package/.*'),
-  new RegExp(repoDir + '/expo-package/node_modules/.*'),
+  new RegExp(repoDir + '/expo-package/.*'),
+  new RegExp(repoDir + '/native-package/node_modules/.*'),
   new RegExp(repoDir + '/node_modules/.*'),
   ],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
@@ -169,3 +169,23 @@ module.exports = {
     getPolyfills: getPolyfillHelper(),
   },
 };
+
+
+
+// /**
+//  * Metro configuration for React Native
+//  * https://github.com/facebook/react-native
+//  *
+//  * @format
+//  */
+
+// module.exports = {
+//   transformer: {
+//     getTransformOptions: async () => ({
+//       transform: {
+//         experimentalImportSupport: false,
+//         inlineRequires: false,
+//       },
+//     }),
+//   },
+// };

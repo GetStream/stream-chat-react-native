@@ -29,7 +29,10 @@ import {
   GroupType,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
@@ -149,7 +152,9 @@ export type MessageListProps<
    *
    * @param message A message object to open the thread upon.
    */
-  onThreadSelect?: (message: unknown) => void;
+  onThreadSelect?: (
+    message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
+  ) => void;
   /**
    * Use `setFlatListRef` to get access to ref to inner FlatList.
    *

@@ -139,6 +139,7 @@ const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
   new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
   new RegExp(repoDir + '/expo-package/.*'),
   new RegExp(repoDir + '/native-package/node_modules/.*'),
