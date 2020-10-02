@@ -8,7 +8,7 @@ export const useStreami18n = ({
   setTranslators,
 }: {
   setTranslators: React.Dispatch<React.SetStateAction<TranslationContextValue>>;
-  i18nInstance?: typeof Streami18n;
+  i18nInstance?: Streami18n;
 }) => {
   useEffect(() => {
     let streami18n: Streami18n;

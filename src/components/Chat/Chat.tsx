@@ -91,7 +91,7 @@ type Props<
    * </Chat>
    * ```
    */
-  i18nInstance?: typeof Streami18n;
+  i18nInstance?: Streami18n;
   logger?: (message?: string) => void;
   style?: ThemeType;
 };
