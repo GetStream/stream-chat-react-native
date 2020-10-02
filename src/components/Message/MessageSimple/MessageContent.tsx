@@ -27,7 +27,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 import { styled } from '../../../styles/styledComponents';
-import { themed } from '../../../styles/theme';
 import { emojiData } from '../../../utils/utils';
 
 import type { GestureResponderEvent } from 'react-native';
@@ -492,6 +491,4 @@ const MessageContent = <
   );
 };
 
-MessageContent.themePath = 'message.content';
-
-export default themed(MessageContent) as typeof MessageContent;
+export default MessageContent;

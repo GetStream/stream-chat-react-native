@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { Attachment } from 'stream-chat';
 
@@ -55,7 +54,7 @@ export type AttachmentActionsProps<
 const AttachmentActions = <At extends UnknownType = DefaultAttachmentType>({
   actionHandler,
   actions,
-}: AttachmentActionsProps<At> & { themePath?: string }) => (
+}: AttachmentActionsProps<At>) => (
   <Container testID='attachment-actions'>
     {actions?.map((action, index) => (
       <ActionButton
@@ -76,6 +75,4 @@ const AttachmentActions = <At extends UnknownType = DefaultAttachmentType>({
   </Container>
 );
 
-AttachmentActions.themePath = 'message.actions';
-
-export default themed(AttachmentActions) as typeof AttachmentActions;
+export default AttachmentActions;

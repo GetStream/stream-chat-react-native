@@ -2,7 +2,6 @@ import React from 'react';
 import { Image } from 'react-native';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const Container = styled.View`
   align-items: center;
@@ -17,7 +16,7 @@ const Container = styled.View`
   ${({ theme }) => theme.closeButton.container.css}
 `;
 
-const CloseButton: React.FC & { themePath: string } = () => (
+const CloseButton: React.FC = () => (
   <Container>
     <Image
       source={require('../../images/icons/close-round.png')}
@@ -26,6 +25,4 @@ const CloseButton: React.FC & { themePath: string } = () => (
   </Container>
 );
 
-CloseButton.themePath = 'closeButton';
-
-export default themed(CloseButton);
+export default CloseButton;

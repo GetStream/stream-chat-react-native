@@ -3,7 +3,6 @@ import React from 'react';
 import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const iconAddAttachment: ImageRequireSource = require('../../images/icons/plus-outline.png');
 
@@ -39,6 +38,4 @@ const AttachButton = ({
   </Container>
 );
 
-AttachButton.themePath = 'messageInput';
-
-export default themed(AttachButton);
+export default AttachButton;

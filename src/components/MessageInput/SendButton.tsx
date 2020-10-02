@@ -2,7 +2,6 @@ import React from 'react';
 
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
 
@@ -63,6 +62,4 @@ const SendButton = <
   );
 };
 
-SendButton.themePath = 'messageInput';
-
-export default themed(SendButton) as typeof SendButton;
+export default SendButton;

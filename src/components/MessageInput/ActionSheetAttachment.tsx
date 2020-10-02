@@ -118,8 +118,6 @@ const ActionSheet = ({
   );
 };
 
-ActionSheet.themePath = 'messageInput.actionSheet';
-
 type AttachmentActionSheetItemProps = {
   icon: ImageRequireSource;
   key: string | number;

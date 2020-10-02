@@ -6,7 +6,6 @@ import UploadProgressIndicator from './UploadProgressIndicator';
 import type { ImageUpload } from './hooks/useMessageDetailsForState';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
@@ -150,6 +149,4 @@ const ImageUploadPreview = ({
   ) : null;
 };
 
-ImageUploadPreview.themePath = 'messageInput.imageUploadPreview';
-
-export default themed(ImageUploadPreview);
+export default ImageUploadPreview;

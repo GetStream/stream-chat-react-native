@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType } from '../../types/types';
@@ -58,6 +57,4 @@ const CommandsItem = <Co extends string = DefaultCommandType>({
   </Container>
 );
 
-CommandsItem.themePath = 'messageInput.suggestions.command';
-
-export default themed(CommandsItem);
+export default CommandsItem;

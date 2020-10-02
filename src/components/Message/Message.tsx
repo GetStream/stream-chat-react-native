@@ -481,8 +481,4 @@ const DefaultMessage = <
   );
 };
 
-DefaultMessage.themePath = 'message';
-
-DefaultMessage.extraThemePaths = ['avatar'];
-
 export default DefaultMessage;

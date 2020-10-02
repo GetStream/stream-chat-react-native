@@ -6,7 +6,6 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { DateSeparator as DateSeparatorType } from './utils/insertDates';
 
@@ -112,6 +111,4 @@ const DateSeparator = <
   );
 };
 
-DateSeparator.themePath = 'messageList.dateSeparator';
-
-export default themed(DateSeparator) as typeof DateSeparator;
+export default DateSeparator;

@@ -3,7 +3,6 @@ import React from 'react';
 import Avatar from '../Avatar/Avatar';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultUserType } from '../../types/types';
@@ -45,6 +44,4 @@ const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   </Container>
 );
 
-MentionsItem.themePath = 'messageInput.suggestions.mention';
-
-export default themed(MentionsItem);
+export default MentionsItem;

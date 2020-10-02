@@ -3,7 +3,6 @@ import { Animated, GestureResponderEvent } from 'react-native';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -63,6 +62,4 @@ const MessageNotification = ({ onPress, showNotification = true }: Props) => {
   ) : null;
 };
 
-MessageNotification.themePath = 'messageList.messageNotification';
-
-export default themed(MessageNotification);
+export default MessageNotification;
