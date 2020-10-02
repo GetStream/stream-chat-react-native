@@ -101,12 +101,12 @@ export type FileAttachmentProps<
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
    */
-  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
+  AttachmentActions?: React.ComponentType<AttachmentActionsProps<At>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /**
    * Position of message in group - top, bottom, middle, single.
    *

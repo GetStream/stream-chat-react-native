@@ -148,7 +148,7 @@ export type MessageSimpleProps<
      *
      * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
      */
-    ActionSheet?: React.ComponentType<Partial<MessageActionSheetProps>>;
+    ActionSheet?: React.ComponentType<MessageActionSheetProps>;
     /**
      * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
      * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
@@ -163,29 +163,27 @@ export type MessageSimpleProps<
      * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
      */
-    AttachmentActions?: React.ComponentType<
-      Partial<AttachmentActionsProps<At>>
-    >;
+    AttachmentActions?: React.ComponentType<AttachmentActionsProps<At>>;
     /**
      * Custom UI component to display generic media type e.g. giphy, url preview etc
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
-    Card?: React.ComponentType<Partial<CardProps<At>>>;
+    Card?: React.ComponentType<CardProps<At>>;
     /**
      * Custom UI component to override default cover (between Header and Footer) of Card component.
      * Accepts the same props as Card component.
      */
-    CardCover?: React.ComponentType<Partial<CardProps<At>>>;
+    CardCover?: React.ComponentType<CardProps<At>>;
     /**
      * Custom UI component to override default Footer of Card component.
      * Accepts the same props as Card component.
      */
-    CardFooter?: React.ComponentType<Partial<CardProps<At>>>;
+    CardFooter?: React.ComponentType<CardProps<At>>;
     /**
      * Custom UI component to override default header of Card component.
      * Accepts the same props as Card component.
      */
-    CardHeader?: React.ComponentType<Partial<CardProps<At>>>;
+    CardHeader?: React.ComponentType<CardProps<At>>;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -199,9 +197,7 @@ export type MessageSimpleProps<
      * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx
      */
-    FileAttachmentGroup?: React.ComponentType<
-      Partial<FileAttachmentGroupProps<At>>
-    >;
+    FileAttachmentGroup?: React.ComponentType<FileAttachmentGroupProps<At>>;
     /**
      * Force alignment of message to left or right - 'left' | 'right'
      * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
@@ -215,12 +211,12 @@ export type MessageSimpleProps<
      * Custom UI component to display image attachments.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx
      */
-    Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
+    Gallery?: React.ComponentType<GalleryProps<At>>;
     /**
      * Custom UI component to display Giphy image.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
-    Giphy?: React.ComponentType<Partial<CardProps<At>>>;
+    Giphy?: React.ComponentType<CardProps<At>>;
     /** enable hiding reaction count from reaction picker  */
     hideReactionCount?: boolean;
     /** enable hiding reaction owners from reaction picker */
@@ -239,14 +235,14 @@ export type MessageSimpleProps<
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx
      * */
     MessageAvatar?: React.ComponentType<
-      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+      ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>
     > & { showAvatar?: boolean };
     /**
      * Custom UI component for message content
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx
      * */
     MessageContent?: React.ComponentType<
-      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+      ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>
     >;
     /**
      * Custom UI component for message status (delivered/read)
@@ -254,11 +250,11 @@ export type MessageSimpleProps<
      *
      * */
     MessageStatus?: React.ComponentType<
-      Partial<ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>>
+      ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>
     >;
     /** Custom UI component for message text */
     MessageText?: React.ComponentType<
-      Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
+      MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
     >;
     /**
      * Function that overrides default behavior when message is long pressed
@@ -333,7 +329,7 @@ export type MessageSimpleProps<
      * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx
      */
     ReactionList?: React.ComponentType<
-      Partial<ReactionListProps<At, Ch, Co, Me, Re, Us>>
+      ReactionListProps<At, Ch, Co, Me, Re, Us>
     >;
     showMessageStatus?: boolean;
     /**
@@ -365,7 +361,7 @@ export type MessageSimpleProps<
      * Custom UI component to display enriched url preview.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
      */
-    UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
+    UrlPreview?: React.ComponentType<CardProps<At>>;
   };
 
 /**

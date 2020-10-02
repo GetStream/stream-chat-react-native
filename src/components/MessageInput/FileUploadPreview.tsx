@@ -104,7 +104,7 @@ export type FileUploadPreviewProps = {
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
 };
 
 /**
