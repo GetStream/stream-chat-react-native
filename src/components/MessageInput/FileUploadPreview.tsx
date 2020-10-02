@@ -8,7 +8,6 @@ import type { FileUpload } from './hooks/useMessageDetailsForState';
 import FileIcon, { FileIconProps } from '../Attachment/FileIcon';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 const closeRound: ImageRequireSource = require('../../images/icons/close-round.png');
@@ -181,6 +180,4 @@ const FileUploadPreview = ({
   ) : null;
 };
 
-FileUploadPreview.themePath = 'messageInput.fileUploadPreview';
-
-export default themed(FileUploadPreview);
+export default FileUploadPreview;

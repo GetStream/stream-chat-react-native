@@ -4,7 +4,6 @@ import Spinner from '../Spinner/Spinner';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 const Container = styled.View`
   align-items: center;
@@ -29,7 +28,7 @@ export type LoadingProps = {
  *
  * @example ./LoadingIndicator.md
  */
-const LoadingIndicator: React.FC<LoadingProps> & { themePath: string } = ({
+const LoadingIndicator: React.FC<LoadingProps> = ({
   listType,
   loadingText,
 }) => {
@@ -55,6 +54,4 @@ const LoadingIndicator: React.FC<LoadingProps> & { themePath: string } = ({
   );
 };
 
-LoadingIndicator.themePath = 'loadingIndicator';
-
-export default themed(LoadingIndicator);
+export default LoadingIndicator;

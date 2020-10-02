@@ -48,8 +48,8 @@ const SuggestionsItem = styled.TouchableOpacity`
 `;
 
 const Title = styled.Text`
-  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
   font-weight: bold;
+  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.title.css};
 `;

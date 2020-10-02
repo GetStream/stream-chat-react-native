@@ -2,123 +2,18 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import TabButton from 'react-styleguidist/lib/rsg-components/TabButton';
-import { originalCSS } from '../styles/theme';
-import { defaultTheme } from '../styles/themeConstants';
-import merge from 'lodash/merge';
-import lodashGet from 'lodash/get';
-import lodashSet from 'lodash/set';
-import isPlainObject from 'lodash/isPlainObject';
-
-const StylesButton = (props) => {
-  const component = props.module[props.visibleName];
-  return component && component.themePath != null ? (
-    <TabButton {...props}>Styles</TabButton>
-  ) : null;
-};
-
-const StylesTab = (props) => {
-  const component = props.module[props.visibleName];
-  return component && component.themePath != null
-    ? formatDefaultTheme(component)
-    : null;
-};
-
-const formatDefaultTheme = (component) => {
-  const path = component.themePath;
-  const extraThemePaths = component.extraThemePaths || [];
-  let mainTheme = defaultTheme;
-  let mainThemeText = '';
-  if (path !== '') {
-    mainTheme = merge(
-      {},
-      lodashGet(defaultTheme, path),
-      lodashGet(originalCSS, path),
-    );
-    mainThemeText = `The path for this component in the full theme is "${path}" with the following styles:\n`;
-  }
-
-  console.log(originalCSS);
-  const extraThemes = {};
-  for (let i = 0; i < extraThemePaths.length; i++) {
-    lodashSet(
-      extraThemes,
-      extraThemePaths[i],
-      lodashGet(defaultTheme, extraThemePaths[i]),
-    );
-  }
-
-  const extraThemeText =
-    extraThemePaths.length === 0
-      ? ''
-      : `\n\nSome other items from the full theme that might be useful to set on this component:\n${JSON.stringify(
-          extraThemes,
-          null,
-          2,
-        )}`;
-
-  return (
-    <div
-      style={{
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-        whiteSpace: 'pre-wrap',
-      }}
-    >
-      {mainThemeText}
-      <table>
-        <thead />
-        <tbody>
-          <tr>
-            <td>{themeToReact(mainTheme)}</td>
-          </tr>
-        </tbody>
-      </table>
-      {`${extraThemeText}`}
-    </div>
-  );
-};
-
-const themeToReact = (v, k, prefix = '') => {
-  if (!isPlainObject(v)) {
-    return (
-      <div key={k}>
-        {prefix}
-        {k}: <strong>{v}</strong>
-      </div>
-    );
-  }
-  const children = [];
-  for (const k in v) {
-    children.push(themeToReact(v[k], k, prefix + '  '));
-  }
-  return (
-    <div className='str-chat-style-row'>
-      {k ? `${prefix}${k}: ` : null}
-      {children}
-    </div>
-  );
-};
 
 export default function Slot(
   { name, active, onlyActive, className, props = {} },
   { slots },
 ) {
-  let fills = slots[name];
+  const fills = slots[name];
   if (!fills) {
     throw new Error(
       `Slot "${name}" not found, available slots: ${Object.keys(slots).join(
         ', ',
       )}`,
     );
-  }
-
-  if (name === 'docsTabButtons') {
-    fills = [...fills, { id: 'rsg-styles', render: StylesButton }];
-  }
-
-  if (name === 'docsTabs') {
-    fills = [...fills, { id: 'rsg-styles', render: StylesTab }];
   }
 
   const rendered = fills

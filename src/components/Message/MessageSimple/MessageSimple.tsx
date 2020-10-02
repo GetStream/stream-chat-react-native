@@ -4,7 +4,6 @@ import DefaultMessageAvatar from './MessageAvatar';
 import DefaultMessageContent, { ForwardedMessageProps } from './MessageContent';
 import DefaultMessageStatus from './MessageStatus';
 
-import { themed } from '../../../styles/theme';
 import { styled } from '../../../styles/styledComponents';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 
@@ -448,6 +447,4 @@ const MessageSimple = <
   );
 };
 
-MessageSimple.themePath = 'message';
-
-export default themed(MessageSimple) as typeof MessageSimple;
+export default MessageSimple;

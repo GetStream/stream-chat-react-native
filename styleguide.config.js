@@ -279,7 +279,6 @@ module.exports = {
           options: {
             comments: true,
             plugins: [
-              'macros',
               'module-resolver',
               'react-native-web',
               'babel-plugin-styled-components',

@@ -9,8 +9,6 @@ import DefaultFileAttachment, { FileAttachmentProps } from './FileAttachment';
 import DefaultFileIcon, { FileIconProps } from './FileIcon';
 import DefaultGallery, { GalleryProps } from './Gallery';
 
-import { themed } from '../../styles/theme';
-
 import type { Attachment as AttachmentType } from 'stream-chat';
 
 import type { FileAttachmentGroupProps } from './FileAttachmentGroup';
@@ -109,7 +107,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
  * @example ./Attachment.md
  */
 const Attachment = <At extends UnknownType = DefaultAttachmentType>(
-  props: AttachmentProps<At> & { themePath?: string },
+  props: AttachmentProps<At>,
 ) => {
   const {
     actionHandler,
@@ -237,6 +235,4 @@ const Attachment = <At extends UnknownType = DefaultAttachmentType>(
   return null;
 };
 
-Attachment.themePath = 'attachment';
-
-export default themed(Attachment) as typeof Attachment;
+export default Attachment;

@@ -7,7 +7,6 @@ import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplay
 import Avatar from '../Avatar/Avatar';
 
 import { styled } from '../../styles/styledComponents';
-import { themed } from '../../styles/theme';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
@@ -25,9 +24,9 @@ import type {
 } from '../../types/types';
 
 const Container = styled.TouchableOpacity`
-  flex-direction: row;
   border-bottom-color: #ebebeb;
   border-bottom-width: 1px;
+  flex-direction: row;
   padding: 10px;
   ${({ theme }) => theme.channelPreview.container.css}
 `;
@@ -45,8 +44,8 @@ const DetailsTop = styled.View`
 `;
 
 const Title = styled.Text`
-  font-weight: bold;
   font-size: 14px;
+  font-weight: bold;
   ${({ theme }) => theme.channelPreview.title.css}
 `;
 
@@ -157,9 +156,4 @@ const ChannelPreviewMessenger = <
   );
 };
 
-ChannelPreviewMessenger.themePath = 'channelPreview';
-
-// TODO: remove HOC and use a theme context provider
-export default themed(
-  ChannelPreviewMessenger,
-) as typeof ChannelPreviewMessenger;
+export default ChannelPreviewMessenger;
