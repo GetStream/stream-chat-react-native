@@ -3,15 +3,19 @@ import { render, waitFor } from '@testing-library/react-native';
 
 import { MentionsItem } from '../MentionsItem';
 
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
+
 describe('MentionsItem', () => {
   it('should render MentionsItem with an avatar image with no name and no mention name', async () => {
     const { queryByTestId } = render(
-      <MentionsItem
-        item={{
-          image:
-            'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
-        }}
-      />,
+      <ThemeProvider>
+        <MentionsItem
+          item={{
+            image:
+              'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
+          }}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -23,7 +27,9 @@ describe('MentionsItem', () => {
 
   it('should render MentionsItem with no avatar image but a name', async () => {
     const { getByTestId, queryByTestId } = render(
-      <MentionsItem item={{ name: 'Test User' }} />,
+      <ThemeProvider>
+        <MentionsItem item={{ name: 'Test User' }} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -37,13 +43,15 @@ describe('MentionsItem', () => {
 
   it('should render MentionsItem with avatar image and name as id', async () => {
     const { getByTestId, queryByTestId } = render(
-      <MentionsItem
-        item={{
-          id: 'Test User',
-          image:
-            'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
-        }}
-      />,
+      <ThemeProvider>
+        <MentionsItem
+          item={{
+            id: 'Test User',
+            image:
+              'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg',
+          }}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

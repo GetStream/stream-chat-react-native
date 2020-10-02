@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { UploadProgressIndicator } from '../UploadProgressIndicator';
 
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../../utils/utils';
 
 describe('UploadProgressIndicator', () => {
@@ -10,10 +11,12 @@ describe('UploadProgressIndicator', () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
-      <UploadProgressIndicator
-        action={action}
-        type={ProgressIndicatorTypes.IN_PROGRESS}
-      ></UploadProgressIndicator>,
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -33,10 +36,12 @@ describe('UploadProgressIndicator', () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
-      <UploadProgressIndicator
-        action={action}
-        type={ProgressIndicatorTypes.RETRY}
-      ></UploadProgressIndicator>,
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          type={ProgressIndicatorTypes.RETRY}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -56,11 +61,13 @@ describe('UploadProgressIndicator', () => {
     const action = jest.fn();
 
     const { queryByTestId, toJSON } = render(
-      <UploadProgressIndicator
-        action={action}
-        active
-        type={ProgressIndicatorTypes.IN_PROGRESS}
-      ></UploadProgressIndicator>,
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          active
+          type={ProgressIndicatorTypes.IN_PROGRESS}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -82,11 +89,13 @@ describe('UploadProgressIndicator', () => {
     const action = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <UploadProgressIndicator
-        action={action}
-        active
-        type={ProgressIndicatorTypes.RETRY}
-      ></UploadProgressIndicator>,
+      <ThemeProvider>
+        <UploadProgressIndicator
+          action={action}
+          active
+          type={ProgressIndicatorTypes.RETRY}
+        ></UploadProgressIndicator>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

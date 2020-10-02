@@ -5,6 +5,7 @@ import { generateFileUploadPreview } from 'mock-builders/generator/attachment';
 
 import { FileUploadPreview } from '../FileUploadPreview';
 
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 import { FileState } from '../../../utils/utils';
 
 describe('FileUploadPreview', () => {
@@ -18,11 +19,13 @@ describe('FileUploadPreview', () => {
     const retryUpload = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <FileUploadPreview
-        fileUploads={fileUploads}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -50,14 +53,16 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <FileUploadPreview
-        fileUploads={fileUploads.map((file, index) => ({
-          ...file,
-          id: `${index}`,
-        }))}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads.map((file, index) => ({
+            ...file,
+            id: `${index}`,
+          }))}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     const snapshot = toJSON();
@@ -77,11 +82,13 @@ describe('FileUploadPreview', () => {
     const retryUpload = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <FileUploadPreview
-        fileUploads={fileUploads}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -107,14 +114,16 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <FileUploadPreview
-        fileUploads={fileUploads.map((file, index) => ({
-          ...file,
-          id: `${index}`,
-        }))}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads.map((file, index) => ({
+            ...file,
+            id: `${index}`,
+          }))}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     const snapshot = toJSON();
@@ -134,11 +143,13 @@ describe('FileUploadPreview', () => {
     const retryUpload = jest.fn();
 
     const { getAllByTestId, queryAllByTestId, rerender, toJSON } = render(
-      <FileUploadPreview
-        fileUploads={fileUploads}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -171,14 +182,16 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <FileUploadPreview
-        fileUploads={fileUploads.map((file, index) => ({
-          ...file,
-          id: `${index}`,
-        }))}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads.map((file, index) => ({
+            ...file,
+            id: `${index}`,
+          }))}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     const snapshot = toJSON();
@@ -198,11 +211,13 @@ describe('FileUploadPreview', () => {
     const retryUpload = jest.fn();
 
     const { queryAllByTestId, rerender, toJSON } = render(
-      <FileUploadPreview
-        fileUploads={fileUploads}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -221,14 +236,16 @@ describe('FileUploadPreview', () => {
     });
 
     rerender(
-      <FileUploadPreview
-        fileUploads={fileUploads.map((file, index) => ({
-          ...file,
-          id: `${index}`,
-        }))}
-        removeFile={removeFile}
-        retryUpload={retryUpload}
-      />,
+      <ThemeProvider>
+        <FileUploadPreview
+          fileUploads={fileUploads.map((file, index) => ({
+            ...file,
+            id: `${index}`,
+          }))}
+          removeFile={removeFile}
+          retryUpload={retryUpload}
+        />
+      </ThemeProvider>,
     );
 
     const snapshot = toJSON();
