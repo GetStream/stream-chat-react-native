@@ -24,7 +24,7 @@ import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext
  *
  * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
  */
-const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
+export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
   behavior = Platform.OS === 'ios' ? 'padding' : 'position',
   children,
   contentContainerStyle,
@@ -236,5 +236,3 @@ const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
       );
   }
 };
-
-export default KeyboardCompatibleView;

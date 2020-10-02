@@ -24,7 +24,7 @@ import { KeyboardProvider } from '../../contexts/keyboardContext/KeyboardContext
  *
  * Following piece of code has been mostly copied from KeyboardAvoidingView component, with few additional tweaks.
  */
-class KeyboardCompatibleView extends React.Component<
+export class KeyboardCompatibleView extends React.Component<
   KeyboardAvoidingViewProps,
   { appState: AppStateStatus; bottom: number; isKeyboardOpen: boolean }
 > {
@@ -262,5 +262,3 @@ class KeyboardCompatibleView extends React.Component<
     }
   }
 }
-
-export default KeyboardCompatibleView;

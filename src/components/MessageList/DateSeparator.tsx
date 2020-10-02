@@ -74,7 +74,7 @@ export type DateSeparatorProps<
 /**
  * @example ./DateSeparator.md
  */
-const DateSeparator = <
+export const DateSeparator = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -110,5 +110,3 @@ const DateSeparator = <
     </Container>
   );
 };
-
-export default DateSeparator;

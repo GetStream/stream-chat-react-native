@@ -5,7 +5,9 @@ export type EmptyStateProps = {
   listType?: 'channel' | 'message' | 'default';
 };
 
-const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => {
+export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
+  listType,
+}) => {
   switch (listType) {
     case 'channel':
       return (
@@ -17,5 +19,3 @@ const EmptyStateIndicator: React.FC<EmptyStateProps> = ({ listType }) => {
       return <Text>No items exist</Text>;
   }
 };
-
-export default EmptyStateIndicator;

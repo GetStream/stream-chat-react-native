@@ -1,13 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { TextInput } from 'react-native';
 
-import type {
-  NativeSyntheticEvent,
-  TextInputProps,
-  TextInputSelectionChangeEventData,
-  TextInput as TextInputType,
-} from 'react-native';
-
 import {
   isSuggestionUser,
   Suggestion,
@@ -18,6 +11,13 @@ import {
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 import { isMentionTrigger } from '../../utils/utils';
+
+import type {
+  NativeSyntheticEvent,
+  TextInputProps,
+  TextInputSelectionChangeEventData,
+  TextInput as TextInputType,
+} from 'react-native';
 
 import type {
   DefaultCommandType,
@@ -80,7 +80,7 @@ export type AutoCompleteInputProps<
   value: string;
 };
 
-const AutoCompleteInput = <
+export const AutoCompleteInput = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 >({
@@ -311,5 +311,3 @@ const AutoCompleteInput = <
     />
   );
 };
-
-export default AutoCompleteInput;

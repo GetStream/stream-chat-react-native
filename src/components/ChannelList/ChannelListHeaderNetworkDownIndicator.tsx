@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled } from '../../styles/styledComponents';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import { styled } from '../../styles/styledComponents';
 
 const Container = styled.View`
   align-items: center;
@@ -20,7 +20,7 @@ const ErrorText = styled.Text`
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
 `;
 
-const ChannelListHeaderNetworkDownIndicator = () => {
+export const ChannelListHeaderNetworkDownIndicator = () => {
   const { t } = useTranslationContext();
 
   return (
@@ -29,5 +29,3 @@ const ChannelListHeaderNetworkDownIndicator = () => {
     </Container>
   );
 };
-
-export default ChannelListHeaderNetworkDownIndicator;

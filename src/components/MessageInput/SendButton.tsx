@@ -42,7 +42,7 @@ export type SendButtonProps = {
  *
  * @example ./SendButton.md
  */
-const SendButton = <
+export const SendButton = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -61,5 +61,3 @@ const SendButton = <
     </Container>
   );
 };
-
-export default SendButton;

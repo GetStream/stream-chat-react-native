@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import CommandsItem from '../CommandsItem';
+import { CommandsItem } from '../CommandsItem';
 
 const args = 'a string list of args';
 const description = 'test description';

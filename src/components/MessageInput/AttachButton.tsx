@@ -29,7 +29,7 @@ export type AttachButtonProps = {
  *
  * @example ./AttachButton.md
  */
-const AttachButton = ({
+export const AttachButton = ({
   disabled = false,
   handleOnPress,
 }: AttachButtonProps) => (
@@ -37,5 +37,3 @@ const AttachButton = ({
     <AttachButtonIcon source={iconAddAttachment} />
   </Container>
 );
-
-export default AttachButton;

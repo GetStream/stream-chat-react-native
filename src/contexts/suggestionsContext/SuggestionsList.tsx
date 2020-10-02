@@ -8,8 +8,8 @@ import {
   Suggestions,
 } from './SuggestionsContext';
 
-import CommandsItem from '../../components/AutoCompleteInput/CommandsItem';
-import MentionsItem from '../../components/AutoCompleteInput/MentionsItem';
+import { CommandsItem } from '../../components/AutoCompleteInput/CommandsItem';
+import { MentionsItem } from '../../components/AutoCompleteInput/MentionsItem';
 import { styled } from '../../styles/styledComponents';
 
 import type {
@@ -72,7 +72,7 @@ const isString = <
   component: SuggestionComponentType<Co, Us>,
 ): component is string => typeof component === 'string';
 
-type Props<
+export type SuggestionsListProps<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
@@ -86,7 +86,7 @@ type Props<
   width: number | string;
 };
 
-const SuggestionsList = <
+export const SuggestionsList = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 >({
@@ -98,7 +98,7 @@ const SuggestionsList = <
   suggestions: { data, onSelect },
   suggestionsTitle,
   width,
-}: Props<Co, Us>) => {
+}: SuggestionsListProps<Co, Us>) => {
   const renderItem = ({ item }: { item: Suggestion<Co, Us> }) => {
     let render;
 
@@ -145,5 +145,3 @@ const SuggestionsList = <
     </Wrapper>
   );
 };
-
-export default SuggestionsList;

@@ -30,12 +30,12 @@ const UnreadCount = styled.Text`
   ${({ theme }) => theme.iconBadge.unreadCount.css};
 `;
 
-type Props = {
+export type IconBadgeProps = {
   unread: number;
   showNumber?: boolean;
 };
 
-export const IconBadge: React.FC<Props> = (props) => {
+export const IconBadge: React.FC<IconBadgeProps> = (props) => {
   const { children, showNumber, unread } = props;
 
   return (

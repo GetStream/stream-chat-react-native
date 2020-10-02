@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import SendButton from '../SendButton';
+import { SendButton } from '../SendButton';
 
 import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
 

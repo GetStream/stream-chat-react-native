@@ -1,130 +1,72 @@
-import Attachment from './Attachment/Attachment';
-import AttachmentActions from './Attachment/AttachmentActions';
-import Card from './Attachment/Card';
-import FileAttachment from './Attachment/FileAttachment';
-import FileAttachmentGroup from './Attachment/FileAttachmentGroup';
-import FileIcon from './Attachment/FileIcon';
-import Gallery from './Attachment/Gallery';
+export * from './Attachment/Attachment';
+export * from './Attachment/AttachmentActions';
+export * from './Attachment/Card';
+export * from './Attachment/FileAttachment';
+export * from './Attachment/FileAttachmentGroup';
+export * from './Attachment/FileIcon';
+export * from './Attachment/Gallery';
 
-import AutoCompleteInput from './AutoCompleteInput/AutoCompleteInput';
-import CommandsItem from './AutoCompleteInput/CommandsItem';
-import MentionsItem from './AutoCompleteInput/MentionsItem';
+export * from './AutoCompleteInput/AutoCompleteInput';
+export * from './AutoCompleteInput/CommandsItem';
+export * from './AutoCompleteInput/MentionsItem';
 
-import Avatar from './Avatar/Avatar';
+export * from './Avatar/Avatar';
 
-import Channel from './Channel/Channel';
+export * from './Channel/Channel';
 
-import ChannelList from './ChannelList/ChannelList';
-import ChannelListFooterLoadingIndicator from './ChannelList/ChannelListFooterLoadingIndicator';
-import ChannelListHeaderErrorIndicator from './ChannelList/ChannelListHeaderErrorIndicator';
-import ChannelListHeaderNetworkDownIndicator from './ChannelList/ChannelListHeaderNetworkDownIndicator';
-import ChannelListMessenger from './ChannelList/ChannelListMessenger';
+export * from './ChannelList/ChannelList';
+export * from './ChannelList/ChannelListFooterLoadingIndicator';
+export * from './ChannelList/ChannelListHeaderErrorIndicator';
+export * from './ChannelList/ChannelListHeaderNetworkDownIndicator';
+export * from './ChannelList/ChannelListMessenger';
 
-import ChannelPreview from './ChannelPreview/ChannelPreview';
-import ChannelPreviewMessenger from './ChannelPreview/ChannelPreviewMessenger';
+export * from './ChannelPreview/ChannelPreview';
+export * from './ChannelPreview/ChannelPreviewMessenger';
 
-import Chat from './Chat/Chat';
+export * from './Chat/Chat';
 
-import CloseButton from './CloseButton/CloseButton';
+export * from './CloseButton/CloseButton';
 
-import EmptyStateIndicator from './Indicators/EmptyStateIndicator';
-import LoadingErrorIndicator from './Indicators/LoadingErrorIndicator';
-import LoadingIndicator from './Indicators/LoadingIndicator';
+export * from './Indicators/EmptyStateIndicator';
+export * from './Indicators/LoadingErrorIndicator';
+export * from './Indicators/LoadingIndicator';
 
-import KeyboardCompatibleView from './KeyboardCompatibleView/KeyboardCompatibleView';
+export * from './KeyboardCompatibleView/KeyboardCompatibleView';
 
-import Message from './Message/Message';
-import MessageAvatar from './Message/MessageSimple/MessageAvatar';
-import MessageContent from './Message/MessageSimple/MessageContent';
-import MessageReplies from './Message/MessageSimple/MessageReplies';
-import MessageSimple from './Message/MessageSimple/MessageSimple';
-import MessageStatus from './Message/MessageSimple/MessageStatus';
-import MessageTextContainer from './Message/MessageSimple/MessageTextContainer';
-import { renderText } from './Message/MessageSimple/utils/renderText';
+export * from './Message/Message';
+export * from './Message/MessageSimple/MessageAvatar';
+export * from './Message/MessageSimple/MessageContent';
+export * from './Message/MessageSimple/MessageReplies';
+export * from './Message/MessageSimple/MessageSimple';
+export * from './Message/MessageSimple/MessageStatus';
+export * from './Message/MessageSimple/MessageTextContainer';
+export * from './Message/MessageSimple/utils/renderText';
 
-import ActionSheetAttachment from './MessageInput/ActionSheetAttachment';
-import AttachButton from './MessageInput/AttachButton';
-import FileUploadPreview from './MessageInput/FileUploadPreview';
-import ImageUploadPreview from './MessageInput/ImageUploadPreview';
-import MessageInput from './MessageInput/MessageInput';
-import SendButton from './MessageInput/SendButton';
-import UploadProgressIndicator from './MessageInput/UploadProgressIndicator';
+export * from './MessageInput/ActionSheetAttachment';
+export * from './MessageInput/AttachButton';
+export * from './MessageInput/FileUploadPreview';
+export * from './MessageInput/ImageUploadPreview';
+export * from './MessageInput/MessageInput';
+export * from './MessageInput/SendButton';
+export * from './MessageInput/UploadProgressIndicator';
 
-import DateSeparator from './MessageList/DateSeparator';
-import MessageList from './MessageList/MessageList';
-import MessageNotification from './MessageList/MessageNotification';
-import MessageSystem from './MessageList/MessageSystem';
-import TypingIndicator from './MessageList/TypingIndicator';
-import TypingIndicatorContainer from './MessageList/TypingIndicatorContainer';
+export * from './MessageList/DateSeparator';
+export * from './MessageList/MessageList';
+export * from './MessageList/MessageNotification';
+export * from './MessageList/MessageSystem';
+export * from './MessageList/TypingIndicator';
+export * from './MessageList/TypingIndicatorContainer';
 
-import ReactionList from './Reaction/ReactionList';
-import ReactionPicker from './Reaction/ReactionPicker';
-import ReactionPickerWrapper from './Reaction/ReactionPickerWrapper';
-import { renderReactions } from './Reaction/utils/renderReactions';
+export * from './Reaction/ReactionList';
+export * from './Reaction/ReactionPicker';
+export * from './Reaction/ReactionPickerWrapper';
+export * from './Reaction/utils/renderReactions';
 
-import Spinner from './Spinner/Spinner';
+export * from './Spinner/Spinner';
 
-import SuggestionsList from '../contexts/suggestionsContext/SuggestionsList';
+export * from '../contexts/suggestionsContext/SuggestionsList';
 
-import Thread from './Thread/Thread';
+export * from './Thread/Thread';
 
-import { IconBadge } from './IconBadge';
-import { IconSquare } from './IconSquare';
-
-export {
-  ActionSheetAttachment,
-  AttachButton,
-  Attachment,
-  AttachmentActions,
-  AutoCompleteInput,
-  Avatar,
-  Card,
-  Channel,
-  ChannelList,
-  ChannelListFooterLoadingIndicator,
-  ChannelListHeaderErrorIndicator,
-  ChannelListHeaderNetworkDownIndicator,
-  ChannelListMessenger,
-  ChannelPreview,
-  ChannelPreviewMessenger,
-  Chat,
-  CloseButton,
-  CommandsItem,
-  DateSeparator,
-  EmptyStateIndicator,
-  FileAttachment,
-  FileAttachmentGroup,
-  FileIcon,
-  FileUploadPreview,
-  Gallery,
-  IconBadge,
-  IconSquare,
-  ImageUploadPreview,
-  KeyboardCompatibleView,
-  LoadingErrorIndicator,
-  LoadingIndicator,
-  MentionsItem,
-  Message,
-  MessageAvatar,
-  MessageContent,
-  MessageInput,
-  MessageList,
-  MessageNotification,
-  MessageReplies,
-  MessageSimple,
-  MessageStatus,
-  MessageSystem,
-  MessageTextContainer,
-  ReactionList,
-  ReactionPicker,
-  ReactionPickerWrapper,
-  renderReactions,
-  renderText,
-  SendButton,
-  Spinner,
-  SuggestionsList,
-  Thread,
-  TypingIndicator,
-  TypingIndicatorContainer,
-  UploadProgressIndicator,
-};
+export * from './IconBadge';
+export * from './IconSquare';

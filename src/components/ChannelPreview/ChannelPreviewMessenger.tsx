@@ -4,7 +4,7 @@ import truncate from 'lodash/truncate';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
 
-import Avatar from '../Avatar/Avatar';
+import { Avatar } from '../Avatar/Avatar';
 
 import { styled } from '../../styles/styledComponents';
 
@@ -106,7 +106,7 @@ export type ChannelPreviewMessengerProps<
  *
  * @example ./ChannelPreviewMessenger.md
  */
-const ChannelPreviewMessenger = <
+export const ChannelPreviewMessenger = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -155,5 +155,3 @@ const ChannelPreviewMessenger = <
     </Container>
   );
 };
-
-export default ChannelPreviewMessenger;

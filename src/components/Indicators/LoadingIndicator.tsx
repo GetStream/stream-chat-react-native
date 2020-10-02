@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Spinner from '../Spinner/Spinner';
+import { Spinner } from '../Spinner/Spinner';
 
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
@@ -28,7 +28,7 @@ export type LoadingProps = {
  *
  * @example ./LoadingIndicator.md
  */
-const LoadingIndicator: React.FC<LoadingProps> = ({
+export const LoadingIndicator: React.FC<LoadingProps> = ({
   listType,
   loadingText,
 }) => {
@@ -53,5 +53,3 @@ const LoadingIndicator: React.FC<LoadingProps> = ({
     </Container>
   );
 };
-
-export default LoadingIndicator;

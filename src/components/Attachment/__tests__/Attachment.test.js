@@ -2,8 +2,8 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import uuidv4 from 'uuid/v4';
 
-import Attachment from '../Attachment';
-import AttachmentActions from '../AttachmentActions';
+import { Attachment } from '../Attachment';
+import { AttachmentActions } from '../AttachmentActions';
 
 import {
   generateAttachmentAction,

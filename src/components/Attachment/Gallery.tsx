@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
-import CloseButton from '../CloseButton/CloseButton';
+import { CloseButton } from '../CloseButton/CloseButton';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
@@ -116,7 +116,7 @@ export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
  *
  * @example ./Gallery.md
  */
-const Gallery = <At extends UnknownType = DefaultAttachmentType>({
+export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
   alignment,
   images,
 }: GalleryProps<At>) => {
@@ -264,5 +264,3 @@ const Gallery = <At extends UnknownType = DefaultAttachmentType>({
     </>
   );
 };
-
-export default Gallery;

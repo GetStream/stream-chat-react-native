@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import Avatar from '../Avatar';
+import { Avatar } from '../Avatar';
 
 describe('Avatar', () => {
   it('should render an image with no name and default size', async () => {

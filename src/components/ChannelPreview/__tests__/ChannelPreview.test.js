@@ -13,9 +13,9 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelPreview from '../ChannelPreview';
+import { ChannelPreview } from '../ChannelPreview';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 const ChannelPreviewUIComponent = (props) => (
   <>

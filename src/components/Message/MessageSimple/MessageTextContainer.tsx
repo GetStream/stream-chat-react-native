@@ -6,6 +6,7 @@ import { renderText } from './utils/renderText';
 import { styled, ThemeContext } from '../../../styles/styledComponents';
 
 import type { MessageSimpleProps } from './MessageSimple';
+
 import type {
   Alignment,
   GroupType,
@@ -139,7 +140,7 @@ export type MessageTextContainerProps<
   >;
 };
 
-const MessageTextContainer = <
+export const MessageTextContainer = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -190,5 +191,3 @@ const MessageTextContainer = <
     </TextContainer>
   );
 };
-
-export default MessageTextContainer;

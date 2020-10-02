@@ -65,7 +65,7 @@ export type MessageRepliesProps<
   openThread: () => void;
 };
 
-const MessageReplies = <
+export const MessageReplies = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -106,5 +106,3 @@ const MessageReplies = <
     </Container>
   );
 };
-
-export default MessageReplies;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import MentionsItem from '../MentionsItem';
+import { MentionsItem } from '../MentionsItem';
 
 describe('MentionsItem', () => {
   it('should render MentionsItem with an avatar image with no name and no mention name', async () => {

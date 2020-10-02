@@ -12,10 +12,10 @@ import { generateChannel } from 'mock-builders/generator/channel';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import MessageInput from '../MessageInput';
+import { MessageInput } from '../MessageInput';
 
-import Channel from '../../Channel/Channel';
-import Chat from '../../Chat/Chat';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();

@@ -58,7 +58,7 @@ export type AvatarProps = {
  *
  * @example ./Avatar.md
  */
-const Avatar: React.FC<AvatarProps> = ({
+export const Avatar: React.FC<AvatarProps> = ({
   image,
   name,
   size = BASE_AVATAR_SIZE,
@@ -93,5 +93,3 @@ const Avatar: React.FC<AvatarProps> = ({
     </AvatarContainer>
   );
 };
-
-export default Avatar;

@@ -28,9 +28,9 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelList from '../ChannelList';
+import { ChannelList } from '../ChannelList';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 /**
  * We are gonna use following custom UI components for preview and list.

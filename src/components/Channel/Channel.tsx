@@ -16,10 +16,10 @@ import {
 } from 'stream-chat';
 import uuidv4 from 'uuid/v4';
 
-import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
-import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
-import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
-import KeyboardCompatibleViewDefault from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
+import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
+import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 
 import {
   ChannelContextValue,
@@ -36,12 +36,12 @@ import {
   ThreadProvider,
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
 import type { Message as MessageType } from '../MessageList/utils/insertDates';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -170,7 +170,7 @@ export type ChannelProps<
  *
  * @example ./Channel.md
  */
-const Channel = <
+export const Channel = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -871,5 +871,3 @@ const Channel = <
     </KeyboardCompatibleView>
   );
 };
-
-export default Channel;

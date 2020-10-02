@@ -16,7 +16,7 @@ const Container = styled.View`
   ${({ theme }) => theme.closeButton.container.css}
 `;
 
-const CloseButton: React.FC = () => (
+export const CloseButton: React.FC = () => (
   <Container>
     <Image
       source={require('../../images/icons/close-round.png')}
@@ -24,5 +24,3 @@ const CloseButton: React.FC = () => (
     />
   </Container>
 );
-
-export default CloseButton;

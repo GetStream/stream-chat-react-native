@@ -13,10 +13,10 @@ import {
 import { generateStaticUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Thread from '../Thread';
+import { Thread } from '../Thread';
 
-import Channel from '../../Channel/Channel';
-import Chat from '../../Chat/Chat';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 
 import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';

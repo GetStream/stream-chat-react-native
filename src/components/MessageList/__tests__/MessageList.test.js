@@ -20,10 +20,10 @@ import {
 import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import MessageList from '../MessageList';
+import { MessageList } from '../MessageList';
 
-import Channel from '../../Channel/Channel';
-import Chat from '../../Chat/Chat';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 
 import {
   ChatContext,

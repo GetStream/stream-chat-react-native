@@ -9,19 +9,26 @@ import {
 } from 'react-native';
 import uuidv4 from 'uuid/v4';
 
-import DefaultDateSeparator, { DateSeparatorProps } from './DateSeparator';
-import MessageNotification from './MessageNotification';
-import DefaultMessageSystem, { MessageSystemProps } from './MessageSystem';
-import DefaultTypingIndicator, {
+import {
+  DateSeparatorProps,
+  DateSeparator as DefaultDateSeparator,
+} from './DateSeparator';
+import { MessageNotification } from './MessageNotification';
+import {
+  MessageSystem as DefaultMessageSystem,
+  MessageSystemProps,
+} from './MessageSystem';
+import {
+  TypingIndicator as DefaultTypingIndicator,
   TypingIndicatorProps,
 } from './TypingIndicator';
-import TypingIndicatorContainer from './TypingIndicatorContainer';
+import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 
 import { useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 import { isDateSeparator, MessageOrDate } from './utils/insertDates';
 
-import DefaultMessage from '../Message/Message';
+import { Message as DefaultMessage } from '../Message/Message';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -190,7 +197,7 @@ export type MessageListProps<
  *
  * @example ./MessageList.md
  */
-const MessageList = <
+export const MessageList = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -442,5 +449,3 @@ const MessageList = <
     </>
   );
 };
-
-export default MessageList;

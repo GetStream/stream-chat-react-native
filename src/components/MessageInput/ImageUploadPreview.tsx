@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, ImageRequireSource } from 'react-native';
 
-import UploadProgressIndicator from './UploadProgressIndicator';
+import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import type { ImageUpload } from './hooks/useMessageDetailsForState';
 
@@ -90,7 +90,7 @@ export type ImageUploadPreviewProps = {
  *
  * @example ./ImageUploadPreview.md
  */
-const ImageUploadPreview = ({
+export const ImageUploadPreview = ({
   imageUploads,
   removeImage,
   retryUpload,
@@ -148,5 +148,3 @@ const ImageUploadPreview = ({
     </Container>
   ) : null;
 };
-
-export default ImageUploadPreview;

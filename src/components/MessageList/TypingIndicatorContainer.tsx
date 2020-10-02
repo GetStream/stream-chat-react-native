@@ -25,7 +25,7 @@ const Container = styled.View`
   ${({ theme }) => theme.messageList.typingIndicatorContainer.css}
 `;
 
-const TypingIndicatorContainer = <
+export const TypingIndicatorContainer = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -52,5 +52,3 @@ const TypingIndicatorContainer = <
 
   return <Container testID='typing-indicator-container'>{children}</Container>;
 };
-
-export default TypingIndicatorContainer;

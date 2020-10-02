@@ -9,7 +9,7 @@ import {
 } from 'mock-builders/generator/message';
 import { generateStaticUser } from 'mock-builders/generator/user';
 
-import MessageTextContainer from '../MessageTextContainer';
+import { MessageTextContainer } from '../MessageTextContainer';
 
 import { defaultTheme } from '../../../../styles/themeConstants';
 

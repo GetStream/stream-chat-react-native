@@ -67,7 +67,7 @@ export type ActionSheetProps = {
   styles?: ActionSheetStyles;
 };
 
-const ActionSheet = ({
+export const ActionSheetAttachment = ({
   closeAttachActionSheet,
   pickFile,
   pickImage,
@@ -136,5 +136,3 @@ const AttachmentActionSheetItem = ({
     <ActionSheetButtonText>{text}</ActionSheetButtonText>
   </ActionSheetButtonContainer>
 );
-
-export default ActionSheet;

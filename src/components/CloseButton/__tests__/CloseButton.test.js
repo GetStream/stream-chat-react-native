@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import CloseButton from '../CloseButton';
+import { CloseButton } from '../CloseButton';
 
 describe('CloseButton', () => {
   it('should render a CloseButton', async () => {

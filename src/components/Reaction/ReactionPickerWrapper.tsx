@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { Dimensions, TouchableOpacity } from 'react-native';
 
-import ReactionPickerDefault from './ReactionPicker';
+import { ReactionPicker as ReactionPickerDefault } from './ReactionPicker';
 
 import { emojiData as emojiDataDefault } from '../../utils/utils';
 
@@ -23,7 +23,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-type Props<
+export type ReactionPickerWrapperProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -76,7 +76,7 @@ type Props<
   >;
 };
 
-const ReactionPickerWrapper = <
+export const ReactionPickerWrapper = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -85,7 +85,9 @@ const ReactionPickerWrapper = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<
+    ReactionPickerWrapperProps<At, Ch, Co, Ev, Me, Re, Us>
+  >,
 ) => {
   const {
     alignment,
@@ -170,5 +172,3 @@ const ReactionPickerWrapper = <
     </TouchableOpacity>
   );
 };
-
-export default ReactionPickerWrapper;

@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { generateImageUploadPreview } from 'mock-builders/generator/attachment';
 
-import ImageUploadPreview from '../ImageUploadPreview';
+import { ImageUploadPreview } from '../ImageUploadPreview';
 
 import { FileState } from '../../../utils/utils';
 

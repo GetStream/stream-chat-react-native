@@ -8,7 +8,7 @@ import {
 } from 'mock-builders/generator/message';
 import { generateStaticUser } from 'mock-builders/generator/user';
 
-import MessageAvatar from '../MessageAvatar';
+import { MessageAvatar } from '../MessageAvatar';
 
 import { defaultTheme } from '../../../../styles/themeConstants';
 

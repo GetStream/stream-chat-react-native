@@ -7,9 +7,9 @@ import { useMockedApis } from 'mock-builders/api/useMockedApis';
 import { generateChannel } from 'mock-builders/generator/channel';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelListMessenger from '../ChannelListMessenger';
+import { ChannelListMessenger } from '../ChannelListMessenger';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 let mockChannels;
 let chatClient;

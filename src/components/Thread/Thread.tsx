@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 
-import DefaultMessage from '../Message/Message';
-import DefaultMessageInput, {
+import { Message as DefaultMessage } from '../Message/Message';
+import {
+  MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import DefaultMessageList, {
+import {
+  MessageList as DefaultMessageList,
   MessageListProps,
 } from '../MessageList/MessageList';
 
@@ -109,7 +111,7 @@ export type ThreadProps<
  *
  * @example ./Thread.md
  */
-const Thread = <
+export const Thread = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -204,5 +206,3 @@ const Thread = <
     </React.Fragment>
   );
 };
-
-export default Thread;

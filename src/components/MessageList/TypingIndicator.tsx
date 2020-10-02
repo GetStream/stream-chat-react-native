@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useTypingString } from './hooks/useTypingString';
 
-import DefaultAvatar, { AvatarProps } from '../Avatar/Avatar';
+import { AvatarProps, Avatar as DefaultAvatar } from '../Avatar/Avatar';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -40,7 +40,7 @@ export type TypingIndicatorProps = {
   Avatar?: React.ComponentType<Partial<AvatarProps>>;
 };
 
-const TypingIndicator = <
+export const TypingIndicator = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -74,5 +74,3 @@ const TypingIndicator = <
     </Container>
   );
 };
-
-export default TypingIndicator;

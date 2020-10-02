@@ -10,7 +10,7 @@ import {
 import { generateMessage } from 'mock-builders/generator/message';
 import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 
-import MessageReplies from '../MessageReplies';
+import { MessageReplies } from '../MessageReplies';
 
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 import { defaultTheme } from '../../../../styles/themeConstants';

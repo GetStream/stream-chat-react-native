@@ -43,7 +43,7 @@ export type CommandsItemProps<Co extends string = DefaultCommandType> = {
 /**
  * @example ./CommandsItem.md
  */
-const CommandsItem = <Co extends string = DefaultCommandType>({
+export const CommandsItem = <Co extends string = DefaultCommandType>({
   item: { args, description, name },
 }: CommandsItemProps<Co>) => (
   <Container>
@@ -56,5 +56,3 @@ const CommandsItem = <Co extends string = DefaultCommandType>({
     </CommandDescription>
   </Container>
 );
-
-export default CommandsItem;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { FlatList, ImageRequireSource } from 'react-native';
 
-import UploadProgressIndicator from './UploadProgressIndicator';
+import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import type { FileUpload } from './hooks/useMessageDetailsForState';
 
-import FileIcon, { FileIconProps } from '../Attachment/FileIcon';
+import { FileIcon, FileIconProps } from '../Attachment/FileIcon';
 
 import { styled } from '../../styles/styledComponents';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
@@ -113,7 +113,7 @@ export type FileUploadPreviewProps = {
  *
  * @example ./FileUploadPreview.md
  */
-const FileUploadPreview = ({
+export const FileUploadPreview = ({
   AttachmentFileIcon = FileIcon,
   fileUploads,
   removeFile,
@@ -179,5 +179,3 @@ const FileUploadPreview = ({
     </Container>
   ) : null;
 };
-
-export default FileUploadPreview;

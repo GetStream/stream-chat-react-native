@@ -7,7 +7,7 @@ import {
 } from 'mock-builders/generator/message';
 import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 
-import DateSeparator from '../DateSeparator';
+import { DateSeparator } from '../DateSeparator';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';

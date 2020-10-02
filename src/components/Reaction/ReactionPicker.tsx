@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View } from 'react-native';
 
-import Avatar from '../Avatar/Avatar';
+import { Avatar } from '../Avatar/Avatar';
 import { styled } from '../../styles/styledComponents';
 import { emojiData } from '../../utils/utils';
 
@@ -110,7 +110,7 @@ export type ReactionPickerProps<
 };
 
 // TODO: change from using Modal to reanimated view to save on rendering and performance
-const ReactionPicker = <
+export const ReactionPicker = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -187,5 +187,3 @@ const ReactionPicker = <
       </Container>
     </Modal>
   ) : null;
-
-export default ReactionPicker;

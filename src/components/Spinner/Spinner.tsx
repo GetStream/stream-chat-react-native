@@ -19,7 +19,7 @@ const Circle = styled(AnimatedView)`
 /**
  * @example ./Spinner.md
  */
-const Spinner: React.FC = () => {
+export const Spinner: React.FC = () => {
   const rotateValue = useRef(new Animated.Value(0));
 
   const loop = Animated.loop(
@@ -51,5 +51,3 @@ const Spinner: React.FC = () => {
     />
   );
 };
-
-export default Spinner;

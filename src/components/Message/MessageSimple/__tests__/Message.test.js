@@ -15,11 +15,12 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Message from '../../Message';
-import Chat from '../../../Chat/Chat';
-import Channel from '../../../Channel/Channel';
-import MessageInput from '../../../MessageInput/MessageInput';
-import MessageList from '../../../MessageList/MessageList';
+import { Message } from '../../Message';
+
+import { Chat } from '../../../Chat/Chat';
+import { Channel } from '../../../Channel/Channel';
+import { MessageInput } from '../../../MessageInput/MessageInput';
+import { MessageList } from '../../../MessageList/MessageList';
 
 describe('Message', () => {
   let channel;

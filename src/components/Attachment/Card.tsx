@@ -101,7 +101,7 @@ export type CardProps<
  *
  * @example ./Card.md
  */
-const Card = <At extends UnknownType = DefaultAttachmentType>(
+export const Card = <At extends UnknownType = DefaultAttachmentType>(
   props: CardProps<At>,
 ) => {
   const {
@@ -151,5 +151,3 @@ const Card = <At extends UnknownType = DefaultAttachmentType>(
     </Container>
   );
 };
-
-export default Card;

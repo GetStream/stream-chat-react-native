@@ -11,9 +11,11 @@ import { generateReaction } from 'mock-builders/generator/reaction';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Message from '../../Message';
-import Chat from '../../../Chat/Chat';
-import Channel from '../../../Channel/Channel';
+import { Message } from '../../Message';
+
+import { Chat } from '../../../Chat/Chat';
+import { Channel } from '../../../Channel/Channel';
+
 import {
   MessageContentProvider,
   useMessageContentContext,

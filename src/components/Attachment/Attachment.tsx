@@ -1,13 +1,17 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import DefaultAttachmentActions, {
+import {
   AttachmentActionsProps,
+  AttachmentActions as DefaultAttachmentActions,
 } from './AttachmentActions';
-import DefaultCard, { CardProps } from './Card';
-import DefaultFileAttachment, { FileAttachmentProps } from './FileAttachment';
-import DefaultFileIcon, { FileIconProps } from './FileIcon';
-import DefaultGallery, { GalleryProps } from './Gallery';
+import { CardProps, Card as DefaultCard } from './Card';
+import {
+  FileAttachment as DefaultFileAttachment,
+  FileAttachmentProps,
+} from './FileAttachment';
+import { FileIcon as DefaultFileIcon, FileIconProps } from './FileIcon';
+import { Gallery as DefaultGallery, GalleryProps } from './Gallery';
 
 import type { Attachment as AttachmentType } from 'stream-chat';
 
@@ -106,7 +110,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
  *
  * @example ./Attachment.md
  */
-const Attachment = <At extends UnknownType = DefaultAttachmentType>(
+export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
   props: AttachmentProps<At>,
 ) => {
   const {
@@ -234,5 +238,3 @@ const Attachment = <At extends UnknownType = DefaultAttachmentType>(
 
   return null;
 };
-
-export default Attachment;

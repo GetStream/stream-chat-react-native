@@ -208,11 +208,9 @@ export type FileIconProps = {
   size?: number;
 };
 
-const FileIcon: React.FC<FileIconProps> = ({ mimeType, size }) => (
+export const FileIcon: React.FC<FileIconProps> = ({ mimeType, size }) => (
   <Icon
     source={mimeTypeToIcon(mimeType)}
     style={size ? { height: size, width: size } : {}}
   />
 );
-
-export default FileIcon;

@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import MessageNotification from '../MessageNotification';
+import { MessageNotification } from '../MessageNotification';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';

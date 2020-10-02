@@ -1,10 +1,11 @@
 import React from 'react';
 
-import Avatar from '../../Avatar/Avatar';
+import { Avatar } from '../../Avatar/Avatar';
 
 import { styled } from '../../../styles/styledComponents';
 
 import type { ForwardedMessageProps } from './MessageContent';
+
 import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
@@ -29,7 +30,7 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
-const MessageAvatar = <
+export const MessageAvatar = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -63,5 +64,3 @@ const MessageAvatar = <
     </Container>
   );
 };
-
-export default MessageAvatar;

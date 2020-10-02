@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import ChannelPreviewMessenger from './ChannelPreviewMessenger';
+import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
 import { useLatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
@@ -43,7 +43,7 @@ export type ChannelPreviewProps<
  * This component manages state for the ChannelPreviewMessenger UI component and receives
  * all props from the ChannelListMessenger component.
  */
-const ChannelPreview = <
+const UnMemoizedChannelPreview = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -126,4 +126,7 @@ const areEqual = <
   return previousLast === nextLast;
 };
 
-export default React.memo(ChannelPreview, areEqual) as typeof ChannelPreview;
+export const ChannelPreview = React.memo(
+  UnMemoizedChannelPreview,
+  areEqual,
+) as typeof UnMemoizedChannelPreview;

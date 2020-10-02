@@ -1,7 +1,8 @@
 import React from 'react';
-import { styled } from '../../styles/styledComponents';
 
-import Spinner from '../Spinner/Spinner';
+import { Spinner } from '../Spinner/Spinner';
+
+import { styled } from '../../styles/styledComponents';
 
 const Container = styled.View`
   align-items: center;
@@ -10,10 +11,8 @@ const Container = styled.View`
   ${({ theme }) => theme.channelListFooterLoadingIndicator.container.css}
 `;
 
-const ChannelListFooterLoadingIndicator = () => (
+export const ChannelListFooterLoadingIndicator = () => (
   <Container>
     <Spinner />
   </Container>
 );
-
-export default ChannelListFooterLoadingIndicator;

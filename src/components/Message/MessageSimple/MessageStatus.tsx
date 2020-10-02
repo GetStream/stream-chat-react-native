@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Avatar from '../../Avatar/Avatar';
+import { Avatar } from '../../Avatar/Avatar';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { styled } from '../../../styles/styledComponents';
@@ -70,7 +70,7 @@ const StatusContainer = styled.View`
   width: 20px;
 `;
 
-const MessageStatus = <
+export const MessageStatus = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -140,5 +140,3 @@ const MessageStatus = <
     </StatusContainer>
   );
 };
-
-export default MessageStatus;

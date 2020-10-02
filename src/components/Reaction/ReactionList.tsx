@@ -151,7 +151,7 @@ const TouchableWrapper = styled.View<{ alignment: Alignment }>`
 /**
  * @example ./ReactionList.md
  */
-const ReactionList = <
+export const ReactionList = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -200,5 +200,3 @@ const ReactionList = <
     )}
   </TouchableWrapper>
 );
-
-export default ReactionList;

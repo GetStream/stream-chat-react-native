@@ -82,7 +82,7 @@ export type MessageSystemProps<
  * they can attach a message with that update. That message will be available
  * in message list as (type) system message.
  */
-const MessageSystem = <
+export const MessageSystem = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -118,5 +118,3 @@ const MessageSystem = <
     </Container>
   );
 };
-
-export default MessageSystem;

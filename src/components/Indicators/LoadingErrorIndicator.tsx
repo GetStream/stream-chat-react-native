@@ -30,7 +30,7 @@ export type LoadingErrorProps = {
   retry?: () => Promise<void>;
 };
 
-const LoadingErrorIndicator: React.FC<LoadingErrorProps> = ({
+export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = ({
   listType,
   retry = () => null,
 }) => {
@@ -62,5 +62,3 @@ const LoadingErrorIndicator: React.FC<LoadingErrorProps> = ({
       );
   }
 };
-
-export default LoadingErrorIndicator;

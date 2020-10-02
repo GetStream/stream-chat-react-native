@@ -1,17 +1,20 @@
 import React from 'react';
 import { Linking, TouchableOpacity } from 'react-native';
 
+import {
+  AttachmentActionsProps,
+  AttachmentActions as DefaultAttachmentActions,
+} from './AttachmentActions';
+
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
 import { styled } from '../../styles/styledComponents';
 
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from './Attachment';
-import DefaultAttachmentActions, {
-  AttachmentActionsProps,
-} from './AttachmentActions';
-import DefaultFileIcon from './FileIcon';
+import { FileIcon as DefaultFileIcon } from './FileIcon';
 import type { FileIconProps } from './FileIcon';
+
 import type {
   Alignment,
   GroupType,
@@ -113,7 +116,7 @@ export type FileAttachmentProps<
   groupStyle?: GroupType;
 };
 
-const FileAttachment = <
+export const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType
 >({
   actionHandler,
@@ -150,5 +153,3 @@ const FileAttachment = <
     </TouchableOpacity>
   );
 };
-
-export default FileAttachment;

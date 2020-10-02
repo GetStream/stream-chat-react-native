@@ -16,12 +16,12 @@ const StyledView = styled.View`
   ${({ theme }) => theme.iconSquare.container.css};
 `;
 
-type Props = {
+export type IconSquareProps = {
   icon: ImageRequireSource;
   onPress?: (event: GestureResponderEvent) => void;
 };
 
-export const IconSquare: React.FC<Props> = ({ icon, onPress }) =>
+export const IconSquare: React.FC<IconSquareProps> = ({ icon, onPress }) =>
   onPress ? (
     <StyledTouchableOpacity onPress={onPress} testID='icon-square'>
       <Image source={icon} style={{ height: 15, width: 15 }} />

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Avatar from '../Avatar/Avatar';
+import { Avatar } from '../Avatar/Avatar';
 
 import { styled } from '../../styles/styledComponents';
 
@@ -35,7 +35,7 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
 /**
  * @example ./MentionsItem.md
  */
-const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
+export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   item: { id, image, name },
 }: MentionsItemProps<Us>) => (
   <Container>
@@ -43,5 +43,3 @@ const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
     <Name testID='mentions-item-name'>{name || id}</Name>
   </Container>
 );
-
-export default MentionsItem;

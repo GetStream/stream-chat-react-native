@@ -1,17 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 
-import DefaultActionSheet from './MessageActionSheet';
-import DefaultMessageReplies, { MessageRepliesProps } from './MessageReplies';
-import MessageTextContainer from './MessageTextContainer';
+import { MessageActionSheet as DefaultActionSheet } from './MessageActionSheet';
+import {
+  MessageReplies as DefaultMessageReplies,
+  MessageRepliesProps,
+} from './MessageReplies';
+import { MessageTextContainer } from './MessageTextContainer';
 
-import DefaultAttachment from '../../Attachment/Attachment';
-import DefaultFileAttachment from '../../Attachment/FileAttachment';
-import DefaultFileAttachmentGroup from '../../Attachment/FileAttachmentGroup';
-import DefaultGallery from '../../Attachment/Gallery';
-import DefaultReactionList, {
+import { Attachment as DefaultAttachment } from '../../Attachment/Attachment';
+import { FileAttachment as DefaultFileAttachment } from '../../Attachment/FileAttachment';
+import { FileAttachmentGroup as DefaultFileAttachmentGroup } from '../../Attachment/FileAttachmentGroup';
+import { Gallery as DefaultGallery } from '../../Attachment/Gallery';
+import {
+  ReactionList as DefaultReactionList,
   LatestReactions,
 } from '../../Reaction/ReactionList';
-import ReactionPickerWrapper from '../../Reaction/ReactionPickerWrapper';
+import { ReactionPickerWrapper } from '../../Reaction/ReactionPickerWrapper';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { MessageContentProvider } from '../../../contexts/messageContentContext/MessageContentContext';
@@ -162,7 +166,7 @@ export type ForwardedMessageProps<
 /**
  * Child of MessageSimple that displays a message's content
  */
-const MessageContent = <
+export const MessageContent = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -490,5 +494,3 @@ const MessageContent = <
     </MessageContentProvider>
   );
 };
-
-export default MessageContent;

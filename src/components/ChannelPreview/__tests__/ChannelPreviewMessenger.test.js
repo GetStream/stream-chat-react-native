@@ -11,9 +11,9 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelPreviewMessenger from '../ChannelPreviewMessenger';
+import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();

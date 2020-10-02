@@ -1,9 +1,9 @@
 import React from 'react';
+
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
 import type { GestureResponderEvent } from 'react-native';
-
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -26,7 +26,7 @@ export type HeaderErrorProps = {
   onPress?: (event: GestureResponderEvent) => Promise<void> | null;
 };
 
-const ChannelListHeaderErrorIndicator = ({
+export const ChannelListHeaderErrorIndicator = ({
   onPress = () => null,
 }: HeaderErrorProps) => {
   const { t } = useTranslationContext();
@@ -39,5 +39,3 @@ const ChannelListHeaderErrorIndicator = ({
     </Container>
   );
 };
-
-export default ChannelListHeaderErrorIndicator;

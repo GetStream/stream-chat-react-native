@@ -4,9 +4,9 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ReactionPickerWrapper from '../ReactionPickerWrapper';
+import { ReactionPickerWrapper } from '../ReactionPickerWrapper';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 import { emojiData } from '../../../utils/utils';
 

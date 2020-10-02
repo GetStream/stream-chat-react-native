@@ -23,7 +23,7 @@ const MessageNotificationText = styled.Text`
   ${({ theme }) => theme.messageList.messageNotification.text.css}
 `;
 
-type Props = {
+export type MessageNotificationProps = {
   /** onPress handler */
   onPress: (event: GestureResponderEvent) => void;
   /** If we should show the notification or not */
@@ -33,7 +33,10 @@ type Props = {
 /**
  * @example ./MessageNotification.md
  */
-const MessageNotification = ({ onPress, showNotification = true }: Props) => {
+export const MessageNotification = ({
+  onPress,
+  showNotification = true,
+}: MessageNotificationProps) => {
   const { t } = useTranslationContext();
 
   const opacity = useRef(new Animated.Value(0)).current;
@@ -61,5 +64,3 @@ const MessageNotification = ({ onPress, showNotification = true }: Props) => {
     </Animated.View>
   ) : null;
 };
-
-export default MessageNotification;

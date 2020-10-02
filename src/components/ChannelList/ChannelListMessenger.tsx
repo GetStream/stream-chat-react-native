@@ -1,13 +1,13 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 
-import ChannelListFooterLoadingIndicator from './ChannelListFooterLoadingIndicator';
-import ChannelListHeaderErrorIndicator from './ChannelListHeaderErrorIndicator';
-import ChannelListHeaderNetworkDownIndicator from './ChannelListHeaderNetworkDownIndicator';
-import ChannelPreview from '../ChannelPreview/ChannelPreview';
-import EmptyStateIndicatorDefault from '../Indicators/EmptyStateIndicator';
-import LoadingErrorIndicatorDefault from '../Indicators/LoadingErrorIndicator';
-import LoadingIndicatorDefault from '../Indicators/LoadingIndicator';
+import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
+import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
+import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
+import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
+import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
+import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
 
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 
@@ -106,7 +106,7 @@ export type ChannelListMessengerProps<
  *
  * @example ./ChannelListMessenger.md
  */
-const ChannelListMessenger = <
+export const ChannelListMessenger = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -196,5 +196,3 @@ const ChannelListMessenger = <
     return renderChannels();
   }
 };
-
-export default ChannelListMessenger;

@@ -51,7 +51,9 @@ export type AttachmentActionsProps<
  *
  * @example ./AttachmentActions.md
  */
-const AttachmentActions = <At extends UnknownType = DefaultAttachmentType>({
+export const AttachmentActions = <
+  At extends UnknownType = DefaultAttachmentType
+>({
   actionHandler,
   actions,
 }: AttachmentActionsProps<At>) => (
@@ -74,5 +76,3 @@ const AttachmentActions = <At extends UnknownType = DefaultAttachmentType>({
     ))}
   </Container>
 );
-
-export default AttachmentActions;

@@ -121,7 +121,7 @@ export type MessageActionSheetProps = {
   threadList?: boolean;
 };
 
-const MessageActionSheet = React.forwardRef(
+export const MessageActionSheet = React.forwardRef(
   (props: MessageActionSheetProps, actionSheetRef) => {
     const {
       actionSheetStyles,
@@ -252,5 +252,3 @@ const MessageActionSheet = React.forwardRef(
 );
 
 MessageActionSheet.displayName = 'messageActionSheet';
-
-export default MessageActionSheet;

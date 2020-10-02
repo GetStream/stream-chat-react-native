@@ -16,18 +16,24 @@ import {
   UserResponse,
 } from 'stream-chat';
 
-import ActionSheetAttachmentDefault, {
+import {
+  ActionSheetAttachment as ActionSheetAttachmentDefault,
   ActionSheetProps,
   ActionSheetStyles,
 } from './ActionSheetAttachment';
-import AttachButtonDefault, { AttachButtonProps } from './AttachButton';
-import FileUploadPreviewDefault, {
+import {
+  AttachButton as AttachButtonDefault,
+  AttachButtonProps,
+} from './AttachButton';
+import {
+  FileUploadPreview as FileUploadPreviewDefault,
   FileUploadPreviewProps,
 } from './FileUploadPreview';
-import ImageUploadPreviewDefault, {
+import {
+  ImageUploadPreview as ImageUploadPreviewDefault,
   ImageUploadPreviewProps,
 } from './ImageUploadPreview';
-import SendButtonDefault, { SendButtonProps } from './SendButton';
+import { SendButton as SendButtonDefault, SendButtonProps } from './SendButton';
 
 import {
   FileUpload,
@@ -36,7 +42,8 @@ import {
 } from './hooks/useMessageDetailsForState';
 import { generateRandomId } from './utils/generateRandomId';
 
-import AutoCompleteInput, {
+import {
+  AutoCompleteInput,
   AutoCompleteInputProps,
 } from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
@@ -273,7 +280,7 @@ export type MessageInputProps<
  *
  * @example ./MessageInput.md
  */
-const MessageInput = <
+export const MessageInput = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -1044,5 +1051,3 @@ const MessageInput = <
     renderInputContainer()
   );
 };
-
-export default MessageInput;

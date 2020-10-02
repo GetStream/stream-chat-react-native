@@ -62,7 +62,7 @@ export type UploadProgressIndicatorProps = {
   type?: 'in_progress' | 'retry';
 };
 
-const UploadProgressIndicator = ({
+export const UploadProgressIndicator = ({
   action,
   active,
   children,
@@ -95,5 +95,3 @@ const UploadProgressIndicator = ({
       </Container>
     </View>
   );
-
-export default UploadProgressIndicator;

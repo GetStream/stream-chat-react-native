@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Keyboard, TouchableOpacity } from 'react-native';
 
-import DefaultMessageSimple, {
+import {
+  MessageSimple as DefaultMessageSimple,
   MessageSimpleProps,
 } from './MessageSimple/MessageSimple';
 
@@ -33,7 +34,7 @@ import type {
 
 import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
 import type { FileIconProps } from '../Attachment/FileIcon';
-import type { Message } from '../MessageList/utils/insertDates';
+import type { Message as InsertDatesMessage } from '../MessageList/utils/insertDates';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -393,7 +394,7 @@ export type MessageProps<
   /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Style object for action sheet (used to message actions).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
@@ -424,7 +425,9 @@ export type MessageProps<
    *
    * @param message A message object to open the thread upon.
    */
-  onThreadSelect?: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  onThreadSelect?: (
+    message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
   /**
    * A list of users that have read this message
    **/
@@ -441,7 +444,7 @@ export type MessageProps<
  *
  * @example ./Message.md
  */
-const DefaultMessage = <
+export const Message = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -480,5 +483,3 @@ const DefaultMessage = <
     />
   );
 };
-
-export default DefaultMessage;

@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { findNodeHandle, Keyboard, View } from 'react-native';
 
-import SuggestionsList from './SuggestionsList';
+import { SuggestionsList } from './SuggestionsList';
 
 import { getDisplayName } from '../utils/getDisplayName';
 

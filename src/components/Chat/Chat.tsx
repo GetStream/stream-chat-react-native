@@ -120,7 +120,7 @@ type Props<
  *
  * @example ./Chat.md
  */
-const Chat = <
+export const Chat = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -181,5 +181,3 @@ const Chat = <
     </ChatProvider>
   );
 };
-
-export default Chat;

@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useRef, useState } from 'react';
 
-import ChannelListMessenger, {
+import {
+  ChannelListMessenger,
   ChannelListMessengerProps,
 } from './ChannelListMessenger';
 
@@ -256,7 +257,7 @@ const DEFAULT_SORT = {};
  *
  * @example ./ChannelList.md
  */
-const ChannelList = <
+export const ChannelList = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -376,5 +377,3 @@ const ChannelList = <
     />
   );
 };
-
-export default ChannelList;

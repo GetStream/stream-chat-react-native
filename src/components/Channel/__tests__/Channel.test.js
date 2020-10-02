@@ -11,10 +11,10 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Channel from '../Channel';
+import { Channel } from '../Channel';
 
-import Attachment from '../../Attachment/Attachment';
-import Chat from '../../Chat/Chat';
+import { Attachment } from '../../Attachment/Attachment';
+import { Chat } from '../../Chat/Chat';
 
 import {
   ChannelContext,

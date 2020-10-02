@@ -6,7 +6,7 @@ import dispatchConnectionChangedEvent from 'mock-builders/event/connectionChange
 import dispatchConnectionRecoveredEvent from 'mock-builders/event/connectionRecovered';
 import { getTestClient } from 'mock-builders/mock';
 
-import Chat from '../Chat';
+import { Chat } from '../Chat';
 
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';

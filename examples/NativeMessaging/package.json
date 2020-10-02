@@ -22,7 +22,7 @@
     "react-native-reanimated": "1.13.1",
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
-    "stream-chat-react-native": "^",
+    "stream-chat-react-native": "link:../../native-package",
     "stream-chat": "2.4.0"
   },
   "devDependencies": {

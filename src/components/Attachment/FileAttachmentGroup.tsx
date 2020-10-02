@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Attachment, { ActionHandler } from './Attachment';
+import { ActionHandler, Attachment } from './Attachment';
 
 import { styled } from '../../styles/styledComponents';
 
@@ -9,6 +9,7 @@ import type { Attachment as AttachmentType } from 'stream-chat';
 import type { AttachmentActionsProps } from './AttachmentActions';
 import type { FileAttachmentProps } from './FileAttachment';
 import type { FileIconProps } from './FileIcon';
+
 import type {
   Alignment,
   GroupType,
@@ -55,7 +56,9 @@ export type FileAttachmentGroupProps<
   messageId?: string;
 };
 
-const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(
+export const FileAttachmentGroup = <
+  At extends UnknownType = DefaultAttachmentType
+>(
   props: FileAttachmentGroupProps<At>,
 ) => {
   const {
@@ -100,5 +103,3 @@ const FileAttachmentGroup = <At extends UnknownType = DefaultAttachmentType>(
     </Container>
   );
 };
-
-export default FileAttachmentGroup;

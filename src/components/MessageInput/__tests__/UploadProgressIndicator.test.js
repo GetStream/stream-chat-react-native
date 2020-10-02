@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import UploadProgressIndicator from '../UploadProgressIndicator';
+import { UploadProgressIndicator } from '../UploadProgressIndicator';
 
 import { ProgressIndicatorTypes } from '../../../utils/utils';
 

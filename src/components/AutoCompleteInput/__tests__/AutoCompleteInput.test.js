@@ -7,9 +7,9 @@ import { generateChannel } from 'mock-builders/generator/channel';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import AutoCompleteInput from '../AutoCompleteInput';
+import { AutoCompleteInput } from '../AutoCompleteInput';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { ACITriggerSettings } from '../../../utils/utils';

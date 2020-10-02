@@ -1,8 +1,11 @@
 import React from 'react';
 
-import DefaultMessageAvatar from './MessageAvatar';
-import DefaultMessageContent, { ForwardedMessageProps } from './MessageContent';
-import DefaultMessageStatus from './MessageStatus';
+import { MessageAvatar as DefaultMessageAvatar } from './MessageAvatar';
+import {
+  MessageContent as DefaultMessageContent,
+  ForwardedMessageProps,
+} from './MessageContent';
+import { MessageStatus as DefaultMessageStatus } from './MessageStatus';
 
 import { styled } from '../../../styles/styledComponents';
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
@@ -12,11 +15,18 @@ import type {
   TouchableOpacityProps,
 } from 'react-native';
 
+import type { MessageActionSheetProps } from './MessageActionSheet';
+import type { MessageTextProps } from './MessageTextContainer';
+
+import type { ActionProps, MessageProps } from '../Message';
+
 import type { AttachmentActionsProps } from '../../Attachment/AttachmentActions';
 import type { CardProps } from '../../Attachment/Card';
 import type { FileAttachmentProps } from '../../Attachment/FileAttachment';
 import type { FileAttachmentGroupProps } from '../../Attachment/FileAttachmentGroup';
 import type { GalleryProps } from '../../Attachment/Gallery';
+import type { ReactionListProps } from '../../Reaction/ReactionList';
+
 import type { Message } from '../../../components/MessageList/utils/insertDates';
 import type {
   Alignment,
@@ -24,10 +34,6 @@ import type {
   MessagesContextValue,
 } from '../../../contexts/messagesContext/MessagesContext';
 import type { TDateTimeParserInput } from '../../../contexts/translationContext/TranslationContext';
-import type { ActionProps, MessageProps } from '../Message';
-import type { MessageActionSheetProps } from './MessageActionSheet';
-import type { MessageTextProps } from './MessageTextContainer';
-import type { ReactionListProps } from '../../Reaction/ReactionList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -368,7 +374,7 @@ export type MessageSimpleProps<
  *
  * @example ./MessageSimple.md
  */
-const MessageSimple = <
+export const MessageSimple = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -446,5 +452,3 @@ const MessageSimple = <
     </Container>
   );
 };
-
-export default MessageSimple;
