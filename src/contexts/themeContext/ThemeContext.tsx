@@ -17,7 +17,7 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = ({
   const modifiedTheme = defaultTheme;
   if (style) {
     const formattedStyle = replaceCssShorthand(style);
-    merge(modifiedTheme, defaultTheme, formattedStyle);
+    merge(modifiedTheme, formattedStyle);
   }
 
   return (
