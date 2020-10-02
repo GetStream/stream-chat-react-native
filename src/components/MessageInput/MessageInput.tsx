@@ -135,7 +135,7 @@ export type MessageInputProps<
    *
    * Defaults to and accepts same props as: [ActionSheetAttachment](https://getstream.github.io/stream-chat-react-native/#actionsheetattachment)
    */
-  ActionSheetAttachment?: React.ComponentType<Partial<ActionSheetProps>>;
+  ActionSheetAttachment?: React.ComponentType<ActionSheetProps>;
   /**
    * Style object for actionsheet (used for option to choose file attachment or photo attachment).
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
@@ -152,12 +152,12 @@ export type MessageInputProps<
    *
    * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
    */
-  AttachButton?: React.ComponentType<Partial<AttachButtonProps>>;
+  AttachButton?: React.ComponentType<AttachButtonProps>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment in preview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -197,12 +197,12 @@ export type MessageInputProps<
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
    */
-  FileUploadPreview?: React.ComponentType<Partial<FileUploadPreviewProps>>;
+  FileUploadPreview?: React.ComponentType<FileUploadPreviewProps>;
   /** If component should have file picker functionality */
   hasFilePicker?: boolean;
   /** If component should have image picker functionality */
   hasImagePicker?: boolean;
-  ImageUploadPreview?: React.ComponentType<Partial<ImageUploadPreviewProps>>;
+  ImageUploadPreview?: React.ComponentType<ImageUploadPreviewProps>;
   /** Initial value to set on input */
   initialValue?: string;
   /**
@@ -210,33 +210,31 @@ export type MessageInputProps<
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AutoCompleteInput/AutoCompleteInput.tsx
    */
   Input?: React.ComponentType<
-    Partial<
-      AutoCompleteInputProps<Co, Us> & {
-        _pickFile: () => Promise<void>;
-        _pickImage: () => Promise<void>;
-        _removeFile: FileUploadPreviewProps['removeFile'];
-        _removeImage: ImageUploadPreviewProps['removeImage'];
-        _uploadFile: FileUploadPreviewProps['retryUpload'];
-        _uploadImage: ImageUploadPreviewProps['retryUpload'];
-        appendText: (newText: string) => void;
-        closeAttachActionSheet: () => void;
-        disabled: boolean;
-        getUsers: () => UserResponse<Us>[];
-        handleOnPress: () => Promise<void>;
-        isValidMessage: () => boolean;
-        onSelectItem: (item: UserResponse<Us>) => void;
-        sendMessage: () => Promise<void>;
-        setInputBoxContainerRef: (ref: View | null) => void;
-        updateMessage: () => Promise<void>;
-        uploadNewFile: (file: {
-          name: string;
-          size?: number | string;
-          type?: string;
-          uri?: string;
-        }) => Promise<void>;
-        uploadNewImage: (image: { uri?: string }) => Promise<void>;
-      }
-    >
+    AutoCompleteInputProps<Co, Us> & {
+      _pickFile: () => Promise<void>;
+      _pickImage: () => Promise<void>;
+      _removeFile: FileUploadPreviewProps['removeFile'];
+      _removeImage: ImageUploadPreviewProps['removeImage'];
+      _uploadFile: FileUploadPreviewProps['retryUpload'];
+      _uploadImage: ImageUploadPreviewProps['retryUpload'];
+      appendText: (newText: string) => void;
+      closeAttachActionSheet: () => void;
+      disabled: boolean;
+      getUsers: () => UserResponse<Us>[];
+      handleOnPress: () => Promise<void>;
+      isValidMessage: () => boolean;
+      onSelectItem: (item: UserResponse<Us>) => void;
+      sendMessage: () => Promise<void>;
+      setInputBoxContainerRef: (ref: View | null) => void;
+      updateMessage: () => Promise<void>;
+      uploadNewFile: (file: {
+        name: string;
+        size?: number | string;
+        type?: string;
+        uri?: string;
+      }) => Promise<void>;
+      uploadNewImage: (image: { uri?: string }) => Promise<void>;
+    }
   >;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles?: number;
@@ -253,7 +251,7 @@ export type MessageInputProps<
    *
    * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
    */
-  SendButton?: React.ComponentType<Partial<SendButtonProps>>;
+  SendButton?: React.ComponentType<SendButtonProps>;
   /**
    * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
    */

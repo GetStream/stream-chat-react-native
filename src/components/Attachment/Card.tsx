@@ -83,17 +83,17 @@ export type CardProps<
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  Cover?: React.ComponentType<Partial<CardProps<At>>>;
+  Cover?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  Footer?: React.ComponentType<Partial<CardProps<At>>>;
+  Footer?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  Header?: React.ComponentType<Partial<CardProps<At>>>;
+  Header?: React.ComponentType<CardProps<At>>;
 };
 
 /**

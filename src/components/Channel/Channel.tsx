@@ -142,18 +142,16 @@ export type ChannelProps<
    * />
    * ```
    */
-  KeyboardCompatibleView?: React.ComponentType<
-    Partial<KeyboardAvoidingViewProps>
-  >;
+  KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
   keyboardVerticalOffset?: number;
   /**
    * Custom loading error indicator to override the Stream default
    */
-  LoadingErrorIndicator?: React.ComponentType<Partial<LoadingErrorProps>>;
+  LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
   /**
    * Custom loading indicator to override the Stream default
    */
-  LoadingIndicator?: React.ComponentType<Partial<LoadingProps>>;
+  LoadingIndicator?: React.ComponentType<LoadingProps>;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)

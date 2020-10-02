@@ -135,7 +135,7 @@ export type MessageTextContainerProps<
    * Custom UI component for message text
    */
   MessageText?: React.ComponentType<
-    Partial<MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>>
+    MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
 };
 

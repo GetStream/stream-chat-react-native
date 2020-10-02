@@ -72,7 +72,7 @@ type Props<
    */
   emojiData?: Reaction[];
   ReactionPicker?: React.ComponentType<
-    Partial<ReactionPickerProps<At, Ch, Co, Me, Re, Us>>
+    ReactionPickerProps<At, Ch, Co, Me, Re, Us>
   >;
 };
 

@@ -403,7 +403,7 @@ export type MessageProps<
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch?: boolean;
   /**

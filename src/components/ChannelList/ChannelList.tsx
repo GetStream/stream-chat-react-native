@@ -80,7 +80,7 @@ export type ChannelListProps<
    *
    * Default: [EmptyStateIndicator](https://getstream.github.io/stream-chat-react-native/#emptystateindicator)
    * */
-  EmptyStateIndicator?: React.ComponentType<Partial<EmptyStateProps>>;
+  EmptyStateIndicator?: React.ComponentType<EmptyStateProps>;
   /**
    * Object containing channel query filters
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields
@@ -97,7 +97,7 @@ export type ChannelListProps<
    *
    * Default: [ChannelListHeaderErrorIndicator](https://getstream.github.io/stream-chat-react-native/#ChannelListHeaderErrorIndicator)
    */
-  HeaderErrorIndicator?: React.ComponentType<Partial<HeaderErrorProps>>;
+  HeaderErrorIndicator?: React.ComponentType<HeaderErrorProps>;
   /**
    * Custom indicator to display network-down error at top of list, if there is connectivity issue
    *
@@ -110,20 +110,20 @@ export type ChannelListProps<
    * Default: [ChannelListMessenger](https://getstream.github.io/stream-chat-react-native/#channellistmessenger)
    */
   List?: React.ComponentType<
-    Partial<ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>
+    ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
    * Custom indicator to use when there is error in fetching channels
    *
    * Default: [LoadingErrorIndicator](https://getstream.github.io/stream-chat-react-native/#loadingerrorindicator)
    * */
-  LoadingErrorIndicator?: React.ComponentType<Partial<LoadingErrorProps>>;
+  LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
   /**
    * Custom loading indicator to use
    *
    * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
    * */
-  LoadingIndicator?: React.ComponentType<Partial<LoadingProps>>;
+  LoadingIndicator?: React.ComponentType<LoadingProps>;
   /**
    * The React Native FlatList threshold to fetch more data
    * @see See loadMoreThreshold [doc](https://facebook.github.io/react-native/docs/flatlist#onendreachedthreshold)
@@ -221,7 +221,7 @@ export type ChannelListProps<
    * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
    * */
   Preview?: React.ComponentType<
-    Partial<ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>>
+    ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
    * Function to gain access to the inner FlatList ref

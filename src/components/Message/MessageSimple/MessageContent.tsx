@@ -155,7 +155,7 @@ export type ForwardedMessageProps<
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
    */
   MessageReplies?: React.ComponentType<
-    Partial<MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>>
+    MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
 };
 

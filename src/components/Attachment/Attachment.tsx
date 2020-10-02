@@ -39,32 +39,32 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
    */
-  AttachmentActions?: React.ComponentType<Partial<AttachmentActionsProps<At>>>;
+  AttachmentActions?: React.ComponentType<AttachmentActionsProps<At>>;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /**
    * Custom UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  Card?: React.ComponentType<Partial<CardProps<At>>>;
+  Card?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
    */
-  CardCover?: React.ComponentType<Partial<CardProps<At>>>;
+  CardCover?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to override default Footer of Card component.
    * Accepts the same props as Card component.
    */
-  CardFooter?: React.ComponentType<Partial<CardProps<At>>>;
+  CardFooter?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to override default header of Card component.
    * Accepts the same props as Card component.
    */
-  CardHeader?: React.ComponentType<Partial<CardProps<At>>>;
+  CardHeader?: React.ComponentType<CardProps<At>>;
   /**
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
@@ -74,19 +74,17 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx
    */
-  FileAttachmentGroup?: React.ComponentType<
-    Partial<FileAttachmentGroupProps<At>>
-  >;
+  FileAttachmentGroup?: React.ComponentType<FileAttachmentGroupProps<At>>;
   /**
    * Custom UI component to display image attachments.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx
    */
-  Gallery?: React.ComponentType<Partial<GalleryProps<At>>>;
+  Gallery?: React.ComponentType<GalleryProps<At>>;
   /**
    * Custom UI component to display Giphy image.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  Giphy?: React.ComponentType<Partial<CardProps<At>>>;
+  Giphy?: React.ComponentType<CardProps<At>>;
   /**
    * Position of message in group - top, bottom, middle, single.
    *
@@ -98,7 +96,7 @@ export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
    * Custom UI component to display enriched url preview.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  UrlPreview?: React.ComponentType<Partial<CardProps<At>>>;
+  UrlPreview?: React.ComponentType<CardProps<At>>;
 };
 
 /**
