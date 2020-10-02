@@ -116,7 +116,7 @@ export type MessageListProps<
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
-  AttachmentFileIcon?: React.ComponentType<Partial<FileIconProps>>;
+  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /**
    * Date separator UI component to render
    *
@@ -183,7 +183,7 @@ export type MessageListProps<
    *
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
-  TypingIndicator?: React.ComponentType<Partial<TypingIndicatorProps>>;
+  TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
 };
 
 /**

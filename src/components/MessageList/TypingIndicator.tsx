@@ -37,7 +37,7 @@ export type TypingIndicatorProps = {
   /**
    * Defaults to and accepts same props as: [Avatar](https://getstream.github.io/stream-chat-react-native/#avatar)
    */
-  Avatar?: React.ComponentType<Partial<AvatarProps>>;
+  Avatar?: React.ComponentType<AvatarProps>;
 };
 
 export const TypingIndicator = <
