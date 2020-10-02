@@ -55,6 +55,7 @@
   },
   "include": ["./src/**/*"],
   "exclude": [
+    "./src/components/docs/*",
     "./src/mock-builders",
     "./src/styleguideComponents",
     "node_modules",

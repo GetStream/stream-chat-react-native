@@ -64,8 +64,6 @@ export * from './Reaction/utils/renderReactions';
 
 export * from './Spinner/Spinner';
 
-export * from '../contexts/suggestionsContext/SuggestionsList';
-
 export * from './Thread/Thread';
 
 export * from './IconBadge';
