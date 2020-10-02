@@ -8,7 +8,7 @@ module.exports = (api) => {
           compact: false,
         },
       ],
-      plugins: ['macros', 'module-resolver', 'babel-plugin-styled-components'],
+      plugins: ['module-resolver', 'babel-plugin-styled-components'],
       presets: [
         '@babel/env',
         'module:metro-react-native-babel-preset',
@@ -35,7 +35,7 @@ module.exports = (api) => {
         compact: false,
       },
     ],
-    plugins: ['macros', 'module-resolver', 'babel-plugin-styled-components'],
+    plugins: ['module-resolver', 'babel-plugin-styled-components'],
     presets: [
       '@babel/env',
       'module:metro-react-native-babel-preset',

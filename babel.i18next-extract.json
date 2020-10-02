@@ -17,7 +17,6 @@
         "discardOldKeys": true
       }
     ],
-    "macros",
     "@babel/transform-runtime",
     "babel-plugin-styled-components"
   ]
