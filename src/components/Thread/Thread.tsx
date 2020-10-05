@@ -163,7 +163,7 @@ export const Thread = <
       await loadMoreThread();
     };
 
-    if (thread && thread.id && thread.reply_count) {
+    if (thread?.id && thread.reply_count) {
       loadMoreThreadAsync();
     }
   }, []);
