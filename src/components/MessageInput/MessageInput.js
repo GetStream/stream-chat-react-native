@@ -363,14 +363,20 @@ const MessageInput = (props) => {
             AttachmentFileIcon={AttachmentFileIcon}
             fileUploads={fileUploads}
             removeFile={removeFile}
-            retryUpload={uploadFile}
+            retryUpload={(id) => {
+              const file = fileUploads.find((file) => file.id === id);
+              uploadFile({ newFile: file });
+            }}
           />
         )}
         {imageUploads && (
           <ImageUploadPreview
             imageUploads={imageUploads}
             removeImage={removeImage}
-            retryUpload={uploadImage}
+            retryUpload={(id) => {
+              const image = imageUploads.find((file) => file.id === id);
+              uploadImage({ newImage: image });
+            }}
           />
         )}
         {/**
