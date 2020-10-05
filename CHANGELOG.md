@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.2] 2020-10-02
+
+- SuggestionsList (for user-mentions feature in MessageInput) doesn't update the position as per keyboard position. For the time being, we have fixed this by dismissing the suggestions list when keyboard gets dismissed  - [0fdff4f](https://github.com/GetStream/stream-chat-react-native/commit/0fdff4f327908d4b554b8d4172028e666df65242)
+
+- Exported IconBadge and IconSquare components, to fix the tutorial [f1b6a39](https://github.com/GetStream/stream-chat-react-native/commit/f1b6a393930e7fcd1571d7d80b56937154454b47)
+
+- Added file size to file attachment [7e653a4](https://github.com/GetStream/stream-chat-react-native/commit/7e653a4a302ba24e5f9b664d2fccba778084ed0b)
+
+## [1.3.1] 2020-09-29
+
+**No changes**
+
 ## [1.3.0] 2020-09-25
 
 **BREAKING CHANGES**
