@@ -243,8 +243,8 @@ export const messageWithImages = {
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  // __html:
-  //   '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  __html:
+    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   status: 'received',
 };
 
