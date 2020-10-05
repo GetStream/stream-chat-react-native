@@ -3,17 +3,18 @@ Any component can be made a consumer of [ChatContext](#chatcontext) by using fun
 e.g.,
 
 ```js static
+import { Text, View } from 'react-native';
+
+import { withChannelContext } from './ChannelContext';
+
 const DemoComponentWithChannelContext = withChannelContext(DemoComponent);
 
-class DemoComponent extends React.Component {
-  render() {
-    return (
-      <div>
-        This is demo component with channel context Number of messages loaded in
-        this channel: {this.props.messages.length}
-        Number of online users: {this.props.online}
-      </div>
-    );
-  }
-}
+const DemoComponent = (props) => (
+  <View>
+    <Text>
+      This is a demo component with channel context
+      Number of channel members: {props.members.length}
+    </Text>
+  </View>
+);
 ```

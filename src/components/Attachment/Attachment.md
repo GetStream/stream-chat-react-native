@@ -9,6 +9,7 @@ There are many types of attachments. By default the components support
 Here's an example of an image
 
 ```js
+import { Attachment } from './Attachment';
 const attachment = {
   thumb_url: 'https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif',
   type: 'image',
@@ -24,6 +25,8 @@ function actionHandler(action) {
 Or a video element:
 
 ```js
+import { Attachment } from './Attachment';
+
 const attachment = {
   asset_url: 'https://www.youtube.com/embed/7LiyXFYaEAY',
   author_name: 'YouTube',
@@ -44,6 +47,8 @@ function actionHandler(action) {
 Image with more meta information:
 
 ```js
+import { Attachment } from './Attachment';
+
 const attachment = {
   image_url:
     'https://images.unsplash.com/photo-1548256434-c7d2374b1077?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9',
@@ -66,7 +71,10 @@ function actionHandler(action) {
 Attachment with actions:
 
 ```js
-const View = require('react-native').View;
+import { View } from 'react-native';
+
+import { Attachment } from './Attachment';
+
 const attachment = {
   actions: [
     {

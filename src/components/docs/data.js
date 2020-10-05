@@ -141,9 +141,9 @@ export const messageWithImages = {
     },
     {
       image_url:
-        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t1/sample_images/img/index/ff_x_t1_002.JPG',
       thumb_url:
-        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t1/sample_images/img/index/ff_x_t1_002.JPG',
       type: 'image',
     },
     {
@@ -243,8 +243,8 @@ export const messageWithImages = {
     role: 'user',
     updated_at: '2019-01-25T16:23:47.052538Z',
   },
-  __html:
-    '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
+  // __html:
+  //   '<p><a href="https://unsplash.com/photos/lxuB4abGzXc" rel="nofollow">https://unsplash.com/photos/lxuB4abGzXc</a></p>\n',
   status: 'received',
 };
 

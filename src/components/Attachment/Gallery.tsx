@@ -240,27 +240,31 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
           </ImageContainer>
         ))}
       </GalleryContainer>
-      <Modal
-        onRequestClose={() => setViewerModalOpen(false)}
-        transparent={true}
-        visible={viewerModalOpen}
-      >
-        <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
-          <ImageViewer
-            // TODO: We don't have 'save image' functionality.
-            // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-            // opens up popup menu to with an option "Save to the album", which basically does nothing.
-            enableSwipeDown
-            imageUrls={galleryImages}
-            index={viewerModalImageIndex}
-            onCancel={() => setViewerModalOpen(false)}
-            renderHeader={() => (
-              <GalleryHeader handleDismiss={() => setViewerModalOpen(false)} />
-            )}
-            saveToLocalByLongPress={false}
-          />
-        </SafeAreaView>
-      </Modal>
+      {viewerModalOpen && (
+        <Modal
+          onRequestClose={() => setViewerModalOpen(false)}
+          transparent
+          visible
+        >
+          <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
+            <ImageViewer
+              // TODO: We don't have 'save image' functionality.
+              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+              // opens up popup menu to with an option "Save to the album", which basically does nothing.
+              enableSwipeDown
+              imageUrls={galleryImages}
+              index={viewerModalImageIndex}
+              onCancel={() => setViewerModalOpen(false)}
+              renderHeader={() => (
+                <GalleryHeader
+                  handleDismiss={() => setViewerModalOpen(false)}
+                />
+              )}
+              saveToLocalByLongPress={false}
+            />
+          </SafeAreaView>
+        </Modal>
+      )}
     </>
   );
 };

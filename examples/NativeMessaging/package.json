@@ -23,15 +23,15 @@
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
     "stream-chat-react-native": "link:../../native-package",
-    "stream-chat": "2.4.0"
+    "stream-chat": "2.5.0"
   },
   "devDependencies": {
     "@babel/core": "7.11.6",
     "@babel/runtime": "7.11.2",
     "@react-native-community/eslint-config": "2.0.0",
-    "babel-jest": "26.3.0",
+    "babel-jest": "26.5.0",
     "eslint": "7.10.0",
-    "jest": "26.4.2",
+    "jest": "26.5.0",
     "metro-react-native-babel-preset": "0.63.0",
     "react-test-renderer": "16.13.1"
   },

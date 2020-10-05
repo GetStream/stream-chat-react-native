@@ -1,8 +1,12 @@
 ```js
-const View = require('react-native').View;
-const data = require('../docs/data');
+import { View } from 'react-native';
 
-<Chat client={data.client}>
+import { MessageNotification } from './MessageNotification';
+
+import { Chat } from '../Chat/Chat';
+import { client } from '../docs/data';
+
+<Chat client={client}>
   <View style={{ width: 90 }}>
     <MessageNotification showNotification={true} onPress={() => {}} />
   </View>

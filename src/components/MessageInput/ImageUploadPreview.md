@@ -1,4 +1,8 @@
 ```js
+import React from 'react';
+
+import { ImageUploadPreview } from './ImageUploadPreview';
+
 const imageUploads = [
   {
     id: '1',

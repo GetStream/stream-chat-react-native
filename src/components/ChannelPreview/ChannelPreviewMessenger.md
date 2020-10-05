@@ -1,11 +1,13 @@
 Unread channel preview:
 
 ```js
-const data = require('../docs/data');
+import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
+
+import { channelContext, message } from '../docs/data';
 
 <ChannelPreviewMessenger
-  {...data.channelContext}
-  latestMessage={data.message}
+  {...channelContext}
+  latestMessage={message}
   unread={10}
 />;
 ```
@@ -13,11 +15,13 @@ const data = require('../docs/data');
 Read channel preview:
 
 ```js
-const data = require('../docs/data');
+import { ChannelPreviewMessenger } from './ChannelPreviewMessenger';
+
+import { channelContext, message } from '../docs/data';
 
 <ChannelPreviewMessenger
-  {...data.channelContext}
-  latestMessage={data.message}
+  {...channelContext}
+  latestMessage={message}
   unread={0}
 />;
 ```

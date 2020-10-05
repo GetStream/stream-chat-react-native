@@ -1,5 +1,7 @@
 ```js
-const View = require('react-native').View;
+import { View } from 'react-native';
+
+import { ReactionList } from './ReactionList';
 
 const props = {
   alignment: 'right',

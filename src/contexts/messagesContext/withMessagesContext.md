@@ -3,21 +3,24 @@ Any component can consume the [MessagesContext](#messagescontext) and receive it
 **Example:**
 
 ```js static
+import { Text, View } from 'react-native';
+
+import { withMessagesContext } from './MessagesContext';
+
 const DemoComponentWithMessagesContext = withMessagesContext(DemoComponent);
 
-class DemoComponent extends React.Component {
-  const { loadingMore, messages } = this.props;
-  render() {
-    return (
-      <View>
-        <Text>
-          MessageList is currently loading more: {loadingMore}
-        </Text>
-        <Text>
-          Number of messages in demo component: {messages.length}
-        </Text>
-      </View>
-    );
-  }
-}
+const DemoComponent = (props) => {
+  const { loadingMore, messages } = props;
+
+  return (
+    <View>
+      <Text>
+        MessageList is currently loading more: {loadingMore}
+      </Text>
+      <Text>
+        Number of messages in demo component: {messages.length}
+      </Text>
+    </View>
+  );
+};
 ```
