@@ -15,40 +15,44 @@
 ></div>
 ```
 
-**Note:** The Channel component provides access to the values stored in [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
+**Note:** The Channel component provides access to the values stored in [ChannelContext](#channelcontext), [MessagesContext](#messagescontext), and [ThreadContext](#threadcontext) and exposes their hooks or the [withChannelContext](#withchannelcontext), [withMessagesContext](#withmessagescontext), and [withThreadContext](#withthreadcontext) higher order components.
 
-The example below shows how to write a component that consumes a context through a higher order component.
+The example below shows how to write a component that consumes a context and uses hooks.
 
-```json
-class CustomChannelHeader extends React.PureComponent {
-  const { channel, loading } = this.props;
+```js static
+import React from 'react';
+import { Text, View } from 'react-native';
 
-  render() {
-    if (loading) {
-      return (
-        <View>
-          <Text>Channel is loading...</Text>
-        </View>
-      );
-    }
+import { Channel } from './Channel';
 
-    return (
-      <View>
-        <Text>Channel ID: {channel.cid}</Text>
-        <Text>
-          There are currently {channel.state.watcher_count} people online
-        </Text>
-      </View>
-    );
-  }
+import { Chat } from '../Chat/Chat';
+import { chat, channel as dataChannel, } from '../docs/data';
+import { MessageInput } from '../MessageInput/MessageInput';
+import { MessageList } from '../MessageList/MessageList';
+
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+
+const CustomChannelHeader = () => {
+  const { channel, loading } = useChannelContext();
+
+  return loading ? (
+    <View>
+      <Text>Channel is loading...</Text>
+    </View>
+  ) : (
+    <View>
+      <Text>Channel ID: {channel.cid}</Text>
+      <Text>
+        There are currently {channel.state.watcher_count} people online
+      </Text>
+    </View>
+  );
 };
 
-ContextAwareCustomChannelHeader = withChannelContext(CustomChannelHeader);
-
 <View>
-  <Chat client={chatClient}>
-    <Channel channel={channel}>
-      <ContextAwareCustomChannelHeader />
+  <Chat client={chat}>
+    <Channel channel={dataChannel}>
+      <CustomChannelHeader />
       <MessageList />
       <MessageInput />
     </Channel>

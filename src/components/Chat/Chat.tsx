@@ -109,7 +109,7 @@ type Props<
  * - logger - custom logging function
  * - setActiveChannel - function to set the currently active channel
  *
- * The Chat Component takes teh following generics in order:
+ * The Chat Component takes the following generics in order:
  * - At (AttachmentType) - custom Attachment object extension
  * - Ct (ChannelType) - custom Channel object extension
  * - Co (CommandType) - custom Command string union extension

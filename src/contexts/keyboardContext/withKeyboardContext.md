@@ -3,16 +3,16 @@ Any component can be made a consumer of [KeyboardContext](#keyboardcontext) by u
 e.g.,
 
 ```js static
+import { Button } from 'react-native';
+
+import { withKeyboardContext } from './KeyboardContext';
+
 const DemoComponentWithKeyboardContext = withKeyboardContext(DemoComponent);
 
-class DemoComponent extends React.Component {
-  render() {
-    return (
-      <Button
-        onPress={() => this.props.dismissKeyboard}
-        title="Button to dismiss keyboard"
-      />
-    );
-  }
-}
+const DemoComponent = (props) => (
+  <Button
+    onPress={props.dismissKeyboard}
+    title='Button to dismiss keyboard'
+  />
+);
 ```

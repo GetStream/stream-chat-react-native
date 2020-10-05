@@ -278,7 +278,10 @@ export const MessageList = <
       if (currentLastReceivedId) {
         const hasNewMessage = lastReceivedId !== currentLastReceivedId;
         const userScrolledUp = yOffset.current > 0;
-        const isOwner = currentLastMessage?.user?.id === client.userID;
+        const isOwner =
+          currentLastMessage &&
+          client &&
+          currentLastMessage.user?.id === client.userID;
 
         // always scroll down when it's your own message that you added..
         const scrollToBottom =

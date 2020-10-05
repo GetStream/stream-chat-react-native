@@ -1,4 +1,8 @@
 ```js
+import React from 'react';
+
+import { FileUploadPreview } from './FileUploadPreview';
+
 const fileUploads = [
   {
     id: '1',

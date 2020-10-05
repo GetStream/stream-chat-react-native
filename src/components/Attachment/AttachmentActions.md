@@ -3,6 +3,8 @@ AttachmentActions renders the attachment action
 Style info
 
 ```js
+import { AttachmentActions } from './AttachmentActions';
+
 function actionHandler(action) {
   console.log(action);
 }
@@ -23,7 +25,9 @@ const actions = [
 ```
 
 ```js
-const { css } = require('styled-components');
+import { css } from 'styled-components';
+
+import { AttachmentActions } from './AttachmentActions';
 
 function actionHandler(action) {
   console.log(action);

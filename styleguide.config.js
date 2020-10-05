@@ -217,6 +217,7 @@ module.exports = {
   compilerConfig: {
     transforms: {
       dangerousTaggedTemplateString: true,
+      moduleImport: false,
     },
     objectAssign: 'Object.assign',
   },
@@ -235,10 +236,9 @@ module.exports = {
   styleguideComponents: {
     PathlineRenderer: path.join(
       __dirname,
-      'src/styleguideComponents/PathlineRenderer.js',
+      'src/styleguideComponents/PathlineRenderer.tsx',
     ),
-    Wrapper: path.join(__dirname, 'src/styleguideComponents/Wrapper'),
-    Slot: path.join(__dirname, 'src/styleguideComponents/Slot.js'),
+    Wrapper: path.join(__dirname, 'src/styleguideComponents/Wrapper.tsx'),
   },
   sections,
   template: {
@@ -258,7 +258,7 @@ module.exports = {
         // Looks ugly in docs, better to just not show it for now
         'react-native-actionsheet': path.join(
           __dirname,
-          'src/styleguideComponents/ReactNativeActionSheet.js',
+          'src/styleguideComponents/ReactNativeActionSheet.tsx',
         ),
       },
       extensions: ['.web.js', '.js', '.ts', '.tsx'],

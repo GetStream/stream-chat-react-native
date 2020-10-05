@@ -48,8 +48,8 @@ const Dismiss = styled.TouchableOpacity`
   height: 20px;
   justify-content: center;
   position: absolute;
-  right: 5;
-  top: 5;
+  right: 5px;
+  top: 5px;
   width: 20px;
   ${({ theme }) => theme.messageInput.fileUploadPreview.dismiss.css};
 `;

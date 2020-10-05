@@ -3,18 +3,20 @@ Any component can consume the [ThreadContext](#threadcontext) and receive its va
 **Example:**
 
 ```js static
+import { Text, View } from 'react-native';
+
+import { withThreadContext } from './TheadContext';
+
 const DemoComponentWithThreadContext = withThreadContext(DemoComponent);
 
-class DemoComponent extends React.Component {
-  const { threadMessages } = this.props;
-  render() {
-    return (
-      <View>
-        <Text>
-          Number of thread messages in demo component: {threadMessages.length}
-        </Text>
-      </View>
-    );
-  }
-}
+const DemoComponent = (props) => {
+  const { threadMessages } = props;
+  return (
+    <View>
+      <Text>
+        Number of thread messages in demo component: {threadMessages.length}
+      </Text>
+    </View>
+  );
+};
 ```

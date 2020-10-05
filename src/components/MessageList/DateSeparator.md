@@ -2,18 +2,22 @@ The date separator between messages.
 Here's what it looks like for today.
 
 ```js
-const date = new Date();
-const data = require('../docs/data');
+import { DateSeparator } from './DateSeparator';
 
-<Chat client={data.client}>
-  <DateSeparator {...data.translationContext} message={{ date }} />
+import { Chat } from '../Chat/Chat';
+import { client, translationContext } from '../docs/data';
+
+const date = new Date();
+
+<Chat client={client}>
+  <DateSeparator {...translationContext} message={{ date }} />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     message={{ date }}
     alignment="center"
   />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     message={{ date }}
     alignment="left"
   />
@@ -23,18 +27,22 @@ const data = require('../docs/data');
 and for a date in the past:
 
 ```js
-const data = require('../docs/data');
+import { DateSeparator } from './DateSeparator';
+
+import { Chat } from '../Chat/Chat';
+import { client, translationContext } from '../docs/data';
 
 const date = new Date('December 17, 1995 03:24:00');
-<Chat client={data.client}>
-  <DateSeparator {...data.translationContext} message={{ date }} />
+
+<Chat client={client}>
+  <DateSeparator {...translationContext} message={{ date }} />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     message={{ date }}
     alignment="center"
   />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     message={{ date }}
     alignment="left"
   />
@@ -44,7 +52,10 @@ const date = new Date('December 17, 1995 03:24:00');
 and adding custom date formatting:
 
 ```js
-const data = require('../docs/data');
+import { DateSeparator } from './DateSeparator';
+
+import { Chat } from '../Chat/Chat';
+import { client, translationContext } from '../docs/data';
 
 const date = new Date('December 17, 1995 03:24:00');
 
@@ -52,20 +63,20 @@ function formatDate(d) {
   return <h2>Messages posted after {d.toDateString()}</h2>;
 }
 
-<Chat client={data.client}>
+<Chat client={client}>
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     formatDate={formatDate}
     message={{ date }}
   />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     formatDate={formatDate}
     message={{ date }}
     alignment="center"
   />
   <DateSeparator
-    {...data.translationContext}
+    {...translationContext}
     formatDate={formatDate}
     message={{ date }}
     alignment="left"

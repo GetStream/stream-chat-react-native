@@ -1,4 +1,8 @@
 ```js
+import { Gallery } from './Gallery';
+
+import { Chat } from '../Chat/Chat';
+
 const images = [
   { image_url: 'https://i.picsum.photos/id/912/200/300.jpg?blur=5&hmac=Qk9-L9x5NUPVQh1fgIM_HucJtpX2RKOAK1sLTGD-7U4' },
   { image_url: 'https://i.picsum.photos/id/1/5616/3744.jpg?hmac=kKHwwU8s46oNettHKwJ24qOlIAsWN9d2TtsXDoCWWsQ' },

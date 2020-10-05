@@ -3,7 +3,9 @@
 Message with text content
 
 ```js
-const data = require('../../docs/data');
+import { Message } from '../Message';
+
+import * as data from '../../docs/data';
 
 const readBy = [
   {
@@ -32,7 +34,10 @@ const readBy = [
 Message with images
 
 ```js
-const data = require('../../docs/data');
+import { Message } from '../Message';
+
+import * as data from '../../docs/data';
+
 <Message
   message={data.messageWithImages}
   readBy={[]}
@@ -46,7 +51,10 @@ const data = require('../../docs/data');
 Message with attachment
 
 ```js
-const data = require('../../docs/data');
+import { Message } from '../Message';
+
+import * as data from '../../docs/data';
+
 <Message
   message={data.messageWithUrlPreview}
   readBy={[]}
@@ -64,6 +72,9 @@ You can customize the styles of message text by providing custom styles in theme
 Available options for customization are: https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
 
 ```js static
+import { Chat } from '../../Chat/Chat';
+import { client } from '../../docs/data';
+
 const theme = {
   message: {
     content: {

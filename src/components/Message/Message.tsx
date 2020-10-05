@@ -138,10 +138,12 @@ const DefaultMessageWithContext = <
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
-  const isMyMessage = () => client && client.user?.id === message.user?.id;
+  const isMyMessage = () =>
+    client && message && client.user?.id === message.user?.id;
 
   const isAdmin = () =>
-    client.user?.role === 'admin' || channel?.state.membership.role === 'admin';
+    (client && client.user?.role === 'admin') ||
+    channel?.state.membership.role === 'admin';
 
   const isOwner = () => channel?.state.membership.role === 'owner';
 

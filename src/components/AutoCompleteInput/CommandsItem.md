@@ -1,4 +1,6 @@
 ```js
+import { CommandsItem } from './CommandsItem';
+
 <CommandsItem
   item={{
     args: 'name',
