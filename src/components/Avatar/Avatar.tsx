@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 import { styled } from '../../styles/styledComponents';
 
@@ -10,13 +10,6 @@ const AvatarContainer = styled.View`
   ${({ theme }) => theme.avatar.container.css}
 `;
 
-const AvatarImage = styled.Image<{ size: number }>`
-  border-radius: ${({ size }) => size / 2}px;
-  height: ${({ size }) => size}px;
-  width: ${({ size }) => size}px;
-  ${({ theme }) => theme.avatar.image.css}
-`;
-
 const AvatarFallback = styled.View<{ size: number }>`
   align-items: center;
   background-color: ${({ theme }) => theme.colors.primary};
@@ -25,6 +18,13 @@ const AvatarFallback = styled.View<{ size: number }>`
   justify-content: center;
   width: ${({ size }) => size}px;
   ${({ theme }) => theme.avatar.fallback.css}
+`;
+
+const AvatarImage = styled.Image<{ size: number }>`
+  border-radius: ${({ size }) => size / 2}px;
+  height: ${({ size }) => size}px;
+  width: ${({ size }) => size}px;
+  ${({ theme }) => theme.avatar.image.css}
 `;
 
 const AvatarText = styled.Text<{ fontSize: number }>`
@@ -58,19 +58,9 @@ export type AvatarProps = {
  *
  * @example ./Avatar.md
  */
-export const Avatar: React.FC<AvatarProps> = ({
-  image,
-  name,
-  size = BASE_AVATAR_SIZE,
-  testID,
-}) => {
+export const Avatar: React.FC<AvatarProps> = (props) => {
+  const { image, name, size = BASE_AVATAR_SIZE, testID } = props;
   const [imageError, setImageError] = useState(false);
-
-  const fontSize = useMemo(
-    () => BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE),
-    [size],
-  );
-  const initials = useMemo(() => getInitials(name), [name]);
 
   return (
     <AvatarContainer>
@@ -85,8 +75,13 @@ export const Avatar: React.FC<AvatarProps> = ({
         />
       ) : (
         <AvatarFallback size={size}>
-          <AvatarText fontSize={fontSize} testID={testID || 'avatar-text'}>
-            {initials}
+          <AvatarText
+            fontSize={
+              BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE)
+            }
+            testID={testID || 'avatar-text'}
+          >
+            {getInitials(name)}
           </AvatarText>
         </AvatarFallback>
       )}

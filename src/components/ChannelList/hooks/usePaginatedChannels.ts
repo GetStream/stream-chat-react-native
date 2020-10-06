@@ -118,7 +118,7 @@ export const usePaginatedChannels = <
     setRefreshing(false);
   };
 
-  const loadNextPage = () => (hasNextPage ? queryChannels() : null);
+  const loadNextPage = hasNextPage ? queryChannels : undefined;
   const refreshList = () => queryChannels('refresh');
   const reloadList = () => queryChannels('reload');
 

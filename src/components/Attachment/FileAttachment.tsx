@@ -118,17 +118,19 @@ export type FileAttachmentProps<
 
 export const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType
->({
-  actionHandler,
-  alignment = 'right',
-  attachment,
-  AttachmentActions = DefaultAttachmentActions,
-  AttachmentFileIcon = DefaultFileIcon,
-  groupStyle,
-}: FileAttachmentProps<At>) => {
-  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
+>(
+  props: FileAttachmentProps<At>,
+) => {
+  const {
+    actionHandler,
+    alignment = 'right',
+    attachment,
+    AttachmentActions = DefaultAttachmentActions,
+    AttachmentFileIcon = DefaultFileIcon,
+    groupStyle,
+  } = props;
 
-  const AttachmentActionsComponent = AttachmentActions as typeof DefaultAttachmentActions;
+  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
   return (
     <TouchableOpacity
@@ -145,10 +147,7 @@ export const FileAttachment = <
         </FileDetails>
       </FileContainer>
       {attachment.actions?.length ? (
-        <AttachmentActionsComponent<At>
-          actionHandler={actionHandler}
-          {...attachment}
-        />
+        <AttachmentActions<At> actionHandler={actionHandler} {...attachment} />
       ) : null}
     </TouchableOpacity>
   );

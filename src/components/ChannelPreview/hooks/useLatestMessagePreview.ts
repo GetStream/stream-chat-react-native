@@ -58,21 +58,11 @@ const getLatestMessageDisplayText = <
   >,
   t: (key: string) => string,
 ) => {
-  if (!message) {
-    return t('Nothing yet...');
-  }
-  if (message.deleted_at) {
-    return t('Message deleted');
-  }
-  if (message.text) {
-    return message.text;
-  }
-  if (message.command) {
-    return '/' + message.command;
-  }
-  if (message.attachments?.length) {
-    return t('🏙 Attachment...');
-  }
+  if (!message) return t('Nothing yet...');
+  if (message.deleted_at) return t('Message deleted');
+  if (message.text) return message.text;
+  if (message.command) return '/' + message.command;
+  if (message.attachments?.length) return t('🏙 Attachment...');
   return t('Empty message...');
 };
 
@@ -92,14 +82,12 @@ const getLatestMessageDisplayDate = <
 ) => {
   const parserOutput = tDateTimeParser(message.created_at.asMutable());
   if (isDayOrMoment(parserOutput)) {
-    if (parserOutput.isSame(new Date(), 'day'))
+    if (parserOutput.isSame(new Date(), 'day')) {
       return parserOutput.format('LT');
-    else {
-      return parserOutput.format('L');
     }
-  } else {
-    return parserOutput;
+    return parserOutput.format('L');
   }
+  return parserOutput;
 };
 
 const getLatestMessagePreview = <
@@ -123,15 +111,14 @@ const getLatestMessagePreview = <
       messageObject: undefined,
       text: '',
     };
-  } else {
-    const message = messages[messages.length - 1];
-
-    return {
-      created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
-      messageObject: { ...message },
-      text: getLatestMessageDisplayText(message, t),
-    };
   }
+
+  const message = messages[messages.length - 1];
+  return {
+    created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
+    messageObject: message,
+    text: getLatestMessageDisplayText(message, t),
+  };
 };
 
 /**
@@ -157,6 +144,9 @@ export const useLatestMessagePreview = <
 ) => {
   const { t, tDateTimeParser } = useTranslationContext();
 
+  const messages = channel?.state?.messages || [];
+  const message = messages[messages.length - 1];
+
   const [latestMessagePreview, setLatestMessagePreview] = useState(
     getLatestMessagePreview(channel, t, tDateTimeParser),
   );
@@ -165,7 +155,7 @@ export const useLatestMessagePreview = <
     setLatestMessagePreview(
       getLatestMessagePreview(channel, t, tDateTimeParser),
     );
-  }, [channel, lastMessage]);
+  }, [lastMessage, message]);
 
   return latestMessagePreview;
 };

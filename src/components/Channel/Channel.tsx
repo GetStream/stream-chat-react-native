@@ -176,25 +176,29 @@ export const Channel = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  Attachment,
-  channel,
-  children,
-  disableIfFrozenChannel = true,
-  disableKeyboardCompatibleView = false,
-  doMarkReadRequest,
-  doSendMessageRequest,
-  doUpdateMessageRequest,
-  emojiData = emojiDataDefault,
-  EmptyStateIndicator = EmptyStateIndicatorDefault,
-  keyboardBehavior,
-  KeyboardCompatibleView = KeyboardCompatibleViewDefault,
-  keyboardVerticalOffset,
-  LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-  LoadingIndicator = LoadingIndicatorDefault,
-  Message,
-  thread: threadProps,
-}: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>) => {
+>(
+  props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const {
+    Attachment,
+    channel,
+    children,
+    disableIfFrozenChannel = true,
+    disableKeyboardCompatibleView = false,
+    doMarkReadRequest,
+    doSendMessageRequest,
+    doUpdateMessageRequest,
+    emojiData = emojiDataDefault,
+    EmptyStateIndicator = EmptyStateIndicatorDefault,
+    keyboardBehavior,
+    KeyboardCompatibleView = KeyboardCompatibleViewDefault,
+    keyboardVerticalOffset,
+    LoadingErrorIndicator = LoadingErrorIndicatorDefault,
+    LoadingIndicator = LoadingIndicatorDefault,
+    Message,
+    thread: threadProps,
+  } = props;
+
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
@@ -324,7 +328,7 @@ export const Channel = <
     }
   };
 
-  const addToEventHistory = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const addToEventHistory = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
     const lastMessageId = messages.length
       ? messages[messages.length - 1].id
       : 'none';
@@ -332,11 +336,11 @@ export const Channel = <
     if (lastMessageId) {
       setEventHistory((prevState) => {
         if (!prevState[lastMessageId]) {
-          return { ...prevState, [lastMessageId]: [e] };
+          return { ...prevState, [lastMessageId]: [event] };
         } else {
           return {
             ...prevState,
-            [lastMessageId]: [...prevState[lastMessageId], e],
+            [lastMessageId]: [...prevState[lastMessageId], event],
           };
         }
       });
@@ -435,17 +439,11 @@ export const Channel = <
 
   const createMessagePreview = ({
     attachments,
-    extraFields,
     mentioned_users,
     parent_id,
     text,
-  }: {
-    attachments?: StreamMessage<At, Me, Us>['attachments'];
-    extraFields?: Partial<StreamMessage<At, Me, Us>>;
-    mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
-    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
-    text?: StreamMessage<At, Me, Us>['text'];
-  }): MessageResponse<At, Ch, Co, Me, Re, Us> => {
+    ...extraFields
+  }: Partial<StreamMessage<At, Me, Us>>) => {
     const message = {
       __html: text,
       attachments,
@@ -541,21 +539,12 @@ export const Channel = <
     Me,
     Re,
     Us
-  >['sendMessage'] = async ({
-    attachments = [],
-    mentioned_users,
-    parent_id,
-    text,
-    ...extraFields
-  }) => {
+  >['sendMessage'] = async (message) => {
     channel?.state?.filterErrorMessages();
 
     const messagePreview = createMessagePreview({
-      attachments,
-      extraFields: extraFields as Partial<StreamMessage<At, Me, Us>>,
-      mentioned_users,
-      parent_id,
-      text,
+      ...message,
+      attachments: message.attachments || [],
     });
 
     updateMessage(messagePreview, {
@@ -706,20 +695,10 @@ export const Channel = <
     Us
   >['openThread'] = (message) => {
     const newThreadMessages = message?.id
-      ? channel?.state?.threads[message.id] || []
-      : [];
+      ? channel?.state?.threads[message.id] || Immutable([])
+      : Immutable([]);
     setThread(message);
-    setThreadMessages(
-      newThreadMessages as ThreadContextValue<
-        At,
-        Ch,
-        Co,
-        Ev,
-        Me,
-        Re,
-        Us
-      >['threadMessages'],
-    );
+    setThreadMessages(newThreadMessages);
   };
 
   const closeThread: ThreadContextValue<

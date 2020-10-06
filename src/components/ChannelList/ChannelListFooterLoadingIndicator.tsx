@@ -11,7 +11,7 @@ const Container = styled.View`
   ${({ theme }) => theme.channelListFooterLoadingIndicator.container.css}
 `;
 
-export const ChannelListFooterLoadingIndicator = () => (
+export const ChannelListFooterLoadingIndicator: React.FC = () => (
   <Container>
     <Spinner />
   </Container>

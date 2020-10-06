@@ -28,8 +28,9 @@ const getChannelPreviewDisplayAvatar = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const currentUserId = client?.user?.id;
-  const channelName = channel?.data?.name;
-  const channelImage = channel?.data?.image;
+  const channelData = channel?.data;
+  const channelName = channelData?.name;
+  const channelImage = channelData?.image;
 
   if (channelImage) {
     return {
@@ -73,13 +74,18 @@ export const useChannelPreviewDisplayAvatar = <
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
+  const channelData = channel?.data;
+  const image = channelData?.image;
+  const name = channelData?.name;
+  const id = client?.user?.id;
+
   const [displayAvatar, setDisplayAvatar] = useState(
     getChannelPreviewDisplayAvatar(channel, client),
   );
 
   useEffect(() => {
     setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
-  }, [channel]);
+  }, [id, image, name]);
 
   return displayAvatar;
 };

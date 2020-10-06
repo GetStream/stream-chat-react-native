@@ -23,12 +23,12 @@ const ErrorText = styled.Text`
 `;
 
 export type HeaderErrorProps = {
-  onPress?: (event: GestureResponderEvent) => Promise<void> | null;
+  onPress?: (event: GestureResponderEvent) => void;
 };
 
-export const ChannelListHeaderErrorIndicator = ({
+export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
   onPress = () => null,
-}: HeaderErrorProps) => {
+}) => {
   const { t } = useTranslationContext();
 
   return (

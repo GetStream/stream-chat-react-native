@@ -62,7 +62,7 @@ export type ChannelListMessengerProps<
   /**
    * Loads the next page of `channels`, which is present as a required prop
    * */
-  loadNextPage?: () => Promise<void> | null;
+  loadNextPage?: () => Promise<void>;
   /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
    * */
@@ -163,16 +163,14 @@ export const ChannelListMessenger = <
         data={channels}
         extraData={forceUpdate}
         keyExtractor={(item) => item.cid}
-        ListEmptyComponent={() => <EmptyStateIndicator listType='channel' />}
-        ListFooterComponent={() =>
-          loadingNextPage ? <FooterLoadingIndicator /> : null
+        ListEmptyComponent={<EmptyStateIndicator listType='channel' />}
+        ListFooterComponent={
+          loadingNextPage ? <FooterLoadingIndicator /> : undefined
         }
         onEndReached={loadNextPage}
         onEndReachedThreshold={loadMoreThreshold}
         onRefresh={refreshList}
-        ref={(flatListRef) => {
-          setFlatListRef && setFlatListRef(flatListRef);
-        }}
+        ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={({ item }) => renderItem(item)}
         testID='channel-list-messenger'

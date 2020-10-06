@@ -12,12 +12,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 import { styled } from '../../styles/styledComponents';
 import { isMentionTrigger } from '../../utils/utils';
 
-import type {
-  NativeSyntheticEvent,
-  TextInputProps,
-  TextInputSelectionChangeEventData,
-  TextInput as TextInputType,
-} from 'react-native';
+import type { TextInputProps, TextInput as TextInputType } from 'react-native';
 
 import type {
   DefaultCommandType,
@@ -36,19 +31,8 @@ const InputBox = styled(TextInput)`
 const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
   startOfTokenPosition + token.length;
 
-const isCommand = (text: string) => {
-  if (text[0] !== '/') {
-    return false;
-  }
-
-  const tokens = text.split(' ');
-
-  if (tokens.length > 1) {
-    return false;
-  }
-
-  return true;
-};
+const isCommand = (text: string) =>
+  text[0] === '/' && text.split(' ').length <= 1;
 
 export type AutoCompleteInputProps<
   Co extends string = DefaultCommandType,
@@ -83,13 +67,17 @@ export type AutoCompleteInputProps<
 export const AutoCompleteInput = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
->({
-  additionalTextInputProps,
-  onChange,
-  setInputBoxRef,
-  triggerSettings,
-  value,
-}: AutoCompleteInputProps<Co, Us>) => {
+>(
+  props: AutoCompleteInputProps<Co, Us>,
+) => {
+  const {
+    additionalTextInputProps,
+    onChange,
+    setInputBoxRef,
+    triggerSettings,
+    value,
+  } = props;
+
   const {
     closeSuggestions,
     openSuggestions,
@@ -164,9 +152,7 @@ export const AutoCompleteInput = <
     }
   };
 
-  const handleSelectionChange: (
-    e: NativeSyntheticEvent<TextInputSelectionChangeEventData>,
-  ) => void = ({
+  const handleSelectionChange: TextInputProps['onSelectionChange'] = ({
     nativeEvent: {
       selection: { end },
     },
@@ -183,11 +169,11 @@ export const AutoCompleteInput = <
   }) => {
     let newTokenString = '';
     if (isMentionTrigger(trigger)) {
-      if (isSuggestionUser<Co, Us>(item)) {
+      if (isSuggestionUser(item)) {
         newTokenString = `${triggerSettings[trigger].output(item).text} `;
       }
     } else {
-      if (!isSuggestionUser<Co, Us>(item)) {
+      if (!isSuggestionUser(item)) {
         newTokenString = `${triggerSettings[trigger].output(item).text} `;
       }
     }
@@ -220,7 +206,7 @@ export const AutoCompleteInput = <
 
     selectionEnd.current = newCaretPosition || 0;
 
-    if (isMentionTrigger(trigger) && isSuggestionUser<Co, Us>(item)) {
+    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
       triggerSettings[trigger].callback(item);
     }
   };
@@ -246,8 +232,6 @@ export const AutoCompleteInput = <
     selectionEnd: number;
     text: string;
   }) => {
-    const minChar = 0;
-
     const tokenMatch = text
       .slice(0, selectionEndProp)
       .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
@@ -264,7 +248,7 @@ export const AutoCompleteInput = <
       if we lost the trigger token or there is no following character we want to close
       the autocomplete
     */
-    if (!lastToken || lastToken.length <= minChar) {
+    if (!lastToken || lastToken.length <= 0) {
       stopTracking();
       return;
     }

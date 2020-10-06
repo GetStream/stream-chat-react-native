@@ -1,8 +1,7 @@
 import React from 'react';
+import { View } from 'react-native';
 
 import { ActionHandler, Attachment } from './Attachment';
-
-import { styled } from '../../styles/styledComponents';
 
 import type { Attachment as AttachmentType } from 'stream-chat';
 
@@ -15,10 +14,6 @@ import type {
   GroupType,
 } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
-
-const Container = styled.View`
-  align-items: stretch;
-`;
 
 export type FileAttachmentGroupProps<
   At extends UnknownType = DefaultAttachmentType
@@ -72,7 +67,7 @@ export const FileAttachmentGroup = <
   } = props;
 
   return (
-    <Container>
+    <View>
       {files.length &&
         files.map((file, index) => {
           let groupStyle: GroupType = 'single';
@@ -100,6 +95,6 @@ export const FileAttachmentGroup = <
             />
           );
         })}
-    </Container>
+    </View>
   );
 };

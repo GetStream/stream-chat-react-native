@@ -22,9 +22,7 @@ import type {
 } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
-export type ActionHandler =
-  | ((name: string, value: string) => Promise<void>)
-  | ((arg1: unknown, arg2: unknown) => unknown);
+export type ActionHandler = (name: string, value: string) => void;
 
 export type AttachmentProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
@@ -123,15 +121,17 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     CardHeader,
     FileAttachment = DefaultFileAttachment,
     Gallery = DefaultGallery,
+    Giphy: GiphyProps,
     groupStyle,
+    UrlPreview: UrlPreviewProps,
   } = props;
 
   if (!attachment) {
     return null;
   }
 
-  const Giphy = props?.Giphy || Card;
-  const UrlPreview = props?.UrlPreview || Card;
+  const Giphy = GiphyProps || Card;
+  const UrlPreview = UrlPreviewProps || Card;
   const cardProps = {
     Cover: CardCover ? CardCover : undefined,
     Footer: CardFooter ? CardFooter : undefined,

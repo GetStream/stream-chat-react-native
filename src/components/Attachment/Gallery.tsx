@@ -88,11 +88,11 @@ const HeaderButton = styled.TouchableOpacity`
   ${({ theme }) => theme.message.gallery.header.button.css}
 `;
 
-const GalleryHeader = ({
-  handleDismiss,
-}: {
+type GalleryHeaderProps = {
   handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
-}) => (
+};
+
+const GalleryHeader = ({ handleDismiss }: GalleryHeaderProps) => (
   <HeaderContainer>
     <HeaderButton onPress={handleDismiss}>
       <CloseButton />
@@ -116,10 +116,10 @@ export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
  *
  * @example ./Gallery.md
  */
-export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
-  alignment,
-  images,
-}: GalleryProps<At>) => {
+export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
+  props: GalleryProps<At>,
+) => {
+  const { alignment, images } = props;
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
   const { t } = useTranslationContext();
 
@@ -128,19 +128,13 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
 
   if (!images?.length) return null;
 
-  const unfilteredImages = [...images].map((image) => {
-    const url = image.image_url || image.thumb_url;
+  const galleryImages = images.reduce((returnArray, currentImage) => {
+    const url = currentImage.image_url || currentImage.thumb_url;
     if (url) {
-      return {
-        url: makeImageCompatibleUrl(url),
-      };
+      returnArray.push({ url: makeImageCompatibleUrl(url) });
     }
-    return undefined;
-  });
-
-  const galleryImages = unfilteredImages.filter(
-    (image) => !!image,
-  ) as IImageInfo[];
+    return returnArray;
+  }, [] as IImageInfo[]);
 
   if (galleryImages.length === 1) {
     return (
@@ -154,32 +148,34 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
         >
           <Image
             resizeMode='cover'
-            source={{ uri: galleryImages[0]?.url }}
+            source={{ uri: galleryImages[0].url }}
             style={{ flex: 1 }}
           />
         </Single>
-        <Modal
-          onRequestClose={() => setViewerModalOpen(false)}
-          transparent={true}
-          visible={viewerModalOpen}
-        >
-          <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
-            <ImageViewer
-              // TODO: We don't have 'save image' functionality.
-              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-              // opens up popup menu to with an option "Save to the album", which basically does nothing.
-              enableSwipeDown
-              imageUrls={galleryImages}
-              onCancel={() => setViewerModalOpen(false)}
-              renderHeader={() => (
-                <GalleryHeader
-                  handleDismiss={() => setViewerModalOpen(false)}
-                />
-              )}
-              saveToLocalByLongPress={false}
-            />
-          </SafeAreaView>
-        </Modal>
+        {viewerModalOpen && (
+          <Modal
+            onRequestClose={() => setViewerModalOpen(false)}
+            transparent
+            visible
+          >
+            <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
+              <ImageViewer
+                // TODO: We don't have 'save image' functionality.
+                // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+                // opens up popup menu to with an option "Save to the album", which basically does nothing.
+                enableSwipeDown
+                imageUrls={galleryImages}
+                onCancel={() => setViewerModalOpen(false)}
+                renderHeader={() => (
+                  <GalleryHeader
+                    handleDismiss={() => setViewerModalOpen(false)}
+                  />
+                )}
+                saveToLocalByLongPress={false}
+              />
+            </SafeAreaView>
+          </Modal>
+        )}
       </>
     );
   }
@@ -208,7 +204,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
               <View style={{ flex: 1 }}>
                 <Image
                   resizeMode='cover'
-                  source={{ uri: galleryImages[3]?.url }}
+                  source={{ uri: galleryImages[i].url }}
                   style={{ flex: 1 }}
                 />
                 <View
@@ -225,7 +221,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>({
                     {' '}
                     +{' '}
                     {t('{{ imageCount }} more', {
-                      imageCount: galleryImages.length - 3,
+                      imageCount: galleryImages.length - (i + 1),
                     })}
                   </Text>
                 </View>

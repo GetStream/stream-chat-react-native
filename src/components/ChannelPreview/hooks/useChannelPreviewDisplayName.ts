@@ -30,19 +30,17 @@ const getChannelPreviewDisplayName = <
   const currentUserId = client?.user?.id;
   const channelName = channel?.data?.name;
 
-  if (channelName) {
-    return channelName;
-  } else {
-    const members = Object.values(channel.state?.members || {});
-    const otherMembers = members.filter(
-      (member) => member.user?.id !== currentUserId,
-    );
-    const name = otherMembers
-      .map((member) => member.user?.name || member.user?.id || 'Unnamed User')
-      .join(', ');
+  if (channelName) return channelName;
 
-    return name;
-  }
+  const members = Object.values(channel.state?.members || {});
+  const otherMembers = members.filter(
+    (member) => member.user?.id !== currentUserId,
+  );
+  const name = otherMembers
+    .map((member) => member.user?.name || member.user?.id || 'Unnamed User')
+    .join(', ');
+
+  return name;
 };
 
 export const useChannelPreviewDisplayName = <
@@ -58,13 +56,17 @@ export const useChannelPreviewDisplayName = <
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
+  const id = client?.user?.id;
+  const members = channel.state?.members;
+  const name = channel?.data?.name;
+
   const [displayName, setDisplayName] = useState(
     getChannelPreviewDisplayName(channel, client),
   );
 
   useEffect(() => {
     setDisplayName(getChannelPreviewDisplayName(channel, client));
-  }, [channel]);
+  }, [id, members, name]);
 
   return displayName;
 };

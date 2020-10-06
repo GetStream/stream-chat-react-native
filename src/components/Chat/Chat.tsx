@@ -143,17 +143,7 @@ export const Chat = <
   useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
-  const { connectionRecovering, isOnline } = useIsOnline<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >({
-    client,
-  });
+  const { connectionRecovering, isOnline } = useIsOnline(client);
 
   useEffect(() => {
     client?.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
@@ -174,7 +164,7 @@ export const Chat = <
   };
 
   return (
-    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
+    <ChatProvider value={chatContext}>
       <TranslationProvider value={translators}>
         <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>

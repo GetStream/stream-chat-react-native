@@ -26,7 +26,7 @@ const RetryText = styled.Text`
 export type LoadingErrorProps = {
   error?: boolean;
   listType?: 'channel' | 'message' | 'default';
-  loadNextPage?: () => Promise<void> | null;
+  loadNextPage?: () => Promise<void>;
   retry?: () => Promise<void>;
 };
 

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import {
   ChannelListMessenger,
@@ -266,7 +266,7 @@ export const ChannelList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: ChannelListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     filters = DEFAULT_FILTERS,

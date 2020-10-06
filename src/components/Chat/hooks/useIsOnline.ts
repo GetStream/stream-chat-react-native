@@ -24,11 +24,9 @@ export const useIsOnline = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  client,
-}: {
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
-}) => {
+>(
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<
     NetInfoSubscription
   >();
@@ -36,9 +34,9 @@ export const useIsOnline = <
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   useEffect(() => {
-    const handleChangedEvent = (e: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
-      setConnectionRecovering(!e.online);
-      setIsOnline(e.online || false);
+    const handleChangedEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+      setConnectionRecovering(!event.online);
+      setIsOnline(event.online || false);
     };
 
     const handleRecoveredEvent = () => setConnectionRecovering(false);

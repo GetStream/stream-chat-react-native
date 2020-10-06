@@ -53,13 +53,8 @@ const FooterTitle = styled.Text`
   ${({ theme }) => theme.message.card.footer.title.css}
 `;
 
-const trimUrl = (url?: string) => {
-  let trimmedUrl;
-  if (url !== undefined && url !== null) {
-    trimmedUrl = url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
-  }
-  return trimmedUrl;
-};
+const trimUrl = (url?: string) =>
+  url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
 
 const goToURL = (url?: string) => {
   if (!url) return;
@@ -121,9 +116,6 @@ export const Card = <At extends UnknownType = DefaultAttachmentType>(
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
   const uri = image_url || thumb_url;
-  if (uri) {
-    makeImageCompatibleUrl(uri);
-  }
 
   return (
     <Container
@@ -135,7 +127,12 @@ export const Card = <At extends UnknownType = DefaultAttachmentType>(
     >
       {Header && <Header {...props} />}
       {Cover && <Cover {...props} />}
-      {uri && !Cover && <CardCover resizeMode='cover' source={{ uri }} />}
+      {uri && !Cover && (
+        <CardCover
+          resizeMode='cover'
+          source={{ uri: makeImageCompatibleUrl(uri) }}
+        />
+      )}
       {Footer ? (
         <Footer {...props} />
       ) : (

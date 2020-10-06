@@ -20,6 +20,7 @@ import type { MessageTextProps } from './MessageTextContainer';
 
 import type { ActionProps, MessageProps } from '../Message';
 
+import type { ActionHandler } from '../../Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../Attachment/AttachmentActions';
 import type { CardProps } from '../../Attachment/Card';
 import type { FileAttachmentProps } from '../../Attachment/FileAttachment';
@@ -99,7 +100,7 @@ export type MessageSimpleProps<
     ) => number;
 
     /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-    handleAction: (name: string, value: string) => Promise<void>;
+    handleAction: ActionHandler;
     /**
      * Handler to delete a current message.
      */

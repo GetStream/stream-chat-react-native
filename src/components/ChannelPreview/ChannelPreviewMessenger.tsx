@@ -31,6 +31,13 @@ const Container = styled.TouchableOpacity`
   ${({ theme }) => theme.channelPreview.container.css}
 `;
 
+const Date = styled.Text`
+  color: #767676;
+  font-size: 11px;
+  text-align: right;
+  ${({ theme }) => theme.channelPreview.date.css}
+`;
+
 const Details = styled.View`
   flex: 1;
   padding-left: 10px;
@@ -41,19 +48,6 @@ const DetailsTop = styled.View`
   flex-direction: row;
   justify-content: space-between;
   ${({ theme }) => theme.channelPreview.detailsTop.css}
-`;
-
-const Title = styled.Text`
-  font-size: 14px;
-  font-weight: bold;
-  ${({ theme }) => theme.channelPreview.title.css}
-`;
-
-const Date = styled.Text`
-  color: #767676;
-  font-size: 11px;
-  text-align: right;
-  ${({ theme }) => theme.channelPreview.date.css}
 `;
 
 const StyledMessage = styled.Text<{ unread?: number }>`
@@ -67,6 +61,12 @@ const StyledMessage = styled.Text<{ unread?: number }>`
       ? theme.channelPreview.message.unreadFontWeight
       : theme.channelPreview.message.fontWeight};
   ${({ theme }) => theme.channelPreview.message.css}
+`;
+
+const Title = styled.Text`
+  font-size: 14px;
+  font-weight: bold;
+  ${({ theme }) => theme.channelPreview.title.css}
 `;
 
 export type ChannelPreviewMessengerProps<
@@ -89,7 +89,7 @@ export type ChannelPreviewMessengerProps<
    * are displayed in 'DD/MM/YY' format. props.latestMessage.created_at is the
    * default formatted date. This default logic is part of ChannelPreview component.
    */
-  formatLatestMessageDate?: (date: string) => string;
+  formatLatestMessageDate?: (date: Date) => string;
   /** Most recent message on the channel */
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
@@ -114,20 +114,24 @@ export const ChannelPreviewMessenger = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  channel,
-  formatLatestMessageDate,
-  latestMessageLength = 30,
-  latestMessagePreview,
-  setActiveChannel,
-  unread,
-}: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    channel,
+    formatLatestMessageDate,
+    latestMessageLength = 30,
+    latestMessagePreview,
+    setActiveChannel,
+    unread,
+  } = props;
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
+  const latestMessageDate = latestMessagePreview.messageObject?.created_at?.asMutable();
 
   return (
     <Container
-      onPress={setActiveChannel && setActiveChannel.bind(null, channel)}
+      onPress={() => setActiveChannel?.(channel)}
       testID='channel-preview-button'
     >
       <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
@@ -137,12 +141,9 @@ export const ChannelPreviewMessenger = <
             {displayName}
           </Title>
           <Date>
-            {formatLatestMessageDate &&
-            typeof latestMessagePreview.messageObject?.created_at === 'string'
-              ? formatLatestMessageDate(
-                  latestMessagePreview.messageObject.created_at,
-                )
-              : latestMessagePreview?.created_at}
+            {formatLatestMessageDate && latestMessageDate
+              ? formatLatestMessageDate(latestMessageDate)
+              : latestMessagePreview.created_at}
           </Date>
         </DetailsTop>
         <StyledMessage unread={unread}>

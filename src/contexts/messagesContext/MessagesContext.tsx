@@ -83,13 +83,7 @@ export type MessagesContextValue<
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
-  sendMessage: (message: {
-    attachments?: StreamMessage<At, Me, Us>['attachments'];
-    extraFields?: Partial<StreamMessage<At, Me, Us>>;
-    mentioned_users?: StreamMessage<At, Me, Us>['mentioned_users'];
-    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
-    text?: StreamMessage<At, Me, Us>['text'];
-  }) => Promise<void>;
+  sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,

@@ -20,7 +20,7 @@ const ErrorText = styled.Text`
   ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
 `;
 
-export const ChannelListHeaderNetworkDownIndicator = () => {
+export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
   const { t } = useTranslationContext();
 
   return (
