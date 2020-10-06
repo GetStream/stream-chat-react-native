@@ -90,53 +90,46 @@ export type ImageUploadPreviewProps = {
  *
  * @example ./ImageUploadPreview.md
  */
-export const ImageUploadPreview = ({
-  imageUploads,
-  removeImage,
-  retryUpload,
-}: ImageUploadPreviewProps) => {
-  const renderItem = ({ item }: { item: ImageUpload }) => {
-    let type;
+export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
+  props,
+) => {
+  const { imageUploads, removeImage, retryUpload } = props;
+  const renderItem = ({ item }: { item: ImageUpload }) => (
+    <ItemContainer>
+      <UploadProgressIndicator
+        action={() => {
+          if (retryUpload) {
+            retryUpload({ newImage: item });
+          }
+        }}
+        active={item.state !== FileState.UPLOADED}
+        type={
+          item.state === FileState.UPLOADING
+            ? ProgressIndicatorTypes.IN_PROGRESS
+            : item.state === FileState.UPLOAD_FAILED
+            ? ProgressIndicatorTypes.RETRY
+            : undefined
+        }
+      >
+        <Upload
+          resizeMode='cover'
+          source={{ uri: item.file.uri || item.url }}
+        />
+      </UploadProgressIndicator>
+      <Dismiss
+        onPress={() => {
+          if (removeImage) {
+            removeImage(item.id);
+          }
+        }}
+        testID='remove-image-upload-preview'
+      >
+        <DismissImage source={closeRound} />
+      </Dismiss>
+    </ItemContainer>
+  );
 
-    if (item.state === FileState.UPLOADING) {
-      type = ProgressIndicatorTypes.IN_PROGRESS;
-    }
-
-    if (item.state === FileState.UPLOAD_FAILED) {
-      type = ProgressIndicatorTypes.RETRY;
-    }
-
-    return (
-      <ItemContainer>
-        <UploadProgressIndicator
-          action={() => {
-            if (retryUpload) {
-              retryUpload({ newImage: item });
-            }
-          }}
-          active={item.state !== FileState.UPLOADED}
-          type={type}
-        >
-          <Upload
-            resizeMode='cover'
-            source={{ uri: item.file.uri || item.url }}
-          />
-        </UploadProgressIndicator>
-        <Dismiss
-          onPress={() => {
-            if (removeImage) {
-              removeImage(item.id);
-            }
-          }}
-          testID='remove-image-upload-preview'
-        >
-          <DismissImage source={closeRound} />
-        </Dismiss>
-      </ItemContainer>
-    );
-  };
-
-  return imageUploads && imageUploads.length ? (
+  return imageUploads?.length > 0 ? (
     <Container>
       <FlatList
         data={imageUploads}

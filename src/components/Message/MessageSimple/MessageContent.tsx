@@ -54,7 +54,7 @@ import type {
  * Otherwise background is transparent, so border radius is not really visible.
  */
 const Container = styled.TouchableOpacity<{
-  alignment: string;
+  alignment: Alignment;
   error: boolean;
 }>`
   align-items: ${({ alignment }) =>
@@ -82,13 +82,13 @@ const Container = styled.TouchableOpacity<{
   ${({ theme }) => theme.message.content.container.css};
 `;
 
-const ContainerInner = styled.View<{ alignment: string }>`
+const ContainerInner = styled.View<{ alignment: Alignment }>`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   ${({ theme }) => theme.message.content.containerInner.css}
 `;
 
-const DeletedContainer = styled.View<{ alignment: string }>`
+const DeletedContainer = styled.View<{ alignment: Alignment }>`
   align-items: ${({ alignment }) =>
     alignment === 'left' ? 'flex-start' : 'flex-end'};
   justify-content: ${({ alignment }) =>
@@ -115,10 +115,10 @@ const MetaContainer = styled.View`
   ${({ theme }) => theme.message.content.metaContainer.css};
 `;
 
-const MetaText = styled.Text<{ alignment: string }>`
+const MetaText = styled.Text<{ alignment: Alignment }>`
   color: ${({ theme }) => theme.colors.textGrey};
   font-size: 11px;
-  text-align: ${({ alignment }) => (alignment === 'left' ? 'left' : 'right')};
+  text-align: ${({ alignment }) => alignment};
   ${({ theme }) => theme.message.content.metaText.css};
 `;
 
@@ -263,25 +263,22 @@ export const MessageContent = <
     }
   }, [actionSheetVisible]);
 
-  const hasAttachment = Boolean(
-    message && message.attachments && message.attachments.length,
-  );
   const showTime = groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
   const hasReactions =
     reactionsEnabled &&
     message.latest_reactions &&
     message.latest_reactions.length > 0;
   const images =
-    hasAttachment &&
-    Array.isArray(message.attachments) &&
-    message.attachments.filter(
-      (item) =>
-        item.type === 'image' && !item.title_link && !item.og_scrape_url,
-    );
+    (Array.isArray(message.attachments) &&
+      message.attachments.filter(
+        (item) =>
+          item.type === 'image' && !item.title_link && !item.og_scrape_url,
+      )) ||
+    [];
   const files =
-    hasAttachment &&
-    Array.isArray(message.attachments) &&
-    message.attachments?.filter((item) => item.type === 'file');
+    (Array.isArray(message.attachments) &&
+      message.attachments.filter((item) => item.type === 'file')) ||
+    [];
 
   if (message.deleted_at) {
     return (
@@ -354,14 +351,14 @@ export const MessageContent = <
         error={message.type === 'error' || message.status === 'failed'}
         testID='message-content-wrapper'
       >
-        {message.type === 'error' ? (
+        {message.type === 'error' && (
           <FailedText testID='message-error'>{t('ERROR · UNSENT')}</FailedText>
-        ) : null}
-        {message.status === 'failed' ? (
+        )}
+        {message.status === 'failed' && (
           <FailedText testID='message-failed'>
             {t('Message failed - try again')}
           </FailedText>
-        ) : null}
+        )}
         {reactionsEnabled && ReactionList && (
           <ReactionPickerWrapper<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
@@ -402,19 +399,20 @@ export const MessageContent = <
           </ReactionPickerWrapper>
         )}
         {MessageHeader && <MessageHeader testID='message-header' {...props} />}
-        {/* Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
+        {/* TODO: Look at this in production: Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
         <ContainerInner alignment={alignment} collapsable={false}>
-          {hasAttachment &&
-            Array.isArray(message.attachments) &&
+          {Array.isArray(message.attachments) &&
             message.attachments.map((attachment, index) => {
               // We handle files separately
-              if (attachment.type === 'file') return null;
               if (
-                attachment.type === 'image' &&
-                !attachment.title_link &&
-                !attachment.og_scrape_url
-              )
+                attachment.type === 'file' ||
+                (attachment.type === 'image' &&
+                  !attachment.title_link &&
+                  !attachment.og_scrape_url)
+              ) {
                 return null;
+              }
+
               return (
                 <Attachment<At>
                   actionHandler={handleAction}
@@ -432,7 +430,7 @@ export const MessageContent = <
                 />
               );
             })}
-          {files && files.length > 0 && (
+          {files.length > 0 && (
             <FileAttachmentGroup<At>
               alignment={alignment}
               AttachmentActions={AttachmentActions}
@@ -443,7 +441,7 @@ export const MessageContent = <
               messageId={message.id}
             />
           )}
-          {images && images.length > 0 && (
+          {images.length > 0 && (
             <Gallery<At> alignment={alignment} images={images} />
           )}
           <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
@@ -459,20 +457,20 @@ export const MessageContent = <
             openThread={onOpenThread}
           />
         </ContainerInner>
-        {repliesEnabled ? (
+        {repliesEnabled && (
           <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             isThreadList={!!threadList}
             message={message}
             openThread={onOpenThread}
           />
-        ) : null}
+        )}
         {MessageFooter && <MessageFooter testID='message-footer' {...props} />}
-        {!MessageFooter && showTime ? (
+        {!MessageFooter && showTime && (
           <MetaContainer testID='show-time'>
             <MetaText alignment={alignment}>{getDateText(formatDate)}</MetaText>
           </MetaContainer>
-        ) : null}
+        )}
         {actionSheetVisible && enableLongPress && (
           <ActionSheet
             actionSheetStyles={actionSheetStyles}

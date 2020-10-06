@@ -46,6 +46,25 @@ const ActionSheetTitleText = styled.Text`
   ${({ theme }) => theme.messageInput.actionSheet.titleText.css};
 `;
 
+type AttachmentActionSheetItemProps = {
+  icon: ImageRequireSource;
+  key: string | number;
+  text: string;
+  testID?: string;
+};
+
+const AttachmentActionSheetItem: React.FC<AttachmentActionSheetItemProps> = (
+  props,
+) => {
+  const { icon, key, testID, text } = props;
+  return (
+    <ActionSheetButtonContainer key={key} testID={testID}>
+      <IconSquare icon={icon} />
+      <ActionSheetButtonText>{text}</ActionSheetButtonText>
+    </ActionSheetButtonContainer>
+  );
+};
+
 export type ActionSheetStyles = {
   body?: StyleProp<ViewStyle>;
   buttonBox?: StyleProp<ViewStyle>;
@@ -67,13 +86,14 @@ export type ActionSheetProps = {
   styles?: ActionSheetStyles;
 };
 
-export const ActionSheetAttachment = ({
-  closeAttachActionSheet,
-  pickFile,
-  pickImage,
-  setAttachActionSheetRef,
-  styles,
-}: ActionSheetProps) => {
+export const ActionSheetAttachment = (props: ActionSheetProps) => {
+  const {
+    closeAttachActionSheet,
+    pickFile,
+    pickImage,
+    setAttachActionSheetRef,
+    styles,
+  } = props;
   const { t } = useTranslationContext();
 
   return (
@@ -117,22 +137,3 @@ export const ActionSheetAttachment = ({
     />
   );
 };
-
-type AttachmentActionSheetItemProps = {
-  icon: ImageRequireSource;
-  key: string | number;
-  text: string;
-  testID?: string;
-};
-
-const AttachmentActionSheetItem = ({
-  icon,
-  key,
-  testID,
-  text,
-}: AttachmentActionSheetItemProps) => (
-  <ActionSheetButtonContainer key={key} testID={testID}>
-    <IconSquare icon={icon} />
-    <ActionSheetButtonText>{text}</ActionSheetButtonText>
-  </ActionSheetButtonContainer>
-);

@@ -53,12 +53,10 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useKeyboardContext } from '../../contexts/keyboardContext/KeyboardContext';
 import {
   isEditingBoolean,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { pickDocument, pickImage as pickImageNative } from '../../native';
@@ -270,10 +268,8 @@ export type MessageInputProps<
  * It's a consumer of
  * [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext),
  * [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext),
- * [Keyboard Context](https://getstream.github.io/stream-chat-react-native/#keyboardcontext),
  * [Messages Context](https://getstream.github.io/stream-chat-react-native/#messagescontext),
- * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext),
- * [Thread Context](https://getstream.github.io/stream-chat-react-native/#threadcontext), and
+ * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
  * @example ./MessageInput.md
@@ -289,31 +285,6 @@ export const MessageInput = <
 >(
   props: MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const channelContext = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { channel, disabled = false, members, watchers } = channelContext;
-
-  const chatContext = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = chatContext;
-
-  const keyboardContext = useKeyboardContext();
-
-  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    clearEditingState,
-    editing,
-    editMessage,
-    sendMessage: sendMessageContext,
-  } = messagesContext;
-
-  const suggestionsContext = useSuggestionsContext<Co, Us>();
-  const { setInputBoxContainerRef } = suggestionsContext;
-
-  // TODO: not sure if this is actually needed but adding it in from the previously all encompassing usage of withChannelContext
-  const threadContext = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const translationContext = useTranslationContext();
-  const { t } = translationContext;
-
   const {
     ActionSheetAttachment = ActionSheetAttachmentDefault,
     actionSheetStyles,
@@ -336,22 +307,31 @@ export const MessageInput = <
     sendImageAsync = false,
   } = props;
 
-  /**
-   * TODO: This should be removed when possible along with the spread into Input
-   */
-  const legacyProps = {
-    ...props,
-    ...channelContext,
-    ...chatContext,
-    ...keyboardContext,
-    ...messagesContext,
-    ...suggestionsContext,
-    ...threadContext,
-    ...translationContext,
-  };
+  const { channel, disabled = false, members, watchers } = useChannelContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const {
+    clearEditingState,
+    editing,
+    editMessage,
+    sendMessage: sendMessageContext,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const { setInputBoxContainerRef } = useSuggestionsContext<Co, Us>();
+
+  const { t } = useTranslationContext();
 
   const attachActionSheet = useRef<ActionSheetCustom | null>(null);
-  const inputBox = useRef<TextInput | null>();
+  const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 
   const [asyncIds, setAsyncIds] = useState<string[]>([]);
@@ -361,6 +341,7 @@ export const MessageInput = <
       url: string;
     };
   }>({});
+
   const {
     fileUploads,
     imageUploads,
@@ -378,10 +359,8 @@ export const MessageInput = <
   );
 
   useEffect(() => {
-    if (editing) {
-      if (inputBox.current) {
-        inputBox.current.focus();
-      }
+    if (editing && inputBoxRef.current) {
+      inputBoxRef.current.focus();
     }
   }, [editing]);
 
@@ -400,12 +379,12 @@ export const MessageInput = <
       ] as StreamMessage<At, Me, Us>['attachments'];
 
       try {
-        sendMessageContext({
+        sendMessageContext(({
           attachments,
           mentioned_users: [],
           parent_id,
-          text: '' as StreamMessage<At, Me, Us>['text'],
-        });
+          text: '',
+        } as unknown) as Partial<StreamMessage<At, Me, Us>>);
 
         setAsyncIds((prevAsyncIds) =>
           prevAsyncIds.splice(prevAsyncIds.indexOf(id), 1),
@@ -416,7 +395,7 @@ export const MessageInput = <
         });
 
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
-      } catch (err) {
+      } catch (_error) {
         console.log('Failed');
       }
     }
@@ -440,7 +419,11 @@ export const MessageInput = <
 
   const closeAttachActionSheet = () => {
     if (attachActionSheet.current) {
-      // @ts-expect-error hide doesn't exist until we bump @types/react-native-actionsheet from this PR being merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/48275
+      /**
+       * Hide doesn't exist until we bump @types/react-native-actionsheet from this
+       * PR being merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/48275
+       */
+      // @ts-expect-error
       attachActionSheet.current.hide();
     }
   };
@@ -462,7 +445,7 @@ export const MessageInput = <
     // make sure we don't list users twice
     const uniqueUsers: { [key: string]: UserResponse<Us> } = {};
     for (const user of users) {
-      if (user !== undefined && !uniqueUsers[user.id]) {
+      if (user && !uniqueUsers[user.id]) {
         uniqueUsers[user.id] = user as UserResponse<Us>;
       }
     }
@@ -538,18 +521,16 @@ export const MessageInput = <
     }
 
     const result = await pickDocument({ maxNumberOfFiles });
-    if (!result.cancelled) {
-      if (result.docs) {
-        result.docs.forEach((doc) => {
-          const mimeType = lookup(doc.name);
+    if (!result.cancelled && result.docs) {
+      result.docs.forEach((doc) => {
+        const mimeType = lookup(doc.name);
 
-          if (mimeType && mimeType.startsWith('image/')) {
-            uploadNewImage(doc);
-          } else {
-            uploadNewFile(doc);
-          }
-        });
-      }
+        if (mimeType && mimeType?.startsWith('image/')) {
+          uploadNewImage(doc);
+        } else {
+          uploadNewFile(doc);
+        }
+      });
     }
   };
 
@@ -570,8 +551,7 @@ export const MessageInput = <
   };
 
   const removeFile = (id: string) => {
-    const fileExists = fileUploads.some((file) => file.id === id);
-    if (fileExists) {
+    if (fileUploads.some((file) => file.id === id)) {
       setFileUploads((prevFileUploads) =>
         prevFileUploads.filter((file) => file.id !== id),
       );
@@ -580,8 +560,7 @@ export const MessageInput = <
   };
 
   const removeImage = (id: string) => {
-    const imageExists = imageUploads.some((image) => image.id === id);
-    if (imageExists) {
+    if (imageUploads.some((image) => image.id === id)) {
       setImageUploads((prevImageUploads) =>
         prevImageUploads.filter((image) => image.id !== id),
       );
@@ -589,15 +568,34 @@ export const MessageInput = <
     }
   };
 
-  const renderInputContainer = () => {
-    let additionalTextInputContainerProps = additionalTextInputProps || {};
-
-    if (disabled) {
-      additionalTextInputContainerProps = {
-        editable: false,
-        ...additionalTextInputContainerProps,
-      };
+  const handleOnPress = async () => {
+    if (hasImagePicker) {
+      if (hasFilePicker) {
+        await Keyboard.dismiss();
+        if (attachActionSheet?.current) {
+          attachActionSheet.current.show();
+        }
+      } else {
+        pickImage();
+      }
+    } else if (hasFilePicker) {
+      pickFile();
     }
+  };
+
+  const renderInputContainer = () => {
+    const additionalTextInputContainerProps = {
+      editable: disabled ? false : undefined,
+      ...additionalTextInputProps,
+    };
+
+    const triggerSettings = channel
+      ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+          channel,
+          onMentionSelectItem: onSelectItem,
+          t,
+        })
+      : ({} as TriggerSettings<Co, Us>);
 
     return (
       <Container imageUploads={imageUploads}>
@@ -616,11 +614,11 @@ export const MessageInput = <
             retryUpload={uploadImage}
           />
         )}
-        {/**
-            TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-            work well with async onPress operations. So find a solution.
-          */}
 
+        {/**
+         * TODO: Use custom action sheet to show icon with titles of button. But it doesn't
+         * work well with async onPress operations. So find a solution.
+         */}
         <ActionSheetAttachment
           closeAttachActionSheet={closeAttachActionSheet}
           pickFile={pickFile}
@@ -631,7 +629,6 @@ export const MessageInput = <
         <InputBoxContainer ref={setInputBoxContainerRef}>
           {Input ? (
             <Input
-              {...legacyProps}
               _pickFile={pickFile}
               _pickImage={pickImage}
               _removeFile={removeFile}
@@ -643,30 +640,14 @@ export const MessageInput = <
               closeAttachActionSheet={closeAttachActionSheet}
               disabled={disabled}
               getUsers={getUsers}
-              handleOnPress={async () => {
-                if (hasImagePicker && hasFilePicker) {
-                  await Keyboard.dismiss();
-                  if (attachActionSheet?.current) {
-                    attachActionSheet.current.show();
-                  }
-                } else if (hasImagePicker && !hasFilePicker) pickImage();
-                else if (!hasImagePicker && hasFilePicker) pickFile();
-              }}
+              handleOnPress={handleOnPress}
               isValidMessage={isValidMessage}
               onChange={onChangeText}
               onSelectItem={onSelectItem}
               sendMessage={sendMessage}
               setInputBoxContainerRef={setInputBoxContainerRef}
               setInputBoxRef={setInputBoxRef}
-              triggerSettings={
-                channel
-                  ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
-                      channel,
-                      onMentionSelectItem: onSelectItem,
-                      t,
-                    })
-                  : ({} as TriggerSettings<Co, Us>)
-              }
+              triggerSettings={triggerSettings}
               updateMessage={updateMessage}
               uploadNewFile={uploadNewFile}
               uploadNewImage={uploadNewImage}
@@ -677,32 +658,14 @@ export const MessageInput = <
               {(hasImagePicker || hasFilePicker) && (
                 <AttachButton
                   disabled={disabled}
-                  handleOnPress={async () => {
-                    if (hasImagePicker && hasFilePicker) {
-                      await Keyboard.dismiss();
-                      if (attachActionSheet.current) {
-                        attachActionSheet.current.show();
-                      }
-                    } else if (hasImagePicker && !hasFilePicker) pickImage();
-                    else if (!hasImagePicker && hasFilePicker) {
-                      pickFile();
-                    }
-                  }}
+                  handleOnPress={handleOnPress}
                 />
               )}
               <AutoCompleteInput<Co, Us>
                 additionalTextInputProps={additionalTextInputProps || {}}
                 onChange={onChangeText}
                 setInputBoxRef={setInputBoxRef}
-                triggerSettings={
-                  channel
-                    ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
-                        channel,
-                        onMentionSelectItem: onSelectItem,
-                        t,
-                      })
-                    : ({} as TriggerSettings<Co, Us>)
-                }
+                triggerSettings={triggerSettings}
                 value={text}
               />
               <SendButton<At, Ch, Co, Ev, Me, Re, Us>
@@ -724,11 +687,11 @@ export const MessageInput = <
 
     const prevText = text;
     await setText('');
-    if (inputBox.current) {
-      inputBox.current.clear();
+    if (inputBoxRef.current) {
+      inputBoxRef.current.clear();
     }
 
-    const attachments = [] as StreamMessage<At, Me, Us>['attachments'];
+    const attachments = [] as Array<Attachment<At>>;
     for (const image of imageUploads) {
       if (!image || image.state === FileState.UPLOAD_FAILED) {
         continue;
@@ -748,7 +711,7 @@ export const MessageInput = <
         }
       }
 
-      if (image.state === FileState.UPLOADED && attachments) {
+      if (image.state === FileState.UPLOADED) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
@@ -766,7 +729,7 @@ export const MessageInput = <
         sending.current = false;
         return;
       }
-      if (file.state === FileState.UPLOADED && attachments) {
+      if (file.state === FileState.UPLOADED) {
         attachments.push({
           asset_url: file.url,
           file_size: file.file.size,
@@ -778,17 +741,19 @@ export const MessageInput = <
     }
 
     // Disallow sending message if its empty.
-    if (!prevText && (!attachments || attachments.length === 0)) {
+    if (!prevText && attachments.length === 0) {
       sending.current = false;
       return;
     }
 
     if (editing && !isEditingBoolean(editing)) {
-      const updatedMessage = { ...editing } as StreamMessage<At, Me, Us>;
+      const updatedMessage = {
+        ...editing,
+        attachments,
+        mentioned_users: mentionedUsers,
+        text: prevText,
+      } as StreamMessage<At, Me, Us>;
 
-      updatedMessage.attachments = attachments;
-      updatedMessage.mentioned_users = mentionedUsers;
-      updatedMessage.text = prevText;
       // TODO: Remove this line and show an error when submit fails
       clearEditingState();
 
@@ -800,12 +765,12 @@ export const MessageInput = <
       sending.current = false;
     } else {
       try {
-        sendMessageContext({
+        sendMessageContext(({
           attachments,
           mentioned_users: uniq(mentionedUsers),
           parent_id,
-          text: prevText as StreamMessage<At, Me, Us>['text'],
-        });
+          text: prevText,
+        } as unknown) as StreamMessage<At, Me, Us>);
 
         sending.current = false;
         setFileUploads([]);
@@ -816,20 +781,20 @@ export const MessageInput = <
             prevNumberOfUploads - (attachments?.length || 0),
         );
         setText('');
-      } catch (err) {
+      } catch (_error) {
         sending.current = false;
         setText(prevText);
-        console.log('Failed');
+        console.log('Failed to send message');
       }
     }
   };
 
-  const setAttachActionSheetRef = (o: ActionSheetCustom | null) => {
-    attachActionSheet.current = o;
+  const setAttachActionSheetRef = (ref: ActionSheetCustom | null) => {
+    attachActionSheet.current = ref;
   };
 
-  const setInputBoxRef = (o: TextInput | null) => {
-    inputBox.current = o;
+  const setInputBoxRef = (ref: TextInput | null) => {
+    inputBoxRef.current = ref;
   };
 
   const updateMessage = async () => {
@@ -843,8 +808,8 @@ export const MessageInput = <
 
       setText('');
       clearEditingState();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -866,15 +831,15 @@ export const MessageInput = <
       }),
     );
 
-    let response: SendFileAPIResponse = {} as SendFileAPIResponse;
+    let response = {} as SendFileAPIResponse;
     try {
       if (doDocUploadRequest) {
         response = await doDocUploadRequest(file, channel);
       } else if (channel) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
-    } catch (e) {
-      console.warn(e);
+    } catch (error) {
+      console.warn(error);
       if (!newFile) {
         setNumberOfUploads((prevNumberOfUploads) => prevNumberOfUploads - 1);
       } else {
@@ -916,7 +881,7 @@ export const MessageInput = <
 
     const id = newImage.id;
 
-    let response: SendFileAPIResponse = {} as SendFileAPIResponse;
+    let response = {} as SendFileAPIResponse;
 
     const filename = (file?.name || file?.uri || '').replace(
       /^(file:\/\/|content:\/\/)/,
@@ -972,8 +937,8 @@ export const MessageInput = <
           }),
         );
       }
-    } catch (e) {
-      console.warn(e);
+    } catch (error) {
+      console.warn(error);
       if (newImage) {
         setImageUploads((prevImageUploads) =>
           prevImageUploads.map((imageUpload) => {

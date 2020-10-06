@@ -17,7 +17,26 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 
-type Parameters<
+const defaultMarkdownStyles = {
+  inlineCode: {
+    backgroundColor: '#F3F3F3',
+    borderColor: '#dddddd',
+    color: 'red',
+    fontSize: 13,
+    padding: 3,
+    paddingHorizontal: 5,
+  },
+  link: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  url: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+};
+
+export type RenderTextParams<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -39,18 +58,16 @@ export const renderText = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  markdownRules,
-  markdownStyles,
-  message,
-}: Parameters<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { markdownRules, markdownStyles, message } = params;
+
   // take the @ mentions and turn them into markdown?
   // translate links
   const { mentioned_users = [], text } = message;
 
-  if (!text) {
-    return null;
-  }
+  if (!text) return null;
 
   let newText = text.trim();
   const urls = anchorme(newText, {
@@ -62,16 +79,16 @@ export const renderText = <
       length: 20,
       omission: '...',
     });
-    const mkdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
-    newText = newText.replace(urlInfo.raw, mkdown);
+    const markdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;
+    newText = newText.replace(urlInfo.raw, markdown);
   }
 
   if (mentioned_users.length) {
     for (let i = 0; i < mentioned_users.length; i++) {
       const username = mentioned_users[i].name || mentioned_users[i].id;
-      const mkdown = `**@${username}**`;
-      const re = new RegExp(`@${username}`, 'g');
-      newText = newText.replace(re, mkdown);
+      const markdown = `**@${username}**`;
+      const regEx = new RegExp(`@${username}`, 'g');
+      newText = newText.replace(regEx, markdown);
     }
   }
 
@@ -86,23 +103,4 @@ export const renderText = <
       {newText}
     </Markdown>
   );
-};
-
-const defaultMarkdownStyles = {
-  inlineCode: {
-    backgroundColor: '#F3F3F3',
-    borderColor: '#dddddd',
-    color: 'red',
-    fontSize: 13,
-    padding: 3,
-    paddingHorizontal: 5,
-  },
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  url: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
 };

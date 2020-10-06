@@ -398,29 +398,28 @@ export const MessageSimple = <
 
   const customMessageContent = !!props.MessageContent;
 
-  let alignment: Alignment;
-  if (forceAlign && (forceAlign === 'left' || forceAlign === 'right')) {
-    alignment = forceAlign;
-  } else {
-    alignment = isMyMessage() ? 'right' : 'left';
-  }
+  const alignment =
+    forceAlign && (forceAlign === 'left' || forceAlign === 'right')
+      ? forceAlign
+      : isMyMessage()
+      ? 'right'
+      : 'left';
 
-  const lastMessage =
-    channel?.state.messages[channel?.state.messages.length - 1];
-  const isVeryLastMessage = lastMessage?.id === message.id;
+  const isVeryLastMessage =
+    channel?.state.messages[channel?.state.messages.length - 1]?.id ===
+    message.id;
   const hasMarginBottom =
     groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
-  const hasReactions =
-    reactionsEnabled &&
-    message.latest_reactions &&
-    message.latest_reactions.length > 0;
 
   const forwardedProps = {
     ...props,
     alignment,
     customMessageContent,
     groupStyles:
-      hasReactions && props.ReactionList
+      reactionsEnabled &&
+      message.latest_reactions &&
+      message.latest_reactions.length > 0 &&
+      props.ReactionList
         ? (['bottom'] as GroupType[])
         : groupStyles,
   };

@@ -3,6 +3,8 @@ import React from 'react';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { styled } from '../../../styles/styledComponents';
 
+import type { ImageRequireSource } from 'react-native';
+
 import type { Message } from '../../../components/MessageList/utils/insertDates';
 import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
@@ -16,7 +18,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const iconPath = require('../../../images/icons/icon_path.png');
+const iconPath: ImageRequireSource = require('../../../images/icons/icon_path.png');
 
 const Container = styled.TouchableOpacity`
   align-items: center;
@@ -73,12 +75,10 @@ export const MessageReplies = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  alignment,
-  isThreadList,
-  message,
-  openThread,
-}: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { alignment, isThreadList, message, openThread } = props;
   const { t } = useTranslationContext();
   if (isThreadList || !message.reply_count) return null;
 

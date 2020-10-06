@@ -147,49 +147,47 @@ export const MessageActionSheet = React.forwardRef(
         title: string;
       }[] = [];
 
-      if (
-        reactionsEnabled &&
-        Array.isArray(messageActions) &&
-        messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
-      ) {
-        newOptions.splice(1, 0, {
-          id: MESSAGE_ACTIONS.reactions,
-          title: t('Add Reaction'),
-        });
-      }
+      if (Array.isArray(messageActions)) {
+        if (
+          reactionsEnabled &&
+          messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
+        ) {
+          newOptions.splice(1, 0, {
+            id: MESSAGE_ACTIONS.reactions,
+            title: t('Add Reaction'),
+          });
+        }
 
-      if (
-        repliesEnabled &&
-        Array.isArray(messageActions) &&
-        messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
-        !threadList
-      ) {
-        newOptions.splice(1, 0, {
-          id: MESSAGE_ACTIONS.reply,
-          title: t('Reply'),
-        });
-      }
+        if (
+          repliesEnabled &&
+          messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
+          !threadList
+        ) {
+          newOptions.splice(1, 0, {
+            id: MESSAGE_ACTIONS.reply,
+            title: t('Reply'),
+          });
+        }
 
-      if (
-        Array.isArray(messageActions) &&
-        messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-        canEditMessage?.()
-      ) {
-        newOptions.splice(1, 0, {
-          id: MESSAGE_ACTIONS.edit,
-          title: t('Edit Message'),
-        });
-      }
+        if (
+          messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
+          canEditMessage?.()
+        ) {
+          newOptions.splice(1, 0, {
+            id: MESSAGE_ACTIONS.edit,
+            title: t('Edit Message'),
+          });
+        }
 
-      if (
-        Array.isArray(messageActions) &&
-        messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-        canDeleteMessage?.()
-      ) {
-        newOptions.splice(1, 0, {
-          id: MESSAGE_ACTIONS.delete,
-          title: t('Delete Message'),
-        });
+        if (
+          messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
+          canDeleteMessage?.()
+        ) {
+          newOptions.splice(1, 0, {
+            id: MESSAGE_ACTIONS.delete,
+            title: t('Delete Message'),
+          });
+        }
       }
 
       setOptions((prevOptions) => [...prevOptions, ...newOptions]);
@@ -220,7 +218,7 @@ export const MessageActionSheet = React.forwardRef(
         cancelButtonIndex={0}
         destructiveButtonIndex={0}
         onPress={(index) => onActionPress(options[index].id)}
-        options={options.map((o, i) => {
+        options={options.map((option, i) => {
           if (i === 0) {
             return (
               <ActionSheetCancelButtonContainer testID='cancel-button'>
@@ -232,10 +230,10 @@ export const MessageActionSheet = React.forwardRef(
           }
           return (
             <ActionSheetButtonContainer
-              key={o.title}
-              testID={`action-sheet-item-${o.title}`}
+              key={option.title}
+              testID={`action-sheet-item-${option.title}`}
             >
-              <ActionSheetButtonText>{o.title}</ActionSheetButtonText>
+              <ActionSheetButtonText>{option.title}</ActionSheetButtonText>
             </ActionSheetButtonContainer>
           );
         })}

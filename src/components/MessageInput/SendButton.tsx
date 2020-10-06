@@ -50,10 +50,10 @@ export const SendButton = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  disabled = false,
-  sendMessage,
-}: SendButtonProps) => {
+>(
+  props: SendButtonProps,
+) => {
+  const { disabled = false, sendMessage } = props;
   const { editing } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   return (
     <Container disabled={disabled} onPress={sendMessage} testID='send-button'>

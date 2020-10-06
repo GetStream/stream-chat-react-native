@@ -29,11 +29,15 @@ export type AttachButtonProps = {
  *
  * @example ./AttachButton.md
  */
-export const AttachButton = ({
-  disabled = false,
-  handleOnPress,
-}: AttachButtonProps) => (
-  <Container disabled={disabled} onPress={handleOnPress} testID='attach-button'>
-    <AttachButtonIcon source={iconAddAttachment} />
-  </Container>
-);
+export const AttachButton: React.FC<AttachButtonProps> = (props) => {
+  const { disabled = false, handleOnPress } = props;
+  return (
+    <Container
+      disabled={disabled}
+      onPress={handleOnPress}
+      testID='attach-button'
+    >
+      <AttachButtonIcon source={iconAddAttachment} />
+    </Container>
+  );
+};

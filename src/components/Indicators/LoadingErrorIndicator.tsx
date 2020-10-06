@@ -23,6 +23,22 @@ const RetryText = styled.Text`
   ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
 `;
 
+type LoadingErrorWrapperProps = {
+  text: string;
+  onPress?: () => void;
+};
+
+const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
+  const { children, onPress, text } = props;
+
+  return (
+    <Container onPress={onPress}>
+      <ErrorText testID='loading-error'>{text}</ErrorText>
+      {children}
+    </Container>
+  );
+};
+
 export type LoadingErrorProps = {
   error?: boolean;
   listType?: 'channel' | 'message' | 'default';
@@ -30,35 +46,27 @@ export type LoadingErrorProps = {
   retry?: () => Promise<void>;
 };
 
-export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = ({
-  listType,
-  retry = () => null,
-}) => {
+export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
+  const { listType, retry = () => null } = props;
   const { t } = useTranslationContext();
 
   switch (listType) {
     case 'channel':
       return (
-        <Container onPress={retry}>
-          <ErrorText testID='loading-error'>
-            {t('Error loading channel list ...')}
-          </ErrorText>
+        <LoadingErrorWrapper
+          onPress={retry}
+          text={t('Error loading channel list ...')}
+        >
           <RetryText>⟳</RetryText>
-        </Container>
+        </LoadingErrorWrapper>
       );
     case 'message':
       return (
-        <Container>
-          <ErrorText testID='loading-error'>
-            {t('Error loading messages for this channel ...')}
-          </ErrorText>
-        </Container>
+        <LoadingErrorWrapper
+          text={t('Error loading messages for this channel ...')}
+        />
       );
     default:
-      return (
-        <Container>
-          <ErrorText testID='loading-error'>{t('Error loading')}</ErrorText>
-        </Container>
-      );
+      return <LoadingErrorWrapper text={t('Error loading')} />;
   }
 };

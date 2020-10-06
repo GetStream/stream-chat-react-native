@@ -18,6 +18,13 @@ const LoadingText = styled.Text`
   ${({ theme }) => theme.loadingIndicator.loadingText.css};
 `;
 
+const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => (
+  <Container>
+    <Spinner />
+    <LoadingText testID='loading'>{text}</LoadingText>
+  </Container>
+);
+
 export type LoadingProps = {
   listType?: 'channel' | 'message' | 'default';
   loadingText?: string;
@@ -28,28 +35,20 @@ export type LoadingProps = {
  *
  * @example ./LoadingIndicator.md
  */
-export const LoadingIndicator: React.FC<LoadingProps> = ({
-  listType,
-  loadingText,
-}) => {
+export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
+  const { listType, loadingText } = props;
   const { t } = useTranslationContext();
-  let indicatorText = '';
+
+  if (loadingText) {
+    return <LoadingIndicatorWrapper text={loadingText} />;
+  }
 
   switch (listType) {
     case 'channel':
-      indicatorText = loadingText ? loadingText : t('Loading channels ...');
-      break;
+      return <LoadingIndicatorWrapper text={t('Loading channels ...')} />;
     case 'message':
-      indicatorText = loadingText ? loadingText : t('Loading messages ...');
-      break;
+      return <LoadingIndicatorWrapper text={t('Loading messages ...')} />;
     default:
-      indicatorText = loadingText ? loadingText : t('Loading ...');
+      return <LoadingIndicatorWrapper text={t('Loading ...')} />;
   }
-
-  return (
-    <Container>
-      <Spinner />
-      <LoadingText testID='loading'>{indicatorText}</LoadingText>
-    </Container>
-  );
 };

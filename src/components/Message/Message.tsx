@@ -138,11 +138,17 @@ const DefaultMessageWithContext = <
   const [actionSheetVisible, setActionSheetVisible] = useState(false);
   const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
 
+  const actionsEnabled =
+    message.type === 'regular' && message.status === 'received';
+
+  /**
+   * TODO: Remove these functions and replace with booleans
+   */
   const isMyMessage = () =>
     client && message && client.user?.id === message.user?.id;
 
   const isAdmin = () =>
-    (client && client.user?.role === 'admin') ||
+    client?.user?.role === 'admin' ||
     channel?.state.membership.role === 'admin';
 
   const isOwner = () => channel?.state.membership.role === 'owner';
@@ -151,6 +157,9 @@ const DefaultMessageWithContext = <
     channel?.state.membership.role === 'channel_moderator' ||
     channel?.state.membership.role === 'moderator';
 
+  /**
+   * TODO: Consolidate these function into one
+   */
   const canEditMessage = () =>
     isMyMessage() || isModerator() || isOwner() || isAdmin();
 
@@ -165,12 +174,12 @@ const DefaultMessageWithContext = <
     }
   };
 
-  // TODO: add flag/mute functionality to SDK
   const handleFlag = async () => {
     if (message.id) {
       await client.flagMessage(message.id);
     }
   };
+
   const handleMute = async () => {
     if (message.user?.id) {
       await client.muteUser(message.user.id);
@@ -196,6 +205,8 @@ const DefaultMessageWithContext = <
   const dismissReactionPicker = () => setReactionPickerVisible(false);
 
   const handleReaction = async (reactionType: string) => {
+    setReactionPickerVisible(false);
+
     let userExistingReaction;
 
     if (Array.isArray(message.own_reactions)) {
@@ -219,8 +230,6 @@ const DefaultMessageWithContext = <
 
     // Add reaction to local state, make API call in background, revert to old message if fails
     try {
-      setReactionPickerVisible(false);
-
       if (userExistingReaction) {
         channel?.state.removeReaction(userExistingReaction);
         if (message.id) {
@@ -244,7 +253,7 @@ const DefaultMessageWithContext = <
           } as Reaction<Re, Us>);
         }
       }
-    } catch (e) {
+    } catch (_error) {
       setReactionPickerVisible(true);
       updateMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
     }
@@ -285,24 +294,24 @@ const DefaultMessageWithContext = <
     const reactionCounts = message.reaction_counts;
 
     if (reactionCounts && Object.keys(reactionCounts).length > 0) {
-      Object.keys(reactionCounts).map((key) => {
-        if (supportedReactions.find((e) => e.id === key)) {
+      Object.keys(reactionCounts).forEach((key) => {
+        if (
+          supportedReactions.find(
+            (supportedReaction) => supportedReaction.id === key,
+          )
+        ) {
           count += reactionCounts[key];
         }
-        return count;
       });
     }
     return count;
   };
 
-  const actionsEnabled =
-    message.type === 'regular' && message.status === 'received';
-
   const actionProps = {} as ActionProps;
-
-  if (channel && typeof channel.getConfig === 'function') {
-    actionProps.reactionsEnabled = channel.getConfig()?.reactions;
-    actionProps.repliesEnabled = channel.getConfig()?.reactions;
+  if (typeof channel?.getConfig === 'function') {
+    const reactions = channel.getConfig()?.reactions;
+    actionProps.reactionsEnabled = reactions;
+    actionProps.repliesEnabled = reactions;
   }
 
   const onPress = () => {
@@ -433,7 +442,7 @@ export type MessageProps<
   /**
    * A list of users that have read this message
    **/
-  readBy?: UserResponse<Us>[] | [];
+  readBy?: UserResponse<Us>[];
   /**
    * Whether or not the MessageList is part of a Thread
    */

@@ -57,14 +57,10 @@ export const useMessageDetailsForState = <
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState(
-    !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
-      message.mentioned_users
-      ? [
-          ...(message.mentioned_users as UserResponse<Us>[]).map(
-            (user) => user.id,
-          ),
-        ]
-      : [],
+    (!isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
+      Array.isArray(message?.mentioned_users) &&
+      message.mentioned_users.map((user) => user.id)) ||
+      [],
   );
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [text, setText] = useState(initialValue || '');
@@ -75,9 +71,11 @@ export const useMessageDetailsForState = <
       const newFileUploads = [];
       const newImageUploads = [];
 
-      const attachments = message.attachments as Attachment<At>[];
+      const attachments = Array.isArray(message.attachments)
+        ? message.attachments
+        : [];
 
-      for (const attach of attachments || []) {
+      for (const attach of attachments) {
         if (attach.type === 'file') {
           const id = generateRandomId();
           newFileUploads.push({

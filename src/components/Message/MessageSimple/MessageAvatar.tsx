@@ -30,6 +30,18 @@ const Spacer = styled.View`
   ${({ theme }) => theme.message.avatarWrapper.spacer.css}
 `;
 
+export type MessageAvatarProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
+  showAvatar?: boolean;
+};
+
 export const MessageAvatar = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -38,14 +50,11 @@ export const MessageAvatar = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
->({
-  alignment,
-  groupStyles,
-  message,
-  showAvatar,
-}: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  showAvatar?: boolean;
-}) => {
+>(
+  props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { alignment, groupStyles, message, showAvatar } = props;
+
   const visible =
     typeof showAvatar === 'boolean'
       ? showAvatar

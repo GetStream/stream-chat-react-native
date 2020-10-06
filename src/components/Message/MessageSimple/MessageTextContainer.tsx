@@ -6,13 +6,14 @@ import { renderText } from './utils/renderText';
 import { styled, ThemeContext } from '../../../styles/styledComponents';
 
 import type { MessageSimpleProps } from './MessageSimple';
+import type { RenderTextParams } from './utils/renderText';
 
 import type {
   Alignment,
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
 import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
-import type { MarkdownStyle, Theme } from '../../../styles/themeConstants';
+import type { Theme } from '../../../styles/themeConstants';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -25,7 +26,7 @@ import type {
 } from '../../../types/types';
 
 const TextContainer = styled.View<{
-  alignment: string;
+  alignment: Alignment;
   groupStyle: string;
   status?: string;
   type?: string;
@@ -75,15 +76,9 @@ export type MessageTextProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  renderText: ({
-    markdownRules,
-    markdownStyles,
-    message,
-  }: {
-    markdownRules: UnknownType;
-    markdownStyles: MarkdownStyle;
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  }) => JSX.Element | null;
+  renderText: (
+    params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => JSX.Element | null;
   theme: Theme;
 };
 
@@ -101,7 +96,7 @@ export type MessageTextContainerProps<
    */
   alignment: Alignment;
   /**
-   * Whether or not the message has failed or errored
+   * Whether or not the message has failed
    */
   disabled: boolean;
   /**

@@ -5,7 +5,10 @@ import { Avatar } from '../../Avatar/Avatar';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import { styled } from '../../../styles/styledComponents';
 
+import type { ImageRequireSource } from 'react-native';
+
 import type { ForwardedMessageProps } from './MessageContent';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -17,8 +20,8 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const iconDeliveredUnseen = require('../../../images/icons/delivered_unseen.png');
-const loadingGif = require('../../../images/loading.gif');
+const iconDeliveredUnseen: ImageRequireSource = require('../../../images/icons/delivered_unseen.png');
+const loadingGif: ImageRequireSource = require('../../../images/loading.gif');
 
 const CheckMark = styled.Image`
   height: 6px;
@@ -78,34 +81,34 @@ export const MessageStatus = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
->({
-  lastReceivedId,
-  message,
-  readBy = [],
-  threadList,
-}: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { lastReceivedId, message, readBy = [], threadList } = props;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const justReadByMe = readBy.length === 1 && readBy[0].id === client.user?.id;
 
-  const Status = () => {
-    if (message.status === 'sending') {
-      return (
+  if (message.status === 'sending') {
+    return (
+      <StatusContainer>
         <SendingContainer testID='sending-container'>
           <SendingImage source={loadingGif} />
         </SendingContainer>
-      );
-    }
+      </StatusContainer>
+    );
+  }
 
-    if (
-      readBy.length !== 0 &&
-      !threadList &&
-      message.id === lastReceivedId &&
-      !justReadByMe
-    ) {
-      const lastReadUser = readBy.filter(
-        (item) => item.id !== client.user?.id,
-      )[0];
-      return (
+  if (
+    readBy.length !== 0 &&
+    !threadList &&
+    message.id === lastReceivedId &&
+    !justReadByMe
+  ) {
+    const lastReadUser = readBy.filter(
+      (item) => item.id !== client.user?.id,
+    )[0];
+    return (
+      <StatusContainer>
         <ReadByContainer testID='read-by-container'>
           <Avatar
             image={lastReadUser.image}
@@ -113,30 +116,30 @@ export const MessageStatus = <
             size={16}
           />
         </ReadByContainer>
-      );
-    }
+      </StatusContainer>
+    );
+  }
 
-    if (
-      message.status === 'received' &&
-      message.type !== 'ephemeral' &&
-      message.id === lastReceivedId &&
-      !threadList
-    ) {
-      return (
+  if (
+    message.status === 'received' &&
+    message.type !== 'ephemeral' &&
+    message.id === lastReceivedId &&
+    !threadList
+  ) {
+    return (
+      <StatusContainer>
         <DeliveredContainer testID='delivered-container'>
           <DeliveredCircle>
             <CheckMark source={iconDeliveredUnseen} />
           </DeliveredCircle>
         </DeliveredContainer>
-      );
-    }
-
-    return <Spacer testID='spacer' />;
-  };
+      </StatusContainer>
+    );
+  }
 
   return (
     <StatusContainer>
-      <Status />
+      <Spacer testID='spacer' />
     </StatusContainer>
   );
 };

@@ -450,7 +450,10 @@ export const Channel = <
       created_at: new Date(),
       html: text,
       id: `${client.userID}-${uuidv4()}`,
-      mentioned_users,
+      mentioned_users:
+        mentioned_users?.map((userId) => ({
+          id: userId,
+        })) || [],
       parent_id,
       reactions: [],
       status: 'sending',
@@ -495,7 +498,8 @@ export const Channel = <
     const messageData = {
       attachments,
       id,
-      mentioned_users,
+      mentioned_users:
+        mentioned_users?.map((mentionedUser) => mentionedUser.id) || [],
       parent_id,
       text,
       ...extraFields,
