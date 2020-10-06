@@ -205,23 +205,28 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
                 <Image
                   resizeMode='cover'
                   source={{ uri: galleryImages[i].url }}
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, opacity: 0.5 }}
                 />
                 <View
                   style={{
                     alignItems: 'center',
+                    bottom: '30%',
+                    borderRadius: 20,
                     backgroundColor: 'rgba(0,0,0,0.69)',
-                    flex: 1,
+                    height: '40%',
                     justifyContent: 'center',
+                    left: '5%',
+                    position: 'absolute',
+                    right: '5%',
+                    width: '90%',
                   }}
                 >
                   <Text
-                    style={{ color: 'white', fontSize: 22, fontWeight: '700' }}
+                    style={{ color: 'white', fontSize: 20, fontWeight: '700' }}
                   >
-                    {' '}
-                    +{' '}
+                    +
                     {t('{{ imageCount }} more', {
-                      imageCount: galleryImages.length - (i + 1),
+                      imageCount: galleryImages.length - i,
                     })}
                   </Text>
                 </View>
