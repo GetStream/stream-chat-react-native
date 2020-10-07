@@ -7,8 +7,6 @@ import {
   MessagesContextValue,
 } from '../../../contexts/messagesContext/MessagesContext';
 
-import type { Attachment, UserResponse } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
