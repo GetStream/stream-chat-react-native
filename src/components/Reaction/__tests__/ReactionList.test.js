@@ -168,7 +168,7 @@ describe('ReactionList', () => {
     );
 
     await waitFor(() => {
-      expect(queryByTestId('reaction-list')).toBeTruthy();
+      expect(queryByTestId('reaction-list')).toBeFalsy();
       emojiTypes.forEach((emoji) => expect(queryByTestId(emoji)).toBeFalsy());
     });
 
