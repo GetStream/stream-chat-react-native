@@ -12,6 +12,19 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
+export type GetGroupStylesParams<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  messagesWithDates: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>;
+  noGroupByUser?: boolean;
+};
+
 export const getGroupStyles = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -20,22 +33,16 @@ export const getGroupStyles = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  messagesWithDates,
-  noGroupByUser,
-}: {
-  messagesWithDates: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>;
-  noGroupByUser?: boolean;
-}) => {
-  const numberOfMessages = messagesWithDates.length;
+>(
+  params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { messagesWithDates, noGroupByUser } = params;
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  const messages = [...messagesWithDates];
-
-  for (let i = 0; i < numberOfMessages; i++) {
-    const previousMessage = messages[i - 1];
-    const message = messages[i];
-    const nextMessage = messages[i + 1];
+  for (let i = 0; i < messagesWithDates.length; i++) {
+    const previousMessage = messagesWithDates[i - 1];
+    const message = messagesWithDates[i];
+    const nextMessage = messagesWithDates[i + 1];
     const groupStyles: GroupType[] = [];
 
     /**
@@ -45,18 +52,15 @@ export const getGroupStyles = <
       continue;
     }
 
-    if (isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)) {
+    if (isDateSeparator(message)) {
       continue;
     }
 
     const userId = message?.user?.id || null;
 
-    /**
-     * Determine top message
-     */
     const isTopMessage =
       !previousMessage ||
-      isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(previousMessage) ||
+      isDateSeparator(previousMessage) ||
       previousMessage.type === 'system' ||
       previousMessage.type === 'channel.event' ||
       (previousMessage.attachments &&
@@ -65,12 +69,9 @@ export const getGroupStyles = <
       previousMessage.type === 'error' ||
       !!previousMessage.deleted_at;
 
-    /**
-     * Determine bottom message
-     */
     const isBottomMessage =
       !nextMessage ||
-      isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(nextMessage) ||
+      isDateSeparator(nextMessage) ||
       nextMessage.type === 'system' ||
       nextMessage.type === 'channel.event' ||
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||

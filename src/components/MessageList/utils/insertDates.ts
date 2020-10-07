@@ -108,16 +108,16 @@ export const insertDates = <
      * variable for previous date (day)
      */
     const messageDate = message.created_at.getDay();
-    let prevMessageDate = messageDate;
 
     /**
      * If this is not the last entry in the messages array
      * set the previous message date (day) to the date of the next
      * message in the array
      */
-    if (i < messages.length - 1) {
-      prevMessageDate = messages[i + 1].created_at.getDay();
-    }
+    const prevMessageDate =
+      i < messages.length - 1
+        ? messages[i + 1].created_at.getDay()
+        : messageDate;
 
     /**
      * Before the first message insert a date object

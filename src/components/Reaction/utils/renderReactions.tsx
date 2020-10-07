@@ -28,21 +28,22 @@ export const renderReactions = <
   const reactionsByType: {
     [key: string]: ReactionResponse<Re, Us>[];
   } = {};
-  reactions?.map((item) => {
-    if (reactionsByType[item.type] === undefined) {
-      return (reactionsByType[item.type] = [item as ReactionResponse<Re, Us>]);
-    } else {
-      return (reactionsByType[item.type] = [
-        ...reactionsByType[item.type],
-        item as ReactionResponse<Re, Us>,
-      ]);
+  reactions?.map((reaction) => {
+    if (!reactionsByType[reaction.type]) {
+      return (reactionsByType[reaction.type] = [reaction]);
     }
+    return (reactionsByType[reaction.type] = [
+      ...reactionsByType[reaction.type],
+      reaction,
+    ]);
   });
 
   const emojiDataByType: { [key: string]: Reaction } = {};
-  supportedReactions.forEach((e) => (emojiDataByType[e.id] = e));
+  const reactionTypes = supportedReactions.map((supportedReaction) => {
+    emojiDataByType[supportedReaction.id] = supportedReaction;
+    return supportedReaction.id;
+  });
 
-  const reactionTypes = supportedReactions.map((e) => e.id);
   return Object.keys(reactionsByType).map((type) =>
     reactionTypes.indexOf(type) > -1 ? (
       <Text key={type} testID={type}>

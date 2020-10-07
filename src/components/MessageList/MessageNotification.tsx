@@ -33,10 +33,10 @@ export type MessageNotificationProps = {
 /**
  * @example ./MessageNotification.md
  */
-export const MessageNotification = ({
-  onPress,
-  showNotification = true,
-}: MessageNotificationProps) => {
+export const MessageNotification: React.FC<MessageNotificationProps> = (
+  props,
+) => {
+  const { onPress, showNotification = true } = props;
   const { t } = useTranslationContext();
 
   const opacity = useRef(new Animated.Value(0)).current;

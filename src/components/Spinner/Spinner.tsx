@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Easing } from 'react-native';
+
 import { styled } from '../../styles/styledComponents';
 
 const AnimatedView = Animated.createAnimatedComponent(Animated.View);

@@ -22,23 +22,14 @@ export const getLastReceivedMessage = <
 >(
   messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  let lastReceivedMessage = null;
-
   /**
    * There are no status on dates so they will be skipped
    */
-  for (let i = 0; i < messages.length; i++) {
-    const message = messages[i];
-    if (
-      message !== undefined &&
-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message) &&
-      message.status !== undefined &&
-      message.status === 'received'
-    ) {
-      lastReceivedMessage = messages[i];
-      break;
+  for (const message of messages) {
+    if (message && !isDateSeparator(message) && message.status === 'received') {
+      return message;
     }
   }
 
-  return lastReceivedMessage;
+  return;
 };

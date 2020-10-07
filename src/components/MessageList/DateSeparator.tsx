@@ -82,20 +82,14 @@ export const DateSeparator = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  formatDate,
-  message,
-}: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { formatDate, message } = props;
   const { tDateTimeParser } = useTranslationContext();
-
-  let date;
-
-  if (formatDate) {
-    date = formatDate(message.date as TDateTimeParserInput);
-  } else {
-    date = tDateTimeParser(message.date as TDateTimeParserInput);
-  }
-
+  const date = formatDate
+    ? formatDate(message.date as TDateTimeParserInput)
+    : tDateTimeParser(message.date as TDateTimeParserInput);
   return (
     <Container testID='date-separator'>
       <Line />

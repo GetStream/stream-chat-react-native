@@ -97,10 +97,11 @@ const getMembers = <
   const members = (channel.state.members as unknown) as ChannelMemberResponse<
     Us
   >[];
+
   return members && Object.values(members).length
-    ? Object.values(members)
-        .filter((member) => member.user)
-        .map((member) => member.user)
+    ? (Object.values(members).filter((member) => member.user) as Array<
+        ChannelMemberResponse<Us> & { user: UserResponse<Us> }
+      >).map((member) => member.user)
     : [];
 };
 
@@ -132,23 +133,17 @@ const getMembersAndWatchers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const users = [
-    ...getMembers<At, Ch, Co, Ev, Me, Re, Us>(channel),
-    ...getWatchers<At, Ch, Co, Ev, Me, Re, Us>(channel),
-  ];
+  const users = [...getMembers(channel), ...getWatchers(channel)];
 
-  // make sure we don't list users twice
-  const uniqueUsers: {
-    [key: string]: SuggestionUser<Us>;
-  } = {};
-  for (const user of users) {
-    if (user !== undefined && !uniqueUsers[user.id]) {
-      uniqueUsers[user.id] = user;
-    }
-  }
-  const usersArray = Object.values(uniqueUsers);
+  return Object.values(
+    users.reduce((acc, cur) => {
+      if (!acc[cur.id]) {
+        acc[cur.id] = cur;
+      }
 
-  return usersArray;
+      return acc;
+    }, {} as { [key: string]: SuggestionUser<Us> }),
+  );
 };
 
 // TODO: test to see if this function works as it integrated a debounce function
@@ -174,8 +169,7 @@ const queryMembers = async <
 
         const users: SuggestionUser<Us>[] = [];
         response.members.forEach(
-          (member) =>
-            isUserResponse<Us>(member.user) && users.push(member.user),
+          (member) => isUserResponse(member.user) && users.push(member.user),
         );
         if (onReady && users) {
           onReady(users);
@@ -191,6 +185,7 @@ export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
   trigger === '@';
 
 export type Trigger = '/' | '@';
+
 export type TriggerSettings<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
@@ -236,15 +231,30 @@ export type TriggerSettings<
   };
 };
 
-// ACI = AutoCompleteInput
-//
-// dataProvider accepts `onReady` function, which will executed once the data is ready.
-// Another approach would have been to simply return the data from dataProvider and let the
-// component await for it and then execute the required logic. We are going for callback instead
-// of async-await since we have debounce function in dataProvider. Which will delay the execution
-// of api call on trailing end of debounce (lets call it a1) but will return with result of
-// previous call without waiting for a1. So in this case, we want to execute onReady, when trailing
-// end of debounce executes.
+export type ACITriggerSettingsParams<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
+} & Pick<TranslationContextValue, 't'>;
+
+/**
+ * ACI = AutoCompleteInput
+ *
+ * DataProvider accepts `onReady` function, which will execute once the data is ready.
+ * Another approach would have been to simply return the data from dataProvider and let the
+ * component await for it and then execute the required logic. We are going for callback instead
+ * of async-await since we have debounce function in dataProvider. Which will delay the execution
+ * of api call on trailing end of debounce (lets call it a1) but will return with result of
+ * previous call without waiting for a1. So in this case, we want to execute onReady, when trailing
+ * end of debounce executes.
+ */
 export const ACITriggerSettings = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -257,44 +267,40 @@ export const ACITriggerSettings = <
   channel,
   onMentionSelectItem,
   t = (msg: string) => msg,
-}: {
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
-  onMentionSelectItem: (item: SuggestionUser<Us>) => void;
-} & Pick<TranslationContextValue, 't'>): TriggerSettings<Co, Us> => ({
+}: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<
+  Co,
+  Us
+> => ({
   '/': {
     component: 'CommandsItem',
     dataProvider: (query, text, onReady) => {
-      if (text.indexOf('/') !== 0) {
-        return [];
-      }
+      if (text.indexOf('/') !== 0) return [];
 
-      const selectedCommands = getCommands<At, Ch, Co, Ev, Me, Re, Us>(
-        channel,
-      ).filter((command) => query && command?.name?.indexOf(query) !== -1);
+      const selectedCommands = getCommands(channel).filter(
+        (command) => query && command.name?.indexOf(query) !== -1,
+      );
 
       // sort alphabetically unless the you're matching the first char
       selectedCommands.sort((a, b) => {
-        let nameA = a?.name?.toLowerCase() || '';
-        let nameB = b?.name?.toLowerCase() || '';
+        let nameA = a.name?.toLowerCase() || '';
+        let nameB = b.name?.toLowerCase() || '';
         if (query && nameA.indexOf(query) === 0) {
           nameA = `0${nameA}`;
         }
         if (query && nameB.indexOf(query) === 0) {
           nameB = `0${nameB}`;
         }
-        if (nameA < nameB) {
-          return -1;
-        }
-        if (nameA > nameB) {
-          return 1;
-        }
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
 
         return 0;
       });
 
       const result = selectedCommands.slice(0, 10);
 
-      onReady?.(result, query);
+      if (onReady) {
+        onReady(result, query);
+      }
 
       return result;
     },
@@ -312,45 +318,41 @@ export const ACITriggerSettings = <
     component: 'MentionsItem',
     dataProvider: (query, _, onReady) => {
       const members = channel.state.members;
-      // By default, we return maximum 100 members via queryChannels api call.
-      // Thus it is safe to assume, that if number of members in channel.state is < 100,
-      // then all the members are already available on client side and we don't need to
-      // make any api call to queryMembers endpoint.
+
+      /**
+       * By default, we return maximum 100 members via queryChannels api call.
+       * Thus it is safe to assume, that if number of members in channel.state is < 100,
+       * then all the members are already available on client side and we don't need to
+       * make any api call to queryMembers endpoint.
+       */
       if (!query || Object.values(members).length < 100) {
-        const users = getMembersAndWatchers<At, Ch, Co, Ev, Me, Re, Us>(
-          channel,
-        );
+        const users = getMembersAndWatchers(channel);
 
         const matchingUsers = users.filter((user) => {
           if (!query) return true;
-          if (
-            user.name !== undefined &&
-            user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
-          ) {
+          if (user.name?.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
             return true;
-          } else if (
-            user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1
-          ) {
-            return true;
-          } else {
-            return false;
           }
+          if (user.id.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+            return true;
+          }
+          return false;
         });
 
         const data = matchingUsers.slice(0, 10);
 
-        onReady?.(data, query);
+        if (onReady) {
+          onReady(data, query);
+        }
 
         return data;
       }
 
-      return queryMembers<At, Ch, Co, Ev, Me, Re, Us>(
-        channel,
-        query,
-        (data) => {
-          onReady?.(data, query);
-        },
-      );
+      return queryMembers(channel, query, (data) => {
+        if (onReady) {
+          onReady(data, query);
+        }
+      });
     },
     output: (entity) => ({
       caretPosition: 'next',

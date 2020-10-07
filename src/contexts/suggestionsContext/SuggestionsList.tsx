@@ -89,44 +89,54 @@ export type SuggestionsListProps<
 export const SuggestionsList = <
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
->({
-  active,
-  backdropHeight,
-  componentType: Component,
-  handleDismiss,
-  marginLeft,
-  suggestions: { data, onSelect },
-  suggestionsTitle,
-  width,
-}: SuggestionsListProps<Co, Us>) => {
-  const renderItem = ({ item }: { item: Suggestion<Co, Us> }) => {
-    let render;
+>(
+  props: SuggestionsListProps<Co, Us>,
+) => {
+  const {
+    active,
+    backdropHeight,
+    componentType: Component,
+    handleDismiss,
+    marginLeft,
+    suggestions: { data, onSelect },
+    suggestionsTitle,
+    width,
+  } = props;
 
+  const renderItem = ({ item }: { item: Suggestion<Co, Us> }) => {
     if (isString(Component)) {
       switch (Component) {
         case 'MentionsItem':
           if (isSuggestionUser(item)) {
-            render = <MentionsItem item={item} />;
+            return (
+              <SuggestionsItem onPress={() => onSelect(item)}>
+                <MentionsItem item={item} />
+              </SuggestionsItem>
+            );
           }
-          break;
+          return null;
         case 'CommandsItem':
           if (!isSuggestionUser(item)) {
-            render = <CommandsItem item={item} />;
+            return (
+              <SuggestionsItem onPress={() => onSelect(item)}>
+                <CommandsItem item={item} />
+              </SuggestionsItem>
+            );
           }
-          break;
+          return null;
         default:
           return null;
       }
-    } else {
-      render = React.cloneElement(Component, { item });
     }
 
     return (
-      <SuggestionsItem onPress={() => onSelect(item)}>{render}</SuggestionsItem>
+      <SuggestionsItem onPress={() => onSelect(item)}>
+        {React.cloneElement(Component, { item })}
+      </SuggestionsItem>
     );
   };
 
-  if (!active || !data || data.length === 0) return null;
+  if (!active || data.length === 0) return null;
 
   return (
     <Wrapper onPress={handleDismiss} style={{ height: backdropHeight }}>

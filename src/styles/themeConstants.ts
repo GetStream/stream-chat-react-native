@@ -1,5 +1,5 @@
-import type { CSSObject } from 'styled-components';
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { CSSObject } from 'styled-components';
 
 export const BASE_FONT_SIZE = 16;
 

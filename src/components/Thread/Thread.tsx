@@ -122,7 +122,17 @@ export const Thread = <
 >(
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { t } = useTranslationContext();
+  const {
+    autoFocus = true,
+    Message: MessageFromProps,
+    MessageList = DefaultMessageList,
+    MessageInput = DefaultMessageInput,
+    additionalParentMessageProps,
+    disabled,
+    additionalMessageListProps,
+    additionalMessageInputProps,
+  } = props;
+
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { Message: MessageFromContext } = useMessagesContext<
     At,
@@ -142,21 +152,7 @@ export const Thread = <
     Re,
     Us
   >();
-  const {
-    autoFocus = true,
-    Message: MessageFromProps,
-    MessageList = DefaultMessageList,
-    MessageInput = DefaultMessageInput,
-    additionalParentMessageProps,
-    disabled,
-    additionalMessageListProps,
-    additionalMessageInputProps,
-  } = props;
-
-  const Message = (MessageFromProps ||
-    MessageFromContext) as React.ComponentType<
-    MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
+  const { t } = useTranslationContext();
 
   useEffect(() => {
     const loadMoreThreadAsync = async () => {
@@ -168,9 +164,9 @@ export const Thread = <
     }
   }, []);
 
-  if (!thread) {
-    return null;
-  }
+  if (!thread) return null;
+
+  const Message = MessageFromProps || MessageFromContext;
 
   const headerComponent = (
     <>
@@ -187,11 +183,8 @@ export const Thread = <
     </>
   );
 
-  // this ensures that if you switch thread the component is recreated
-  const key = `thread-${thread.id}-${channel?.cid || ''}`;
-
   return (
-    <React.Fragment key={key}>
+    <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
         {...additionalMessageListProps}
         HeaderComponent={headerComponent}

@@ -90,28 +90,26 @@ export const MessageSystem = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  formatDate,
-  message,
-}: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { formatDate, message } = props;
   const { tDateTimeParser } = useTranslationContext();
 
-  let date;
-
-  if (formatDate && message?.created_at) {
-    date = formatDate(message.created_at as TDateTimeParserInput);
-  } else {
-    date = tDateTimeParser(message.created_at as TDateTimeParserInput);
-    if (isDayOrMoment(date)) {
-      date = date.calendar().toUpperCase();
-    }
-  }
+  const createdAt = message.created_at as TDateTimeParserInput | undefined;
+  const parsedDate = tDateTimeParser(createdAt);
+  const date =
+    formatDate && createdAt
+      ? formatDate(createdAt)
+      : parsedDate && isDayOrMoment(parsedDate)
+      ? parsedDate.calendar().toUpperCase()
+      : parsedDate;
 
   return (
     <Container testID='message-system'>
       <Line />
       <TextContainer>
-        <Text>{message?.text?.toUpperCase() || ''}</Text>
+        <Text>{message.text?.toUpperCase() || ''}</Text>
         <DateText>{date}</DateText>
       </TextContainer>
       <Line />

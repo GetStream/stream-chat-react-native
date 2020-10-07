@@ -1,4 +1,5 @@
 import * as styledComponents from 'styled-components/native';
+
 import type { Theme } from './themeConstants';
 
 declare module 'styled-components/native' {

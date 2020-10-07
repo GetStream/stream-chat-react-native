@@ -1,5 +1,10 @@
-import { InsertDatesResponse, isDateSeparator } from '../utils/insertDates';
+import {
+  InsertDatesResponse,
+  isDateSeparator,
+  Message,
+} from '../utils/insertDates';
 
+import type { ImmutableDate } from 'seamless-immutable';
 import type { UserResponse } from 'stream-chat';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -26,23 +31,20 @@ export const getReadStates = <
   messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>,
   read?: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'],
 ) => {
-  const readData: { [key: string]: UserResponse<Us>[] } = {};
-
-  for (const message of messages) {
-    /**
-     * Filter out date separators
-     */
-    if (isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)) {
-      continue;
+  const readData = messages.reduce((acc, cur) => {
+    if (!isDateSeparator(cur) && cur.id) {
+      acc[cur.id] = [];
     }
+    return acc;
+  }, {} as { [key: string]: UserResponse<Us>[] });
 
-    /**
-     * Create empty array for each message id
-     */
-    if (message.id) {
-      readData[message.id] = [];
+  const filteredMessagesReversed = messages
+    .filter((msg) => !isDateSeparator(msg) && msg.updated_at)
+    .reverse() as Array<
+    Message<At, Ch, Co, Ev, Me, Re, Us> & {
+      updated_at: string | ImmutableDate;
     }
-  }
+  >;
 
   if (read) {
     /**
@@ -50,26 +52,22 @@ export const getReadStates = <
      */
     for (const readState of Object.values(read)) {
       /**
-       * If no last read break
-       * TODO: Check if this is needed or if continue should be used instead
+       * If no last read continue
        */
-      if (readState.last_read == null) {
-        break;
+      if (!readState.last_read) {
+        continue;
       }
 
       /**
-       * Find the last message before the last_read
+       * Array is in reverse order so newest message is at 0,
+       * we find the index of the first message that is older
+       * than the last read and then set last read to that, or
+       * if there are no newer messages, the first message is
+       * last read message.
        */
-      let userLastReadMsgId;
-      for (const msg of messages) {
-        if (
-          !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) &&
-          msg.updated_at &&
-          msg.updated_at < readState.last_read
-        ) {
-          userLastReadMsgId = msg.id;
-        }
-      }
+      const userLastReadMsgId = filteredMessagesReversed.find(
+        (msg) => msg.updated_at < readState.last_read,
+      )?.id;
 
       /**
        * If there there is a last read message add the user

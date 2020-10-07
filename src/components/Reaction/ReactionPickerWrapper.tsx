@@ -7,6 +7,7 @@ import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 import type { LatestReactions, Reaction } from './ReactionList';
 import type { ReactionPickerProps } from './ReactionPicker';
+
 import type {
   Alignment,
   MessageWithDates,
@@ -118,10 +119,10 @@ export const ReactionPickerWrapper = <
   }, [reactionPickerVisible]);
 
   const setReactionPickerPosition = () => {
-    if (messageContainer.current) {
-      setTimeout(
-        () => {
-          messageContainer?.current?.measureInWindow((x, y, width) => {
+    setTimeout(
+      () => {
+        if (messageContainer.current) {
+          messageContainer.current.measureInWindow((x, y, width) => {
             setRPLeft(alignment === 'left' ? x - 10 + offset.left : undefined);
             setRPRight(
               alignment === 'right'
@@ -131,10 +132,10 @@ export const ReactionPickerWrapper = <
             );
             setRPTop(y - 60 + offset.top);
           });
-        },
-        customMessageContent ? 10 : 0,
-      );
-    }
+        }
+      },
+      customMessageContent ? 10 : 0,
+    );
   };
 
   return (

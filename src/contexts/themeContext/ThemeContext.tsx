@@ -10,11 +10,10 @@ export type ThemeProviderInputValue = {
   style?: ThemeType;
 };
 
-export const ThemeProvider: React.FC<ThemeProviderInputValue> = ({
-  children,
-  style,
-}) => {
+export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
+  const { children, style } = props;
   const modifiedTheme = defaultTheme;
+
   if (style) {
     const formattedStyle = replaceCssShorthand(style);
     merge(modifiedTheme, formattedStyle);

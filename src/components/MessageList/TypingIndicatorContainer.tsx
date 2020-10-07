@@ -25,6 +25,10 @@ const Container = styled.View`
   ${({ theme }) => theme.messageList.typingIndicatorContainer.css}
 `;
 
+type Props = {
+  children?: React.ReactNode;
+};
+
 export const TypingIndicatorContainer = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -35,17 +39,14 @@ export const TypingIndicatorContainer = <
   Us extends DefaultUserType = DefaultUserType
 >({
   children,
-}: {
-  children: React.ReactNode;
-}) => {
+}: Props) => {
   const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const typingUsers = Object.values(typing);
 
   if (
     !typingUsers.length ||
-    (typingUsers.length === 1 &&
-      typingUsers?.[0]?.user?.id === client?.user?.id)
+    (typingUsers.length === 1 && typingUsers[0].user?.id === client?.user?.id)
   ) {
     return null;
   }

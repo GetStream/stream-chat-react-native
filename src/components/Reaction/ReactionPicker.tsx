@@ -63,27 +63,11 @@ const getLatestUser = <
   type: string,
   reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
 ) => {
-  const filtered = getUsersPerReaction(type, reactions);
+  const filtered = reactions?.filter((item) => item.type === type);
   if (filtered?.[0]?.user) {
     return filtered[0].user;
-  } else {
-    return 'NotFound';
   }
-};
-
-const getUsersPerReaction = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  type: string,
-  reactions?: LatestReactions<At, Ch, Co, Me, Re, Us>,
-) => {
-  const filtered = reactions?.filter((item) => item.type === type);
-  return filtered;
+  return;
 };
 
 export type ReactionPickerProps<
@@ -117,26 +101,32 @@ export const ReactionPicker = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
->({
-  handleDismiss,
-  handleReaction,
-  hideReactionCount = false,
-  hideReactionOwners = false,
-  latestReactions,
-  reactionCounts,
-  reactionPickerVisible,
-  rpLeft = 30,
-  rpRight = 10,
-  rpTop = 40,
-  supportedReactions = emojiData,
-}: ReactionPickerProps<At, Ch, Co, Me, Re, Us>) =>
-  reactionPickerVisible ? (
+>(
+  props: ReactionPickerProps<At, Ch, Co, Me, Re, Us>,
+) => {
+  const {
+    handleDismiss,
+    handleReaction,
+    hideReactionCount = false,
+    hideReactionOwners = false,
+    latestReactions,
+    reactionCounts,
+    reactionPickerVisible,
+    rpLeft = 30,
+    rpRight = 10,
+    rpTop = 40,
+    supportedReactions = emojiData,
+  } = props;
+
+  if (!reactionPickerVisible) return null;
+
+  return (
     <Modal
       animationType='fade'
       onRequestClose={handleDismiss}
       testID='reaction-picker'
       transparent
-      visible={reactionPickerVisible}
+      visible
     >
       <Container
         activeOpacity={1}
@@ -145,20 +135,18 @@ export const ReactionPicker = <
       >
         <ContainerView
           style={{
-            marginLeft: rpLeft ?? undefined,
-            marginRight: rpRight ?? undefined,
+            marginLeft: rpLeft,
+            marginRight: rpRight,
             marginTop: rpTop,
           }}
         >
           {supportedReactions.map(({ icon, id }) => {
-            const latestUser = getLatestUser<At, Ch, Co, Me, Re, Us>(
-              id,
-              latestReactions,
-            );
             const count = reactionCounts?.[id] || 0;
+            const latestUser = getLatestUser(id, latestReactions);
+
             return (
               <Column key={id} testID={id}>
-                {latestUser !== 'NotFound' && !hideReactionOwners ? (
+                {latestUser && !hideReactionOwners ? (
                   <Avatar
                     image={latestUser.image}
                     name={latestUser.name || latestUser.id}
@@ -186,4 +174,5 @@ export const ReactionPicker = <
         </ContainerView>
       </Container>
     </Modal>
-  ) : null;
+  );
+};

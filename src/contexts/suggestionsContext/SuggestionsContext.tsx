@@ -165,6 +165,7 @@ export const SuggestionsProvider = <
       value?.setInputBoxContainerRef || setInputBoxContainerRef,
     updateSuggestions: value?.updateSuggestions || updateSuggestions,
   };
+
   return (
     <SuggestionsContext.Provider
       value={(suggestionsContext as unknown) as SuggestionsContextValue}

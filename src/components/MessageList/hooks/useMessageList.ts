@@ -4,7 +4,6 @@ import {
   insertDates,
   InsertDatesResponse,
   isDateSeparator,
-  MessageOrDate,
 } from '../utils/insertDates';
 
 import {
@@ -25,15 +24,10 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-export type MessageList<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>;
+export type UseMessageListParams = {
+  noGroupByUser?: boolean;
+  threadList?: boolean;
+};
 
 export const useMessageList = <
   At extends UnknownType = DefaultAttachmentType,
@@ -43,13 +37,10 @@ export const useMessageList = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  noGroupByUser,
-  threadList,
-}: {
-  noGroupByUser?: boolean;
-  threadList?: boolean;
-}): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
+>(
+  params: UseMessageListParams,
+): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
+  const { noGroupByUser, threadList } = params;
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();

@@ -8,6 +8,8 @@ import { useChannelContext } from '../../contexts/channelContext/ChannelContext'
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { styled } from '../../styles/styledComponents';
 
+import type { Event, UserResponse } from 'stream-chat';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -59,17 +61,19 @@ export const TypingIndicator = <
 
   return (
     <Container testID='typing-indicator'>
-      {typingUsers
-        .filter(({ user }) => user?.id !== client?.user?.id)
-        .map(({ user }, idx) => (
-          <Avatar
-            image={user?.image}
-            key={`${user?.id}${idx}`}
-            name={user?.name || user?.id}
-            size={24}
-            testID={`typing-avatar-${idx}`}
-          />
-        ))}
+      {(typingUsers.filter(
+        ({ user }) => !!user && user.id !== client?.user?.id,
+      ) as Array<
+        Event<At, Ch, Co, Ev, Me, Re, Us> & { user: UserResponse<Us> }
+      >).map(({ user }, idx) => (
+        <Avatar
+          image={user.image}
+          key={`${user.id}${idx}`}
+          name={user.name || user.id}
+          size={24}
+          testID={`typing-avatar-${idx}`}
+        />
+      ))}
       <TypingText>{typingString}</TypingText>
     </Container>
   );

@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   FlatListProps,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
+  ScrollViewProps,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -59,19 +58,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const ListContainer = (styled(FlatList)`
-  flex: 1;
-  padding-horizontal: 10px;
-  width: 100%;
-  ${({ theme }) => theme.messageList.listContainer.css}
-` as React.ComponentType) as new <T>() => FlatList<T>;
-
-const ErrorNotificationText = styled.Text`
-  background-color: #fae6e8;
-  color: red;
-  ${({ theme }) => theme.messageList.errorNotificationText.css}
-`;
-
 const ErrorNotification = styled.View`
   align-items: center;
   background-color: #fae6e8;
@@ -80,6 +66,46 @@ const ErrorNotification = styled.View`
   z-index: 10;
   ${({ theme }) => theme.messageList.errorNotification.css}
 `;
+
+const ErrorNotificationText = styled.Text`
+  background-color: #fae6e8;
+  color: red;
+  ${({ theme }) => theme.messageList.errorNotificationText.css}
+`;
+
+const ListContainer = (styled(FlatList)`
+  flex: 1;
+  padding-horizontal: 10px;
+  width: 100%;
+  ${({ theme }) => theme.messageList.listContainer.css}
+` as React.ComponentType) as new <T>() => FlatList<T>;
+
+const keyExtractor = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  item: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  if (!isDateSeparator(item)) {
+    return (
+      item.id ||
+      (item.created_at
+        ? typeof item.created_at === 'string'
+          ? item.created_at
+          : item.created_at.toISOString()
+        : uuidv4())
+    );
+  }
+  if (item.date && typeof item.date !== 'string') {
+    return item.date.toISOString();
+  }
+  return uuidv4();
+};
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -205,23 +231,27 @@ export const MessageList = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  actionSheetStyles,
-  additionalFlatListProps,
-  AttachmentFileIcon,
-  DateSeparator = DefaultDateSeparator,
-  disableWhileEditing = true,
-  dismissKeyboardOnMessageTouch = true,
-  HeaderComponent,
-  Message: MessageFromProps,
-  MessageSystem = DefaultMessageSystem,
-  messageActions,
-  noGroupByUser,
-  onThreadSelect,
-  setFlatListRef,
-  threadList,
-  TypingIndicator = DefaultTypingIndicator,
-}: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>) => {
+>(
+  props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    actionSheetStyles,
+    additionalFlatListProps,
+    AttachmentFileIcon,
+    DateSeparator = DefaultDateSeparator,
+    disableWhileEditing = true,
+    dismissKeyboardOnMessageTouch = true,
+    HeaderComponent,
+    Message: MessageFromProps,
+    MessageSystem = DefaultMessageSystem,
+    messageActions,
+    noGroupByUser,
+    onThreadSelect,
+    setFlatListRef,
+    threadList,
+    TypingIndicator = DefaultTypingIndicator,
+  } = props;
+
   const {
     channel,
     disabled,
@@ -238,7 +268,6 @@ export const MessageList = <
   const { loadMoreThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  const Message = MessageFromProps || MessageFromContext;
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     noGroupByUser,
     threadList,
@@ -249,31 +278,14 @@ export const MessageList = <
   > | null>(null);
   const yOffset = useRef(0);
 
-  const [lastReceivedId, setLastReceivedId] = useState(() => {
-    let message;
-    if (getLastReceivedMessage) {
-      message = getLastReceivedMessage<At, Ch, Co, Ev, Me, Re, Us>(messageList);
-    }
-    return !message || isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)
-      ? undefined
-      : message.id;
-  });
+  const [lastReceivedId, setLastReceivedId] = useState(
+    getLastReceivedMessage(messageList)?.id,
+  );
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   useEffect(() => {
-    const currentLastMessage = getLastReceivedMessage<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >(messageList);
-    if (
-      currentLastMessage &&
-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(currentLastMessage)
-    ) {
+    const currentLastMessage = getLastReceivedMessage(messageList);
+    if (currentLastMessage) {
       const currentLastReceivedId = currentLastMessage.id;
       if (currentLastReceivedId) {
         const hasNewMessage = lastReceivedId !== currentLastReceivedId;
@@ -284,23 +296,19 @@ export const MessageList = <
           currentLastMessage.user?.id === client.userID;
 
         // always scroll down when it's your own message that you added..
-        const scrollToBottom =
-          (hasNewMessage && isOwner) || (hasNewMessage && !userScrolledUp);
+        const scrollToBottom = hasNewMessage && (isOwner || !userScrolledUp);
 
         // Check the scroll position... if you're scrolled up show a little notification
         if (!scrollToBottom && hasNewMessage && !newMessagesNotification) {
           setNewMessageNotification(true);
         }
-        if (scrollToBottom) {
-          if (flatListRef.current) {
-            flatListRef.current.scrollToIndex({ index: 0 });
-          }
-        }
 
-        // remove the scroll notification if we already scrolled down...
-        if (scrollToBottom && newMessagesNotification) {
+        // remove the scroll notification when we scroll down...
+        if (scrollToBottom && flatListRef.current) {
+          flatListRef.current.scrollToIndex({ index: 0 });
           setNewMessageNotification(false);
         }
+
         if (hasNewMessage) setLastReceivedId(currentLastReceivedId);
       }
     }
@@ -308,12 +316,16 @@ export const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
+  const Message = MessageFromProps || MessageFromContext;
+
   const renderItem = (message: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>) => {
-    if (isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(message)) {
+    if (isDateSeparator(message)) {
       return <DateSeparator message={message} />;
-    } else if (message.type === 'system') {
+    }
+    if (message.type === 'system') {
       return <MessageSystem message={message} />;
-    } else if (message.type !== 'message.read') {
+    }
+    if (message.type !== 'message.read') {
       return (
         <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
           actionSheetStyles={actionSheetStyles}
@@ -332,12 +344,10 @@ export const MessageList = <
         />
       );
     }
-    return <></>;
+    return null;
   };
 
-  const handleScroll: (
-    event: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => void = (event) => {
+  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const y = event.nativeEvent.contentOffset.y;
     const removeNewMessageNotification = y <= 0;
     if (
@@ -345,8 +355,9 @@ export const MessageList = <
       removeNewMessageNotification &&
       channel &&
       channel.countUnread() > 0
-    )
+    ) {
       markRead();
+    }
 
     yOffset.current = y;
     if (removeNewMessageNotification) {
@@ -355,16 +366,16 @@ export const MessageList = <
   };
 
   const goToNewMessages = () => {
-    setNewMessageNotification(false);
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({ index: 0 });
+      setNewMessageNotification(false);
+      if (!threadList) markRead();
     }
-    if (!threadList) markRead();
   };
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
-  if (messageList && messageList.length === 0 && !threadList) {
+  if (messageList.length === 0 && !threadList) {
     return (
       <View style={{ flex: 1 }}>
         <EmptyStateIndicator listType='message' />
@@ -384,21 +395,7 @@ export const MessageList = <
           extraData={disabled}
           inverted
           keyboardShouldPersistTaps='always'
-          keyExtractor={(item) => {
-            if (!isDateSeparator(item)) {
-              return (
-                item.id ||
-                (item.created_at
-                  ? typeof item.created_at === 'string'
-                    ? item.created_at
-                    : item.created_at.toISOString()
-                  : '')
-              );
-            } else if (item.date && typeof item.date !== 'string') {
-              return item.date.toISOString();
-            }
-            return uuidv4();
-          }}
+          keyExtractor={keyExtractor}
           ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
@@ -408,11 +405,13 @@ export const MessageList = <
           onScroll={handleScroll}
           ref={(fl) => {
             flatListRef.current = fl;
-            setFlatListRef && setFlatListRef(fl);
+            if (setFlatListRef) {
+              setFlatListRef(fl);
+            }
           }}
           renderItem={({ item }) => renderItem(item)}
           testID='message-flat-list'
-          {...(additionalFlatListProps || {})}
+          {...additionalFlatListProps}
         />
         {TypingIndicator && (
           <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>

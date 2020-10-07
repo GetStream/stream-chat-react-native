@@ -1,5 +1,6 @@
 import React from 'react';
 import { GestureResponderEvent, Image, ImageRequireSource } from 'react-native';
+
 import { styled } from '../styles/styledComponents';
 
 const StyledTouchableOpacity = styled.TouchableOpacity`
@@ -21,13 +22,20 @@ export type IconSquareProps = {
   onPress?: (event: GestureResponderEvent) => void;
 };
 
-export const IconSquare: React.FC<IconSquareProps> = ({ icon, onPress }) =>
-  onPress ? (
-    <StyledTouchableOpacity onPress={onPress} testID='icon-square'>
-      <Image source={icon} style={{ height: 15, width: 15 }} />
-    </StyledTouchableOpacity>
-  ) : (
+export const IconSquare: React.FC<IconSquareProps> = (props) => {
+  const { icon, onPress } = props;
+
+  if (onPress) {
+    return (
+      <StyledTouchableOpacity onPress={onPress} testID='icon-square'>
+        <Image source={icon} style={{ height: 15, width: 15 }} />
+      </StyledTouchableOpacity>
+    );
+  }
+
+  return (
     <StyledView testID='icon-square'>
       <Image source={icon} style={{ height: 15, width: 15 }} />
     </StyledView>
   );
+};
