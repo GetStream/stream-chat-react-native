@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { SafeAreaView, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
@@ -11,7 +11,6 @@ import {
   Channel,
   ChannelList,
   Chat,
-  CloseButton,
   MessageInput,
   MessageList,
   Streami18n,
@@ -381,15 +380,25 @@ export default () => {
                     }}
                     style={{
                       alignItems: 'center',
-                      backgroundColor: '#ebebeb',
-                      borderRadius: 20,
-                      height: 30,
                       justifyContent: 'center',
                       marginRight: 20,
-                      width: 30,
                     }}
                   >
-                    <CloseButton />
+                    <View style={{
+                      alignItems: 'center',
+                      backgroundColor: 'white',
+                      borderColor: 'rgba(0, 0, 0, 0.1)',
+                      borderRadius: 3,
+                      borderStyle: 'solid',
+                      borderWidth: 1,
+                      height: 30,
+                      justifyContent: 'center',
+                      width: 30,
+                    }}>
+                      <Text>
+                        X
+                      </Text>
+                    </View>
                   </TouchableOpacity>
                 ),
               })}

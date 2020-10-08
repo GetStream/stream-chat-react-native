@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { View, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 
 import { StreamChat } from 'stream-chat';
 import {
@@ -9,7 +9,6 @@ import {
   MessageInput,
   ChannelList,
   Thread,
-  CloseButton,
   ChannelPreviewMessenger,
   Streami18n
 } from 'stream-chat-expo';
@@ -129,17 +128,26 @@ class ThreadScreen extends PureComponent {
           navigation.goBack();
         }}
         style={{
-          backgroundColor: '#ebebeb',
-          width: 30,
-          height: 30,
-          marginRight: 20,
-          display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderRadius: 20,
+          marginRight: 20,
         }}
       >
-        <CloseButton />
+        <View style={{
+          alignItems: 'center',
+          backgroundColor: 'white',
+          borderColor: 'rgba(0, 0, 0, 0.1)',
+          borderRadius: 3,
+          borderStyle: 'solid',
+          borderWidth: 1,
+          height: 30,
+          justifyContent: 'center',
+          width: 30,
+        }}>
+          <Text>
+            X
+          </Text>
+        </View>
       </TouchableOpacity>
     ),
   });

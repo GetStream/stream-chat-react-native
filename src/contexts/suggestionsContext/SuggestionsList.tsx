@@ -42,14 +42,16 @@ const Separator = styled.View`
 `;
 
 const SuggestionsItem = styled.TouchableOpacity`
-  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  height: ${({ theme }) =>
+    theme.messageInput.suggestions.container.itemHeight}px;
   justify-content: center;
   ${({ theme }) => theme.messageInput.suggestions.item.css};
 `;
 
 const Title = styled.Text`
   font-weight: bold;
-  height: ${({ theme }) => theme.messageInput.suggestions.container.itemHeight};
+  height: ${({ theme }) =>
+    theme.messageInput.suggestions.container.itemHeight}px;
   padding: 10px;
   ${({ theme }) => theme.messageInput.suggestions.title.css};
 `;

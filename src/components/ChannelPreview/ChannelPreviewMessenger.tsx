@@ -127,7 +127,7 @@ export const ChannelPreviewMessenger = <
   } = props;
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
-  const latestMessageDate = latestMessagePreview.messageObject?.created_at?.asMutable();
+  const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
   return (
     <Container
@@ -143,7 +143,7 @@ export const ChannelPreviewMessenger = <
           <Date>
             {formatLatestMessageDate && latestMessageDate
               ? formatLatestMessageDate(latestMessageDate)
-              : latestMessagePreview.created_at}
+              : latestMessagePreview?.created_at}
           </Date>
         </DetailsTop>
         <StyledMessage unread={unread}>
