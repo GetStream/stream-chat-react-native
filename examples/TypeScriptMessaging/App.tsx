@@ -93,15 +93,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   const { setChannel } = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalResponseType,
-        LocalUserType
-      >
+      <Chat
         client={chatClient}
         i18nInstance={streami18n}
         style={theme}
@@ -139,28 +131,12 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalResponseType,
-        LocalUserType
-      >
+      <Chat
         client={chatClient}
         i18nInstance={streami18n}
         style={theme}
       >
-        <Channel<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalResponseType,
-          LocalUserType
-        >
+        <Channel
           channel={channel}
         >
           <View style={{ height: '100%' }}>
@@ -200,27 +176,11 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
 
   return (
     <SafeAreaView>
-      <Chat<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalEventType,
-        LocalMessageType,
-        LocalResponseType,
-        LocalUserType
-      >
+      <Chat
         client={chatClient}
         i18nInstance={streami18n}
       >
-        <Channel<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalResponseType,
-          LocalUserType
-        >
+        <Channel
           channel={channel}
           thread={thread}
         >
