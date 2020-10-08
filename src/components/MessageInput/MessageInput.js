@@ -468,14 +468,14 @@ const MessageInput = (props) => {
     );
   };
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (sending.current) {
       return;
     }
     sending.current = true;
 
     const prevText = text;
-    await setText('');
+    setText('');
     if (inputBox.current) {
       inputBox.current.clear();
     }
@@ -549,27 +549,29 @@ const MessageInput = (props) => {
 
       sending.current = false;
     } else {
-      try {
-        sendMessageContext({
-          attachments,
-          mentioned_users: uniq(mentionedUsers),
-          parent,
-          text: prevText,
-        });
+      setTimeout(() => {
+        try {
+          sendMessageContext({
+            attachments,
+            mentioned_users: uniq(mentionedUsers),
+            parent,
+            text: prevText,
+          });
 
-        sending.current = false;
-        setFileUploads(Immutable([]));
-        setImageUploads(Immutable([]));
-        setMentionedUsers([]);
-        setNumberOfUploads(
-          (prevNumberOfUploads) => prevNumberOfUploads - attachments.length,
-        );
-        setText('');
-      } catch (err) {
-        sending.current = false;
-        setText(prevText);
-        console.log('Failed');
-      }
+          sending.current = false;
+          setFileUploads(Immutable([]));
+          setImageUploads(Immutable([]));
+          setMentionedUsers([]);
+          setNumberOfUploads(
+            (prevNumberOfUploads) => prevNumberOfUploads - attachments.length,
+          );
+          setText('');
+        } catch (err) {
+          sending.current = false;
+          setText(prevText);
+          console.log('Failed');
+        }
+      });
     }
   };
 

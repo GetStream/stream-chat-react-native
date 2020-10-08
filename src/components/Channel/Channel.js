@@ -303,7 +303,7 @@ const Channel = (props) => {
     }
   };
 
-  const sendMessage = async ({
+  const sendMessage = ({
     attachments = [],
     mentioned_users,
     parent,
@@ -326,7 +326,9 @@ const Channel = (props) => {
       userAutocomplete: [],
     });
 
-    await sendMessageRequest(messagePreview);
+    setTimeout(() => {
+      sendMessageRequest(messagePreview);
+    });
   };
 
   const retrySendMessage = async (message) => {
