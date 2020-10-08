@@ -75,7 +75,9 @@ export type ChannelListProps<
    *
    * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
-  additionalFlatListProps?: FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>;
+  additionalFlatListProps?: Partial<
+    FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
   /**
    * Custom indicator to use when channel list is empty
    *

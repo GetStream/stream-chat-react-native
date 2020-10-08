@@ -63,6 +63,10 @@ export type ChannelProps<
   Us extends UnknownType = DefaultUserType
 > = {
   /**
+   * Additional props passed to keyboard avoiding view
+   */
+  additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
+  /**
    * The currently active channel
    */
   channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
@@ -180,6 +184,7 @@ export const Channel = <
   props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
+    additionalKeyboardAvoidingViewProps,
     Attachment,
     channel,
     children,
@@ -841,6 +846,7 @@ export const Channel = <
       behavior={keyboardBehavior}
       enabled={!disableKeyboardCompatibleView}
       keyboardVerticalOffset={keyboardVerticalOffset}
+      {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
         <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>

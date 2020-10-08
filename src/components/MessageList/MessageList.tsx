@@ -135,8 +135,8 @@ export type MessageListProps<
    *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
    * ```
    */
-  additionalFlatListProps?: FlatListProps<
-    MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>
+  additionalFlatListProps?: Partial<
+    FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
