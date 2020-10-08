@@ -143,7 +143,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   const galleryImages: IImageInfo[] = [];
 
   immutableGalleryImages.forEach((image) =>
-    galleryImages.push({ ...image.asMutable(), props: { style: { flex: 1 } } }),
+    galleryImages.push(image.asMutable()),
   );
 
   if (galleryImages.length === 1) {
