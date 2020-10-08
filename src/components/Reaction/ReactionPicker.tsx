@@ -112,8 +112,8 @@ export const ReactionPicker = <
     latestReactions,
     reactionCounts,
     reactionPickerVisible,
-    rpLeft = 30,
-    rpRight = 10,
+    rpLeft,
+    rpRight,
     rpTop = 40,
     supportedReactions = emojiData,
   } = props;
