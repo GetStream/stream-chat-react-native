@@ -63,13 +63,13 @@ export type ChannelProps<
   Us extends UnknownType = DefaultUserType
 > = {
   /**
-   * Additional props passed to keyboard avoiding view
-   */
-  additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
-  /**
    * The currently active channel
    */
   channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
+  /**
+   * Additional props passed to keyboard avoiding view
+   */
+  additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
   /**
    * Custom UI component to display attachments on individual messages
    * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
