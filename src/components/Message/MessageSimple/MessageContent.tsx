@@ -371,7 +371,7 @@ export const MessageContent = <
             offset={{
               left: 10,
               right: 10,
-              top: 25,
+              top: 0,
             }}
             openReactionPicker={openReactionPicker}
             reactionPickerVisible={reactionPickerVisible}
