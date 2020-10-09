@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
@@ -75,6 +76,8 @@ const ImageContainer = styled.TouchableOpacity<{ length?: number }>`
 const HeaderContainer = styled.View`
   flex-direction: row;
   justify-content: flex-end;
+  position: absolute;
+  width: 100%;
   z-index: 1000;
   ${({ theme }) => theme.message.gallery.header.container.css}
 `;
@@ -128,6 +131,8 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
 
+  const insets = useSafeAreaInsets();
+
   if (!images?.length) return null;
 
   const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
@@ -143,7 +148,14 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   const galleryImages: IImageInfo[] = [];
 
   immutableGalleryImages.forEach((image) =>
-    galleryImages.push(image.asMutable()),
+    galleryImages.push({
+      ...image.asMutable(),
+      props: {
+        style: {
+          top: -(insets.bottom + insets.top) / 2,
+        },
+      },
+    }),
   );
 
   if (galleryImages.length === 1) {
