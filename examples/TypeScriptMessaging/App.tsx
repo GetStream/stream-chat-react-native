@@ -1,9 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import {
+  LogBox,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { NavigationContainer, RouteProp} from '@react-navigation/native';
 import {
   createStackNavigator,
   StackNavigationProp,
+  useHeaderHeight,
 } from '@react-navigation/stack';
 import { enableScreens } from 'react-native-screens';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
@@ -18,11 +25,12 @@ import {
   ThreadContextValue,
 } from 'stream-chat-react-native';
 
+LogBox.ignoreAllLogs(true);
 enableScreens();
 
 type LocalAttachmentType = {};
 type LocalChannelType = {};
-type LocalCommandType = '';
+type LocalCommandType = string;
 type LocalEventType = {};
 type LocalMessageType = {};
 type LocalResponseType = {};
@@ -93,12 +101,8 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   const { setChannel } = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat
-        client={chatClient}
-        i18nInstance={streami18n}
-        style={theme}
-      >
-        <View style={{ height: '100%', padding: 10 }}>
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+        <View style={{ flexGrow: 1, padding: 10 }}>
           <ChannelList<
             LocalAttachmentType,
             LocalChannelType,
@@ -128,18 +132,17 @@ type ChannelScreenProps = {
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread } = useContext(AppContext);
+  const headerHeight = useHeaderHeight();
+
 
   return (
     <SafeAreaView>
-      <Chat
-        client={chatClient}
-        i18nInstance={streami18n}
-        style={theme}
-      >
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel
+          keyboardVerticalOffset={headerHeight}
           channel={channel}
         >
-          <View style={{ height: '100%' }}>
+          <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
               LocalChannelType,
@@ -156,49 +159,48 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
                 }
               }}
             />
-            <MessageInput />
+           <MessageInput />                                                                                                                                     
           </View>
         </Channel>
       </Chat>
     </SafeAreaView>
   );
 };
-
+                          
 type ThreadScreenProps = {
-  route: RouteProp<ThreadRoute, 'Thread'>;
-};
-
+  route: RouteProp<ThreadRoute, 'Thread'>;         
+};                                                                                                                                                                                                                                                       
+                                                                          
 const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
   const { thread } = useContext(AppContext);
   const [channel] = useState(
     chatClient.channel('messaging', route.params.channelId),
   );
-
+  const headerHeight = useHeaderHeight();
+                                                                
   return (
     <SafeAreaView>
-      <Chat
-        client={chatClient}
-        i18nInstance={streami18n}
-      >
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel
-          channel={channel}
+          channel={channel}        
           thread={thread}
+          keyboardVerticalOffset={headerHeight}
         >
-          <View
-            style={{
-              height: '100%',
-              justifyContent: 'flex-start',
-            }}
-          >
+           <View
+              style={{
+                flex: 1,
+                justifyContent: 'flex-start',
+              }}
+            >
             <Thread<
-              LocalAttachmentType,
+              LocalAttachmentType,         
               LocalChannelType,
               LocalCommandType,
               LocalEventType,
               LocalMessageType,
               LocalResponseType,
-              LocalUserType
-            > />
+              LocalUserType             
+              > />
           </View>
         </Channel>
       </Chat>
@@ -319,7 +321,6 @@ export default () => {
               name='Channel'
               options={() => ({
                 headerBackTitle: 'Back',
-                headerRight: () => <></>,
                 headerTitle: channel?.data?.name,
               })}
             />
@@ -344,20 +345,20 @@ export default () => {
                       marginRight: 20,
                     }}
                   >
-                    <View style={{
-                      alignItems: 'center',
-                      backgroundColor: 'white',
-                      borderColor: 'rgba(0, 0, 0, 0.1)',
-                      borderRadius: 3,
-                      borderStyle: 'solid',
-                      borderWidth: 1,
-                      height: 30,
-                      justifyContent: 'center',
-                      width: 30,
-                    }}>
-                      <Text>
-                        X
-                      </Text>
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        backgroundColor: 'white',
+                        borderColor: 'rgba(0, 0, 0, 0.1)',
+                        borderRadius: 3,
+                        borderStyle: 'solid',
+                        borderWidth: 1,
+                        height: 30,
+                        justifyContent: 'center',
+                        width: 30,
+                      }}
+                    >
+                      <Text>X</Text>
                     </View>
                   </TouchableOpacity>
                 ),
