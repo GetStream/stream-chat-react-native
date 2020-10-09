@@ -857,7 +857,7 @@ export const MessageInput = <
     try {
       if (doDocUploadRequest) {
         response = await doDocUploadRequest(file, channel);
-      } else if (channel) {
+      } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
@@ -912,35 +912,37 @@ export const MessageInput = <
     try {
       if (doImageUploadRequest) {
         response = await doImageUploadRequest(file, channel);
-      } else if (sendImageAsync && channel) {
-        channel.sendImage(file.uri, undefined, contentType).then((res) => {
-          if (asyncIds.includes(id)) {
-            // Evaluates to true if user hit send before image successfully uploaded
-            setAsyncUploads((prevAsyncUploads) => {
-              prevAsyncUploads[id] = {
-                ...prevAsyncUploads[id],
-                state: FileState.UPLOADED,
-                url: res.file,
-              };
-              return prevAsyncUploads;
-            });
-          } else {
-            setImageUploads((prevImageUploads) =>
-              prevImageUploads.map((imageUpload) => {
-                if (imageUpload.id === id) {
-                  return {
-                    ...imageUpload,
-                    state: FileState.UPLOADED,
-                    url: res.file,
-                  };
-                }
-                return imageUpload;
-              }),
-            );
-          }
-        });
-      } else if (channel) {
-        response = await channel.sendImage(file.uri, undefined, contentType);
+      } else if (file.uri && channel) {
+        if (sendImageAsync) {
+          channel.sendImage(file.uri, undefined, contentType).then((res) => {
+            if (asyncIds.includes(id)) {
+              // Evaluates to true if user hit send before image successfully uploaded
+              setAsyncUploads((prevAsyncUploads) => {
+                prevAsyncUploads[id] = {
+                  ...prevAsyncUploads[id],
+                  state: FileState.UPLOADED,
+                  url: res.file,
+                };
+                return prevAsyncUploads;
+              });
+            } else {
+              setImageUploads((prevImageUploads) =>
+                prevImageUploads.map((imageUpload) => {
+                  if (imageUpload.id === id) {
+                    return {
+                      ...imageUpload,
+                      state: FileState.UPLOADED,
+                      url: res.file,
+                    };
+                  }
+                  return imageUpload;
+                }),
+              );
+            }
+          });
+        } else {
+          response = await channel.sendImage(file.uri, undefined, contentType);
+        }
       }
 
       if (Object.keys(response).length) {
