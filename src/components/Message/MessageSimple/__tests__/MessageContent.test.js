@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
@@ -44,7 +45,14 @@ describe('MessageContent', () => {
       render(
         <Chat client={chatClient}>
           <Channel channel={channel}>
-            <Message groupStyles={['bottom']} {...options} />
+            <SafeAreaProvider
+              initialMetrics={{
+                frame: { height: 0, width: 0, x: 0, y: 0 },
+                insets: { bottom: 0, left: 0, right: 0, top: 0 },
+              }}
+            >
+              <Message groupStyles={['bottom']} {...options} />
+            </SafeAreaProvider>
           </Channel>
         </Chat>,
       );
@@ -65,6 +73,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
     });
   });
+
   it('renders an error/unsent message when `message.type` is `error`', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
@@ -106,6 +115,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
+
   it('renders a MessageHeader when the prop exists', async () => {
     const user = generateUser();
     const message = generateMessage({ user });

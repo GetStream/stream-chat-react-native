@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Immutable, isImmutable } from 'seamless-immutable';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
@@ -19,7 +20,6 @@ import { styled } from '../../styles/styledComponents';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
-import type { Immutable } from 'seamless-immutable';
 import type { Attachment } from 'stream-chat';
 
 import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
@@ -147,16 +147,17 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
 
   const galleryImages: IImageInfo[] = [];
 
-  immutableGalleryImages.forEach((image) =>
+  immutableGalleryImages.forEach((image) => {
+    const galleryImage = isImmutable(image) ? image.asMutable() : image;
     galleryImages.push({
-      ...image.asMutable(),
+      ...galleryImage,
       props: {
         style: {
           top: -(insets.bottom + insets.top) / 2,
         },
       },
-    }),
-  );
+    });
+  });
 
   if (galleryImages.length === 1) {
     return (

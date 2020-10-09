@@ -1,4 +1,5 @@
 import React from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import uuidv4 from 'uuid/v4';
 
@@ -18,14 +19,28 @@ import {
 } from 'mock-builders/generator/attachment';
 
 const getAttachmentComponent = (props) => (
-  <ThemeProvider>
-    <Attachment {...props} />;
-  </ThemeProvider>
+  <SafeAreaProvider
+    initialMetrics={{
+      frame: { height: 0, width: 0, x: 0, y: 0 },
+      insets: { bottom: 0, left: 0, right: 0, top: 0 },
+    }}
+  >
+    <ThemeProvider>
+      <Attachment {...props} />;
+    </ThemeProvider>
+  </SafeAreaProvider>
 );
 const getActionComponent = (props) => (
-  <ThemeProvider>
-    <AttachmentActions {...props} />;
-  </ThemeProvider>
+  <SafeAreaProvider
+    initialMetrics={{
+      frame: { height: 0, width: 0, x: 0, y: 0 },
+      insets: { bottom: 0, left: 0, right: 0, top: 0 },
+    }}
+  >
+    <ThemeProvider>
+      <AttachmentActions {...props} />;
+    </ThemeProvider>
+  </SafeAreaProvider>
 );
 
 describe('Attachment', () => {
