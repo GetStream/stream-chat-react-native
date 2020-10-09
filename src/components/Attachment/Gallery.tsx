@@ -276,6 +276,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
                 />
               )}
               saveToLocalByLongPress={false}
+              useNativeDriver
             />
           </SafeAreaView>
         </Modal>

@@ -516,7 +516,10 @@ export const MessageInput = <
   };
 
   const pickFile = async () => {
-    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads > 10
+    ) {
       return;
     }
 
@@ -535,9 +538,13 @@ export const MessageInput = <
   };
 
   const pickImage = async () => {
-    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads > 10
+    ) {
       return;
     }
+
     const result = await pickImageNative({
       compressImageQuality,
       maxNumberOfFiles,
@@ -569,6 +576,13 @@ export const MessageInput = <
   };
 
   const handleOnPress = async () => {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads >= 10
+    ) {
+      return;
+    }
+
     if (hasImagePicker) {
       if (hasFilePicker) {
         await Keyboard.dismiss();
