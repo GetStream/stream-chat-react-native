@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
-import type { Event, StreamChat } from 'stream-chat';
+import type { StreamChat, Event as StreamEvent } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -34,7 +34,9 @@ export const useIsOnline = <
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
   useEffect(() => {
-    const handleChangedEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
+    const handleChangedEvent = (
+      event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>,
+    ) => {
       setConnectionRecovering(!event.online);
       setIsOnline(event.online || false);
     };
@@ -46,11 +48,11 @@ export const useIsOnline = <
         if (netInfoState) {
           client.wsConnection.onlineStatusChanged({
             type: 'online',
-          });
+          } as Event);
         } else {
           client.wsConnection.onlineStatusChanged({
             type: 'offline',
-          });
+          } as Event);
         }
       }
     };
