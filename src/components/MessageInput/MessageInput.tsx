@@ -261,6 +261,10 @@ export type MessageInputProps<
    * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
    */
   sendImageAsync?: boolean;
+  /**
+   * ref for input setter function
+   */
+  setInputRef?: (ref: TextInput | null) => void;
 };
 
 /**
@@ -305,6 +309,7 @@ export const MessageInput = <
     parent_id,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
+    setInputRef,
   } = props;
 
   const { channel, disabled = false, members, watchers } = useChannelContext<
@@ -795,6 +800,9 @@ export const MessageInput = <
 
   const setInputBoxRef = (ref: TextInput | null) => {
     inputBoxRef.current = ref;
+    if (setInputRef) {
+      setInputRef(ref);
+    }
   };
 
   const updateMessage = async () => {
