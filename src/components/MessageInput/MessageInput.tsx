@@ -896,20 +896,18 @@ export const MessageInput = <
   };
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
-    const { file } = newImage || {};
+    const { file, id } = newImage || {};
     if (!file) {
       return;
     }
 
-    const id = newImage.id;
-
     let response = {} as SendFileAPIResponse;
 
-    const filename = (file?.name || file?.uri || '').replace(
+    const filename = (file.name || file.uri || '').replace(
       /^(file:\/\/|content:\/\/)/,
       '',
     );
-    const contentType = lookup(filename) || 'application/octet-stream';
+    const contentType = lookup(filename) || 'multipart/form-data';
 
     try {
       if (doImageUploadRequest) {
