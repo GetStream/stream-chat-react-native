@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { NavigationContainer, RouteProp} from '@react-navigation/native';
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
   StackNavigationProp,
@@ -134,14 +134,10 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
-
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <Channel
-          keyboardVerticalOffset={headerHeight}
-          channel={channel}
-        >
+        <Channel keyboardVerticalOffset={headerHeight} channel={channel}>
           <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
@@ -159,48 +155,48 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
                 }
               }}
             />
-           <MessageInput />                                                                                                                                     
+            <MessageInput />
           </View>
         </Channel>
       </Chat>
     </SafeAreaView>
   );
 };
-                          
+
 type ThreadScreenProps = {
-  route: RouteProp<ThreadRoute, 'Thread'>;         
-};                                                                                                                                                                                                                                                       
-                                                                          
+  route: RouteProp<ThreadRoute, 'Thread'>;
+};
+
 const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
   const { thread } = useContext(AppContext);
   const [channel] = useState(
     chatClient.channel('messaging', route.params.channelId),
   );
   const headerHeight = useHeaderHeight();
-                                                                
+
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel
-          channel={channel}        
+          channel={channel}
           thread={thread}
           keyboardVerticalOffset={headerHeight}
         >
-           <View
-              style={{
-                flex: 1,
-                justifyContent: 'flex-start',
-              }}
-            >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'flex-start',
+            }}
+          >
             <Thread<
-              LocalAttachmentType,         
+              LocalAttachmentType,
               LocalChannelType,
               LocalCommandType,
               LocalEventType,
               LocalMessageType,
               LocalResponseType,
-              LocalUserType             
-              > />
+              LocalUserType
+            > />
           </View>
         </Channel>
       </Chat>
