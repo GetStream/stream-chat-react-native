@@ -18,6 +18,7 @@ import { styled } from '../../styles/styledComponents';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
+import type { Immutable } from 'seamless-immutable';
 import type { Attachment } from 'stream-chat';
 
 import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
@@ -129,13 +130,21 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
 
   if (!images?.length) return null;
 
-  const galleryImages = images.reduce((returnArray, currentImage) => {
+  const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
     const url = currentImage.image_url || currentImage.thumb_url;
     if (url) {
-      returnArray.push({ url: makeImageCompatibleUrl(url) });
+      returnArray.push({ url: makeImageCompatibleUrl(url) } as Immutable<
+        IImageInfo
+      >);
     }
     return returnArray;
-  }, [] as IImageInfo[]);
+  }, [] as Immutable<IImageInfo>[]);
+
+  const galleryImages: IImageInfo[] = [];
+
+  immutableGalleryImages.forEach((image) =>
+    galleryImages.push(image.asMutable()),
+  );
 
   if (galleryImages.length === 1) {
     return (
@@ -173,6 +182,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
                   />
                 )}
                 saveToLocalByLongPress={false}
+                useNativeDriver
               />
             </SafeAreaView>
           </Modal>
@@ -266,6 +276,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
                 />
               )}
               saveToLocalByLongPress={false}
+              useNativeDriver
             />
           </SafeAreaView>
         </Modal>
