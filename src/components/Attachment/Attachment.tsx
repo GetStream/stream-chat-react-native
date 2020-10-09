@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {
   AttachmentActionsProps,
@@ -162,7 +161,7 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
 
   if (type === 'image') {
     return (
-      <SafeAreaProvider>
+      <>
         <Gallery<At> alignment={alignment} images={[attachment]} />
         {hasAttachmentActions && (
           <AttachmentActions<At>
@@ -171,7 +170,7 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
             {...attachment}
           />
         )}
-      </SafeAreaProvider>
+      </>
     );
   }
 
