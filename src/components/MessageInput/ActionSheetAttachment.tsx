@@ -86,7 +86,7 @@ export type ActionSheetProps = {
   styles?: ActionSheetStyles;
 };
 
-export const ActionSheetAttachment = (props: ActionSheetProps) => {
+export const ActionSheetAttachment: React.FC<ActionSheetProps> = (props) => {
   const {
     closeAttachActionSheet,
     pickFile,
