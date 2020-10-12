@@ -69,9 +69,9 @@ describe('ChannelListMessenger', () => {
     });
   });
 
-  it('renders the `LoadingIndicator` when `loadingChannels` prop is true', async () => {
+  it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
     const { getByTestId } = render(
-      <Component channels={mockChannels} loadingChannels={true} />,
+      <Component channels={[]} loadingChannels={true} />,
     );
     await waitFor(() => {
       expect(getByTestId('loading-indicator')).toBeTruthy();
