@@ -16,13 +16,13 @@
     "@react-navigation/stack": "5.9.3",
     "react": "16.13.1",
     "react-native": "0.63.3",
-    "react-native-document-picker": "3.5.4",
+    "react-native-document-picker": "4.0.0",
     "react-native-gesture-handler": "1.8.0",
     "react-native-image-crop-picker": "0.35.1",
     "react-native-reanimated": "1.13.1",
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
-    "stream-chat": "2.5.0",
+    "stream-chat": "2.6.0",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {
