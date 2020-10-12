@@ -55,6 +55,7 @@ const UnMemoizedChannelPreview = <
   props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { channel, Preview = ChannelPreviewMessenger } = props;
+
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const [lastMessage, setLastMessage] = useState<

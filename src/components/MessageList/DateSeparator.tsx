@@ -86,10 +86,13 @@ export const DateSeparator = <
   props: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { formatDate, message } = props;
+
   const { tDateTimeParser } = useTranslationContext();
+
   const date = formatDate
     ? formatDate(message.date as TDateTimeParserInput)
     : tDateTimeParser(message.date as TDateTimeParserInput);
+
   return (
     <Container testID='date-separator'>
       <Line />

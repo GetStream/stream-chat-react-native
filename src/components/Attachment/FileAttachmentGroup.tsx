@@ -70,17 +70,16 @@ export const FileAttachmentGroup = <
     <View>
       {files.length &&
         files.map((file, index) => {
-          let groupStyle: GroupType = 'single';
-
-          if (files.length === 1) {
-            groupStyle = 'single';
-          } else if (index === 0) {
-            groupStyle = 'top';
-          } else if (index < files.length - 1 && index > 0) {
-            groupStyle = 'middle';
-          } else if (index === files.length - 1) {
-            groupStyle = 'bottom';
-          }
+          const groupStyle: GroupType =
+            files.length === 1
+              ? 'single'
+              : index === 0
+              ? 'top'
+              : index < files.length - 1 && index > 0
+              ? 'middle'
+              : index === files.length - 1
+              ? 'bottom'
+              : 'single';
 
           return (
             <Attachment<At>

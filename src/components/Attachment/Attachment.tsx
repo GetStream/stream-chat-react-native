@@ -138,28 +138,9 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     Header: CardHeader ? CardHeader : undefined,
   };
 
-  let type;
-
-  if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    type = 'giphy';
-  } else if (
-    (attachment.title_link || attachment.og_scrape_url) &&
-    (attachment.image_url || attachment.thumb_url)
-  ) {
-    type = 'urlPreview';
-  } else if (attachment.type === 'image') {
-    type = 'image';
-  } else if (attachment.type === 'file' || attachment.type === 'audio') {
-    type = 'file';
-  } else if (attachment.type === 'video') {
-    type = 'media';
-  } else {
-    type = 'card';
-  }
-
   const hasAttachmentActions = !!attachment.actions?.length;
 
-  if (type === 'image') {
+  if (attachment.type === 'image') {
     return (
       <>
         <Gallery<At> alignment={alignment} images={[attachment]} />
@@ -174,7 +155,7 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     );
   }
 
-  if (type === 'giphy') {
+  if (attachment.type === 'giphy' || attachment.type === 'imgur') {
     if (hasAttachmentActions) {
       return (
         <View>
@@ -191,30 +172,16 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     }
   }
 
-  if (type === 'card') {
-    if (hasAttachmentActions) {
-      return (
-        <View>
-          <Card<At> alignment={alignment} {...attachment} {...cardProps} />
-          <AttachmentActions<At>
-            actionHandler={actionHandler}
-            key={`key-actions-${attachment.id}`}
-            {...attachment}
-          />
-        </View>
-      );
-    } else {
-      return <Card<At> alignment={alignment} {...attachment} />;
-    }
-  }
-
-  if (type === 'urlPreview') {
+  if (
+    (attachment.title_link || attachment.og_scrape_url) &&
+    (attachment.image_url || attachment.thumb_url)
+  ) {
     return (
       <UrlPreview<At> alignment={alignment} {...attachment} {...cardProps} />
     );
   }
 
-  if (type === 'file') {
+  if (attachment.type === 'file' || attachment.type === 'audio') {
     return (
       <FileAttachment<At>
         actionHandler={actionHandler}
@@ -227,12 +194,29 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
     );
   }
 
-  if (type === 'media' && attachment.asset_url && attachment.image_url) {
+  if (
+    attachment.type === 'video' &&
+    attachment.asset_url &&
+    attachment.image_url
+  ) {
     return (
       // TODO: Put in video component
       <Card<At> alignment={alignment} {...attachment} {...cardProps} />
     );
   }
 
-  return null;
+  if (hasAttachmentActions) {
+    return (
+      <View>
+        <Card<At> alignment={alignment} {...attachment} {...cardProps} />
+        <AttachmentActions<At>
+          actionHandler={actionHandler}
+          key={`key-actions-${attachment.id}`}
+          {...attachment}
+        />
+      </View>
+    );
+  } else {
+    return <Card<At> alignment={alignment} {...attachment} />;
+  }
 };

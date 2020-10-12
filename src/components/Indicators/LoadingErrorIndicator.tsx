@@ -48,6 +48,7 @@ export type LoadingErrorProps = {
 
 export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
   const { listType, retry = () => null } = props;
+
   const { t } = useTranslationContext();
 
   switch (listType) {

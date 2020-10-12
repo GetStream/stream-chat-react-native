@@ -37,6 +37,7 @@ export type LoadingProps = {
  */
 export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
   const { listType, loadingText } = props;
+
   const { t } = useTranslationContext();
 
   if (loadingText) {

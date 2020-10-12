@@ -167,6 +167,10 @@ export const AutoCompleteInput = <
     item: Suggestion<Co, Us>;
     trigger: Trigger;
   }) => {
+    if (!trigger) {
+      return;
+    }
+
     let newTokenString = '';
     if (isMentionTrigger(trigger)) {
       if (isSuggestionUser(item)) {
@@ -176,10 +180,6 @@ export const AutoCompleteInput = <
       if (!isSuggestionUser(item)) {
         newTokenString = `${triggerSettings[trigger].output(item).text} `;
       }
-    }
-
-    if (!trigger) {
-      return;
     }
 
     const textToModify = value.slice(0, selectionEnd.current);
