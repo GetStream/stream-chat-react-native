@@ -140,21 +140,6 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
-  if (attachment.type === 'image') {
-    return (
-      <>
-        <Gallery<At> alignment={alignment} images={[attachment]} />
-        {hasAttachmentActions && (
-          <AttachmentActions<At>
-            actionHandler={actionHandler}
-            key={`key-actions-${attachment.id}`}
-            {...attachment}
-          />
-        )}
-      </>
-    );
-  }
-
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
     if (hasAttachmentActions) {
       return (
@@ -178,6 +163,21 @@ export const Attachment = <At extends UnknownType = DefaultAttachmentType>(
   ) {
     return (
       <UrlPreview<At> alignment={alignment} {...attachment} {...cardProps} />
+    );
+  }
+
+  if (attachment.type === 'image') {
+    return (
+      <>
+        <Gallery<At> alignment={alignment} images={[attachment]} />
+        {hasAttachmentActions && (
+          <AttachmentActions<At>
+            actionHandler={actionHandler}
+            key={`key-actions-${attachment.id}`}
+            {...attachment}
+          />
+        )}
+      </>
     );
   }
 
