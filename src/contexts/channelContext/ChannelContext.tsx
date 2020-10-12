@@ -5,6 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { Channel, ChannelState, Event } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
+import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -29,6 +30,7 @@ export type ChannelContextValue<
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
   loading: boolean;
+  LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: () => void;
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];

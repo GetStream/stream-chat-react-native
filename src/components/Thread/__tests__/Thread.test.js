@@ -70,7 +70,7 @@ describe('Thread', () => {
       </Chat>,
     );
 
-    expect(t).toHaveBeenCalledWith('Loading messages ...');
+    expect(t).toHaveBeenCalledWith('Start of a new thread');
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Start of a new thread');
       expect(getByText('Start of a new thread')).toBeTruthy();

@@ -17,6 +17,7 @@
     - `eventHistory`
     - `lastRead`
     - `loading`
+    - `LoadingIndicator`
     - `markRead`
     - `members`
     - `read`

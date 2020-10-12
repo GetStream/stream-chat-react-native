@@ -788,6 +788,7 @@ export const Channel = <
     eventHistory,
     lastRead,
     loading,
+    LoadingIndicator,
     markRead: markReadThrottled,
     members,
     read,
@@ -835,10 +836,6 @@ export const Channel = <
         {t('Please select a channel first')}
       </Text>
     );
-  }
-
-  if (loading) {
-    return <LoadingIndicator listType='message' />;
   }
 
   return (

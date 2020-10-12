@@ -256,6 +256,8 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    loading,
+    LoadingIndicator,
     markRead,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -396,6 +398,9 @@ export const MessageList = <
           inverted
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
+          ListEmptyComponent={
+            loading ? <LoadingIndicator listType='message' /> : null
+          }
           ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
