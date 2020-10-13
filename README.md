@@ -391,6 +391,8 @@ withChannelContext<
 
 ## Upgrade
 
+- Upgrade from 1.x.x to 2.x.x:
+
 - Upgrade from 1.2.x to 1.3.x:
   - 1.3.x replaced native dependency support for react-native-image-picker in favor of react-native-image-crop-picker for multi-image selection capabilities
 
