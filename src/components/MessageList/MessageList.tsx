@@ -285,6 +285,16 @@ export const MessageList = <
   );
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
+  /**
+   * In order to prevent the LoadingIndicator component from showing up briefly on mount,
+   * we set the loading state one cycle behind to ensure the messages are set before the
+   * change to the loading state is registered.
+   */
+  const [messagesLoading, setMessagesLoading] = useState(false);
+  useEffect(() => {
+    setMessagesLoading(!!loading);
+  }, [loading]);
+
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
     if (currentLastMessage) {
@@ -378,8 +388,10 @@ export const MessageList = <
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
   if (messageList.length === 0 && !threadList) {
-    return (
-      <View style={{ flex: 1 }}>
+    return messagesLoading ? (
+      <LoadingIndicator listType='message' />
+    ) : (
+      <View style={{ flex: 1 }} testID='empty-state'>
         <EmptyStateIndicator listType='message' />
       </View>
     );
@@ -398,9 +410,6 @@ export const MessageList = <
           inverted
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
-          ListEmptyComponent={
-            loading ? <LoadingIndicator listType='message' /> : null
-          }
           ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,

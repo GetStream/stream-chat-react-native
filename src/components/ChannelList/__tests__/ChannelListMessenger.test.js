@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
@@ -20,11 +19,6 @@ const Component = ({ channels, error = false, loadingChannels = false }) => (
       channels={channels}
       error={error}
       loadingChannels={loadingChannels}
-      LoadingIndicator={() => (
-        <View testID='loading-indicator'>
-          <Text>Loading Indicator</Text>
-        </View>
-      )}
     />
   </Chat>
 );
@@ -74,7 +68,7 @@ describe('ChannelListMessenger', () => {
       <Component channels={[]} loadingChannels={true} />,
     );
     await waitFor(() => {
-      expect(getByTestId('loading-indicator')).toBeTruthy();
+      expect(getByTestId('loading')).toBeTruthy();
     });
   });
 });
