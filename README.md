@@ -474,7 +474,7 @@ withChannelContext<
       sdk.dir=/Users/{user_name}/Library/Android/sdk/
       ```
 
-   3. Rerun `npx react-native run-android` in `stream-chat-react-native/examples/NativeMessaging` directory
+   3. Rerun `yarn android` in `stream-chat-react-native/examples/NativeMessaging` directory
 
 ## Internationalisation
 
