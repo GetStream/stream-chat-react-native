@@ -288,6 +288,16 @@ const client = new StreamChat<
 >('YOUR_API_KEY', 'API_KEY_SECRET');
 ```
 
+The seven customizable fields these generics extend are provided via `stream-chat-js`.
+
+1. [`Attachment`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1166)
+2. [`ChannelResponse`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L104)
+3. [`CommandVariants`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1271)
+4. [`Event`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L796)
+5. [`MessageBase`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1344)
+6. [`Reaction`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1401)
+7. [`User`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1465)
+
 All seven generics contain defaults in the `stream-chat-react-native` repo that you can extend for custom data. Additional fields on the defaults i.e. `file_size`, `mime_type`, and `image` are custom fields used by `stream-chat-react-native` already within the SDK. When wanting to set a subset of generics the preceding and interceding generics must also be set in order for the TypeScript compiler to correctly understand intent.
 
 To set `ChannelType` and `MessageType` for instance the initialization would be:
