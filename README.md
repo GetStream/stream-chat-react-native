@@ -101,7 +101,7 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
    - For android
 
      ```bash
-     npx react-native run-android
+     yarn android
      ```
 
    If you run into following error on android:
