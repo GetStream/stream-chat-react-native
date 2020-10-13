@@ -21,7 +21,7 @@ class KeyboardCompatibleView extends React.Component {
   static defaultProps = {
     behavior: Platform.OS === 'ios' ? 'padding' : 'position',
     enabled: true,
-    keyboardVerticalOffset: 66.5, // default MessageInput height
+    keyboardVerticalOffset: Platform.OS === 'ios' ? 86.5 : -300, // default MessageInput height
   };
 
   _frame = null;
@@ -43,7 +43,6 @@ class KeyboardCompatibleView extends React.Component {
     }
 
     const keyboardY = keyboardFrame.screenY - this.props.keyboardVerticalOffset;
-
     // Calculate the displacement needed for the view such that it
     // no longer overlaps with the keyboard
     return Math.max(frame.y + frame.height - keyboardY, 0);
