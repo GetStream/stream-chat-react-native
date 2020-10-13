@@ -84,11 +84,11 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
 4. ```bash
    git clone https://github.com/GetStream/stream-chat-react-native.git
    cd stream-chat-react-native
-   yarn install
+   yarn
    cd stream-chat-react-native/native-package
-   yarn install
+   yarn
    cd stream-chat-react-native/examples/NativeMessaging
-   yarn install
+   yarn
    ```
 
 5. - For iOS
