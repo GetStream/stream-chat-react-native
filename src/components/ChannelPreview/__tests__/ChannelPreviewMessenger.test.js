@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';

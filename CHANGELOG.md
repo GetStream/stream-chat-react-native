@@ -4,6 +4,10 @@
 
 Full TypeScript support
 
+**BREAKING CHANGES**
+
+- You will need to install https://github.com/LinusU/react-native-get-random-values and add this line `import 'react-native-get-random-values';` to your `index.js`
+- Expo 39 is now the lowest supported version
 
 ### Component prop changes
 

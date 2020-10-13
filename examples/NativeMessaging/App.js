@@ -45,9 +45,9 @@ const user = {
 };
 
 const filters = {
-  type: 'messaging',
   example: 'example-apps',
   members: {$in: ['ron']},
+  type: 'messaging',
 };
 const sort = {last_message_at: -1};
 const options = {
@@ -67,17 +67,17 @@ const ChannelListScreen = React.memo(({navigation}) => {
   const {setChannel} = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <View style={{height: '100%', padding: 10}}>
           <ChannelList
             filters={filters}
-            sort={sort}
-            options={options}
-            Preview={ChannelPreviewMessenger}
             onSelect={(channel) => {
               setChannel(channel);
               navigation.navigate('Channel');
             }}
+            options={options}
+            Preview={ChannelPreviewMessenger}
+            sort={sort}
           />
         </View>
       </Chat>
@@ -92,8 +92,8 @@ const ChannelScreen = React.memo(({navigation}) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <Channel keyboardVerticalOffset={headerHeight} channel={channel}>
-          <View style={{height: '100%'}}>
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
+          <View style={{flex: 1}}>
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread);
@@ -124,7 +124,7 @@ const ThreadScreen = React.memo(({route}) => {
           thread={thread}>
           <View
             style={{
-              height: '100%',
+              flex: 1,
               justifyContent: 'flex-start',
             }}>
             <Thread thread={thread} />

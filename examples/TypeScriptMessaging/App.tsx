@@ -102,7 +102,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <View style={{ flexGrow: 1, padding: 10 }}>
+        <View style={{ height: '100%', padding: 10 }}>
           <ChannelList<
             LocalAttachmentType,
             LocalChannelType,
