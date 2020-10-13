@@ -86,7 +86,7 @@ export type ActionSheetProps = {
   styles?: ActionSheetStyles;
 };
 
-export const ActionSheetAttachment = (props: ActionSheetProps) => {
+export const ActionSheetAttachment: React.FC<ActionSheetProps> = (props) => {
   const {
     closeAttachActionSheet,
     pickFile,
@@ -94,6 +94,7 @@ export const ActionSheetAttachment = (props: ActionSheetProps) => {
     setAttachActionSheetRef,
     styles,
   } = props;
+
   const { t } = useTranslationContext();
 
   return (

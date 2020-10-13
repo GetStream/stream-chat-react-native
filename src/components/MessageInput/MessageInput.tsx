@@ -261,6 +261,10 @@ export type MessageInputProps<
    * For images still in uploading state when user hits send, send text immediately and send image as follow-up message once uploaded
    */
   sendImageAsync?: boolean;
+  /**
+   * ref for input setter function
+   */
+  setInputRef?: (ref: TextInput | null) => void;
 };
 
 /**
@@ -305,6 +309,7 @@ export const MessageInput = <
     parent_id,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
+    setInputRef,
   } = props;
 
   const { channel, disabled = false, members, watchers } = useChannelContext<
@@ -516,7 +521,10 @@ export const MessageInput = <
   };
 
   const pickFile = async () => {
-    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads > 10
+    ) {
       return;
     }
 
@@ -535,9 +543,13 @@ export const MessageInput = <
   };
 
   const pickImage = async () => {
-    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads > 10
+    ) {
       return;
     }
+
     const result = await pickImageNative({
       compressImageQuality,
       maxNumberOfFiles,
@@ -569,6 +581,13 @@ export const MessageInput = <
   };
 
   const handleOnPress = async () => {
+    if (
+      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
+      numberOfUploads >= 10
+    ) {
+      return;
+    }
+
     if (hasImagePicker) {
       if (hasFilePicker) {
         await Keyboard.dismiss();
@@ -795,6 +814,9 @@ export const MessageInput = <
 
   const setInputBoxRef = (ref: TextInput | null) => {
     inputBoxRef.current = ref;
+    if (setInputRef) {
+      setInputRef(ref);
+    }
   };
 
   const updateMessage = async () => {
@@ -835,7 +857,7 @@ export const MessageInput = <
     try {
       if (doDocUploadRequest) {
         response = await doDocUploadRequest(file, channel);
-      } else if (channel) {
+      } else if (channel && file.uri) {
         response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
@@ -874,53 +896,53 @@ export const MessageInput = <
   };
 
   const uploadImage = async ({ newImage }: { newImage: ImageUpload }) => {
-    const { file } = newImage || {};
+    const { file, id } = newImage || {};
     if (!file) {
       return;
     }
 
-    const id = newImage.id;
-
     let response = {} as SendFileAPIResponse;
 
-    const filename = (file?.name || file?.uri || '').replace(
+    const filename = (file.name || file.uri || '').replace(
       /^(file:\/\/|content:\/\/)/,
       '',
     );
-    const contentType = lookup(filename) || 'application/octet-stream';
+    const contentType = lookup(filename) || 'multipart/form-data';
 
     try {
       if (doImageUploadRequest) {
         response = await doImageUploadRequest(file, channel);
-      } else if (sendImageAsync && channel) {
-        channel.sendImage(file.uri, undefined, contentType).then((res) => {
-          if (asyncIds.includes(id)) {
-            // Evaluates to true if user hit send before image successfully uploaded
-            setAsyncUploads((prevAsyncUploads) => {
-              prevAsyncUploads[id] = {
-                ...prevAsyncUploads[id],
-                state: FileState.UPLOADED,
-                url: res.file,
-              };
-              return prevAsyncUploads;
-            });
-          } else {
-            setImageUploads((prevImageUploads) =>
-              prevImageUploads.map((imageUpload) => {
-                if (imageUpload.id === id) {
-                  return {
-                    ...imageUpload,
-                    state: FileState.UPLOADED,
-                    url: res.file,
-                  };
-                }
-                return imageUpload;
-              }),
-            );
-          }
-        });
-      } else if (channel) {
-        response = await channel.sendImage(file.uri, undefined, contentType);
+      } else if (file.uri && channel) {
+        if (sendImageAsync) {
+          channel.sendImage(file.uri, undefined, contentType).then((res) => {
+            if (asyncIds.includes(id)) {
+              // Evaluates to true if user hit send before image successfully uploaded
+              setAsyncUploads((prevAsyncUploads) => {
+                prevAsyncUploads[id] = {
+                  ...prevAsyncUploads[id],
+                  state: FileState.UPLOADED,
+                  url: res.file,
+                };
+                return prevAsyncUploads;
+              });
+            } else {
+              setImageUploads((prevImageUploads) =>
+                prevImageUploads.map((imageUpload) => {
+                  if (imageUpload.id === id) {
+                    return {
+                      ...imageUpload,
+                      state: FileState.UPLOADED,
+                      url: res.file,
+                    };
+                  }
+                  return imageUpload;
+                }),
+              );
+            }
+          });
+        } else {
+          response = await channel.sendImage(file.uri, undefined, contentType);
+        }
       }
 
       if (Object.keys(response).length) {

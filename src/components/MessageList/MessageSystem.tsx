@@ -94,6 +94,7 @@ export const MessageSystem = <
   props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { formatDate, message } = props;
+
   const { tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at as TDateTimeParserInput | undefined;

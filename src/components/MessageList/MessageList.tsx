@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   DateSeparatorProps,
@@ -135,8 +135,8 @@ export type MessageListProps<
    *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
    * ```
    */
-  additionalFlatListProps?: FlatListProps<
-    MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>
+  additionalFlatListProps?: Partial<
+    FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
@@ -256,6 +256,8 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    loading,
+    LoadingIndicator,
     markRead,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -396,6 +398,9 @@ export const MessageList = <
           inverted
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
+          ListEmptyComponent={
+            loading ? <LoadingIndicator listType='message' /> : null
+          }
           ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,

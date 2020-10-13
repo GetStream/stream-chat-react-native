@@ -94,6 +94,7 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
   props,
 ) => {
   const { imageUploads, removeImage, retryUpload } = props;
+
   const renderItem = ({ item }: { item: ImageUpload }) => (
     <ItemContainer>
       <UploadProgressIndicator

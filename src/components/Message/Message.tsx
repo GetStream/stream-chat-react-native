@@ -230,27 +230,29 @@ const DefaultMessageWithContext = <
 
     // Add reaction to local state, make API call in background, revert to old message if fails
     try {
-      if (userExistingReaction) {
-        channel?.state.removeReaction(userExistingReaction);
-        if (message.id) {
-          await channel?.deleteReaction(message.id, userExistingReaction.type);
-        }
-      } else {
-        const tmpReaction = {
-          created_at: new Date(),
-          message_id: message.id,
-          type: reactionType,
-          updated_at: new Date(),
-          user: client.user,
-        };
-
-        channel?.state.addReaction(
-          (tmpReaction as unknown) as ReactionResponse<Re, Us>,
-        );
-        if (message.id) {
-          await channel?.sendReaction(message.id, {
+      if (channel) {
+        if (userExistingReaction) {
+          channel.state.removeReaction(userExistingReaction);
+          if (message.id) {
+            await channel.deleteReaction(message.id, userExistingReaction.type);
+          }
+        } else {
+          const tmpReaction = {
+            created_at: new Date(),
+            message_id: message.id,
             type: reactionType,
-          } as Reaction<Re, Us>);
+            updated_at: new Date(),
+            user: client.user,
+          };
+
+          channel.state.addReaction(
+            (tmpReaction as unknown) as ReactionResponse<Re, Us>,
+          );
+          if (message.id) {
+            await channel.sendReaction(message.id, {
+              type: reactionType,
+            } as Reaction<Re, Us>);
+          }
         }
       }
     } catch (_error) {

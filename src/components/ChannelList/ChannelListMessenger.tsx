@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList } from 'react-native';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
@@ -124,6 +124,8 @@ export const ChannelListMessenger = <
     error,
     FooterLoadingIndicator = ChannelListFooterLoadingIndicator,
     forceUpdate,
+    HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
+    HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
     loadingChannels,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
@@ -139,11 +141,17 @@ export const ChannelListMessenger = <
 
   const { isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const renderHeaderIndicator = () => {
-    const {
-      HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
-      HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
-    } = props;
+  /**
+   * In order to prevent the EmptyStateIndicator component from showing up briefly on mount,
+   * we set the loading state one cycle behind to ensure the channels are set before the
+   * change to loadingChannels is registered.
+   */
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(!!loadingChannels);
+  }, [loadingChannels]);
+
+  const HeaderIndicator: React.FC = () => {
     if (!isOnline) {
       return <HeaderNetworkDownIndicator />;
     } else if (error) {
@@ -156,14 +164,32 @@ export const ChannelListMessenger = <
     <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> {...props} channel={channel} />
   );
 
-  const renderChannels = () => (
+  if (error && !refreshing && !channels?.length) {
+    return (
+      <LoadingErrorIndicator
+        error={error}
+        listType='channel'
+        loadNextPage={loadNextPage}
+        retry={reloadList}
+      />
+    );
+  }
+
+  return (
     <>
-      {renderHeaderIndicator()}
+      <HeaderIndicator />
       <FlatList
+        contentContainerStyle={{ flexGrow: 1 }}
         data={channels}
         extraData={forceUpdate}
         keyExtractor={(item) => item.cid}
-        ListEmptyComponent={<EmptyStateIndicator listType='channel' />}
+        ListEmptyComponent={
+          loading ? (
+            <LoadingIndicator listType='channel' />
+          ) : (
+            <EmptyStateIndicator listType='channel' />
+          )
+        }
         ListFooterComponent={
           loadingNextPage ? <FooterLoadingIndicator /> : undefined
         }
@@ -173,24 +199,10 @@ export const ChannelListMessenger = <
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={({ item }) => renderItem(item)}
+        style={{ flex: 1 }}
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
     </>
   );
-
-  if (loadingChannels) {
-    return <LoadingIndicator listType='channel' />;
-  } else if (error && !refreshing && !channels?.length) {
-    return (
-      <LoadingErrorIndicator
-        error={error}
-        listType='channel'
-        loadNextPage={loadNextPage}
-        retry={reloadList}
-      />
-    );
-  } else {
-    return renderChannels();
-  }
 };

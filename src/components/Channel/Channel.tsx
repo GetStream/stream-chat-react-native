@@ -14,7 +14,7 @@ import {
   StreamChat,
   Message as StreamMessage,
 } from 'stream-chat';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -66,6 +66,10 @@ export type ChannelProps<
    * The currently active channel
    */
   channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
+  /**
+   * Additional props passed to keyboard avoiding view
+   */
+  additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
   /**
    * Custom UI component to display attachments on individual messages
    * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
@@ -180,6 +184,7 @@ export const Channel = <
   props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
+    additionalKeyboardAvoidingViewProps,
     Attachment,
     channel,
     children,
@@ -362,7 +367,7 @@ export const Channel = <
     trailing: true,
   });
 
-  const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (e) => {
+  const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
     if (thread) {
       const updatedThreadMessages =
         (thread.id && channel && channel.state.threads[thread.id]) ||
@@ -370,13 +375,13 @@ export const Channel = <
       setThreadMessages(updatedThreadMessages);
     }
 
-    if (channel && thread && e.message && e.message.id === thread.id) {
-      const updatedThread = channel.state.messageToImmutable(e.message);
+    if (channel && thread && event.message?.id === thread.id) {
+      const updatedThread = channel.state.messageToImmutable(event.message);
       setThread(updatedThread);
     }
 
-    if (e.type === 'member.added') addToEventHistory(e);
-    if (e.type === 'member.removed') addToEventHistory(e);
+    if (event.type === 'member.added') addToEventHistory(event);
+    if (event.type === 'member.removed') addToEventHistory(event);
 
     if (channel) {
       handleEventStateThrottled(channel.state);
@@ -398,8 +403,8 @@ export const Channel = <
     if (channel && !channel.initialized && channel.cid) {
       try {
         await channel.watch();
-      } catch (e) {
-        setError(e);
+      } catch (err) {
+        setError(err);
         setLoading(false);
         initError = true;
       }
@@ -544,7 +549,9 @@ export const Channel = <
     Re,
     Us
   >['sendMessage'] = async (message) => {
-    channel?.state?.filterErrorMessages();
+    if (channel?.state?.filterErrorMessages) {
+      channel.state.filterErrorMessages();
+    }
 
     const messagePreview = createMessagePreview({
       ...message,
@@ -614,8 +621,8 @@ export const Channel = <
         const updatedHasMore = queryResponse.messages.length === limit;
         loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
       }
-    } catch (e) {
-      console.warn('Message pagination request failed with error', e);
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
       return setLoadingMore(false);
     }
   };
@@ -641,12 +648,10 @@ export const Channel = <
     Me,
     Re,
     Us
-  >['editMessage'] = (updatedMessage) => {
-    if (doUpdateMessageRequest) {
-      return doUpdateMessageRequest(channel?.cid || '', updatedMessage);
-    }
-    return client.updateMessage(updatedMessage);
-  };
+  >['editMessage'] = (updatedMessage) =>
+    doUpdateMessageRequest
+      ? doUpdateMessageRequest(channel?.cid || '', updatedMessage)
+      : client.updateMessage(updatedMessage);
 
   const setEditingState: MessagesContextValue<
     At,
@@ -754,7 +759,7 @@ export const Channel = <
     Re,
     Us
   >['loadMoreThread'] = async () => {
-    if (threadLoadingMore || !(thread && thread.id)) return;
+    if (threadLoadingMore || !thread?.id) return;
     setThreadLoadingMore(true);
 
     if (channel) {
@@ -783,6 +788,7 @@ export const Channel = <
     eventHistory,
     lastRead,
     loading,
+    LoadingIndicator,
     markRead: markReadThrottled,
     members,
     read,
@@ -832,15 +838,12 @@ export const Channel = <
     );
   }
 
-  if (loading) {
-    return <LoadingIndicator listType='message' />;
-  }
-
   return (
     <KeyboardCompatibleView
       behavior={keyboardBehavior}
       enabled={!disableKeyboardCompatibleView}
       keyboardVerticalOffset={keyboardVerticalOffset}
+      {...additionalKeyboardAvoidingViewProps}
     >
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
         <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>

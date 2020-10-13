@@ -71,7 +71,6 @@ registerNativeHandlers({
     try {
       let res = await ImagePicker.openPicker({
         compressImageQuality,
-        includeBase64: Platform.OS === 'ios',
         maxFiles: maxNumberOfFiles || undefined,
         multiple: true,
         writeTempFile: false,
@@ -85,10 +84,7 @@ registerNativeHandlers({
       return {
         cancelled: false,
         images: res.map((image) => ({
-          uri:
-            Platform.OS === 'ios'
-              ? `data:${image.mime};base64,${image.data}`
-              : image.path,
+          uri: Platform.OS === 'ios' ? image.sourceURL : image.path,
         })),
       };
     } catch (err) {

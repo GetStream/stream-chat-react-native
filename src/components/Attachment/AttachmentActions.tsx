@@ -53,26 +53,29 @@ export type AttachmentActionsProps<
  */
 export const AttachmentActions = <
   At extends UnknownType = DefaultAttachmentType
->({
-  actionHandler,
-  actions,
-}: AttachmentActionsProps<At>) => (
-  <Container testID='attachment-actions'>
-    {actions?.map((action, index) => (
-      <ActionButton
-        buttonStyle={action.style}
-        key={`${index}-${action.value}`}
-        onPress={() => {
-          if (action.name && action.value && actionHandler) {
-            actionHandler(action.name, action.value);
-          }
-        }}
-        testID={`attachment-actions-button-${action.name}`}
-      >
-        <ActionButtonText buttonStyle={action.style}>
-          {action.text}
-        </ActionButtonText>
-      </ActionButton>
-    ))}
-  </Container>
-);
+>(
+  props: AttachmentActionsProps<At>,
+) => {
+  const { actionHandler, actions } = props;
+
+  return (
+    <Container testID='attachment-actions'>
+      {actions?.map((action, index) => (
+        <ActionButton
+          buttonStyle={action.style}
+          key={`${index}-${action.value}`}
+          onPress={() => {
+            if (action.name && action.value && actionHandler) {
+              actionHandler(action.name, action.value);
+            }
+          }}
+          testID={`attachment-actions-button-${action.name}`}
+        >
+          <ActionButtonText buttonStyle={action.style}>
+            {action.text}
+          </ActionButtonText>
+        </ActionButton>
+      ))}
+    </Container>
+  );
+};

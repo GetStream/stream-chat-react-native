@@ -75,7 +75,9 @@ export type ChannelListProps<
    *
    * **Note:** Don't use `additionalFlatListProps` to access the FlatList ref, use `setFlatListRef`
    */
-  additionalFlatListProps?: FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>;
+  additionalFlatListProps?: Partial<
+    FlatListProps<Channel<At, Ch, Co, Ev, Me, Re, Us>>
+  >;
   /**
    * Custom indicator to use when channel list is empty
    *
@@ -305,28 +307,28 @@ export const ChannelList = <
   });
 
   // Setup event listeners
-  useAddedToChannelNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useAddedToChannelNotification({
     onAddedToChannel,
     setChannels,
   });
 
-  useChannelDeleted<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelDeleted({
     onChannelDeleted,
     setChannels,
   });
 
-  useChannelHidden<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelHidden({
     onChannelHidden,
     setChannels,
   });
 
-  useChannelTruncated<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelTruncated({
     onChannelTruncated,
     setChannels,
     setForceUpdate,
   });
 
-  useChannelUpdated<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelUpdated({
     onChannelUpdated,
     setChannels,
   });
@@ -335,22 +337,22 @@ export const ChannelList = <
     setForceUpdate,
   });
 
-  useNewMessage<At, Ch, Co, Ev, Me, Re, Us>({
+  useNewMessage({
     lockChannelOrder,
     setChannels,
   });
 
-  useNewMessageNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useNewMessageNotification({
     onMessageNew,
     setChannels,
   });
 
-  useRemovedFromChannelNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useRemovedFromChannelNotification({
     onRemovedFromChannel,
     setChannels,
   });
 
-  useUserPresence<At, Ch, Co, Ev, Me, Re, Us>({
+  useUserPresence({
     setChannels,
   });
 

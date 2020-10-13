@@ -65,6 +65,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
     });
   });
+
   it('renders an error/unsent message when `message.type` is `error`', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
@@ -106,6 +107,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
+
   it('renders a MessageHeader when the prop exists', async () => {
     const user = generateUser();
     const message = generateMessage({ user });

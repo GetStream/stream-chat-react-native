@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
-import uuidv5 from 'uuid/v5';
+import { v5 as uuidv5 } from 'uuid';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';
@@ -70,7 +70,7 @@ describe('Thread', () => {
       </Chat>,
     );
 
-    expect(t).toHaveBeenCalledWith('Loading messages ...');
+    expect(t).toHaveBeenCalledWith('Start of a new thread');
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Start of a new thread');
       expect(getByText('Start of a new thread')).toBeTruthy();

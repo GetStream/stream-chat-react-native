@@ -108,15 +108,6 @@ describe('Channel', () => {
     await waitFor(() => expect(getByTestId('loading-error')).toBeTruthy());
   });
 
-  it('should render a LoadingIndicator if it is loading', async () => {
-    const watchPromise = new Promise(() => {});
-    jest.spyOn(channel, 'watch').mockImplementationOnce(() => watchPromise);
-
-    const { getByTestId } = renderComponent({ channel });
-
-    await waitFor(() => expect(getByTestId('loading')).toBeTruthy());
-  });
-
   it('should render children if a channel is set', async () => {
     const { getByTestId } = renderComponent({
       channel,
@@ -210,28 +201,6 @@ describe('Channel', () => {
     );
   const limit = 10;
 
-  it('should set hasMore to false if channel query returns less messages than the limit', async () => {
-    let channelHasMore = false;
-    const newMessages = [generateMessage()];
-    renderComponent(
-      { channel },
-      ({ hasMore, loadMore, messages: contextMessages }) => {
-        if (
-          !contextMessages.find((message) => message.id === newMessages[0].id)
-        ) {
-          // Our new message is not yet passed as part of channel context. Call loadMore and mock API response to include it.
-          useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-          loadMore(limit);
-        } else {
-          // If message has been added, set our checker variable so we can verify if hasMore is false.
-          channelHasMore = hasMore;
-        }
-      },
-      MessagesContext,
-    );
-    await waitFor(() => expect(channelHasMore).toBe(false));
-  });
-
   it('should call the channel query method to load more messages', async () => {
     const channelQuerySpy = jest.spyOn(channel, 'query');
 
@@ -247,24 +216,6 @@ describe('Channel', () => {
     );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
-  });
-
-  it('should set loadingMore to true while loading more', async () => {
-    const queryPromise = new Promise(() => {});
-    let isLoadingMore = false;
-
-    renderComponent(
-      { channel },
-      ({ loadingMore, loadMore }) => {
-        // return a promise that hasn't resolved yet, so loadMore will be stuck in the 'await' part of the function
-        jest.spyOn(channel, 'query').mockImplementationOnce(() => queryPromise);
-        loadMore();
-        isLoadingMore = loadingMore;
-      },
-      MessagesContext,
-    );
-
-    await waitFor(() => expect(isLoadingMore).toBe(true));
   });
 
   it('should enable editing messages', async () => {

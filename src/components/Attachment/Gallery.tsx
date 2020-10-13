@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   GestureResponderEvent,
   Image,
   Modal,
-  SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
+import { Immutable, isImmutable } from 'seamless-immutable';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
@@ -74,6 +75,8 @@ const ImageContainer = styled.TouchableOpacity<{ length?: number }>`
 const HeaderContainer = styled.View`
   flex-direction: row;
   justify-content: flex-end;
+  position: absolute;
+  width: 100%;
   z-index: 1000;
   ${({ theme }) => theme.message.gallery.header.container.css}
 `;
@@ -83,8 +86,8 @@ const HeaderButton = styled.TouchableOpacity`
   border-radius: 20px;
   height: 30px;
   justify-content: center;
-  margin-right: 20px;
-  margin-top: 20px;
+  margin-right: 32px;
+  margin-top: 32px;
   width: 30px;
   ${({ theme }) => theme.message.gallery.header.button.css}
 `;
@@ -93,13 +96,20 @@ type GalleryHeaderProps = {
   handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
 };
 
-const GalleryHeader = ({ handleDismiss }: GalleryHeaderProps) => (
-  <HeaderContainer>
-    <HeaderButton onPress={handleDismiss}>
-      <CloseButton />
-    </HeaderButton>
-  </HeaderContainer>
-);
+const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
+  useEffect(() => {
+    StatusBar.setHidden(true);
+    return () => StatusBar.setHidden(false);
+  }, []);
+
+  return (
+    <HeaderContainer>
+      <HeaderButton onPress={handleDismiss}>
+        <CloseButton />
+      </HeaderButton>
+    </HeaderContainer>
+  );
+};
 
 export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
@@ -121,6 +131,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   props: GalleryProps<At>,
 ) => {
   const { alignment, images } = props;
+
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
   const { t } = useTranslationContext();
 
@@ -129,13 +140,22 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
 
   if (!images?.length) return null;
 
-  const galleryImages = images.reduce((returnArray, currentImage) => {
+  const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
     const url = currentImage.image_url || currentImage.thumb_url;
     if (url) {
-      returnArray.push({ url: makeImageCompatibleUrl(url) });
+      returnArray.push({ url: makeImageCompatibleUrl(url) } as Immutable<
+        IImageInfo
+      >);
     }
     return returnArray;
-  }, [] as IImageInfo[]);
+  }, [] as Immutable<IImageInfo>[]);
+
+  const galleryImages: IImageInfo[] = [];
+
+  immutableGalleryImages.forEach((image) => {
+    const galleryImage = isImmutable(image) ? image.asMutable() : image;
+    galleryImages.push(galleryImage);
+  });
 
   if (galleryImages.length === 1) {
     return (
@@ -159,22 +179,21 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
             transparent
             visible
           >
-            <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
-              <ImageViewer
-                // TODO: We don't have 'save image' functionality.
-                // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-                // opens up popup menu to with an option "Save to the album", which basically does nothing.
-                enableSwipeDown
-                imageUrls={galleryImages}
-                onCancel={() => setViewerModalOpen(false)}
-                renderHeader={() => (
-                  <GalleryHeader
-                    handleDismiss={() => setViewerModalOpen(false)}
-                  />
-                )}
-                saveToLocalByLongPress={false}
-              />
-            </SafeAreaView>
+            <ImageViewer
+              // TODO: We don't have 'save image' functionality.
+              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+              // opens up popup menu to with an option "Save to the album", which basically does nothing.
+              enableSwipeDown
+              imageUrls={galleryImages}
+              onCancel={() => setViewerModalOpen(false)}
+              renderHeader={() => (
+                <GalleryHeader
+                  handleDismiss={() => setViewerModalOpen(false)}
+                />
+              )}
+              saveToLocalByLongPress={false}
+              useNativeDriver
+            />
           </Modal>
         )}
       </>
@@ -251,23 +270,20 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
           transparent
           visible
         >
-          <SafeAreaView style={{ backgroundColor: 'transparent', flex: 1 }}>
-            <ImageViewer
-              // TODO: We don't have 'save image' functionality.
-              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-              // opens up popup menu to with an option "Save to the album", which basically does nothing.
-              enableSwipeDown
-              imageUrls={galleryImages}
-              index={viewerModalImageIndex}
-              onCancel={() => setViewerModalOpen(false)}
-              renderHeader={() => (
-                <GalleryHeader
-                  handleDismiss={() => setViewerModalOpen(false)}
-                />
-              )}
-              saveToLocalByLongPress={false}
-            />
-          </SafeAreaView>
+          <ImageViewer
+            // TODO: We don't have 'save image' functionality.
+            // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
+            // opens up popup menu to with an option "Save to the album", which basically does nothing.
+            enableSwipeDown
+            imageUrls={galleryImages}
+            index={viewerModalImageIndex}
+            onCancel={() => setViewerModalOpen(false)}
+            renderHeader={() => (
+              <GalleryHeader handleDismiss={() => setViewerModalOpen(false)} />
+            )}
+            saveToLocalByLongPress={false}
+            useNativeDriver
+          />
         </Modal>
       )}
     </>
