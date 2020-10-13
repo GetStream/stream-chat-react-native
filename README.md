@@ -439,7 +439,7 @@ withChannelContext<
    1. Close/stop the metro bundler process.
    2. Let the build process finish. It can usually take around 2-3 minutes for the first time.
    3. Start the metro bundler manually by executing `yarn start` inside `stream-chat-react-native/examples/NativeMessaging` directory.
-2. When you execute `npx react-native run-android`, you may (not necessarily) run into following error:
+2. When you execute `yarn android`, you may (not necessarily) run into following error:
 
    ```ERROR
    info Starting JS server...
