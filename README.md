@@ -95,7 +95,7 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
 
      ```bash
      cd ios && pod install && cd ..
-     npx react-native run-ios
+     yarn ios
      ```
 
    - For android
