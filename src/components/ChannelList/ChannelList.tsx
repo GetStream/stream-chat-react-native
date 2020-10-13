@@ -307,28 +307,28 @@ export const ChannelList = <
   });
 
   // Setup event listeners
-  useAddedToChannelNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useAddedToChannelNotification({
     onAddedToChannel,
     setChannels,
   });
 
-  useChannelDeleted<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelDeleted({
     onChannelDeleted,
     setChannels,
   });
 
-  useChannelHidden<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelHidden({
     onChannelHidden,
     setChannels,
   });
 
-  useChannelTruncated<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelTruncated({
     onChannelTruncated,
     setChannels,
     setForceUpdate,
   });
 
-  useChannelUpdated<At, Ch, Co, Ev, Me, Re, Us>({
+  useChannelUpdated({
     onChannelUpdated,
     setChannels,
   });
@@ -337,22 +337,22 @@ export const ChannelList = <
     setForceUpdate,
   });
 
-  useNewMessage<At, Ch, Co, Ev, Me, Re, Us>({
+  useNewMessage({
     lockChannelOrder,
     setChannels,
   });
 
-  useNewMessageNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useNewMessageNotification({
     onMessageNew,
     setChannels,
   });
 
-  useRemovedFromChannelNotification<At, Ch, Co, Ev, Me, Re, Us>({
+  useRemovedFromChannelNotification({
     onRemovedFromChannel,
     setChannels,
   });
 
-  useUserPresence<At, Ch, Co, Ev, Me, Re, Us>({
+  useUserPresence({
     setChannels,
   });
 

@@ -85,6 +85,7 @@ export const MessageStatus = <
   props: ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { lastReceivedId, message, readBy = [], threadList } = props;
+
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const justReadByMe = readBy.length === 1 && readBy[0].id === client.user?.id;
 

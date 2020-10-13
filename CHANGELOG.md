@@ -1,5 +1,38 @@
 # Changelog
 
+## [2.0.0]
+
+Full TypeScript support
+
+**BREAKING CHANGES**
+
+- You will need to install https://github.com/LinusU/react-native-get-random-values and add this line `import 'react-native-get-random-values';` to your `index.js`
+- Expo 39 is now the lowest supported version
+
+### Component prop changes
+
+*Avatar*
+- add `testID` prop
+
+*Channel*
+- add `additionalKeyboardAvoidingViewProps` prop to allow custom keyboard props
+
+*ChannelListMessenger*
+- remove `setActiveChannel` prop
+
+*ChannelPreviewMessenger*
+- renamed the `latestMessage` prop to `latestMessagePreview`. This name change is more semantic to what the prop does and reduces confusion with the `lastMessage` prop
+
+*MessageContent*
+- removed `retrySendMessage` prop in favor of `retrySendMessage` within `MessagesContext`
+
+*MessageInput*
+- remove `parent` prop to `parent_id` as it needs to be just an id string instead of the entire parent object
+- add `setInputRef` prop to actually allow forwarding of the TextInput ref controls
+
+*MessageSystem*
+- add `formatDate` prop to allow custom date formatting
+
 ## [1.3.3] 2020-10-XX UNPUBLISHED
 
 **BREAKING CHANGES**

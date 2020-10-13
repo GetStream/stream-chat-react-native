@@ -131,6 +131,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   props: GalleryProps<At>,
 ) => {
   const { alignment, images } = props;
+
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
   const { t } = useTranslationContext();
 

@@ -123,14 +123,14 @@ export const Thread = <
   props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    autoFocus = true,
-    Message: MessageFromProps,
-    MessageList = DefaultMessageList,
-    MessageInput = DefaultMessageInput,
-    additionalParentMessageProps,
-    disabled,
-    additionalMessageListProps,
     additionalMessageInputProps,
+    additionalMessageListProps,
+    additionalParentMessageProps,
+    autoFocus = true,
+    disabled,
+    Message: MessageFromProps,
+    MessageInput = DefaultMessageInput,
+    MessageList = DefaultMessageList,
   } = props;
 
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
