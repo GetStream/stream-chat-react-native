@@ -25,25 +25,20 @@
 
 ## Contents
 
-- [Official React Native SDK for Stream Chat](#official-react-native-sdk-for-stream-chat)
-  - [Contents](#contents)
-  - [React Native Compatibility](#react-native-compatibility)
-  - [React Native Chat Tutorial](#react-native-chat-tutorial)
-  - [Example Apps](#example-apps)
-    - [Expo example](#expo-example)
-    - [Slack clone](#slack-clone)
-  - [Docs](#docs)
-  - [Keep in mind](#keep-in-mind)
-  - [Setup (Setting up a chat app)](#setup-setting-up-a-chat-app)
-    - [Expo package](#expo-package)
-    - [Native package](#native-package)
-      - [For react native < 0.60](#for-react-native--060)
-      - [For react native >= 0.60](#for-react-native--060-1)
+- [React Native Compatibility](#react-native-compatibility)
+- [React Native Chat Tutorial](#react-native-chat-tutorial)
+- [Example Apps](#example-apps)
+  - [Expo example](#expo-example)
+  - [Slack clone](#slack-clone)
+- [Docs](#docs)
+- [Keep in mind](#keep-in-mind)
+- [Setup](#setup-setting-up-a-chat-app)
+  - [Expo package](#expo-package)
+  - [Native package](#native-package)
+  - Native Web package _(currently under development. Please follow progress at [#206](https://github.com/GetStream/stream-chat-react-native/issues/206))_
   - [TypeScript Support](#typescript-support)
   - [Upgrade](#upgrade)
   - [Common issues](#common-issues)
-    - [While running native example, you may (not necessarily) run into the following issues](#while-running-native-example-you-may-not-necessarily-run-into-the-following-issues)
-  - [Internationalisation](#internationalisation)
   - [Contributing](#contributing)
 
 ## React Native Compatibility
@@ -73,17 +68,6 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
 ### Expo example
 
 1. Make sure node version is >= v10.13.0
-2.
-2.
-2.
-2.
-2.
-2.
-2.
-2.
-2.
-2.
-2.
 2. ```bash
    yarn global add expo-cli
    git clone https://github.com/GetStream/stream-chat-react-native.git
