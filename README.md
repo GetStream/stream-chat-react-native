@@ -435,7 +435,7 @@ withChannelContext<
 
 #### While running native example, you may (not necessarily) run into the following issues
 
-1. When you execute `npx react-native run-ios` for the first time, it starts a metro bundler in parallel. It can result in some errors since the build process isn't complete yet. Try the following to fix this:
+1. When you execute `yarn ios` for the first time, it starts a metro bundler in parallel. It can result in some errors since the build process isn't complete yet. Try the following to fix this:
    1. Close/stop the metro bundler process.
    2. Let the build process finish. It can usually take around 2-3 minutes for the first time.
    3. Start the metro bundler manually by executing `yarn start` inside `stream-chat-react-native/examples/NativeMessaging` directory.
