@@ -65,17 +65,55 @@ registerNativeHandlers({
       });
     },
   },
-  pickImage: async () => {
-    await Permissions.askAsync(Permissions.CAMERA_ROLL);
+  pickDocument: async ({ maxNumberOfFiles }) => {
+    try {
+      const { type, ...rest } = await DocumentPicker.getDocumentAsync();
 
-    return await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: false,
-      aspect: [4, 3],
-      //TODO: Decide what to do about it
-      quality: 0.2,
-    });
+      if (type === 'cancel') {
+        return {
+          cancelled: true,
+        };
+      }
+      return {
+        cancelled: false,
+        docs: [rest],
+      };
+    } catch (err) {
+      return {
+        cancelled: true,
+      };
+    }
   },
-  pickDocument: async () => await DocumentPicker.getDocumentAsync(),
+  pickImage: async ({ compressImageQuality = 0.2, maxNumberOfFiles }) => {
+    try {
+      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      if (status !== 'granted') {
+        return {
+          cancelled: true,
+        };
+      }
+
+      const { cancelled, ...rest } = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: false,
+        aspect: [4, 3],
+        quality: compressImageQuality,
+      });
+
+      if (cancelled) {
+        return {
+          cancelled,
+        };
+      }
+      return {
+        cancelled: false,
+        images: [{ uri: rest.uri }],
+      };
+    } catch (err) {
+      return {
+        cancelled: true,
+      };
+    }
+  },
 });
 
 export * from 'stream-chat-react-native-core';

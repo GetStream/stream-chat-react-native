@@ -125,6 +125,7 @@ export const ChannelPreviewMessenger = <
     setActiveChannel,
     unread,
   } = props;
+
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();

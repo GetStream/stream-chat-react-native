@@ -94,6 +94,7 @@ export const ActionSheetAttachment: React.FC<ActionSheetProps> = (props) => {
     setAttachActionSheetRef,
     styles,
   } = props;
+
   const { t } = useTranslationContext();
 
   return (

@@ -238,6 +238,8 @@ PODS:
   - React-jsinspector (0.63.3)
   - react-native-document-picker (4.0.0):
     - React-Core
+  - react-native-get-random-values (1.5.0):
+    - React
   - react-native-netinfo (5.9.7):
     - React-Core
   - react-native-safe-area-context (3.1.8):
@@ -362,6 +364,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
+  - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -430,6 +433,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
+  react-native-get-random-values:
+    :path: "../node_modules/react-native-get-random-values"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -495,6 +500,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: b56c03e61c0dd5f5801255f2160a815f4a53d451
   React-jsinspector: 8e68ffbfe23880d3ee9bafa8be2777f60b25cbe2
   react-native-document-picker: 0bba80cc56caab1f67dbaa81ff557e3a9b7f2b9f
+  react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
   react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
   react-native-safe-area-context: 79fea126c6830c85f65947c223a5e3058a666937
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa

@@ -129,6 +129,31 @@ describe('MessageList', () => {
     });
   });
 
+  it('should render the EmptyStateIndicator when no messages loaded', async () => {
+    const user1 = generateUser();
+    const mockedChannel = generateChannel({
+      members: [generateMember({ user: user1 })],
+      messages: [],
+    });
+
+    const chatClient = await getTestClientWithUser({ id: 'testID' });
+    useMockedApis(chatClient, [getOrCreateChannelApi(mockedChannel)]);
+    const channel = chatClient.channel('messaging', mockedChannel.id);
+    await channel.query();
+
+    const { getByTestId } = render(
+      <Chat client={chatClient}>
+        <Channel channel={channel}>
+          <MessageList />
+        </Channel>
+      </Chat>,
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('empty-state')).toBeTruthy();
+    });
+  });
+
   it('should render the is offline error', async () => {
     const user1 = generateUser();
     const mockedChannel = generateChannel({

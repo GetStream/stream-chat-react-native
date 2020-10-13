@@ -37,6 +37,7 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
   props,
 ) => {
   const { onPress, showNotification = true } = props;
+
   const { t } = useTranslationContext();
 
   const opacity = useRef(new Animated.Value(0)).current;
