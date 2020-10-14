@@ -3,14 +3,13 @@ import { Text } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
 
+import { MessageTextContainer } from '../MessageTextContainer';
+
 import {
   generateMessage,
   generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser } from 'mock-builders/generator/user';
-
-import { MessageTextContainer } from '../MessageTextContainer';
-
+} from '../../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);

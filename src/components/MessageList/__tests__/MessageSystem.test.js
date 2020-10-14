@@ -2,15 +2,14 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components/native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import {
-  generateMessage,
-  generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser } from 'mock-builders/generator/user';
-
 import { MessageSystem } from '../MessageSystem';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import {
+  generateMessage,
+  generateStaticMessage,
+} from '../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { defaultTheme } from '../../../styles/themeConstants';
 import { Streami18n } from '../../../utils/Streami18n';
 

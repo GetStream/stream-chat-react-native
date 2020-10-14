@@ -6,16 +6,16 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { MessageInput } from '../MessageInput';
 
 import { Channel } from '../../Channel/Channel';
 import { Chat } from '../../Chat/Chat';
+
+import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../mock-builders/generator/channel';
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 describe('MessageInput', () => {
   const clientUser = generateUser();

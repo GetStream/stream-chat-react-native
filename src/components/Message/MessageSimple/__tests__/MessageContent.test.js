@@ -2,15 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateReaction } from 'mock-builders/generator/reaction';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { Message } from '../../Message';
 
 import { Chat } from '../../../Chat/Chat';
@@ -20,6 +11,14 @@ import {
   MessageContentProvider,
   useMessageContentContext,
 } from '../../../../contexts/messageContentContext/MessageContentContext';
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateMessage } from '../../../../mock-builders/generator/message';
+import { generateReaction } from '../../../../mock-builders/generator/reaction';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../../mock-builders/mock';
 
 describe('MessageContent', () => {
   let channel;

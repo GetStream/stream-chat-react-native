@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { ReactionList } from '../ReactionList';
 
 import { Chat } from '../../Chat/Chat';
+
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 
 const defaultProps = {
   getTotalReactionCount: () => 5,

@@ -7,20 +7,19 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
-import { useMockedApis } from 'mock-builders/api/useMockedApis';
-import { generateChannel } from 'mock-builders/generator/channel';
-import { generateMember } from 'mock-builders/generator/member';
-import { generateMessage } from 'mock-builders/generator/message';
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { Message } from '../../Message';
 
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
 import { MessageInput } from '../../../MessageInput/MessageInput';
 import { MessageList } from '../../../MessageList/MessageList';
+import { getOrCreateChannelApi } from '../../../../mock-builders/api/getOrCreateChannel';
+import { useMockedApis } from '../../../../mock-builders/api/useMockedApis';
+import { generateChannel } from '../../../../mock-builders/generator/channel';
+import { generateMember } from '../../../../mock-builders/generator/member';
+import { generateMessage } from '../../../../mock-builders/generator/message';
+import { generateUser } from '../../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../../mock-builders/mock';
 
 describe('Message', () => {
   let channel;

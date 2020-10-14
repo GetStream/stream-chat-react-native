@@ -2,14 +2,13 @@ import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 import { ThemeProvider } from 'styled-components/native';
 
+import { MessageAvatar } from '../MessageAvatar';
+
 import {
   generateMessage,
   generateStaticMessage,
-} from 'mock-builders/generator/message';
-import { generateStaticUser } from 'mock-builders/generator/user';
-
-import { MessageAvatar } from '../MessageAvatar';
-
+} from '../../../../mock-builders/generator/message';
+import { generateStaticUser } from '../../../../mock-builders/generator/user';
 import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);
