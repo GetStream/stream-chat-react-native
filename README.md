@@ -389,47 +389,9 @@ withChannelContext<
 >(MyComponent);
 ```
 
-## Upgrade
+## Upgrade helper
 
-- Upgrade from 1.x.x to 2.x.x:
-
-  - We have split the `ChannelContext` into three separate contexts to further modularize the code and reduce renders as items in context change. The following contexts now contain the following values, previously all held within the `ChannelContext`:
-
-    - `ChannelContext`:
-      
-      `channel`, `disabled`, `EmptyStateIndicator`, `error`, `eventHistory`, `lastRead`, `loading`, `LoadingIndicator`, `markRead`, `members`, `read`, `setLastRead`, `typing`, `watcherCount`, `watchers`
-
-    - `MessagesContext`:
-    
-      `Attachment`, `clearEditingState`, `editing`, `editMessage`, `emojiData`, `hasMore`, `loadingMore`, `loadMore`, `Message`, `messages`, `removeMessage`, `retrySendMessage`, `sendMessage`, `setEditingState`, `updateMessage`
-
-    - `ThreadContext`:
-    
-      `closeThread`, `loadMoreThread`, `openThread`, `thread`, `threadHasMore`, `threadLoadingMore`, `threadMessages`
-
-  All contexts are exported and any values can be accessed through one of the custom context hooks or a higher order component. If previously `ChannelContext` was used to access these values this must be changed to the appropriate new context, e.g. `const { messages } = useMessagesContext();`.
-
-- Upgrade from 1.2.x to 1.3.x:
-  - 1.3.x replaced native dependency support for react-native-image-picker in favor of react-native-image-crop-picker for multi-image selection capabilities
-
-- Upgrade from 0.1.x to 0.2.x:
-
-  - 0.2.x added support for react native 0.60. Dependencies like `react-native-image-picker`, `react-native-document-picker` and `netinfo` have been taken out of hard dependencies and moved to peer dependencies and thus will have to be installed manually on consumer end ([Reference](https://github.com/GetStream/stream-chat-react-native/pull/52/files#diff-83a54d8caab0ea9fcdd5f832b03a5d83))
-  - React Native 0.60 came with auto-linking functionality that means if some native libraries are linked manually before the upgrade, they will have to be unlinked, so that React Native can auto-link them ([Reference](https://facebook.github.io/react-native/blog/2019/07/03/version-60#native-modules-are-now-autolinked))
-
-    ```
-    react-native unlink react-native-image-picker
-    react-native unlink react-native-document-picker
-    react-native unlink @react-native-community/netinfo
-    ```
-
-  - React Native 0.60 has been migrated over to AndroidX. In the current context, dependencies such as `react-native-document-picker` and (if you are using `react-navigation`) `react-native-gesture-handler`, `react-native-reanimated` don't have AndroidX support. But an excellent tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with AndroidX support.
-
-  - CocoaPods are not part of React Native's iOS project ([ref](https://facebook.github.io/react-native/blog/2019/07/03/version-60#cocoapods-by-default)). Thus make sure to install all the pod dependencies.
-
-    ```
-    cd ios && pod install && cd ..
-    ```
+Please refer to [upgrade doc](https://github.com/GetStream/stream-chat-react-native/blob/master/upgrade-doc.md)
 
 ## Common issues
 
