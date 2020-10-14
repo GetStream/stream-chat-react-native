@@ -1,13 +1,12 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { generateUser } from 'mock-builders/generator/user';
-import { getTestClientWithUser } from 'mock-builders/mock';
-
 import { ReactionPicker } from '../ReactionPicker';
 
 import { Chat } from '../../Chat/Chat';
 
+import { generateUser } from '../../../mock-builders/generator/user';
+import { getTestClientWithUser } from '../../../mock-builders/mock';
 import { emojiData } from '../../../utils/utils';
 
 const defaultProps = {

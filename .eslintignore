@@ -5,4 +5,5 @@ dist/
 vendor/
 *.md
 src/components/docs/
+src/v2/components/docs/
 lib/

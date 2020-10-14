@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MessageSystem should match the snapshot for message system 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "marginBottom": 10,
+      },
+    ]
+  }
+  testID="message-system"
+>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#EBEBEB",
+          "flexBasis": 0,
+          "flexGrow": 1,
+          "flexShrink": 1,
+          "height": 0.5,
+        },
+      ]
+    }
+  />
+  <View
+    style={
+      Array [
+        Object {
+          "flexBasis": 0,
+          "flexGrow": 3,
+          "flexShrink": 1,
+          "marginTop": 10,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "rgba(0, 0, 0, 0.5)",
+            "fontSize": 10,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      HELLO WORLD
+    </Text>
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "rgba(0, 0, 0, 0.5)",
+            "fontSize": 10,
+            "fontWeight": "bold",
+            "textAlign": "center",
+          },
+        ]
+      }
+    >
+      04/27/2020
+    </Text>
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "backgroundColor": "#EBEBEB",
+          "flexBasis": 0,
+          "flexGrow": 1,
+          "flexShrink": 1,
+          "height": 0.5,
+        },
+      ]
+    }
+  />
+</View>
+`;
