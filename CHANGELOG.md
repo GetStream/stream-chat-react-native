@@ -11,9 +11,6 @@ Full TypeScript support
 
 ### Component prop changes
 
-*Avatar*
-- add `testID` prop
-
 *Channel*
 - add `additionalKeyboardAvoidingViewProps` prop to allow custom keyboard props
 
@@ -32,10 +29,6 @@ Full TypeScript support
 
 *MessageSystem*
 - add `formatDate` prop to allow custom date formatting
-
-## [1.3.3] 2020-10-XX UNPUBLISHED
-
-**BREAKING CHANGES**
 
 *ChannelContext*
 
