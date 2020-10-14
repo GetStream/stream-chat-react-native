@@ -7126,9 +7126,28 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-"stream-chat-react-native-core@link:../..":
-  version "0.0.0"
-  uid ""
+stream-chat-react-native-core@v2.0.0-beta.0:
+  version "2.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.0.0-beta.0.tgz#34bdd5f3f01cc03bdb6e0e5477bacbd95e771bc2"
+  integrity sha512-0Yr5bX59PRCWXjCxaPWVOBaYPqssxNOXfJlxbtf/J6Cf4iTZspU9QJMTT6MNIHDDY+vcPRxXyj+sk8IMc1NP3Q==
+  dependencies:
+    "@babel/runtime" "7.11.2"
+    "@stream-io/react-native-simple-markdown" "1.2.1"
+    anchorme "^1.1.2"
+    dayjs "1.9.3"
+    file-loader "6.1.1"
+    i18next "19.8.2"
+    lodash-es "4.17.15"
+    metro-react-native-babel-preset "^0.56.0"
+    mime-types "2.1.27"
+    path "0.12.7"
+    react-art "^16.8.6"
+    react-native-actionsheet "2.4.2"
+    react-native-image-zoom-viewer "3.0.1"
+    seamless-immutable "7.1.4"
+    stream-chat "2.6.0"
+    styled-components "5.2.0"
+    uuid "8.3.1"
 
 "stream-chat-react-native@link:../../native-package":
   version "0.0.0"
