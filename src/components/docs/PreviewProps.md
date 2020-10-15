@@ -1,8 +1,7 @@
-All the props available to [List](#list-in-channellist) UI component as available in Preview UI component.
+All props available to the [ChannelPreview](#channelpreview) component are also passed to the ChannelPreviewMessenger UI component. Additionally, the following channel specific properties are available:
 
-Additionally following channel specific properties are available:
-
-- `unread` {number} Number of unread messages on channel
-- `lastMessage` {object} Latest received message object on channel
-- `latestMessage` {string} Latest received message text on channel
-- `lastRead` {string} DateTime stamp of last time channel was read
+- `formatLatestMessageDate` {function} Formatter function for date of the latest message
+- `lastMessage` {object} Latest received message on the channel
+- `latestMessageLength` {number} Length at which latest message should be truncated
+- `latestMessagePreview` {object} Formatted message object with preview display information
+- `unread` {number} Number of unread messages on the channel

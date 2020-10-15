@@ -71,7 +71,6 @@ registerNativeHandlers({
     try {
       let res = await ImagePicker.openPicker({
         compressImageQuality,
-        includeBase64: Platform.OS === 'ios',
         maxFiles: maxNumberOfFiles || undefined,
         multiple: true,
         writeTempFile: false,
@@ -85,10 +84,7 @@ registerNativeHandlers({
       return {
         cancelled: false,
         images: res.map((image) => ({
-          uri:
-            Platform.OS === 'ios'
-              ? `data:${image.mime};base64,${image.data}`
-              : image.path,
+          uri: Platform.OS === 'ios' ? image.sourceURL : image.path,
         })),
       };
     } catch (err) {
@@ -103,7 +99,7 @@ if (Platform.OS === 'android') {
   if (typeof Symbol === 'undefined') {
     require('es6-symbol/implement');
     if (Array.prototype[Symbol.iterator] === undefined) {
-      Array.prototype[Symbol.iterator] = function() {
+      Array.prototype[Symbol.iterator] = function () {
         let i = 0;
         return {
           next: () => ({

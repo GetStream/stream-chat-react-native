@@ -1,7 +1,7 @@
 import { default as Dayjs } from 'dayjs';
 import 'dayjs/locale/nl';
 import localeData from 'dayjs/plugin/localeData';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Streami18n } from '../Streami18n';
 
@@ -174,7 +174,7 @@ describe('Streami18n instance - with custom translations', () => {
   });
 });
 
-describe('registerTranslation - register new language `mr` (Marathi) ', () => {
+describe('registerTranslation - register new language `mr` (Marathi)', () => {
   const streami18nOptions = {
     disableDateTimeTranslations: false,
     language: 'en',

@@ -1,6 +1,4 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import { ThemeProvider } from '@stream-io/styled-components';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
@@ -8,35 +6,21 @@ import { useMockedApis } from 'mock-builders/api/useMockedApis';
 import { generateChannel } from 'mock-builders/generator/channel';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelListMessenger from '../ChannelListMessenger';
+import { ChannelListMessenger } from '../ChannelListMessenger';
 
-import Chat from '../../Chat/Chat';
-
-import { TranslationContext } from '../../../context';
-import { defaultTheme } from '../../../styles/theme';
+import { Chat } from '../../Chat/Chat';
 
 let mockChannels;
 let chatClient;
 
-const t = jest.fn((key) => key);
-
 const Component = ({ channels, error = false, loadingChannels = false }) => (
-  <ThemeProvider theme={defaultTheme}>
-    <TranslationContext.Provider value={{ t }}>
-      <Chat client={chatClient}>
-        <ChannelListMessenger
-          channels={channels}
-          error={error}
-          loadingChannels={loadingChannels}
-          LoadingIndicator={() => (
-            <View testID='loading-indicator'>
-              <Text>Loading Indicator</Text>
-            </View>
-          )}
-        />
-      </Chat>
-    </TranslationContext.Provider>
-  </ThemeProvider>
+  <Chat client={chatClient}>
+    <ChannelListMessenger
+      channels={channels}
+      error={error}
+      loadingChannels={loadingChannels}
+    />
+  </Chat>
 );
 
 describe('ChannelListMessenger', () => {
@@ -79,12 +63,12 @@ describe('ChannelListMessenger', () => {
     });
   });
 
-  it('renders the `LoadingIndicator` when `loadingChannels` prop is true', async () => {
+  it('renders the `LoadingIndicator` when when channels have not yet loaded', async () => {
     const { getByTestId } = render(
-      <Component channels={mockChannels} loadingChannels={true} />,
+      <Component channels={[]} loadingChannels={true} />,
     );
     await waitFor(() => {
-      expect(getByTestId('loading-indicator')).toBeTruthy();
+      expect(getByTestId('loading')).toBeTruthy();
     });
   });
 });

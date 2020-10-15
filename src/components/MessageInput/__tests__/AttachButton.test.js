@@ -1,14 +1,18 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import AttachButton from '../AttachButton';
+import { AttachButton } from '../AttachButton';
+
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 describe('AttachButton', () => {
   it('should render an enabled AttachButton', async () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <AttachButton handleOnPress={handleOnPress} />,
+      <ThemeProvider>
+        <AttachButton handleOnPress={handleOnPress} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -31,7 +35,9 @@ describe('AttachButton', () => {
     const handleOnPress = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <AttachButton disabled handleOnPress={handleOnPress} />,
+      <ThemeProvider>
+        <AttachButton disabled handleOnPress={handleOnPress} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

@@ -11,11 +11,23 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Channel from '../Channel';
+import { Channel } from '../Channel';
 
-import Chat from '../../Chat/Chat';
+import { Attachment } from '../../Attachment/Attachment';
+import { Chat } from '../../Chat/Chat';
 
-import { ChannelContext } from '../../../context';
+import {
+  ChannelContext,
+  ChannelProvider,
+} from '../../../contexts/channelContext/ChannelContext';
+import {
+  MessagesContext,
+  MessagesProvider,
+} from '../../../contexts/messagesContext/MessagesContext';
+import {
+  ThreadContext,
+  ThreadProvider,
+} from '../../../contexts/threadContext/ThreadContext';
 
 // This component is used for performing effects in a component that consumes ChannelContext,
 // i.e. making use of the callbacks & values provided by the Channel component.
@@ -96,15 +108,6 @@ describe('Channel', () => {
     await waitFor(() => expect(getByTestId('loading-error')).toBeTruthy());
   });
 
-  it('should render a LoadingIndicator if it is loading', async () => {
-    const watchPromise = new Promise(() => {});
-    jest.spyOn(channel, 'watch').mockImplementationOnce(() => watchPromise);
-
-    const { getByTestId } = renderComponent({ channel });
-
-    await waitFor(() => expect(getByTestId('loading')).toBeTruthy());
-  });
-
   it('should render children if a channel is set', async () => {
     const { getByTestId } = renderComponent({
       channel,
@@ -168,13 +171,17 @@ describe('Channel', () => {
     const hasThread = jest.fn();
     // this renders Channel, calls openThread from a child context consumer with a message,
     // and then calls hasThread with the thread id if it was set.
-    renderComponent({ channel }, ({ openThread, thread }) => {
-      if (!thread) {
-        openThread(threadMessage);
-      } else {
-        hasThread(thread.id);
-      }
-    });
+    renderComponent(
+      { channel },
+      ({ openThread, thread }) => {
+        if (!thread) {
+          openThread(threadMessage);
+        } else {
+          hasThread(thread.id);
+        }
+      },
+      ThreadContext,
+    );
     await waitFor(() =>
       expect(hasThread).toHaveBeenCalledWith(threadMessage.id),
     );
@@ -194,52 +201,21 @@ describe('Channel', () => {
     );
   const limit = 10;
 
-  it('should set hasMore to false if channel query returns less messages than the limit', async () => {
-    let channelHasMore = false;
-    const newMessages = [generateMessage()];
-    renderComponent(
-      { channel },
-      ({ hasMore, loadMore, messages: contextMessages }) => {
-        if (
-          !contextMessages.find((message) => message.id === newMessages[0].id)
-        ) {
-          // Our new message is not yet passed as part of channel context. Call loadMore and mock API response to include it.
-          useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-          loadMore(limit);
-        } else {
-          // If message has been added, set our checker variable so we can verify if hasMore is false.
-          channelHasMore = hasMore;
-        }
-      },
-    );
-    await waitFor(() => expect(channelHasMore).toBe(false));
-  });
-
   it('should call the channel query method to load more messages', async () => {
     const channelQuerySpy = jest.spyOn(channel, 'query');
 
     const newMessages = [generateMessage()];
 
-    renderComponent({ channel }, ({ loadMore }) => {
-      useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-      loadMore(limit);
-    });
+    renderComponent(
+      { channel },
+      ({ loadMore }) => {
+        useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
+        loadMore(limit);
+      },
+      MessagesContext,
+    );
 
     await waitFor(() => expect(channelQuerySpy).toHaveBeenCalled());
-  });
-
-  it('should set loadingMore to true while loading more', async () => {
-    const queryPromise = new Promise(() => {});
-    let isLoadingMore = false;
-
-    renderComponent({ channel }, ({ loadingMore, loadMore }) => {
-      // return a promise that hasn't resolved yet, so loadMore will be stuck in the 'await' part of the function
-      jest.spyOn(channel, 'query').mockImplementationOnce(() => queryPromise);
-      loadMore();
-      isLoadingMore = loadingMore;
-    });
-
-    await waitFor(() => expect(isLoadingMore).toBe(true));
   });
 
   it('should enable editing messages', async () => {
@@ -247,9 +223,13 @@ describe('Channel', () => {
     const updatedMessage = { ...messages[0], text: newText };
     const clientUpdateMessageSpy = jest.spyOn(chatClient, 'updateMessage');
 
-    renderComponent({ channel }, ({ editMessage }) => {
-      editMessage(updatedMessage);
-    });
+    renderComponent(
+      { channel },
+      ({ editMessage }) => {
+        editMessage(updatedMessage);
+      },
+      MessagesContext,
+    );
 
     await waitFor(() =>
       expect(clientUpdateMessageSpy).toHaveBeenCalledWith(updatedMessage),
@@ -258,9 +238,13 @@ describe('Channel', () => {
 
   it('should use doUpdateMessageRequest for the editMessage callback if provided', async () => {
     const doUpdateMessageRequest = jest.fn((channelId, message) => message);
-    renderComponent({ channel, doUpdateMessageRequest }, ({ editMessage }) => {
-      editMessage(messages[0]);
-    });
+    renderComponent(
+      { channel, doUpdateMessageRequest },
+      ({ editMessage }) => {
+        editMessage(messages[0]);
+      },
+      MessagesContext,
+    );
 
     await waitFor(() =>
       expect(doUpdateMessageRequest).toHaveBeenCalledWith(
@@ -285,6 +269,7 @@ describe('Channel', () => {
           allMessagesRemoved = true;
         }
       },
+      MessagesContext,
     );
 
     await waitFor(() => {
@@ -296,9 +281,9 @@ describe('Channel', () => {
   describe('ChannelContext', () => {
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <ChannelContext.Provider>
+        <ChannelProvider>
           <View testID='children' />
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -315,14 +300,14 @@ describe('Channel', () => {
       };
 
       render(
-        <ChannelContext.Provider value={mockContext}>
+        <ChannelProvider value={mockContext}>
           <ContextConsumer
             context={ChannelContext}
             fn={(ctx) => {
               context = ctx;
             }}
           ></ContextConsumer>
-        </ChannelContext.Provider>,
+        </ChannelProvider>,
       );
 
       await waitFor(() => {
@@ -331,6 +316,90 @@ describe('Channel', () => {
         expect(context.client).toBeInstanceOf(StreamChat);
         expect(context.markRead).toBeInstanceOf(Function);
         expect(context.watcherCount).toBe(5);
+      });
+    });
+  });
+
+  describe('MessagesContext', () => {
+    it('renders children without crashing', async () => {
+      const { getByTestId } = render(
+        <MessagesProvider>
+          <View testID='children' />
+        </MessagesProvider>,
+      );
+
+      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+    });
+
+    it('exposes the messages context', async () => {
+      let context;
+
+      const mockContext = {
+        Attachment,
+        editing: false,
+        messages,
+        sendMessage: () => {},
+      };
+
+      render(
+        <MessagesProvider value={mockContext}>
+          <ContextConsumer
+            context={MessagesContext}
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ContextConsumer>
+        </MessagesProvider>,
+      );
+
+      await waitFor(() => {
+        expect(context).toBeInstanceOf(Object);
+        expect(context.Attachment).toBeInstanceOf(Function);
+        expect(context.editing).toBe(false);
+        expect(context.messages).toBeInstanceOf(Array);
+        expect(context.sendMessage).toBeInstanceOf(Function);
+      });
+    });
+  });
+
+  describe('ThreadContext', () => {
+    it('renders children without crashing', async () => {
+      const { getByTestId } = render(
+        <ThreadProvider>
+          <View testID='children' />
+        </ThreadProvider>,
+      );
+
+      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
+    });
+
+    it('exposes the thread context', async () => {
+      let context;
+
+      const mockContext = {
+        openThread: () => {},
+        thread: {},
+        threadHasMore: true,
+        threadLoadingMore: false,
+      };
+
+      render(
+        <ThreadProvider value={mockContext}>
+          <ContextConsumer
+            context={ThreadContext}
+            fn={(ctx) => {
+              context = ctx;
+            }}
+          ></ContextConsumer>
+        </ThreadProvider>,
+      );
+
+      await waitFor(() => {
+        expect(context).toBeInstanceOf(Object);
+        expect(context.openThread).toBeInstanceOf(Function);
+        expect(context.thread).toBeInstanceOf(Object);
+        expect(context.threadHasMore).toBe(true);
+        expect(context.threadLoadingMore).toBe(false);
       });
     });
   });

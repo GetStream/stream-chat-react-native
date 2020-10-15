@@ -2,6 +2,7 @@
 
 exports[`Thread should match thread snapshot 1`] = `
 <View
+  keyboardVerticalOffset={86.5}
   onLayout={[Function]}
   style={
     Object {
@@ -111,7 +112,7 @@ exports[`Thread should match thread snapshot 1`] = `
             },
             Object {
               "date": 2020-05-05T14:50:00.000Z,
-              "groupStyles": undefined,
+              "groupStyles": Array [],
               "readBy": Array [],
               "type": "message.date",
             },
@@ -161,8 +162,7 @@ exports[`Thread should match thread snapshot 1`] = `
                 "flexBasis": 0,
                 "flexGrow": 1,
                 "flexShrink": 1,
-                "paddingLeft": 10,
-                "paddingRight": 10,
+                "paddingHorizontal": 10,
                 "width": "100%",
               },
             ],
@@ -173,9 +173,7 @@ exports[`Thread should match thread snapshot 1`] = `
         viewabilityConfigCallbackPairs={Array []}
         windowSize={21}
       >
-        <View
-          ListFooterComponent={null}
-        >
+        <View>
           <View
             onLayout={[Function]}
             style={
@@ -341,7 +339,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "backgroundColor": "transparent",
                             "borderBottomLeftRadius": 2,
                             "borderBottomRightRadius": 16,
-                            "borderColor": "rgba(0,0,0,0.08)",
+                            "borderColor": "rgba(0, 0, 0, 0.08)",
                             "borderTopLeftRadius": 16,
                             "borderTopRightRadius": 16,
                             "borderWidth": 0.5,
@@ -585,7 +583,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "backgroundColor": "transparent",
                             "borderBottomLeftRadius": 2,
                             "borderBottomRightRadius": 16,
-                            "borderColor": "rgba(0,0,0,0.08)",
+                            "borderColor": "rgba(0, 0, 0, 0.08)",
                             "borderTopLeftRadius": 16,
                             "borderTopRightRadius": 16,
                             "borderWidth": 0.5,
@@ -829,7 +827,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "backgroundColor": "transparent",
                             "borderBottomLeftRadius": 2,
                             "borderBottomRightRadius": 16,
-                            "borderColor": "rgba(0,0,0,0.08)",
+                            "borderColor": "rgba(0, 0, 0, 0.08)",
                             "borderTopLeftRadius": 16,
                             "borderTopRightRadius": 16,
                             "borderWidth": 0.5,
@@ -932,8 +930,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "alignItems": "center",
                     "flexDirection": "row",
                     "justifyContent": "center",
-                    "marginBottom": 20,
-                    "marginTop": 20,
+                    "marginVertical": 20,
                   },
                 ]
               }
@@ -957,8 +954,7 @@ exports[`Thread should match thread snapshot 1`] = `
                   Array [
                     Object {
                       "fontSize": 10,
-                      "marginLeft": 5,
-                      "marginRight": 5,
+                      "marginHorizontal": 5,
                       "opacity": 0.8,
                       "textAlign": "center",
                       "textTransform": "uppercase",
@@ -1155,7 +1151,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "backgroundColor": "transparent",
                             "borderBottomLeftRadius": 2,
                             "borderBottomRightRadius": 16,
-                            "borderColor": "rgba(0,0,0,0.08)",
+                            "borderColor": "rgba(0, 0, 0, 0.08)",
                             "borderTopLeftRadius": 16,
                             "borderTopRightRadius": 16,
                             "borderWidth": 0.5,
@@ -1624,6 +1620,8 @@ exports[`Thread should match thread snapshot 1`] = `
         </View>
         <TextInput
           allowFontScaling={true}
+          autoFocus={true}
+          editable={true}
           multiline={true}
           onChangeText={[Function]}
           onSelectionChange={[Function]}

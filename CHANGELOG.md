@@ -1,5 +1,87 @@
 # Changelog
 
+## [2.0.0]
+
+Full TypeScript support
+
+**BREAKING CHANGES**
+
+- You will need to install https://github.com/LinusU/react-native-get-random-values and add this line `import 'react-native-get-random-values';` to your `index.js`
+- Expo 39 is now the lowest supported version
+
+### Component prop changes
+
+*Channel*
+- add `additionalKeyboardAvoidingViewProps` prop to allow custom keyboard props
+
+*ChannelListMessenger*
+- remove `setActiveChannel` prop
+
+*ChannelPreviewMessenger*
+- renamed the `latestMessage` prop to `latestMessagePreview`. This name change is more semantic to what the prop does and reduces confusion with the `lastMessage` prop
+
+*MessageContent*
+- removed `retrySendMessage` prop in favor of `retrySendMessage` within `MessagesContext`
+
+*MessageInput*
+- remove `parent` prop to `parent_id` as it needs to be just an id string instead of the entire parent object
+- add `setInputRef` prop to actually allow forwarding of the TextInput ref controls
+
+*MessageSystem*
+- add `formatDate` prop to allow custom date formatting
+
+*ChannelContext*
+
+- We have split the `ChannelContext` into three separate contexts to further modularize the code and reduce renders as items in context change. The following contexts now contain the following values, previously all held within the `ChannelContext`:
+
+  - `ChannelContext`:
+
+    - `channel`
+    - `disabled`
+    - `EmptyStateIndicator`
+    - `error`
+    - `eventHistory`
+    - `lastRead`
+    - `loading`
+    - `LoadingIndicator`
+    - `markRead`
+    - `members`
+    - `read`
+    - `setLastRead`
+    - `typing`
+    - `watcherCount`
+    - `watchers`
+
+  - `MessagesContext`
+
+    - `Attachment`
+    - `clearEditingState`
+    - `editing`
+    - `editMessage`
+    - `emojiData`
+    - `hasMore`
+    - `loadingMore`
+    - `loadMore`
+    - `Message`
+    - `messages`
+    - `removeMessage`
+    - `retrySendMessage`
+    - `sendMessage`
+    - `setEditingState`
+    - `updateMessage`
+
+  - `ThreadContext`
+
+    - `closeThread`
+    - `loadMoreThread`
+    - `openThread`
+    - `thread`
+    - `threadHasMore`
+    - `threadLoadingMore`
+    - `threadMessages`
+
+- All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or with one of our custom context hooks (ex: access `MessagesContext` by `const { messages } = useMessagesContext();`).
+
 ## [1.3.2] 2020-10-02
 
 - SuggestionsList (for user-mentions feature in MessageInput) doesn't update the position as per keyboard position. For the time being, we have fixed this by dismissing the suggestions list when keyboard gets dismissed  - [0fdff4f](https://github.com/GetStream/stream-chat-react-native/commit/0fdff4f327908d4b554b8d4172028e666df65242)
@@ -74,11 +156,22 @@ e.g.,
 - We have removed support for the `fileUploadPreview.dismissText` theme value
 - We have added support for `fileUploadPreview.dismiss`, `fileUploadPreview.dismissImage`, and `fileUploadPreview.imageContainer` theme values
 
+## MessageInput
+
+- We replaced the default image picker [react-native-image-picker](https://github.com/react-native-community/react-native-image-picker) for [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) and added `compressImageQuality` prop to support image compression out-of-the-box
+- Added `FileUploadPreview` and `ImageUploadPreview` props to support custom overrides to those components
+
+## MessageSystem
+
+- Added `formatDate` prop to support custom date formatting
+
 ## Deprecated Props
 
 - We have removed support for the `MessageList` component's `onMessageTouch` prop. Please use the `onPress` prop on the `MessageSimple` component to perform an action on touch of a message.
 
 - We have removed support for the `Message` component's `readOnly` prop. Please use the `disabled` value from the `ChannelContext` instead.
+
+- We renamed the `latestMessage` prop on the `ChannelPreviewMessenger` component to `latestMessagePreview`. This name change is more semantic to what the prop does and reduces confusion with the `lastMessage` prop.
 
 - We have also dropped support for the following `MessageList` props:
   - `dateSeparator` (use DateSeparator instead)

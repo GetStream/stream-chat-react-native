@@ -1,18 +1,21 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import SendButton from '../SendButton';
+import { SendButton } from '../SendButton';
 
-import { ChannelContext } from '../../../context';
+import { MessagesProvider } from '../../../contexts/messagesContext/MessagesContext';
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 describe('SendButton', () => {
   it('should render a non-editing enabled SendButton', async () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ChannelContext.Provider value={{ editing: false }}>
-        <SendButton sendMessage={sendMessage} />
-      </ChannelContext.Provider>,
+      <ThemeProvider>
+        <MessagesProvider value={{ editing: false }}>
+          <SendButton sendMessage={sendMessage} />
+        </MessagesProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -35,9 +38,11 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ChannelContext.Provider value={{ editing: false }}>
-        <SendButton disabled sendMessage={sendMessage} />
-      </ChannelContext.Provider>,
+      <ThemeProvider>
+        <MessagesProvider value={{ editing: false }}>
+          <SendButton disabled sendMessage={sendMessage} />
+        </MessagesProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -60,9 +65,11 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ChannelContext.Provider value={{ editing: true }}>
-        <SendButton sendMessage={sendMessage} />
-      </ChannelContext.Provider>,
+      <ThemeProvider>
+        <MessagesProvider value={{ editing: true }}>
+          <SendButton sendMessage={sendMessage} />
+        </MessagesProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -85,9 +92,11 @@ describe('SendButton', () => {
     const sendMessage = jest.fn();
 
     const { getByTestId, queryByTestId, toJSON } = render(
-      <ChannelContext.Provider value={{ editing: true }}>
-        <SendButton disabled sendMessage={sendMessage} />
-      </ChannelContext.Provider>,
+      <ThemeProvider>
+        <MessagesProvider value={{ editing: true }}>
+          <SendButton disabled sendMessage={sendMessage} />
+        </MessagesProvider>
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

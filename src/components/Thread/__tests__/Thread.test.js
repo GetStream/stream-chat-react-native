@@ -1,6 +1,6 @@
 import React from 'react';
 import { act, cleanup, render, waitFor } from '@testing-library/react-native';
-import uuidv5 from 'uuid/v5';
+import { v5 as uuidv5 } from 'uuid';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';
@@ -13,12 +13,14 @@ import {
 import { generateStaticUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Thread from '../Thread';
+import { Thread } from '../Thread';
 
-import Channel from '../../Channel/Channel';
-import Chat from '../../Chat/Chat';
+import { Channel } from '../../Channel/Channel';
+import { Chat } from '../../Chat/Chat';
 
-import { ChannelContext, TranslationContext } from '../../../context';
+import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
+import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';
+import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { Streami18n } from '../../../utils/Streami18n';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
@@ -55,20 +57,20 @@ describe('Thread', () => {
 
     const { getAllByText, getByText, queryByText, rerender } = render(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ ...translators, t }}>
+        <TranslationProvider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread}>
-            <ChannelContext.Consumer>
+            <ThreadContext.Consumer>
               {(c) => {
                 openThread = c.openThread;
-                return <Thread thread={thread} />;
+                return <Thread />;
               }}
-            </ChannelContext.Consumer>
+            </ThreadContext.Consumer>
           </Channel>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
 
-    expect(t).toHaveBeenCalledWith('Loading messages ...');
+    expect(t).toHaveBeenCalledWith('Start of a new thread');
     await waitFor(() => {
       expect(t).toHaveBeenCalledWith('Start of a new thread');
       expect(getByText('Start of a new thread')).toBeTruthy();
@@ -80,11 +82,11 @@ describe('Thread', () => {
     act(() => openThread(thread2));
     rerender(
       <Chat client={chatClient}>
-        <TranslationContext.Provider value={{ ...translators, t }}>
+        <TranslationProvider value={{ ...translators, t }}>
           <Channel channel={channel} client={chatClient} thread={thread2}>
-            <Thread thread={thread2} />
+            <Thread />
           </Channel>
-        </TranslationContext.Provider>
+        </TranslationProvider>
       </Chat>,
     );
 
@@ -156,7 +158,7 @@ describe('Thread', () => {
           <ChannelContext.Consumer>
             {(c) => {
               setLastRead = c.setLastRead;
-              return <Thread thread={thread} />;
+              return <Thread />;
             }}
           </ChannelContext.Consumer>
         </Channel>
@@ -172,7 +174,6 @@ describe('Thread', () => {
     act(() => setLastRead(new Date('2020-08-17T18:08:03.196Z')));
 
     const snapshot = toJSON();
-    snapshot.children[0].children[0].children[0].children[0].props.ListFooterComponent = null;
     snapshot.children[0].children[0].children[0].props.ListFooterComponent = null;
 
     await waitFor(() => {

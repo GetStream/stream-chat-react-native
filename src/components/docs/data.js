@@ -141,9 +141,9 @@ export const messageWithImages = {
     },
     {
       image_url:
-        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t1/sample_images/img/index/ff_x_t1_002.JPG',
       thumb_url:
-        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t3/sample_images/img/index/ff_x_t3_002.JPG',
+        'https://www.fujifilm.com/products/digital_cameras/x/fujifilm_x_t1/sample_images/img/index/ff_x_t1_002.JPG',
       type: 'image',
     },
     {

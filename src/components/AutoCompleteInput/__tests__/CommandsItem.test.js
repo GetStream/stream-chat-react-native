@@ -1,7 +1,9 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import CommandsItem from '../CommandsItem';
+import { CommandsItem } from '../CommandsItem';
+
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 const args = 'a string list of args';
 const description = 'test description';
@@ -10,7 +12,9 @@ const name = 'giphy';
 describe('CommandsItem', () => {
   it('should render CommandsItem with no avatar image but a name', async () => {
     const { getByTestId, queryByTestId } = render(
-      <CommandsItem item={{ args, description, name }} />,
+      <ThemeProvider>
+        <CommandsItem item={{ args, description, name }} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

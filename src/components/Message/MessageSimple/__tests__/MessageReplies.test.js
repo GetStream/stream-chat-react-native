@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemeProvider } from '@stream-io/styled-components';
+import { ThemeProvider } from 'styled-components/native';
 import {
   cleanup,
   fireEvent,
@@ -10,10 +10,10 @@ import {
 import { generateMessage } from 'mock-builders/generator/message';
 import { generateStaticUser, generateUser } from 'mock-builders/generator/user';
 
-import MessageReplies from '../MessageReplies';
+import { MessageReplies } from '../MessageReplies';
 
-import { TranslationContext } from '../../../../context';
-import { defaultTheme } from '../../../../styles/theme';
+import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
+import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);
 
@@ -33,7 +33,7 @@ describe('MessageReplies', () => {
       rerender,
       toJSON,
     } = render(
-      <TranslationContext.Provider value={{ t }}>
+      <TranslationProvider value={{ t }}>
         <ThemeProvider theme={defaultTheme}>
           <MessageReplies
             alignment='right'
@@ -42,7 +42,7 @@ describe('MessageReplies', () => {
             openThread={onPressMock}
           />
         </ThemeProvider>
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -61,7 +61,7 @@ describe('MessageReplies', () => {
     });
 
     rerender(
-      <TranslationContext.Provider value={{ t }}>
+      <TranslationProvider value={{ t }}>
         <ThemeProvider theme={defaultTheme}>
           <MessageReplies
             alignment='left'
@@ -70,7 +70,7 @@ describe('MessageReplies', () => {
             openThread={onPressMock}
           />
         </ThemeProvider>
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     fireEvent.press(getByTestId('message-replies'));
@@ -92,7 +92,7 @@ describe('MessageReplies', () => {
       user,
     });
     const { queryAllByTestId, rerender } = render(
-      <TranslationContext.Provider value={{ t }}>
+      <TranslationProvider value={{ t }}>
         <ThemeProvider theme={defaultTheme}>
           <MessageReplies
             alignment='right'
@@ -101,7 +101,7 @@ describe('MessageReplies', () => {
             openThread={() => null}
           />
         </ThemeProvider>
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {
@@ -116,7 +116,7 @@ describe('MessageReplies', () => {
     });
 
     rerender(
-      <TranslationContext.Provider value={{ t }}>
+      <TranslationProvider value={{ t }}>
         <ThemeProvider theme={defaultTheme}>
           <MessageReplies
             alignment='right'
@@ -126,7 +126,7 @@ describe('MessageReplies', () => {
             openThread={() => null}
           />
         </ThemeProvider>
-      </TranslationContext.Provider>,
+      </TranslationProvider>,
     );
 
     await waitFor(() => {

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
       "stream-chat-react-native": ["./src/index"]
     },
@@ -10,7 +10,7 @@
     "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
     "jsx": "react-native",
-    "lib": ["esnext"],
+    "lib": ["esnext", "DOM"],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -19,6 +19,7 @@
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "strictNullChecks": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
@@ -53,5 +54,14 @@
     ]
   },
   "include": ["./src/**/*"],
-  "exclude": ["**/__tests__/*.test.js"]
+  "exclude": [
+    "./src/components/docs/*",
+    "./src/mock-builders",
+    "./src/styleguideComponents",
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "**/__tests__/*.test.js"
+  ]
 }

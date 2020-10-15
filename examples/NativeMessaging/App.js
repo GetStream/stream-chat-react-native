@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { SafeAreaView, TouchableOpacity, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { enableScreens } from 'react-native-screens';
-import { StreamChat } from 'stream-chat';
+/* eslint-disable react-native/no-inline-styles */
+import React, {useContext, useEffect, useState} from 'react';
+import {LogBox, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator, useHeaderHeight} from '@react-navigation/stack';
+import {enableScreens} from 'react-native-screens';
+import {StreamChat} from 'stream-chat';
 import {
   Channel,
   ChannelList,
   ChannelPreviewMessenger,
   Chat,
-  CloseButton,
   MessageInput,
   MessageList,
   Streami18n,
-  Thread
+  Thread,
 } from 'stream-chat-react-native';
 
+LogBox.ignoreAllLogs(true);
 enableScreens();
 
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
@@ -39,41 +40,44 @@ const theme = {
 const chatClient = new StreamChat('q95x9hkbyd6p');
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
-  const user = {
-    id: 'ron',
-  };
-  
-const filters = { type: 'messaging', example: 'example-apps', members: { '$in': ['ron'] } };
-const sort = { last_message_at: -1 };
+const user = {
+  id: 'ron',
+};
+
+const filters = {
+  example: 'example-apps',
+  members: {$in: ['ron']},
+  type: 'messaging',
+};
+const sort = {last_message_at: -1};
 const options = {
   state: true,
-  watch: true
-}
+  watch: true,
+};
 
 /**
  * Start playing with streami18n instance here:
  * Please refer to description of this PR for details: https://github.com/GetStream/stream-chat-react-native/pull/150
  */
 const streami18n = new Streami18n({
-  language: 'en'
+  language: 'en',
 });
 
-
-const ChannelListScreen = React.memo(({ navigation }) => {
-  const { setChannel } = useContext(AppContext);
+const ChannelListScreen = React.memo(({navigation}) => {
+  const {setChannel} = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat client={chatClient} style={theme} i18nInstance={streami18n}>
-        <View style={{ height: '100%', padding: 10 }}>
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+        <View style={{height: '100%', padding: 10}}>
           <ChannelList
             filters={filters}
-            sort={sort}
-            options={options}
-            Preview={ChannelPreviewMessenger}
-            onSelect={channel => {
+            onSelect={(channel) => {
               setChannel(channel);
               navigation.navigate('Channel');
             }}
+            options={options}
+            Preview={ChannelPreviewMessenger}
+            sort={sort}
           />
         </View>
       </Chat>
@@ -81,18 +85,19 @@ const ChannelListScreen = React.memo(({ navigation }) => {
   );
 });
 
-const ChannelScreen = React.memo(({ navigation }) => {
-  const { channel, setThread } = useContext(AppContext);
+const ChannelScreen = React.memo(({navigation}) => {
+  const {channel, setThread} = useContext(AppContext);
+  const headerHeight = useHeaderHeight();
 
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <Channel channel={channel} client={chatClient}>
-          <View style={{ height: '100%' }}>
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
+          <View style={{flex: 1}}>
             <MessageList
-              onThreadSelect={thread => {
+              onThreadSelect={(thread) => {
                 setThread(thread);
-                navigation.navigate('Thread', { channelId: channel.id });
+                navigation.navigate('Thread', {channelId: channel.id});
               }}
             />
             <MessageInput />
@@ -103,21 +108,23 @@ const ChannelScreen = React.memo(({ navigation }) => {
   );
 });
 
-const ThreadScreen = React.memo(({ route }) => {
-  const { thread } = useContext(AppContext);
-  const [channel] = useState(chatClient.channel('messaging', route.params.channelId));
+const ThreadScreen = React.memo(({route}) => {
+  const {thread} = useContext(AppContext);
+  const [channel] = useState(
+    chatClient.channel('messaging', route.params.channelId),
+  );
+  const headerHeight = useHeaderHeight();
 
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel
           channel={channel}
-          client={chatClient}
-          dummyProp='DUMMY PROP'
+          keyboardVerticalOffset={headerHeight}
           thread={thread}>
           <View
             style={{
-              height: '100%',
+              flex: 1,
               justifyContent: 'flex-start',
             }}>
             <Thread thread={thread} />
@@ -139,10 +146,7 @@ export default () => {
 
   useEffect(() => {
     const setupClient = async () => {
-      await chatClient.setUser(
-        user,
-        userToken,
-      );
+      await chatClient.setUser(user, userToken);
 
       setClientReady(true);
     };
@@ -152,34 +156,32 @@ export default () => {
 
   return (
     <NavigationContainer>
-      <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-      {
-        clientReady &&
+      <AppContext.Provider value={{channel, setChannel, setThread, thread}}>
+        {clientReady && (
           <Stack.Navigator
-            initialRouteName='ChannelList'
+            initialRouteName="ChannelList"
             screenOptions={{
-              cardStyle: { backgroundColor: 'white' },
-              headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-            }}
-          >
+              cardStyle: {backgroundColor: 'white'},
+              headerTitleStyle: {alignSelf: 'center', fontWeight: 'bold'},
+            }}>
             <Stack.Screen
               component={ChannelScreen}
-              name='Channel'
+              name="Channel"
               options={() => ({
                 headerBackTitle: 'Back',
                 headerRight: () => <></>,
-                headerTitle: channel.data.name
+                headerTitle: channel.data.name,
               })}
             />
             <Stack.Screen
               component={ChannelListScreen}
-              name='ChannelList'
-              options={{ headerTitle: 'Channel List' }}
+              name="ChannelList"
+              options={{headerTitle: 'Channel List'}}
             />
             <Stack.Screen
               component={ThreadScreen}
-              name='Thread'
-              options={({ navigation }) => ({
+              name="Thread"
+              options={({navigation}) => ({
                 headerLeft: () => <></>,
                 headerRight: () => (
                   <TouchableOpacity
@@ -188,20 +190,29 @@ export default () => {
                     }}
                     style={{
                       alignItems: 'center',
-                      backgroundColor: '#ebebeb',
-                      borderRadius: 20,
-                      height: 30,
                       justifyContent: 'center',
                       marginRight: 20,
-                      width: 30,
                     }}>
-                    <CloseButton />
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        backgroundColor: 'white',
+                        borderColor: 'rgba(0, 0, 0, 0.1)',
+                        borderRadius: 3,
+                        borderStyle: 'solid',
+                        borderWidth: 1,
+                        height: 30,
+                        justifyContent: 'center',
+                        width: 30,
+                      }}>
+                      <Text>X</Text>
+                    </View>
                   </TouchableOpacity>
-                )
+                ),
               })}
             />
           </Stack.Navigator>
-      }
+        )}
       </AppContext.Provider>
     </NavigationContainer>
   );

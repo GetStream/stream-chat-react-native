@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getOrCreateChannelApi } from 'mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from 'mock-builders/api/useMockedApis';
@@ -11,9 +11,9 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelPreviewMessenger from '../ChannelPreviewMessenger';
+import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 describe('ChannelPreviewMessenger', () => {
   const clientUser = generateUser();
@@ -25,7 +25,7 @@ describe('ChannelPreviewMessenger', () => {
       <ChannelPreviewMessenger
         channel={channel}
         client={chatClient}
-        latestMessage={generateMessage()}
+        latestMessagePreview={generateMessage()}
         setActiveChannel={jest.fn()}
         {...props}
       />

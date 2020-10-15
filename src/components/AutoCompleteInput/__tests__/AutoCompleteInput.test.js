@@ -7,11 +7,11 @@ import { generateChannel } from 'mock-builders/generator/channel';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import AutoCompleteInput from '../AutoCompleteInput';
+import { AutoCompleteInput } from '../AutoCompleteInput';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
-import { SuggestionsContext } from '../../../context';
+import { SuggestionsProvider } from '../../../contexts/suggestionsContext/SuggestionsContext';
 import { ACITriggerSettings } from '../../../utils/utils';
 
 describe('AutoCompleteInput', () => {
@@ -21,7 +21,7 @@ describe('AutoCompleteInput', () => {
 
   const getComponent = (props = {}) => (
     <Chat client={chatClient}>
-      <SuggestionsContext.Provider value={props}>
+      <SuggestionsProvider value={props}>
         <AutoCompleteInput
           onChange={jest.fn}
           triggerSettings={ACITriggerSettings({
@@ -31,7 +31,7 @@ describe('AutoCompleteInput', () => {
           })}
           value={props.value}
         />
-      </SuggestionsContext.Provider>
+      </SuggestionsProvider>
     </Chat>
   );
 

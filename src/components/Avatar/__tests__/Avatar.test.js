@@ -1,12 +1,16 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react-native';
 
-import Avatar from '../Avatar';
+import { Avatar } from '../Avatar';
+
+import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
 
 describe('Avatar', () => {
   it('should render an image with no name and default size', async () => {
     const { queryByTestId } = render(
-      <Avatar image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg' />,
+      <ThemeProvider>
+        <Avatar image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg' />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -17,10 +21,12 @@ describe('Avatar', () => {
 
   it('should render an image with name and default size', async () => {
     const { queryByTestId } = render(
-      <Avatar
-        image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg'
-        name='Test User'
-      />,
+      <ThemeProvider>
+        <Avatar
+          image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg'
+          name='Test User'
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -31,10 +37,12 @@ describe('Avatar', () => {
 
   it('should render an image with custom size', async () => {
     const { queryByTestId } = render(
-      <Avatar
-        image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg'
-        size={20}
-      />,
+      <ThemeProvider>
+        <Avatar
+          image='https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg'
+          size={20}
+        />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {
@@ -44,7 +52,11 @@ describe('Avatar', () => {
   });
 
   it('should render an avatar with no image but a name and default size', async () => {
-    const { getByTestId, queryByTestId } = render(<Avatar name='Test User' />);
+    const { getByTestId, queryByTestId } = render(
+      <ThemeProvider>
+        <Avatar name='Test User' />
+      </ThemeProvider>,
+    );
 
     await waitFor(() => {
       expect(queryByTestId('avatar-image')).toBeFalsy();
@@ -55,7 +67,9 @@ describe('Avatar', () => {
 
   it('should render an avatar with no image but a name and custom size', async () => {
     const { getByTestId, queryByTestId } = render(
-      <Avatar name='Test User' size={20} />,
+      <ThemeProvider>
+        <Avatar name='Test User' size={20} />
+      </ThemeProvider>,
     );
 
     await waitFor(() => {

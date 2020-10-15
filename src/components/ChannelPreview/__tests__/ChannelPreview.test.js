@@ -13,15 +13,17 @@ import { generateMessage } from 'mock-builders/generator/message';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import ChannelPreview from '../ChannelPreview';
+import { ChannelPreview } from '../ChannelPreview';
 
-import Chat from '../../Chat/Chat';
+import { Chat } from '../../Chat/Chat';
 
 const ChannelPreviewUIComponent = (props) => (
   <>
     <Text testID='channel-id'>{props.channel.id}</Text>
     <Text testID='unread-count'>{props.unread}</Text>
-    <Text testID='last-event-message'>{props?.lastMessage?.text}</Text>
+    <Text testID='last-event-message'>
+      {props && props.lastMessage && props.lastMessage.text}
+    </Text>
     <Text testID='latest-message'>
       {props.latestMessage && props.latestMessage.text}
     </Text>

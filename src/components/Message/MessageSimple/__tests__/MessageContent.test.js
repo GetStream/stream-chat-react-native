@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
 
@@ -11,10 +11,15 @@ import { generateReaction } from 'mock-builders/generator/reaction';
 import { generateUser } from 'mock-builders/generator/user';
 import { getTestClientWithUser } from 'mock-builders/mock';
 
-import Message from '../../Message';
-import Chat from '../../../Chat/Chat';
-import Channel from '../../../Channel/Channel';
-import { MessageContentContext } from '../../../../context';
+import { Message } from '../../Message';
+
+import { Chat } from '../../../Chat/Chat';
+import { Channel } from '../../../Channel/Channel';
+
+import {
+  MessageContentProvider,
+  useMessageContentContext,
+} from '../../../../contexts/messageContentContext/MessageContentContext';
 
 describe('MessageContent', () => {
   let channel;
@@ -60,6 +65,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
     });
   });
+
   it('renders an error/unsent message when `message.type` is `error`', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
@@ -101,6 +107,7 @@ describe('MessageContent', () => {
       expect(getByTestId('message-deleted')).toBeTruthy();
     });
   });
+
   it('renders a MessageHeader when the prop exists', async () => {
     const user = generateUser();
     const message = generateMessage({ user });
@@ -218,15 +225,15 @@ describe('MessageContent', () => {
 
   describe('MessageContentContext', () => {
     const MessageContentContextConsumer = ({ fn }) => {
-      fn(useContext(MessageContentContext));
+      fn(useMessageContentContext());
       return <View testID='children' />;
     };
 
     it('renders children without crashing', async () => {
       const { getByTestId } = render(
-        <MessageContentContext.Provider>
+        <MessageContentProvider>
           <View testID='children' />
-        </MessageContentContext.Provider>,
+        </MessageContentProvider>,
       );
 
       await waitFor(() => expect(getByTestId('children')).toBeTruthy());
@@ -241,13 +248,13 @@ describe('MessageContent', () => {
       };
 
       render(
-        <MessageContentContext.Provider value={mockContext}>
+        <MessageContentProvider value={mockContext}>
           <MessageContentContextConsumer
             fn={(ctx) => {
               context = ctx;
             }}
           ></MessageContentContextConsumer>
-        </MessageContentContext.Provider>,
+        </MessageContentProvider>,
       );
 
       await waitFor(() => {
@@ -266,13 +273,13 @@ describe('MessageContent', () => {
       };
 
       const { rerender } = render(
-        <MessageContentContext.Provider value={mockContext}>
+        <MessageContentProvider value={mockContext}>
           <MessageContentContextConsumer
             fn={(ctx) => {
               context = ctx;
             }}
           ></MessageContentContextConsumer>
-        </MessageContentContext.Provider>,
+        </MessageContentProvider>,
       );
 
       await waitFor(() => {
@@ -287,13 +294,13 @@ describe('MessageContent', () => {
       };
 
       rerender(
-        <MessageContentContext.Provider value={newContext}>
+        <MessageContentProvider value={newContext}>
           <MessageContentContextConsumer
             fn={(ctx) => {
               context = ctx;
             }}
           ></MessageContentContextConsumer>
-        </MessageContentContext.Provider>,
+        </MessageContentProvider>,
       );
 
       await waitFor(() => {

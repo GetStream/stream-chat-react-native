@@ -87,7 +87,7 @@ function buildModuleResolutionMap() {
   return Object.assign({}, externalModuleMap, moduleMap);
 }
 
-function findAlernateRoots(
+function findAlternateRoots(
   moduleRoot = baseModulePath,
   alternateRoots = [],
   _alreadyVisited,
@@ -101,7 +101,7 @@ function findAlernateRoots(
     if (fileName.charAt(0) !== '@') {
       if (external) alternateRoots.push(fullFileName);
     } else {
-      findAlernateRoots(fullFileName, alternateRoots, alreadyVisited);
+      findAlternateRoots(fullFileName, alternateRoots, alreadyVisited);
     }
   });
 
@@ -139,6 +139,7 @@ const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
   new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+  new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
   new RegExp(repoDir + '/expo-package/.*'),
   new RegExp(repoDir + '/native-package/node_modules/.*'),
@@ -146,7 +147,7 @@ const moduleBlacklist = [
   ],
   baseModulePath = resolvePath(__dirname, 'node_modules'),
   // watch alternate roots (outside of project root)
-  alternateRoots = findAlernateRoots(),
+  alternateRoots = findAlternateRoots(),
   // build full module map for proper
   // resolution of modules in external roots
   extraNodeModules = buildModuleResolutionMap();

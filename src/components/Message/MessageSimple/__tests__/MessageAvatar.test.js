@@ -1,6 +1,6 @@
 import React from 'react';
-import { ThemeProvider } from '@stream-io/styled-components';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
+import { ThemeProvider } from 'styled-components/native';
 
 import {
   generateMessage,
@@ -8,9 +8,9 @@ import {
 } from 'mock-builders/generator/message';
 import { generateStaticUser } from 'mock-builders/generator/user';
 
-import MessageAvatar from '../MessageAvatar';
+import { MessageAvatar } from '../MessageAvatar';
 
-import { defaultTheme } from '../../../../styles/theme';
+import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);
 

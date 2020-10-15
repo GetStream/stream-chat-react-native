@@ -1,9 +1,11 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   moduleNameMapper: {
-    '@stream-io/styled-components':
-      '<rootDir>/node_modules/@stream-io/styled-components/native/dist/styled-components.native.cjs.js',
     'mock-builders(.*)$': '<rootDir>/src/mock-builders$1',
+    'styled-components':
+      '<rootDir>/node_modules/styled-components/native/dist/styled-components.native.cjs.js',
+    'styled-components/native':
+      '<rootDir>/node_modules/styled-components/native/dist/styled-components.native.cjs.js',
   },
   preset: 'react-native',
   setupFiles: [
@@ -20,5 +22,8 @@ module.exports = {
      * "src/components/MessageList/__tests__/MessageList.test.js"
      */
   ],
+  transform: {
+    '^.+\\.[t|j]sx?$': 'babel-jest',
+  },
   verbose: true,
 };

@@ -22,7 +22,6 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
   <Modal
     animationType="fade"
     hardwareAccelerated={false}
-    onShow={[Function]}
     testID="reaction-picker"
     transparent={true}
     visible={true}
@@ -40,7 +39,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "alignItems": "flex-start",
+          "alignItems": "flex-end",
           "flexBasis": 0,
           "flexGrow": 1,
           "flexShrink": 1,
@@ -59,8 +58,8 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               "paddingHorizontal": 20,
             },
             Object {
-              "marginLeft": 30,
-              "marginRight": 10,
+              "marginLeft": undefined,
+              "marginRight": undefined,
               "marginTop": 40,
             },
           ]
@@ -403,7 +402,6 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
   <Modal
     animationType="fade"
     hardwareAccelerated={false}
-    onShow={[Function]}
     testID="reaction-picker"
     transparent={true}
     visible={true}
@@ -421,7 +419,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
       onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "alignItems": "flex-start",
+          "alignItems": "flex-end",
           "flexBasis": 0,
           "flexGrow": 1,
           "flexShrink": 1,
@@ -440,8 +438,8 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               "paddingHorizontal": 20,
             },
             Object {
-              "marginLeft": 30,
-              "marginRight": 10,
+              "marginLeft": undefined,
+              "marginRight": undefined,
               "marginTop": 40,
             },
           ]

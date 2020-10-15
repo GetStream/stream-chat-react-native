@@ -3,7 +3,6 @@ build/
 dist/
 .expo/
 vendor/
-examples/
 *.md
 src/components/docs/
 lib/

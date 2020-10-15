@@ -2,7 +2,6 @@
 
 exports[`ReactionList should render left aligned ReactionList 1`] = `
 <View
-  activeOpacity={1}
   alignment="left"
   style={
     Array [
@@ -10,7 +9,6 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
         "alignSelf": "flex-start",
         "height": 28,
         "left": -10,
-        "position": "relative",
         "zIndex": 10,
       },
     ]
@@ -131,34 +129,16 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
 </View>
 `;
 
-exports[`ReactionList should render not visible ReactionList 1`] = `
-<View
-  activeOpacity={1}
-  style={
-    Array [
-      Object {
-        "alignSelf": "flex-end",
-        "height": 28,
-        "position": "relative",
-        "right": -10,
-        "zIndex": 10,
-      },
-    ]
-  }
-  testID="reaction-list"
-/>
-`;
+exports[`ReactionList should render not visible ReactionList 1`] = `null`;
 
 exports[`ReactionList should render right aligned ReactionList 1`] = `
 <View
-  activeOpacity={1}
   alignment="right"
   style={
     Array [
       Object {
         "alignSelf": "flex-end",
         "height": 28,
-        "position": "relative",
         "right": -10,
         "zIndex": 10,
       },
