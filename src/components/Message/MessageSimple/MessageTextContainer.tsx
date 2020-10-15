@@ -111,7 +111,7 @@ export type MessageTextContainerProps<
   /**
    * Returns true if message belongs to current user, else false
    */
-  isMyMessage: () => boolean;
+  isMyMessage: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => boolean;
   /**
    * Current [message object](https://getstream.io/chat/docs/#message_format)
    */
