@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.0.0.beta.0]
+## [2.0.0-beta.0]
 
 Please check [Upgrade Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper#upgrade-from-0xx-to-2xx) for upgrading from 0.x.x to 2.x.x
 
