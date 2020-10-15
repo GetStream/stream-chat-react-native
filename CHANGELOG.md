@@ -1,13 +1,17 @@
 # Changelog
 
-## [2.0.0]
+## [2.0.0.beta.0]
 
-Full TypeScript support
+Please check [Upgrade Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper#upgrade-from-0xx-to-2xx) for upgrading from 0.x.x to 2.x.x
 
 **BREAKING CHANGES**
 
 - You will need to install https://github.com/LinusU/react-native-get-random-values and add this line `import 'react-native-get-random-values';` to your `index.js`
 - Expo 39 is now the lowest supported version
+
+### Typescript
+
+This library has been moved to full typescript. Please check [Typescript doc](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details
 
 ### Component prop changes
 
