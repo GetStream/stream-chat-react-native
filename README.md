@@ -166,10 +166,10 @@ expo install @react-native-community/netinfo expo-document-picker expo-image-pic
 
 Please check the [example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) to see usage of the components.
 
-OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) for your `App.js` in the root folder with by following these additional steps:
+OR you can swap [this file](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) for your `App.js` in the root folder and follow these additional steps:
 
 ```bash
-yarn add react-navigation@3.2.1 react-native-gesture-handler react-native-reanimated
+yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-get-random-values react-native-reanimated react-native-safe-area-context react-native-screens
 ```
 
 and finally
@@ -226,7 +226,6 @@ cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
 yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker
 cd ios && pod install && cd ..
-
 ```
 
 Just to be sure, please verify you are using the appropriate version of the following packages as per your react-native version.
@@ -240,7 +239,7 @@ Please check the [example](https://github.com/GetStream/stream-chat-react-native
 OR you can swap this file for your `App.js` in the root folder by following these additional steps:
 
 ```bash
-yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens
+yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-get-random-values react-native-reanimated react-native-safe-area-context react-native-screens
 cd ios && pod install && cd ..
 ```
 
@@ -253,7 +252,7 @@ and finally
 **iOS**:
 
 ```bash
-npx react-native run-ios
+yarn ios
 ```
 
 **Note for Android**:
