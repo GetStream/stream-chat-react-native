@@ -326,59 +326,7 @@ Please refer to [Upgrade Helper](https://github.com/GetStream/stream-chat-react-
 
 ## Internationalisation
 
-Instance of class `Streami18n` should be provided to the Chat component to handle translations.
-Stream provides the following list of built-in translations for components:
-
-1. English (en)
-2. Dutch (nl)
-3. Russian (ru)
-4. Turkish (tr)
-5. French (fr)
-6. Italian (it)
-7. Hindi (hi)
-
-The default language is English. The simplest way to start using chat components in one of the in-built languages is the following:
-
-Simplest way to start using chat components in one of the in-built languages would be following:
-
-```js static
-const i18n = new Streami18n({ language: 'nl' });
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
-
-If you would like to override certain keys in in-built translation:
-
-```js static
-const i18n = new Streami18n({
-  language: 'nl',
-  translationsForLanguage: {
-    'Nothing yet...': 'Nog Niet ...',
-    '{{ firstUser }} and {{ secondUser }} are typing...':
-      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
-  },
-});
-```
-
-You can find all the available keys here: <https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n>
-
-They are also exported as a JSON object from the library.
-
-```js static
-import {
-  enTranslations,
-  nlTranslations,
-  ruTranslations,
-  trTranslations,
-  frTranslations,
-  hiTranslations,
-  itTranslations,
-  esTranslations,
-} from 'stream-chat-react-native'; // or 'stream-chat-expo'
-```
-
-Please read this docs on i18n for more details and further customizations - <https://getstream.github.io/stream-chat-react-native/#streami18n>
+Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
 
 ## Contributing
 
