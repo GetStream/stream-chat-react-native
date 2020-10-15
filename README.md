@@ -47,7 +47,7 @@ To use this library you need to ensure you match up with the correct version of 
 
 | `stream-chat-react-native` version | Required React Native Version |
 | ----------------------------------------- | --------- |
-| `2.x.x`                                   | `>= 0.60` |
+| `2.x.x` (beta)                            | `>= 0.60` |
 | `1.x.x`                                   | `>= 0.59` |
 | `0.x.x`                                   | `*` |
 
@@ -224,9 +224,11 @@ react-native run-ios
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
-yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker
+yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker react-native-get-random-values
 cd ios && pod install && cd ..
 ```
+
+**You also need to import `react-native-get-random-values` in your index.js in root directory, before importing your main app component.**
 
 Just to be sure, please verify you are using the appropriate version of the following packages as per your react-native version.
 
@@ -239,7 +241,7 @@ Please check the [example](https://github.com/GetStream/stream-chat-react-native
 OR you can swap this file for your `App.js` in the root folder by following these additional steps:
 
 ```bash
-yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-get-random-values react-native-reanimated react-native-safe-area-context react-native-screens
+yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler  react-native-reanimated react-native-safe-area-context react-native-screens
 cd ios && pod install && cd ..
 ```
 
@@ -271,126 +273,11 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ## TypeScript Support
 
-As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. The `stream-chat-js` library was converted to typescript in version `2.0.0` as well. These upgrades not only provide improved type safety but also allow through the use of [generics](https://www.typescriptlang.org/docs/handbook/generics.html) for user provided typings to be passed to server responses, custom components, filters, etc.
+As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.
 
-In many cases TypeScript can use [inference](https://www.typescriptlang.org/docs/handbook/type-inference.html) from a provided prop to infer the generics used. It is therefore important that the proper generics be applied to the `stream-chat-js` client when it is instantiated. The [documentation on `stream-chat-js` TypeScript](https://github.com/GetStream/stream-chat-js#typescript-v2xx) has examples of how this can be done in detail. The client takes seven optional generics that correspond to the seven customizable fields that currently exist in `stream-chat-js`.
+## Upgrading
 
-```typescript
-const client = new StreamChat<
-  AttachmentType,
-  ChannelType,
-  CommandType,
-  EventType,
-  MessageType,
-  ReactionType,
-  UserType
->('YOUR_API_KEY', 'API_KEY_SECRET');
-```
-
-The seven customizable fields these generics extend are provided via `stream-chat-js`.
-
-1. [`Attachment`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1166)
-2. [`ChannelResponse`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L104)
-3. [`CommandVariants`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1271)
-4. [`Event`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L796)
-5. [`MessageBase`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1344)
-6. [`Reaction`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1401)
-7. [`User`](https://github.com/GetStream/stream-chat-js/blob/534bcb09a971caea9f187f31b005e9e3b1413a67/src/types.ts#L1465)
-
-All seven generics contain defaults in the `stream-chat-react-native` repo that you can extend for custom data. Additional fields on the defaults i.e. `file_size`, `mime_type`, and `image` are custom fields used by `stream-chat-react-native` already within the SDK. When wanting to set a subset of generics the preceding and interceding generics must also be set in order for the TypeScript compiler to correctly understand intent.
-
-To set `ChannelType` and `MessageType` for instance the initialization would be:
-
-```typescript
-const client = new StreamChat<
-  DefaultAttachmentType,
-  { image?: string, nickName?: string },
-  DefaultCommandType,
-  DefaultEventType,
-  { isAdminMessage?: boolean },
->('YOUR_API_KEY', 'API_KEY_SECRET');
-```
-
-**Note:** `DefaultCommandType` extends `string & {}` instead of `string` to maintain intellisense for the included commands. In use a string union such as `'poll' | 'question'` could be used to extend them.
-
-```typescript
-type DefaultAttachmentType = Record<string, unknown> & {
-  file_size?: number | string;
-  mime_type?: string;
-};
-type DefaultChannelType = Record<string, unknown> & {
-  image?: string;
-};
-type DefaultCommandType = string & {};
-type DefaultEventType = Record<string, unknown>;
-type DefaultMessageType = Record<string, unknown>;
-type DefaultReactionType = Record<string, unknown>;
-type DefaultUserType = Record<string, unknown> & {
-  image?: string;
-};
-```
-
-The [TypeScript Example App](./examples/TypeScriptMessaging/App.tsx) shows how to apply the generics to many of the components in the SDK. Core to understanding this usage is how generics [can be applied to JSX elements](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#generic-type-arguments-in-jsx-elements).
-
-In many cases the use of a single prop such as `client` or `channel` allows TypeScript to infer the generics on an element. In this case `LocalAttachmentType` is inferred from `channel` and passed to the props type for a custom Attachment component.
-
-<div style="display: inline">
-  <img src="./screenshots/TS-1.png" alt="TypeScript Image 1" width="900" border="1" />
-</div>
-
-Not all components use or are always provided a prop that can provide inference though. In these cases the generics must be applied to the component directly. `MessageList` for instance could have the previous generics applied to it.
-
-```typescript
-<MessageList<
-  DefaultAttachmentType,
-  { image?: string, nickName?: string },
-  DefaultCommandType,
-  DefaultEventType,
-  { isAdminMessage?: boolean },
->
-  onThreadSelect={(thread) => {
-    setThread(thread);
-    if (channel?.id) {
-      navigation.navigate('Thread', { channelId: channel.id });
-    }
-  }}
-/>
-```
-
-This passes the generics through appropriately to custom components and other props, in this case the custom `Message` component would receive the generics.
-
-<div style="display: inline">
-  <img src="./screenshots/TS-2.png" alt="TypeScript Image 2" width="900" border="1" />
-</div>
-
-The context hooks provided also require generics to be applied to correctly type custom returns. `useChannelContext` for instance would have the previous generics applied to it to get a correctly typed return for `channel`.
-
-```typescript
-const { channel } = useChannelContext<
-  DefaultAttachmentType,
-  { image?: string, nickName?: string },
-  DefaultCommandType,
-  DefaultEventType,
-  { isAdminMessage?: boolean },
-  >();
-```
-
-**Note:** Inference only works correctly when all generics are provided by a given input. [Partial Type Argument Inference](https://github.com/microsoft/TypeScript/issues/26242) is currently not supported in TypeScript. This is particularly relevant if the Higher Order Components are used in place of the provided context hooks. The `withChannelContext` HOC accepts the generics similarly to the `useChannelContext` hook, but because partial inference is not supported the props for the wrapped component must also be explicitly provided.
-
-```typescript
-withChannelContext<
-  MyComponentProps,
-  DefaultAttachmentType,
-  { image?: string, nickName?: string },
-  DefaultCommandType,
-  DefaultEventType,
-  { isAdminMessage?: boolean },
->(MyComponent);
-```
-
-## Upgrade helper
-
-Please refer to [upgrade doc](https://github.com/GetStream/stream-chat-react-native/blob/master/upgrade-doc.md)
+Please refer to [Upgrade Helper](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper)
 
 ## Common issues
 
@@ -439,59 +326,7 @@ Please refer to [upgrade doc](https://github.com/GetStream/stream-chat-react-nat
 
 ## Internationalisation
 
-Instance of class `Streami18n` should be provided to the Chat component to handle translations.
-Stream provides the following list of built-in translations for components:
-
-1. English (en)
-2. Dutch (nl)
-3. Russian (ru)
-4. Turkish (tr)
-5. French (fr)
-6. Italian (it)
-7. Hindi (hi)
-
-The default language is English. The simplest way to start using chat components in one of the in-built languages is the following:
-
-Simplest way to start using chat components in one of the in-built languages would be following:
-
-```js static
-const i18n = new Streami18n({ language: 'nl' });
-<Chat client={chatClient} i18nInstance={i18n}>
-  ...
-</Chat>;
-```
-
-If you would like to override certain keys in in-built translation:
-
-```js static
-const i18n = new Streami18n({
-  language: 'nl',
-  translationsForLanguage: {
-    'Nothing yet...': 'Nog Niet ...',
-    '{{ firstUser }} and {{ secondUser }} are typing...':
-      '{{ firstUser }} en {{ secondUser }} zijn aan het typen...',
-  },
-});
-```
-
-You can find all the available keys here: <https://github.com/GetStream/stream-chat-react-native/tree/master/src/i18n>
-
-They are also exported as a JSON object from the library.
-
-```js static
-import {
-  enTranslations,
-  nlTranslations,
-  ruTranslations,
-  trTranslations,
-  frTranslations,
-  hiTranslations,
-  itTranslations,
-  esTranslations,
-} from 'stream-chat-react-native'; // or 'stream-chat-expo'
-```
-
-Please read this docs on i18n for more details and further customizations - <https://getstream.github.io/stream-chat-react-native/#streami18n>
+Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
 
 ## Contributing
 

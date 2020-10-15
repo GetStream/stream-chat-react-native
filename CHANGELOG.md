@@ -1,13 +1,17 @@
 # Changelog
 
-## [2.0.0]
+## [2.0.0-beta.0]
 
-Full TypeScript support
+Please check [Upgrade Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper#upgrade-from-0xx-to-2xx) for upgrading from 0.x.x to 2.x.x
 
 **BREAKING CHANGES**
 
 - You will need to install https://github.com/LinusU/react-native-get-random-values and add this line `import 'react-native-get-random-values';` to your `index.js`
 - Expo 39 is now the lowest supported version
+
+### Typescript
+
+This library has been moved to full typescript. Please check [Typescript doc](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details
 
 ### Component prop changes
 
@@ -81,6 +85,14 @@ Full TypeScript support
     - `threadMessages`
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or with one of our custom context hooks (ex: access `MessagesContext` by `const { messages } = useMessagesContext();`).
+
+## [1.3.4] 2020-10-13
+
+- Fixing keyboard glitch functionality for android [a7f94b9](https://github.com/GetStream/stream-chat-react-native/commit/a7f94b93a12c997055a706316902aafbd256f29b)
+
+## [1.3.3] 2020-10-05
+
+- Fixing retry upload functionality [e89b87f](https://github.com/GetStream/stream-chat-react-native/commit/e89b87fb6b519d5433717d14ba12591236459586)
 
 ## [1.3.2] 2020-10-02
 
