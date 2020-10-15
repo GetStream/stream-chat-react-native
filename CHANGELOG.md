@@ -82,6 +82,14 @@ Full TypeScript support
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or with one of our custom context hooks (ex: access `MessagesContext` by `const { messages } = useMessagesContext();`).
 
+## [1.3.4] 2020-10-05
+
+- Fixing keyboard glitch functionality for android [a7f94b9](https://github.com/GetStream/stream-chat-react-native/commit/a7f94b93a12c997055a706316902aafbd256f29b)
+
+## [1.3.3] 2020-10-05
+
+- Fixing retry upload functionality [e89b87f](https://github.com/GetStream/stream-chat-react-native/commit/e89b87fb6b519d5433717d14ba12591236459586)
+
 ## [1.3.2] 2020-10-02
 
 - SuggestionsList (for user-mentions feature in MessageInput) doesn't update the position as per keyboard position. For the time being, we have fixed this by dismissing the suggestions list when keyboard gets dismissed  - [0fdff4f](https://github.com/GetStream/stream-chat-react-native/commit/0fdff4f327908d4b554b8d4172028e666df65242)
