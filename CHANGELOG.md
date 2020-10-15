@@ -82,7 +82,7 @@ Full TypeScript support
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or with one of our custom context hooks (ex: access `MessagesContext` by `const { messages } = useMessagesContext();`).
 
-## [1.3.4] 2020-10-05
+## [1.3.4] 2020-10-13
 
 - Fixing keyboard glitch functionality for android [a7f94b9](https://github.com/GetStream/stream-chat-react-native/commit/a7f94b93a12c997055a706316902aafbd256f29b)
 
