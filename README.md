@@ -224,9 +224,11 @@ react-native run-ios
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
-yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker
+yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker react-native-get-random-values
 cd ios && pod install && cd ..
 ```
+
+**You also need to import `react-native-get-random-values` in your index.js in root directory, before importing your main app component.**
 
 Just to be sure, please verify you are using the appropriate version of the following packages as per your react-native version.
 
@@ -239,7 +241,7 @@ Please check the [example](https://github.com/GetStream/stream-chat-react-native
 OR you can swap this file for your `App.js` in the root folder by following these additional steps:
 
 ```bash
-yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler react-native-get-random-values react-native-reanimated react-native-safe-area-context react-native-screens
+yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-gesture-handler  react-native-reanimated react-native-safe-area-context react-native-screens
 cd ios && pod install && cd ..
 ```
 
