@@ -5,6 +5,8 @@ export * from './contexts';
 export * from './styles/styledComponents';
 export * from './styles/themeConstants';
 
+export * from './types/types';
+
 export * from './utils/Streami18n';
 export * from './utils/utils';
 
