@@ -212,7 +212,7 @@ const MessageSimpleStyled = (props) => {
       },
     },
     'message.content.textContainer':
-      'background-color: white; border-color: black; border-width: 1',
+      'background-color: white; border-color: black; border-width: 1px',
   };
 
   const receivedMessageStyles = {
