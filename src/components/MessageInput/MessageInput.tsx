@@ -171,6 +171,10 @@ export type MessageInputProps<
    */
   compressImageQuality?: number;
   /**
+   * Override of context disabled for disabling input only
+   */
+  disabled?: boolean;
+  /**
    * Override file upload request
    *
    * @param file    File object - { uri: '', name: '' }
@@ -296,6 +300,7 @@ export const MessageInput = <
     AttachButton = AttachButtonDefault,
     AttachmentFileIcon,
     compressImageQuality,
+    disabled: disabledProp,
     doDocUploadRequest,
     doImageUploadRequest,
     FileUploadPreview = FileUploadPreviewDefault,
@@ -312,15 +317,14 @@ export const MessageInput = <
     setInputRef,
   } = props;
 
-  const { channel, disabled = false, members, watchers } = useChannelContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    channel,
+    disabled: disabledContext = false,
+    members,
+    watchers,
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const disabled = disabledProp || disabledContext;
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
