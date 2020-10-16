@@ -3,7 +3,7 @@ import merge from 'lodash/merge';
 
 import { replaceCssShorthand, ThemeType } from './utils/replaceCssShorthand';
 
-import { ThemeProvider as StyledComponentsThemeProvider } from '../../styles/styledComponents';
+import { StyledComponentsThemeProvider } from '../../styles/styledComponents';
 import { defaultTheme } from '../../styles/themeConstants';
 
 export type ThemeProviderInputValue = {

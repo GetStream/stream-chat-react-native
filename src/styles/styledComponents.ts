@@ -28,7 +28,7 @@ export {
   styled,
   ThemeConsumer,
   ThemeContext,
-  ThemeProvider,
+  ThemeProvider as StyledComponentsThemeProvider,
   useTheme,
   withTheme,
 };
