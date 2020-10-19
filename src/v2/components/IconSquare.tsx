@@ -19,6 +19,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
   },
+  image: {
+    height: 15,
+    width: 15,
+  },
 });
 
 export type IconSquareProps = {
@@ -37,7 +41,7 @@ export const IconSquare: React.FC<IconSquareProps> = (props) => {
         style={[styles.container, theme.iconSquare.container]}
         testID='icon-square'
       >
-        <Image source={icon} style={{ height: 15, width: 15 }} />
+        <Image source={icon} style={styles.image} />
       </TouchableOpacity>
     );
   }
@@ -47,7 +51,7 @@ export const IconSquare: React.FC<IconSquareProps> = (props) => {
       style={[styles.container, theme.iconSquare.container]}
       testID='icon-square'
     >
-      <Image source={icon} style={{ height: 15, width: 15 }} />
+      <Image source={icon} style={styles.image} />
     </View>
   );
 };
