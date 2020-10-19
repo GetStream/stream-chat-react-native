@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import { useTheme } from '../contexts/themeContext/hooks/useTheme';
+import { useTheme } from '../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
   container: {
