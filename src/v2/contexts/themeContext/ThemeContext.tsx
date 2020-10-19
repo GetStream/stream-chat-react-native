@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import merge from 'lodash/merge';
 
 import { defaultTheme, Theme } from './utils/theme';
@@ -26,4 +26,13 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
       {children}
     </ThemeContext.Provider>
   );
+};
+
+export const useTheme = () => {
+  const theme = useContext(ThemeContext);
+
+  return {
+    colors: theme.colors,
+    theme,
+  };
 };
