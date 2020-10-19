@@ -30,7 +30,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-type Props<
+type ChatProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -130,7 +130,7 @@ export const Chat = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<Props<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const { children, client, i18nInstance, logger = () => null, style } = props;
 
