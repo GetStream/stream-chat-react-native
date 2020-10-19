@@ -129,8 +129,7 @@ export type MessageSimpleProps<
     /**
      * Returns true if message belongs to current user, else false
      */
-    isMyMessage: () => boolean;
-
+    isMyMessage: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => boolean;
     /** Opens the reaction picker */
     openReactionPicker: () => Promise<void>;
     /** Whether or not the reaction picker is visible */
@@ -401,7 +400,7 @@ export const MessageSimple = <
   const alignment =
     forceAlign && (forceAlign === 'left' || forceAlign === 'right')
       ? forceAlign
-      : isMyMessage()
+      : isMyMessage(message)
       ? 'right'
       : 'left';
 

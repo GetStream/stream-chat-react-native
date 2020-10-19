@@ -586,7 +586,7 @@ export class Streami18n {
   registerTranslation(
     language: string,
     translation: typeof enTranslations,
-    customDayjsLocale: Partial<ILocale>,
+    customDayjsLocale?: Partial<ILocale>,
   ) {
     if (!translation) {
       this.logger(

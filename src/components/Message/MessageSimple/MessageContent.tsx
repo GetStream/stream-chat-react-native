@@ -465,7 +465,13 @@ export const MessageContent = <
             openThread={onOpenThread}
           />
         )}
-        {MessageFooter && <MessageFooter testID='message-footer' {...props} />}
+        {MessageFooter && (
+          <MessageFooter
+            testID='message-footer'
+            {...props}
+            supportedReactions={supportedReactions}
+          />
+        )}
         {!MessageFooter && showTime && (
           <MetaContainer testID='show-time'>
             <MetaText alignment={alignment}>{getDateText(formatDate)}</MetaText>
