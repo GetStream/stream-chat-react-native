@@ -19,7 +19,7 @@
 - [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
-- [Release Notes](https://github.com/GetStream/stream-chat-react-native/blob/master/CHANGELOG.md)
+- [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
 - [Internationalisation (i18n)](#internationalisation)
 - [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook)  :rocket:
 
@@ -41,7 +41,7 @@
   - [Common issues](#common-issues)
   - [Contributing](#contributing)
 
-## React Native Compatibility
+## 🔐 React Native Compatibility
 
 To use this library you need to ensure you match up with the correct version of React Native you are using.
 
@@ -51,11 +51,11 @@ To use this library you need to ensure you match up with the correct version of 
 | `1.x.x`                                   | `>= 0.59` |
 | `0.x.x`                                   | `*` |
 
-## React Native Chat Tutorial
+## 📖 React Native Chat Tutorial
 
 The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
 
-## Example Apps
+## 🔮 Example Apps
 
 This repo includes 3 example apps. One made with Expo, one Native JavaScript code, and one in TypeScript.
 
@@ -130,13 +130,13 @@ Check out our tutorial on how to build a slack clone using react-native and stre
   - **react native** <https://github.com/GetStream/slack-clone-react-native/>
   - **expo** <https://github.com/GetStream/slack-clone-expo/>
 
-## Docs
+## 📋 Docs
 
 The [styleguidist docs for stream-chat-react-native](https://getstream.github.io/stream-chat-react-native/) document how all the components work.
 
 The React Native components are created using the stream-chat-js library. If you're customizing the components, it's essential to learn how the Chat Server API works. You'll want to review our [JS chat API docs](https://getstream.io/chat/docs/js/).
 
-## Keep in mind
+## 💬 Keep in mind
 
 1. Navigation between different components is something we expect consumers to implement. You can check out the example given in this repository
 
@@ -144,7 +144,7 @@ The React Native components are created using the stream-chat-js library. If you
 
 You can see detailed documentation about the components at <https://getstream.github.io/stream-chat-react-native>
 
-## Setup (Setting up a chat app)
+## 🛠 Setup (Setting up a chat app)
 
 ### Expo package
 
@@ -271,15 +271,19 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 ![Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
 
-## TypeScript Support
+## 💪 TypeScript Support
 
 As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.
 
-## Upgrading
+## ✈️ Internationalisation
+
+Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
+
+## 🚀 Upgrading
 
 Please refer to [Upgrade Helper](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper)
 
-## Common issues
+## ⚠️ Common issues
 
 #### While running native example, you may (not necessarily) run into the following issues
 
@@ -324,10 +328,6 @@ Please refer to [Upgrade Helper](https://github.com/GetStream/stream-chat-react-
 
    3. Rerun `yarn android` in `stream-chat-react-native/examples/NativeMessaging` directory
 
-## Internationalisation
-
-Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
-
-## Contributing
+## 👏 Contributing
 
 We welcome code changes that improve this library or fix a problem, and please make sure to follow all best practices and test all the changes. Please check our [dev setup docs](https://github.com/GetStream/stream-chat-react-native/wiki/Dev-setup-for-contributing-to-the-library) to get you started. We are pleased to merge your code into the official repository. Make sure to sign our [Contributor License Agreement (CLA)](https://docs.google.com/forms/d/e/1FAIpQLScFKsKkAJI7mhCr7K9rEIOpqIDThrWxuvxnwUq2XkHyG154vQ/viewform) first. See our license file for more details.
