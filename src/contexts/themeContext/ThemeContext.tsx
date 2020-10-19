@@ -3,8 +3,12 @@ import merge from 'lodash/merge';
 
 import { replaceCssShorthand, ThemeType } from './utils/replaceCssShorthand';
 
-import { ThemeProvider as StyledComponentsThemeProvider } from '../../styles/styledComponents';
+import {
+  StyledComponentsThemeProvider,
+  useTheme,
+} from '../../styles/styledComponents';
 import { defaultTheme } from '../../styles/themeConstants';
+import { formatDotNotation } from './utils/formatDotNotation';
 
 export type ThemeProviderInputValue = {
   style?: ThemeType;
@@ -12,11 +16,13 @@ export type ThemeProviderInputValue = {
 
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const { children, style } = props;
-  const modifiedTheme = defaultTheme;
+  const theme = useTheme();
+  const modifiedTheme = theme || defaultTheme;
 
   if (style) {
     const formattedStyle = replaceCssShorthand(style);
-    merge(modifiedTheme, formattedStyle);
+    const formattedTheme = formatDotNotation({ formattedStyle, modifiedTheme });
+    merge(modifiedTheme, formattedTheme);
   }
 
   return (
