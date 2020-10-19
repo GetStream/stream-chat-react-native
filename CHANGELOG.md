@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0]
+- Added peer dependencies for:
+  - [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation)
+  - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values#installation)
+  - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation)
+  - [react-native-svg](https://github.com/react-native-svg/react-native-svg#installation)
+
+- Remove styled-components:
+  - Remove dot notation for theming applications
+  - Remove css string notation for styles on theme
+
 ## [2.0.0-beta.0]
 
 Please check [Upgrade Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper#upgrade-from-0xx-to-2xx) for upgrading from 0.x.x to 2.x.x
