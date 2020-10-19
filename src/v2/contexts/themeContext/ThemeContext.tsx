@@ -1,27 +1,32 @@
 import React from 'react';
 import merge from 'lodash/merge';
 
-import { replaceCssShorthand, ThemeType } from './utils/replaceCssShorthand';
+import { defaultTheme, Theme } from './utils/theme';
 
-import { ThemeProvider as StyledComponentsThemeProvider } from '../../../styles/styledComponents';
-import { defaultTheme } from '../../../styles/themeConstants';
+export type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
 
 export type ThemeProviderInputValue = {
-  style?: ThemeType;
+  style?: DeepPartial<Theme>;
 };
+
+export const ThemeContext = React.createContext({} as Theme);
 
 export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const { children, style } = props;
   const modifiedTheme = defaultTheme;
 
   if (style) {
-    const formattedStyle = replaceCssShorthand(style);
-    merge(modifiedTheme, formattedStyle);
+    /**
+     * TODO: re-add dot notation from master
+     */
+    merge(modifiedTheme, style);
   }
 
   return (
-    <StyledComponentsThemeProvider theme={modifiedTheme}>
+    <ThemeContext.Provider value={modifiedTheme}>
       {children}
-    </StyledComponentsThemeProvider>
+    </ThemeContext.Provider>
   );
 };

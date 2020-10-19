@@ -1,21 +1,25 @@
 import React from 'react';
-import { GestureResponderEvent, Image, ImageRequireSource } from 'react-native';
+import {
+  GestureResponderEvent,
+  Image,
+  ImageRequireSource,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../contexts/themeContext/hooks/useTheme';
 
-const StyledTouchableOpacity = styled.TouchableOpacity`
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-  padding: 5px;
-  ${({ theme }) => theme.iconSquare.container.css};
-`;
-
-const StyledView = styled.View`
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
-  padding: 5px;
-  ${({ theme }) => theme.iconSquare.container.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    /**
+     * 0D is 5% opacity in 8-digit hex
+     */
+    backgroundColor: '#0000000D',
+    borderRadius: 5,
+    padding: 5,
+  },
+});
 
 export type IconSquareProps = {
   icon: ImageRequireSource;
@@ -24,18 +28,26 @@ export type IconSquareProps = {
 
 export const IconSquare: React.FC<IconSquareProps> = (props) => {
   const { icon, onPress } = props;
+  const { theme } = useTheme();
 
   if (onPress) {
     return (
-      <StyledTouchableOpacity onPress={onPress} testID='icon-square'>
+      <TouchableOpacity
+        onPress={onPress}
+        style={[styles.container, theme.iconSquare.container]}
+        testID='icon-square'
+      >
         <Image source={icon} style={{ height: 15, width: 15 }} />
-      </StyledTouchableOpacity>
+      </TouchableOpacity>
     );
   }
 
   return (
-    <StyledView testID='icon-square'>
+    <View
+      style={[styles.container, theme.iconSquare.container]}
+      testID='icon-square'
+    >
       <Image source={icon} style={{ height: 15, width: 15 }} />
-    </StyledView>
+    </View>
   );
 };
