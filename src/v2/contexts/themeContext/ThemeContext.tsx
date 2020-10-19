@@ -18,9 +18,6 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
   const modifiedTheme = defaultTheme;
 
   if (style) {
-    /**
-     * TODO: re-add dot notation from master
-     */
     merge(modifiedTheme, style);
   }
 
