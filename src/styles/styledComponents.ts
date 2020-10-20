@@ -15,7 +15,7 @@ const appStyledComponents = styledComponents as styledComponents.ReactNativeThem
 const {
   css,
   default: styled,
-  ThemeProvider,
+  ThemeProvider: StyledComponentsThemeProvider,
   useTheme,
   withTheme,
 } = appStyledComponents;
@@ -28,7 +28,7 @@ export {
   styled,
   ThemeConsumer,
   ThemeContext,
-  ThemeProvider as StyledComponentsThemeProvider,
+  StyledComponentsThemeProvider,
   useTheme,
   withTheme,
 };

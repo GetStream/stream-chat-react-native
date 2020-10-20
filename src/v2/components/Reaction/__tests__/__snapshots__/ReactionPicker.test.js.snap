@@ -1,412 +1,414 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ReactionPicker should render ReactionPicker 1`] = `
-<Modal
-  animationType="fade"
-  hardwareAccelerated={false}
-  testID="reaction-picker"
-  transparent={true}
-  visible={true}
->
-  <View
-    accessible={true}
-    focusable={false}
-    isTVSelectable={true}
-    onClick={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "alignItems": "flex-end",
-        "flexBasis": 0,
-        "flexGrow": 1,
-        "flexShrink": 1,
-        "opacity": 1,
-      }
-    }
+<View>
+  <Modal
+    animationType="fade"
+    hardwareAccelerated={false}
+    testID="reaction-picker"
+    transparent={true}
+    visible={true}
   >
     <View
+      accessible={true}
+      focusable={false}
+      isTVSelectable={true}
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
       style={
-        Array [
-          Object {
-            "backgroundColor": "black",
-            "borderRadius": 30,
-            "flexDirection": "row",
-            "height": 60,
-            "paddingHorizontal": 20,
-          },
-          Object {
-            "marginLeft": undefined,
-            "marginRight": undefined,
-            "marginTop": 40,
-          },
-        ]
+        Object {
+          "alignItems": "flex-end",
+          "flexBasis": 0,
+          "flexGrow": 1,
+          "flexShrink": 1,
+          "opacity": 1,
+        }
       }
     >
       <View
         style={
           Array [
             Object {
-              "alignItems": "center",
-              "marginTop": -5,
+              "backgroundColor": "black",
+              "borderRadius": 30,
+              "flexDirection": "row",
+              "height": 60,
+              "paddingHorizontal": 20,
+            },
+            Object {
+              "marginLeft": undefined,
+              "marginRight": undefined,
+              "marginTop": 40,
             },
           ]
         }
-        testID="like"
       >
         <View
           style={
             Array [
               Object {
                 "alignItems": "center",
+                "marginTop": -5,
               },
             ]
           }
+          testID="like"
         >
-          <Image
-            accessibilityLabel="initials"
-            onError={[Function]}
-            resizeMethod="resize"
-            size={18}
-            source={
-              Object {
-                "uri": "https://bit.ly/321RmWb",
-              }
-            }
+          <View
             style={
               Array [
                 Object {
-                  "borderRadius": 9,
-                  "height": 18,
-                  "width": 18,
+                  "alignItems": "center",
                 },
               ]
             }
-            testID="avatar-image"
-          />
-        </View>
-        <Text
-          onPress={[Function]}
-          style={
-            Array [
-              Object {
-                "fontSize": 20,
-                "marginVertical": 5,
-              },
-            ]
-          }
-          testID="like-reaction"
-        >
-          👍
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
-              },
-            ]
-          }
-          testID="like-2"
-        >
-          2
-        </Text>
-      </View>
-      <View
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "marginTop": -5,
-            },
-          ]
-        }
-        testID="love"
-      >
-        <View
-          style={
-            Object {
-              "height": 18,
-              "width": 18,
+          >
+            <Image
+              accessibilityLabel="initials"
+              onError={[Function]}
+              resizeMethod="resize"
+              size={18}
+              source={
+                Object {
+                  "uri": "https://bit.ly/321RmWb",
+                }
+              }
+              style={
+                Array [
+                  Object {
+                    "borderRadius": 9,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="avatar-image"
+            />
+          </View>
+          <Text
+            onPress={[Function]}
+            style={
+              Array [
+                Object {
+                  "fontSize": 20,
+                  "marginVertical": 5,
+                },
+              ]
             }
-          }
-        />
-        <Text
-          onPress={[Function]}
-          style={
-            Array [
-              Object {
-                "fontSize": 20,
-                "marginVertical": 5,
-              },
-            ]
-          }
-          testID="love-reaction"
-        >
-          ❤️️
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
-              },
-            ]
-          }
-          testID="love-count"
-        >
-          
-        </Text>
-      </View>
-      <View
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "marginTop": -5,
-            },
-          ]
-        }
-        testID="haha"
-      >
+            testID="like-reaction"
+          >
+            👍
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
+            }
+            testID="like-2"
+          >
+            2
+          </Text>
+        </View>
         <View
           style={
             Array [
               Object {
                 "alignItems": "center",
+                "marginTop": -5,
               },
             ]
           }
+          testID="love"
         >
-          <Image
-            accessibilityLabel="initials"
-            onError={[Function]}
-            resizeMethod="resize"
-            size={18}
-            source={
+          <View
+            style={
               Object {
-                "uri": "https://bit.ly/321RmWb",
+                "height": 18,
+                "width": 18,
               }
             }
+          />
+          <Text
+            onPress={[Function]}
             style={
               Array [
                 Object {
-                  "borderRadius": 9,
-                  "height": 18,
-                  "width": 18,
+                  "fontSize": 20,
+                  "marginVertical": 5,
                 },
               ]
             }
-            testID="avatar-image"
-          />
-        </View>
-        <Text
-          onPress={[Function]}
-          style={
-            Array [
-              Object {
-                "fontSize": 20,
-                "marginVertical": 5,
-              },
-            ]
-          }
-          testID="haha-reaction"
-        >
-          😂
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
-              },
-            ]
-          }
-          testID="haha-1"
-        >
-          1
-        </Text>
-      </View>
-      <View
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "marginTop": -5,
-            },
-          ]
-        }
-        testID="wow"
-      >
-        <View
-          style={
-            Object {
-              "height": 18,
-              "width": 18,
+            testID="love-reaction"
+          >
+            ❤️️
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
             }
-          }
-        />
-        <Text
-          onPress={[Function]}
-          style={
-            Array [
-              Object {
-                "fontSize": 20,
-                "marginVertical": 5,
-              },
-            ]
-          }
-          testID="wow-reaction"
-        >
-          😮
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
-              },
-            ]
-          }
-          testID="wow-count"
-        >
-          
-        </Text>
-      </View>
-      <View
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "marginTop": -5,
-            },
-          ]
-        }
-        testID="sad"
-      >
+            testID="love-count"
+          >
+            
+          </Text>
+        </View>
         <View
           style={
             Array [
               Object {
                 "alignItems": "center",
+                "marginTop": -5,
               },
             ]
           }
+          testID="haha"
         >
-          <Image
-            accessibilityLabel="initials"
-            onError={[Function]}
-            resizeMethod="resize"
-            size={18}
-            source={
-              Object {
-                "uri": "https://bit.ly/321RmWb",
-              }
-            }
+          <View
             style={
               Array [
                 Object {
-                  "borderRadius": 9,
-                  "height": 18,
-                  "width": 18,
+                  "alignItems": "center",
                 },
               ]
             }
-            testID="avatar-image"
-          />
+          >
+            <Image
+              accessibilityLabel="initials"
+              onError={[Function]}
+              resizeMethod="resize"
+              size={18}
+              source={
+                Object {
+                  "uri": "https://bit.ly/321RmWb",
+                }
+              }
+              style={
+                Array [
+                  Object {
+                    "borderRadius": 9,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="avatar-image"
+            />
+          </View>
+          <Text
+            onPress={[Function]}
+            style={
+              Array [
+                Object {
+                  "fontSize": 20,
+                  "marginVertical": 5,
+                },
+              ]
+            }
+            testID="haha-reaction"
+          >
+            😂
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
+            }
+            testID="haha-1"
+          >
+            1
+          </Text>
         </View>
-        <Text
-          onPress={[Function]}
-          style={
-            Array [
-              Object {
-                "fontSize": 20,
-                "marginVertical": 5,
-              },
-            ]
-          }
-          testID="sad-reaction"
-        >
-          😔
-        </Text>
-        <Text
-          style={
-            Array [
-              Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
-              },
-            ]
-          }
-          testID="sad-2"
-        >
-          2
-        </Text>
-      </View>
-      <View
-        style={
-          Array [
-            Object {
-              "alignItems": "center",
-              "marginTop": -5,
-            },
-          ]
-        }
-        testID="angry"
-      >
         <View
           style={
-            Object {
-              "height": 18,
-              "width": 18,
+            Array [
+              Object {
+                "alignItems": "center",
+                "marginTop": -5,
+              },
+            ]
+          }
+          testID="wow"
+        >
+          <View
+            style={
+              Object {
+                "height": 18,
+                "width": 18,
+              }
             }
-          }
-        />
-        <Text
-          onPress={[Function]}
+          />
+          <Text
+            onPress={[Function]}
+            style={
+              Array [
+                Object {
+                  "fontSize": 20,
+                  "marginVertical": 5,
+                },
+              ]
+            }
+            testID="wow-reaction"
+          >
+            😮
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
+            }
+            testID="wow-count"
+          >
+            
+          </Text>
+        </View>
+        <View
           style={
             Array [
               Object {
-                "fontSize": 20,
-                "marginVertical": 5,
+                "alignItems": "center",
+                "marginTop": -5,
               },
             ]
           }
-          testID="angry-reaction"
+          testID="sad"
         >
-          😠
-        </Text>
-        <Text
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                },
+              ]
+            }
+          >
+            <Image
+              accessibilityLabel="initials"
+              onError={[Function]}
+              resizeMethod="resize"
+              size={18}
+              source={
+                Object {
+                  "uri": "https://bit.ly/321RmWb",
+                }
+              }
+              style={
+                Array [
+                  Object {
+                    "borderRadius": 9,
+                    "height": 18,
+                    "width": 18,
+                  },
+                ]
+              }
+              testID="avatar-image"
+            />
+          </View>
+          <Text
+            onPress={[Function]}
+            style={
+              Array [
+                Object {
+                  "fontSize": 20,
+                  "marginVertical": 5,
+                },
+              ]
+            }
+            testID="sad-reaction"
+          >
+            😔
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
+            }
+            testID="sad-2"
+          >
+            2
+          </Text>
+        </View>
+        <View
           style={
             Array [
               Object {
-                "color": "white",
-                "fontSize": 10,
-                "fontWeight": "bold",
+                "alignItems": "center",
+                "marginTop": -5,
               },
             ]
           }
-          testID="angry-count"
+          testID="angry"
         >
-          
-        </Text>
+          <View
+            style={
+              Object {
+                "height": 18,
+                "width": 18,
+              }
+            }
+          />
+          <Text
+            onPress={[Function]}
+            style={
+              Array [
+                Object {
+                  "fontSize": 20,
+                  "marginVertical": 5,
+                },
+              ]
+            }
+            testID="angry-reaction"
+          >
+            😠
+          </Text>
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "white",
+                  "fontSize": 10,
+                  "fontWeight": "bold",
+                },
+              ]
+            }
+            testID="angry-count"
+          >
+            
+          </Text>
+        </View>
       </View>
     </View>
-  </View>
-</Modal>
+  </Modal>
+</View>
 `;
 
-exports[`ReactionPicker should render not visible ReactionPicker 1`] = `null`;
+exports[`ReactionPicker should render not visible ReactionPicker 1`] = `<View />`;
