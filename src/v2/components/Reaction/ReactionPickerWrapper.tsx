@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
-import { Dimensions, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { ReactionPicker as ReactionPickerDefault } from './ReactionPicker';
 
@@ -23,6 +23,14 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+
+const styles = StyleSheet.create({
+  offset: {
+    left: 30,
+    right: 10,
+    top: 40,
+  },
+});
 
 export type ReactionPickerWrapperProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -100,7 +108,7 @@ export const ReactionPickerWrapper = <
     hideReactionCount = false,
     hideReactionOwners = false,
     message,
-    offset = { left: 30, right: 10, top: 40 },
+    offset = styles.offset,
     openReactionPicker,
     ReactionPicker = ReactionPickerDefault,
     reactionPickerVisible,
