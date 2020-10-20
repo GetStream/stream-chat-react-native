@@ -47,6 +47,7 @@ To use this library you need to ensure you match up with the correct version of 
 
 | `stream-chat-react-native` version | Required React Native Version |
 | ----------------------------------------- | --------- |
+| `3.x.x` (alpha)                           | `>= 0.60` |
 | `2.x.x` (beta)                            | `>= 0.60` |
 | `1.x.x`                                   | `>= 0.59` |
 | `0.x.x`                                   | `*` |

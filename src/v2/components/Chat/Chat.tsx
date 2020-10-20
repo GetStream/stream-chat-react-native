@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Dayjs from 'dayjs';
 
 import { useIsOnline } from './hooks/useIsOnline';
@@ -172,10 +173,12 @@ export const Chat = <
   };
 
   return (
-    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
-      <TranslationProvider value={translators}>
-        <ThemeProvider style={style}>{children}</ThemeProvider>
-      </TranslationProvider>
-    </ChatProvider>
+    <GestureHandlerRootView>
+      <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
+        <TranslationProvider value={translators}>
+          <ThemeProvider style={style}>{children}</ThemeProvider>
+        </TranslationProvider>
+      </ChatProvider>
+    </GestureHandlerRootView>
   );
 };

@@ -1,6 +1,7 @@
 # Changelog
 
 ## [3.0.0]
+
 - Added peer dependencies for:
   - [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation)
   - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values#installation)

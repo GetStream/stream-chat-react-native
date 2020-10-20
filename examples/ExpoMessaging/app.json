@@ -20,6 +20,9 @@
     "ios": {
       "supportsTablet": true,
       "usesIcloudStorage": true
+    },
+    "experiments": {
+      "turboModules": true
     }
   }
 }

@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+/* eslint-disable react/display-name */
+import React, { useContext, useEffect, useState } from 'react';
 import {
   LogBox,
   SafeAreaView,
@@ -28,13 +29,13 @@ import {
 LogBox.ignoreAllLogs(true);
 enableScreens();
 
-type LocalAttachmentType = {};
-type LocalChannelType = {};
+type LocalAttachmentType = Record<string, unknown>;
+type LocalChannelType = Record<string, unknown>;
 type LocalCommandType = string;
-type LocalEventType = {};
-type LocalMessageType = {};
-type LocalResponseType = {};
-type LocalUserType = {};
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalResponseType = Record<string, unknown>;
+type LocalUserType = Record<string, unknown>;
 
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
 const theme = {
@@ -73,9 +74,9 @@ const user = {
 };
 
 const filters = {
-  type: 'messaging',
   example: 'example-apps',
   members: { $in: ['ron'] },
+  type: 'messaging',
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 const options = {
@@ -137,7 +138,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <Channel keyboardVerticalOffset={headerHeight} channel={channel}>
+        <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
           <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
@@ -179,8 +180,8 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel
           channel={channel}
-          thread={thread}
           keyboardVerticalOffset={headerHeight}
+          thread={thread}
         >
           <View
             style={{
