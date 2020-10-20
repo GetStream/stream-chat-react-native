@@ -261,8 +261,8 @@ export type Theme = {
         top: ViewStyle;
       };
       container: ViewStyle & {
-        itemHeight: ViewStyle['height'];
-        maxHeight: ViewStyle['height'];
+        itemHeight: number;
+        maxHeight: number;
       };
       item: ViewStyle;
       mention: {
