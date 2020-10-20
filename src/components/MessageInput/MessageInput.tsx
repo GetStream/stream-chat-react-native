@@ -428,11 +428,6 @@ export const MessageInput = <
 
   const closeAttachActionSheet = () => {
     if (attachActionSheet.current) {
-      /**
-       * Hide doesn't exist until we bump @types/react-native-actionsheet from this
-       * PR being merged: https://github.com/DefinitelyTyped/DefinitelyTyped/pull/48275
-       */
-      // @ts-expect-error
       attachActionSheet.current.hide();
     }
   };
