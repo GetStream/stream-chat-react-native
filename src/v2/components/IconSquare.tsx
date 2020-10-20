@@ -32,26 +32,30 @@ export type IconSquareProps = {
 
 export const IconSquare: React.FC<IconSquareProps> = (props) => {
   const { icon, onPress } = props;
-  const { theme } = useTheme();
+
+  const {
+    theme: {
+      iconSquare: { container, image },
+    },
+  } = useTheme();
 
   if (onPress) {
     return (
       <TouchableOpacity
         onPress={onPress}
-        style={[styles.container, theme.iconSquare.container]}
+        style={[styles.container, container]}
         testID='icon-square'
       >
-        <Image source={icon} style={styles.image} />
+        <Image source={icon} style={[styles.image, image]} />
       </TouchableOpacity>
     );
   }
 
   return (
-    <View
-      style={[styles.container, theme.iconSquare.container]}
-      testID='icon-square'
-    >
-      <Image source={icon} style={styles.image} />
+    <View style={[styles.container, container]} testID='icon-square'>
+      <Image source={icon} style={[styles.image, image]} />
     </View>
   );
 };
+
+IconSquare.displayName = 'IconSquare{iconSquare}';

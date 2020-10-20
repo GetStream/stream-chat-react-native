@@ -54,255 +54,264 @@ export type MarkdownStyle = Partial<{
 
 export type Theme = {
   avatar: {
-    container: StyleProp<ViewStyle>;
-    fallback: StyleProp<ViewStyle>;
-    image: StyleProp<ImageStyle>;
-    text: StyleProp<TextStyle>;
+    container: ViewStyle;
+    fallback: ViewStyle;
+    image: ImageStyle;
+    text: TextStyle;
   };
   channelListFooterLoadingIndicator: {
-    container: StyleProp<ViewStyle>;
+    container: ViewStyle;
   };
   channelListHeaderErrorIndicator: {
-    container: StyleProp<ViewStyle>;
-    errorText: StyleProp<TextStyle>;
+    container: ViewStyle;
+    errorText: TextStyle;
   };
   channelPreview: {
-    container: StyleProp<ViewStyle>;
-    date: StyleProp<TextStyle>;
-    details: StyleProp<ViewStyle>;
-    detailsTop: StyleProp<ViewStyle>;
-    message: StyleProp<TextStyle> & {
-      color: string;
-      fontWeight: string;
-      unreadColor: string;
-      unreadFontWeight: string;
+    container: ViewStyle;
+    date: TextStyle;
+    details: ViewStyle;
+    detailsTop: ViewStyle;
+    message: TextStyle & {
+      color: TextStyle['color'];
+      fontWeight: TextStyle['fontWeight'];
+      unreadColor: TextStyle['color'];
+      unreadFontWeight: TextStyle['fontWeight'];
     };
-    title: StyleProp<TextStyle>;
+    title: TextStyle;
   };
   closeButton: {
-    container: StyleProp<ViewStyle>;
+    container: ViewStyle;
   };
   colors: typeof Colors;
   iconBadge: {
-    icon: StyleProp<ViewStyle>;
-    iconInner: StyleProp<ViewStyle>;
-    unreadCount: StyleProp<TextStyle>;
+    icon: ViewStyle;
+    iconInner: ViewStyle;
+    unreadCount: TextStyle;
   };
   iconSquare: {
-    container: StyleProp<ViewStyle>;
+    container: ViewStyle;
+    image: ImageStyle;
   };
   loadingErrorIndicator: {
-    container: StyleProp<ViewStyle>;
-    errorText: StyleProp<TextStyle>;
-    retryText: StyleProp<TextStyle>;
+    container: ViewStyle;
+    errorText: TextStyle;
+    retryText: TextStyle;
   };
   loadingIndicator: {
-    container: StyleProp<ViewStyle>;
-    loadingText: StyleProp<TextStyle>;
+    container: ViewStyle;
+    loadingText: TextStyle;
   };
   message: {
     actions: {
-      button: StyleProp<ViewStyle> & {
-        defaultBackgroundColor: string;
-        defaultBorderColor: string;
-        primaryBackgroundColor: string;
-        primaryBorderColor: string;
+      button: ViewStyle & {
+        defaultBackgroundColor: ViewStyle['backgroundColor'];
+        defaultBorderColor: ViewStyle['borderColor'];
+        primaryBackgroundColor: ViewStyle['backgroundColor'];
+        primaryBorderColor: ViewStyle['borderColor'];
       };
-      buttonText: StyleProp<TextStyle> & {
-        defaultColor: string;
-        primaryColor: string;
+      buttonText: TextStyle & {
+        defaultColor: TextStyle['color'];
+        primaryColor: TextStyle['color'];
       };
-      container: StyleProp<ViewStyle>;
+      container: ViewStyle;
     };
     actionSheet: {
-      buttonContainer: StyleProp<ViewStyle>;
-      buttonText: StyleProp<TextStyle>;
-      cancelButtonContainer: StyleProp<ViewStyle>;
-      cancelButtonText: StyleProp<TextStyle>;
-      titleContainer: StyleProp<ViewStyle>;
-      titleText: StyleProp<TextStyle>;
+      buttonContainer: ViewStyle;
+      buttonText: TextStyle;
+      cancelButtonContainer: ViewStyle;
+      cancelButtonText: TextStyle;
+      titleContainer: ViewStyle;
+      titleText: TextStyle;
     };
     avatarWrapper: {
-      container: StyleProp<ViewStyle>;
-      spacer: StyleProp<ViewStyle>;
+      container: ViewStyle;
+      spacer: ViewStyle;
     };
     card: {
-      container: StyleProp<ViewStyle>;
-      cover: StyleProp<ImageStyle>;
-      footer: StyleProp<ViewStyle> & {
-        description: StyleProp<TextStyle>;
-        link: StyleProp<TextStyle>;
-        logo: StyleProp<ImageStyle>;
-        title: StyleProp<TextStyle>;
+      container: ViewStyle;
+      cover: ImageStyle;
+      footer: ViewStyle & {
+        description: TextStyle;
+        link: TextStyle;
+        logo: ImageStyle;
+        title: TextStyle;
       };
     };
-    container: StyleProp<ViewStyle>;
+    container: ViewStyle;
     content: {
-      container: StyleProp<ViewStyle> & {
-        borderRadiusL: number;
-        borderRadiusS: number;
+      container: ViewStyle & {
+        borderRadiusL: ViewStyle[
+          | 'borderBottomLeftRadius'
+          | 'borderTopLeftRadius'];
+        borderRadiusS: ViewStyle[
+          | 'borderBottomRightRadius'
+          | 'borderTopRightRadius'];
       };
-      containerInner: StyleProp<ViewStyle>;
-      deletedContainer: StyleProp<ViewStyle>;
-      deletedText: StyleProp<TextStyle>;
+      containerInner: ViewStyle;
+      deletedContainer: ViewStyle;
+      deletedText: TextStyle;
       errorContainer: {
-        backgroundColor: string;
+        backgroundColor: ViewStyle['backgroundColor'];
       };
       /**
        * Available options for styling text:
        * https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
        */
       markdown: MarkdownStyle;
-      metaContainer: StyleProp<ViewStyle>;
-      metaText: StyleProp<TextStyle>;
-      textContainer: StyleProp<ViewStyle> & {
-        borderRadiusL: number;
-        borderRadiusS: number;
-        leftBorderColor: string;
-        leftBorderWidth: number;
-        rightBorderColor: string;
-        rightBorderWidth: number;
+      metaContainer: ViewStyle;
+      metaText: TextStyle;
+      textContainer: ViewStyle & {
+        borderRadiusL: ViewStyle[
+          | 'borderBottomLeftRadius'
+          | 'borderTopLeftRadius'];
+        borderRadiusS: ViewStyle[
+          | 'borderBottomRightRadius'
+          | 'borderTopRightRadius'];
+        leftBorderColor: ViewStyle['borderLeftColor'];
+        leftBorderWidth: ViewStyle['borderLeftWidth'];
+        rightBorderColor: ViewStyle['borderRightColor'];
+        rightBorderWidth: ViewStyle['borderRightWidth'];
       };
     };
     file: {
-      container: StyleProp<ViewStyle>;
-      details: StyleProp<ViewStyle>;
-      icon: StyleProp<ImageStyle>;
-      size: StyleProp<TextStyle>;
-      title: StyleProp<TextStyle>;
+      container: ViewStyle;
+      details: ViewStyle;
+      icon: ImageStyle;
+      size: TextStyle;
+      title: TextStyle;
     };
     gallery: {
-      doubleSize: number;
-      galleryContainer: StyleProp<ViewStyle>;
-      halfSize: number;
+      doubleSize: ViewStyle['height'];
+      galleryContainer: ViewStyle;
+      halfSize: ViewStyle['height'];
       header: {
-        button: StyleProp<ViewStyle>;
-        container: StyleProp<ViewStyle>;
+        button: ViewStyle;
+        container: ViewStyle;
       };
-      imageContainer: StyleProp<ViewStyle>;
-      single: StyleProp<ViewStyle>;
-      size: number;
-      width: number;
+      imageContainer: ViewStyle;
+      single: ViewStyle;
+      size: ViewStyle['height'];
+      width: ViewStyle['width'];
     };
     reactionList: {
-      container: StyleProp<ViewStyle>;
-      reactionCount: StyleProp<TextStyle>;
+      container: ViewStyle;
+      reactionCount: TextStyle;
     };
     reactionPicker: {
-      column: StyleProp<ViewStyle>;
-      container: StyleProp<ViewStyle>;
-      containerView: StyleProp<ViewStyle>;
-      emoji: StyleProp<TextStyle>;
-      text: StyleProp<TextStyle>;
+      column: ViewStyle;
+      container: ViewStyle;
+      containerView: ViewStyle;
+      emoji: TextStyle;
+      text: TextStyle;
     };
     replies: {
-      container: StyleProp<ViewStyle>;
-      image: StyleProp<ImageStyle>;
-      messageRepliesText: StyleProp<TextStyle>;
+      container: ViewStyle;
+      image: ImageStyle;
+      messageRepliesText: TextStyle;
     };
     status: {
-      checkMark: StyleProp<ImageStyle>;
-      deliveredCircle: StyleProp<ViewStyle>;
-      deliveredContainer: StyleProp<ViewStyle>;
-      readByContainer: StyleProp<ViewStyle>;
-      sendingContainer: StyleProp<ViewStyle>;
-      sendingImage: StyleProp<ImageStyle>;
+      checkMark: ImageStyle;
+      deliveredCircle: ViewStyle;
+      deliveredContainer: ViewStyle;
+      readByContainer: ViewStyle;
+      sendingContainer: ViewStyle;
+      sendingImage: ImageStyle;
     };
   };
   messageInput: {
     actionSheet: {
-      buttonContainer: StyleProp<ViewStyle>;
-      buttonText: StyleProp<ImageStyle>;
-      titleContainer: StyleProp<ViewStyle>;
-      titleText: StyleProp<ImageStyle>;
+      buttonContainer: ViewStyle;
+      buttonText: ImageStyle;
+      titleContainer: ViewStyle;
+      titleText: ImageStyle;
     };
-    attachButton: StyleProp<ViewStyle>;
-    attachButtonIcon: StyleProp<ImageStyle>;
-    container: StyleProp<ViewStyle> & {
-      conditionalPadding: number;
+    attachButton: ViewStyle;
+    attachButtonIcon: ImageStyle;
+    container: ViewStyle & {
+      conditionalPadding: ViewStyle['paddingTop'];
     };
-    editingBoxContainer: StyleProp<ViewStyle>;
-    editingBoxHeader: StyleProp<ViewStyle>;
-    editingBoxHeaderTitle: StyleProp<ImageStyle>;
+    editingBoxContainer: ViewStyle;
+    editingBoxHeader: ViewStyle;
+    editingBoxHeaderTitle: ImageStyle;
     fileUploadPreview: {
-      attachmentContainerView: StyleProp<ViewStyle>;
-      attachmentView: StyleProp<ViewStyle>;
-      container: StyleProp<ViewStyle>;
-      dismiss: StyleProp<ViewStyle>;
-      dismissImage: StyleProp<ImageStyle>;
-      filenameText: StyleProp<TextStyle>;
+      attachmentContainerView: ViewStyle;
+      attachmentView: ViewStyle;
+      container: ViewStyle;
+      dismiss: ViewStyle;
+      dismissImage: ImageStyle;
+      filenameText: TextStyle;
     };
     imageUploadPreview: {
-      container: StyleProp<ViewStyle>;
-      dismiss: StyleProp<ViewStyle>;
-      dismissImage: StyleProp<ImageStyle>;
-      itemContainer: StyleProp<ViewStyle>;
-      upload: StyleProp<ImageStyle>;
+      container: ViewStyle;
+      dismiss: ViewStyle;
+      dismissImage: ImageStyle;
+      itemContainer: ViewStyle;
+      upload: ImageStyle;
     };
-    inputBox: StyleProp<TextStyle>;
-    inputBoxContainer: StyleProp<ViewStyle>;
-    sendButton: StyleProp<ViewStyle>;
-    sendButtonIcon: StyleProp<ImageStyle>;
+    inputBox: TextStyle;
+    inputBoxContainer: ViewStyle;
+    sendButton: ViewStyle;
+    sendButtonIcon: ImageStyle;
     suggestions: {
       command: {
-        args: StyleProp<TextStyle>;
-        container: StyleProp<ViewStyle>;
-        description: StyleProp<TextStyle>;
-        title: StyleProp<TextStyle>;
-        top: StyleProp<ViewStyle>;
+        args: TextStyle;
+        container: ViewStyle;
+        description: TextStyle;
+        title: TextStyle;
+        top: ViewStyle;
       };
-      container: StyleProp<ViewStyle> & {
-        itemHeight: number;
-        maxHeight: number;
+      container: ViewStyle & {
+        itemHeight: ViewStyle['height'];
+        maxHeight: ViewStyle['height'];
       };
-      item: StyleProp<ViewStyle>;
+      item: ViewStyle;
       mention: {
-        container: StyleProp<ViewStyle>;
-        name: StyleProp<TextStyle>;
+        container: ViewStyle;
+        name: TextStyle;
       };
-      separator: StyleProp<ViewStyle>;
-      title: StyleProp<TextStyle>;
-      wrapper: StyleProp<ViewStyle>;
+      separator: ViewStyle;
+      title: TextStyle;
+      wrapper: ViewStyle;
     };
     uploadProgressIndicator: {
-      container: StyleProp<ViewStyle>;
-      overlay: StyleProp<ViewStyle>;
+      container: ViewStyle;
+      overlay: ViewStyle;
     };
   };
   messageList: {
     dateSeparator: {
-      container: StyleProp<ViewStyle>;
-      date: StyleProp<TextStyle>;
-      dateText: StyleProp<TextStyle>;
-      line: StyleProp<ViewStyle>;
+      container: ViewStyle;
+      date: TextStyle;
+      dateText: TextStyle;
+      line: ViewStyle;
     };
-    errorNotification: StyleProp<ViewStyle>;
-    errorNotificationText: StyleProp<TextStyle>;
-    listContainer: StyleProp<ViewStyle>;
+    errorNotification: ViewStyle;
+    errorNotificationText: TextStyle;
+    listContainer: ViewStyle;
     messageNotification: {
-      container: StyleProp<ViewStyle>;
-      text: StyleProp<TextStyle>;
+      container: ViewStyle;
+      text: TextStyle;
     };
     messageSystem: {
-      container: StyleProp<ViewStyle>;
-      dateText: StyleProp<TextStyle>;
-      line: StyleProp<ViewStyle>;
-      text: StyleProp<TextStyle>;
-      textContainer: StyleProp<ViewStyle>;
+      container: ViewStyle;
+      dateText: TextStyle;
+      line: ViewStyle;
+      text: TextStyle;
+      textContainer: ViewStyle;
     };
-    typingIndicatorContainer: StyleProp<ViewStyle>;
+    typingIndicatorContainer: ViewStyle;
   };
-  spinner: StyleProp<ViewStyle>;
+  spinner: ViewStyle;
   thread: {
-    newThread: StyleProp<ViewStyle> & {
-      text: StyleProp<TextStyle>;
+    newThread: ViewStyle & {
+      text: TextStyle;
     };
   };
   typingIndicator: {
-    container: StyleProp<ViewStyle>;
-    text: StyleProp<TextStyle> & {
-      color: string;
-      fontSize: number;
+    container: ViewStyle;
+    text: TextStyle & {
+      color: TextStyle['color'];
+      fontSize: TextStyle['fontSize'];
     };
   };
 };
@@ -347,6 +356,7 @@ export const defaultTheme: Theme = {
   },
   iconSquare: {
     container: {},
+    image: {},
   },
   loadingErrorIndicator: {
     container: {},
