@@ -3,6 +3,8 @@ import {
   FlatList,
   FlatListProps,
   ScrollViewProps,
+  StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -35,13 +37,12 @@ import {
   GroupType,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -59,27 +60,34 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const ErrorNotification = styled.View`
-  align-items: center;
-  background-color: #fae6e8;
-  color: red;
-  padding: 5px;
-  z-index: 10;
-  ${({ theme }) => theme.messageList.errorNotification.css}
-`;
-
-const ErrorNotificationText = styled.Text`
-  background-color: #fae6e8;
-  color: red;
-  ${({ theme }) => theme.messageList.errorNotificationText.css}
-`;
-
-const ListContainer = (styled(FlatList)`
-  flex: 1;
-  padding-horizontal: 10px;
-  width: 100%;
-  ${({ theme }) => theme.messageList.listContainer.css}
-` as React.ComponentType) as new <T>() => FlatList<T>;
+const styles = StyleSheet.create({
+  container: { alignItems: 'center', flex: 1, width: '100%' },
+  editStateMask: {
+    backgroundColor: 'black',
+    height: '100%',
+    opacity: 0.4,
+    position: 'absolute',
+    width: '100%',
+    zIndex: 100,
+  },
+  errorNotification: {
+    alignItems: 'center',
+    backgroundColor: '#FAE6E8',
+    color: '#FF0000',
+    padding: 5,
+    zIndex: 10,
+  },
+  errorNotificationText: {
+    backgroundColor: '#FAE6E8',
+    color: '#FF0000',
+  },
+  flex: { flex: 1 },
+  listContainer: {
+    flex: 1,
+    paddingHorizontal: 10,
+    width: '100%',
+  },
+});
 
 const keyExtractor = <
   At extends UnknownType = DefaultAttachmentType,
@@ -268,6 +276,11 @@ export const MessageList = <
     loadMore: mainLoadMore,
     Message: MessageFromContext,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      messageList: { errorNotification, errorNotificationText, listContainer },
+    },
+  } = useTheme();
   const { loadMoreThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
@@ -392,7 +405,7 @@ export const MessageList = <
     return messagesLoading ? (
       <LoadingIndicator listType='message' />
     ) : (
-      <View style={{ flex: 1 }} testID='empty-state'>
+      <View style={styles.flex} testID='empty-state'>
         <EmptyStateIndicator listType='message' />
       </View>
     );
@@ -400,11 +413,8 @@ export const MessageList = <
 
   return (
     <>
-      <View
-        collapsable={false}
-        style={{ alignItems: 'center', flex: 1, width: '100%' }}
-      >
-        <ListContainer
+      <View collapsable={false} style={styles.container}>
+        <FlatList
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
@@ -425,6 +435,7 @@ export const MessageList = <
             }
           }}
           renderItem={({ item }) => renderItem(item)}
+          style={[styles.listContainer, listContainer]}
           testID='message-flat-list'
           {...additionalFlatListProps}
         />
@@ -440,11 +451,14 @@ export const MessageList = <
           />
         )}
         {!isOnline && (
-          <ErrorNotification testID='error-notification'>
-            <ErrorNotificationText>
+          <View
+            style={[styles.errorNotification, errorNotification]}
+            testID='error-notification'
+          >
+            <Text style={[styles.errorNotificationText, errorNotificationText]}>
               {t('Connection failure, reconnecting now ...')}
-            </ErrorNotificationText>
-          </ErrorNotification>
+            </Text>
+          </View>
         )}
       </View>
       {
@@ -452,17 +466,12 @@ export const MessageList = <
         editing && disableWhileEditing && (
           <TouchableOpacity
             onPress={clearEditingState}
-            style={{
-              backgroundColor: 'black',
-              height: '100%',
-              opacity: 0.4,
-              position: 'absolute',
-              width: '100%',
-              zIndex: 100,
-            }}
+            style={styles.editStateMask}
           />
         )
       }
     </>
   );
 };
+
+MessageList.displayName = 'MessageList{messageList}';

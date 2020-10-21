@@ -1,12 +1,12 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TDateTimeParserInput,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { Message } from './utils/insertDates';
 
@@ -21,42 +21,28 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  margin-bottom: 10px;
-  ${({ theme }) => theme.messageList.messageSystem.container.css}
-`;
-
-const DateText = styled.Text`
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 10px;
-  font-weight: bold;
-  text-align: center;
-  ${({ theme }) => theme.messageList.messageSystem.dateText.css}
-`;
-
-const Line = styled.View`
-  background-color: ${({ theme }) => theme.colors.light};
-  flex: 1;
-  height: 0.5px;
-  ${({ theme }) => theme.messageList.messageSystem.line.css}
-`;
-
-const Text = styled.Text`
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 10px;
-  font-weight: bold;
-  text-align: center;
-  ${({ theme }) => theme.messageList.messageSystem.text.css}
-`;
-
-const TextContainer = styled.View`
-  flex: 3;
-  margin-top: 10px;
-  ${({ theme }) => theme.messageList.messageSystem.textContainer.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  line: {
+    flex: 1,
+    height: 0.5,
+  },
+  text: {
+    color: '#00000080', // 80 = 50% opacity
+    fontSize: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  textContainer: {
+    flex: 3,
+    marginTop: 10,
+  },
+});
 
 export type MessageSystemProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -96,6 +82,14 @@ export const MessageSystem = <
 ) => {
   const { formatDate, message } = props;
 
+  const {
+    theme: {
+      colors: { light },
+      messageList: {
+        messageSystem: { container, dateText, line, text, textContainer },
+      },
+    },
+  } = useTheme();
   const { tDateTimeParser } = useTranslationContext();
 
   const createdAt = message.created_at as TDateTimeParserInput | undefined;
@@ -108,13 +102,17 @@ export const MessageSystem = <
       : parsedDate;
 
   return (
-    <Container testID='message-system'>
-      <Line />
-      <TextContainer>
-        <Text>{message.text?.toUpperCase() || ''}</Text>
-        <DateText>{date}</DateText>
-      </TextContainer>
-      <Line />
-    </Container>
+    <View style={[styles.container, container]} testID='message-system'>
+      <View style={[styles.line, { backgroundColor: light }, line]} />
+      <View style={[styles.textContainer, textContainer]}>
+        <Text style={[styles.text, text]}>
+          {message.text?.toUpperCase() || ''}
+        </Text>
+        <Text style={[styles.text, dateText]}>{date}</Text>
+      </View>
+      <View style={[styles.line, { backgroundColor: light }, line]} />
+    </View>
   );
 };
+
+MessageSystem.displayName = 'MessageSystem{messageList{messageSystem}}';

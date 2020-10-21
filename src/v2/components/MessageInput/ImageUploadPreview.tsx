@@ -1,55 +1,54 @@
 import React from 'react';
-import { FlatList, ImageRequireSource } from 'react-native';
+import {
+  FlatList,
+  Image,
+  ImageRequireSource,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import type { ImageUpload } from './hooks/useMessageDetailsForState';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
-
-import { styled } from '../../../styles/styledComponents';
 
 const closeRound: ImageRequireSource = require('../../../images/icons/close-round.png');
 
-const Container = styled.View`
-  height: 70px;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.container.css};
-`;
-
-const Dismiss = styled.TouchableOpacity`
-  align-items: center;
-  background-color: #fff;
-  border-radius: 20px;
-  height: 20px;
-  justify-content: center;
-  position: absolute;
-  right: 5px;
-  top: 5px;
-  width: 20px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismiss.css};
-`;
-
-const DismissImage = styled.Image`
-  height: 10px;
-  width: 10px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.dismissImage.css};
-`;
-
-const ItemContainer = styled.View`
-  align-items: flex-start;
-  flex-direction: row;
-  height: 50px;
-  margin-left: 5px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.itemContainer.css};
-`;
-
-const Upload = styled.Image`
-  border-radius: 10px;
-  height: 50px;
-  width: 50px;
-  ${({ theme }) => theme.messageInput.imageUploadPreview.upload.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    height: 70,
+    padding: 10,
+  },
+  dismiss: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    height: 20,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 5,
+    top: 5,
+    width: 20,
+  },
+  dismissImage: {
+    height: 10,
+    width: 10,
+  },
+  itemContainer: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    height: 50,
+    marginLeft: 5,
+  },
+  upload: {
+    borderRadius: 10,
+    height: 50,
+    width: 50,
+  },
+});
 
 export type ImageUploadPreviewProps = {
   /**
@@ -96,8 +95,22 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
 ) => {
   const { imageUploads, removeImage, retryUpload } = props;
 
+  const {
+    theme: {
+      messageInput: {
+        imageUploadPreview: {
+          container,
+          dismiss,
+          dismissImage,
+          itemContainer,
+          upload,
+        },
+      },
+    },
+  } = useTheme();
+
   const renderItem = ({ item }: { item: ImageUpload }) => (
-    <ItemContainer>
+    <View style={[styles.itemContainer, itemContainer]}>
       <UploadProgressIndicator
         action={() => {
           if (retryUpload) {
@@ -113,26 +126,31 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
             : undefined
         }
       >
-        <Upload
+        <Image
           resizeMode='cover'
           source={{ uri: item.file.uri || item.url }}
+          style={[styles.upload, upload]}
         />
       </UploadProgressIndicator>
-      <Dismiss
+      <TouchableOpacity
         onPress={() => {
           if (removeImage) {
             removeImage(item.id);
           }
         }}
+        style={[styles.dismiss, dismiss]}
         testID='remove-image-upload-preview'
       >
-        <DismissImage source={closeRound} />
-      </Dismiss>
-    </ItemContainer>
+        <Image
+          source={closeRound}
+          style={[styles.dismissImage, dismissImage]}
+        />
+      </TouchableOpacity>
+    </View>
   );
 
   return imageUploads?.length > 0 ? (
-    <Container>
+    <View style={[styles.container, container]}>
       <FlatList
         data={imageUploads}
         horizontal
@@ -140,6 +158,9 @@ export const ImageUploadPreview: React.FC<ImageUploadPreviewProps> = (
         renderItem={renderItem}
         style={{ flex: 1 }}
       />
-    </Container>
+    </View>
   ) : null;
 };
+
+ImageUploadPreview.displayName =
+  'ImageUploadPreview{messageInput{imageUploadPreview}}';

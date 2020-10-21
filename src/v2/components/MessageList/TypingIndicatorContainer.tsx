@@ -1,9 +1,9 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
   DefaultAttachmentType,
@@ -16,15 +16,16 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View`
-  bottom: 0px;
-  height: 30px;
-  padding-left: 16px;
-  padding-vertical: 3px;
-  position: absolute;
-  width: 100%;
-  ${({ theme }) => theme.messageList.typingIndicatorContainer.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    bottom: 0,
+    height: 30,
+    paddingLeft: 16,
+    paddingVertical: 3,
+    position: 'absolute',
+    width: '100%',
+  },
+});
 
 type Props = {
   children?: React.ReactNode;
@@ -43,6 +44,11 @@ export const TypingIndicatorContainer = <
 }: Props) => {
   const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      messageList: { typingIndicatorContainer },
+    },
+  } = useTheme();
   const typingUsers = Object.values(typing);
 
   if (
@@ -52,5 +58,15 @@ export const TypingIndicatorContainer = <
     return null;
   }
 
-  return <Container testID='typing-indicator-container'>{children}</Container>;
+  return (
+    <View
+      style={[styles.container, typingIndicatorContainer]}
+      testID='typing-indicator-container'
+    >
+      {children}
+    </View>
+  );
 };
+
+TypingIndicatorContainer.displayName =
+  'TypingIndicatorContainer{messageList{typingIndicatorContainer}}';

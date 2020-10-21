@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { MessageAvatar as DefaultMessageAvatar } from './MessageAvatar';
 import {
@@ -8,8 +9,7 @@ import {
 import { MessageStatus as DefaultMessageStatus } from './MessageStatus';
 
 import { useChannelContext } from '../../../contexts/channelContext/ChannelContext';
-
-import { styled } from '../../../../styles/styledComponents';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type {
   GestureResponderEvent,
@@ -47,19 +47,12 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const Container = styled.View<{
-  alignment: Alignment;
-  hasMarginBottom: boolean;
-  isVeryLastMessage: boolean;
-}>`
-  align-items: flex-end;
-  flex-direction: row;
-  justify-content: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  margin-bottom: ${({ hasMarginBottom, isVeryLastMessage }) =>
-    hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0}px;
-  ${({ theme }) => theme.message.container.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+  },
+});
 
 export type MessageSimpleProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -396,6 +389,12 @@ export const MessageSimple = <
 
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
+  const {
+    theme: {
+      message: { container },
+    },
+  } = useTheme();
+
   const customMessageContent = !!props.MessageContent;
 
   const alignment =
@@ -425,10 +424,15 @@ export const MessageSimple = <
   };
 
   return (
-    <Container
-      alignment={alignment}
-      hasMarginBottom={hasMarginBottom}
-      isVeryLastMessage={isVeryLastMessage}
+    <View
+      style={[
+        styles.container,
+        {
+          justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
+          marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 20) : 0,
+        },
+        container,
+      ]}
       testID='message-simple-wrapper'
     >
       {alignment === 'right' ? (
@@ -445,6 +449,8 @@ export const MessageSimple = <
           <MessageContent<At, Ch, Co, Ev, Me, Re, Us> {...forwardedProps} />
         </>
       )}
-    </Container>
+    </View>
   );
 };
+
+MessageSimple.displayName = 'MessageSimple{message{container}}';

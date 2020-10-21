@@ -1,8 +1,8 @@
 import React from 'react';
+import { Image, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
-
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
 
@@ -20,16 +20,15 @@ import type {
 const iconEdit: ImageRequireSource = require('../../../images/icons/icon_edit.png');
 const iconSendNewMessage: ImageRequireSource = require('../../../images/icons/icon_new_message.png');
 
-const Container = styled.TouchableOpacity`
-  margin-left: 8px;
-  ${({ theme }) => theme.messageInput.sendButton.css};
-`;
-
-const SendButtonIcon = styled.Image`
-  height: 15px;
-  width: 15px;
-  ${({ theme }) => theme.messageInput.sendButtonIcon.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    marginLeft: 8,
+  },
+  sendButtonIcon: {
+    height: 15,
+    width: 15,
+  },
+});
 
 export type SendButtonProps = {
   /** Disables the button */
@@ -56,9 +55,25 @@ export const SendButton = <
 ) => {
   const { disabled = false, sendMessage } = props;
   const { editing } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      messageInput: { sendButton, sendButtonIcon },
+    },
+  } = useTheme();
+
   return (
-    <Container disabled={disabled} onPress={sendMessage} testID='send-button'>
-      <SendButtonIcon source={editing ? iconEdit : iconSendNewMessage} />
-    </Container>
+    <TouchableOpacity
+      disabled={disabled}
+      onPress={sendMessage}
+      style={[styles.container, sendButton]}
+      testID='send-button'
+    >
+      <Image
+        source={editing ? iconEdit : iconSendNewMessage}
+        style={[styles.sendButtonIcon, sendButtonIcon]}
+      />
+    </TouchableOpacity>
   );
 };
+
+SendButton.displayName = 'SendButton{messageInput}';

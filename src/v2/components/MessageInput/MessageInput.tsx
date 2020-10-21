@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   ImageRequireSource,
   Keyboard,
+  StyleSheet,
+  Text,
   TextInput,
   TextInputProps,
   View,
@@ -58,6 +60,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useSuggestionsContext } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import {
   ACITriggerSettings,
@@ -66,7 +69,6 @@ import {
 } from '../../utils/utils';
 
 import { pickDocument, pickImage as pickImageNative } from '../../../native';
-import { styled } from '../../../styles/styledComponents';
 
 import type { ActionSheetCustom } from 'react-native-actionsheet';
 
@@ -84,48 +86,36 @@ import type {
 
 const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.png');
 
-const Container = styled.View<{ imageUploads: ImageUpload[] }>`
-  background-color: rgba(0, 0, 0, 0.05);
-  border-radius: 10px;
-  margin-horizontal: 10px;
-  padding-top: ${({ imageUploads, theme }) =>
-    imageUploads && imageUploads.length
-      ? theme.messageInput.container.conditionalPadding
-      : 0}px;
-  ${({ theme }) => theme.messageInput.container.css};
-`;
-
-const EditingBoxContainer = styled.View`
-  background-color: white;
-  padding-horizontal: 0px;
-  shadow-color: grey;
-  shadow-opacity: 0.5;
-  z-index: 100;
-  ${({ theme }) => theme.messageInput.editingBoxContainer.css};
-`;
-
-const EditingBoxHeader = styled.View`
-  align-items: center;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.editingBoxHeader.css};
-`;
-
-const EditingBoxHeaderTitle = styled.Text`
-  font-weight: bold;
-  ${({ theme }) => theme.messageInput.editingBoxHeaderTitle.css};
-`;
-
-// have to wrap the react-native View because styled-components don't work well with ref setting
-const InputBoxContainer = styled(View)`
-  align-items: center;
-  flex-direction: row;
-  margin: 10px;
-  min-height: 46px;
-  padding-horizontal: 10px;
-  ${({ theme }) => theme.messageInput.inputBoxContainer.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#0000000D', // 0D = 5% opacity
+    borderRadius: 10,
+    marginHorizontal: 10,
+  },
+  editingBoxContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 0,
+    shadowColor: '#808080',
+    shadowOpacity: 0.5,
+    zIndex: 100,
+  },
+  editingBoxHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+  },
+  editingBoxHeaderTitle: {
+    fontWeight: 'bold',
+  },
+  inputBoxContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    margin: 10,
+    minHeight: 46,
+    paddingHorizontal: 10,
+  },
+});
 
 export type MessageInputProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -337,6 +327,18 @@ export const MessageInput = <
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { setInputBoxContainerRef } = useSuggestionsContext<Co, Us>();
+
+  const {
+    theme: {
+      messageInput: {
+        container: { conditionalPadding, ...container },
+        editingBoxContainer,
+        editingBoxHeader,
+        editingBoxHeaderTitle,
+        inputBoxContainer,
+      },
+    },
+  } = useTheme();
 
   const { t } = useTranslationContext();
 
@@ -617,7 +619,13 @@ export const MessageInput = <
       : ({} as TriggerSettings<Co, Us>);
 
     return (
-      <Container imageUploads={imageUploads}>
+      <View
+        style={[
+          styles.container,
+          { paddingTop: imageUploads.length ? conditionalPadding : 0 },
+          container,
+        ]}
+      >
         {fileUploads && (
           <FileUploadPreview
             AttachmentFileIcon={AttachmentFileIcon}
@@ -645,7 +653,10 @@ export const MessageInput = <
           setAttachActionSheetRef={setAttachActionSheetRef}
           styles={actionSheetStyles}
         />
-        <InputBoxContainer ref={setInputBoxContainerRef}>
+        <View
+          ref={setInputBoxContainerRef}
+          style={[styles.inputBoxContainer, inputBoxContainer]}
+        >
           {Input ? (
             <Input
               _pickFile={pickFile}
@@ -693,8 +704,8 @@ export const MessageInput = <
               />
             </>
           )}
-        </InputBoxContainer>
-      </Container>
+        </View>
+      </View>
     );
   };
 
@@ -1019,9 +1030,14 @@ export const MessageInput = <
   };
 
   return editing ? (
-    <EditingBoxContainer testID='editing'>
-      <EditingBoxHeader>
-        <EditingBoxHeaderTitle>{t('Editing Message')}</EditingBoxHeaderTitle>
+    <View
+      style={[styles.editingBoxContainer, editingBoxContainer]}
+      testID='editing'
+    >
+      <View style={[styles.editingBoxHeader, editingBoxHeader]}>
+        <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
+          {t('Editing Message')}
+        </Text>
         <IconSquare
           icon={iconClose}
           onPress={() => {
@@ -1029,10 +1045,12 @@ export const MessageInput = <
             setText('');
           }}
         />
-      </EditingBoxHeader>
+      </View>
       {renderInputContainer()}
-    </EditingBoxContainer>
+    </View>
   ) : (
     renderInputContainer()
   );
 };
+
+MessageInput.displayName = 'MessageInput{messageInput}';

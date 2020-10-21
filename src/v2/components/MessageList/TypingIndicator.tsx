@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTypingString } from './hooks/useTypingString';
 
@@ -6,8 +7,7 @@ import { AvatarProps, Avatar as DefaultAvatar } from '../Avatar/Avatar';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
-
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { Event, UserResponse } from 'stream-chat';
 
@@ -22,19 +22,16 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  justify-content: flex-start;
-  ${({ theme }) => theme.typingIndicator.container.css};
-`;
-
-const TypingText = styled.Text`
-  color: ${({ theme }) => theme.typingIndicator.text.color};
-  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
-  margin-left: 10px;
-  ${({ theme }) => theme.typingIndicator.text.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  typingText: {
+    marginLeft: 10,
+  },
+});
 
 export type TypingIndicatorProps = {
   /**
@@ -56,12 +53,20 @@ export const TypingIndicator = <
 }: TypingIndicatorProps) => {
   const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      typingIndicator: {
+        container,
+        text: { color, fontSize, ...text },
+      },
+    },
+  } = useTheme();
   const typingString = useTypingString<At, Ch, Co, Ev, Me, Re, Us>();
 
   const typingUsers = Object.values(typing);
 
   return (
-    <Container testID='typing-indicator'>
+    <View style={[styles.container, container]} testID='typing-indicator'>
       {(typingUsers.filter(
         ({ user }) => !!user && user.id !== client?.user?.id,
       ) as Array<
@@ -75,7 +80,11 @@ export const TypingIndicator = <
           testID={`typing-avatar-${idx}`}
         />
       ))}
-      <TypingText>{typingString}</TypingText>
-    </Container>
+      <Text style={[styles.typingText, { color, fontSize }, text]}>
+        {typingString}
+      </Text>
+    </View>
   );
 };
+
+TypingIndicator.displayName = 'TypingIndicator{typingIndicator}';
