@@ -25,7 +25,7 @@ exports[`MessageNotification should render the message notification and match sn
     style={
       Object {
         "alignItems": "center",
-        "backgroundColor": "#006cff",
+        "backgroundColor": "#006CFF",
         "borderRadius": 13,
         "height": 27,
         "justifyContent": "center",
