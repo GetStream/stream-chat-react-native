@@ -7,7 +7,10 @@ import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
-import { ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import {
+  DeepPartial,
+  ThemeProvider,
+} from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -94,7 +97,7 @@ type ChatProps<
    */
   i18nInstance?: Streami18n;
   logger?: (message?: string) => void;
-  style?: Theme;
+  style?: DeepPartial<Theme>;
 };
 
 /**
