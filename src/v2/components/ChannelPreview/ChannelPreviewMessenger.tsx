@@ -26,7 +26,7 @@ import type {
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomColor: '#ebebeb',
+    borderBottomColor: '#EBEBEB',
     borderBottomWidth: 1,
     flexDirection: 'row',
     padding: 10,
