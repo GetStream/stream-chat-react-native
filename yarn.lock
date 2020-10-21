@@ -11568,10 +11568,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat@2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.6.0.tgz#2fae6e4c5a56a8f86dee0676654fe2511d751aab"
-  integrity sha512-hI1aIMCkcGektSOt7Gt2CrrKmHKn31ovbJ+IWz1rsgdZHiWLCG2QG7JgGUKeoJVD/Ix501CjnEugZHlFdbZLwg==
+stream-chat@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.0.tgz#a1f9fe1474d270cee9e0e118953d7dcbbadd90ba"
+  integrity sha512-JRhw5JyIrS9bKVhLzEu57BxXTExMlxCJu0YXdMryJh9Wnl0XOzzjwCwYqZIFWFWH52RGyovQ+8VxkRzURStowg==
   dependencies:
     "@babel/runtime" "^7.11.2"
     "@types/jsonwebtoken" "^8.5.0"

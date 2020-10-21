@@ -102,14 +102,14 @@
     "react-native-actionsheet": "2.4.2",
     "react-native-image-zoom-viewer": "3.0.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.6.0",
     "styled-components": "5.2.0",
     "uuid": "8.3.1"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0",
-    "react-native": "^0.60.0"
+    "react-native": "^0.60.0",
+    "stream-chat": "2.7.x"
   },
   "devDependencies": {
     "@babel/cli": "7.11.6",
@@ -164,6 +164,7 @@
     "react-native-web": "0.14.1",
     "react-styleguidist": "11.1.0",
     "react-test-renderer": "16.13.1",
+    "stream-chat": "^2.7.0",
     "stylelint": "13.7.2",
     "stylelint-config-standard": "20.0.0",
     "stylelint-config-styled-components": "0.1.1",
