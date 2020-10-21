@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Image, ImageRequireSource } from 'react-native';
-import { useTheme } from 'src/v2/contexts';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const iconPDF: ImageRequireSource = require('../../../images/PDF.png');
 const iconDOC: ImageRequireSource = require('../../../images/DOC.png');

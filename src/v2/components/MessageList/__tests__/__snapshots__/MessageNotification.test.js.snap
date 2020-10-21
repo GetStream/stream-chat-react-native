@@ -44,10 +44,11 @@ exports[`MessageNotification should render the message notification and match sn
       style={
         Array [
           Object {
-            "color": "white",
+            "color": "#FFFFFF",
             "fontSize": 12,
             "fontWeight": "600",
           },
+          Object {},
         ]
       }
     >

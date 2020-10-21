@@ -3,14 +3,15 @@
 exports[`ReactionList should render left aligned ReactionList 1`] = `
 <View>
   <View
-    alignment="left"
     style={
       Array [
         Object {
-          "alignSelf": "flex-start",
           "height": 28,
-          "left": -10,
           "zIndex": 10,
+        },
+        Object {
+          "alignSelf": "flex-start",
+          "left": -10,
         },
       ]
     }
@@ -26,16 +27,15 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
             "paddingHorizontal": 5,
             "zIndex": 1,
           },
+          Object {},
         ]
       }
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <Text
@@ -55,13 +55,14 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
         </Text>
       </View>
       <Text
-        reactionCounts={5}
         style={
           Array [
             Object {
-              "color": "white",
+              "color": "#FFFFFF",
               "fontSize": 12,
             },
+            Object {},
+            Object {},
           ]
         }
       >
@@ -70,12 +71,10 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
     </View>
     <View
       style={
-        Array [
-          Object {
-            "flexDirection": "row",
-            "top": -23,
-          },
-        ]
+        Object {
+          "flexDirection": "row",
+          "top": -23,
+        }
       }
     >
       <Image
@@ -85,12 +84,10 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "height": 33,
-              "width": 25,
-            },
-          ]
+          Object {
+            "height": 33,
+            "width": 25,
+          }
         }
       />
       <Image
@@ -101,14 +98,10 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "flexBasis": 0,
-              "flexGrow": 1,
-              "flexShrink": 1,
-              "height": 33,
-            },
-          ]
+          Object {
+            "flex": 1,
+            "height": 33,
+          }
         }
       />
       <Image
@@ -118,12 +111,10 @@ exports[`ReactionList should render left aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "height": 33,
-              "width": 14,
-            },
-          ]
+          Object {
+            "height": 33,
+            "width": 14,
+          }
         }
       />
     </View>
@@ -136,14 +127,15 @@ exports[`ReactionList should render not visible ReactionList 1`] = `<View />`;
 exports[`ReactionList should render right aligned ReactionList 1`] = `
 <View>
   <View
-    alignment="right"
     style={
       Array [
         Object {
-          "alignSelf": "flex-end",
           "height": 28,
-          "right": -10,
           "zIndex": 10,
+        },
+        Object {
+          "alignSelf": "flex-end",
+          "right": -10,
         },
       ]
     }
@@ -159,16 +151,15 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
             "paddingHorizontal": 5,
             "zIndex": 1,
           },
+          Object {},
         ]
       }
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <Text
@@ -188,13 +179,14 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
         </Text>
       </View>
       <Text
-        reactionCounts={5}
         style={
           Array [
             Object {
-              "color": "white",
+              "color": "#FFFFFF",
               "fontSize": 12,
             },
+            Object {},
+            Object {},
           ]
         }
       >
@@ -203,12 +195,10 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
     </View>
     <View
       style={
-        Array [
-          Object {
-            "flexDirection": "row",
-            "top": -23,
-          },
-        ]
+        Object {
+          "flexDirection": "row",
+          "top": -23,
+        }
       }
     >
       <Image
@@ -218,12 +208,10 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "height": 33,
-              "width": 14,
-            },
-          ]
+          Object {
+            "height": 33,
+            "width": 14,
+          }
         }
       />
       <Image
@@ -234,14 +222,10 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "flexBasis": 0,
-              "flexGrow": 1,
-              "flexShrink": 1,
-              "height": 33,
-            },
-          ]
+          Object {
+            "flex": 1,
+            "height": 33,
+          }
         }
       />
       <Image
@@ -251,12 +235,10 @@ exports[`ReactionList should render right aligned ReactionList 1`] = `
           }
         }
         style={
-          Array [
-            Object {
-              "height": 33,
-              "width": 25,
-            },
-          ]
+          Object {
+            "height": 33,
+            "width": 25,
+          }
         }
       />
     </View>

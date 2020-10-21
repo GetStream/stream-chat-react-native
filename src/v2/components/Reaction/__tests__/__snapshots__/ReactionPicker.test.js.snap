@@ -23,9 +23,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
       style={
         Object {
           "alignItems": "flex-end",
-          "flexBasis": 0,
-          "flexGrow": 1,
-          "flexShrink": 1,
+          "flex": 1,
           "opacity": 1,
         }
       }
@@ -34,7 +32,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
         style={
           Array [
             Object {
-              "backgroundColor": "black",
+              "backgroundColor": "#000000",
               "borderRadius": 30,
               "flexDirection": "row",
               "height": 60,
@@ -45,6 +43,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
               "marginRight": undefined,
               "marginTop": 40,
             },
+            Object {},
           ]
         }
       >
@@ -55,6 +54,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="like"
@@ -65,6 +65,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 Object {
                   "alignItems": "center",
                 },
+                Object {},
               ]
             }
           >
@@ -72,7 +73,6 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
               accessibilityLabel="initials"
               onError={[Function]}
               resizeMethod="resize"
-              size={18}
               source={
                 Object {
                   "uri": "https://bit.ly/321RmWb",
@@ -85,6 +85,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                     "height": 18,
                     "width": 18,
                   },
+                  Object {},
                 ]
               }
               testID="avatar-image"
@@ -98,6 +99,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="like-reaction"
@@ -108,10 +110,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="like-2"
@@ -126,6 +129,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="love"
@@ -146,6 +150,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="love-reaction"
@@ -156,10 +161,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="love-count"
@@ -174,6 +180,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="haha"
@@ -184,6 +191,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 Object {
                   "alignItems": "center",
                 },
+                Object {},
               ]
             }
           >
@@ -191,7 +199,6 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
               accessibilityLabel="initials"
               onError={[Function]}
               resizeMethod="resize"
-              size={18}
               source={
                 Object {
                   "uri": "https://bit.ly/321RmWb",
@@ -204,6 +211,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                     "height": 18,
                     "width": 18,
                   },
+                  Object {},
                 ]
               }
               testID="avatar-image"
@@ -217,6 +225,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="haha-reaction"
@@ -227,10 +236,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="haha-1"
@@ -245,6 +255,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="wow"
@@ -265,6 +276,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="wow-reaction"
@@ -275,10 +287,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="wow-count"
@@ -293,6 +306,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="sad"
@@ -303,6 +317,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 Object {
                   "alignItems": "center",
                 },
+                Object {},
               ]
             }
           >
@@ -310,7 +325,6 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
               accessibilityLabel="initials"
               onError={[Function]}
               resizeMethod="resize"
-              size={18}
               source={
                 Object {
                   "uri": "https://bit.ly/321RmWb",
@@ -323,6 +337,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                     "height": 18,
                     "width": 18,
                   },
+                  Object {},
                 ]
               }
               testID="avatar-image"
@@ -336,6 +351,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="sad-reaction"
@@ -346,10 +362,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="sad-2"
@@ -364,6 +381,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                 "alignItems": "center",
                 "marginTop": -5,
               },
+              Object {},
             ]
           }
           testID="angry"
@@ -384,6 +402,7 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
                   "fontSize": 20,
                   "marginVertical": 5,
                 },
+                Object {},
               ]
             }
             testID="angry-reaction"
@@ -394,10 +413,11 @@ exports[`ReactionPicker should render ReactionPicker 1`] = `
             style={
               Array [
                 Object {
-                  "color": "white",
+                  "color": "#FFFFFF",
                   "fontSize": 10,
                   "fontWeight": "bold",
                 },
+                Object {},
               ]
             }
             testID="angry-count"

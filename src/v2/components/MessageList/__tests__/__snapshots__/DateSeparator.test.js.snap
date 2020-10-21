@@ -10,6 +10,7 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
         "justifyContent": "center",
         "marginVertical": 20,
       },
+      Object {},
     ]
   }
   testID="date-separator"
@@ -18,12 +19,13 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
     style={
       Array [
         Object {
-          "backgroundColor": "#EBEBEB",
-          "flexBasis": 0,
-          "flexGrow": 1,
-          "flexShrink": 1,
+          "flex": 1,
           "height": 0.5,
         },
+        Object {
+          "backgroundColor": "#EBEBEB",
+        },
+        Object {},
       ]
     }
   />
@@ -37,6 +39,7 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
           "textAlign": "center",
           "textTransform": "uppercase",
         },
+        Object {},
       ]
     }
   >
@@ -49,6 +52,7 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
             "opacity": 0.8,
             "textTransform": "uppercase",
           },
+          Object {},
         ]
       }
     >
@@ -59,12 +63,13 @@ exports[`DateSeparator should match date separator snapshot 1`] = `
     style={
       Array [
         Object {
-          "backgroundColor": "#EBEBEB",
-          "flexBasis": 0,
-          "flexGrow": 1,
-          "flexShrink": 1,
+          "flex": 1,
           "height": 0.5,
         },
+        Object {
+          "backgroundColor": "#EBEBEB",
+        },
+        Object {},
       ]
     }
   />

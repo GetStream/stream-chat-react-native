@@ -4,13 +4,11 @@ exports[`MessageStatus should render message status with read by container 1`] =
 <View>
   <View
     style={
-      Array [
-        Object {
-          "flexDirection": "row",
-          "justifyContent": "center",
-          "width": 20,
-        },
-      ]
+      Object {
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "width": 20,
+      }
     }
   >
     <View
@@ -20,6 +18,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
             "alignItems": "center",
             "flexDirection": "row",
           },
+          Object {},
         ]
       }
       testID="read-by-container"
@@ -30,6 +29,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
             Object {
               "alignItems": "center",
             },
+            Object {},
           ]
         }
       >
@@ -37,7 +37,6 @@ exports[`MessageStatus should render message status with read by container 1`] =
           accessibilityLabel="initials"
           onError={[Function]}
           resizeMethod="resize"
-          size={16}
           source={
             Object {
               "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
@@ -50,6 +49,7 @@ exports[`MessageStatus should render message status with read by container 1`] =
                 "height": 16,
                 "width": 16,
               },
+              Object {},
             ]
           }
           testID="avatar-image"

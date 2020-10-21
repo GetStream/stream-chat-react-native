@@ -32,6 +32,7 @@ exports[`AttachButton should render a disabled AttachButton 1`] = `
           "height": 15,
           "width": 15,
         },
+        Object {},
       ]
     }
   />
@@ -70,6 +71,7 @@ exports[`AttachButton should render an enabled AttachButton 1`] = `
           "height": 15,
           "width": 15,
         },
+        Object {},
       ]
     }
   />
