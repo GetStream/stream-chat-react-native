@@ -71,6 +71,8 @@ const Separator: React.FC = () => {
   return <View style={[styles.separator, separator]} />;
 };
 
+Separator.displayName = 'Separator{messageInput{suggestions{separator}}}';
+
 const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => {
   const {
     theme: {
@@ -89,6 +91,8 @@ const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => {
     </Text>
   );
 };
+
+SuggestionsHeader.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
   const { children, ...touchableOpacityProps } = props;
@@ -112,6 +116,8 @@ const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
     </TouchableOpacity>
   );
 };
+
+SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
 const isString = <
   Co extends string = DefaultCommandType,
@@ -227,3 +233,5 @@ export const SuggestionsList = <
     </TouchableOpacity>
   );
 };
+
+SuggestionsList.displayName = 'SuggestionsList{messageInput{suggestions}}';
