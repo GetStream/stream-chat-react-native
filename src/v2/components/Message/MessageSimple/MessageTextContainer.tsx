@@ -13,7 +13,7 @@ import type {
   Alignment,
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
-import type { Colors, Theme } from '../../../contexts/themeContext/utils/theme';
+import type { Theme } from '../../../contexts/themeContext/utils/theme';
 import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
 import type {
   DefaultAttachmentType,
@@ -48,7 +48,7 @@ export type MessageTextProps<
   renderText: (
     params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
   ) => JSX.Element | null;
-  theme: { colors: typeof Colors; theme: Theme };
+  theme: { theme: Theme };
 };
 
 export type MessageTextContainerProps<
