@@ -1,33 +1,23 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType } from '../../types/types';
 
-const CommandArgs = styled.Text`
-  ${({ theme }) => theme.messageInput.suggestions.command.args.css}
-`;
-
-const CommandDescription = styled.Text`
-  ${({ theme }) => theme.messageInput.suggestions.command.description.css}
-`;
-
-const Container = styled.View`
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.command.container.css}
-`;
-
-const Title = styled.Text`
-  font-weight: bold;
-  ${({ theme }) => theme.messageInput.suggestions.command.title.css}
-`;
-
-const Top = styled.View`
-  align-items: center;
-  flex-direction: row;
-  ${({ theme }) => theme.messageInput.suggestions.command.top.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    padding: 10,
+  },
+  title: {
+    fontWeight: 'bold',
+  },
+  top: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
 
 export type CommandsItemProps<Co extends string = DefaultCommandType> = {
   /**
@@ -45,14 +35,38 @@ export type CommandsItemProps<Co extends string = DefaultCommandType> = {
  */
 export const CommandsItem = <Co extends string = DefaultCommandType>({
   item: { args, description, name },
-}: CommandsItemProps<Co>) => (
-  <Container>
-    <Top>
-      <Title testID='commands-item-title'>/{name} </Title>
-      <CommandArgs testID='commands-item-args'>{args}</CommandArgs>
-    </Top>
-    <CommandDescription testID='commands-item-description'>
-      {description}
-    </CommandDescription>
-  </Container>
-);
+}: CommandsItemProps<Co>) => {
+  const {
+    theme: {
+      messageInput: {
+        suggestions: {
+          command: {
+            args: argsStyle,
+            container,
+            description: descriptionStyle,
+            title,
+            top,
+          },
+        },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <View style={[styles.top, top]}>
+        <Text style={[styles.title, title]} testID='commands-item-title'>
+          /{name}{' '}
+        </Text>
+        <Text style={argsStyle} testID='commands-item-args'>
+          {args}
+        </Text>
+      </View>
+      <Text style={descriptionStyle} testID='commands-item-description'>
+        {description}
+      </Text>
+    </View>
+  );
+};
+
+CommandsItem.displayName = 'CommandsItem{messageInput{suggestions{command}}}';
