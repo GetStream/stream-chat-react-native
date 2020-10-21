@@ -459,7 +459,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},
@@ -705,7 +705,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},
@@ -951,7 +951,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},
@@ -1283,7 +1283,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},

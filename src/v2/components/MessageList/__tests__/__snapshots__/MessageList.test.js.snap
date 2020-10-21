@@ -413,7 +413,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},
@@ -750,7 +750,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},
@@ -996,7 +996,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "fontSize": 11,
                             },
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
                             Object {},

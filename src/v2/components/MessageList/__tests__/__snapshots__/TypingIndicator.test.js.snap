@@ -86,7 +86,7 @@ exports[`TypingIndicator should match typing indicator snapshot 1`] = `
             "marginLeft": 10,
           },
           Object {
-            "color": "rgba(0,0,0,0.5)",
+            "color": "#00000080",
             "fontSize": 14,
           },
           Object {},
