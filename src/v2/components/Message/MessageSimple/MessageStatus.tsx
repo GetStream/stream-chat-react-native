@@ -165,3 +165,5 @@ export const MessageStatus = <
     </View>
   );
 };
+
+MessageStatus.displayName = 'MessageStatus{message{status}}';
