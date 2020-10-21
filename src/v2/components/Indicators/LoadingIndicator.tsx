@@ -64,3 +64,5 @@ export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
       return <LoadingIndicatorWrapper text={t('Loading ...')} />;
   }
 };
+
+LoadingIndicator.displayName = 'LoadingIndicator{loadingIndicator}';
