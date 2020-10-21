@@ -14,7 +14,7 @@ import {
   MessageList,
   Streami18n,
   Thread,
-} from 'stream-chat-react-native';
+} from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
 enableScreens();
@@ -23,17 +23,16 @@ enableScreens();
 const theme = {
   avatar: {
     image: {
-      size: 32,
+      height: 32,
+      width: 32,
     },
   },
   colors: {
     primary: 'blue',
   },
   spinner: {
-    css: `
-      width: 15px;
-      height: 15px;
-    `,
+    height: 15,
+    width: 15,
   },
 };
 

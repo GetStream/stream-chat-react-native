@@ -31,8 +31,5 @@ export const ThemeProvider: React.FC<ThemeProviderInputValue> = (props) => {
 export const useTheme = () => {
   const theme = useContext(ThemeContext);
 
-  return {
-    colors: theme.colors,
-    theme,
-  };
+  return { theme };
 };
