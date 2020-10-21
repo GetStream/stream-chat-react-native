@@ -1,28 +1,25 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import { styled } from '../../../styles/styledComponents';
-
-const Container = styled.TouchableOpacity`
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  ${({ theme }) => theme.loadingErrorIndicator.container.css};
-`;
-
-const ErrorText = styled.Text`
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 20px;
-  ${({ theme }) => theme.loadingErrorIndicator.errorText.css};
-`;
-
-const RetryText = styled.Text`
-  font-size: 30px;
-  font-weight: 600;
-  ${({ theme }) => theme.loadingErrorIndicator.retryText.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  errorText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 20,
+  },
+  retryText: {
+    fontSize: 30,
+    fontWeight: '600',
+  },
+});
 
 type LoadingErrorWrapperProps = {
   text: string;
@@ -32,11 +29,19 @@ type LoadingErrorWrapperProps = {
 const LoadingErrorWrapper: React.FC<LoadingErrorWrapperProps> = (props) => {
   const { children, onPress, text } = props;
 
+  const {
+    theme: {
+      loadingErrorIndicator: { container, errorText },
+    },
+  } = useTheme();
+
   return (
-    <Container onPress={onPress}>
-      <ErrorText testID='loading-error'>{text}</ErrorText>
+    <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
+      <Text style={[styles.errorText, errorText]} testID='loading-error'>
+        {text}
+      </Text>
       {children}
-    </Container>
+    </TouchableOpacity>
   );
 };
 
@@ -50,6 +55,11 @@ export type LoadingErrorProps = {
 export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
   const { listType, retry = () => null } = props;
 
+  const {
+    theme: {
+      loadingErrorIndicator: { retryText },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
 
   switch (listType) {
@@ -59,7 +69,7 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
           onPress={retry}
           text={t('Error loading channel list ...')}
         >
-          <RetryText>⟳</RetryText>
+          <Text style={[styles.retryText, retryText]}>⟳</Text>
         </LoadingErrorWrapper>
       );
     case 'message':
@@ -72,3 +82,6 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
       return <LoadingErrorWrapper text={t('Error loading')} />;
   }
 };
+
+LoadingErrorIndicator.displayName =
+  'LoadingErrorIndicator{loadingErrorIndicator}';

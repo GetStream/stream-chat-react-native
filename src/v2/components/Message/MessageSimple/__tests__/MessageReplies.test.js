@@ -1,5 +1,4 @@
 import React from 'react';
-import { ThemeProvider } from 'styled-components/native';
 import {
   cleanup,
   fireEvent,
@@ -9,6 +8,7 @@ import {
 
 import { MessageReplies } from '../MessageReplies';
 
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
 import { TranslationProvider } from '../../../../contexts/translationContext/TranslationContext';
 
 import { generateMessage } from '../../../../../mock-builders/generator/message';
@@ -37,7 +37,7 @@ describe('MessageReplies', () => {
       toJSON,
     } = render(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
@@ -65,7 +65,7 @@ describe('MessageReplies', () => {
 
     rerender(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='left'
             groupStyles={['bottom']}
@@ -96,7 +96,7 @@ describe('MessageReplies', () => {
     });
     const { queryAllByTestId, rerender } = render(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
@@ -120,7 +120,7 @@ describe('MessageReplies', () => {
 
     rerender(
       <TranslationProvider value={{ t }}>
-        <ThemeProvider theme={defaultTheme}>
+        <ThemeProvider style={defaultTheme}>
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
