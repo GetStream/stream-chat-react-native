@@ -1,12 +1,10 @@
 import React from 'react';
+import { Image, ImageRequireSource, StyleSheet, View } from 'react-native';
 
 import { Avatar } from '../../Avatar/Avatar';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useChatContext } from '../../../contexts/chatContext/ChatContext';
-
-import { styled } from '../../../../styles/styledComponents';
-
-import type { ImageRequireSource } from 'react-native';
 
 import type { ForwardedMessageProps } from './MessageContent';
 
@@ -24,55 +22,40 @@ import type {
 const iconDeliveredUnseen: ImageRequireSource = require('../../../../images/icons/delivered_unseen.png');
 const loadingGif: ImageRequireSource = require('../../../../images/loading.gif');
 
-const CheckMark = styled.Image`
-  height: 6px;
-  width: 8px;
-  ${({ theme }) => theme.message.status.checkMark.css};
-`;
-
-const DeliveredCircle = styled.View`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 16px;
-  height: 16px;
-  justify-content: center;
-  padding: 6px;
-  width: 16px;
-  ${({ theme }) => theme.message.status.deliveredCircle.css};
-`;
-
-const DeliveredContainer = styled.View`
-  align-items: center;
-  height: 20px;
-  ${({ theme }) => theme.message.status.deliveredContainer.css};
-`;
-
-const ReadByContainer = styled.View`
-  align-items: center;
-  flex-direction: row;
-  ${({ theme }) => theme.message.status.readByContainer.css};
-`;
-
-const SendingContainer = styled.View`
-  align-items: center;
-  ${({ theme }) => theme.message.status.sendingContainer.css};
-`;
-
-const SendingImage = styled.Image`
-  height: 10px;
-  width: 10px;
-  ${({ theme }) => theme.message.status.sendingImage.css};
-`;
-
-const Spacer = styled.View`
-  height: 10px;
-`;
-
-const StatusContainer = styled.View`
-  flex-direction: row;
-  justify-content: center;
-  width: 20px;
-`;
+const styles = StyleSheet.create({
+  checkMark: {
+    height: 6,
+    width: 8,
+  },
+  deliveredCircle: {
+    alignItems: 'center',
+    borderRadius: 16,
+    height: 16,
+    justifyContent: 'center',
+    padding: 6,
+    width: 16,
+  },
+  deliveredContainer: { alignItems: 'center', height: 20 },
+  readByContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  sendingContainer: {
+    alignItems: 'center',
+  },
+  sendingImage: {
+    height: 10,
+    width: 10,
+  },
+  spacer: {
+    height: 10,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    width: 20,
+  },
+});
 
 export const MessageStatus = <
   At extends UnknownType = DefaultAttachmentType,
@@ -88,15 +71,37 @@ export const MessageStatus = <
   const { lastReceivedId, message, readBy = [], threadList } = props;
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      colors: { primary },
+      message: {
+        status: {
+          checkMark,
+          deliveredCircle,
+          deliveredContainer,
+          readByContainer,
+          sendingContainer,
+          sendingImage,
+        },
+      },
+    },
+  } = useTheme();
+
   const justReadByMe = readBy.length === 1 && readBy[0].id === client.user?.id;
 
   if (message.status === 'sending') {
     return (
-      <StatusContainer>
-        <SendingContainer testID='sending-container'>
-          <SendingImage source={loadingGif} />
-        </SendingContainer>
-      </StatusContainer>
+      <View style={styles.statusContainer}>
+        <View
+          style={[styles.sendingContainer, sendingContainer]}
+          testID='sending-container'
+        >
+          <Image
+            source={loadingGif}
+            style={[styles.sendingImage, sendingImage]}
+          />
+        </View>
+      </View>
     );
   }
 
@@ -110,15 +115,18 @@ export const MessageStatus = <
       (item) => item.id !== client.user?.id,
     )[0];
     return (
-      <StatusContainer>
-        <ReadByContainer testID='read-by-container'>
+      <View style={styles.statusContainer}>
+        <View
+          style={[styles.readByContainer, readByContainer]}
+          testID='read-by-container'
+        >
           <Avatar
             image={lastReadUser.image}
             name={lastReadUser.name || lastReadUser.id}
             size={16}
           />
-        </ReadByContainer>
-      </StatusContainer>
+        </View>
+      </View>
     );
   }
 
@@ -129,19 +137,31 @@ export const MessageStatus = <
     !threadList
   ) {
     return (
-      <StatusContainer>
-        <DeliveredContainer testID='delivered-container'>
-          <DeliveredCircle>
-            <CheckMark source={iconDeliveredUnseen} />
-          </DeliveredCircle>
-        </DeliveredContainer>
-      </StatusContainer>
+      <View style={styles.statusContainer}>
+        <View
+          style={[styles.deliveredContainer, deliveredContainer]}
+          testID='delivered-container'
+        >
+          <View
+            style={[
+              styles.deliveredCircle,
+              { backgroundColor: primary },
+              deliveredCircle,
+            ]}
+          >
+            <Image
+              source={iconDeliveredUnseen}
+              style={[styles.checkMark, checkMark]}
+            />
+          </View>
+        </View>
+      </View>
     );
   }
 
   return (
-    <StatusContainer>
-      <Spacer testID='spacer' />
-    </StatusContainer>
+    <View style={styles.statusContainer}>
+      <View style={styles.spacer} testID='spacer' />
+    </View>
   );
 };
