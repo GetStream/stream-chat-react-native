@@ -1,27 +1,34 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, StyleSheet } from 'react-native';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const AnimatedView = Animated.createAnimatedComponent(Animated.View);
 
-const Circle = styled(AnimatedView)`
-  border-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 30px;
-  border-right-color: transparent;
-  border-width: 2px;
-  height: 30px;
-  justify-content: center;
-  margin: 5px;
-  width: 30px;
-  ${({ theme }) => theme.spinner.css};
-`;
+const styles = StyleSheet.create({
+  spinner: {
+    borderRadius: 30,
+    borderRightColor: 'transparent',
+    borderWidth: 2,
+    height: 30,
+    justifyContent: 'center',
+    margin: 5,
+    width: 30,
+  },
+});
 
 /**
  * @example ./Spinner.md
  */
 export const Spinner: React.FC = () => {
   const rotateValue = useRef(new Animated.Value(0));
+
+  const {
+    theme: {
+      colors: { primary },
+      spinner,
+    },
+  } = useTheme();
 
   const loop = Animated.loop(
     Animated.timing(rotateValue.current, {
@@ -38,17 +45,24 @@ export const Spinner: React.FC = () => {
   });
 
   return (
-    <Circle
-      style={{
-        transform: [
-          {
-            rotate: rotateValue.current.interpolate({
-              inputRange: [0, 1],
-              outputRange: ['0deg', '360deg'],
-            }),
-          },
-        ],
-      }}
+    <AnimatedView
+      style={[
+        styles.spinner,
+        {
+          borderColor: primary,
+          transform: [
+            {
+              rotate: rotateValue.current.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0deg', '360deg'],
+              }),
+            },
+          ],
+        },
+        spinner,
+      ]}
     />
   );
 };
+
+Spinner.displayName = 'Spinner{spinner}';

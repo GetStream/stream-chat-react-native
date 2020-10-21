@@ -1,12 +1,16 @@
 import React from 'react';
+import {
+  Image,
+  ImageRequireSource,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { renderReactions } from './utils/renderReactions';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { emojiData } from '../../utils/utils';
-
-import { styled } from '../../../styles/styledComponents';
-
-import type { ImageRequireSource } from 'react-native';
 
 import type {
   Alignment,
@@ -30,69 +34,62 @@ const rightTail: ImageRequireSource = require('../../../images/reactionlist/righ
 const rightCenter: ImageRequireSource = require('../../../images/reactionlist/right-center.png');
 const rightEnd: ImageRequireSource = require('../../../images/reactionlist/right-end.png');
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  height: 24px;
-  padding-horizontal: 5px;
-  z-index: 1;
-  ${({ theme }) => theme.message.reactionList.container.css}
-`;
-
-const ImageWrapper = styled.View`
-  flex-direction: row;
-  top: -23px;
-`;
-
-const LeftCenter = styled.Image`
-  flex: 1;
-  height: 33px;
-`;
-
-const LeftEnd = styled.Image`
-  height: 33px;
-  width: 14px;
-`;
-
-const LeftTail = styled.Image`
-  height: 33px;
-  width: 25px;
-`;
-
-const ReactionCount = styled.Text<{ reactionCounts: number }>`
-  color: white;
-  font-size: 12px;
-  ${({ reactionCounts }) =>
-    reactionCounts < 10 ? undefined : 'min-width: 20px;'}
-  ${({ theme }) => theme.message.reactionList.reactionCount.css}
-`;
-
-const Reactions = styled.View`
-  flex-direction: row;
-`;
-
-const RightCenter = styled.Image`
-  flex: 1;
-  height: 33px;
-`;
-
-const RightEnd = styled.Image`
-  height: 33px;
-  width: 14px;
-`;
-
-const RightTail = styled.Image`
-  height: 33px;
-  width: 25px;
-`;
-
-const Wrapper = styled.View<{ alignment: Alignment }>`
-  align-self: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  height: 28px;
-  ${({ alignment }) => `${alignment === 'left' ? 'left' : 'right'}: -10px`}
-  z-index: 10;
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 24,
+    paddingHorizontal: 5,
+    zIndex: 1,
+  },
+  imageWrapper: {
+    flexDirection: 'row',
+    top: -23,
+  },
+  leftCenter: {
+    flex: 1,
+    height: 33,
+  },
+  leftEnd: {
+    height: 33,
+    width: 14,
+  },
+  leftTail: {
+    height: 33,
+    width: 25,
+  },
+  reactionCount: {
+    color: '#FFFFFF',
+    fontSize: 12,
+  },
+  reactions: {
+    flexDirection: 'row',
+  },
+  rightCenter: {
+    flex: 1,
+    height: 33,
+  },
+  rightEnd: {
+    height: 33,
+    width: 14,
+  },
+  rightTail: {
+    height: 33,
+    width: 25,
+  },
+  wrapper: {
+    height: 28,
+    zIndex: 10,
+  },
+  wrapperLeftAlign: {
+    alignSelf: 'flex-start',
+    left: -10,
+  },
+  wrapperRightAlign: {
+    alignSelf: 'flex-end',
+    right: -10,
+  },
+});
 
 export type LatestReactions<
   At extends UnknownType = DefaultAttachmentType,
@@ -170,35 +167,67 @@ export const ReactionList = <
     visible,
   } = props;
 
+  const {
+    theme: {
+      message: {
+        reactionList: { container, reactionCount },
+      },
+    },
+  } = useTheme();
+
   if (!visible) return null;
 
+  const totalReactionCount = getTotalReactionCount(supportedReactions);
+
   return (
-    <Wrapper alignment={alignment} testID='reaction-list'>
-      <Container>
-        <Reactions>
+    <View
+      style={[
+        styles.wrapper,
+        alignment === 'left'
+          ? styles.wrapperLeftAlign
+          : styles.wrapperRightAlign,
+      ]}
+      testID='reaction-list'
+    >
+      <View style={[styles.container, container]}>
+        <View style={styles.reactions}>
           {renderReactions(latestReactions, supportedReactions)}
-        </Reactions>
-        <ReactionCount
-          reactionCounts={getTotalReactionCount(supportedReactions)}
+        </View>
+        <Text
+          style={[
+            styles.reactionCount,
+            totalReactionCount < 10 ? {} : { minWidth: 20 },
+            reactionCount,
+          ]}
         >
-          {getTotalReactionCount(supportedReactions)}
-        </ReactionCount>
-      </Container>
-      <ImageWrapper>
+          {totalReactionCount}
+        </Text>
+      </View>
+      <View style={styles.imageWrapper}>
         {alignment === 'left' ? (
           <>
-            <LeftTail source={leftTail} />
-            <LeftCenter resizeMode='stretch' source={leftCenter} />
-            <LeftEnd source={leftEnd} />
+            <Image source={leftTail} style={styles.leftTail} />
+            <Image
+              resizeMode='stretch'
+              source={leftCenter}
+              style={styles.leftCenter}
+            />
+            <Image source={leftEnd} style={styles.leftEnd} />
           </>
         ) : (
           <>
-            <RightEnd source={rightEnd} />
-            <RightCenter resizeMode='stretch' source={rightCenter} />
-            <RightTail source={rightTail} />
+            <Image source={rightEnd} style={styles.rightEnd} />
+            <Image
+              resizeMode='stretch'
+              source={rightCenter}
+              style={styles.rightCenter}
+            />
+            <Image source={rightTail} style={styles.rightTail} />
           </>
         )}
-      </ImageWrapper>
-    </Wrapper>
+      </View>
+    </View>
   );
 };
+
+ReactionList.displayName = 'ReactionList{message{reactionList}}';

@@ -1,34 +1,31 @@
 import React from 'react';
-import { View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../contexts/themeContext/ThemeContext';
 
-const Icon = styled.View`
-  align-items: center;
-  align-self: center;
-  border-radius: 20px;
-  justify-content: center;
-  padding-top: 5px;
-  ${({ theme }) => theme.iconBadge.icon.css};
-`;
-
-const IconInner = styled.View`
-  align-items: center;
-  align-self: flex-start;
-  background-color: green;
-  border-radius: 20px;
-  height: 15px;
-  justify-content: center;
-  min-width: 15px;
-  padding-horizontal: 3px;
-  ${({ theme }) => theme.iconBadge.iconInner.css};
-`;
-
-const UnreadCount = styled.Text`
-  color: #ffffff;
-  font-size: 10px;
-  ${({ theme }) => theme.iconBadge.unreadCount.css};
-`;
+const styles = StyleSheet.create({
+  icon: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+    paddingTop: 5,
+  },
+  iconInner: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#00FF00',
+    borderRadius: 20,
+    height: 15,
+    justifyContent: 'center',
+    minWidth: 15,
+    paddingHorizontal: 3,
+  },
+  unreadCount: {
+    color: '#FFFFFF',
+    fontSize: 10,
+  },
+});
 
 export type IconBadgeProps = {
   unread: number;
@@ -38,16 +35,26 @@ export type IconBadgeProps = {
 export const IconBadge: React.FC<IconBadgeProps> = (props) => {
   const { children, showNumber, unread } = props;
 
+  const {
+    theme: {
+      iconBadge: { icon, iconInner, unreadCount },
+    },
+  } = useTheme();
+
   return (
     <View>
       {children}
       {unread > 0 && (
-        <Icon>
-          <IconInner>
-            {showNumber && <UnreadCount>{unread}</UnreadCount>}
-          </IconInner>
-        </Icon>
+        <View style={[styles.icon, icon]}>
+          <View style={[styles.iconInner, iconInner]}>
+            {showNumber && (
+              <Text style={[styles.unreadCount, unreadCount]}>{unread}</Text>
+            )}
+          </View>
+        </View>
       )}
     </View>
   );
 };
+
+IconBadge.displayName = 'IconBadge{iconBadge}';

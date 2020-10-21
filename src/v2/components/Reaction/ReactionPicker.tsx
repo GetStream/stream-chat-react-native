@@ -1,10 +1,10 @@
 import React from 'react';
-import { Modal, View } from 'react-native';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Avatar } from '../Avatar/Avatar';
-import { emojiData } from '../../utils/utils';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { emojiData } from '../../utils/utils';
 
 import type { LatestReactions, Reaction } from './ReactionList';
 
@@ -19,39 +19,32 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
-  align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
-  flex: 1;
-  ${({ theme }) => theme.message.reactionPicker.container.css}
-`;
-
-const ContainerView = styled.View`
-  background-color: black;
-  border-radius: 30px;
-  flex-direction: row;
-  height: 60px;
-  padding-horizontal: 20px;
-  ${({ theme }) => theme.message.reactionPicker.containerView.css}
-`;
-
-const Column = styled.View`
-  align-items: center;
-  margin-top: -5px;
-  ${({ theme }) => theme.message.reactionPicker.column.css}
-`;
-
-const Emoji = styled.Text`
-  font-size: 20px;
-  margin-vertical: 5px;
-  ${({ theme }) => theme.message.reactionPicker.emoji.css}
-`;
-
-const ReactionCount = styled.Text`
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  ${({ theme }) => theme.message.reactionPicker.text.css}
-`;
+const styles = StyleSheet.create({
+  column: {
+    alignItems: 'center',
+    marginTop: -5,
+  },
+  container: {
+    flex: 1,
+  },
+  containerView: {
+    backgroundColor: '#000000',
+    borderRadius: 30,
+    flexDirection: 'row',
+    height: 60,
+    paddingHorizontal: 20,
+  },
+  emoji: {
+    fontSize: 20,
+    marginVertical: 5,
+  },
+  reactionCount: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  reactionOwners: { height: 18, width: 18 },
+});
 
 const getLatestUser = <
   At extends UnknownType = DefaultAttachmentType,
@@ -119,6 +112,14 @@ export const ReactionPicker = <
     supportedReactions = emojiData,
   } = props;
 
+  const {
+    theme: {
+      message: {
+        reactionPicker: { column, container, containerView, emoji, text },
+      },
+    },
+  } = useTheme();
+
   if (!reactionPickerVisible) return null;
 
   return (
@@ -129,24 +130,32 @@ export const ReactionPicker = <
       transparent
       visible
     >
-      <Container
+      <TouchableOpacity
         activeOpacity={1}
-        leftAlign={Boolean(rpLeft)}
         onPress={handleDismiss}
+        style={[
+          styles.container,
+          { alignItems: rpLeft ? 'flex-start' : 'flex-end' },
+          container,
+        ]}
       >
-        <ContainerView
-          style={{
-            marginLeft: rpLeft,
-            marginRight: rpRight,
-            marginTop: rpTop,
-          }}
+        <View
+          style={[
+            styles.containerView,
+            {
+              marginLeft: rpLeft,
+              marginRight: rpRight,
+              marginTop: rpTop,
+            },
+            containerView,
+          ]}
         >
           {supportedReactions.map(({ icon, id }) => {
             const count = reactionCounts?.[id] || 0;
             const latestUser = getLatestUser(id, latestReactions);
 
             return (
-              <Column key={id} testID={id}>
+              <View key={id} style={[styles.column, column]} testID={id}>
                 {latestUser && !hideReactionOwners ? (
                   <Avatar
                     image={latestUser.image}
@@ -154,26 +163,30 @@ export const ReactionPicker = <
                     size={18}
                   />
                 ) : (
-                  !hideReactionOwners && (
-                    <View style={{ height: 18, width: 18 }} />
-                  )
+                  !hideReactionOwners && <View style={styles.reactionOwners} />
                 )}
-                <Emoji
+                <Text
                   onPress={() => handleReaction(id)}
+                  style={[styles.emoji, emoji]}
                   testID={`${id}-reaction`}
                 >
                   {icon}
-                </Emoji>
+                </Text>
                 {!hideReactionCount && (
-                  <ReactionCount testID={`${id}-${count || 'count'}`}>
+                  <Text
+                    style={[styles.reactionCount, text]}
+                    testID={`${id}-${count || 'count'}`}
+                  >
                     {count > 0 ? count : ''}
-                  </ReactionCount>
+                  </Text>
                 )}
-              </Column>
+              </View>
             );
           })}
-        </ContainerView>
-      </Container>
+        </View>
+      </TouchableOpacity>
     </Modal>
   );
 };
+
+ReactionPicker.displayName = 'ReactionPicker{message{reactionPicker}}';
