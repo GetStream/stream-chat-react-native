@@ -5,11 +5,11 @@ export const BASE_FONT_SIZE = 16;
 export const Colors = {
   danger: '#EDD8DD',
   light: '#EBEBEB',
-  primary: '#006cff',
-  secondary: '#111',
-  textDark: 'rgba(0,0,0,1)',
-  textGrey: 'rgba(0,0,0,0.5)',
-  textLight: 'white',
+  primary: '#006CFF',
+  secondary: '#111111',
+  textDark: '#000000',
+  textGrey: '#00000080',
+  textLight: '#FFFFFF',
   transparent: 'transparent',
 };
 
