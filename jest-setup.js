@@ -16,6 +16,7 @@ console.error = (e) => {
 console.warn = () => {};
 
 registerNativeHandlers({
+  BlurView: () => null,
   NetInfo: {
     addEventListener: () => {},
     fetch: () =>

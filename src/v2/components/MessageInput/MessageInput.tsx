@@ -68,7 +68,7 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
-import { pickDocument, pickImage as pickImageNative } from '../../../native';
+import { pickDocument, pickImage as pickImageNative } from '../../native';
 
 import type { ActionSheetCustom } from 'react-native-actionsheet';
 

@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/blur": "3.6.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.7",
     "@react-navigation/native": "5.7.6",
@@ -24,7 +25,7 @@
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
     "react-native-svg": "12.1.0",
-    "stream-chat": "2.6.0",
+    "stream-chat": "2.7.0",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {

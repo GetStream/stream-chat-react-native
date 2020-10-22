@@ -1,10 +1,16 @@
-import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import React from 'react';
 import NetInfo from '@react-native-community/netinfo';
+import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
 
 registerNativeHandlers({
+  // eslint-disable-next-line react/display-name
+  BlurView: ({ blurAmount = 100, blurType = 'dark', style }) => (
+    <ExpoBlurView intensity={blurAmount} style={style} tint={blurType} />
+  ),
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;

@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import React, { useContext, useEffect, useState } from 'react';
 import {
   LogBox,
@@ -22,6 +21,7 @@ import {
   DeepPartial,
   MessageInput,
   MessageList,
+  OverlayProvider,
   Streami18n,
   Theme,
   Thread,
@@ -303,64 +303,66 @@ export default () => {
   return (
     <NavigationContainer>
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        {clientReady && (
-          <Stack.Navigator
-            initialRouteName='ChannelList'
-            screenOptions={{
-              cardStyle: { backgroundColor: 'white' },
-              headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
-            }}
-          >
-            <Stack.Screen
-              component={ChannelScreen}
-              name='Channel'
-              options={() => ({
-                headerBackTitle: 'Back',
-                headerTitle: channel?.data?.name,
-              })}
-            />
-            <Stack.Screen
-              component={ChannelListScreen}
-              name='ChannelList'
-              options={{ headerTitle: 'Channel List' }}
-            />
-            <Stack.Screen
-              component={ThreadScreen}
-              name='Thread'
-              options={({ navigation }) => ({
-                headerLeft: () => <></>,
-                headerRight: () => (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginRight: 20,
-                    }}
-                  >
-                    <View
+        <OverlayProvider>
+          {clientReady && (
+            <Stack.Navigator
+              initialRouteName='ChannelList'
+              screenOptions={{
+                cardStyle: { backgroundColor: 'white' },
+                headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
+              }}
+            >
+              <Stack.Screen
+                component={ChannelScreen}
+                name='Channel'
+                options={() => ({
+                  headerBackTitle: 'Back',
+                  headerTitle: channel?.data?.name,
+                })}
+              />
+              <Stack.Screen
+                component={ChannelListScreen}
+                name='ChannelList'
+                options={{ headerTitle: 'Channel List' }}
+              />
+              <Stack.Screen
+                component={ThreadScreen}
+                name='Thread'
+                options={({ navigation }) => ({
+                  headerLeft: () => <></>,
+                  headerRight: () => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.goBack();
+                      }}
                       style={{
                         alignItems: 'center',
-                        backgroundColor: 'white',
-                        borderColor: 'rgba(0, 0, 0, 0.1)',
-                        borderRadius: 3,
-                        borderStyle: 'solid',
-                        borderWidth: 1,
-                        height: 30,
                         justifyContent: 'center',
-                        width: 30,
+                        marginRight: 20,
                       }}
                     >
-                      <Text>X</Text>
-                    </View>
-                  </TouchableOpacity>
-                ),
-              })}
-            />
-          </Stack.Navigator>
-        )}
+                      <View
+                        style={{
+                          alignItems: 'center',
+                          backgroundColor: 'white',
+                          borderColor: 'rgba(0, 0, 0, 0.1)',
+                          borderRadius: 3,
+                          borderStyle: 'solid',
+                          borderWidth: 1,
+                          height: 30,
+                          justifyContent: 'center',
+                          width: 30,
+                        }}
+                      >
+                        <Text>X</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ),
+                })}
+              />
+            </Stack.Navigator>
+          )}
+        </OverlayProvider>
       </AppContext.Provider>
     </NavigationContainer>
   );

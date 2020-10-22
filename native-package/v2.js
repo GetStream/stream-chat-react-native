@@ -1,10 +1,16 @@
+import React from 'react';
 import { Platform } from 'react-native';
+import { BlurView as RNBlurView } from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
 import ImagePicker from 'react-native-image-crop-picker';
-import { registerNativeHandlers } from 'stream-chat-react-native-core';
+import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
 
 registerNativeHandlers({
+  // eslint-disable-next-line react/display-name
+  BlurView: ({ blurAmount = 10, blurType = 'dark', style }) => (
+    <RNBlurView blurAmount={blurAmount} blurType={blurType} style={style} />
+  ),
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;
@@ -97,6 +103,7 @@ registerNativeHandlers({
 
 if (Platform.OS === 'android') {
   if (typeof Symbol === 'undefined') {
+    // eslint-disable-next-line no-undef
     require('es6-symbol/implement');
     if (Array.prototype[Symbol.iterator] === undefined) {
       Array.prototype[Symbol.iterator] = function () {
