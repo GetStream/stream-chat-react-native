@@ -6,6 +6,6 @@ Internally it uses [react-native-simple-markdown](https://github.com/GetStream/r
 
 It accepts following params:
 
-- message { object } Message object
-- style { object } - <https://github.com/GetStream/react-native-simple-markdown#styles-1>
 - markdownRules { object } - <https://github.com/GetStream/react-native-simple-markdown#rules>
+- markdownStyles { object } - <https://github.com/GetStream/react-native-simple-markdown#styles-1>
+- message { object } Message object
