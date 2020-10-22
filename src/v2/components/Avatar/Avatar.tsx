@@ -1,39 +1,24 @@
 import React, { useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
 const BASE_AVATAR_SIZE = 32;
 
-const AvatarContainer = styled.View`
-  align-items: center;
-  ${({ theme }) => theme.avatar.container.css}
-`;
-
-const AvatarFallback = styled.View<{ size: number }>`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: ${({ size }) => size / 2}px;
-  height: ${({ size }) => size}px;
-  justify-content: center;
-  width: ${({ size }) => size}px;
-  ${({ theme }) => theme.avatar.fallback.css}
-`;
-
-const AvatarImage = styled.Image<{ size: number }>`
-  border-radius: ${({ size }) => size / 2}px;
-  height: ${({ size }) => size}px;
-  width: ${({ size }) => size}px;
-  ${({ theme }) => theme.avatar.image.css}
-`;
-
-const AvatarText = styled.Text<{ fontSize: number }>`
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: ${({ fontSize }) => fontSize}px;
-  font-weight: bold;
-  text-transform: uppercase;
-  ${({ theme }) => theme.avatar.text.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+  fallback: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+});
 
 const getInitials = (fullName?: string) =>
   fullName
@@ -59,32 +44,57 @@ export type AvatarProps = {
  * @example ./Avatar.md
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
-  const { image, name, size = BASE_AVATAR_SIZE, testID } = props;
+  const { image: imageProp, name, size = BASE_AVATAR_SIZE, testID } = props;
+  const {
+    theme: {
+      avatar: { container, fallback, image, text },
+      colors: { primary, textLight },
+    },
+  } = useTheme();
+
   const [imageError, setImageError] = useState(false);
 
   return (
-    <AvatarContainer>
-      {image && !imageError ? (
-        <AvatarImage
+    <View style={[styles.container, container]}>
+      {imageProp && !imageError ? (
+        <Image
           accessibilityLabel='initials'
           onError={() => setImageError(true)}
           resizeMethod='resize'
-          size={size}
-          source={{ uri: image }}
+          source={{ uri: imageProp }}
+          style={[{ borderRadius: size / 2, height: size, width: size }, image]}
           testID={testID || 'avatar-image'}
         />
       ) : (
-        <AvatarFallback size={size}>
-          <AvatarText
-            fontSize={
-              BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE)
-            }
+        <View
+          style={[
+            styles.fallback,
+            {
+              backgroundColor: primary,
+              borderRadius: size / 2,
+              height: size,
+              width: size,
+            },
+            fallback,
+          ]}
+        >
+          <Text
+            style={[
+              {
+                color: textLight,
+                fontSize:
+                  BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE),
+              },
+              text,
+            ]}
             testID={testID || 'avatar-text'}
           >
             {getInitials(name)}
-          </AvatarText>
-        </AvatarFallback>
+          </Text>
+        </View>
       )}
-    </AvatarContainer>
+    </View>
   );
 };
+
+Avatar.displayName = 'Avatar{avatar}';

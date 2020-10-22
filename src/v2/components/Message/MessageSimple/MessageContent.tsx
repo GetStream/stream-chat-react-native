@@ -1,4 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { MessageActionSheet as DefaultActionSheet } from './MessageActionSheet';
 import {
@@ -24,6 +31,7 @@ import {
   GroupType,
   useMessagesContext,
 } from '../../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import {
   isDayOrMoment,
@@ -32,9 +40,6 @@ import {
 } from '../../../contexts/translationContext/TranslationContext';
 import { emojiData } from '../../../utils/utils';
 
-import { styled } from '../../../../styles/styledComponents';
-
-import type { GestureResponderEvent } from 'react-native';
 import type { ActionSheetCustom } from 'react-native-actionsheet';
 import type { MessageResponse } from 'stream-chat';
 
@@ -50,78 +55,42 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-/**
- * Border radii are useful for the case of error message types only.
- * Otherwise background is transparent, so border radius is not really visible.
- */
-const Container = styled.TouchableOpacity<{
-  alignment: Alignment;
-  error: boolean;
-}>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  background-color: ${({ error, theme }) =>
-    error
-      ? theme.message.content.errorContainer.backgroundColor
-      : theme.colors.transparent};
-  border-bottom-left-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.container.borderRadiusS
-      : theme.message.content.container.borderRadiusL}px;
-  border-bottom-right-radius: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.container.borderRadiusL
-      : theme.message.content.container.borderRadiusS}px;
-  border-top-left-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL}px;
-  border-top-right-radius: ${({ theme }) =>
-    theme.message.content.container.borderRadiusL}px;
-  justify-content: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  max-width: 250px;
-  padding: ${({ error }) => (error ? 5 : 0)}px;
-  ${({ theme }) => theme.message.content.container.css};
-`;
-
-const ContainerInner = styled.View<{ alignment: Alignment }>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  ${({ theme }) => theme.message.content.containerInner.css}
-`;
-
-const DeletedContainer = styled.View<{ alignment: Alignment }>`
-  align-items: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  justify-content: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  max-width: 250px;
-  padding: 5px;
-  ${({ theme }) => theme.message.content.deletedContainer.css};
-`;
-
-const DeletedText = styled.Text`
-  color: #a4a4a4;
-  font-size: 15px;
-  line-height: 20px;
-  ${({ theme }) => theme.message.content.deletedText.css};
-`;
-
-const FailedText = styled.Text`
-  color: #a4a4a4;
-  margin-right: 5px;
-`;
-
-const MetaContainer = styled.View`
-  margin-top: 2px;
-  ${({ theme }) => theme.message.content.metaContainer.css};
-`;
-
-const MetaText = styled.Text<{ alignment: Alignment }>`
-  color: ${({ theme }) => theme.colors.textGrey};
-  font-size: 11px;
-  text-align: ${({ alignment }) => alignment};
-  ${({ theme }) => theme.message.content.metaText.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    maxWidth: 250,
+  },
+  deletedContainer: {
+    maxWidth: 250,
+    padding: 5,
+  },
+  deletedText: {
+    color: '#A4A4A4',
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  failedText: {
+    color: '#A4A4A4',
+    marginRight: 5,
+  },
+  leftAlignContent: {
+    justifyContent: 'flex-start',
+  },
+  leftAlignItems: {
+    alignItems: 'flex-start',
+  },
+  metaContainer: {
+    marginTop: 2,
+  },
+  metaText: {
+    fontSize: 11,
+  },
+  rightAlignContent: {
+    justifyContent: 'flex-end',
+  },
+  rightAlignItems: {
+    alignItems: 'flex-end',
+  },
+});
 
 export type ForwardedMessageProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -238,6 +207,22 @@ export const MessageContent = <
     Message,
     retrySendMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    theme: {
+      colors: { textGrey, transparent },
+      message: {
+        content: {
+          container: { borderRadiusL, borderRadiusS, ...container },
+          containerInner,
+          deletedContainer,
+          deletedText,
+          errorContainer: { backgroundColor },
+          metaContainer,
+          metaText,
+        },
+      },
+    },
+  } = useTheme();
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
@@ -283,17 +268,27 @@ export const MessageContent = <
 
   if (message.deleted_at) {
     return (
-      <DeletedContainer alignment={alignment}>
-        <DeletedText testID='message-deleted'>
+      <View
+        style={[
+          styles.deletedContainer,
+          ...(alignment === 'left'
+            ? [styles.leftAlignContent, styles.leftAlignItems]
+            : [styles.rightAlignContent, styles.rightAlignItems]),
+          deletedContainer,
+        ]}
+      >
+        <Text
+          style={[styles.deletedText, deletedText]}
+          testID='message-deleted'
+        >
           {t('This message was deleted ...')}
-        </DeletedText>
-      </DeletedContainer>
+        </Text>
+      </View>
     );
   }
 
   const contentProps = {
     activeOpacity: 0.7,
-    alignment,
     disabled,
     hasReactions,
     onLongPress:
@@ -345,20 +340,55 @@ export const MessageContent = <
     return message.created_at;
   };
 
+  const error = message.type === 'error' || message.status === 'failed';
+
   return (
     <MessageContentProvider value={context}>
-      <Container
+      <TouchableOpacity
         {...contentProps}
-        error={message.type === 'error' || message.status === 'failed'}
+        /**
+         * Border radii are useful for the case of error message types only.
+         * Otherwise background is transparent, so border radius is not really visible.
+         */
+        style={[
+          styles.container,
+          {
+            borderTopLeftRadius: borderRadiusL,
+            borderTopRightRadius: borderRadiusL,
+          },
+          ...(alignment === 'left'
+            ? [
+                styles.leftAlignContent,
+                styles.leftAlignItems,
+                {
+                  borderBottomLeftRadius: borderRadiusS,
+                  borderBottomRightRadius: borderRadiusL,
+                },
+              ]
+            : [
+                styles.rightAlignContent,
+                styles.rightAlignItems,
+                {
+                  borderBottomLeftRadius: borderRadiusL,
+                  borderBottomRightRadius: borderRadiusS,
+                },
+              ]),
+          error
+            ? { backgroundColor, padding: 5 }
+            : { backgroundColor: transparent, padding: 0 },
+          container,
+        ]}
         testID='message-content-wrapper'
       >
         {message.type === 'error' && (
-          <FailedText testID='message-error'>{t('ERROR · UNSENT')}</FailedText>
+          <Text style={styles.failedText} testID='message-error'>
+            {t('ERROR · UNSENT')}
+          </Text>
         )}
         {message.status === 'failed' && (
-          <FailedText testID='message-failed'>
+          <Text style={styles.failedText} testID='message-failed'>
             {t('Message failed - try again')}
-          </FailedText>
+          </Text>
         )}
         {reactionsEnabled && ReactionList && (
           <ReactionPickerWrapper<At, Ch, Co, Ev, Me, Re, Us>
@@ -401,7 +431,15 @@ export const MessageContent = <
         )}
         {MessageHeader && <MessageHeader testID='message-header' {...props} />}
         {/* TODO: Look at this in production: Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
-        <ContainerInner alignment={alignment} collapsable={false}>
+        <View
+          collapsable={false}
+          style={[
+            alignment === 'left'
+              ? styles.leftAlignItems
+              : styles.rightAlignItems,
+            containerInner,
+          ]}
+        >
           {Array.isArray(message.attachments) &&
             message.attachments.map((attachment, index) => {
               // We handle files separately
@@ -457,7 +495,7 @@ export const MessageContent = <
             MessageText={MessageText}
             openThread={onOpenThread}
           />
-        </ContainerInner>
+        </View>
         {repliesEnabled && (
           <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
@@ -474,9 +512,20 @@ export const MessageContent = <
           />
         )}
         {!MessageFooter && showTime && (
-          <MetaContainer testID='show-time'>
-            <MetaText alignment={alignment}>{getDateText(formatDate)}</MetaText>
-          </MetaContainer>
+          <View
+            style={[styles.metaContainer, metaContainer]}
+            testID='show-time'
+          >
+            <Text
+              style={[
+                styles.metaText,
+                { color: textGrey, textAlign: alignment },
+                metaText,
+              ]}
+            >
+              {getDateText(formatDate)}
+            </Text>
+          </View>
         )}
         {actionSheetVisible && enableLongPress && (
           <ActionSheet
@@ -495,7 +544,9 @@ export const MessageContent = <
             threadList={threadList}
           />
         )}
-      </Container>
+      </TouchableOpacity>
     </MessageContentProvider>
   );
 };
+
+MessageContent.displayName = 'MessageContent{message{content}}';

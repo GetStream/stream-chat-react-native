@@ -41,9 +41,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
         style={
           Object {
             "alignItems": "flex-end",
-            "flexBasis": 0,
-            "flexGrow": 1,
-            "flexShrink": 1,
+            "flex": 1,
             "opacity": 1,
           }
         }
@@ -52,7 +50,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
           style={
             Array [
               Object {
-                "backgroundColor": "black",
+                "backgroundColor": "#000000",
                 "borderRadius": 30,
                 "flexDirection": "row",
                 "height": 60,
@@ -63,6 +61,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                 "marginRight": undefined,
                 "marginTop": 40,
               },
+              Object {},
             ]
           }
         >
@@ -73,6 +72,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="like"
@@ -93,6 +93,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="like-reaction"
@@ -103,10 +104,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="like-2"
@@ -121,6 +123,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="love"
@@ -141,6 +144,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="love-reaction"
@@ -151,10 +155,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="love-count"
@@ -169,6 +174,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="haha"
@@ -189,6 +195,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="haha-reaction"
@@ -199,10 +206,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="haha-1"
@@ -217,6 +225,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="wow"
@@ -237,6 +246,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="wow-reaction"
@@ -247,10 +257,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="wow-count"
@@ -265,6 +276,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="sad"
@@ -285,6 +297,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="sad-reaction"
@@ -295,10 +308,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="sad-2"
@@ -313,6 +327,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="angry"
@@ -333,6 +348,7 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="angry-reaction"
@@ -343,10 +359,11 @@ exports[`ReactionPickerWrapper should render left aligned ReactionPickerWrapper 
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="angry-count"
@@ -425,9 +442,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
         style={
           Object {
             "alignItems": "flex-end",
-            "flexBasis": 0,
-            "flexGrow": 1,
-            "flexShrink": 1,
+            "flex": 1,
             "opacity": 1,
           }
         }
@@ -436,7 +451,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
           style={
             Array [
               Object {
-                "backgroundColor": "black",
+                "backgroundColor": "#000000",
                 "borderRadius": 30,
                 "flexDirection": "row",
                 "height": 60,
@@ -447,6 +462,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                 "marginRight": undefined,
                 "marginTop": 40,
               },
+              Object {},
             ]
           }
         >
@@ -457,6 +473,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="like"
@@ -477,6 +494,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="like-reaction"
@@ -487,10 +505,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="like-2"
@@ -505,6 +524,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="love"
@@ -525,6 +545,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="love-reaction"
@@ -535,10 +556,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="love-count"
@@ -553,6 +575,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="haha"
@@ -573,6 +596,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="haha-reaction"
@@ -583,10 +607,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="haha-1"
@@ -601,6 +626,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="wow"
@@ -621,6 +647,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="wow-reaction"
@@ -631,10 +658,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="wow-count"
@@ -649,6 +677,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="sad"
@@ -669,6 +698,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="sad-reaction"
@@ -679,10 +709,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="sad-2"
@@ -697,6 +728,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                   "alignItems": "center",
                   "marginTop": -5,
                 },
+                Object {},
               ]
             }
             testID="angry"
@@ -717,6 +749,7 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
                     "fontSize": 20,
                     "marginVertical": 5,
                   },
+                  Object {},
                 ]
               }
               testID="angry-reaction"
@@ -727,10 +760,11 @@ exports[`ReactionPickerWrapper should render right aligned ReactionPickerWrapper
               style={
                 Array [
                   Object {
-                    "color": "white",
+                    "color": "#FFFFFF",
                     "fontSize": 10,
                     "fontWeight": "bold",
                   },
+                  Object {},
                 ]
               }
               testID="angry-count"

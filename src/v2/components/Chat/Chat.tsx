@@ -7,7 +7,10 @@ import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
-import { ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import {
+  DeepPartial,
+  ThemeProvider,
+} from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
@@ -17,7 +20,7 @@ import { version } from '../../../../package.json';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
-import type { ThemeType } from '../../contexts/themeContext/utils/replaceCssShorthand';
+import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Streami18n } from '../../utils/Streami18n';
 import type {
   DefaultAttachmentType,
@@ -94,7 +97,7 @@ type ChatProps<
    */
   i18nInstance?: Streami18n;
   logger?: (message?: string) => void;
-  style?: ThemeType;
+  style?: DeepPartial<Theme>;
 };
 
 /**

@@ -167,12 +167,11 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
               },
               Array [
                 Object {
-                  "flexBasis": 0,
-                  "flexGrow": 1,
-                  "flexShrink": 1,
+                  "flex": 1,
                   "paddingHorizontal": 10,
                   "width": "100%",
                 },
+                Object {},
               ],
             ]
           }
@@ -218,29 +217,29 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={true}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 30,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -251,6 +250,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -258,7 +258,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/iNaC3K7.jpg",
@@ -271,6 +270,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -299,10 +299,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -326,39 +323,40 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -403,19 +401,22 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -452,6 +453,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       "justifyContent": "center",
                       "marginVertical": 20,
                     },
+                    Object {},
                   ]
                 }
                 testID="date-separator"
@@ -460,12 +462,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />
@@ -479,6 +482,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "textAlign": "center",
                         "textTransform": "uppercase",
                       },
+                      Object {},
                     ]
                   }
                 >
@@ -491,6 +495,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 0.8,
                           "textTransform": "uppercase",
                         },
+                        Object {},
                       ]
                     }
                   >
@@ -501,12 +506,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />
@@ -548,29 +554,29 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={false}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -581,6 +587,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -588,7 +595,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/iNaC3K7.jpg",
@@ -601,6 +607,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -629,10 +636,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -656,39 +660,40 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -733,19 +738,22 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -792,29 +800,29 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={false}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -825,6 +833,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -832,7 +841,6 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/SLx06PP.png",
@@ -845,6 +853,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -873,10 +882,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -900,39 +906,40 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -977,19 +984,22 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -1026,6 +1036,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                       "justifyContent": "center",
                       "marginVertical": 20,
                     },
+                    Object {},
                   ]
                 }
                 testID="date-separator"
@@ -1034,12 +1045,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />
@@ -1053,6 +1065,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         "textAlign": "center",
                         "textTransform": "uppercase",
                       },
+                      Object {},
                     ]
                   }
                 >
@@ -1065,6 +1078,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                           "opacity": 0.8,
                           "textTransform": "uppercase",
                         },
+                        Object {},
                       ]
                     }
                   >
@@ -1075,12 +1089,13 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />

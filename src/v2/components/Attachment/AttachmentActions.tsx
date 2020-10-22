@@ -1,42 +1,27 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from './Attachment';
+
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
-const Container = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 5px;
-  ${({ theme }) => theme.message.actions.container.css}
-`;
-
-const ActionButton = styled.TouchableOpacity<{ buttonStyle?: string }>`
-  background-color: ${({ buttonStyle, theme }) =>
-    buttonStyle === 'primary'
-      ? theme.message.actions.button.primaryBackgroundColor
-      : theme.message.actions.button.defaultBackgroundColor};
-  border-color: ${({ buttonStyle, theme }) =>
-    buttonStyle === 'primary'
-      ? theme.message.actions.button.primaryBorderColor
-      : theme.message.actions.button.defaultBorderColor};
-  border-radius: 20px;
-  border-width: 1px;
-  padding-horizontal: 10px;
-  padding-vertical: 5px;
-  ${({ theme }) => theme.message.actions.button.css}
-`;
-
-const ActionButtonText = styled.Text<{ buttonStyle?: string }>`
-  color: ${({ buttonStyle, theme }) =>
-    buttonStyle === 'primary'
-      ? theme.message.actions.buttonText.primaryColor
-      : theme.message.actions.buttonText.defaultColor};
-  ${({ theme }) => theme.message.actions.buttonText.css}
-`;
+const styles = StyleSheet.create({
+  actionButton: {
+    borderRadius: 20,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 5,
+  },
+});
 
 export type AttachmentActionsProps<
   At extends UnknownType = DefaultAttachmentType
@@ -58,24 +43,64 @@ export const AttachmentActions = <
 ) => {
   const { actionHandler, actions } = props;
 
+  const {
+    theme: {
+      message: {
+        actions: {
+          button: {
+            defaultBackgroundColor,
+            defaultBorderColor,
+            primaryBackgroundColor,
+            primaryBorderColor,
+            ...buttonStyle
+          },
+          buttonText: { defaultColor, primaryColor, ...buttonTextStyle },
+          container,
+        },
+      },
+    },
+  } = useTheme();
+
   return (
-    <Container testID='attachment-actions'>
-      {actions?.map((action, index) => (
-        <ActionButton
-          buttonStyle={action.style}
-          key={`${index}-${action.value}`}
-          onPress={() => {
-            if (action.name && action.value && actionHandler) {
-              actionHandler(action.name, action.value);
-            }
-          }}
-          testID={`attachment-actions-button-${action.name}`}
-        >
-          <ActionButtonText buttonStyle={action.style}>
-            {action.text}
-          </ActionButtonText>
-        </ActionButton>
-      ))}
-    </Container>
+    <View style={[styles.container, container]} testID='attachment-actions'>
+      {actions?.map((action, index) => {
+        const primary = action.style === 'primary';
+
+        return (
+          <TouchableOpacity
+            key={`${index}-${action.value}`}
+            onPress={() => {
+              if (action.name && action.value && actionHandler) {
+                actionHandler(action.name, action.value);
+              }
+            }}
+            style={[
+              styles.actionButton,
+              {
+                backgroundColor: primary
+                  ? primaryBackgroundColor
+                  : defaultBackgroundColor,
+                borderColor: primary ? primaryBorderColor : defaultBorderColor,
+              },
+              buttonStyle,
+            ]}
+            testID={`attachment-actions-button-${action.name}`}
+          >
+            <Text
+              style={[
+                {
+                  color: primary ? primaryColor : defaultColor,
+                },
+                buttonTextStyle,
+              ]}
+            >
+              {action.text}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
   );
 };
+
+AttachmentActions.displayName = 'AttachmentActions{message{actions}}';

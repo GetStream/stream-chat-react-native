@@ -8,9 +8,10 @@
   - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation)
   - [react-native-svg](https://github.com/react-native-svg/react-native-svg#installation)
 
-- Remove styled-components:
-  - Remove dot notation for theming applications
-  - Remove css string notation for styles on theme
+- Removed styled-components:
+  - Removed dot notation for theming applications
+  - Removed css string notation for styles on theme
+  - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
 
 ## [2.0.0-beta.0]
 

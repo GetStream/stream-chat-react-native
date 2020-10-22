@@ -1,21 +1,25 @@
 import React from 'react';
+import {
+  GestureResponderEvent,
+  Image,
+  ImageRequireSource,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 
-import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
-
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const iconAddAttachment: ImageRequireSource = require('../../../images/icons/plus-outline.png');
 
-const AttachButtonIcon = styled.Image`
-  height: 15px;
-  width: 15px;
-  ${({ theme }) => theme.messageInput.attachButtonIcon.css};
-`;
-
-const Container = styled.TouchableOpacity`
-  margin-right: 8px;
-  ${({ theme }) => theme.messageInput.attachButton.css};
-`;
+const styles = StyleSheet.create({
+  attachButtonIcon: {
+    height: 15,
+    width: 15,
+  },
+  container: {
+    marginRight: 8,
+  },
+});
 
 export type AttachButtonProps = {
   /** Disables the button */
@@ -31,13 +35,25 @@ export type AttachButtonProps = {
  */
 export const AttachButton: React.FC<AttachButtonProps> = (props) => {
   const { disabled = false, handleOnPress } = props;
+  const {
+    theme: {
+      messageInput: { attachButton, attachButtonIcon },
+    },
+  } = useTheme();
+
   return (
-    <Container
+    <TouchableOpacity
       disabled={disabled}
       onPress={handleOnPress}
+      style={[styles.container, attachButton]}
       testID='attach-button'
     >
-      <AttachButtonIcon source={iconAddAttachment} />
-    </Container>
+      <Image
+        source={iconAddAttachment}
+        style={[styles.attachButtonIcon, attachButtonIcon]}
+      />
+    </TouchableOpacity>
   );
 };
+
+AttachButton.displayName = 'AttachButton{messageInput}';

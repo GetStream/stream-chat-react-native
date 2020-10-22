@@ -1,12 +1,12 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { Avatar } from '../../Avatar/Avatar';
 
-import { styled } from '../../../../styles/styledComponents';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { ForwardedMessageProps } from './MessageContent';
 
-import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -18,17 +18,20 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const Container = styled.View<{ alignment: Alignment }>`
-  margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)}px;
-  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;
-  ${({ theme }) => theme.message.avatarWrapper.container.css}
-`;
-
-const Spacer = styled.View`
-  height: 28px;
-  width: 32px;
-  ${({ theme }) => theme.message.avatarWrapper.spacer.css}
-`;
+const styles = StyleSheet.create({
+  leftAlign: {
+    marginLeft: 0,
+    marginRight: 8,
+  },
+  rightAlign: {
+    marginLeft: 8,
+    marginRight: 0,
+  },
+  spacer: {
+    height: 28,
+    width: 32,
+  },
+});
 
 export type MessageAvatarProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -55,21 +58,37 @@ export const MessageAvatar = <
 ) => {
   const { alignment, groupStyles, message, showAvatar } = props;
 
+  const {
+    theme: {
+      message: {
+        avatarWrapper: { container, spacer },
+      },
+    },
+  } = useTheme();
+
   const visible =
     typeof showAvatar === 'boolean'
       ? showAvatar
       : groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
 
   return (
-    <Container alignment={alignment} testID='message-avatar'>
+    <View
+      style={[
+        alignment === 'left' ? styles.leftAlign : styles.rightAlign,
+        container,
+      ]}
+      testID='message-avatar'
+    >
       {visible ? (
         <Avatar
           image={message.user?.image}
           name={message.user?.name || message.user?.id}
         />
       ) : (
-        <Spacer testID='spacer' />
+        <View style={[styles.spacer, spacer]} testID='spacer' />
       )}
-    </Container>
+    </View>
   );
 };
+
+MessageAvatar.displayName = 'MessageAvatar{message{avatarWrapper}}';

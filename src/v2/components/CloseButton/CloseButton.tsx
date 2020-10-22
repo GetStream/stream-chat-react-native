@@ -1,26 +1,37 @@
 import React from 'react';
-import { Image } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-const Container = styled.View`
-  align-items: center;
-  background-color: white;
-  border-color: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  border-style: solid;
-  border-width: 1px;
-  height: 30px;
-  justify-content: center;
-  width: 30px;
-  ${({ theme }) => theme.closeButton.container.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#0000001A', // 1A = 10% opacity
+    borderRadius: 3,
+    borderStyle: 'solid',
+    borderWidth: 1,
+    height: 30,
+    justifyContent: 'center',
+    width: 30,
+  },
+});
 
-export const CloseButton: React.FC = () => (
-  <Container>
-    <Image
-      source={require('../../../images/icons/close-round.png')}
-      testID='close-button'
-    />
-  </Container>
-);
+export const CloseButton: React.FC = () => {
+  const {
+    theme: {
+      closeButton: { container },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <Image
+        source={require('../../../images/icons/close-round.png')}
+        testID='close-button'
+      />
+    </View>
+  );
+};
+
+CloseButton.displayName = 'CloseButton{closeButton}';

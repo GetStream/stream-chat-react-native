@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { ActionSheetCustom } from 'react-native-actionsheet';
 
 import type {
@@ -10,41 +11,33 @@ import type {
 
 import { IconSquare } from '../IconSquare';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-import { styled } from '../../../styles/styledComponents';
 
 const iconGallery: ImageRequireSource = require('../../../images/icons/icon_attach-media.png');
 const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.png');
 const iconFolder: ImageRequireSource = require('../../../images/icons/icon_folder.png');
 
-const ActionSheetButtonContainer = styled.View`
-  align-items: center;
-  flex-direction: row;
-  justify-content: flex-start;
-  padding-left: 20px;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.actionSheet.buttonContainer.css};
-`;
-
-const ActionSheetButtonText = styled.Text`
-  ${({ theme }) => theme.messageInput.actionSheet.buttonText.css};
-`;
-
-const ActionSheetTitleContainer = styled.View`
-  align-items: center;
-  flex-direction: row;
-  height: 100%;
-  justify-content: space-between;
-  padding-horizontal: 20px;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.actionSheet.titleContainer.css};
-`;
-
-const ActionSheetTitleText = styled.Text`
-  font-weight: bold;
-  ${({ theme }) => theme.messageInput.actionSheet.titleText.css};
-`;
+const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    paddingLeft: 20,
+    width: '100%',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: '100%',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    width: '100%',
+  },
+  titleText: {
+    fontWeight: 'bold',
+  },
+});
 
 type AttachmentActionSheetItemProps = {
   icon: ImageRequireSource;
@@ -57,11 +50,23 @@ const AttachmentActionSheetItem: React.FC<AttachmentActionSheetItemProps> = (
   props,
 ) => {
   const { icon, key, testID, text } = props;
+  const {
+    theme: {
+      messageInput: {
+        actionSheet: { buttonContainer, buttonText },
+      },
+    },
+  } = useTheme();
+
   return (
-    <ActionSheetButtonContainer key={key} testID={testID}>
+    <View
+      key={key}
+      style={[styles.buttonContainer, buttonContainer]}
+      testID={testID}
+    >
       <IconSquare icon={icon} />
-      <ActionSheetButtonText>{text}</ActionSheetButtonText>
-    </ActionSheetButtonContainer>
+      <Text style={buttonText}>{text}</Text>
+    </View>
   );
 };
 
@@ -92,9 +97,16 @@ export const ActionSheetAttachment: React.FC<ActionSheetProps> = (props) => {
     pickFile,
     pickImage,
     setAttachActionSheetRef,
-    styles,
+    styles: stylesProp,
   } = props;
 
+  const {
+    theme: {
+      messageInput: {
+        actionSheet: { titleContainer, titleText },
+      },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
 
   return (
@@ -128,13 +140,16 @@ export const ActionSheetAttachment: React.FC<ActionSheetProps> = (props) => {
         />,
       ]}
       ref={setAttachActionSheetRef}
-      styles={styles}
+      styles={stylesProp}
       title={
-        <ActionSheetTitleContainer>
-          <ActionSheetTitleText>{t('Add a file')}</ActionSheetTitleText>
+        <View style={[styles.titleContainer, titleContainer]}>
+          <Text style={[styles.titleText, titleText]}>{t('Add a file')}</Text>
           <IconSquare icon={iconClose} onPress={closeAttachActionSheet} />
-        </ActionSheetTitleContainer>
+        </View>
       }
     />
   );
 };
+
+ActionSheetAttachment.displayName =
+  'ActionSheetAttachment{messageInput{actionSheet}}';

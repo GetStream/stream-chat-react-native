@@ -6,6 +6,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
@@ -14,10 +15,9 @@ import { Immutable, isImmutable } from 'seamless-immutable';
 import { CloseButton } from '../CloseButton/CloseButton';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 import type { Attachment } from 'stream-chat';
@@ -25,92 +25,71 @@ import type { Attachment } from 'stream-chat';
 import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
-const Single = styled.TouchableOpacity<{ alignment: Alignment }>`
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2}px;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2}px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  height: 200px;
-  overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width}px;
-  ${({ theme }) => theme.message.gallery.single.css}
-`;
-
-const GalleryContainer = styled.View<{
-  alignment: Alignment;
-  length?: number;
-}>`
-  border-bottom-left-radius: ${({ alignment }) =>
-    alignment === 'right' ? 16 : 2}px;
-  border-bottom-right-radius: ${({ alignment }) =>
-    alignment === 'left' ? 16 : 2}px;
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
-  flex-direction: row;
-  flex-wrap: wrap;
-  height: ${({ length, theme }) =>
-    length && length >= 4
-      ? theme.message.gallery.doubleSize
-      : length === 3
-      ? theme.message.gallery.halfSize
-      : theme.message.gallery.size}px;
-  overflow: hidden;
-  width: ${({ theme }) => theme.message.gallery.width}px;
-  ${({ theme }) => theme.message.gallery.galleryContainer.css}
-`;
-
-const ImageContainer = styled.TouchableOpacity<{ length?: number }>`
-  height: ${({ length, theme }) =>
-    length !== 3
-      ? theme.message.gallery.size
-      : theme.message.gallery.halfSize}px;
-  width: ${({ length, theme }) =>
-    length !== 3
-      ? theme.message.gallery.size
-      : theme.message.gallery.halfSize}px;
-  ${({ theme }) => theme.message.gallery.imageContainer.css}
-`;
-
-const HeaderContainer = styled.View`
-  flex-direction: row;
-  justify-content: flex-end;
-  position: absolute;
-  width: 100%;
-  z-index: 1000;
-  ${({ theme }) => theme.message.gallery.header.container.css}
-`;
-
-const HeaderButton = styled.TouchableOpacity`
-  align-items: center;
-  border-radius: 20px;
-  height: 30px;
-  justify-content: center;
-  margin-right: 32px;
-  margin-top: 32px;
-  width: 30px;
-  ${({ theme }) => theme.message.gallery.header.button.css}
-`;
+const styles = StyleSheet.create({
+  galleryContainer: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    overflow: 'hidden',
+  },
+  headerButton: {
+    alignItems: 'center',
+    borderRadius: 20,
+    height: 30,
+    justifyContent: 'center',
+    marginRight: 32,
+    marginTop: 32,
+    width: 30,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    position: 'absolute',
+    width: '100%',
+    zIndex: 1000,
+  },
+  single: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    height: 200,
+    overflow: 'hidden',
+  },
+});
 
 type GalleryHeaderProps = {
   handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
 };
 
 const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
+  const {
+    theme: {
+      message: {
+        gallery: {
+          header: { button, container },
+        },
+      },
+    },
+  } = useTheme();
+
   useEffect(() => {
     StatusBar.setHidden(true);
     return () => StatusBar.setHidden(false);
   }, []);
 
   return (
-    <HeaderContainer>
-      <HeaderButton onPress={handleDismiss}>
+    <View style={[styles.headerContainer, container]}>
+      <TouchableOpacity
+        onPress={handleDismiss}
+        style={[styles.headerButton, button]}
+      >
         <CloseButton />
-      </HeaderButton>
-    </HeaderContainer>
+      </TouchableOpacity>
+    </View>
   );
 };
+
+GalleryHeader.displayName = 'GalleryHeader{message{gallery{header}}}';
 
 export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
   /**
@@ -132,6 +111,21 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   props: GalleryProps<At>,
 ) => {
   const { alignment, images } = props;
+  const {
+    theme: {
+      message: {
+        gallery: {
+          doubleSize,
+          galleryContainer,
+          halfSize,
+          imageContainer,
+          single,
+          size,
+          width,
+        },
+      },
+    },
+  } = useTheme();
 
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
   const { t } = useTranslationContext();
@@ -161,10 +155,18 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   if (galleryImages.length === 1) {
     return (
       <>
-        <Single
-          alignment={alignment}
+        <TouchableOpacity
           onLongPress={onLongPress}
           onPress={() => setViewerModalOpen(true)}
+          style={[
+            styles.single,
+            {
+              borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
+              borderBottomRightRadius: alignment === 'left' ? 16 : 2,
+              width,
+            },
+            single,
+          ]}
           testID='image-attachment-single'
           {...additionalTouchableProps}
         >
@@ -173,7 +175,7 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
             source={{ uri: galleryImages[0].url }}
             style={{ flex: 1 }}
           />
-        </Single>
+        </TouchableOpacity>
         {viewerModalOpen && (
           <Modal
             onRequestClose={() => setViewerModalOpen(false)}
@@ -203,21 +205,40 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
 
   return (
     <>
-      <GalleryContainer
-        alignment={alignment}
-        length={galleryImages.length}
+      <View
+        style={[
+          styles.galleryContainer,
+          {
+            borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
+            borderBottomRightRadius: alignment === 'left' ? 16 : 2,
+            height:
+              galleryImages.length >= 4
+                ? doubleSize
+                : galleryImages.length === 3
+                ? halfSize
+                : size,
+            width,
+          },
+          galleryContainer,
+        ]}
         testID='image-multiple-container'
       >
         {galleryImages.slice(0, 4).map((image, i) => (
-          <ImageContainer
+          <TouchableOpacity
             activeOpacity={0.8}
             key={`gallery-item-${i}`}
-            length={galleryImages.length}
             onLongPress={onLongPress}
             onPress={() => {
               setViewerModalOpen(true);
               setViewerModalImageIndex(i);
             }}
+            style={[
+              {
+                height: galleryImages.length !== 3 ? size : halfSize,
+                width: galleryImages.length !== 3 ? size : halfSize,
+              },
+              imageContainer,
+            ]}
             testID='image-multiple'
             {...additionalTouchableProps}
           >
@@ -262,9 +283,9 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
                 style={{ flex: 1 }}
               />
             )}
-          </ImageContainer>
+          </TouchableOpacity>
         ))}
-      </GalleryContainer>
+      </View>
       {viewerModalOpen && (
         <Modal
           onRequestClose={() => setViewerModalOpen(false)}
@@ -290,3 +311,5 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
     </>
   );
 };
+
+Gallery.displayName = 'Gallery{message{gallery}}';

@@ -4,55 +4,54 @@ import {
   GestureResponderEvent,
   Image,
   ImageRequireSource,
+  StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { ProgressIndicatorTypes } from '../../utils/utils';
-
-import { styled } from '../../../styles/styledComponents';
 
 const iconReload: ImageRequireSource = require('../../../images/reload1.png');
 
-const ActivityIndicatorContainer = styled.View`
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const Container = styled.View`
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0);
-  height: 100%;
-  justify-content: center;
-  position: absolute;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.container.css};
-`;
-
-const Overlay = styled.View`
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  height: 100%;
-  justify-content: center;
-  opacity: 0;
-  position: absolute;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
-`;
-
-const RetryButtonContainer = styled.TouchableOpacity`
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
+const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF00',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
+  overlay: {
+    alignItems: 'center',
+    backgroundColor: '#0000004D', // 4D = 30% opacity
+    height: '100%',
+    justifyContent: 'center',
+    opacity: 0,
+    position: 'absolute',
+    width: '100%',
+  },
+  retryButtonContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  retryButtonImage: { height: 18, width: 18 },
+});
 
 export type UploadProgressIndicatorProps = {
   /** Action triggered when clicked indicator */
@@ -68,31 +67,45 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
 ) => {
   const { action, active, children, type } = props;
 
+  const {
+    theme: {
+      messageInput: {
+        uploadProgressIndicator: { container, overlay },
+      },
+    },
+  } = useTheme();
+
   return !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
     <View testID='active-upload-progress-indicator'>
       {children}
-      <Overlay />
-      <Container>
+      <View style={[styles.overlay, overlay]} />
+      <View style={[styles.container, container]}>
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <ActivityIndicatorContainer>
+          <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator
               color='grey'
               testID='upload-progress-indicator'
             />
-          </ActivityIndicatorContainer>
+          </View>
         )}
         {type === ProgressIndicatorTypes.RETRY && (
-          <RetryButtonContainer onPress={action}>
+          <TouchableOpacity
+            onPress={action}
+            style={styles.retryButtonContainer}
+          >
             <Image
               source={iconReload}
-              style={{ height: 18, width: 18 }}
+              style={styles.retryButtonImage}
               testID='retry-upload-progress-indicator'
             />
-          </RetryButtonContainer>
+          </TouchableOpacity>
         )}
-      </Container>
+      </View>
     </View>
   );
 };
+
+UploadProgressIndicator.displayName =
+  'UploadProgressIndicator{messageInput{uploadProgressIndicator}}';

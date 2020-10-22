@@ -1,12 +1,12 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TDateTimeParserInput,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { DateSeparator as DateSeparatorType } from './utils/insertDates';
 
@@ -21,37 +21,31 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  margin-vertical: 20px;
-  ${({ theme }) => theme.messageList.dateSeparator.container.css}
-`;
-
-const Date = styled.Text`
-  font-size: 10px;
-  font-weight: 700;
-  opacity: 0.8;
-  text-transform: uppercase;
-  ${({ theme }) => theme.messageList.dateSeparator.date.css}
-`;
-
-const DateText = styled.Text`
-  font-size: 10px;
-  margin-horizontal: 5px;
-  opacity: 0.8;
-  text-align: center;
-  text-transform: uppercase;
-  ${({ theme }) => theme.messageList.dateSeparator.dateText.css}
-`;
-
-const Line = styled.View`
-  background-color: ${({ theme }) => theme.colors.light};
-  flex: 1;
-  height: 0.5px;
-  ${({ theme }) => theme.messageList.dateSeparator.line.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 20,
+  },
+  date: {
+    fontSize: 10,
+    fontWeight: '700',
+    opacity: 0.8,
+    textTransform: 'uppercase',
+  },
+  dateText: {
+    fontSize: 10,
+    marginHorizontal: 5,
+    opacity: 0.8,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+  },
+  line: {
+    flex: 1,
+    height: 0.5,
+  },
+});
 
 export type DateSeparatorProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -88,23 +82,37 @@ export const DateSeparator = <
 ) => {
   const { formatDate, message } = props;
 
+  const {
+    theme: {
+      colors: { light },
+      messageList: {
+        dateSeparator: { container, date, dateText, line },
+      },
+    },
+  } = useTheme();
   const { tDateTimeParser } = useTranslationContext();
 
-  const date = formatDate
+  const formattedDate = formatDate
     ? formatDate(message.date as TDateTimeParserInput)
     : tDateTimeParser(message.date as TDateTimeParserInput);
 
   return (
-    <Container testID='date-separator'>
-      <Line />
-      <DateText>
+    <View style={[styles.container, container]} testID='date-separator'>
+      <View style={[styles.line, { backgroundColor: light }, line]} />
+      <Text style={[styles.dateText, dateText]}>
         {formatDate ? (
-          date
+          formattedDate
         ) : (
-          <Date>{isDayOrMoment(date) ? date.calendar() : date}</Date>
+          <Text style={[styles.date, date]}>
+            {isDayOrMoment(formattedDate)
+              ? formattedDate.calendar()
+              : formattedDate}
+          </Text>
         )}
-      </DateText>
-      <Line />
-    </Container>
+      </Text>
+      <View style={[styles.line, { backgroundColor: light }, line]} />
+    </View>
   );
 };
+
+DateSeparator.displayName = 'DateSeparator{messageList{dateSeparator}}';

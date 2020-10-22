@@ -19,12 +19,14 @@ import {
   Channel,
   ChannelList,
   Chat,
+  DeepPartial,
   MessageInput,
   MessageList,
   Streami18n,
+  Theme,
   Thread,
   ThreadContextValue,
-} from 'stream-chat-react-native';
+} from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
 enableScreens();
@@ -38,23 +40,19 @@ type LocalResponseType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
 
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-const theme = {
+const theme: DeepPartial<Theme> = {
   avatar: {
     image: {
-      css: `
-        height: 32px;
-        width: 32px;
-      `,
+      height: 32,
+      width: 32,
     },
   },
   colors: {
     primary: 'blue',
   },
   spinner: {
-    css: `
-      height: 15px;
-      width: 15px;
-    `,
+    height: 15,
+    width: 15,
   },
 };
 

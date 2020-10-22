@@ -1,25 +1,25 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Avatar } from '../Avatar/Avatar';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultUserType } from '../../types/types';
 
-const Container = styled.View`
-  align-items: center;
-  flex-direction: row;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.mention.container.css}
-`;
-
-const Name = styled.Text`
-  color: black;
-  font-weight: bold;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.mention.name.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    padding: 10,
+  },
+  name: {
+    color: '#000000',
+    fontWeight: 'bold',
+    padding: 10,
+  },
+});
 
 export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   /**
@@ -37,9 +37,25 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
  */
 export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   item: { id, image, name },
-}: MentionsItemProps<Us>) => (
-  <Container>
-    <Avatar image={image} name={name} />
-    <Name testID='mentions-item-name'>{name || id}</Name>
-  </Container>
-);
+}: MentionsItemProps<Us>) => {
+  const {
+    theme: {
+      messageInput: {
+        suggestions: {
+          mention: { container, name: nameStyle },
+        },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <Avatar image={image} name={name} />
+      <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
+        {name || id}
+      </Text>
+    </View>
+  );
+};
+
+MentionsItem.displayName = 'MentionsItem{messageInput{suggestions{mention}}}';

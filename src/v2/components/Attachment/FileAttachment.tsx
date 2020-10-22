@@ -1,5 +1,11 @@
 import React from 'react';
-import { Linking, TouchableOpacity } from 'react-native';
+import {
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   AttachmentActionsProps,
@@ -7,8 +13,7 @@ import {
 } from './AttachmentActions';
 
 import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
-
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { Attachment } from 'stream-chat';
 
@@ -22,46 +27,20 @@ import type {
 } from '../../contexts/messagesContext/MessagesContext';
 import type { DefaultAttachmentType, UnknownType } from '../../types/types';
 
-const FileContainer = styled.View<{
-  alignment: Alignment;
-  groupStyle?: string;
-}>`
-  align-items: center;
-  background-color: #ebebeb;
-  border-bottom-left-radius: ${({ alignment, groupStyle }) => {
-    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-    return alignment === 'right' ? 16 : 2;
-  }}px;
-  border-bottom-right-radius: ${({ alignment, groupStyle }) => {
-    if (groupStyle === 'top' || groupStyle === 'middle') return 0;
-    return alignment === 'left' ? 16 : 2;
-  }}px;
-  border-top-left-radius: ${({ groupStyle }) => {
-    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
-    return 16;
-  }}px;
-  border-top-right-radius: ${({ groupStyle }) => {
-    if (groupStyle === 'middle' || groupStyle === 'bottom') return 0;
-    return 16;
-  }}px;
-  flex-direction: row;
-  padding: 10px;
-  ${({ theme }) => theme.message.file.container.css}
-`;
-
-const FileDetails = styled.View`
-  padding-left: 10px;
-  ${({ theme }) => theme.message.file.details.css}
-`;
-
-const FileSize = styled.Text`
-  ${({ theme }) => theme.message.file.size.css}
-`;
-
-const FileTitle = styled.Text`
-  font-weight: 700;
-  ${({ theme }) => theme.message.file.title.css}
-`;
+const styles = StyleSheet.create({
+  fileContainer: {
+    alignItems: 'center',
+    backgroundColor: '#EBEBEB',
+    flexDirection: 'row',
+    padding: 10,
+  },
+  fileDetails: {
+    paddingLeft: 10,
+  },
+  fileTitle: {
+    fontWeight: '700',
+  },
+});
 
 const getFileSizeDisplayText = (size?: number | string) => {
   if (!size) return;
@@ -131,7 +110,32 @@ export const FileAttachment = <
     groupStyle,
   } = props;
 
+  const {
+    theme: {
+      message: {
+        file: { container, details, size, title },
+      },
+    },
+  } = useTheme();
+
   const { additionalTouchableProps, onLongPress } = useMessageContentContext();
+
+  const borderBottomLeftRadius =
+    groupStyle === 'top' || groupStyle === 'middle'
+      ? 0
+      : alignment === 'right'
+      ? 16
+      : 2;
+  const borderBottomRightRadius =
+    groupStyle === 'top' || groupStyle === 'middle'
+      ? 0
+      : alignment === 'left'
+      ? 16
+      : 2;
+  const borderTopLeftRadius =
+    groupStyle === 'bottom' || groupStyle === 'middle' ? 0 : 16;
+  const borderTopRightRadius =
+    groupStyle === 'bottom' || groupStyle === 'middle' ? 0 : 16;
 
   return (
     <TouchableOpacity
@@ -140,16 +144,33 @@ export const FileAttachment = <
       testID='file-attachment'
       {...additionalTouchableProps}
     >
-      <FileContainer alignment={alignment} groupStyle={groupStyle}>
+      <View
+        style={[
+          styles.fileContainer,
+          {
+            borderBottomLeftRadius,
+            borderBottomRightRadius,
+            borderTopLeftRadius,
+            borderTopRightRadius,
+          },
+          container,
+        ]}
+      >
         <AttachmentFileIcon mimeType={attachment.mime_type} />
-        <FileDetails>
-          <FileTitle numberOfLines={2}>{attachment.title}</FileTitle>
-          <FileSize>{getFileSizeDisplayText(attachment.file_size)}</FileSize>
-        </FileDetails>
-      </FileContainer>
+        <View style={[styles.fileDetails, details]}>
+          <Text numberOfLines={2} style={[styles.fileTitle, title]}>
+            {attachment.title}
+          </Text>
+          <Text style={size}>
+            {getFileSizeDisplayText(attachment.file_size)}
+          </Text>
+        </View>
+      </View>
       {attachment.actions?.length ? (
         <AttachmentActions<At> actionHandler={actionHandler} {...attachment} />
       ) : null}
     </TouchableOpacity>
   );
 };
+
+FileAttachment.displayName = 'FileAttachment{message{file}}';

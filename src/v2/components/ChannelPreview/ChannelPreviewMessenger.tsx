@@ -1,4 +1,5 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import truncate from 'lodash/truncate';
 
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
@@ -6,7 +7,7 @@ import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplay
 
 import { Avatar } from '../Avatar/Avatar';
 
-import { styled } from '../../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
@@ -23,51 +24,34 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.TouchableOpacity`
-  border-bottom-color: #ebebeb;
-  border-bottom-width: 1px;
-  flex-direction: row;
-  padding: 10px;
-  ${({ theme }) => theme.channelPreview.container.css}
-`;
-
-const Date = styled.Text`
-  color: #767676;
-  font-size: 11px;
-  text-align: right;
-  ${({ theme }) => theme.channelPreview.date.css}
-`;
-
-const Details = styled.View`
-  flex: 1;
-  padding-left: 10px;
-  ${({ theme }) => theme.channelPreview.details.css}
-`;
-
-const DetailsTop = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  ${({ theme }) => theme.channelPreview.detailsTop.css}
-`;
-
-const StyledMessage = styled.Text<{ unread?: number }>`
-  color: ${({ theme, unread }) =>
-    unread
-      ? theme.channelPreview.message.unreadColor
-      : theme.channelPreview.message.color};
-  font-size: 13px;
-  font-weight: ${({ theme, unread }) =>
-    unread
-      ? theme.channelPreview.message.unreadFontWeight
-      : theme.channelPreview.message.fontWeight};
-  ${({ theme }) => theme.channelPreview.message.css}
-`;
-
-const Title = styled.Text`
-  font-size: 14px;
-  font-weight: bold;
-  ${({ theme }) => theme.channelPreview.title.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    borderBottomColor: '#EBEBEB',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    padding: 10,
+  },
+  date: {
+    color: '#767676',
+    fontSize: 11,
+    textAlign: 'right',
+  },
+  details: {
+    flex: 1,
+    paddingLeft: 10,
+  },
+  detailsTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  styledMessage: {
+    fontSize: 13,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+});
 
 export type ChannelPreviewMessengerProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -126,34 +110,68 @@ export const ChannelPreviewMessenger = <
     unread,
   } = props;
 
+  const {
+    theme: {
+      channelPreview: {
+        container,
+        date,
+        details,
+        detailsTop,
+        message: {
+          color,
+          fontWeight,
+          unreadColor,
+          unreadFontWeight,
+          ...message
+        },
+        title,
+      },
+    },
+  } = useTheme();
+
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
 
   return (
-    <Container
+    <TouchableOpacity
       onPress={() => setActiveChannel?.(channel)}
+      style={[styles.container, container]}
       testID='channel-preview-button'
     >
       <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
-      <Details>
-        <DetailsTop>
-          <Title ellipsizeMode='tail' numberOfLines={1}>
+      <View style={[styles.details, details]}>
+        <View style={[styles.detailsTop, detailsTop]}>
+          <Text
+            ellipsizeMode='tail'
+            numberOfLines={1}
+            style={[styles.title, title]}
+          >
             {displayName}
-          </Title>
-          <Date>
+          </Text>
+          <Text style={[styles.date, date]}>
             {formatLatestMessageDate && latestMessageDate
               ? formatLatestMessageDate(latestMessageDate)
               : latestMessagePreview?.created_at}
-          </Date>
-        </DetailsTop>
-        <StyledMessage unread={unread}>
+          </Text>
+        </View>
+        <Text
+          style={[
+            styles.styledMessage,
+            unread
+              ? { color: unreadColor, fontWeight: unreadFontWeight }
+              : { color, fontWeight },
+            message,
+          ]}
+        >
           {latestMessagePreview?.text &&
             truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
               length: latestMessageLength,
             })}
-        </StyledMessage>
-      </Details>
-    </Container>
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
+
+ChannelPreviewMessenger.displayName = 'ChannelPreviewMessenger{channelPreview}';

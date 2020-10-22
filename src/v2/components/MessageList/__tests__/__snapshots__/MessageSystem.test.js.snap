@@ -10,6 +10,7 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
         "justifyContent": "center",
         "marginBottom": 10,
       },
+      Object {},
     ]
   }
   testID="message-system"
@@ -18,12 +19,13 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     style={
       Array [
         Object {
-          "backgroundColor": "#EBEBEB",
-          "flexBasis": 0,
-          "flexGrow": 1,
-          "flexShrink": 1,
+          "flex": 1,
           "height": 0.5,
         },
+        Object {
+          "backgroundColor": "#EBEBEB",
+        },
+        Object {},
       ]
     }
   />
@@ -31,11 +33,10 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     style={
       Array [
         Object {
-          "flexBasis": 0,
-          "flexGrow": 3,
-          "flexShrink": 1,
+          "flex": 3,
           "marginTop": 10,
         },
+        Object {},
       ]
     }
   >
@@ -43,11 +44,12 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "rgba(0, 0, 0, 0.5)",
+            "color": "#00000080",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",
           },
+          Object {},
         ]
       }
     >
@@ -57,11 +59,12 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
       style={
         Array [
           Object {
-            "color": "rgba(0, 0, 0, 0.5)",
+            "color": "#00000080",
             "fontSize": 10,
             "fontWeight": "bold",
             "textAlign": "center",
           },
+          Object {},
         ]
       }
     >
@@ -72,12 +75,13 @@ exports[`MessageSystem should match the snapshot for message system 1`] = `
     style={
       Array [
         Object {
-          "backgroundColor": "#EBEBEB",
-          "flexBasis": 0,
-          "flexGrow": 1,
-          "flexShrink": 1,
+          "flex": 1,
           "height": 0.5,
         },
+        Object {
+          "backgroundColor": "#EBEBEB",
+        },
+        Object {},
       ]
     }
   />

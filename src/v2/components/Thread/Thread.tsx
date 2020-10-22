@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Message as DefaultMessage } from '../Message/Message';
 import {
@@ -12,10 +13,9 @@ import {
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
 import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { Message as StreamMessage } from 'stream-chat';
 
@@ -32,18 +32,15 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const NewThread = styled.View`
-  align-items: center;
-  background-color: #f4f9ff;
-  border-radius: 4px;
-  margin: 10px;
-  padding: 8px;
-  ${({ theme }) => theme.thread.newThread.css};
-`;
-
-const NewThreadText = styled.Text`
-  ${({ theme }) => theme.thread.newThread.text.css};
-`;
+const styles = StyleSheet.create({
+  newThread: {
+    alignItems: 'center',
+    backgroundColor: '#F4F9FF',
+    borderRadius: 4,
+    margin: 10,
+    padding: 8,
+  },
+});
 
 export type ThreadProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -144,6 +141,13 @@ export const Thread = <
     Re,
     Us
   >();
+  const {
+    theme: {
+      thread: {
+        newThread: { text, ...newThread },
+      },
+    },
+  } = useTheme();
   const { loadMoreThread, thread } = useThreadContext<
     At,
     Ch,
@@ -178,9 +182,9 @@ export const Thread = <
         Message={Message}
         threadList
       />
-      <NewThread>
-        <NewThreadText>{t('Start of a new thread')}</NewThreadText>
-      </NewThread>
+      <View style={[styles.newThread, newThread]}>
+        <Text style={text}>{t('Start of a new thread')}</Text>
+      </View>
     </>
   );
 
@@ -200,3 +204,5 @@ export const Thread = <
     </React.Fragment>
   );
 };
+
+Thread.displayName = 'Thread{thread{newThread}}';

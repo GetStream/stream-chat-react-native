@@ -1,54 +1,50 @@
 import React, { useEffect, useState } from 'react';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
-import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
-
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { MESSAGE_ACTIONS } from '../../../utils/utils';
 
-import { styled } from '../../../../styles/styledComponents';
-
-const ActionSheetButtonContainer = styled.View`
-  align-items: center;
-  background-color: #fff;
-  height: 50px;
-  justify-content: center;
-  width: 100%;
-  ${({ theme }) => theme.message.actionSheet.buttonContainer.css};
-`;
-
-const ActionSheetButtonText = styled.Text`
-  color: #388cea;
-  font-size: 18px;
-  ${({ theme }) => theme.message.actionSheet.buttonText.css};
-`;
-
-const ActionSheetCancelButtonContainer = styled.View`
-  align-items: center;
-  height: 50px;
-  justify-content: center;
-  width: 100%;
-  ${({ theme }) => theme.message.actionSheet.cancelButtonContainer.css};
-`;
-
-const ActionSheetCancelButtonText = styled.Text`
-  color: red;
-  font-size: 18px;
-  ${({ theme }) => theme.message.actionSheet.cancelButtonText.css};
-`;
-
-const ActionSheetTitleContainer = styled.View`
-  align-items: center;
-  flex: 1;
-  justify-content: center;
-  ${({ theme }) => theme.message.actionSheet.titleContainer.css};
-`;
-
-const ActionSheetTitleText = styled.Text`
-  color: #757575;
-  font-size: 14px;
-  ${({ theme }) => theme.message.actionSheet.titleText.css};
-`;
+const styles = StyleSheet.create({
+  buttonContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    justifyContent: 'center',
+    width: '100%',
+  },
+  buttonText: {
+    color: '#388CEA',
+    fontSize: 18,
+  },
+  cancelButtonContainer: {
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'center',
+    width: '100%',
+  },
+  cancelButtonText: {
+    color: '#FF0000',
+    fontSize: 18,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  titleText: {
+    color: '#757575',
+    fontSize: 14,
+  },
+});
 
 export type ActionSheetStyles = {
   body?: StyleProp<ViewStyle>;
@@ -139,6 +135,20 @@ export const MessageActionSheet = React.forwardRef(
       threadList,
     } = props;
 
+    const {
+      theme: {
+        message: {
+          actionSheet: {
+            buttonContainer,
+            buttonText,
+            cancelButtonContainer,
+            cancelButtonText,
+            titleContainer,
+            titleText,
+          },
+        },
+      },
+    } = useTheme();
     const { t } = useTranslationContext();
     const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
 
@@ -222,32 +232,43 @@ export const MessageActionSheet = React.forwardRef(
         options={options.map((option, i) => {
           if (i === 0) {
             return (
-              <ActionSheetCancelButtonContainer testID='cancel-button'>
-                <ActionSheetCancelButtonText>
+              <View
+                style={[styles.cancelButtonContainer, cancelButtonContainer]}
+                testID='cancel-button'
+              >
+                <Text style={[styles.cancelButtonText, cancelButtonText]}>
                   {t('Cancel')}
-                </ActionSheetCancelButtonText>
-              </ActionSheetCancelButtonContainer>
+                </Text>
+              </View>
             );
           }
           return (
-            <ActionSheetButtonContainer
+            <View
               key={option.title}
+              style={[styles.buttonContainer, buttonContainer]}
               testID={`action-sheet-item-${option.title}`}
             >
-              <ActionSheetButtonText>{option.title}</ActionSheetButtonText>
-            </ActionSheetButtonContainer>
+              <Text style={[styles.buttonText, buttonText]}>
+                {option.title}
+              </Text>
+            </View>
           );
         })}
         ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
         styles={actionSheetStyles}
         title={
-          <ActionSheetTitleContainer testID='action-sheet-container'>
-            <ActionSheetTitleText>{t('Choose an action')}</ActionSheetTitleText>
-          </ActionSheetTitleContainer>
+          <View
+            style={[styles.titleContainer, titleContainer]}
+            testID='action-sheet-container'
+          >
+            <Text style={[styles.titleText, titleText]}>
+              {t('Choose an action')}
+            </Text>
+          </View>
         }
       />
     );
   },
 );
 
-MessageActionSheet.displayName = 'messageActionSheet';
+MessageActionSheet.displayName = 'MessageActionSheet{message{actionSheet}}';

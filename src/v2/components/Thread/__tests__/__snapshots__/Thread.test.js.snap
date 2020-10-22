@@ -62,11 +62,26 @@ exports[`Thread should match thread snapshot 1`] = `
                 }
                 threadList={true}
               />
-              <Styled(View)>
-                <Styled(Text)>
+              <View
+                style={
+                  Array [
+                    Object {
+                      "alignItems": "center",
+                      "backgroundColor": "#F4F9FF",
+                      "borderRadius": 4,
+                      "margin": 10,
+                      "padding": 8,
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                <Text
+                  style={Object {}}
+                >
                   Start of a new thread
-                </Styled(Text)>
-              </Styled(View)>
+                </Text>
+              </View>
             </React.Fragment>
           }
           data={
@@ -198,12 +213,11 @@ exports[`Thread should match thread snapshot 1`] = `
               },
               Array [
                 Object {
-                  "flexBasis": 0,
-                  "flexGrow": 1,
-                  "flexShrink": 1,
+                  "flex": 1,
                   "paddingHorizontal": 10,
                   "width": "100%",
                 },
+                Object {},
               ],
             ]
           }
@@ -249,29 +263,29 @@ exports[`Thread should match thread snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={false}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -282,6 +296,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -289,7 +304,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/SLx06PP.png",
@@ -302,6 +316,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -330,10 +345,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -357,39 +369,40 @@ exports[`Thread should match thread snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -434,19 +447,22 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -493,29 +509,29 @@ exports[`Thread should match thread snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={false}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -526,6 +542,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -533,7 +550,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
@@ -546,6 +562,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -574,10 +591,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -601,39 +615,40 @@ exports[`Thread should match thread snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -678,19 +693,22 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -737,29 +755,29 @@ exports[`Thread should match thread snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={false}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 20,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -770,6 +788,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -777,7 +796,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/SLx06PP.png",
@@ -790,6 +808,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -818,10 +837,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -845,39 +861,40 @@ exports[`Thread should match thread snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
-                        status="received"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -922,19 +939,22 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -971,6 +991,7 @@ exports[`Thread should match thread snapshot 1`] = `
                       "justifyContent": "center",
                       "marginVertical": 20,
                     },
+                    Object {},
                   ]
                 }
                 testID="date-separator"
@@ -979,12 +1000,13 @@ exports[`Thread should match thread snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />
@@ -998,6 +1020,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "textAlign": "center",
                         "textTransform": "uppercase",
                       },
+                      Object {},
                     ]
                   }
                 >
@@ -1010,6 +1033,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           "opacity": 0.8,
                           "textTransform": "uppercase",
                         },
+                        Object {},
                       ]
                     }
                   >
@@ -1020,12 +1044,13 @@ exports[`Thread should match thread snapshot 1`] = `
                   style={
                     Array [
                       Object {
-                        "backgroundColor": "#EBEBEB",
-                        "flexBasis": 0,
-                        "flexGrow": 1,
-                        "flexShrink": 1,
+                        "flex": 1,
                         "height": 0.5,
                       },
+                      Object {
+                        "backgroundColor": "#EBEBEB",
+                      },
+                      Object {},
                     ]
                   }
                 />
@@ -1062,29 +1087,29 @@ exports[`Thread should match thread snapshot 1`] = `
                 testID="message-wrapper"
               >
                 <View
-                  alignment="left"
-                  hasMarginBottom={true}
-                  isVeryLastMessage={true}
                   style={
                     Array [
                       Object {
                         "alignItems": "flex-end",
                         "flexDirection": "row",
+                      },
+                      Object {
                         "justifyContent": "flex-start",
                         "marginBottom": 30,
                       },
+                      Object {},
                     ]
                   }
                   testID="message-simple-wrapper"
                 >
                   <View
-                    alignment="left"
                     style={
                       Array [
                         Object {
                           "marginLeft": 0,
                           "marginRight": 8,
                         },
+                        Object {},
                       ]
                     }
                     testID="message-avatar"
@@ -1095,6 +1120,7 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "alignItems": "center",
                           },
+                          Object {},
                         ]
                       }
                     >
@@ -1102,7 +1128,6 @@ exports[`Thread should match thread snapshot 1`] = `
                         accessibilityLabel="initials"
                         onError={[Function]}
                         resizeMethod="resize"
-                        size={32}
                         source={
                           Object {
                             "uri": "https://i.imgur.com/T68W8nR_d.webp?maxwidth=728&fidelity=grand",
@@ -1115,6 +1140,7 @@ exports[`Thread should match thread snapshot 1`] = `
                               "height": 32,
                               "width": 32,
                             },
+                            Object {},
                           ]
                         }
                         testID="avatar-image"
@@ -1143,10 +1169,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "justifyContent": "flex-start",
                         "maxWidth": 250,
                         "opacity": 1,
-                        "paddingBottom": 0,
-                        "paddingLeft": 0,
-                        "paddingRight": 0,
-                        "paddingTop": 0,
+                        "padding": 0,
                       }
                     }
                     testID="message-content-wrapper"
@@ -1170,38 +1193,40 @@ exports[`Thread should match thread snapshot 1`] = `
                       testID="reaction-picker-wrapper"
                     />
                     <View
-                      alignment="left"
                       collapsable={false}
                       style={
                         Array [
                           Object {
                             "alignItems": "flex-start",
                           },
+                          Object {},
                         ]
                       }
                     >
                       <View
-                        alignment="left"
-                        groupStyle="leftSingle"
                         style={
                           Array [
                             Object {
-                              "alignSelf": "flex-start",
-                              "backgroundColor": "transparent",
-                              "borderBottomLeftRadius": 2,
-                              "borderBottomRightRadius": 16,
-                              "borderColor": "rgba(0, 0, 0, 0.08)",
-                              "borderTopLeftRadius": 16,
-                              "borderTopRightRadius": 16,
-                              "borderWidth": 0.5,
                               "marginTop": 2,
                               "paddingHorizontal": 8,
                               "paddingVertical": 5,
                             },
+                            Object {
+                              "alignSelf": "flex-start",
+                              "borderColor": "rgba(0, 0, 0, 0.08)",
+                              "borderWidth": 0.5,
+                            },
+                            Object {
+                              "backgroundColor": "transparent",
+                              "borderBottomLeftRadius": 2,
+                              "borderBottomRightRadius": 16,
+                              "borderTopLeftRadius": 16,
+                              "borderTopRightRadius": 16,
+                            },
+                            Object {},
                           ]
                         }
                         testID="message-text-container"
-                        type="regular"
                       >
                         <View
                           style={
@@ -1246,19 +1271,22 @@ exports[`Thread should match thread snapshot 1`] = `
                           Object {
                             "marginTop": 2,
                           },
+                          Object {},
                         ]
                       }
                       testID="show-time"
                     >
                       <Text
-                        alignment="left"
                         style={
                           Array [
                             Object {
-                              "color": "rgba(0,0,0,0.5)",
                               "fontSize": 11,
+                            },
+                            Object {
+                              "color": "#00000080",
                               "textAlign": "left",
                             },
+                            Object {},
                           ]
                         }
                       >
@@ -1273,26 +1301,17 @@ exports[`Thread should match thread snapshot 1`] = `
                   Array [
                     Object {
                       "alignItems": "center",
-                      "backgroundColor": "#f4f9ff",
+                      "backgroundColor": "#F4F9FF",
                       "borderRadius": 4,
-                      "marginBottom": 10,
-                      "marginLeft": 10,
-                      "marginRight": 10,
-                      "marginTop": 10,
-                      "paddingBottom": 8,
-                      "paddingLeft": 8,
-                      "paddingRight": 8,
-                      "paddingTop": 8,
+                      "margin": 10,
+                      "padding": 8,
                     },
+                    Object {},
                   ]
                 }
               >
                 <Text
-                  style={
-                    Array [
-                      Object {},
-                    ]
-                  }
+                  style={Object {}}
                 >
                   Start of a new thread
                 </Text>
@@ -1302,15 +1321,17 @@ exports[`Thread should match thread snapshot 1`] = `
         </RCTScrollView>
       </View>
       <View
-        imageUploads={Array []}
         style={
           Array [
             Object {
-              "backgroundColor": "rgba(0, 0, 0, 0.05)",
+              "backgroundColor": "#0000000D",
               "borderRadius": 10,
               "marginHorizontal": 10,
+            },
+            Object {
               "paddingTop": 0,
             },
+            Object {},
           ]
         }
       >
@@ -1389,6 +1410,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         "paddingHorizontal": 20,
                         "width": "100%",
                       },
+                      Object {},
                     ]
                   }
                 >
@@ -1398,6 +1420,7 @@ exports[`Thread should match thread snapshot 1`] = `
                         Object {
                           "fontWeight": "bold",
                         },
+                        Object {},
                       ]
                     }
                   >
@@ -1416,13 +1439,10 @@ exports[`Thread should match thread snapshot 1`] = `
                     onStartShouldSetResponder={[Function]}
                     style={
                       Object {
-                        "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                        "backgroundColor": "#0000000D",
                         "borderRadius": 5,
                         "opacity": 1,
-                        "paddingBottom": 5,
-                        "paddingLeft": 5,
-                        "paddingRight": 5,
-                        "paddingTop": 5,
+                        "padding": 5,
                       }
                     }
                     testID="icon-square"
@@ -1434,10 +1454,13 @@ exports[`Thread should match thread snapshot 1`] = `
                         }
                       }
                       style={
-                        Object {
-                          "height": 15,
-                          "width": 15,
-                        }
+                        Array [
+                          Object {
+                            "height": 15,
+                            "width": 15,
+                          },
+                          Object {},
+                        ]
                       }
                     />
                   </View>
@@ -1480,6 +1503,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingLeft": 20,
                             "width": "100%",
                           },
+                          Object {},
                         ]
                       }
                       testID="upload-photo-item"
@@ -1488,13 +1512,11 @@ exports[`Thread should match thread snapshot 1`] = `
                         style={
                           Array [
                             Object {
-                              "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                              "backgroundColor": "#0000000D",
                               "borderRadius": 5,
-                              "paddingBottom": 5,
-                              "paddingLeft": 5,
-                              "paddingRight": 5,
-                              "paddingTop": 5,
+                              "padding": 5,
                             },
+                            Object {},
                           ]
                         }
                         testID="icon-square"
@@ -1506,19 +1528,18 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           }
                           style={
-                            Object {
-                              "height": 15,
-                              "width": 15,
-                            }
+                            Array [
+                              Object {
+                                "height": 15,
+                                "width": 15,
+                              },
+                              Object {},
+                            ]
                           }
                         />
                       </View>
                       <Text
-                        style={
-                          Array [
-                            Object {},
-                          ]
-                        }
+                        style={Object {}}
                       >
                         Upload a photo
                       </Text>
@@ -1557,6 +1578,7 @@ exports[`Thread should match thread snapshot 1`] = `
                             "paddingLeft": 20,
                             "width": "100%",
                           },
+                          Object {},
                         ]
                       }
                       testID="upload-file-item"
@@ -1565,13 +1587,11 @@ exports[`Thread should match thread snapshot 1`] = `
                         style={
                           Array [
                             Object {
-                              "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                              "backgroundColor": "#0000000D",
                               "borderRadius": 5,
-                              "paddingBottom": 5,
-                              "paddingLeft": 5,
-                              "paddingRight": 5,
-                              "paddingTop": 5,
+                              "padding": 5,
                             },
+                            Object {},
                           ]
                         }
                         testID="icon-square"
@@ -1583,19 +1603,18 @@ exports[`Thread should match thread snapshot 1`] = `
                             }
                           }
                           style={
-                            Object {
-                              "height": 15,
-                              "width": 15,
-                            }
+                            Array [
+                              Object {
+                                "height": 15,
+                                "width": 15,
+                              },
+                              Object {},
+                            ]
                           }
                         />
                       </View>
                       <Text
-                        style={
-                          Array [
-                            Object {},
-                          ]
-                        }
+                        style={Object {}}
                       >
                         Upload a file
                       </Text>
@@ -1612,13 +1631,11 @@ exports[`Thread should match thread snapshot 1`] = `
               Object {
                 "alignItems": "center",
                 "flexDirection": "row",
-                "marginBottom": 10,
-                "marginLeft": 10,
-                "marginRight": 10,
-                "marginTop": 10,
+                "margin": 10,
                 "minHeight": 46,
                 "paddingHorizontal": 10,
               },
+              Object {},
             ]
           }
         >
@@ -1653,6 +1670,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "height": 15,
                     "width": 15,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1669,15 +1687,11 @@ exports[`Thread should match thread snapshot 1`] = `
             style={
               Array [
                 Object {
-                  "flexBasis": 0,
-                  "flexGrow": 1,
-                  "flexShrink": 1,
-                  "marginBottom": -5,
-                  "marginLeft": -5,
-                  "marginRight": -5,
-                  "marginTop": -5,
+                  "flex": 1,
+                  "margin": -5,
                   "maxHeight": 60,
                 },
+                Object {},
               ]
             }
             testID="auto-complete-text-input"
@@ -1715,6 +1729,7 @@ exports[`Thread should match thread snapshot 1`] = `
                     "height": 15,
                     "width": 15,
                   },
+                  Object {},
                 ]
               }
             />

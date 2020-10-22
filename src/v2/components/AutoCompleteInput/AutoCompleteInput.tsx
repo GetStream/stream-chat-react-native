@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { TextInput } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
 import {
   isSuggestionUser,
@@ -8,10 +8,9 @@ import {
   SuggestionUser,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { isMentionTrigger } from '../../utils/utils';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type { TextInputProps, TextInput as TextInputType } from 'react-native';
 
@@ -22,12 +21,13 @@ import type {
 } from '../../types/types';
 import type { Trigger, TriggerSettings } from '../../utils/utils';
 
-const InputBox = styled(TextInput)`
-  flex: 1;
-  margin: -5px;
-  max-height: 60px;
-  ${({ theme }) => theme.messageInput.inputBox.css}
-`;
+const styles = StyleSheet.create({
+  inputBox: {
+    flex: 1,
+    margin: -5,
+    maxHeight: 60,
+  },
+});
 
 const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
   startOfTokenPosition + token.length;
@@ -78,6 +78,12 @@ export const AutoCompleteInput = <
     triggerSettings,
     value,
   } = props;
+
+  const {
+    theme: {
+      messageInput: { inputBox },
+    },
+  } = useTheme();
 
   const {
     closeSuggestions,
@@ -282,7 +288,7 @@ export const AutoCompleteInput = <
   };
 
   return (
-    <InputBox
+    <TextInput
       multiline
       onChangeText={(text) => {
         handleChange(text);
@@ -290,9 +296,12 @@ export const AutoCompleteInput = <
       onSelectionChange={handleSelectionChange}
       placeholder={t('Write your message')}
       ref={setInputBoxRef}
+      style={[styles.inputBox, inputBox]}
       testID='auto-complete-text-input'
       value={value}
       {...additionalTextInputProps}
     />
   );
 };
+
+AutoCompleteInput.displayName = 'AutoCompleteInput{messageInput{inputBox}}';

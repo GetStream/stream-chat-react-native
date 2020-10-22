@@ -1,9 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { capitalize } from './utils/capitalize';
 import { renderText } from './utils/renderText';
 
-import { styled, ThemeContext } from '../../../../styles/styledComponents';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
 import type { MessageSimpleProps } from './MessageSimple';
 import type { RenderTextParams } from './utils/renderText';
@@ -12,6 +13,7 @@ import type {
   Alignment,
   GroupType,
 } from '../../../contexts/messagesContext/MessagesContext';
+import type { Theme } from '../../../contexts/themeContext/utils/theme';
 import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
 import type {
   DefaultAttachmentType,
@@ -24,49 +26,15 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-import type { Theme } from '../../../../styles/themeConstants';
-
-const TextContainer = styled.View<{
-  alignment: Alignment;
-  groupStyle: string;
-  status?: string;
-  type?: string;
-}>`
-  align-self: ${({ alignment }) =>
-    alignment === 'left' ? 'flex-start' : 'flex-end'};
-  background-color: ${({ alignment, status, theme, type }) =>
-    alignment === 'left' || type === 'error' || status === 'failed'
-      ? theme.colors.transparent
-      : theme.colors.light};
-  border-bottom-left-radius: ${({ groupStyle, theme }) =>
-    groupStyle.indexOf('left') !== -1
-      ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL}px;
-  border-bottom-right-radius: ${({ groupStyle, theme }) =>
-    groupStyle.indexOf('right') !== -1
-      ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL}px;
-  border-color: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.textContainer.leftBorderColor
-      : theme.message.content.textContainer.rightBorderColor};
-  border-top-left-radius: ${({ groupStyle, theme }) =>
-    groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
-      ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL}px;
-  border-top-right-radius: ${({ groupStyle, theme }) =>
-    groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
-      ? theme.message.content.textContainer.borderRadiusS
-      : theme.message.content.textContainer.borderRadiusL}px;
-  border-width: ${({ alignment, theme }) =>
-    alignment === 'left'
-      ? theme.message.content.textContainer.leftBorderWidth
-      : theme.message.content.textContainer.rightBorderWidth}px;
-  margin-top: 2px;
-  padding-horizontal: 8px;
-  padding-vertical: 5px;
-  ${({ theme }) => theme.message.content.textContainer.css}
-`;
+const styles = StyleSheet.create({
+  textContainer: { marginTop: 2, paddingHorizontal: 8, paddingVertical: 5 },
+  textContainerAlignmentLeft: {
+    alignSelf: 'flex-start',
+  },
+  textContainerAlignmentRight: {
+    alignSelf: 'flex-end',
+  },
+});
 
 export type MessageTextProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -80,7 +48,7 @@ export type MessageTextProps<
   renderText: (
     params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
   ) => JSX.Element | null;
-  theme: Theme;
+  theme: { theme: Theme };
 };
 
 export type MessageTextContainerProps<
@@ -154,7 +122,26 @@ export const MessageTextContainer = <
     message,
     MessageText,
   } = props;
-  const theme = useContext(ThemeContext);
+  const theme = useTheme();
+  const {
+    theme: {
+      colors: { light, transparent },
+      message: {
+        content: {
+          markdown,
+          textContainer: {
+            borderRadiusL,
+            borderRadiusS,
+            leftBorderColor,
+            leftBorderWidth,
+            rightBorderColor,
+            rightBorderWidth,
+            ...textContainer
+          },
+        },
+      },
+    },
+  } = theme;
 
   if (!message.text) return null;
 
@@ -165,15 +152,46 @@ export const MessageTextContainer = <
         ? 'bottom'
         : groupStyles[0],
     );
-  const markdownStyles = theme ? theme.message.content.markdown : {};
+  const markdownStyles = theme ? markdown : {};
 
   return (
-    <TextContainer
-      alignment={alignment}
-      groupStyle={groupStyle}
-      status={message.status}
+    <View
+      style={[
+        styles.textContainer,
+        alignment === 'left'
+          ? {
+              ...styles.textContainerAlignmentLeft,
+              borderColor: leftBorderColor,
+              borderWidth: leftBorderWidth,
+            }
+          : {
+              ...styles.textContainerAlignmentRight,
+              borderColor: rightBorderColor,
+              borderWidth: rightBorderWidth,
+            },
+        {
+          backgroundColor:
+            alignment === 'left' ||
+            message.type === 'error' ||
+            message.status === 'failed'
+              ? transparent
+              : light,
+          borderBottomLeftRadius:
+            groupStyle.indexOf('left') !== -1 ? borderRadiusS : borderRadiusL,
+          borderBottomRightRadius:
+            groupStyle.indexOf('right') !== -1 ? borderRadiusS : borderRadiusL,
+          borderTopLeftRadius:
+            groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
+              ? borderRadiusS
+              : borderRadiusL,
+          borderTopRightRadius:
+            groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
+              ? borderRadiusS
+              : borderRadiusL,
+        },
+        textContainer,
+      ]}
       testID='message-text-container'
-      type={message.type}
     >
       {MessageText ? (
         <MessageText {...props} renderText={renderText} theme={theme} />
@@ -184,6 +202,8 @@ export const MessageTextContainer = <
           message,
         })
       )}
-    </TextContainer>
+    </View>
   );
 };
+
+MessageTextContainer.displayName = 'MessageTextContainer{message{content}}';

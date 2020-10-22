@@ -1,5 +1,13 @@
 import React from 'react';
-import { FlatList, GestureResponderEvent } from 'react-native';
+import {
+  FlatList,
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 
 import {
   isSuggestionUser,
@@ -8,10 +16,10 @@ import {
   Suggestions,
 } from './SuggestionsContext';
 
+import { useTheme } from '../themeContext/ThemeContext';
+
 import { CommandsItem } from '../../components/AutoCompleteInput/CommandsItem';
 import { MentionsItem } from '../../components/AutoCompleteInput/MentionsItem';
-
-import { styled } from '../../../styles/styledComponents';
 
 import type {
   DefaultCommandType,
@@ -19,54 +27,97 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View<{ length: number }>`
-  background-color: white;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  bottom: 10px;
-  height: ${({ length, theme }) =>
-    Math.min(
-      length * theme.messageInput.suggestions.container.itemHeight,
-      theme.messageInput.suggestions.container.maxHeight,
-    )}px;
-  position: absolute;
-  shadow-color: #000;
-  shadow-offset: 0px -3px;
-  shadow-opacity: 0.05;
-  z-index: 100;
-  ${({ theme }) => theme.messageInput.suggestions.container.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    bottom: 10,
+    position: 'absolute',
+    shadowColor: '#000000',
+    shadowOffset: {
+      height: -3,
+      width: 0,
+    },
+    shadowOpacity: 0.05,
+    zIndex: 100,
+  },
+  separator: {
+    height: 0,
+  },
+  suggestionsItem: {
+    justifyContent: 'center',
+  },
+  title: {
+    fontWeight: 'bold',
+    padding: 10,
+  },
+  wrapper: {
+    position: 'absolute',
+    width: '100%',
+    zIndex: 90,
+  },
+});
 
-const Separator = styled.View`
-  height: 0px;
-  ${({ theme }) => theme.messageInput.suggestions.separator.css};
-`;
+const Separator: React.FC = () => {
+  const {
+    theme: {
+      messageInput: {
+        suggestions: { separator },
+      },
+    },
+  } = useTheme();
 
-const SuggestionsItem = styled.TouchableOpacity`
-  height: ${({ theme }) =>
-    theme.messageInput.suggestions.container.itemHeight}px;
-  justify-content: center;
-  ${({ theme }) => theme.messageInput.suggestions.item.css};
-`;
+  return <View style={[styles.separator, separator]} />;
+};
 
-const Title = styled.Text`
-  font-weight: bold;
-  height: ${({ theme }) =>
-    theme.messageInput.suggestions.container.itemHeight}px;
-  padding: 10px;
-  ${({ theme }) => theme.messageInput.suggestions.title.css};
-`;
+Separator.displayName = 'Separator{messageInput{suggestions{separator}}}';
 
-const Wrapper = styled.TouchableOpacity`
-  position: absolute;
-  width: 100%;
-  z-index: 90;
-  ${({ theme }) => theme.messageInput.suggestions.wrapper.css};
-`;
+const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => {
+  const {
+    theme: {
+      messageInput: {
+        suggestions: {
+          container: { itemHeight },
+          title: titleStyle,
+        },
+      },
+    },
+  } = useTheme();
 
-const SuggestionsHeader: React.FC<{ title: string }> = ({ title }) => (
-  <Title>{title}</Title>
-);
+  return (
+    <Text style={[styles.title, { height: itemHeight }, titleStyle]}>
+      {title}
+    </Text>
+  );
+};
+
+SuggestionsHeader.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
+
+const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {
+  const { children, ...touchableOpacityProps } = props;
+  const {
+    theme: {
+      messageInput: {
+        suggestions: {
+          container: { itemHeight },
+          item,
+        },
+      },
+    },
+  } = useTheme();
+
+  return (
+    <TouchableOpacity
+      {...touchableOpacityProps}
+      style={[styles.suggestionsItem, { height: itemHeight }, item]}
+    >
+      {children}
+    </TouchableOpacity>
+  );
+};
+
+SuggestionsItem.displayName = 'SuggestionsHeader{messageInput{suggestions}}';
 
 const isString = <
   Co extends string = DefaultCommandType,
@@ -106,6 +157,17 @@ export const SuggestionsList = <
     width,
   } = props;
 
+  const {
+    theme: {
+      messageInput: {
+        suggestions: {
+          container: { itemHeight, maxHeight, ...container },
+          wrapper,
+        },
+      },
+    },
+  } = useTheme();
+
   const renderItem = ({ item }: { item: Suggestion<Co, Us> }) => {
     if (isString(Component)) {
       switch (Component) {
@@ -142,8 +204,21 @@ export const SuggestionsList = <
   if (!active || data.length === 0) return null;
 
   return (
-    <Wrapper onPress={handleDismiss} style={{ height: backdropHeight }}>
-      <Container length={data.length + 1} style={{ marginLeft, width }}>
+    <TouchableOpacity
+      onPress={handleDismiss}
+      style={[styles.wrapper, { height: backdropHeight }, wrapper]}
+    >
+      <View
+        style={[
+          styles.container,
+          {
+            height: Math.min((data.length + 1) * itemHeight, maxHeight),
+            marginLeft,
+            width,
+          },
+          container,
+        ]}
+      >
         <FlatList
           data={data}
           ItemSeparatorComponent={Separator}
@@ -154,7 +229,9 @@ export const SuggestionsList = <
           ListHeaderComponent={<SuggestionsHeader title={suggestionsTitle} />}
           renderItem={renderItem}
         />
-      </Container>
-    </Wrapper>
+      </View>
+    </TouchableOpacity>
   );
 };
+
+SuggestionsList.displayName = 'SuggestionsList{messageInput{suggestions}}';
