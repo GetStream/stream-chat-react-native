@@ -158,7 +158,7 @@ const sections = [
         name: 'OverlayContext',
       },
       {
-        content: 'src/v2/contexts/overlyContext/withOverlayContext.md',
+        content: 'src/v2/contexts/overlayContext/withOverlayContext.md',
         name: 'withOverlayContext',
       },
       {
