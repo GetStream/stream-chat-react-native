@@ -97,6 +97,7 @@ registerNativeHandlers({
 
 if (Platform.OS === 'android') {
   if (typeof Symbol === 'undefined') {
+    // eslint-disable-next-line no-undef
     require('es6-symbol/implement');
     if (Array.prototype[Symbol.iterator] === undefined) {
       Array.prototype[Symbol.iterator] = function () {
