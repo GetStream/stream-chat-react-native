@@ -10,7 +10,6 @@
   - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values#installation)
   - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation)
   - [react-native-svg](https://github.com/react-native-svg/react-native-svg#installation)
-  - [stream-chat](https://github.com/GetStream/stream-chat-js)
 
 - Removed styled-components:
   - Removed dot notation for theming applications
