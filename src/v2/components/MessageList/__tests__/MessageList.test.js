@@ -243,7 +243,10 @@ describe('MessageList', () => {
     fireEvent.scroll(getByTestId('message-flat-list'), eventDataUp);
 
     act(() => {
-      const newMessage = generateMessage({ user: user2 });
+      const newMessage = generateMessage({
+        timestamp: new Date(),
+        user: user2,
+      });
       dispatchMessageNewEvent(chatClient, newMessage, mockedChannel.channel);
     });
 

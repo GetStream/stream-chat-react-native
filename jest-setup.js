@@ -1,4 +1,5 @@
-import { registerNativeHandlers } from './src/native';
+import { registerNativeHandlers as registerNativeHandlersV1 } from './src/native';
+import { registerNativeHandlers as registerNativeHandlersV2 } from './src/v2/native';
 
 // eslint-disable-next-line no-underscore-dangle
 const _consoleE = console.error;
@@ -15,7 +16,20 @@ console.error = (e) => {
 };
 console.warn = () => {};
 
-registerNativeHandlers({
+registerNativeHandlersV1({
+  NetInfo: {
+    addEventListener: () => {},
+    fetch: () =>
+      new Promise((resolve) => {
+        resolve();
+      }),
+  },
+  pickDocument: () => null,
+  pickImage: () => null,
+});
+
+registerNativeHandlersV2({
+  BlurView: () => null,
   NetInfo: {
     addEventListener: () => {},
     fetch: () =>

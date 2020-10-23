@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { NetInfo } from '../../../../native';
+import { NetInfo } from '../../../native';
 
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 import type { StreamChat, Event as StreamEvent } from 'stream-chat';

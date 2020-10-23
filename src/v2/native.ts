@@ -1,3 +1,4 @@
+import type { StyleProp, ViewStyle } from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
@@ -5,6 +6,13 @@ const fail = () => {
     'Native handler was not registered, you should import stream-chat-expo or stream-chat-react-native',
   );
 };
+
+type BlurView = React.ComponentType<{
+  blurAmount?: number;
+  blurType?: string;
+  style?: StyleProp<ViewStyle>;
+}>;
+export let BlurView: BlurView = fail;
 
 type NetInfo = {
   addEventListener: (
@@ -45,11 +53,17 @@ type PickDocument = ({
 export let pickDocument: PickDocument = fail;
 
 type Handlers = {
+  BlurView?: BlurView;
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
   pickImage?: PickImage;
 };
+
 export const registerNativeHandlers = (handlers: Handlers) => {
+  if (handlers.BlurView) {
+    BlurView = handlers.BlurView;
+  }
+
   if (handlers.NetInfo) {
     NetInfo = handlers.NetInfo;
   }

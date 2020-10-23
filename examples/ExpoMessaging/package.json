@@ -13,6 +13,7 @@
     "@react-navigation/native": "5.7.6",
     "@react-navigation/stack": "5.9.3",
     "expo": "39.0.3",
+    "expo-blur": "8.2.0",
     "expo-document-picker": "8.4.1",
     "expo-image-picker": "9.1.1",
     "expo-permissions": "9.3.0",
@@ -26,6 +27,7 @@
     "react-native-screens": "2.10.1",
     "react-native-svg": "12.1.0",
     "react-native-web": "0.13.7",
+    "stream-chat": "2.7.0",
     "stream-chat-expo": "link:../../expo-package"
   },
   "devDependencies": {

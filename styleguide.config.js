@@ -154,6 +154,14 @@ const sections = [
         name: 'withMessagesContext',
       },
       {
+        content: 'src/v2/contexts/overlayContext/OverlayContext.md',
+        name: 'OverlayContext',
+      },
+      {
+        content: 'src/v2/contexts/overlayContext/withOverlayContext.md',
+        name: 'withOverlayContext',
+      },
+      {
         content: 'src/contexts/suggestionsContext/SuggestionsContext.md',
         name: 'SuggestionsContext',
       },

@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-community/blur": "3.6.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.7",
     "@react-navigation/native": "5.7.6",
@@ -24,16 +25,16 @@
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
     "react-native-svg": "12.1.0",
-    "stream-chat": "2.6.0",
+    "stream-chat": "2.7.0",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
     "@babel/runtime": "7.12.1",
     "@react-native-community/eslint-config": "2.0.0",
-    "babel-jest": "26.6.0",
+    "babel-jest": "26.6.1",
     "eslint": "7.11.0",
-    "jest": "26.6.0",
+    "jest": "26.6.1",
     "metro-react-native-babel-preset": "0.63.0",
     "react-test-renderer": "16.13.1"
   },
