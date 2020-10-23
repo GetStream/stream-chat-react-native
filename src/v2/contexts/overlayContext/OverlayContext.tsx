@@ -49,9 +49,9 @@ export const withOverlayContext = <P extends UnknownType>(
   const WithOverlayContextComponent = (
     props: Omit<P, keyof OverlayContextValue>,
   ) => {
-    const keyboardContext = useOverlayContext();
+    const overlayContext = useOverlayContext();
 
-    return <Component {...(props as P)} {...keyboardContext} />;
+    return <Component {...(props as P)} {...overlayContext} />;
   };
   WithOverlayContextComponent.displayName = `WithOverlayContext${getDisplayName(
     Component,
