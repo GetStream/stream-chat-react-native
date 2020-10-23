@@ -102,7 +102,7 @@
     "react-native-actionsheet": "2.4.2",
     "react-native-image-zoom-viewer": "3.0.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.6.0",
+    "stream-chat": "2.7.0",
     "styled-components": "5.2.0",
     "uuid": "8.3.1"
   },
