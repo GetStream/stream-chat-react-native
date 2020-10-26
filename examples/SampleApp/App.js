@@ -68,7 +68,7 @@ const ChannelListScreen = React.memo(({navigation}) => {
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <View style={{height: '100%', padding: 10}}>
+        <View style={{height: '100%', padding: 9}}>
           <ChannelList
             filters={filters}
             onSelect={(channel) => {
