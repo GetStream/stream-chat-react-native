@@ -1,7 +1,10 @@
 name: test
 
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
+      - v2-design
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -36,3 +39,27 @@ jobs:
           yarn test
           yarn docs
           yarn validate-translations
+  build_and_deploy_ios:
+    runs-on: [macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install RubyGems
+        run: |
+          cd examples/SampleApp/ios
+          bundle install
+      - name: Install firebase-tools
+        run: npm install -g firebase-tools
+      - name: RN setup
+        run: |
+          cd examples/SampleApp
+          yarn;
+          cd ios
+          pod install
+      - name: Build and release
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          cd examples/SampleApp/ios
+          bundle exec fastlane distribute
