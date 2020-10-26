@@ -11,5 +11,5 @@ yarn-error.log
 dist/
 lib/
 .env*
-
+examples/SampleApp/ios/vendor/
 .tern-port
