@@ -12,8 +12,15 @@
 
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
-
 default_platform(:ios)
+
+
+before_all do
+  if is_ci
+    setup_ci()
+  end
+end
+
 
 desc "Installs all Certs and Profiles necessary for development and ad-hoc"
 lane :match_me do

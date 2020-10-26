@@ -20,7 +20,6 @@
 		C59A48B9682964FC9F82EF80 /* libPods-SampleApp-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EDCED86DF4E3BC1A6FF485D8 /* libPods-SampleApp-tvOS.a */; };
 		D683C1E33121BF3A62BEBD11 /* libPods-SampleApp-SampleAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 999F5457ACC75E8C0847149F /* libPods-SampleApp-SampleAppTests.a */; };
 		FC3955CAE958BD2327B6A9B3 /* libPods-SampleApp-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 451425A4DB9AAA7EA18BAE59 /* libPods-SampleApp-tvOSTests.a */; };
-		FCA5E30D2546FEAD00B4E978 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCA5E30C2546FEAD00B4E978 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,7 +67,6 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EDCED86DF4E3BC1A6FF485D8 /* libPods-SampleApp-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleApp-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA5E30C2546FEAD00B4E978 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,7 +125,6 @@
 		13B07FAE1A68108700A75B9A /* SampleApp */ = {
 			isa = PBXGroup;
 			children = (
-				FCA5E30C2546FEAD00B4E978 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -346,7 +343,6 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				FCA5E30D2546FEAD00B4E978 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -648,6 +644,7 @@
 			baseConfigurationReference = 8B07073F83AD6740A614A16F /* Pods-SampleApp-SampleAppTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = EHV7XZLAHA;
 				INFOPLIST_FILE = SampleAppTests/Info.plist;
@@ -660,6 +657,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
 			};
 			name = Release;
@@ -670,6 +669,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EHV7XZLAHA;
 				ENABLE_BITCODE = NO;
@@ -682,6 +682,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.getstream.reactnative.SampleApp;
 				PRODUCT_NAME = SampleApp;
+				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc io.getstream.reactnative.SampleApp";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -694,6 +695,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = EHV7XZLAHA;
 				INFOPLIST_FILE = SampleApp/Info.plist;
@@ -705,6 +708,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.getstream.reactnative.SampleApp;
 				PRODUCT_NAME = SampleApp;
+				PROVISIONING_PROFILE_SPECIFIER = "match AdHoc io.getstream.reactnative.SampleApp";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
