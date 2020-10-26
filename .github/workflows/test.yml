@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - v2-design
+      - vishal/v2-design
 jobs:
   test:
     runs-on: ubuntu-latest
