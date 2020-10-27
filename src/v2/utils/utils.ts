@@ -1,4 +1,5 @@
 import debounce from 'lodash/debounce';
+import { Dimensions, Platform, StatusBar } from 'react-native';
 
 import type {
   Channel,
@@ -372,3 +373,22 @@ export const MESSAGE_ACTIONS = {
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
+
+export const vw = (percentageWidth: number, rounded = false) => {
+  const value = Dimensions.get('window').width * (percentageWidth / 100);
+  return rounded ? Math.round(value) : value;
+};
+
+export const vh = (percentageHeight: number, rounded = false) => {
+  let height = Dimensions.get('window').height;
+
+  /**
+   * Android includes `statusbar` height to the Dimensions.get('window').height
+   */
+  if (Platform.OS === 'android' && StatusBar.currentHeight) {
+    height -= StatusBar.currentHeight;
+  }
+
+  const value = height * (percentageHeight / 100);
+  return rounded ? Math.round(value) : value;
+};
