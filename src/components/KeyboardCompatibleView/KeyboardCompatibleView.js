@@ -127,8 +127,9 @@ class KeyboardCompatibleView extends React.Component {
   };
 
   unsetKeyboardListeners = () => {
-    this._subscriptions.forEach((subscription) => {
+    this._subscriptions = this._subscriptions.filter((subscription) => {
       subscription.remove();
+      return false;
     });
   };
 
