@@ -20,8 +20,6 @@ import type {
 
 const Container = styled.TouchableOpacity<{ leftAlign: boolean }>`
   align-items: ${({ leftAlign }) => (leftAlign ? 'flex-start' : 'flex-end')};
-  border-color: pink;
-  border-width: 10px;
   flex: 1;
   ${({ theme }) => theme.message.reactionPicker.container.css}
 `;
@@ -30,8 +28,7 @@ const ContainerView = styled.View`
   background-color: black;
   border-radius: 30px;
   flex-direction: row;
-  flex-wrap: wrap;
-  height: 100px;
+  height: 60px;
   padding-horizontal: 20px;
   ${({ theme }) => theme.message.reactionPicker.containerView.css}
 `;
@@ -90,7 +87,6 @@ export type ReactionPickerProps<
     | MessageWithDates<At, Ch, Co, Me, Re, Us>['reaction_counts']
     | null;
   reactionPickerVisible?: boolean;
-  rpBottom?: number;
   rpLeft?: number;
   rpRight?: number;
   rpTop?: number;
@@ -118,7 +114,7 @@ export const ReactionPicker = <
     reactionPickerVisible,
     rpLeft,
     rpRight,
-    rpTop,
+    rpTop = 40,
     supportedReactions = emojiData,
   } = props;
 
@@ -126,7 +122,7 @@ export const ReactionPicker = <
 
   return (
     <Modal
-      animationType='slide'
+      animationType='fade'
       onRequestClose={handleDismiss}
       testID='reaction-picker'
       transparent
