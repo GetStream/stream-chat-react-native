@@ -1,10 +1,6 @@
 # Changelog
 
-## [1.3.5] 2020-10-27
-
-- Fixing [keyboard issue](https://github.com/GetStream/stream-chat-react-native/issues/397) during app state change [a8aa4ed](https://github.com/GetStream/stream-chat-react-native/commit/a8aa4edebd723120ea41d88b2f9d45df5a75f848)
-
-## [2.0.0-beta.0]
+## [2.0.0] 2020-10-29
 
 Please check [Upgrade Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper#upgrade-from-0xx-to-2xx) for upgrading from 0.x.x to 2.x.x
 
@@ -89,6 +85,10 @@ This library has been moved to full typescript. Please check [Typescript doc](ht
     - `threadMessages`
 
 - All contexts are exported and any values can be accessed through a higher order component (ex: `withMessagesContext`) or with one of our custom context hooks (ex: access `MessagesContext` by `const { messages } = useMessagesContext();`).
+
+## [1.3.5] 2020-10-27
+
+- Fixing [keyboard issue](https://github.com/GetStream/stream-chat-react-native/issues/397) during app state change [a8aa4ed](https://github.com/GetStream/stream-chat-react-native/commit/a8aa4edebd723120ea41d88b2f9d45df5a75f848)
 
 ## [1.3.4] 2020-10-13
 
