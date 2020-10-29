@@ -6930,10 +6930,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v2.0.0-beta.1:
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.0.0-beta.1.tgz#98ebe3660c75fcc53b3778a72041859b0648bfcd"
-  integrity sha512-sL1v5TXCT2M5CQalLCxNiP/ZezFGeawEcZiRb7kCBMaNKoWHjVeH/vUWdA3zput4SBHBjo7evWMJmjiCyZUdgA==
+stream-chat-react-native-core@v2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.0.0.tgz#ca0f5a241cdf0d82d4a8e938311db107428e2533"
+  integrity sha512-JWZCSSKBLBTEQXIsR0vGr6lbj9Wl+2KnMhOQnq4CF4AqVEnSV/zd+78z+g8ZwZNjxs3wah+KmjP9kwm2hqHl5Q==
   dependencies:
     "@babel/runtime" "7.11.2"
     "@stream-io/react-native-simple-markdown" "1.2.1"
@@ -6949,7 +6949,7 @@ stream-chat-react-native-core@v2.0.0-beta.1:
     react-native-actionsheet "2.4.2"
     react-native-image-zoom-viewer "3.0.1"
     seamless-immutable "7.1.4"
-    stream-chat "2.6.0"
+    stream-chat "2.7.0"
     styled-components "5.2.0"
     uuid "8.3.1"
 
@@ -6961,6 +6961,25 @@ stream-chat@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.6.0.tgz#2fae6e4c5a56a8f86dee0676654fe2511d751aab"
   integrity sha512-hI1aIMCkcGektSOt7Gt2CrrKmHKn31ovbJ+IWz1rsgdZHiWLCG2QG7JgGUKeoJVD/Ix501CjnEugZHlFdbZLwg==
+  dependencies:
+    "@babel/runtime" "^7.11.2"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/seamless-immutable" "7.1.13"
+    "@types/uuid" "^8.3.0"
+    "@types/ws" "^7.2.7"
+    axios "^0.20.0"
+    base64-js "^1.3.1"
+    form-data "^3.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    seamless-immutable "^7.1.4"
+    uuid "^8.3.1"
+    ws "^7.3.1"
+
+stream-chat@2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.0.tgz#a1f9fe1474d270cee9e0e118953d7dcbbadd90ba"
+  integrity sha512-JRhw5JyIrS9bKVhLzEu57BxXTExMlxCJu0YXdMryJh9Wnl0XOzzjwCwYqZIFWFWH52RGyovQ+8VxkRzURStowg==
   dependencies:
     "@babel/runtime" "^7.11.2"
     "@types/jsonwebtoken" "^8.5.0"
