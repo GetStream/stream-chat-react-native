@@ -17,6 +17,8 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type { Reaction } from 'src/components/Reaction/ReactionList';
+
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
   background-color: #fff;
@@ -117,7 +119,7 @@ export type MessageActionSheetProps<
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  supportedReactions: Array<unknown>;
+  supportedReactions: Reaction[];
   /**
    * Style object for action sheet (used to style message actions)
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
