@@ -1,6 +1,6 @@
 {
   "name": "stream-chat-expo",
-  "version": "2.0.0-dev-sc.0",
+  "version": "2.0.0",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -9,7 +9,7 @@
   "main": "src/index.js",
   "types": "types/index.d.ts",
   "dependencies": {
-    "stream-chat-react-native-core": "v2.0.0-dev-sc.0"
+    "stream-chat-react-native-core": "v2.0.0"
   },
   "peerDependencies": {
     "expo": "^39.0.0",
