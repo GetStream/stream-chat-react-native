@@ -171,11 +171,11 @@ export const Thread = <
   const headerComponent = (
     <>
       <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalParentMessageProps}
         groupStyles={['single']}
         message={thread}
         Message={Message}
         threadList
+        {...additionalParentMessageProps}
       />
       <NewThread>
         <NewThreadText>{t('Start of a new thread')}</NewThreadText>
@@ -186,15 +186,15 @@ export const Thread = <
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalMessageListProps}
         HeaderComponent={headerComponent}
         Message={Message}
         threadList
+        {...additionalMessageListProps}
       />
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalMessageInputProps}
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
         parent_id={thread.id as StreamMessage<At, Me, Us>['parent_id']}
+        {...additionalMessageInputProps}
       />
     </React.Fragment>
   );
