@@ -1,27 +1,37 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useContext, useEffect, useState} from 'react';
 import {LogBox, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, RouteProp} from '@react-navigation/native';
 import {createStackNavigator, useHeaderHeight} from '@react-navigation/stack';
+import type {StackNavigationProp} from '@react-navigation/stack';
 import {enableScreens} from 'react-native-screens';
-import {StreamChat} from 'stream-chat';
+import {ChannelSort, Channel as ChannelType, StreamChat} from 'stream-chat';
 import {
   Channel,
   ChannelList,
-  ChannelPreviewMessenger,
   Chat,
+  DeepPartial,
   MessageInput,
   MessageList,
   OverlayProvider,
   Streami18n,
+  Theme,
   Thread,
+  ThreadContextValue,
 } from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
 enableScreens();
 
+type LocalAttachmentType = Record<string, unknown>;
+type LocalChannelType = Record<string, unknown>;
+type LocalCommandType = string;
+type LocalEventType = Record<string, unknown>;
+type LocalMessageType = Record<string, unknown>;
+type LocalResponseType = Record<string, unknown>;
+type LocalUserType = Record<string, unknown>;
+
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-const theme = {
+const theme: DeepPartial<Theme> = {
   avatar: {
     image: {
       height: 32,
@@ -37,7 +47,15 @@ const theme = {
   },
 };
 
-const chatClient = new StreamChat('q95x9hkbyd6p');
+const chatClient = new StreamChat<
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType
+>('q95x9hkbyd6p');
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoicm9uIn0.eRVjxLvd4aqCEHY_JRa97g6k7WpHEhxL7Z4K4yTot1c';
 const user = {
@@ -49,7 +67,7 @@ const filters = {
   members: {$in: ['ron']},
   type: 'messaging',
 };
-const sort = {last_message_at: -1};
+const sort: ChannelSort<LocalChannelType> = {last_message_at: -1};
 const options = {
   state: true,
   watch: true,
@@ -63,29 +81,44 @@ const streami18n = new Streami18n({
   language: 'en',
 });
 
-const ChannelListScreen = React.memo(({navigation}) => {
+type ChannelListScreenProps = {
+  navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;
+};
+
+const ChannelListScreen: React.FC<ChannelListScreenProps> = ({navigation}) => {
   const {setChannel} = useContext(AppContext);
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
-        <View style={{height: '100%', padding: 9}}>
-          <ChannelList
+        <View style={{height: '100%', padding: 10}}>
+          <ChannelList<
+            LocalAttachmentType,
+            LocalChannelType,
+            LocalCommandType,
+            LocalEventType,
+            LocalMessageType,
+            LocalResponseType,
+            LocalUserType
+          >
             filters={filters}
             onSelect={(channel) => {
               setChannel(channel);
               navigation.navigate('Channel');
             }}
             options={options}
-            Preview={ChannelPreviewMessenger}
             sort={sort}
           />
         </View>
       </Chat>
     </SafeAreaView>
   );
-});
+};
 
-const ChannelScreen = React.memo(({navigation}) => {
+type ChannelScreenProps = {
+  navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
+};
+
+const ChannelScreen: React.FC<ChannelScreenProps> = ({navigation}) => {
   const {channel, setThread} = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
@@ -94,10 +127,20 @@ const ChannelScreen = React.memo(({navigation}) => {
       <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
           <View style={{flex: 1}}>
-            <MessageList
+            <MessageList<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
+            >
               onThreadSelect={(thread) => {
                 setThread(thread);
-                navigation.navigate('Thread', {channelId: channel.id});
+                if (channel?.id) {
+                  navigation.navigate('Thread', {channelId: channel.id});
+                }
               }}
             />
             <MessageInput />
@@ -106,9 +149,13 @@ const ChannelScreen = React.memo(({navigation}) => {
       </Chat>
     </SafeAreaView>
   );
-});
+};
 
-const ThreadScreen = React.memo(({route}) => {
+type ThreadScreenProps = {
+  route: RouteProp<ThreadRoute, 'Thread'>;
+};
+
+const ThreadScreen: React.FC<ThreadScreenProps> = ({route}) => {
   const {thread} = useContext(AppContext);
   const [channel] = useState(
     chatClient.channel('messaging', route.params.channelId),
@@ -117,7 +164,7 @@ const ThreadScreen = React.memo(({route}) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
+      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
         <Channel
           channel={channel}
           keyboardVerticalOffset={headerHeight}
@@ -127,28 +174,114 @@ const ThreadScreen = React.memo(({route}) => {
               flex: 1,
               justifyContent: 'flex-start',
             }}>
-            <Thread thread={thread} />
+            <Thread<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
+            > />
           </View>
         </Channel>
       </Chat>
     </SafeAreaView>
   );
-});
+};
 
-const Stack = createStackNavigator();
+type ChannelRoute = {Channel: undefined};
+type ChannelListRoute = {ChannelList: undefined};
+type ThreadRoute = {Thread: {channelId: string}};
+type NavigationParamsList = ChannelRoute & ChannelListRoute & ThreadRoute;
 
-const AppContext = React.createContext();
+const Stack = createStackNavigator<NavigationParamsList>();
+
+type AppContextType = {
+  channel:
+    | ChannelType<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalResponseType,
+        LocalUserType
+      >
+    | undefined;
+  setChannel: React.Dispatch<
+    React.SetStateAction<
+      | ChannelType<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+      | undefined
+    >
+  >;
+  setThread: React.Dispatch<
+    React.SetStateAction<
+      | ThreadContextValue<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >['thread']
+      | undefined
+    >
+  >;
+  thread:
+    | ThreadContextValue<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalResponseType,
+        LocalUserType
+      >['thread']
+    | undefined;
+};
+
+const AppContext = React.createContext({} as AppContextType);
 
 export default () => {
-  const [channel, setChannel] = useState();
+  const [channel, setChannel] = useState<
+    ChannelType<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >
+  >();
   const [clientReady, setClientReady] = useState(false);
-  const [thread, setThread] = useState();
+  const [thread, setThread] = useState<
+    ThreadContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >['thread']
+  >();
 
   useEffect(() => {
     const setupClient = async () => {
       await chatClient.setUser(user, userToken);
 
-      setClientReady(true);
+      return setClientReady(true);
     };
 
     setupClient();
@@ -170,8 +303,7 @@ export default () => {
                 name="Channel"
                 options={() => ({
                   headerBackTitle: 'Back',
-                  headerRight: () => <></>,
-                  headerTitle: channel.data.name,
+                  headerTitle: channel?.data?.name,
                 })}
               />
               <Stack.Screen
