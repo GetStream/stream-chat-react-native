@@ -1,4 +1,4 @@
-/* eslint-env node */
+/* eslint-disable */ 
 function resolvePath(...parts) {
   const thisPath = PATH.resolve.apply(PATH, parts);
   if (!FS.existsSync(thisPath)) return;
@@ -52,7 +52,7 @@ function buildFullModuleMap(
 
   listDirectories(
     moduleRoot,
-    ({fileName, fullFileName, symbolic, external}) => {
+    ({external, fileName, fullFileName, symbolic}) => {
       if (symbolic)
         return buildFullModuleMap(
           resolvePath(fullFileName, 'node_modules'),
@@ -97,7 +97,7 @@ function findAlternateRoots(
 
   alreadyVisited[moduleRoot] = true;
 
-  listDirectories(moduleRoot, ({fullFileName, fileName, external}) => {
+  listDirectories(moduleRoot, ({external, fileName, fullFileName}) => {
     if (fileName.charAt(0) !== '@') {
       if (external) alternateRoots.push(fullFileName);
     } else {
