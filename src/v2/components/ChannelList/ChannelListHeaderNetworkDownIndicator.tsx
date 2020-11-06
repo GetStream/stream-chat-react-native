@@ -31,7 +31,7 @@ export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
   return (
     <View style={[styles.container, container]}>
       <Text style={[styles.errorText, errorText]}>
-        {t('Connection failure, reconnecting now ...')}
+        {t('Connection failure, reconnecting now...')}
       </Text>
     </View>
   );

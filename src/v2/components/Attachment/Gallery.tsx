@@ -14,16 +14,33 @@ import { Immutable, isImmutable } from 'seamless-immutable';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
-import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
-import type { Attachment } from 'stream-chat';
 
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const styles = StyleSheet.create({
   galleryContainer: {
@@ -64,7 +81,7 @@ type GalleryHeaderProps = {
 const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
   const {
     theme: {
-      message: {
+      messageSimple: {
         gallery: {
           header: { button, container },
         },
@@ -89,31 +106,42 @@ const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
   );
 };
 
-GalleryHeader.displayName = 'GalleryHeader{message{gallery{header}}}';
+GalleryHeader.displayName = 'GalleryHeader{messageSimple{gallery{header}}}';
 
-export type GalleryProps<At extends UnknownType = DefaultAttachmentType> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * The image attachments to render
-   */
-  images: Attachment<At>[];
-};
+export type GalleryPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'images' | 'onLongPress'
+> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps'
+  > &
+  Pick<TranslationContextValue, 't'>;
 
-/**
- * UI component for card in attachments.
- *
- * @example ./Gallery.md
- */
-export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
-  props: GalleryProps<At>,
+const GalleryWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, images } = props;
+  const { additionalTouchableProps, alignment, images, onLongPress, t } = props;
+
   const {
     theme: {
-      message: {
+      messageSimple: {
         gallery: {
           doubleSize,
           galleryContainer,
@@ -126,9 +154,6 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
       },
     },
   } = useTheme();
-
-  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
-  const { t } = useTranslationContext();
 
   const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
   const [viewerModalOpen, setViewerModalOpen] = useState(false);
@@ -312,4 +337,90 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   );
 };
 
-Gallery.displayName = 'Gallery{message{gallery}}';
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { images: prevImages } = prevProps;
+  const { images: nextImages } = nextProps;
+
+  const imagesEqual = prevImages.length === nextImages.length;
+
+  return imagesEqual;
+};
+
+const MemoizedGallery = React.memo(
+  GalleryWithContext,
+  areEqual,
+) as typeof GalleryWithContext;
+
+export type GalleryProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+/**
+ * UI component for card in attachments.
+ *
+ * @example ./Gallery.md
+ */
+export const Gallery = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: GalleryProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTouchableProps: propAdditionalTouchableProps,
+    alignment: propAlignment,
+    images: propImages,
+    onLongPress: propOnLongPress,
+    t: propT,
+  } = props;
+
+  const {
+    alignment: contextAlignment,
+    images: contextImages,
+    onLongPress: contextOnLongPress,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { t: contextT } = useTranslationContext();
+
+  const images = propImages || contextImages;
+
+  if (!images.length) return null;
+
+  const additionalTouchableProps =
+    propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const alignment = propAlignment || contextAlignment;
+  const onLongPress = propOnLongPress || contextOnLongPress;
+  const t = propT || contextT;
+
+  return (
+    <MemoizedGallery
+      {...{ additionalTouchableProps, alignment, images, onLongPress, t }}
+    />
+  );
+};
+
+Gallery.displayName = 'Gallery{messageSimple{gallery}}';

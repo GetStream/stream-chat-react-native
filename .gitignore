@@ -11,5 +11,14 @@ yarn-error.log
 dist/
 lib/
 .env*
-
+examples/SampleApp/ios/vendor/
 .tern-port
+
+########################################### Custom ##############################################
+
+**/ios/GoogleService-Info.plist
+**/google-services.json
+**/.env
+
+
+#################################################################################################

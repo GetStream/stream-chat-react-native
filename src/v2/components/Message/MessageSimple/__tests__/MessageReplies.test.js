@@ -124,9 +124,9 @@ describe('MessageReplies', () => {
           <MessageReplies
             alignment='right'
             groupStyles={['bottom']}
-            isThreadList
             message={message2}
             openThread={() => null}
+            threadList
           />
         </ThemeProvider>
       </TranslationProvider>,

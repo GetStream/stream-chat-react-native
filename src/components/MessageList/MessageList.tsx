@@ -441,7 +441,7 @@ export const MessageList = <
         {!isOnline && (
           <ErrorNotification testID='error-notification'>
             <ErrorNotificationText>
-              {t('Connection failure, reconnecting now ...')}
+              {t('Connection failure, reconnecting now...')}
             </ErrorNotificationText>
           </ErrorNotification>
         )}

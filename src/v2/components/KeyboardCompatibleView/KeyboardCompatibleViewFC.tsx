@@ -88,8 +88,9 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
     };
 
     const unsetKeyboardListeners = () => {
-      subscriptions.current.forEach((subscription) => {
+      subscriptions.current = subscriptions.current.filter((subscription) => {
         subscription.remove();
+        return false;
       });
     };
 

@@ -40,3 +40,7 @@ registerNativeHandlersV2({
   pickDocument: () => null,
   pickImage: () => null,
 });
+
+jest.mock('react-native-reanimated', () =>
+  require('react-native-reanimated/mock'),
+);

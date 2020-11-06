@@ -79,8 +79,8 @@ export const useThreadContext = <
   >;
 
 /**
- * Typescript currently does not support partial inference so if MessageContentContext
- * typing is desired while using the HOC withMessageContentContextContext the Props for the
+ * Typescript currently does not support partial inference so if ThreadContext
+ * typing is desired while using the HOC withThreadContextContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withThreadContext = <

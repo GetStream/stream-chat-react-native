@@ -1,12 +1,15 @@
 import * as React from 'react';
-import { Image, ImageRequireSource } from 'react-native';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-const iconPDF: ImageRequireSource = require('../../../images/PDF.png');
-const iconDOC: ImageRequireSource = require('../../../images/DOC.png');
-const iconPPT: ImageRequireSource = require('../../../images/PPT.png');
-const iconXLS: ImageRequireSource = require('../../../images/XLS.png');
-const iconTAR: ImageRequireSource = require('../../../images/TAR.png');
+import { CSV } from '../../icons/CSV';
+import { DOC } from '../../icons/DOC';
+import { PDF } from '../../icons/PDF';
+import { PPT } from '../../icons/PPT';
+import { TAR } from '../../icons/TAR';
+import { XLS } from '../../icons/XLS';
+import { ZIP } from '../../icons/ZIP';
+
+import type { IconProps } from '../../icons/utils/base';
 
 // Partially based on:
 // https://stackoverflow.com/a/4212908/2570866
@@ -38,8 +41,6 @@ const wordMimeTypes = [
 ];
 
 const excelMimeTypes = [
-  // .csv
-  'text/csv',
   // TODO: maybe more data files
 
   // Microsoft Excel
@@ -99,9 +100,7 @@ const powerpointMimeTypes = [
   // NOTE: firefox doesn't know mimetype so maybe ignore
 ];
 
-const archiveFileTypes = [
-  // .zip
-  'application/zip',
+const tarFileTypes = [
   // .z7
   'application/x-7z-compressed',
   // .ar
@@ -165,37 +164,49 @@ const codeFileTypes = [
   'application/x-shellscript',
 ];
 
-const mimeTypeToIconMap: Record<string, ImageRequireSource> = {
-  'application/pdf': iconPDF,
+const zipFileTypes = [
+  // .gzip
+  'application/gzip',
+  // .zip
+  'application/zip',
+];
+
+const mimeTypeToIconMap: Record<string, React.FC<IconProps>> = {
+  'application/pdf': PDF,
+  'text/csv': CSV, // .csv
 };
 
 for (const type of wordMimeTypes) {
-  mimeTypeToIconMap[type] = iconDOC;
+  mimeTypeToIconMap[type] = DOC;
 }
 
 for (const type of excelMimeTypes) {
-  mimeTypeToIconMap[type] = iconXLS;
+  mimeTypeToIconMap[type] = XLS;
 }
 
 for (const type of powerpointMimeTypes) {
-  mimeTypeToIconMap[type] = iconPPT;
+  mimeTypeToIconMap[type] = PPT;
 }
 
-for (const type of archiveFileTypes) {
-  mimeTypeToIconMap[type] = iconTAR;
+for (const type of tarFileTypes) {
+  mimeTypeToIconMap[type] = TAR;
 }
 
 for (const type of codeFileTypes) {
-  mimeTypeToIconMap[type] = iconDOC;
+  mimeTypeToIconMap[type] = DOC;
 }
 
-function mimeTypeToIcon(mimeType?: string): ImageRequireSource {
-  if (!mimeType) return iconDOC;
+for (const type of zipFileTypes) {
+  mimeTypeToIconMap[type] = ZIP;
+}
 
-  const icon = mimeTypeToIconMap[mimeType];
-  if (icon) return icon;
+function mimeTypeToIcon(mimeType?: string): React.FC<IconProps> {
+  if (!mimeType) return DOC;
 
-  return iconDOC;
+  const Icon = mimeTypeToIconMap[mimeType];
+  if (Icon) return Icon;
+
+  return DOC;
 }
 
 export type FileIconProps = {
@@ -206,18 +217,15 @@ export type FileIconProps = {
 export const FileIcon: React.FC<FileIconProps> = ({ mimeType, size }) => {
   const {
     theme: {
-      message: {
+      messageSimple: {
         file: { icon },
       },
     },
   } = useTheme();
 
-  return (
-    <Image
-      source={mimeTypeToIcon(mimeType)}
-      style={[icon, size ? { height: size, width: size } : {}]}
-    />
-  );
+  const Icon = mimeTypeToIcon(mimeType);
+
+  return <Icon {...(size ? { height: size, width: size } : {})} {...icon} />;
 };
 
-FileIcon.displayName = 'FileIcon{message{file{icon}}}';
+FileIcon.displayName = 'FileIcon{messageSimple{file{icon}}}';

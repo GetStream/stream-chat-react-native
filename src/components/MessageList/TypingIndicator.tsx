@@ -22,7 +22,7 @@ import type {
 } from '../../types/types';
 
 const Container = styled.View`
-  align-items: center;
+  align-items: flex-end;
   flex-direction: row;
   justify-content: flex-start;
   ${({ theme }) => theme.typingIndicator.container.css};
@@ -70,7 +70,7 @@ export const TypingIndicator = <
           image={user.image}
           key={`${user.id}${idx}`}
           name={user.name || user.id}
-          size={24}
+          size={20}
           testID={`typing-avatar-${idx}`}
         />
       ))}

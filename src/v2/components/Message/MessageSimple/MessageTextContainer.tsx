@@ -1,20 +1,24 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { capitalize } from './utils/capitalize';
-import { renderText } from './utils/renderText';
+import { renderText, RenderTextParams } from './utils/renderText';
 
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type { MessageSimpleProps } from './MessageSimple';
-import type { RenderTextParams } from './utils/renderText';
+import { emojiRegex } from '../../../utils/utils';
 
 import type {
-  Alignment,
-  GroupType,
-} from '../../../contexts/messagesContext/MessagesContext';
-import type { Theme } from '../../../contexts/themeContext/utils/theme';
-import type { Message as MessageType } from '../../../components/MessageList/utils/insertDates';
+  MarkdownStyle,
+  Theme,
+} from '../../../contexts/themeContext/utils/theme';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -27,7 +31,7 @@ import type {
 } from '../../../types/types';
 
 const styles = StyleSheet.create({
-  textContainer: { marginTop: 2, paddingHorizontal: 8, paddingVertical: 5 },
+  textContainer: { marginTop: 2, maxWidth: 250, paddingHorizontal: 16 },
   textContainerAlignmentLeft: {
     alignSelf: 'flex-start',
   },
@@ -51,6 +55,162 @@ export type MessageTextProps<
   theme: { theme: Theme };
 };
 
+export type MessageTextContainerPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'groupStyles' | 'message'
+> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'markdownRules' | 'MessageText'
+  > & { theme: { theme: Theme }; markdownStyles?: MarkdownStyle };
+
+const MessageTextContainerWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    alignment,
+    groupStyles,
+    markdownRules,
+    markdownStyles: propMarkdownStyles = {},
+    message,
+    MessageText,
+    theme,
+  } = props;
+
+  const {
+    theme: {
+      colors: { light, transparent },
+      messageSimple: {
+        content: {
+          markdown,
+          textContainer: {
+            borderRadiusL,
+            borderRadiusS,
+            leftBorderColor,
+            leftBorderWidth,
+            onlyEmojiLeftBorderColor,
+            onlyEmojiMarkdown,
+            onlyEmojiRightBorderColor,
+            rightBorderColor,
+            rightBorderWidth,
+            ...textContainer
+          },
+        },
+      },
+    },
+  } = theme;
+
+  if (!message.text) return null;
+
+  const onlyEmojis = emojiRegex.test(message.text);
+
+  const groupStyle = `${alignment}_${(Array.isArray(message.attachments) &&
+  message.attachments.length > 0
+    ? 'bottom'
+    : groupStyles[0]
+  ).toLowerCase()}`;
+
+  const markdownStyles = propMarkdownStyles || markdown || {};
+
+  return (
+    <View
+      style={[
+        styles.textContainer,
+        alignment === 'left'
+          ? {
+              ...styles.textContainerAlignmentLeft,
+              borderColor: onlyEmojis
+                ? onlyEmojiLeftBorderColor
+                : leftBorderColor,
+              borderWidth: leftBorderWidth,
+            }
+          : {
+              ...styles.textContainerAlignmentRight,
+              borderColor: onlyEmojis
+                ? onlyEmojiRightBorderColor
+                : rightBorderColor,
+              borderWidth: rightBorderWidth,
+            },
+        {
+          backgroundColor: onlyEmojis
+            ? transparent
+            : alignment === 'left' ||
+              message.type === 'error' ||
+              message.status === 'failed'
+            ? '#FFFFFF'
+            : light,
+          borderBottomLeftRadius:
+            groupStyle === 'left_bottom' || groupStyle === 'left_single'
+              ? borderRadiusS
+              : borderRadiusL,
+          borderBottomRightRadius:
+            groupStyle === 'right_bottom' || groupStyle === 'right_single'
+              ? borderRadiusS
+              : borderRadiusL,
+          borderTopLeftRadius: borderRadiusL,
+          borderTopRightRadius: borderRadiusL,
+        },
+        textContainer,
+      ]}
+      testID='message-text-container'
+    >
+      {MessageText ? (
+        <MessageText {...props} renderText={renderText} theme={theme} />
+      ) : (
+        renderText<At, Ch, Co, Ev, Me, Re, Us>({
+          markdownRules,
+          markdownStyles: {
+            ...markdownStyles,
+            ...(onlyEmojis ? onlyEmojiMarkdown : {}),
+          },
+          message,
+        })
+      )}
+    </View>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { message: prevMessage } = prevProps;
+  const { message: nextMessage } = nextProps;
+
+  const messageTextEqual = prevMessage.text === nextMessage.text;
+
+  return messageTextEqual;
+};
+
+const MemoizedMessageTextContainer = React.memo(
+  MessageTextContainerWithContext,
+  areEqual,
+) as typeof MessageTextContainerWithContext;
+
 export type MessageTextContainerProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -59,50 +219,7 @@ export type MessageTextContainerProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the message has failed
-   */
-  disabled: boolean;
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: GroupType[];
-  /** Handler to process a reaction */
-  handleReaction: (reactionType: string) => Promise<void>;
-  /**
-   * Returns true if message belongs to current user, else false
-   */
-  isMyMessage: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => boolean;
-  /**
-   * Current [message object](https://getstream.io/chat/docs/#message_format)
-   */
-  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Handler to open and navigate into a message thread
-   */
-  openThread: () => void;
-  /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules?: UnknownType;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
-   * Custom UI component for message text
-   */
-  MessageText?: React.ComponentType<
-    MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-};
+> = Partial<MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageTextContainer = <
   At extends UnknownType = DefaultAttachmentType,
@@ -115,95 +232,40 @@ export const MessageTextContainer = <
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment,
-    groupStyles = ['bottom'],
-    markdownRules = {},
-    message,
-    MessageText,
-  } = props;
+  const { alignment, groupStyles, message } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { markdownRules, MessageText } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const theme = useTheme();
-  const {
-    theme: {
-      colors: { light, transparent },
-      message: {
-        content: {
-          markdown,
-          textContainer: {
-            borderRadiusL,
-            borderRadiusS,
-            leftBorderColor,
-            leftBorderWidth,
-            rightBorderColor,
-            rightBorderWidth,
-            ...textContainer
-          },
-        },
-      },
-    },
-  } = theme;
-
-  if (!message.text) return null;
-
-  const groupStyle =
-    alignment +
-    capitalize(
-      Array.isArray(message.attachments) && message.attachments.length > 0
-        ? 'bottom'
-        : groupStyles[0],
-    );
-  const markdownStyles = theme ? markdown : {};
 
   return (
-    <View
-      style={[
-        styles.textContainer,
-        alignment === 'left'
-          ? {
-              ...styles.textContainerAlignmentLeft,
-              borderColor: leftBorderColor,
-              borderWidth: leftBorderWidth,
-            }
-          : {
-              ...styles.textContainerAlignmentRight,
-              borderColor: rightBorderColor,
-              borderWidth: rightBorderWidth,
-            },
-        {
-          backgroundColor:
-            alignment === 'left' ||
-            message.type === 'error' ||
-            message.status === 'failed'
-              ? transparent
-              : light,
-          borderBottomLeftRadius:
-            groupStyle.indexOf('left') !== -1 ? borderRadiusS : borderRadiusL,
-          borderBottomRightRadius:
-            groupStyle.indexOf('right') !== -1 ? borderRadiusS : borderRadiusL,
-          borderTopLeftRadius:
-            groupStyle === 'leftBottom' || groupStyle === 'leftMiddle'
-              ? borderRadiusS
-              : borderRadiusL,
-          borderTopRightRadius:
-            groupStyle === 'rightBottom' || groupStyle === 'rightMiddle'
-              ? borderRadiusS
-              : borderRadiusL,
-        },
-        textContainer,
-      ]}
-      testID='message-text-container'
-    >
-      {MessageText ? (
-        <MessageText {...props} renderText={renderText} theme={theme} />
-      ) : (
-        renderText<At, Ch, Co, Ev, Me, Re, Us>({
-          markdownRules,
-          markdownStyles,
-          message,
-        })
-      )}
-    </View>
+    <MemoizedMessageTextContainer
+      {...{
+        alignment,
+        groupStyles,
+        markdownRules,
+        message,
+        MessageText,
+        theme,
+      }}
+      {...props}
+    />
   );
 };
 
-MessageTextContainer.displayName = 'MessageTextContainer{message{content}}';
+MessageTextContainer.displayName =
+  'MessageTextContainer{messageSimple{content}}';

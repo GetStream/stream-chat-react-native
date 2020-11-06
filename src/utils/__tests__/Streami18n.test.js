@@ -78,7 +78,7 @@ describe('Streami18n instance - default', () => {
   });
 });
 
-describe('Streami18n instance - with built-in langauge', () => {
+describe('Streami18n instance - with built-in language', () => {
   describe('datetime translations enabled', () => {
     const streami18nOptions = { language: 'nl' };
     const streami18n = new Streami18n(streami18nOptions);
@@ -153,7 +153,7 @@ describe('Streami18n instance - with custom translations', () => {
       [textKey2]: textValue2,
     };
     const streami18nOptions = {
-      langauge: 'zh',
+      language: 'zh',
       translationsForLanguage: translations,
     };
     const streami18n = new Streami18n(streami18nOptions);

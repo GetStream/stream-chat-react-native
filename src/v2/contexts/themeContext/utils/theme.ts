@@ -1,9 +1,14 @@
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
 
+import type { IconProps } from '../../../icons/utils/base';
+
 export const BASE_FONT_SIZE = 16;
+export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
-  danger: '#EDD8DD',
+  black: '#000000',
+  danger: '#FF3742',
+  grey: '#E6E6E6',
   light: '#EBEBEB',
   primary: '#006CFF',
   secondary: '#111111',
@@ -11,13 +16,16 @@ export const Colors = {
   textGrey: '#00000080',
   textLight: '#FFFFFF',
   transparent: 'transparent',
+  white: '#FFFFFF',
 };
 
 export type MarkdownStyle = Partial<{
+  autolink: StyleProp<TextStyle>;
   blockQuoteBar: StyleProp<ViewStyle>;
   blockQuoteSection: StyleProp<ViewStyle>;
   blockQuoteSectionBar: StyleProp<ViewStyle>;
-  blockQuoteText: StyleProp<ViewStyle>;
+  blockQuoteText: StyleProp<TextStyle | ViewStyle>;
+  br: StyleProp<TextStyle>;
   codeBlock: StyleProp<TextStyle>;
   del: StyleProp<TextStyle>;
   em: StyleProp<TextStyle>;
@@ -31,33 +39,42 @@ export type MarkdownStyle = Partial<{
   hr: StyleProp<ViewStyle>;
   image: StyleProp<ImageStyle>;
   inlineCode: StyleProp<TextStyle>;
-  link: StyleProp<TextStyle>;
+  list: StyleProp<ViewStyle>;
   listItem: StyleProp<ViewStyle>;
-  listItemBulletType: string;
-  listItemButton: StyleProp<TextStyle>;
+  listItemBullet: StyleProp<TextStyle>;
   listItemNumber: StyleProp<TextStyle>;
   listItemText: StyleProp<TextStyle>;
+  listRow: StyleProp<ViewStyle>;
   mailTo: StyleProp<TextStyle>;
-  paragraph: StyleProp<ViewStyle>;
+  newline: StyleProp<TextStyle>;
+  noMargin: StyleProp<TextStyle>;
+  paragraph: StyleProp<TextStyle>;
+  paragraphCenter: StyleProp<TextStyle>;
+  paragraphWithImage: StyleProp<ViewStyle>;
   strong: StyleProp<TextStyle>;
+  sublist: StyleProp<ViewStyle>;
   table: StyleProp<ViewStyle>;
   tableHeader: StyleProp<ViewStyle>;
-  tableHeaderCell: StyleProp<ViewStyle>;
+  tableHeaderCell: StyleProp<TextStyle>;
   tableRow: StyleProp<ViewStyle>;
   tableRowCell: StyleProp<ViewStyle>;
   tableRowLast: StyleProp<ViewStyle>;
   text: StyleProp<TextStyle>;
   u: StyleProp<TextStyle>;
-  video: StyleProp<ImageStyle>;
   view: StyleProp<ViewStyle>;
 }>;
 
 export type Theme = {
   avatar: {
+    BASE_AVATAR_FALLBACK_TEXT_SIZE: number;
+    BASE_AVATAR_SIZE: number;
     container: ViewStyle;
     fallback: ViewStyle;
     image: ImageStyle;
     text: TextStyle;
+  };
+  channel: {
+    selectChannel: TextStyle;
   };
   channelListFooterLoadingIndicator: {
     container: ViewStyle;
@@ -100,123 +117,6 @@ export type Theme = {
   loadingIndicator: {
     container: ViewStyle;
     loadingText: TextStyle;
-  };
-  message: {
-    actions: {
-      button: ViewStyle & {
-        defaultBackgroundColor: ViewStyle['backgroundColor'];
-        defaultBorderColor: ViewStyle['borderColor'];
-        primaryBackgroundColor: ViewStyle['backgroundColor'];
-        primaryBorderColor: ViewStyle['borderColor'];
-      };
-      buttonText: TextStyle & {
-        defaultColor: TextStyle['color'];
-        primaryColor: TextStyle['color'];
-      };
-      container: ViewStyle;
-    };
-    actionSheet: {
-      buttonContainer: ViewStyle;
-      buttonText: TextStyle;
-      cancelButtonContainer: ViewStyle;
-      cancelButtonText: TextStyle;
-      titleContainer: ViewStyle;
-      titleText: TextStyle;
-    };
-    avatarWrapper: {
-      container: ViewStyle;
-      spacer: ViewStyle;
-    };
-    card: {
-      container: ViewStyle;
-      cover: ImageStyle;
-      footer: ViewStyle & {
-        description: TextStyle;
-        link: TextStyle;
-        logo: ImageStyle;
-        title: TextStyle;
-      };
-    };
-    container: ViewStyle;
-    content: {
-      container: ViewStyle & {
-        borderRadiusL: ViewStyle[
-          | 'borderBottomLeftRadius'
-          | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle[
-          | 'borderBottomRightRadius'
-          | 'borderTopRightRadius'];
-      };
-      containerInner: ViewStyle;
-      deletedContainer: ViewStyle;
-      deletedText: TextStyle;
-      errorContainer: {
-        backgroundColor: ViewStyle['backgroundColor'];
-      };
-      /**
-       * Available options for styling text:
-       * https://github.com/CharlesMangwa/react-native-simple-markdown/tree/next#styles-1
-       */
-      markdown: MarkdownStyle;
-      metaContainer: ViewStyle;
-      metaText: TextStyle;
-      textContainer: ViewStyle & {
-        borderRadiusL: ViewStyle[
-          | 'borderBottomLeftRadius'
-          | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle[
-          | 'borderBottomRightRadius'
-          | 'borderTopRightRadius'];
-        leftBorderColor: ViewStyle['borderLeftColor'];
-        leftBorderWidth: ViewStyle['borderLeftWidth'];
-        rightBorderColor: ViewStyle['borderRightColor'];
-        rightBorderWidth: ViewStyle['borderRightWidth'];
-      };
-    };
-    file: {
-      container: ViewStyle;
-      details: ViewStyle;
-      icon: ImageStyle;
-      size: TextStyle;
-      title: TextStyle;
-    };
-    gallery: {
-      doubleSize: ViewStyle['height'];
-      galleryContainer: ViewStyle;
-      halfSize: ViewStyle['height'];
-      header: {
-        button: ViewStyle;
-        container: ViewStyle;
-      };
-      imageContainer: ViewStyle;
-      single: ViewStyle;
-      size: ViewStyle['height'];
-      width: ViewStyle['width'];
-    };
-    reactionList: {
-      container: ViewStyle;
-      reactionCount: TextStyle;
-    };
-    reactionPicker: {
-      column: ViewStyle;
-      container: ViewStyle;
-      containerView: ViewStyle;
-      emoji: TextStyle;
-      text: TextStyle;
-    };
-    replies: {
-      container: ViewStyle;
-      image: ImageStyle;
-      messageRepliesText: TextStyle;
-    };
-    status: {
-      checkMark: ImageStyle;
-      deliveredCircle: ViewStyle;
-      deliveredContainer: ViewStyle;
-      readByContainer: ViewStyle;
-      sendingContainer: ViewStyle;
-      sendingImage: ImageStyle;
-    };
   };
   messageInput: {
     actionSheet: {
@@ -301,6 +201,143 @@ export type Theme = {
     };
     typingIndicatorContainer: ViewStyle;
   };
+  messageSimple: {
+    actions: {
+      button: ViewStyle & {
+        defaultBackgroundColor: ViewStyle['backgroundColor'];
+        defaultBorderColor: ViewStyle['borderColor'];
+        primaryBackgroundColor: ViewStyle['backgroundColor'];
+        primaryBorderColor: ViewStyle['borderColor'];
+      };
+      buttonText: TextStyle & {
+        defaultColor: TextStyle['color'];
+        primaryColor: TextStyle['color'];
+      };
+      container: ViewStyle;
+    };
+    avatarWrapper: {
+      container: ViewStyle;
+      leftAlign: ViewStyle;
+      rightAlign: ViewStyle;
+      spacer: ViewStyle;
+    };
+    card: {
+      container: ViewStyle;
+      cover: ImageStyle;
+      footer: ViewStyle & {
+        description: TextStyle;
+        link: TextStyle;
+        title: TextStyle;
+      };
+    };
+    container: ViewStyle;
+    content: {
+      container: ViewStyle & {
+        borderRadiusL: ViewStyle[
+          | 'borderBottomLeftRadius'
+          | 'borderTopLeftRadius'];
+        borderRadiusS: ViewStyle[
+          | 'borderBottomRightRadius'
+          | 'borderTopRightRadius'];
+      };
+      containerInner: ViewStyle;
+      deletedContainer: ViewStyle;
+      deletedMetaText: TextStyle;
+      deletedText: MarkdownStyle;
+      errorContainer: ViewStyle;
+      errorIcon: IconProps;
+      errorIconContainer: ViewStyle;
+      eyeIcon: IconProps;
+      /**
+       * Available options for styling text:
+       * https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js
+       */
+      markdown: MarkdownStyle;
+      messageUser: TextStyle;
+      metaContainer: ViewStyle;
+      metaText: TextStyle;
+      textContainer: ViewStyle & {
+        borderRadiusL: ViewStyle[
+          | 'borderBottomLeftRadius'
+          | 'borderTopLeftRadius'];
+        borderRadiusS: ViewStyle[
+          | 'borderBottomRightRadius'
+          | 'borderTopRightRadius'];
+        leftBorderColor: ViewStyle['borderLeftColor'];
+        leftBorderWidth: ViewStyle['borderLeftWidth'];
+        onlyEmojiLeftBorderColor: ViewStyle['borderLeftColor'];
+        onlyEmojiMarkdown: MarkdownStyle;
+        onlyEmojiRightBorderColor: ViewStyle['borderRightColor'];
+        rightBorderColor: ViewStyle['borderRightColor'];
+        rightBorderWidth: ViewStyle['borderRightWidth'];
+      };
+    };
+    file: {
+      container: ViewStyle;
+      details: ViewStyle;
+      fileSize: TextStyle;
+      icon: IconProps;
+      title: TextStyle;
+    };
+    gallery: {
+      doubleSize: ViewStyle['height'];
+      galleryContainer: ViewStyle;
+      halfSize: ViewStyle['height'];
+      header: {
+        button: ViewStyle;
+        container: ViewStyle;
+      };
+      imageContainer: ViewStyle;
+      single: ViewStyle;
+      size: ViewStyle['height'];
+      width: ViewStyle['width'];
+    };
+    reactionList: {
+      container: ViewStyle;
+      middleIcon: ViewStyle;
+      radius: number;
+      reactionBubble: ViewStyle;
+      reactionBubbleBackground: ViewStyle;
+      reactionSize: number;
+    };
+    reactionPicker: {
+      column: ViewStyle;
+      container: ViewStyle;
+      containerView: ViewStyle;
+      emoji: TextStyle;
+      text: TextStyle;
+    };
+    replies: {
+      container: ViewStyle;
+      messageRepliesText: TextStyle;
+    };
+    status: {
+      checkAllIcon: IconProps;
+      checkIcon: IconProps;
+      readByCount: TextStyle;
+      statusContainer: ViewStyle;
+      timeIcon: IconProps;
+    };
+  };
+  overlay: {
+    padding: number;
+    reactions: {
+      avatarContainer: ViewStyle;
+      avatarName: TextStyle;
+      avatarSize: number;
+      container: ViewStyle;
+      flatListContainer: ViewStyle;
+      radius: number;
+      reactionBubble: ViewStyle;
+      reactionBubbleBackground: ViewStyle;
+      title: TextStyle;
+    };
+    reactionsList: {
+      radius: number;
+      reaction: ViewStyle;
+      reactionList: ViewStyle;
+    };
+  };
   spinner: ViewStyle;
   thread: {
     newThread: ViewStyle & {
@@ -318,10 +355,27 @@ export type Theme = {
 
 export const defaultTheme: Theme = {
   avatar: {
+    BASE_AVATAR_FALLBACK_TEXT_SIZE: 14,
+    BASE_AVATAR_SIZE: 32,
     container: {},
-    fallback: {},
-    image: {},
-    text: {},
+    fallback: {
+      backgroundColor: Colors.primary,
+      borderRadius: 16,
+      height: 16,
+      width: 16,
+    },
+    image: {
+      borderRadius: 16,
+      height: 32,
+      width: 32,
+    },
+    text: {
+      color: Colors.textLight,
+      fontSize: 14,
+    },
+  },
+  channel: {
+    selectChannel: {},
   },
   channelListFooterLoadingIndicator: {
     container: {},
@@ -366,111 +420,6 @@ export const defaultTheme: Theme = {
   loadingIndicator: {
     container: {},
     loadingText: {},
-  },
-  message: {
-    actions: {
-      button: {
-        defaultBackgroundColor: 'white',
-        defaultBorderColor: 'transparent',
-        primaryBackgroundColor: Colors.primary,
-        primaryBorderColor: Colors.light,
-      },
-      buttonText: {
-        defaultColor: 'black',
-        primaryColor: 'white',
-      },
-      container: {},
-    },
-    actionSheet: {
-      buttonContainer: {},
-      buttonText: {},
-      cancelButtonContainer: {},
-      cancelButtonText: {},
-      titleContainer: {},
-      titleText: {},
-    },
-    avatarWrapper: {
-      container: {},
-      spacer: {},
-    },
-    card: {
-      container: {},
-      cover: {},
-      footer: {
-        description: {},
-        link: {},
-        logo: {},
-        title: {},
-      },
-    },
-    container: {},
-    content: {
-      container: {
-        borderRadiusL: 16,
-        borderRadiusS: 2,
-      },
-      containerInner: {},
-      deletedContainer: {},
-      deletedText: {},
-      errorContainer: {
-        backgroundColor: Colors.danger,
-      },
-      markdown: {},
-      metaContainer: {},
-      metaText: {},
-      textContainer: {
-        borderRadiusL: 16,
-        borderRadiusS: 2,
-        leftBorderColor: 'rgba(0, 0, 0, 0.08)',
-        leftBorderWidth: 0.5,
-        rightBorderColor: 'transparent',
-        rightBorderWidth: 0,
-      },
-    },
-    file: {
-      container: {},
-      details: {},
-      icon: {},
-      size: {},
-      title: {},
-    },
-    gallery: {
-      doubleSize: 240,
-      galleryContainer: {},
-      halfSize: 80,
-      header: {
-        button: {},
-        container: {},
-      },
-      imageContainer: {},
-      single: {},
-      size: 120,
-      width: 240,
-    },
-    reactionList: {
-      container: {},
-      reactionCount: {},
-    },
-    reactionPicker: {
-      column: {},
-      container: {},
-      containerView: {},
-      emoji: {},
-      text: {},
-    },
-    replies: {
-      container: {},
-      image: {},
-      messageRepliesText: {},
-    },
-    status: {
-      checkMark: {},
-      deliveredCircle: {},
-      deliveredContainer: {},
-      readByContainer: {},
-      sendingContainer: {},
-      sendingImage: {},
-    },
   },
   messageInput: {
     actionSheet: {
@@ -554,6 +503,184 @@ export const defaultTheme: Theme = {
       textContainer: {},
     },
     typingIndicatorContainer: {},
+  },
+  messageSimple: {
+    actions: {
+      button: {
+        defaultBackgroundColor: Colors.white,
+        defaultBorderColor: Colors.transparent,
+        primaryBackgroundColor: Colors.primary,
+        primaryBorderColor: Colors.light,
+      },
+      buttonText: {
+        defaultColor: Colors.black,
+        primaryColor: Colors.white,
+      },
+      container: {},
+    },
+    avatarWrapper: {
+      container: {},
+      leftAlign: {
+        marginRight: 8,
+      },
+      rightAlign: {
+        marginLeft: 8,
+      },
+      spacer: {
+        height: 28,
+        width: 32, // same as BASE_AVATAR_SIZE
+      },
+    },
+    card: {
+      container: {},
+      cover: {},
+      footer: {
+        description: {},
+        link: {},
+        title: {},
+      },
+    },
+    container: {},
+    content: {
+      container: {
+        borderRadiusL: 16,
+        borderRadiusS: 2,
+      },
+      containerInner: {},
+      deletedContainer: {},
+      deletedMetaText: {
+        paddingHorizontal: 10,
+      },
+      deletedText: {
+        em: {
+          color: Colors.textGrey,
+          fontSize: 15,
+          fontStyle: 'italic',
+          fontWeight: '400',
+        },
+      },
+      errorContainer: {
+        paddingRight: 12,
+        paddingTop: 0,
+      },
+      errorIcon: {
+        height: 20,
+        pathFill: Colors.danger,
+        width: 20,
+      },
+      errorIconContainer: {
+        bottom: -2,
+        position: 'absolute',
+        right: -12,
+      },
+      eyeIcon: {
+        height: 16,
+        pathFill: Colors.textGrey,
+        width: 16,
+      },
+      markdown: {},
+      messageUser: { fontSize: 12, fontWeight: '700', paddingRight: 6 },
+      metaContainer: {
+        flexDirection: 'row',
+        marginTop: 4,
+      },
+      metaText: {
+        color: Colors.textGrey,
+        fontSize: 12,
+      },
+      textContainer: {
+        borderRadiusL: 16,
+        borderRadiusS: 2,
+        leftBorderColor: '#00000014', // 14 = 8% opacity
+        leftBorderWidth: 0.5,
+        onlyEmojiLeftBorderColor: Colors.transparent,
+        onlyEmojiMarkdown: { text: { fontSize: 50 } },
+        onlyEmojiRightBorderColor: Colors.transparent,
+        rightBorderColor: Colors.transparent,
+        rightBorderWidth: 0,
+      },
+    },
+    file: {
+      container: {},
+      details: {},
+      fileSize: {
+        color: Colors.textGrey,
+      },
+      icon: {},
+      title: {},
+    },
+    gallery: {
+      doubleSize: 250,
+      galleryContainer: {},
+      halfSize: 80,
+      header: {
+        button: {},
+        container: {},
+      },
+      imageContainer: {},
+      single: {},
+      size: 125,
+      width: 250,
+    },
+    reactionList: {
+      container: {},
+      middleIcon: {},
+      radius: 2, // not recommended to change this
+      reactionBubble: {},
+      reactionBubbleBackground: {},
+      reactionSize: 24,
+    },
+    reactionPicker: {
+      column: {},
+      container: {},
+      containerView: {},
+      emoji: {},
+      text: {},
+    },
+    replies: {
+      container: {},
+      messageRepliesText: {},
+    },
+    status: {
+      checkAllIcon: {
+        height: DEFAULT_STATUS_ICON_SIZE,
+        pathFill: Colors.primary,
+        width: DEFAULT_STATUS_ICON_SIZE,
+      },
+      checkIcon: {
+        height: DEFAULT_STATUS_ICON_SIZE,
+        width: DEFAULT_STATUS_ICON_SIZE,
+      },
+      readByCount: {
+        color: Colors.primary,
+      },
+      statusContainer: {},
+      timeIcon: {
+        height: DEFAULT_STATUS_ICON_SIZE,
+        width: DEFAULT_STATUS_ICON_SIZE,
+      },
+    },
+  },
+  overlay: {
+    padding: 8,
+    reactions: {
+      avatarContainer: {},
+      avatarName: {},
+      avatarSize: 64,
+      container: {},
+      flatListContainer: {},
+      radius: 2,
+      reactionBubble: {},
+      reactionBubbleBackground: {},
+      title: {},
+    },
+    reactionsList: {
+      radius: 2.5,
+      reaction: {},
+      reactionList: {
+        backgroundColor: Colors.grey,
+      },
+    },
   },
   spinner: {},
   thread: {

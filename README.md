@@ -21,7 +21,7 @@
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
 - [Internationalisation (i18n)](#internationalisation)
-- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook)  :rocket:
+- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x))  :rocket:
 
 ## Contents
 
@@ -48,7 +48,7 @@ To use this library you need to ensure you match up with the correct version of 
 | `stream-chat-react-native` version | Required React Native Version |
 | ----------------------------------------- | --------- |
 | `3.x.x` (alpha)                           | `>= 0.60` |
-| `2.x.x` (beta)                            | `>= 0.60` |
+| `2.x.x`                                   | `>= 0.60` |
 | `1.x.x`                                   | `>= 0.59` |
 | `0.x.x`                                   | `*` |
 
