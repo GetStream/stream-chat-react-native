@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
@@ -11,6 +15,8 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
+  },
+  wrapper: {
     bottom: 0,
     left: 0,
     position: 'absolute',
@@ -20,27 +26,40 @@ const styles = StyleSheet.create({
 
 type Props = {
   opacity: Animated.SharedValue<number>;
+  visible: Animated.SharedValue<number>;
 };
 
-export const ImageGalleryFooter: React.FC<Props> = ({ opacity }) => {
-  const opacityStyle = useAnimatedStyle<ViewStyle>(
+export const ImageGalleryFooter: React.FC<Props> = ({ opacity, visible }) => {
+  const [height, setHeight] = useState(200);
+
+  const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       opacity: opacity.value,
+      transform: [
+        {
+          translateY: interpolate(
+            visible.value,
+            [0, 1],
+            [height, 0],
+            Extrapolate.CLAMP,
+          ),
+        },
+      ],
     }),
     [],
   );
 
   return (
-    <ReanimatedSafeAreaView
-      style={[
-        styles.safeArea,
-        opacityStyle,
-        { bottom: 0, position: 'absolute' },
-      ]}
+    <Animated.View
+      onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
+      pointerEvents={'box-none'}
+      style={styles.wrapper}
     >
-      <View style={styles.container}>
-        <Text>Footer</Text>
-      </View>
-    </ReanimatedSafeAreaView>
+      <ReanimatedSafeAreaView style={[styles.safeArea, footerStyle]}>
+        <View style={styles.container}>
+          <Text>Footer</Text>
+        </View>
+      </ReanimatedSafeAreaView>
+    </Animated.View>
   );
 };

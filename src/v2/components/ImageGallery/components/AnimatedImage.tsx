@@ -7,6 +7,7 @@ import { vw } from '../../../utils/utils';
 const halfScreenWidth = vw(50);
 
 type Props = {
+  offsetScale: Animated.SharedValue<number>;
   photo: { uri: string };
   previous: boolean;
   scale: Animated.SharedValue<number>;
@@ -20,6 +21,7 @@ type Props = {
 export const AnimatedGalleryImage: React.FC<Props> = React.memo(
   (props) => {
     const {
+      offsetScale,
       photo,
       previous,
       scale,
@@ -44,7 +46,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
           {
             translateX: selected
               ? translateX.value
-              : scale.value < 1
+              : scale.value < 1 || scale.value !== offsetScale.value
               ? 0
               : previous
               ? translateX.value - halfScreenWidth * (scale.value - 1)

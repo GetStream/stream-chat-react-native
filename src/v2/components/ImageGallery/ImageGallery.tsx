@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, ImageStyle, StyleSheet, ViewStyle } from 'react-native';
+import { Image, ImageStyle, StyleSheet } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
   PinchGestureHandler,
   PinchGestureHandlerGestureEvent,
+  TapGestureHandler,
+  TapGestureHandlerGestureEvent,
 } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
@@ -29,7 +31,6 @@ import type { Attachment } from 'stream-chat';
 
 const screenHeight = vh(100);
 const halfScreenHeight = vh(50);
-const quarterScreenHeight = vh(25);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const MARGIN = 32;
@@ -65,6 +66,9 @@ export const ImageGallery: React.FC<{
   const { setOverlay } = useOverlayContext();
   const { images } = useImageGalleryContext();
 
+  /**
+   * Image height from URL or default to full screen height
+   */
   const [currentImageHeight, setCurrentImageHeight] = useState<number>(vh(100));
 
   /**
@@ -74,8 +78,18 @@ export const ImageGallery: React.FC<{
   const [selectedIndex, setSelectedIndex] = useState(0);
   const index = useSharedValue(0);
 
-  const pinchRef = useRef<PinchGestureHandler>(null);
+  /**
+   * Header visible value for animating in out
+   */
+  const headerFooterVisible = useSharedValue(1);
+
+  /**
+   * Gesture handler refs
+   */
+  const doubleTapRef = useRef<TapGestureHandler>(null);
   const panRef = useRef<PanGestureHandler>(null);
+  const pinchRef = useRef<PinchGestureHandler>(null);
+  const singleTapRef = useRef<TapGestureHandler>(null);
 
   /**
    * Shared values for movement
@@ -101,6 +115,8 @@ export const ImageGallery: React.FC<{
   const focalOffsetY = useSharedValue(0);
   const adjustedFocalX = useSharedValue(0);
   const adjustedFocalY = useSharedValue(0);
+  const tapX = useSharedValue(0);
+  const tapY = useSharedValue(0);
 
   /**
    * Shared values for gesture tracking
@@ -220,21 +236,51 @@ export const ImageGallery: React.FC<{
           }
 
           /**
-           * If not swiping translate the image in X and Y to the event
-           * translation plus offset. If swiping only translate X
+           * localEvtScale is used for swipe away
            */
-          translateX.value = offsetX.value + evt.translationX;
+          const localEvtScale = scale.value / offsetScale.value;
+
+          /**
+           * If not swiping translate the image in X and Y to the event
+           * translation plus offset. If swiping only translate X, if
+           * swiping down when at top of screen or centered balance scale
+           * using offset to a degree (this needs improvement the calculation
+           * is incorrect but likely needs origin use to be 100%)
+           */
+          translateX.value =
+            scale.value !== offsetScale.value
+              ? offsetX.value * localEvtScale + evt.translationX
+              : offsetX.value + evt.translationX;
           translateY.value =
             isSwiping.value !== IsSwiping.TRUE
-              ? offsetY.value + evt.translationY
+              ? scale.value !== offsetScale.value
+                ? offsetY.value * localEvtScale + evt.translationY
+                : offsetY.value + evt.translationY
               : translateY.value;
 
-          // TODO:
-          // overlayOpacity.value =
-          //   evt.translationY < screenHeight / 3
-          //     ? 1
-          //     : 1 -
-          //       (evt.translationY - screenHeight / 3) / ((screenHeight * 2) / 3);
+          /**
+           * If swiping down start scaling down the image for swipe
+           * away effect
+           */
+          scale.value =
+            currentImageHeight * offsetScale.value < screenHeight &&
+            translateY.value > 0
+              ? offsetScale.value *
+                (1 - (1 / 3) * (translateY.value / screenHeight))
+              : currentImageHeight * offsetScale.value > screenHeight &&
+                translateY.value >
+                  (currentImageHeight / 2) * offsetScale.value -
+                    halfScreenHeight
+              ? offsetScale.value *
+                (1 -
+                  (1 / 3) *
+                    ((translateY.value -
+                      ((currentImageHeight / 2) * offsetScale.value -
+                        halfScreenHeight)) /
+                      screenHeight))
+              : scale.value;
+
+          overlayOpacity.value = localEvtScale;
         }
       },
       onFinish: (evt) => {
@@ -245,6 +291,7 @@ export const ImageGallery: React.FC<{
            * event velocity
            */
           const finalXPosition = evt.translationX + evt.velocityX * 0.3;
+          const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
           /**
            * If there is a next photo, the image is lined up to the right
@@ -255,7 +302,8 @@ export const ImageGallery: React.FC<{
             index.value < photoLength - 1 &&
             offsetX.value === -halfScreenWidth * (scale.value - 1) &&
             translateX.value < 0 &&
-            finalXPosition < -halfScreenWidth
+            finalXPosition < -halfScreenWidth &&
+            isSwiping.value === IsSwiping.TRUE
           ) {
             translationX.value = withTiming(
               -(screenWidth + MARGIN) * (index.value + 1),
@@ -279,7 +327,8 @@ export const ImageGallery: React.FC<{
             index.value > 0 &&
             offsetX.value === halfScreenWidth * (scale.value - 1) &&
             translateX.value > 0 &&
-            finalXPosition > halfScreenWidth
+            finalXPosition > halfScreenWidth &&
+            isSwiping.value === IsSwiping.TRUE
           ) {
             translationX.value = withTiming(
               -(screenWidth + MARGIN) * (index.value - 1),
@@ -333,19 +382,19 @@ export const ImageGallery: React.FC<{
             currentImageHeight * scale.value < screenHeight
               ? withTiming(0)
               : translateY.value >
-                (currentImageHeight / 2) * scale.value - screenHeight / 2
+                (currentImageHeight / 2) * scale.value - halfScreenHeight
               ? withTiming(
-                  (currentImageHeight / 2) * scale.value - screenHeight / 2,
+                  (currentImageHeight / 2) * scale.value - halfScreenHeight,
                 )
               : translateY.value <
-                (-currentImageHeight / 2) * scale.value + screenHeight / 2
+                (-currentImageHeight / 2) * scale.value + halfScreenHeight
               ? withTiming(
-                  (-currentImageHeight / 2) * scale.value + screenHeight / 2,
+                  (-currentImageHeight / 2) * scale.value + halfScreenHeight,
                 )
               : withDecay({
                   clamp: [
-                    (-currentImageHeight / 2) * scale.value + screenHeight / 2,
-                    (currentImageHeight / 2) * scale.value - screenHeight / 2,
+                    (-currentImageHeight / 2) * scale.value + halfScreenHeight,
+                    (currentImageHeight / 2) * scale.value - halfScreenHeight,
                   ],
                   deceleration: 0.99,
                   velocity: evt.velocityY,
@@ -353,11 +402,58 @@ export const ImageGallery: React.FC<{
 
           resetTouchValues();
 
-          // evt.translationY < halfScreenHeight
-          //   ? withTiming(0)
-          //   : withTiming(screenHeight, undefined, () => setOverlay('none'));
-          overlayOpacity.value =
-            evt.translationY < halfScreenHeight ? withTiming(1) : withTiming(0);
+          /**
+           * If the scale has been reduced below one, i.e. zoomed out, translate
+           * the zoom back to one
+           */
+          scale.value =
+            scale.value !== offsetScale.value
+              ? withTiming(offsetScale.value)
+              : offsetScale.value;
+
+          /**
+           * If the photo is centered or at the top of the screen if scaled larger
+           * than the screen, and not paging left or right, and the final Y position
+           * is greater than half the screen using swipe velocity and position, close
+           * the overlay
+           */
+          if (
+            finalYPosition > halfScreenHeight &&
+            offsetY.value + 8 >=
+              (currentImageHeight / 2) * scale.value - halfScreenHeight &&
+            !(
+              offsetX.value === -halfScreenWidth * (scale.value - 1) &&
+              translateX.value < 0 &&
+              finalXPosition < -halfScreenWidth
+            ) &&
+            !(
+              offsetX.value === halfScreenWidth * (scale.value - 1) &&
+              translateX.value > 0 &&
+              finalXPosition > halfScreenWidth
+            )
+          ) {
+            cancelAnimation(translateX);
+            cancelAnimation(translateY);
+            cancelAnimation(scale);
+            overlayOpacity.value = withTiming(
+              0,
+              {
+                duration: 200,
+                easing: Easing.out(Easing.ease),
+              },
+              () => setOverlay('none'),
+            );
+            scale.value = withTiming(0.6, {
+              duration: 200,
+              easing: Easing.out(Easing.ease),
+            });
+            translateY.value = withDecay({
+              velocity: evt.velocityY,
+            });
+            translateX.value = withDecay({
+              velocity: evt.velocityX,
+            });
+          }
         }
       },
 
@@ -536,29 +632,76 @@ export const ImageGallery: React.FC<{
         adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
         originX.value = adjustedFocalX.value;
         originY.value = adjustedFocalY.value;
+        offsetScale.value = scale.value;
       },
     },
     [currentImageHeight],
   );
 
   /**
-   * The header and footer opacity is determined via a combination of the scale
-   * and translation values. If the scale is greater than two the opacity is zero.
-   * If the scale is less than two the opacity is either the two minus the scale,
-   * i.e. a value between zero and one, or the inverse percentage translated along
-   * one quarter of the height of the screen, whichever is smaller
+   * Single tap handler for header hiding and showing
+   */
+  const onSingleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
+    onActive: () => {
+      cancelAnimation(headerFooterVisible);
+      headerFooterVisible.value =
+        headerFooterVisible.value > 0 ? withTiming(0) : withTiming(1);
+    },
+  });
+
+  /**
+   * Double tap handler to zoom back out and hide header and footer
+   */
+  const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
+    onActive: (evt) => {
+      if (
+        Math.abs(tapX.value - evt.absoluteX) < 32 &&
+        Math.abs(tapY.value - evt.absoluteY) < 32
+      ) {
+        offsetScale.value = 1;
+        scale.value = withTiming(1, {
+          duration: 200,
+          easing: Easing.out(Easing.ease),
+        });
+        offsetX.value = 0;
+        offsetY.value = 0;
+        translateX.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.out(Easing.ease),
+        });
+        translateY.value = withTiming(0, {
+          duration: 200,
+          easing: Easing.out(Easing.ease),
+        });
+        if (headerFooterVisible.value !== 0) {
+          cancelAnimation(headerFooterVisible);
+          headerFooterVisible.value = withTiming(0);
+        }
+      }
+    },
+    onStart: (evt) => {
+      tapX.value = evt.absoluteX;
+      tapY.value = evt.absoluteY;
+    },
+  });
+
+  /**
+   * If the header is visible we scale down the opacity of it as the
+   * image is swiped downward
    */
   const headerFooterOpacity = useDerivedValue(
     () =>
-      2 - scale.value > 0
-        ? 2 - scale.value >
-          (quarterScreenHeight - Math.abs(translateY.value)) /
-            quarterScreenHeight
-          ? (quarterScreenHeight - Math.abs(translateY.value)) /
-            quarterScreenHeight
-          : 2 - scale.value
-        : 0,
-    [quarterScreenHeight],
+      currentImageHeight * scale.value < screenHeight && translateY.value > 0
+        ? 1 - translateY.value / screenHeight
+        : currentImageHeight * scale.value > screenHeight &&
+          translateY.value >
+            (currentImageHeight / 2) * scale.value - halfScreenHeight
+        ? 1 -
+          (translateY.value -
+            ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
+            screenHeight
+        : 1,
+    [currentImageHeight],
   );
 
   useEffect(() => {
@@ -578,59 +721,93 @@ export const ImageGallery: React.FC<{
     [],
   );
 
-  const containerBackground = useAnimatedStyle<ViewStyle>(
-    () => ({
-      backgroundColor:
-        offsetY.value === 0 && offsetX.value === 0 ? '#F2F2F2' : '#F2F2F200',
-    }),
-    [],
-  );
+  // const containerBackground = useAnimatedStyle<ViewStyle>(
+  //   () => ({
+  //     backgroundColor:
+  //       offsetY.value === 0 && offsetX.value === 0 ? '#F2F2F2' : '#F2F2F200',
+  //   }),
+  //   [],
+  // );
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFillObject, containerBackground]}>
-      <PinchGestureHandler
-        onGestureEvent={onPinch}
-        ref={pinchRef}
-        simultaneousHandlers={panRef}
+    <Animated.View style={StyleSheet.absoluteFillObject}>
+      <TapGestureHandler
+        minPointers={1}
+        numberOfTaps={1}
+        onGestureEvent={onSingleTap}
+        ref={singleTapRef}
+        waitFor={[panRef, pinchRef, doubleTapRef]}
       >
-        <Animated.View style={StyleSheet.absoluteFill}>
-          <PanGestureHandler
-            maxPointers={1}
-            minDist={10}
-            onGestureEvent={onPan}
-            ref={panRef}
-            simultaneousHandlers={pinchRef}
+        <Animated.View style={StyleSheet.absoluteFillObject}>
+          <TapGestureHandler
+            maxDeltaX={8}
+            maxDeltaY={8}
+            maxDist={8}
+            minPointers={1}
+            numberOfTaps={2}
+            onGestureEvent={onDoubleTap}
+            ref={doubleTapRef}
+            simultaneousHandlers={[panRef, pinchRef, singleTapRef]}
           >
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFill,
-                styles.animatedContainer,
-                pagerStyle,
-              ]}
-            >
-              {photos.map((photo, i) => (
-                <AnimatedGalleryImage
-                  key={photo.uri}
-                  photo={photo}
-                  previous={selectedIndex > i}
-                  scale={scale}
-                  selected={selectedIndex === i}
-                  shouldRender={Math.abs(selectedIndex - i) < 4}
-                  style={{
-                    height: screenHeight,
-                    marginRight: MARGIN,
-                    width: screenWidth,
-                  }}
-                  translateX={translateX}
-                  translateY={translateY}
-                />
-              ))}
+            <Animated.View style={StyleSheet.absoluteFillObject}>
+              <PinchGestureHandler
+                onGestureEvent={onPinch}
+                ref={pinchRef}
+                simultaneousHandlers={[doubleTapRef, panRef, singleTapRef]}
+              >
+                <Animated.View style={StyleSheet.absoluteFill}>
+                  <PanGestureHandler
+                    maxPointers={1}
+                    minDist={10}
+                    onGestureEvent={onPan}
+                    ref={panRef}
+                    simultaneousHandlers={[
+                      doubleTapRef,
+                      pinchRef,
+                      singleTapRef,
+                    ]}
+                  >
+                    <Animated.View
+                      style={[
+                        StyleSheet.absoluteFill,
+                        styles.animatedContainer,
+                        pagerStyle,
+                      ]}
+                    >
+                      {photos.map((photo, i) => (
+                        <AnimatedGalleryImage
+                          key={`${photo.uri}-${i}`}
+                          offsetScale={offsetScale}
+                          photo={photo}
+                          previous={selectedIndex > i}
+                          scale={scale}
+                          selected={selectedIndex === i}
+                          shouldRender={Math.abs(selectedIndex - i) < 4}
+                          style={{
+                            height: screenHeight,
+                            marginRight: MARGIN,
+                            width: screenWidth,
+                          }}
+                          translateX={translateX}
+                          translateY={translateY}
+                        />
+                      ))}
+                    </Animated.View>
+                  </PanGestureHandler>
+                </Animated.View>
+              </PinchGestureHandler>
             </Animated.View>
-          </PanGestureHandler>
+          </TapGestureHandler>
         </Animated.View>
-      </PinchGestureHandler>
-      <ImageGalleryHeader opacity={headerFooterOpacity} />
-      <ImageGalleryFooter opacity={headerFooterOpacity} />
+      </TapGestureHandler>
+      <ImageGalleryHeader
+        opacity={headerFooterOpacity}
+        visible={headerFooterVisible}
+      />
+      <ImageGalleryFooter
+        opacity={headerFooterOpacity}
+        visible={headerFooterVisible}
+      />
     </Animated.View>
   );
 };
