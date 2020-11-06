@@ -1,10 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TDateTimeParserInput,
+  TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
@@ -47,7 +52,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type DateSeparatorProps<
+export type DateSeparatorPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -55,21 +60,12 @@ export type DateSeparatorProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  message: DateSeparatorType<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Formatter function for date object.
-   *
-   * @param date TDateTimeParserInput object of message
-   * @returns string
-   */
-  formatDate?: (date: TDateTimeParserInput) => string;
-};
+> = Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'formatDate'> &
+  Pick<TranslationContextValue, 'tDateTimeParser'> & {
+    message: DateSeparatorType<At, Ch, Co, Ev, Me, Re, Us>;
+  };
 
-/**
- * @example ./DateSeparator.md
- */
-export const DateSeparator = <
+const DateSeparatorWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -78,9 +74,9 @@ export const DateSeparator = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: DateSeparatorPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { formatDate, message } = props;
+  const { formatDate, message, tDateTimeParser } = props;
 
   const {
     theme: {
@@ -90,7 +86,6 @@ export const DateSeparator = <
       },
     },
   } = useTheme();
-  const { tDateTimeParser } = useTranslationContext();
 
   const formattedDate = formatDate
     ? formatDate(message.date as TDateTimeParserInput)
@@ -112,6 +107,63 @@ export const DateSeparator = <
       </Text>
       <View style={[styles.line, { backgroundColor: light }, line]} />
     </View>
+  );
+};
+
+const MemoizedDateSeparator = React.memo(
+  DateSeparatorWithContext,
+  (prevProps, nextProps) => prevProps.message.date === nextProps.message.date,
+) as typeof DateSeparatorWithContext;
+
+export type DateSeparatorProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<
+  Omit<DateSeparatorPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'message'>
+> &
+  Pick<DateSeparatorPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'message'>;
+
+/**
+ * @example ./DateSeparator.md
+ */
+export const DateSeparator = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    formatDate: propFormatDate,
+    message,
+    tDateTimeParser: propTDateTimeParser,
+  } = props;
+
+  const { formatDate: contextFormatDate } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
+
+  const formatDate = propFormatDate || contextFormatDate;
+  const tDateTimeParser = propTDateTimeParser || contextTDateTimeParser;
+
+  return (
+    <MemoizedDateSeparator {...{ formatDate, message, tDateTimeParser }} />
   );
 };
 

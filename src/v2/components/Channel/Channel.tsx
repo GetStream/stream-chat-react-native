@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { KeyboardAvoidingViewProps, Text } from 'react-native';
+import { KeyboardAvoidingViewProps, StyleSheet, Text } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
@@ -14,12 +14,25 @@ import {
   StreamChat,
   Message as StreamMessage,
 } from 'stream-chat';
-import { v4 as uuidv4 } from 'uuid';
 
+import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
+import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
+import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
+import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
+import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
+import { Gallery as GalleryDefault } from '../Attachment/Gallery';
+import { Card as CardDefault } from '../Attachment/Card';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
+import { Message as MessageDefault } from '../Message/Message';
+import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
+import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
+import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
+import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
+import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
+import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
 
 import {
   ChannelContextValue,
@@ -27,16 +40,18 @@ import {
 } from '../../contexts/channelContext/ChannelContext';
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
+  ActionProps,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
 import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
   ThreadProvider,
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { emojiData as emojiDataDefault } from '../../utils/utils';
+import { reactionData as reactionDataDefault } from '../../utils/utils';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
@@ -53,6 +68,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+const styles = StyleSheet.create({
+  selectChannel: { fontWeight: 'bold', padding: 16 },
+});
+
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -61,108 +80,84 @@ export type ChannelProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * The currently active channel
-   */
-  channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
-  /**
-   * Additional props passed to keyboard avoiding view
-   */
-  additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
-  /**
-   * Custom UI component to display attachments on individual messages
-   * Default component (accepts the same props): [Attachment](https://getstream.github.io/stream-chat-react-native/#attachment)
-   */
-  Attachment?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Attachment'];
-  /**
-   * Disables the channel UI if the channel is frozen
-   */
-  disableIfFrozenChannel?: boolean;
-  /**
-   * When true, disables the KeyboardCompatibleView wrapper
-   *
-   * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
-   * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
-   * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
-   * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
-   */
-  disableKeyboardCompatibleView?: boolean;
-  /**
-   * Overrides the Stream default mark channel read request (Advanced usage only)
-   * @param channel Channel object
-   */
-  doMarkReadRequest?: (
-    channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
-  /**
-   * Overrides the Stream default send message request (Advanced usage only)
-   * @param channelId
-   * @param messageData Message object
-   */
-  doSendMessageRequest?: (
-    channelId: string,
-    messageData: StreamMessage<At, Me, Us>,
-  ) => Promise<SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>>;
-  /**
-   * Overrides the Stream default update message request (Advanced usage only)
-   * @param channelId
-   * @param updatedMessage UpdatedMessage object
-   */
-  doUpdateMessageRequest?: (
-    channelId: string,
-    updatedMessage: StreamMessage<At, Me, Us>,
-  ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
-  emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
-  /**
-   * Custom empty state indicator to override the Stream default
-   */
-  EmptyStateIndicator?: ChannelContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['EmptyStateIndicator'];
-  keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
-  /**
-   * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
-   * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
-   *
-   * **Example:**
-   *
-   * ```
-   * <Channel
-   *  channel={channel}
-   *  KeyboardCompatibleView={(props) => {
-   *    return (
-   *      <KeyboardCompatibleView>
-   *        {props.children}
-   *      </KeyboardCompatibleView>
-   *    )
-   *  }}
-   * />
-   * ```
-   */
-  KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
-  keyboardVerticalOffset?: number;
-  /**
-   * Custom loading error indicator to override the Stream default
-   */
-  LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
-  /**
-   * Custom loading indicator to override the Stream default
-   */
-  LoadingIndicator?: React.ComponentType<LoadingProps>;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   */
-  Message?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['Message'];
-  thread?: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'];
-};
+> = Partial<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
+  Partial<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
+  Partial<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>> & {
+    /**
+     * Additional props passed to keyboard avoiding view
+     */
+    additionalKeyboardAvoidingViewProps?: Partial<KeyboardAvoidingViewProps>;
+    /**
+     * Disables the channel UI if the channel is frozen
+     */
+    disableIfFrozenChannel?: boolean;
+    /**
+     * When true, disables the KeyboardCompatibleView wrapper
+     *
+     * Channel internally uses the [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     * component to adjust the height of Channel when the keyboard is opened or dismissed. This prop provides the ability to disable this functionality in case you
+     * want to use [KeyboardAvoidingView](https://facebook.github.io/react-native/docs/keyboardavoidingview) or handle dismissal yourself.
+     * KeyboardAvoidingView works well when your component occupies 100% of screen height, otherwise it may raise some issues.
+     */
+    disableKeyboardCompatibleView?: boolean;
+    /**
+     * Overrides the Stream default mark channel read request (Advanced usage only)
+     * @param channel Channel object
+     */
+    doMarkReadRequest?: (
+      channel: ChannelType<At, Ch, Co, Ev, Me, Re, Us>,
+    ) => void;
+    /**
+     * Overrides the Stream default send message request (Advanced usage only)
+     * @param channelId
+     * @param messageData Message object
+     */
+    doSendMessageRequest?: (
+      channelId: string,
+      messageData: StreamMessage<At, Me, Us>,
+    ) => Promise<SendMessageAPIResponse<At, Ch, Co, Me, Re, Us>>;
+    /**
+     * Overrides the Stream default update message request (Advanced usage only)
+     * @param channelId
+     * @param updatedMessage UpdatedMessage object
+     */
+    doUpdateMessageRequest?: (
+      channelId: string,
+      updatedMessage: Parameters<
+        StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
+      >[0],
+    ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+    keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
+    /**
+     * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
+     * Default component (accepts the same props): [KeyboardCompatibleView](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/KeyboardCompatibleView/KeyboardCompatibleView.tsx)
+     *
+     * **Example:**
+     *
+     * ```
+     * <Channel
+     *  channel={channel}
+     *  KeyboardCompatibleView={(props) => {
+     *    return (
+     *      <KeyboardCompatibleView>
+     *        {props.children}
+     *      </KeyboardCompatibleView>
+     *    )
+     *  }}
+     * />
+     * ```
+     */
+    KeyboardCompatibleView?: React.ComponentType<KeyboardAvoidingViewProps>;
+    keyboardVerticalOffset?: number;
+    /**
+     * Custom loading error indicator to override the Stream default
+     */
+    LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    /**
+     * Custom loading indicator to override the Stream default
+     */
+    LoadingIndicator?: React.ComponentType<LoadingProps>;
+  };
 
 /**
  *
@@ -185,27 +180,56 @@ export const Channel = <
 ) => {
   const {
     additionalKeyboardAvoidingViewProps,
-    Attachment,
+    additionalTouchableProps,
+    Attachment = AttachmentDefault,
+    AttachmentActions = AttachmentActionsDefault,
+    AttachmentFileIcon = FileIconDefault,
+    Card = CardDefault,
+    CardCover,
+    CardFooter,
+    CardHeader,
     channel,
     children,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
+    dismissKeyboardOnMessageTouch = true,
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
-    emojiData = emojiDataDefault,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
+    FileAttachment = FileAttachmentDefault,
+    FileAttachmentGroup = FileAttachmentGroupDefault,
+    formatDate,
+    Gallery = GalleryDefault,
+    Giphy = CardDefault,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
-    Message,
+    markdownRules,
+    Message = MessageDefault,
+    MessageAvatar = MessageAvatarDefault,
+    MessageContent = MessageContentDefault,
+    MessageFooter,
+    MessageHeader,
+    MessageReplies = MessageRepliesDefault,
+    MessageSimple = MessageSimpleDefault,
+    MessageStatus = MessageStatusDefault,
+    MessageText,
+    ReactionList = ReactionListDefault,
+    supportedReactions = reactionDataDefault,
     thread: threadProps,
+    UrlPreview = CardDefault,
   } = props;
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
+  const {
+    theme: {
+      channel: { selectChannel },
+    },
+  } = useTheme();
 
   const [editing, setEditing] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
@@ -287,6 +311,20 @@ export const Channel = <
       }
     }
   }, [threadProps]);
+
+  /**
+   * CHANNEL CONSTS
+   */
+
+  const isAdmin =
+    client?.user?.role === 'admin' ||
+    channel?.state.membership.role === 'admin';
+
+  const isModerator =
+    channel?.state.membership.role === 'channel_moderator' ||
+    channel?.state.membership.role === 'moderator';
+
+  const isOwner = channel?.state.membership.role === 'owner';
 
   /**
    * CHANNEL METHODS
@@ -421,6 +459,17 @@ export const Channel = <
    * MESSAGE METHODS
    */
 
+  const actionProps = {
+    reactionsEnabled: true,
+    repliesEnabled: true,
+  } as ActionProps;
+  if (typeof channel?.getConfig === 'function') {
+    const reactions = channel.getConfig()?.reactions;
+    const replies = channel.getConfig()?.replies;
+    actionProps.reactionsEnabled = reactions;
+    actionProps.repliesEnabled = replies;
+  }
+
   const updateMessage: MessagesContextValue<
     At,
     Ch,
@@ -448,13 +497,13 @@ export const Channel = <
     parent_id,
     text,
     ...extraFields
-  }: Partial<StreamMessage<At, Me, Us>>) => {
-    const message = {
+  }: Partial<StreamMessage<At, Me, Us>>) =>
+    (({
       __html: text,
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${uuidv4()}`,
+      id: `${client.userID}-${new Date().getTime()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
@@ -469,10 +518,7 @@ export const Channel = <
         ...client.user,
       },
       ...extraFields,
-    };
-
-    return (message as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>;
-  };
+    } as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const sendMessageRequest = async (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
@@ -610,7 +656,7 @@ export const Channel = <
     }
 
     const oldestID = oldestMessage && oldestMessage.id;
-    const limit = 100;
+    const limit = 20;
 
     try {
       if (channel) {
@@ -786,6 +832,9 @@ export const Channel = <
     EmptyStateIndicator,
     error,
     eventHistory,
+    isAdmin,
+    isModerator,
+    isOwner,
     lastRead,
     loading,
     LoadingIndicator,
@@ -799,21 +848,46 @@ export const Channel = <
   };
 
   const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
+    ...actionProps,
+    additionalTouchableProps,
     Attachment,
+    AttachmentActions,
+    AttachmentFileIcon,
+    Card,
+    CardCover,
+    CardFooter,
+    CardHeader,
     clearEditingState,
+    dismissKeyboardOnMessageTouch,
     editing,
     editMessage,
-    emojiData,
+    FileAttachment,
+    FileAttachmentGroup,
+    formatDate,
+    Gallery,
+    Giphy,
     hasMore,
     loadingMore,
     loadMore: loadMoreThrottled,
+    markdownRules,
     Message,
+    MessageAvatar,
+    MessageContent,
+    MessageFooter,
+    MessageHeader,
+    MessageReplies,
     messages,
+    MessageSimple,
+    MessageStatus,
+    MessageText,
+    ReactionList,
     removeMessage,
     retrySendMessage,
     sendMessage,
     setEditingState,
+    supportedReactions,
     updateMessage,
+    UrlPreview,
   };
 
   const threadContext: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
@@ -832,7 +906,7 @@ export const Channel = <
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={{ fontWeight: 'bold', padding: 16 }} testID='no-channel'>
+      <Text style={[styles.selectChannel, selectChannel]} testID='no-channel'>
         {t('Please select a channel first')}
       </Text>
     );
@@ -855,3 +929,5 @@ export const Channel = <
     </KeyboardCompatibleView>
   );
 };
+
+Channel.displayName = 'Channel{channel}';

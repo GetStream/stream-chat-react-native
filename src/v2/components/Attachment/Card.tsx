@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Image,
-  ImageRequireSource,
   Linking,
   StyleSheet,
   Text,
@@ -9,16 +8,29 @@ import {
   View,
 } from 'react-native';
 
-import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { Attachment } from 'stream-chat';
 
-import type { Alignment } from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
-
-const giphyLogo: ImageRequireSource = require('../../../assets/Poweredby_100px-White_VertText.png');
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const styles = StyleSheet.create({
   cardCover: {
@@ -51,72 +63,62 @@ const goToURL = (url?: string) => {
   });
 };
 
-export type CardProps<
-  At extends UnknownType = DefaultAttachmentType
-> = Attachment<At> & {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Custom UI component to override default cover (between Header and Footer) of Card component.
-   * Accepts the same props as Card component.
-   */
-  Cover?: React.ComponentType<CardProps<At>>;
-  /**
-   * Custom UI component to override default Footer of Card component.
-   * Accepts the same props as Card component.
-   */
-  Footer?: React.ComponentType<CardProps<At>>;
-  /**
-   * Custom UI component to override default header of Card component.
-   * Accepts the same props as Card component.
-   */
-  Header?: React.ComponentType<CardProps<At>>;
-};
+export type CardPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Attachment<At> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'alignment' | 'onLongPress'
+  > &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
+  >;
 
-/**
- * UI component for card in attachments.
- *
- * @example ./Card.md
- */
-export const Card = <At extends UnknownType = DefaultAttachmentType>(
-  props: CardProps<At>,
+const CardWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: CardPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    additionalTouchableProps,
     alignment,
-    Cover,
-    Footer,
-    Header,
+    CardCover,
+    CardFooter,
+    CardHeader,
     image_url,
     og_scrape_url,
+    onLongPress,
     text,
     thumb_url,
     title,
     title_link,
-    type,
   } = props;
 
   const {
     theme: {
       colors: { light },
-      message: {
+      messageSimple: {
         card: {
           container,
           cover,
-          footer: {
-            description,
-            link,
-            logo,
-            title: titleStyle,
-            ...footerStyle
-          },
+          footer: { description, link, title: titleStyle, ...footerStyle },
         },
       },
     },
   } = useTheme();
-
-  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
 
   const uri = image_url || thumb_url;
 
@@ -136,17 +138,17 @@ export const Card = <At extends UnknownType = DefaultAttachmentType>(
       testID='card-attachment'
       {...additionalTouchableProps}
     >
-      {Header && <Header {...props} />}
-      {Cover && <Cover {...props} />}
-      {uri && !Cover && (
+      {CardHeader && <CardHeader {...props} />}
+      {CardCover && <CardCover {...props} />}
+      {uri && !CardCover && (
         <Image
           resizeMode='cover'
           source={{ uri: makeImageCompatibleUrl(uri) }}
           style={[styles.cardCover, cover]}
         />
       )}
-      {Footer ? (
-        <Footer {...props} />
+      {CardFooter ? (
+        <CardFooter {...props} />
       ) : (
         <View style={[styles.cardFooter, footerStyle]}>
           <View style={{ backgroundColor: 'transparent' }}>
@@ -154,11 +156,106 @@ export const Card = <At extends UnknownType = DefaultAttachmentType>(
             {text && <Text style={description}>{text}</Text>}
             <Text style={link}>{trimUrl(title_link || og_scrape_url)}</Text>
           </View>
-          {type === 'giphy' && <Image source={giphyLogo} style={logo} />}
         </View>
       )}
     </TouchableOpacity>
   );
 };
 
-Card.displayName = 'Card{message{card}}';
+const MemoizedCard = React.memo(
+  CardWithContext,
+  () => true,
+) as typeof CardWithContext;
+
+export type CardProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Attachment<At> &
+  Partial<
+    Pick<
+      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'alignment' | 'onLongPress'
+    > &
+      Pick<
+        MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+        'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
+      >
+  >;
+
+/**
+ * UI component for card in attachments.
+ *
+ * @example ./Card.md
+ */
+export const Card = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTouchableProps: propAdditionalTouchableProps,
+    alignment: propAlignment,
+    CardCover: PropCardCover,
+    CardFooter: PropCardFooter,
+    CardHeader: PropCardHeader,
+    image_url,
+    og_scrape_url,
+    onLongPress: propOnLongPress,
+    text,
+    thumb_url,
+    title,
+    title_link,
+  } = props;
+
+  const {
+    alignment: contextAlignment,
+    onLongPress: contextOnLongPress,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+    CardCover: ContextCardCover,
+    CardFooter: ContextCardFooter,
+    CardHeader: ContextCardHeader,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const additionalTouchableProps =
+    propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const alignment = propAlignment || contextAlignment;
+  const CardCover = PropCardCover || ContextCardCover;
+  const CardFooter = PropCardFooter || ContextCardFooter;
+  const CardHeader = PropCardHeader || ContextCardHeader;
+  const onLongPress = propOnLongPress || contextOnLongPress;
+
+  return (
+    <MemoizedCard
+      {...props}
+      {...{
+        additionalTouchableProps,
+        alignment,
+        CardCover,
+        CardFooter,
+        CardHeader,
+        image_url,
+        og_scrape_url,
+        onLongPress,
+        text,
+        thumb_url,
+        title,
+        title_link,
+      }}
+    />
+  );
+};
+
+Card.displayName = 'Card{messageSimple{card}}';

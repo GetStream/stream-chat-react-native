@@ -100,7 +100,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   const { setChannel } = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <View style={{ height: '100%', padding: 10 }}>
           <ChannelList<
             LocalAttachmentType,
@@ -135,7 +135,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
           <View style={{ flex: 1 }}>
             <MessageList<
@@ -175,7 +175,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel
           channel={channel}
           keyboardVerticalOffset={headerHeight}
@@ -303,7 +303,17 @@ export default () => {
   return (
     <NavigationContainer>
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <OverlayProvider>
+        <OverlayProvider<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+          value={{ style: theme }}
+        >
           {clientReady && (
             <Stack.Navigator
               initialRouteName='ChannelList'

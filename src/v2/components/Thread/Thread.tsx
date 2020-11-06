@@ -12,14 +12,11 @@ import {
 } from '../MessageList/MessageList';
 
 import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import type { Message as StreamMessage } from 'stream-chat';
-
-import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
 
 import type {
   DefaultAttachmentType,
@@ -65,22 +62,10 @@ export type ThreadProps<
   additionalMessageListProps?: Partial<
     MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  /**
-   * Additional props for underlying Message component of parent message at the top.
-   * Available props - https://getstream.github.io/stream-chat-react-native/#message
-   * */
-  additionalParentMessageProps?: Partial<
-    MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
   /** Make input focus on mounting thread */
   autoFocus?: boolean;
   /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
   disabled?: boolean;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * **Customized MessageInput component to used within Thread instead of default MessageInput
    * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
@@ -123,24 +108,14 @@ export const Thread = <
   const {
     additionalMessageInputProps,
     additionalMessageListProps,
-    additionalParentMessageProps,
     autoFocus = true,
     disabled,
-    Message: MessageFromProps,
     MessageInput = DefaultMessageInput,
     MessageList = DefaultMessageList,
   } = props;
 
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { Message: MessageFromContext } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+
   const {
     theme: {
       thread: {
@@ -171,15 +146,13 @@ export const Thread = <
 
   if (!thread) return null;
 
-  const Message = MessageFromProps || MessageFromContext;
-
   const headerComponent = (
     <>
       <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalParentMessageProps}
+        alignment={'left'}
+        enableLongPress={false}
         groupStyles={['single']}
         message={thread}
-        Message={Message}
         threadList
       />
       <View style={[styles.newThread, newThread]}>
@@ -193,7 +166,6 @@ export const Thread = <
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
         {...additionalMessageListProps}
         HeaderComponent={headerComponent}
-        Message={Message}
         threadList
       />
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>

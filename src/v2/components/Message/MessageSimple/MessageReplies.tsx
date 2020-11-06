@@ -1,17 +1,16 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import {
-  Image,
-  ImageRequireSource,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../../contexts/translationContext/TranslationContext';
 
-import type { Message } from '../../../components/MessageList/utils/insertDates';
-import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,8 +21,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-
-const iconPath: ImageRequireSource = require('../../../../images/icons/icon_path.png');
 
 const styles = StyleSheet.create({
   container: {
@@ -37,6 +34,93 @@ const styles = StyleSheet.create({
   },
 });
 
+export type MessageRepliesPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'message' | 'onOpenThread' | 'threadList'
+> &
+  Pick<TranslationContextValue, 't'>;
+
+const MessageRepliesWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { message, onOpenThread, t, threadList } = props;
+
+  const {
+    theme: {
+      colors: { primary },
+      messageSimple: {
+        replies: { container, messageRepliesText },
+      },
+    },
+  } = useTheme();
+  if (threadList || !message.reply_count) return null;
+
+  return (
+    <TouchableOpacity
+      onPress={onOpenThread}
+      style={[styles.container, container]}
+      testID='message-replies'
+    >
+      <Text
+        style={[
+          styles.messageRepliesText,
+          { color: primary },
+          messageRepliesText,
+        ]}
+      >
+        {message.reply_count === 1
+          ? t('1 Thread Reply')
+          : t('{{ replyCount }} Thread Replies', {
+              replyCount: message.reply_count,
+            })}
+      </Text>
+    </TouchableOpacity>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { message: prevMessage, threadList: prevThreadList } = prevProps;
+  const { message: nextMessage, threadList: nextThreadList } = nextProps;
+
+  const messageReplyCountEqual =
+    prevMessage.reply_count === nextMessage.reply_count;
+  const threadListEqual = prevThreadList === nextThreadList;
+
+  return messageReplyCountEqual && threadListEqual;
+};
+
+const MemoizedMessageReplies = React.memo(
+  MessageRepliesWithContext,
+  areEqual,
+) as typeof MessageRepliesWithContext;
+
 export type MessageRepliesProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -45,24 +129,7 @@ export type MessageRepliesProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the current message is part of a thread
-   */
-  isThreadList: boolean;
-  /**
-   * Current [message object](https://getstream.io/chat/docs/#message_format)
-   */
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Handler to open a thread on a message
-   */
-  openThread: () => void;
-};
+> = Partial<MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageReplies = <
   At extends UnknownType = DefaultAttachmentType,
@@ -75,61 +142,28 @@ export const MessageReplies = <
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, isThreadList, message, openThread } = props;
   const {
-    theme: {
-      colors: { primary },
-      message: {
-        replies: { container, image, messageRepliesText },
-      },
-    },
-  } = useTheme();
-  const { t } = useTranslationContext();
-  if (isThreadList || !message.reply_count) return null;
+    message: propMessage,
+    onOpenThread: propOnOpenThread,
+    t: propT,
+    threadList: propThreadList,
+  } = props;
+
+  const {
+    message: contextMessage,
+    onOpenThread: contextOnOpenThread,
+    threadList: contextThreadList,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { t: contextT } = useTranslationContext();
+
+  const message = propMessage || contextMessage;
+  const onOpenThread = propOnOpenThread || contextOnOpenThread;
+  const threadList = propThreadList || contextThreadList;
+  const t = propT || contextT;
 
   return (
-    <TouchableOpacity
-      onPress={openThread}
-      style={[styles.container, container]}
-      testID='message-replies'
-    >
-      {alignment === 'left' && (
-        <Image
-          source={iconPath}
-          style={[
-            {
-              transform: [{ rotateY: '0deg' }],
-            },
-            image,
-          ]}
-          testID='message-replies-left'
-        />
-      )}
-      <Text
-        style={[
-          styles.messageRepliesText,
-          { color: primary },
-          messageRepliesText,
-        ]}
-      >
-        {message.reply_count === 1
-          ? t('1 reply')
-          : t('{{ replyCount }} replies', { replyCount: message.reply_count })}
-      </Text>
-      {alignment === 'right' && (
-        <Image
-          source={iconPath}
-          style={[
-            {
-              transform: [{ rotateY: '180deg' }],
-            },
-            image,
-          ]}
-          testID='message-replies-right'
-        />
-      )}
-    </TouchableOpacity>
+    <MemoizedMessageReplies {...{ message, onOpenThread, t, threadList }} />
   );
 };
 
-MessageReplies.displayName = 'MessageReplies{message{replies}}';
+MessageReplies.displayName = 'MessageReplies{messageSimple{replies}}';

@@ -111,7 +111,9 @@ export type ChannelProps<
    */
   doUpdateMessageRequest?: (
     channelId: string,
-    updatedMessage: StreamMessage<At, Me, Us>,
+    updatedMessage: Parameters<
+      StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
+    >[0],
   ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
   /**

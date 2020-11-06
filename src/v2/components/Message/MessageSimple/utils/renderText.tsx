@@ -1,8 +1,11 @@
 import React from 'react';
+import { Linking } from 'react-native';
 // @ts-expect-error
-import Markdown from '@stream-io/react-native-simple-markdown';
+import Markdown from 'react-native-markdown-package';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
+
+import type { DefaultRules } from 'simple-markdown';
 
 import type { Message } from '../../../MessageList/utils/insertDates';
 import type {
@@ -16,9 +19,13 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 
-import type { MarkdownStyle } from '../../../../../styles/themeConstants';
+import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
-const defaultMarkdownStyles = {
+const defaultMarkdownStyles: MarkdownStyle = {
+  autolink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
   inlineCode: {
     backgroundColor: '#F3F3F3',
     borderColor: '#dddddd',
@@ -27,15 +34,21 @@ const defaultMarkdownStyles = {
     padding: 3,
     paddingHorizontal: 5,
   },
-  link: {
-    color: 'blue',
-    textDecorationLine: 'underline',
+  paragraph: {
+    marginBottom: 8,
+    marginTop: 8,
   },
-  url: {
-    color: 'blue',
-    textDecorationLine: 'underline',
+  paragraphCenter: {
+    marginBottom: 8,
+    marginTop: 8,
+  },
+  paragraphWithImage: {
+    marginBottom: 8,
+    marginTop: 8,
   },
 };
+
+export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams<
   At extends UnknownType = DefaultAttachmentType,
@@ -46,9 +59,10 @@ export type RenderTextParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  markdownRules: UnknownType;
-  markdownStyles: MarkdownStyle;
   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  markdownRules?: MarkdownRules;
+  markdownStyles?: MarkdownStyle;
+  onLink?: (url: string) => Promise<void>;
 };
 
 export const renderText = <
@@ -62,7 +76,12 @@ export const renderText = <
 >(
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { markdownRules, markdownStyles, message } = params;
+  const {
+    markdownRules,
+    markdownStyles,
+    message,
+    onLink: onLinkParams,
+  } = params;
 
   // take the @ mentions and turn them into markdown?
   // translate links
@@ -99,8 +118,17 @@ export const renderText = <
     ...markdownStyles,
   };
 
+  const onLink = (url: string) =>
+    Linking.canOpenURL(url).then(
+      (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+    );
+
   return (
-    <Markdown rules={markdownRules} styles={styles}>
+    <Markdown
+      onLink={onLinkParams || onLink}
+      rules={markdownRules}
+      styles={styles}
+    >
       {newText}
     </Markdown>
   );

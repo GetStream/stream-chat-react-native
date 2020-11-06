@@ -67,7 +67,7 @@ const ChannelListScreen = React.memo(({navigation}) => {
   const {setChannel} = useContext(AppContext);
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <View style={{height: '100%', padding: 10}}>
           <ChannelList
             filters={filters}
@@ -91,7 +91,7 @@ const ChannelScreen = React.memo(({navigation}) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n} style={theme}>
+      <Chat client={chatClient} i18nInstance={streami18n}>
         <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
           <View style={{flex: 1}}>
             <MessageList
@@ -157,7 +157,7 @@ export default () => {
   return (
     <NavigationContainer>
       <AppContext.Provider value={{channel, setChannel, setThread, thread}}>
-        <OverlayProvider>
+        <OverlayProvider value={{style: theme}}>
           {clientReady && (
             <Stack.Navigator
               initialRouteName="ChannelList"

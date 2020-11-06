@@ -1,12 +1,12 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Dayjs from 'dayjs';
 
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import {
   DeepPartial,
   ThemeProvider,
@@ -143,6 +143,8 @@ export const Chat = <
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
 
+  const { style: overlayStyle } = useOverlayContext();
+
   // Setup translators
   useStreami18n({ i18nInstance, setTranslators });
 
@@ -176,12 +178,10 @@ export const Chat = <
   };
 
   return (
-    <GestureHandlerRootView>
-      <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
-        <TranslationProvider value={translators}>
-          <ThemeProvider style={style}>{children}</ThemeProvider>
-        </TranslationProvider>
-      </ChatProvider>
-    </GestureHandlerRootView>
+    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
+      <TranslationProvider value={translators}>
+        <ThemeProvider style={style || overlayStyle}>{children}</ThemeProvider>
+      </TranslationProvider>
+    </ChatProvider>
   );
 };

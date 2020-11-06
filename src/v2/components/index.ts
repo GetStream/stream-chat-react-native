@@ -40,6 +40,7 @@ export * from './Message/MessageSimple/MessageReplies';
 export * from './Message/MessageSimple/MessageSimple';
 export * from './Message/MessageSimple/MessageStatus';
 export * from './Message/MessageSimple/MessageTextContainer';
+export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 
 export * from './MessageInput/ActionSheetAttachment';
@@ -57,10 +58,10 @@ export * from './MessageList/MessageSystem';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
 
-export * from './Reaction/ReactionList';
-export * from './Reaction/ReactionPicker';
-export * from './Reaction/ReactionPickerWrapper';
-export * from './Reaction/utils/renderReactions';
+export * from './MessageOverlay/MessageActions';
+export * from './MessageOverlay/MessageOverlay';
+export * from './MessageOverlay/OverlayReactions';
+export * from './MessageOverlay/OverlayReactionList';
 
 export * from './Spinner/Spinner';
 

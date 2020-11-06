@@ -7,11 +7,6 @@ import { Message } from '../../Message';
 import { Chat } from '../../../Chat/Chat';
 import { Channel } from '../../../Channel/Channel';
 
-import {
-  MessageContentProvider,
-  useMessageContentContext,
-} from '../../../../contexts/messageContentContext/MessageContentContext';
-
 import { getOrCreateChannelApi } from '../../../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../../../mock-builders/generator/channel';
@@ -220,94 +215,6 @@ describe('MessageContent', () => {
     await waitFor(() => {
       expect(getByTestId('message-content-wrapper')).toBeTruthy();
       expect(getByTestId('reaction-list')).toBeTruthy();
-    });
-  });
-
-  describe('MessageContentContext', () => {
-    const MessageContentContextConsumer = ({ fn }) => {
-      fn(useMessageContentContext());
-      return <View testID='children' />;
-    };
-
-    it('renders children without crashing', async () => {
-      const { getByTestId } = render(
-        <MessageContentProvider>
-          <View testID='children' />
-        </MessageContentProvider>,
-      );
-
-      await waitFor(() => expect(getByTestId('children')).toBeTruthy());
-    });
-
-    it('exposes the message content context', async () => {
-      let context;
-
-      const mockContext = {
-        disabled: false,
-        onLongPress: () => {},
-      };
-
-      render(
-        <MessageContentProvider value={mockContext}>
-          <MessageContentContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></MessageContentContextConsumer>
-        </MessageContentProvider>,
-      );
-
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.disabled).toBe(false);
-        expect(context.onLongPress).toBeInstanceOf(Function);
-      });
-    });
-
-    it('updates the context when props change', async () => {
-      let context;
-
-      const mockContext = {
-        disabled: false,
-        onLongPress: () => {},
-      };
-
-      const { rerender } = render(
-        <MessageContentProvider value={mockContext}>
-          <MessageContentContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></MessageContentContextConsumer>
-        </MessageContentProvider>,
-      );
-
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.disabled).toBe(false);
-        expect(context.onLongPress).toBeInstanceOf(Function);
-      });
-
-      const newContext = {
-        disabled: true,
-        onLongPress: null,
-      };
-
-      rerender(
-        <MessageContentProvider value={newContext}>
-          <MessageContentContextConsumer
-            fn={(ctx) => {
-              context = ctx;
-            }}
-          ></MessageContentContextConsumer>
-        </MessageContentProvider>,
-      );
-
-      await waitFor(() => {
-        expect(context).toBeInstanceOf(Object);
-        expect(context.disabled).toBe(true);
-        expect(context.onLongPress).toBeNull();
-      });
     });
   });
 });
