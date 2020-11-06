@@ -6,6 +6,18 @@ import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { styled } from '../../../styles/styledComponents';
 import { MESSAGE_ACTIONS } from '../../../utils/utils';
+import type { Message as InsertDatesMessage } from '../../MessageList/utils/insertDates';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../../types/types';
+import type { Reaction } from 'src/components/Reaction/ReactionList';
 
 const ActionSheetButtonContainer = styled.View`
   align-items: center;
@@ -62,7 +74,15 @@ export type ActionSheetStyles = {
   wrapper?: StyleProp<ViewStyle>;
 };
 
-export type MessageActionSheetProps = {
+export type MessageActionSheetProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = {
   /**
    * Handler to delete a current message
    */
@@ -72,6 +92,8 @@ export type MessageActionSheetProps = {
    * The `editing` prop is used by the MessageInput component to switch to edit mode.
    */
   handleEdit: () => void;
+  handleReaction: (reactionType: string) => Promise<void>;
+  message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Function that opens the reaction picker
    */
@@ -97,6 +119,7 @@ export type MessageActionSheetProps = {
    * React useState hook setter function that toggles action sheet visibility
    */
   setActionSheetVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  supportedReactions: Reaction[];
   /**
    * Style object for action sheet (used to style message actions)
    * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
