@@ -60,9 +60,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageGallery: React.FC<{
+type Props = {
   overlayOpacity: Animated.SharedValue<number>;
-}> = ({ overlayOpacity }) => {
+  visible: boolean;
+};
+
+export const ImageGallery: React.FC<Props> = (props) => {
+  const { overlayOpacity, visible } = props;
   const { setOverlay } = useOverlayContext();
   const { images } = useImageGalleryContext();
 
@@ -126,6 +130,57 @@ export const ImageGallery: React.FC<{
   const isPinch = useSharedValue(false);
 
   /**
+   * Reset gesture values for use on touch release
+   */
+  const resetTouchValues = () => {
+    'worklet';
+    focalX.value = 0;
+    focalY.value = 0;
+    oldFocalX.value = 0;
+    oldFocalY.value = 0;
+    originX.value = 0;
+    originY.value = 0;
+    focalOffsetX.value = 0;
+    focalOffsetY.value = 0;
+    numberOfPinchFingers.value = 0;
+    isPinch.value = false;
+    isSwiping.value = IsSwiping.UNDETERMINED;
+  };
+
+  /**
+   * Reset movement values for use on selected photo change
+   */
+  const resetMovementValues = () => {
+    'worklet';
+    translateX.value = 0;
+    translateY.value = 0;
+    scale.value = 1;
+    offsetScale.value = 1;
+  };
+
+  /**
+   * Reset all key values for visible
+   */
+  const resetVisibleValues = () => {
+    'worklet';
+    resetTouchValues();
+    resetMovementValues();
+    headerFooterVisible.value = 1;
+    offsetX.value = 0;
+    offsetY.value = 0;
+    adjustedFocalX.value = 0;
+    adjustedFocalY.value = 0;
+    tapX.value = 0;
+    tapY.value = 0;
+  };
+
+  useEffect(() => {
+    if (!visible) {
+      resetVisibleValues();
+    }
+  }, [visible]);
+
+  /**
    * Photos array created from all currently available
    * photo attachments
    */
@@ -178,35 +233,6 @@ export const ImageGallery: React.FC<{
   }, [index.value]);
 
   /**
-   * Reset gesture values for use on touch release
-   */
-  const resetTouchValues = () => {
-    'worklet';
-    focalX.value = 0;
-    focalY.value = 0;
-    oldFocalX.value = 0;
-    oldFocalY.value = 0;
-    originX.value = 0;
-    originY.value = 0;
-    focalOffsetX.value = 0;
-    focalOffsetY.value = 0;
-    numberOfPinchFingers.value = 0;
-    isPinch.value = false;
-    isSwiping.value = IsSwiping.UNDETERMINED;
-  };
-
-  /**
-   * Reset movement values for use on selected photo change
-   */
-  const resetMovementValues = () => {
-    'worklet';
-    translateX.value = 0;
-    translateY.value = 0;
-    scale.value = 1;
-    offsetScale.value = 1;
-  };
-
-  /**
    * We use simultaneousHandlers to allow pan and pinch gesture handlers
    * depending on the gesture. The touch is fully handled by the pinch
    * gesture handler once it has began so all interactions by the pan
@@ -224,9 +250,11 @@ export const ImageGallery: React.FC<{
            */
           if (isSwiping.value === IsSwiping.UNDETERMINED) {
             if (
-              Math.abs(evt.translationX / evt.translationY) > 1.5 &&
-              (offsetX.value === -halfScreenWidth * (scale.value - 1) ||
-                offsetX.value === halfScreenWidth * (scale.value - 1))
+              Math.abs(evt.translationX / evt.translationY) > 0.25 &&
+              (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) <
+                3 ||
+                Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) <
+                  3)
             ) {
               isSwiping.value = IsSwiping.TRUE;
             }
@@ -300,11 +328,13 @@ export const ImageGallery: React.FC<{
            */
           if (
             index.value < photoLength - 1 &&
-            offsetX.value === -halfScreenWidth * (scale.value - 1) &&
+            Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) <
+              3 &&
             translateX.value < 0 &&
             finalXPosition < -halfScreenWidth &&
             isSwiping.value === IsSwiping.TRUE
           ) {
+            cancelAnimation(translationX);
             translationX.value = withTiming(
               -(screenWidth + MARGIN) * (index.value + 1),
               {
@@ -325,11 +355,12 @@ export const ImageGallery: React.FC<{
              */
           } else if (
             index.value > 0 &&
-            offsetX.value === halfScreenWidth * (scale.value - 1) &&
+            Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) < 3 &&
             translateX.value > 0 &&
             finalXPosition > halfScreenWidth &&
             isSwiping.value === IsSwiping.TRUE
           ) {
+            cancelAnimation(translationX);
             translationX.value = withTiming(
               -(screenWidth + MARGIN) * (index.value - 1),
               {
@@ -465,6 +496,7 @@ export const ImageGallery: React.FC<{
            */
           cancelAnimation(translateX);
           cancelAnimation(translateY);
+          cancelAnimation(scale);
           offsetX.value = translateX.value;
           offsetY.value = translateY.value;
         }
@@ -611,6 +643,7 @@ export const ImageGallery: React.FC<{
          */
         cancelAnimation(translateX);
         cancelAnimation(translateY);
+        cancelAnimation(scale);
 
         /**
          * Set pinch to true to stop all pan gesture interactions
@@ -704,12 +737,6 @@ export const ImageGallery: React.FC<{
     [currentImageHeight],
   );
 
-  useEffect(() => {
-    if (offsetY.value === screenHeight) {
-      setOverlay('none');
-    }
-  }, [offsetY.value]);
-
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
       transform: [
@@ -718,7 +745,7 @@ export const ImageGallery: React.FC<{
         },
       ],
     }),
-    [],
+    [visible],
   );
 
   // const containerBackground = useAnimatedStyle<ViewStyle>(
@@ -728,6 +755,10 @@ export const ImageGallery: React.FC<{
   //   }),
   //   [],
   // );
+
+  if (!visible) {
+    return null;
+  }
 
   return (
     <Animated.View style={StyleSheet.absoluteFillObject}>
@@ -772,6 +803,13 @@ export const ImageGallery: React.FC<{
                         StyleSheet.absoluteFill,
                         styles.animatedContainer,
                         pagerStyle,
+                        {
+                          transform: [
+                            {
+                              translateX: translationX.value, // TODO: See if beta 8 fixes issue on reopen index
+                            },
+                          ],
+                        },
                       ]}
                     >
                       {photos.map((photo, i) => (
