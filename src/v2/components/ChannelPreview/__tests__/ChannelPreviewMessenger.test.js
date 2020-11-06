@@ -68,7 +68,7 @@ describe('ChannelPreviewMessenger', () => {
   });
 
   it('should render name of channel', async () => {
-    const channelName = new Date().getTime();
+    const channelName = new Date().getTime().toString();
     await initializeChannel(
       generateChannel({
         channel: {

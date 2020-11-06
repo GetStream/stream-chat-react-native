@@ -128,7 +128,9 @@ describe('Attachment', () => {
   it('should render "Card" if attachment type is not recognized', async () => {
     const { getByTestId } = render(
       getAttachmentComponent({
-        attachment: generateCardAttachment({ type: new Date().getTime() }),
+        attachment: generateCardAttachment({
+          type: new Date().getTime().toString(),
+        }),
       }),
     );
     await waitFor(() => {
