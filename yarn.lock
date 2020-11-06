@@ -2570,10 +2570,10 @@
     "@types/prop-types" "*"
     csstype "^3.0.2"
 
-"@types/react@16.9.55":
-  version "16.9.55"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.55.tgz#47078587f5bfe028a23b6b46c7b94ac0d436acff"
-  integrity sha512-6KLe6lkILeRwyyy7yG9rULKJ0sXplUsl98MGoCfpteXf9sPWFWWMknDcsvubcpaTdBuxtsLF6HDUwdApZL/xIg==
+"@types/react@16.9.56":
+  version "16.9.56"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.56.tgz#ea25847b53c5bec064933095fc366b1462e2adf0"
+  integrity sha512-gIkl4J44G/qxbuC6r2Xh+D3CGZpJ+NdWTItAPmZbR5mUS+JQ8Zvzpl0ea5qT/ZT3ZNTUcDKUVqV3xBE8wv/DyQ==
   dependencies:
     "@types/prop-types" "*"
     csstype "^3.0.2"
@@ -12539,10 +12539,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat@2.7.3:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.3.tgz#5b344d78261373bd89b86b0d801ca399e3f087a8"
-  integrity sha512-C1voibR9bZfu4Vc9z+Kv728WaGGiUg6RUxvxS+fmgaDhMGBmkJgsKzUpQk8cp4H0l0Bz8a7V6S8BHlTenu9nfQ==
+stream-chat@2.7.4:
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.4.tgz#663593211e18c1e6d3657207b043d0cf99266fac"
+  integrity sha512-ub2EQGeQixy/jRTyPJ4fCJofjKH1gu1JCWVSP+WdJ9iZSH/UOnONJ6Ibir+t5d3SJZyrkzqejyx6SZ7sRtx8ZA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

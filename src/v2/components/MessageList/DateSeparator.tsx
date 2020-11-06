@@ -142,28 +142,11 @@ export const DateSeparator = <
 >(
   props: DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    formatDate: propFormatDate,
-    message,
-    tDateTimeParser: propTDateTimeParser,
-  } = props;
-
-  const { formatDate: contextFormatDate } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { tDateTimeParser: contextTDateTimeParser } = useTranslationContext();
-
-  const formatDate = propFormatDate || contextFormatDate;
-  const tDateTimeParser = propTDateTimeParser || contextTDateTimeParser;
+  const { formatDate } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { tDateTimeParser } = useTranslationContext();
 
   return (
-    <MemoizedDateSeparator {...{ formatDate, message, tDateTimeParser }} />
+    <MemoizedDateSeparator {...{ formatDate, tDateTimeParser }} {...props} />
   );
 };
 

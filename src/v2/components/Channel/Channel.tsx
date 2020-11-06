@@ -219,6 +219,7 @@ export const Channel = <
     MessageText,
     ReactionList = ReactionListDefault,
     supportedReactions = reactionDataDefault,
+    textBeforeAttachments = false,
     thread: threadProps,
     UrlPreview = CardDefault,
   } = props;
@@ -886,6 +887,7 @@ export const Channel = <
     sendMessage,
     setEditingState,
     supportedReactions,
+    textBeforeAttachments,
     updateMessage,
     UrlPreview,
   };

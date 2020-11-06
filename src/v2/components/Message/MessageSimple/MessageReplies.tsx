@@ -142,27 +142,22 @@ export const MessageReplies = <
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    message: propMessage,
-    onOpenThread: propOnOpenThread,
-    t: propT,
-    threadList: propThreadList,
-  } = props;
-
-  const {
-    message: contextMessage,
-    onOpenThread: contextOnOpenThread,
-    threadList: contextThreadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t: contextT } = useTranslationContext();
-
-  const message = propMessage || contextMessage;
-  const onOpenThread = propOnOpenThread || contextOnOpenThread;
-  const threadList = propThreadList || contextThreadList;
-  const t = propT || contextT;
+  const { message, onOpenThread, threadList } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { t } = useTranslationContext();
 
   return (
-    <MemoizedMessageReplies {...{ message, onOpenThread, t, threadList }} />
+    <MemoizedMessageReplies
+      {...{ message, onOpenThread, t, threadList }}
+      {...props}
+    />
   );
 };
 

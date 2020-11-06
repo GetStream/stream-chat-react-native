@@ -96,7 +96,7 @@ export const renderText = <
 
   for (const urlInfo of urls) {
     const displayLink = truncate(urlInfo.encoded.replace(/^(www\.)/, ''), {
-      length: 20,
+      length: 200,
       omission: '...',
     });
     const markdown = `[${displayLink}](${urlInfo.protocol}${urlInfo.encoded})`;

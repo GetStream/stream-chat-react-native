@@ -24,7 +24,7 @@ import type {
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
@@ -76,7 +76,7 @@ export const TypingIndicator = <
           image={user.image}
           key={`${user.id}${idx}`}
           name={user.name || user.id}
-          size={24}
+          size={20}
           testID={`typing-avatar-${idx}`}
         />
       ))}

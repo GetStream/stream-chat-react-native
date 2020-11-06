@@ -163,17 +163,17 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: propMessage, threadList: propThreadList } = props;
+  const { message, threadList } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
-  const {
-    message: contextMessage,
-    threadList: contextThreadList,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const message = propMessage || contextMessage;
-  const threadList = propThreadList || contextThreadList;
-
-  return <MemoizedMessageStatus {...{ message, threadList }} />;
+  return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

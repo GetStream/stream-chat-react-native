@@ -232,33 +232,25 @@ export const MessageTextContainer = <
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment: propAlignment,
-    groupStyles: propGroupStyles,
-    markdownRules: propMarkdownRules,
-    markdownStyles,
-    message: propMessage,
-    MessageText: PropMessageText,
-    theme: propTheme,
-  } = props;
-
-  const {
-    alignment: contextAlignment,
-    groupStyles: contextGroupStyles,
-    message: contextMessage,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    markdownRules: contextMarkdownRules,
-    MessageText: ContextMessageText,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const contextTheme = useTheme();
-
-  const alignment = propAlignment || contextAlignment;
-  const groupStyles = propGroupStyles || contextGroupStyles;
-  const markdownRules = propMarkdownRules || contextMarkdownRules;
-  const message = propMessage || contextMessage;
-  const MessageText = PropMessageText || ContextMessageText;
-  const theme = propTheme || contextTheme;
+  const { alignment, groupStyles, message } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { markdownRules, MessageText } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const theme = useTheme();
 
   return (
     <MemoizedMessageTextContainer
@@ -266,11 +258,11 @@ export const MessageTextContainer = <
         alignment,
         groupStyles,
         markdownRules,
-        markdownStyles,
         message,
         MessageText,
         theme,
       }}
+      {...props}
     />
   );
 };

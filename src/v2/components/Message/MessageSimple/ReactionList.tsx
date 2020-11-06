@@ -394,19 +394,16 @@ export const ReactionList = <
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment: propAlignment,
-    reactions: propReactions,
-    showMessageOverlay: propShowMessageOverlay,
-    supportedReactions: propSupportedReactions,
-  } = props;
-
-  const {
-    alignment: contextAlignment,
-    reactions: contextReactions,
-    showMessageOverlay: contextShowMessageOverlay,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { supportedReactions: contextSupportedReactions } = useMessagesContext<
+  const { alignment, reactions, showMessageOverlay } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { supportedReactions } = useMessagesContext<
     At,
     Ch,
     Co,
@@ -416,17 +413,10 @@ export const ReactionList = <
     Us
   >();
 
-  const alignment = propAlignment || contextAlignment;
-  const reactions = propReactions || contextReactions;
-  const showMessageOverlay =
-    propShowMessageOverlay || contextShowMessageOverlay;
-  const supportedReactions =
-    propSupportedReactions || contextSupportedReactions;
-
   return (
     <MemoizedReactionList
-      {...props}
       {...{ alignment, reactions, showMessageOverlay, supportedReactions }}
+      {...props}
     />
   );
 };

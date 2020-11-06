@@ -185,18 +185,8 @@ export const MessageSimple = <
 >(
   props: MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment: propAlignment,
-    channel: propChannel,
-    groupStyles: propGroupStyles,
-    hasReactions: propHasReactions,
-    message: propMessage,
-    MessageAvatar: PropMessageAvatar,
-    MessageContent: PropMessageContent,
-    ReactionList: PropReactionList,
-  } = props;
-
-  const { channel: contextChannel } = useChannelContext<
+  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { alignment, groupStyles, hasReactions, message } = useMessageContext<
     At,
     Ch,
     Co,
@@ -205,26 +195,15 @@ export const MessageSimple = <
     Re,
     Us
   >();
-  const {
-    alignment: contextAlignment,
-    groupStyles: contextGroupStyles,
-    hasReactions: contextHasReactions,
-    message: contextMessage,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    MessageAvatar: ContextMessageAvatar,
-    MessageContent: ContextMessageContent,
-    ReactionList: ContextReactionList,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const alignment = propAlignment || contextAlignment;
-  const channel = propChannel || contextChannel;
-  const groupStyles = propGroupStyles || contextGroupStyles;
-  const hasReactions = propHasReactions || contextHasReactions;
-  const message = propMessage || contextMessage;
-  const MessageAvatar = PropMessageAvatar || ContextMessageAvatar;
-  const MessageContent = PropMessageContent || ContextMessageContent;
-  const ReactionList = PropReactionList || ContextReactionList;
+  const { MessageAvatar, MessageContent, ReactionList } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   return (
     <MemoizedMessageSimple<At, Ch, Co, Ev, Me, Re, Us>
@@ -238,6 +217,7 @@ export const MessageSimple = <
         MessageContent,
         ReactionList,
       }}
+      {...props}
     />
   );
 };

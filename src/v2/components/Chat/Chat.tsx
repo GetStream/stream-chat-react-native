@@ -160,7 +160,9 @@ export const Chat = <
   >(client);
 
   useEffect(() => {
-    client?.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+    if (client.setUserAgent) {
+      client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+    }
   }, []);
 
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>

@@ -406,10 +406,13 @@ export const Gallery = <
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t: contextT } = useTranslationContext();
 
+  const images = propImages || contextImages;
+
+  if (!images.length) return null;
+
   const additionalTouchableProps =
     propAdditionalTouchableProps || contextAdditionalTouchableProps;
   const alignment = propAlignment || contextAlignment;
-  const images = propImages || contextImages;
   const onLongPress = propOnLongPress || contextOnLongPress;
   const t = propT || contextT;
 

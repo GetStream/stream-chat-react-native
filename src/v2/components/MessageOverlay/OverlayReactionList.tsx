@@ -1,11 +1,11 @@
 import React from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import Svg, { Circle, FillProps } from 'react-native-svg';
+import Svg, { Circle, CircleProps, FillProps } from 'react-native-svg';
 
 import {
   MessageOverlayContextValue,
@@ -104,7 +104,7 @@ const OverlayReactionListWithContext = <
 
   const { width } = useWindowDimensions();
 
-  const animatedStyle = useAnimatedStyle(() => {
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => {
     const borderRadius =
       reactionList.borderRadius || styles.reactionList.borderRadius;
     const insideLeftBound =
@@ -126,14 +126,14 @@ const OverlayReactionListWithContext = <
     };
   });
 
-  const animatedBigCircleProps = useAnimatedProps(() => ({
+  const animatedBigCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius * 3,
     cy: messageLayout.value.y - radius * 3,
     fill: fill || grey,
     r: radius * 2,
   }));
 
-  const animateSmallCircleProps = useAnimatedProps(() => ({
+  const animateSmallCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius,
     cy: messageLayout.value.y,
     fill: fill || grey,

@@ -130,23 +130,11 @@ export const MessageAvatar = <
   props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    alignment: propAlignment,
-    lastGroupMessage: propLastGroupMessage,
-    message: propMessage,
-    showAvatar: propShowAvatar,
-  } = props;
-
-  const {
-    alignment: contextAlignment,
-    lastGroupMessage: contextLastGroupMessage,
-    message: contextMessage,
-    showAvatar: contextShowAvatar,
+    alignment,
+    lastGroupMessage,
+    message,
+    showAvatar,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const alignment = propAlignment || contextAlignment;
-  const lastGroupMessage = propLastGroupMessage || contextLastGroupMessage;
-  const message = propMessage || contextMessage;
-  const showAvatar = propShowAvatar || contextShowAvatar;
 
   return (
     <MemoizedMessageAvatar
@@ -156,6 +144,7 @@ export const MessageAvatar = <
         message,
         showAvatar,
       }}
+      {...props}
     />
   );
 };

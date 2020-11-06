@@ -7239,10 +7239,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.7.3:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.3.tgz#5b344d78261373bd89b86b0d801ca399e3f087a8"
-  integrity sha512-C1voibR9bZfu4Vc9z+Kv728WaGGiUg6RUxvxS+fmgaDhMGBmkJgsKzUpQk8cp4H0l0Bz8a7V6S8BHlTenu9nfQ==
+stream-chat@2.7.4:
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.4.tgz#663593211e18c1e6d3657207b043d0cf99266fac"
+  integrity sha512-ub2EQGeQixy/jRTyPJ4fCJofjKH1gu1JCWVSP+WdJ9iZSH/UOnONJ6Ibir+t5d3SJZyrkzqejyx6SZ7sRtx8ZA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"
@@ -7250,25 +7250,6 @@ stream-chat@2.7.3:
     "@types/uuid" "^8.3.0"
     "@types/ws" "^7.2.7"
     axios "^0.21.0"
-    base64-js "^1.3.1"
-    form-data "^3.0.0"
-    isomorphic-ws "^4.0.1"
-    jsonwebtoken "^8.5.1"
-    seamless-immutable "^7.1.4"
-    uuid "^8.3.1"
-    ws "^7.3.1"
-
-stream-chat@2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.0.tgz#a1f9fe1474d270cee9e0e118953d7dcbbadd90ba"
-  integrity sha512-JRhw5JyIrS9bKVhLzEu57BxXTExMlxCJu0YXdMryJh9Wnl0XOzzjwCwYqZIFWFWH52RGyovQ+8VxkRzURStowg==
-  dependencies:
-    "@babel/runtime" "^7.11.2"
-    "@types/jsonwebtoken" "^8.5.0"
-    "@types/seamless-immutable" "7.1.13"
-    "@types/uuid" "^8.3.0"
-    "@types/ws" "^7.2.7"
-    axios "^0.20.0"
     base64-js "^1.3.1"
     form-data "^3.0.0"
     isomorphic-ws "^4.0.1"

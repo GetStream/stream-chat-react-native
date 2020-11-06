@@ -173,21 +173,8 @@ export const AttachmentActions = <
 >(
   props: AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { actions, handleAction: propHandleAction } = props;
-
-  const { handleAction: contextHandleAction } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-
-  const handleAction = propHandleAction || contextHandleAction;
-
-  return <MemoizedAttachmentActions {...{ actions, handleAction }} />;
+  const { handleAction } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
 };
 
 AttachmentActions.displayName = 'AttachmentActions{messageSimple{actions}}';

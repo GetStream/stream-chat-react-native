@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -77,7 +77,7 @@ const MessageAction = <
 
   const opacity = useSharedValue(1);
 
-  const animatedStyle = useAnimatedStyle(() => ({
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
   }));
 

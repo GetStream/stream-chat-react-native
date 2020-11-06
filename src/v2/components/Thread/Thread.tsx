@@ -88,7 +88,6 @@ export type ThreadProps<
  *
  * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
  * Underlying MessageList, MessageInput and Message components can be customized using props:
- * - additionalParentMessageProps
  * - additionalMessageListProps
  * - additionalMessageInputProps
  *
@@ -164,14 +163,14 @@ export const Thread = <
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalMessageListProps}
         HeaderComponent={headerComponent}
         threadList
+        {...additionalMessageListProps}
       />
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
-        {...additionalMessageInputProps}
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
         parent_id={thread.id as StreamMessage<At, Me, Us>['parent_id']}
+        {...additionalMessageInputProps}
       />
     </React.Fragment>
   );

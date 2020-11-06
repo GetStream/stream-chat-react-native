@@ -80,13 +80,22 @@ export type MessagePropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = MessageProps<At, Ch, Co, Ev, Me, Re, Us> &
-  Pick<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'channel' | 'disabled' | 'isAdmin' | 'isModerator' | 'isOwner'
-  > &
+> = Pick<
+  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'channel' | 'disabled' | 'isAdmin' | 'isModerator' | 'isOwner'
+> &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
+  Partial<
+    Omit<
+      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'groupStyles' | 'message'
+    >
+  > &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'groupStyles' | 'message'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'dismissKeyboardOnMessageTouch'
@@ -102,6 +111,15 @@ export type MessagePropsWithContext<
   Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
+    /**
+     * Whether or not users are able to long press messages.
+     */
+    enableLongPress?: boolean;
+    /**
+     * Force alignment of message to left or right - 'left' | 'right'
+     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
+     * */
+    forceAlign?: Alignment | boolean;
     /** Handler to delete a current message */
     handleDelete?: () => Promise<void>;
     /**
@@ -122,6 +140,44 @@ export type MessagePropsWithContext<
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
     messageActions?: MessageAction[];
+    /**
+     * You can call methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     *
+     * By default, we show the overlay with all the message actions on long press.
+     *
+     * @param message Message object which was long pressed
+     * @param event   Event object for onLongPress event
+     **/
+    onLongPress?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
+    /**
+     * You can call methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     *
+     * By default, we will dismiss the keyboard on press.
+     *
+     * @param message Message object which was long pressed
+     * @param event   Event object for onLongPress event
+     * */
+    onPress?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
+    /**
+     * Handler to open the thread on message. This is callback for touch event for replies button.
+     *
+     * @param message A message object to open the thread upon.
+     */
+    onThreadSelect?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+    ) => void;
   };
 
 /**
@@ -513,62 +569,14 @@ export type MessageProps<
   Us extends UnknownType = DefaultUserType
 > = Partial<
   Omit<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
     'groupStyles' | 'message'
   >
 > &
   Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
     'groupStyles' | 'message'
-  > & {
-    /**
-     * Whether or not users are able to long press messages.
-     */
-    enableLongPress?: boolean;
-    /**
-     * Force alignment of message to left or right - 'left' | 'right'
-     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
-     * */
-    forceAlign?: Alignment | boolean;
-    /**
-     * You can call methods available on the Message
-     * component such as handleEdit, handleDelete, handleAction etc.
-     *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
-     *
-     * By default, we show the overlay with all the message actions on long press.
-     *
-     * @param message Message object which was long pressed
-     * @param event   Event object for onLongPress event
-     **/
-    onLongPress?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
-      event: GestureResponderEvent,
-    ) => void;
-    /**
-     * You can call methods available on the Message
-     * component such as handleEdit, handleDelete, handleAction etc.
-     *
-     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
-     *
-     * By default, we will dismiss the keyboard on press.
-     *
-     * @param message Message object which was long pressed
-     * @param event   Event object for onLongPress event
-     * */
-    onPress?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
-      event: GestureResponderEvent,
-    ) => void;
-    /**
-     * Handler to open the thread on message. This is callback for touch event for replies button.
-     *
-     * @param message A message object to open the thread upon.
-     */
-    onThreadSelect?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => void;
-  };
+  >;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -613,7 +621,6 @@ export const Message = <
 
   return (
     <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
-      {...props}
       {...{
         channel,
         client,
@@ -635,6 +642,7 @@ export const Message = <
         t,
         updateMessage,
       }}
+      {...props}
     />
   );
 };

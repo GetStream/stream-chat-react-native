@@ -7467,10 +7467,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.7.3:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.3.tgz#5b344d78261373bd89b86b0d801ca399e3f087a8"
-  integrity sha512-C1voibR9bZfu4Vc9z+Kv728WaGGiUg6RUxvxS+fmgaDhMGBmkJgsKzUpQk8cp4H0l0Bz8a7V6S8BHlTenu9nfQ==
+stream-chat@2.7.4:
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.4.tgz#663593211e18c1e6d3657207b043d0cf99266fac"
+  integrity sha512-ub2EQGeQixy/jRTyPJ4fCJofjKH1gu1JCWVSP+WdJ9iZSH/UOnONJ6Ibir+t5d3SJZyrkzqejyx6SZ7sRtx8ZA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

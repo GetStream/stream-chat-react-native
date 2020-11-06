@@ -180,6 +180,8 @@ export type MessagesContextValue<
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
+  /** Whether message text should be rendered before attachments */
+  textBeforeAttachments: boolean;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
     extraState?: {

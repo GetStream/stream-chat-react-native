@@ -93,6 +93,7 @@ export type MessageContentPropsWithContext<
     | 'ReactionList'
     | 'reactionsEnabled'
     | 'repliesEnabled'
+    | 'textBeforeAttachments'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -134,6 +135,7 @@ export const MessageContentWithContext = <
     showMessageStatus,
     t,
     tDateTimeParser,
+    textBeforeAttachments,
   } = props;
 
   const {
@@ -279,31 +281,38 @@ export const MessageContentWithContext = <
             alignment === 'left'
               ? styles.leftAlignItems
               : styles.rightAlignItems,
+            {
+              flexDirection: textBeforeAttachments
+                ? 'column-reverse'
+                : 'column',
+            },
             containerInner,
           ]}
           testID='message-content-wrapper'
         >
-          {Array.isArray(message.attachments) &&
-            message.attachments.map((attachment, index) => {
-              // We handle files separately
-              if (
-                attachment.type === 'file' ||
-                (attachment.type === 'image' &&
-                  !attachment.title_link &&
-                  !attachment.og_scrape_url)
-              ) {
-                return null;
-              }
+          <>
+            {Array.isArray(message.attachments) &&
+              message.attachments.map((attachment, index) => {
+                // We handle files separately
+                if (
+                  attachment.type === 'file' ||
+                  (attachment.type === 'image' &&
+                    !attachment.title_link &&
+                    !attachment.og_scrape_url)
+                ) {
+                  return null;
+                }
 
-              return (
-                <Attachment
-                  attachment={attachment}
-                  key={`${message.id}-${index}`}
-                />
-              );
-            })}
-          <FileAttachmentGroup messageId={message.id} />
-          <Gallery />
+                return (
+                  <Attachment
+                    attachment={attachment}
+                    key={`${message.id}-${index}`}
+                  />
+                );
+              })}
+            <FileAttachmentGroup messageId={message.id} />
+            <Gallery />
+          </>
           <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us> />
         </View>
         {error && (
@@ -414,87 +423,31 @@ export const MessageContent = <
 >(
   props: MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { disabled, members } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    additionalTouchableProps: propAdditionalTouchableProps,
-    alignment: propAlignment,
-    Attachment: PropAttachment,
-    disabled: propDisabled,
-    FileAttachmentGroup: PropFileAttachmentGroup,
-    formatDate: propFormatDate,
-    Gallery: PropGallery,
-    hasReactions: propHasReactions,
-    lastGroupMessage: propLastGroupMessage,
-    members: propMembers,
-    message: propMessage,
-    MessageFooter: PropMessageFooter,
-    MessageHeader: PropMessageHeader,
-    MessageReplies: PropMessageReplies,
-    MessageStatus: PropMessageStatus,
-    onLongPress: propOnLongPress,
-    ReactionList: PropReactionList,
-    reactionsEnabled: propReactionsEnabled,
-    repliesEnabled: propRepliesEnabled,
-    setMessageContentWidth,
-    showMessageStatus: propShowMessageStatus,
-    t: propT,
-    tDateTimeParser: propTDateTimeParser,
-  } = props;
-
-  const {
-    disabled: contextDisabled,
-    members: contextMembers,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    alignment: contextAlignment,
-    hasReactions: contextHasReactions,
-    lastGroupMessage: contextLastGroupMessage,
-    message: contextMessage,
-    onLongPress: contextOnLongPress,
-    showMessageStatus: contextShowMessageStatus,
+    alignment,
+    hasReactions,
+    lastGroupMessage,
+    message,
+    onLongPress,
+    showMessageStatus,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
-    Attachment: ContextAttachment,
-    FileAttachmentGroup: ContextFileAttachmentGroup,
-    formatDate: contextFormatDate,
-    Gallery: ContextGallery,
-    MessageFooter: ContextMessageFooter,
-    MessageHeader: ContextMessageHeader,
-    MessageReplies: ContextMessageReplies,
-    MessageStatus: ContextMessageStatus,
-    ReactionList: ContextReactionList,
-    reactionsEnabled: contextReactionsEnabled,
-    repliesEnabled: contextRepliesEnabled,
+    additionalTouchableProps,
+    Attachment,
+    FileAttachmentGroup,
+    formatDate,
+    Gallery,
+    MessageFooter,
+    MessageHeader,
+    MessageReplies,
+    MessageStatus,
+    ReactionList,
+    reactionsEnabled,
+    repliesEnabled,
+    textBeforeAttachments,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    t: contextT,
-    tDateTimeParser: contextTDateTimeParser,
-  } = useTranslationContext();
-
-  const additionalTouchableProps =
-    propAdditionalTouchableProps || contextAdditionalTouchableProps;
-  const alignment = propAlignment || contextAlignment;
-  const Attachment = PropAttachment || ContextAttachment;
-  const disabled = propDisabled || contextDisabled;
-  const FileAttachmentGroup =
-    PropFileAttachmentGroup || ContextFileAttachmentGroup;
-  const formatDate = propFormatDate || contextFormatDate;
-  const Gallery = PropGallery || ContextGallery;
-  const hasReactions = propHasReactions || contextHasReactions;
-  const lastGroupMessage = propLastGroupMessage || contextLastGroupMessage;
-  const members = propMembers || contextMembers;
-  const message = propMessage || contextMessage;
-  const MessageFooter = PropMessageFooter || ContextMessageFooter;
-  const MessageHeader = PropMessageHeader || ContextMessageHeader;
-  const MessageReplies = PropMessageReplies || ContextMessageReplies;
-  const MessageStatus = PropMessageStatus || ContextMessageStatus;
-  const onLongPress = propOnLongPress || contextOnLongPress;
-  const ReactionList = PropReactionList || ContextReactionList;
-  const reactionsEnabled = propReactionsEnabled || contextReactionsEnabled;
-  const repliesEnabled = propRepliesEnabled || contextRepliesEnabled;
-  const showMessageStatus = propShowMessageStatus || contextShowMessageStatus;
-  const t = propT || contextT;
-  const tDateTimeParser = propTDateTimeParser || contextTDateTimeParser;
+  const { t, tDateTimeParser } = useTranslationContext();
 
   return (
     <MemoizedMessageContent<At, Ch, Co, Ev, Me, Re, Us>
@@ -518,11 +471,12 @@ export const MessageContent = <
         ReactionList,
         reactionsEnabled,
         repliesEnabled,
-        setMessageContentWidth,
         showMessageStatus,
         t,
         tDateTimeParser,
+        textBeforeAttachments,
       }}
+      {...props}
     />
   );
 };

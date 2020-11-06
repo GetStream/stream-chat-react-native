@@ -103,7 +103,7 @@
     "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.7.3",
+    "stream-chat": "2.7.4",
     "styled-components": "5.2.0",
     "uuid": "8.3.1"
   },
@@ -133,7 +133,7 @@
     "@types/jest": "26.0.15",
     "@types/lodash": "4.14.165",
     "@types/mime-types": "2.1.0",
-    "@types/react": "16.9.55",
+    "@types/react": "16.9.56",
     "@types/react-native": "0.63.32",
     "@types/react-native-actionsheet": "2.4.2",
     "@types/react-test-renderer": "16.9.3",

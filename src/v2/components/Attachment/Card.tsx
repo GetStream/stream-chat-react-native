@@ -203,57 +203,33 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { alignment, onLongPress } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
-    additionalTouchableProps: propAdditionalTouchableProps,
-    alignment: propAlignment,
-    CardCover: PropCardCover,
-    CardFooter: PropCardFooter,
-    CardHeader: PropCardHeader,
-    image_url,
-    og_scrape_url,
-    onLongPress: propOnLongPress,
-    text,
-    thumb_url,
-    title,
-    title_link,
-  } = props;
-
-  const {
-    alignment: contextAlignment,
-    onLongPress: contextOnLongPress,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
-    CardCover: ContextCardCover,
-    CardFooter: ContextCardFooter,
-    CardHeader: ContextCardHeader,
+    additionalTouchableProps,
+    CardCover,
+    CardFooter,
+    CardHeader,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const additionalTouchableProps =
-    propAdditionalTouchableProps || contextAdditionalTouchableProps;
-  const alignment = propAlignment || contextAlignment;
-  const CardCover = PropCardCover || ContextCardCover;
-  const CardFooter = PropCardFooter || ContextCardFooter;
-  const CardHeader = PropCardHeader || ContextCardHeader;
-  const onLongPress = propOnLongPress || contextOnLongPress;
 
   return (
     <MemoizedCard
-      {...props}
       {...{
         additionalTouchableProps,
         alignment,
         CardCover,
         CardFooter,
         CardHeader,
-        image_url,
-        og_scrape_url,
         onLongPress,
-        text,
-        thumb_url,
-        title,
-        title_link,
       }}
+      {...props}
     />
   );
 };
