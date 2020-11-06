@@ -17,4 +17,4 @@ const streamTheme: DeepPartial<Theme> = {
   },
 };
 
-export default { streamTheme };
+export { streamTheme };

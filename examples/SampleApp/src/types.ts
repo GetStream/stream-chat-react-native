@@ -4,9 +4,11 @@ export type LocalCommandType = string;
 export type LocalEventType = Record<string, unknown>;
 export type LocalMessageType = Record<string, unknown>;
 export type LocalResponseType = Record<string, unknown>;
-export type LocalUserType = Record<string, unknown>;
+export type LocalUserType = {
+  image: string;
+};
 
-export type ChannelRoute = { Channel: undefined };
+export type ChannelRoute = { Channel: { channelId: string } };
 export type ChannelListRoute = { ChannelList: undefined };
 export type ThreadRoute = { Thread: { channelId: string } };
 

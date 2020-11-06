@@ -14,7 +14,7 @@ import {
   LocalUserType,
   ThreadRoute,
 } from '../types';
-import streamTheme from '../utils/streamTheme';
+import { streamTheme } from '../utils/streamTheme';
 
 export type ThreadScreenProps = {
   route: RouteProp<ThreadRoute, 'Thread'>;
