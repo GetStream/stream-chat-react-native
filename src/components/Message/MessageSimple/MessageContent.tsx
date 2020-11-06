@@ -146,6 +146,7 @@ export type ForwardedMessageProps<
    * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
    */
   groupStyles: GroupType[];
+  disabled?: boolean;
   /**
    * Custom message footer component
    */
@@ -161,6 +162,7 @@ export type ForwardedMessageProps<
   MessageReplies?: React.ComponentType<
     MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  textBeforeAttachments?: boolean;
 };
 
 /**
@@ -229,9 +231,20 @@ export const MessageContent = <
     showActionSheet,
     supportedReactions = emojiData,
     threadList,
+    textBeforeAttachments = false,
+    disabled: disabledFromProps,
   } = props;
 
-  const { disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disabled: disabledFromContext } = useChannelContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const disabled = disabledFromProps || disabledFromContext;
   const {
     Attachment: ContextAttachment,
     Message,
@@ -344,6 +357,53 @@ export const MessageContent = <
     return message.created_at;
   };
 
+  const renderAttachments = () => (
+    <>
+      {Array.isArray(message.attachments) &&
+        message.attachments.map((attachment, index) => {
+          // We handle files separately
+          if (
+            attachment.type === 'file' ||
+            (attachment.type === 'image' &&
+              !attachment.title_link &&
+              !attachment.og_scrape_url)
+          ) {
+            return null;
+          }
+
+          return (
+            <Attachment<At>
+              actionHandler={handleAction}
+              alignment={alignment}
+              attachment={attachment}
+              AttachmentActions={AttachmentActions}
+              Card={Card}
+              CardCover={CardCover}
+              CardFooter={CardFooter}
+              CardHeader={CardHeader}
+              FileAttachment={FileAttachment}
+              Giphy={Giphy}
+              key={`${message.id}-${index}`}
+              UrlPreview={UrlPreview}
+            />
+          );
+        })}
+      {files.length > 0 && (
+        <FileAttachmentGroup<At>
+          alignment={alignment}
+          AttachmentActions={AttachmentActions}
+          AttachmentFileIcon={AttachmentFileIcon}
+          FileAttachment={FileAttachment}
+          files={files}
+          handleAction={handleAction}
+          messageId={message.id}
+        />
+      )}
+      {images.length > 0 && (
+        <Gallery<At> alignment={alignment} images={images} />
+      )}
+    </>
+  );
   return (
     <MessageContentProvider value={context}>
       <Container
@@ -401,49 +461,7 @@ export const MessageContent = <
         {MessageHeader && <MessageHeader testID='message-header' {...props} />}
         {/* TODO: Look at this in production: Reason for collapsible: https://github.com/facebook/react-native/issues/12966 */}
         <ContainerInner alignment={alignment} collapsable={false}>
-          {Array.isArray(message.attachments) &&
-            message.attachments.map((attachment, index) => {
-              // We handle files separately
-              if (
-                attachment.type === 'file' ||
-                (attachment.type === 'image' &&
-                  !attachment.title_link &&
-                  !attachment.og_scrape_url)
-              ) {
-                return null;
-              }
-
-              return (
-                <Attachment<At>
-                  actionHandler={handleAction}
-                  alignment={alignment}
-                  attachment={attachment}
-                  AttachmentActions={AttachmentActions}
-                  Card={Card}
-                  CardCover={CardCover}
-                  CardFooter={CardFooter}
-                  CardHeader={CardHeader}
-                  FileAttachment={FileAttachment}
-                  Giphy={Giphy}
-                  key={`${message.id}-${index}`}
-                  UrlPreview={UrlPreview}
-                />
-              );
-            })}
-          {files.length > 0 && (
-            <FileAttachmentGroup<At>
-              alignment={alignment}
-              AttachmentActions={AttachmentActions}
-              AttachmentFileIcon={AttachmentFileIcon}
-              FileAttachment={FileAttachment}
-              files={files}
-              handleAction={handleAction}
-              messageId={message.id}
-            />
-          )}
-          {images.length > 0 && (
-            <Gallery<At> alignment={alignment} images={images} />
-          )}
+          {!textBeforeAttachments && renderAttachments()}
           <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
             alignment={alignment}
             disabled={message.status === 'failed' || message.type === 'error'}
@@ -456,6 +474,7 @@ export const MessageContent = <
             MessageText={MessageText}
             openThread={onOpenThread}
           />
+          {textBeforeAttachments && renderAttachments()}
         </ContainerInner>
         {repliesEnabled && (
           <MessageReplies<At, Ch, Co, Ev, Me, Re, Us>
@@ -484,6 +503,8 @@ export const MessageContent = <
             canEditMessage={canEditMessage}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
+            handleReaction={handleReaction}
+            message={message}
             messageActions={messageActions}
             openReactionPicker={openReactionPicker}
             openThread={onOpenThread}
@@ -491,6 +512,7 @@ export const MessageContent = <
             ref={actionSheetRef}
             repliesEnabled={repliesEnabled}
             setActionSheetVisible={setActionSheetVisible}
+            supportedReactions={emojiData}
             threadList={threadList}
           />
         )}
