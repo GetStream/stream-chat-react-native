@@ -250,21 +250,26 @@ const areEqual = <
   } = nextProps;
 
   const alignmentEqual = prevAlignment === nextAlignment;
-  const groupStylesEqual = prevGroupStyles?.[0] === nextGroupStyles?.[0];
-  const messageEqual =
-    Array.isArray(prevMessage?.latest_reactions) &&
-    Array.isArray(nextMessage?.latest_reactions) &&
-    (prevMessage?.latest_reactions as ReactionResponse<Re, Us>[]).length ===
-      (nextMessage?.latest_reactions as ReactionResponse<Re, Us>[]).length;
+  if (!alignmentEqual) return false;
+
   const messageReactionTitleEqual =
     prevMessageReactionTitle === nextMessageReactionTitle;
+  if (!messageReactionTitleEqual) return false;
 
-  return (
-    alignmentEqual &&
-    groupStylesEqual &&
-    messageEqual &&
-    messageReactionTitleEqual
-  );
+  const groupStylesEqual = prevGroupStyles?.[0] === nextGroupStyles?.[0];
+  if (!groupStylesEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage?.latest_reactions) ===
+      Array.isArray(nextMessage?.latest_reactions) &&
+    ((Array.isArray(prevMessage?.latest_reactions) &&
+      Array.isArray(nextMessage?.latest_reactions) &&
+      prevMessage?.latest_reactions.length ===
+        nextMessage?.latest_reactions.length) ||
+      prevMessage?.latest_reactions === nextMessage?.latest_reactions);
+  if (!latestReactionsEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessageOverlay = React.memo(

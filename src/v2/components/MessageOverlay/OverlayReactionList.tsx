@@ -200,12 +200,15 @@ const areEqual = <
     reactionListHeight: nextReactionListHeight,
   } = nextProps;
 
-  const ownReactionTypesEqual =
-    prevOwnReactionTypes.length === nextOwnReactionTypes.length;
   const reactionListHeightEqual =
     prevReactionListHeight === nextReactionListHeight;
+  if (!reactionListHeightEqual) return false;
 
-  return ownReactionTypesEqual && reactionListHeightEqual;
+  const ownReactionTypesEqual =
+    prevOwnReactionTypes.length === nextOwnReactionTypes.length;
+  if (!ownReactionTypesEqual) return false;
+
+  return true;
 };
 
 const MemoizedOverlayReactionList = React.memo(

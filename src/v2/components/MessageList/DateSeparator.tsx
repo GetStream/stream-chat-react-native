@@ -110,9 +110,33 @@ const DateSeparatorWithContext = <
   );
 };
 
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: DateSeparatorPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: DateSeparatorPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    message: { date: prevDate },
+  } = prevProps;
+  const {
+    message: { date: nextDate },
+  } = nextProps;
+
+  const dateEqual = prevDate === nextDate;
+
+  return dateEqual;
+};
+
 const MemoizedDateSeparator = React.memo(
   DateSeparatorWithContext,
-  (prevProps, nextProps) => prevProps.message.date === nextProps.message.date,
+  areEqual,
 ) as typeof DateSeparatorWithContext;
 
 export type DateSeparatorProps<
