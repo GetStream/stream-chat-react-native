@@ -7,37 +7,47 @@ import {
   View,
 } from 'react-native';
 
+import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
+import { FileIcon as FileIconDefault } from '../../components/Attachment/FileIcon';
 import {
-  AttachmentActionsProps,
-  AttachmentActions as DefaultAttachmentActions,
-} from './AttachmentActions';
-
-import { useMessageContentContext } from '../../contexts/messageContentContext/MessageContentContext';
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { Attachment } from 'stream-chat';
 
-import type { ActionHandler } from './Attachment';
-import { FileIcon as DefaultFileIcon } from './FileIcon';
-import type { FileIconProps } from './FileIcon';
-
 import type {
-  Alignment,
-  GroupType,
-} from '../../contexts/messagesContext/MessagesContext';
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const styles = StyleSheet.create({
-  fileContainer: {
+  container: {
     alignItems: 'center',
-    backgroundColor: '#EBEBEB',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     flexDirection: 'row',
-    padding: 10,
+    padding: 8,
   },
-  fileDetails: {
-    paddingLeft: 10,
+  details: {
+    paddingLeft: 16,
   },
-  fileTitle: {
+  size: {
+    fontSize: 12,
+  },
+  title: {
+    fontSize: 14,
     fontWeight: '700',
   },
 });
@@ -66,76 +76,49 @@ const goToURL = (url?: string) => {
   });
 };
 
-export type FileAttachmentProps<
-  At extends UnknownType = DefaultAttachmentType
-> = {
-  /** The attachment to render */
-  attachment: Attachment<At>;
-  /** Handler for actions. Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands). */
-  actionHandler?: ActionHandler;
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment?: Alignment;
-  /**
-   * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
-   * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
-   */
-  AttachmentActions?: React.ComponentType<AttachmentActionsProps<At>>;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyle?: GroupType;
-};
+export type FileAttachmentPropsWithContext<
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'additionalTouchableProps' | 'AttachmentActions' | 'AttachmentFileIcon'
+  > & {
+    /** The attachment to render */
+    attachment: Attachment<At>;
+  };
 
-export const FileAttachment = <
-  At extends DefaultAttachmentType = DefaultAttachmentType
+const FileAttachmentWithContext = <
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
-  props: FileAttachmentProps<At>,
+  props: FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    actionHandler,
-    alignment = 'right',
+    additionalTouchableProps,
     attachment,
-    AttachmentActions = DefaultAttachmentActions,
-    AttachmentFileIcon = DefaultFileIcon,
-    groupStyle,
+    AttachmentActions,
+    AttachmentFileIcon,
+    onLongPress,
   } = props;
 
   const {
     theme: {
-      message: {
-        file: { container, details, size, title },
+      messageSimple: {
+        file: { container, details, fileSize, title },
       },
     },
   } = useTheme();
-
-  const { additionalTouchableProps, onLongPress } = useMessageContentContext();
-
-  const borderBottomLeftRadius =
-    groupStyle === 'top' || groupStyle === 'middle'
-      ? 0
-      : alignment === 'right'
-      ? 16
-      : 2;
-  const borderBottomRightRadius =
-    groupStyle === 'top' || groupStyle === 'middle'
-      ? 0
-      : alignment === 'left'
-      ? 16
-      : 2;
-  const borderTopLeftRadius =
-    groupStyle === 'bottom' || groupStyle === 'middle' ? 0 : 16;
-  const borderTopRightRadius =
-    groupStyle === 'bottom' || groupStyle === 'middle' ? 0 : 16;
 
   return (
     <TouchableOpacity
@@ -144,33 +127,95 @@ export const FileAttachment = <
       testID='file-attachment'
       {...additionalTouchableProps}
     >
-      <View
-        style={[
-          styles.fileContainer,
-          {
-            borderBottomLeftRadius,
-            borderBottomRightRadius,
-            borderTopLeftRadius,
-            borderTopRightRadius,
-          },
-          container,
-        ]}
-      >
+      <View style={[styles.container, container]}>
         <AttachmentFileIcon mimeType={attachment.mime_type} />
-        <View style={[styles.fileDetails, details]}>
-          <Text numberOfLines={2} style={[styles.fileTitle, title]}>
+        <View style={[styles.details, details]}>
+          <Text numberOfLines={2} style={[styles.title, title]}>
             {attachment.title}
           </Text>
-          <Text style={size}>
+          <Text style={[styles.size, fileSize]}>
             {getFileSizeDisplayText(attachment.file_size)}
           </Text>
         </View>
       </View>
       {attachment.actions?.length ? (
-        <AttachmentActions<At> actionHandler={actionHandler} {...attachment} />
+        <AttachmentActions {...attachment} />
       ) : null}
     </TouchableOpacity>
   );
 };
 
-FileAttachment.displayName = 'FileAttachment{message{file}}';
+export type FileAttachmentProps<
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<
+  Omit<FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>
+> &
+  Pick<
+    FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'attachment'
+  >;
+
+export const FileAttachment = <
+  At extends DefaultAttachmentType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTouchableProps: propAdditionalTouchableProps,
+    attachment,
+    AttachmentActions: PropAttachmentActions,
+    AttachmentFileIcon: PropAttachmentFileIcon,
+    onLongPress: propOnLongPress,
+  } = props;
+
+  const { onLongPress: contextOnLongPress } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const {
+    additionalTouchableProps: contextAdditionalTouchableProps,
+    AttachmentActions: ContextAttachmentActions,
+    AttachmentFileIcon: ContextAttachmentFileIcon,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const additionalTouchableProps =
+    propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const AttachmentActions =
+    PropAttachmentActions ||
+    ContextAttachmentActions ||
+    AttachmentActionsDefault;
+  const AttachmentFileIcon =
+    PropAttachmentFileIcon || ContextAttachmentFileIcon || FileIconDefault;
+  const onLongPress = propOnLongPress || contextOnLongPress;
+
+  return (
+    <FileAttachmentWithContext
+      {...{
+        additionalTouchableProps,
+        attachment,
+        AttachmentActions,
+        AttachmentFileIcon,
+        onLongPress,
+      }}
+    />
+  );
+};
+
+FileAttachment.displayName = 'FileAttachment{messageSimple{file}}';

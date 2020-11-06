@@ -3,41 +3,56 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start",
+    "android": "npx react-native run-android",
+    "ios": "npx react-native run-ios",
+    "start": "npx react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
     "@react-native-community/blur": "3.6.0",
-    "@react-native-community/masked-view": "^0.1.10",
-    "@react-native-community/netinfo": "^5.9.7",
-    "@react-navigation/native": "^5.8.0",
-    "@react-navigation/stack": "^5.10.0",
+    "@react-native-community/masked-view": "0.1.10",
+    "@react-native-community/netinfo": "5.9.7",
+    "@react-navigation/native": "5.8.6",
+    "@react-navigation/stack": "5.12.3",
     "react": "16.13.1",
     "react-native": "0.63.3",
-    "react-native-document-picker": "^4.0.0",
-    "react-native-gesture-handler": "^1.8.0",
-    "react-native-get-random-values": "^1.5.0",
-    "react-native-image-crop-picker": "^0.35.1",
-    "react-native-reanimated": "^1.13.1",
-    "react-native-safe-area-context": "^3.1.8",
-    "react-native-screens": "^2.11.0",
+    "react-native-document-picker": "4.1.0",
+    "react-native-gesture-handler": "1.8.0",
+    "react-native-get-random-values": "1.5.0",
+    "react-native-image-crop-picker": "0.35.1",
+    "react-native-reanimated": "2.0.0-alpha.8",
+    "react-native-safe-area-context": "3.1.8",
+    "react-native-screens": "2.13.0",
     "react-native-svg": "12.1.0",
+    "stream-chat": "2.7.4",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/runtime": "^7.8.4",
-    "@react-native-community/eslint-config": "^1.1.0",
-    "babel-jest": "^25.1.0",
-    "eslint": "^6.5.1",
-    "jest": "^25.1.0",
-    "metro-react-native-babel-preset": "^0.59.0",
-    "react-test-renderer": "16.13.1"
+    "@babel/core": "7.12.3",
+    "@babel/runtime": "7.12.5",
+    "@react-native-community/eslint-config": "2.0.0",
+    "@types/jest": "26.0.15",
+    "@types/react-native": "0.63.32",
+    "@types/react-test-renderer": "16.9.3",
+    "@typescript-eslint/eslint-plugin": "4.6.1",
+    "@typescript-eslint/parser": "4.6.1",
+    "babel-jest": "26.6.3",
+    "eslint": "7.12.1",
+    "jest": "26.6.3",
+    "metro-react-native-babel-preset": "0.64.0",
+    "react-test-renderer": "16.13.1",
+    "typescript": "4.0.5"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }

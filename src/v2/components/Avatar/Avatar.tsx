@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import {
+  Image,
+  StyleProp,
+  StyleSheet,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const BASE_AVATAR_FALLBACK_TEXT_SIZE = 14;
-const BASE_AVATAR_SIZE = 32;
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    justifyContent: 'center',
   },
   fallback: {
     alignItems: 'center',
@@ -16,6 +21,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
+    textAlign: 'center',
     textTransform: 'uppercase',
   },
 });
@@ -29,6 +35,8 @@ const getInitials = (fullName?: string) =>
     : null;
 
 export type AvatarProps = {
+  containerStyle?: StyleProp<ViewStyle>;
+  fallbackStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
@@ -44,48 +52,69 @@ export type AvatarProps = {
  * @example ./Avatar.md
  */
 export const Avatar: React.FC<AvatarProps> = (props) => {
-  const { image: imageProp, name, size = BASE_AVATAR_SIZE, testID } = props;
+  const {
+    containerStyle,
+    fallbackStyle,
+    image: imageProp,
+    name,
+    size,
+    testID,
+  } = props;
   const {
     theme: {
-      avatar: { container, fallback, image, text },
-      colors: { primary, textLight },
+      avatar: {
+        BASE_AVATAR_FALLBACK_TEXT_SIZE,
+        BASE_AVATAR_SIZE,
+        container,
+        fallback,
+        image,
+        text,
+      },
     },
   } = useTheme();
 
   const [imageError, setImageError] = useState(false);
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, container, containerStyle]}>
       {imageProp && !imageError ? (
         <Image
           accessibilityLabel='initials'
           onError={() => setImageError(true)}
           resizeMethod='resize'
           source={{ uri: imageProp }}
-          style={[{ borderRadius: size / 2, height: size, width: size }, image]}
+          style={[
+            image,
+            size ? { borderRadius: size / 2, height: size, width: size } : {},
+          ]}
           testID={testID || 'avatar-image'}
         />
       ) : (
         <View
           style={[
             styles.fallback,
-            {
-              backgroundColor: primary,
-              borderRadius: size / 2,
-              height: size,
-              width: size,
-            },
             fallback,
+            size
+              ? {
+                  borderRadius: size / 2,
+                  height: size,
+                  width: size,
+                }
+              : {},
+            fallbackStyle,
           ]}
         >
           <Text
             style={[
-              {
-                color: textLight,
-                fontSize:
-                  BASE_AVATAR_FALLBACK_TEXT_SIZE * (size / BASE_AVATAR_SIZE),
-              },
+              styles.text,
               text,
+              size
+                ? {
+                    fontSize:
+                      BASE_AVATAR_FALLBACK_TEXT_SIZE *
+                      (size / BASE_AVATAR_SIZE),
+                  }
+                : {},
             ]}
             testID={testID || 'avatar-text'}
           >

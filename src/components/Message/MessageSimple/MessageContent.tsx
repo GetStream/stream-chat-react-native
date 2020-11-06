@@ -297,7 +297,7 @@ export const MessageContent = <
     return (
       <DeletedContainer alignment={alignment}>
         <DeletedText testID='message-deleted'>
-          {t('This message was deleted ...')}
+          {t('This message was deleted...')}
         </DeletedText>
       </DeletedContainer>
     );

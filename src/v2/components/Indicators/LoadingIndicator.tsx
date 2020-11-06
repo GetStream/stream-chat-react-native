@@ -57,11 +57,11 @@ export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
 
   switch (listType) {
     case 'channel':
-      return <LoadingIndicatorWrapper text={t('Loading channels ...')} />;
+      return <LoadingIndicatorWrapper text={t('Loading channels...')} />;
     case 'message':
-      return <LoadingIndicatorWrapper text={t('Loading messages ...')} />;
+      return <LoadingIndicatorWrapper text={t('Loading messages...')} />;
     default:
-      return <LoadingIndicatorWrapper text={t('Loading ...')} />;
+      return <LoadingIndicatorWrapper text={t('Loading...')} />;
   }
 };
 

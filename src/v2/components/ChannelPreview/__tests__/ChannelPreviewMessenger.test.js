@@ -1,7 +1,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import truncate from 'lodash/truncate';
-import { v4 as uuidv4 } from 'uuid';
 
 import { ChannelPreviewMessenger } from '../ChannelPreviewMessenger';
 
@@ -69,7 +68,7 @@ describe('ChannelPreviewMessenger', () => {
   });
 
   it('should render name of channel', async () => {
-    const channelName = uuidv4();
+    const channelName = new Date().getTime().toString();
     await initializeChannel(
       generateChannel({
         channel: {

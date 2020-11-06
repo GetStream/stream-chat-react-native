@@ -186,9 +186,7 @@ describe('MessageList', () => {
       expect(queryAllByTestId('message-system')).toHaveLength(0);
       expect(queryAllByTestId('typing-indicator')).toHaveLength(0);
       expect(getByTestId('error-notification')).toBeTruthy();
-      expect(
-        getByText('Connection failure, reconnecting now ...'),
-      ).toBeTruthy();
+      expect(getByText('Connection failure, reconnecting now...')).toBeTruthy();
     });
   });
 

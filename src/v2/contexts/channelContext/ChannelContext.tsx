@@ -29,6 +29,18 @@ export type ChannelContextValue<
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
+  /**
+   * Returns true if the current user has admin privileges
+   */
+  isAdmin: boolean;
+  /**
+   * Returns true if the current user is a moderator
+   */
+  isModerator: boolean;
+  /**
+   * Returns true if the current user is a owner
+   */
+  isOwner: boolean;
   loading: boolean;
   LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: () => void;

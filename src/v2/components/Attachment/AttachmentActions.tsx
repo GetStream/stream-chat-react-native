@@ -1,13 +1,24 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type { Attachment } from 'stream-chat';
 
-import type { ActionHandler } from './Attachment';
-
-import type { DefaultAttachmentType, UnknownType } from '../../types/types';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const styles = StyleSheet.create({
   actionButton: {
@@ -23,29 +34,33 @@ const styles = StyleSheet.create({
   },
 });
 
-export type AttachmentActionsProps<
-  At extends UnknownType = DefaultAttachmentType
-> = Attachment<At> & {
-  /** The handler to execute after selecting an action */
-  actionHandler?: ActionHandler;
-};
+export type AttachmentActionsPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<Attachment<At>, 'actions'> &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>;
 
-/**
- * AttachmentActions - The actions you can take on an attachment.
- * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
- *
- * @example ./AttachmentActions.md
- */
-export const AttachmentActions = <
-  At extends UnknownType = DefaultAttachmentType
+const AttachmentActionsWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
 >(
-  props: AttachmentActionsProps<At>,
+  props: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { actionHandler, actions } = props;
+  const { actions, handleAction } = props;
 
   const {
     theme: {
-      message: {
+      messageSimple: {
         actions: {
           button: {
             defaultBackgroundColor,
@@ -70,8 +85,8 @@ export const AttachmentActions = <
           <TouchableOpacity
             key={`${index}-${action.value}`}
             onPress={() => {
-              if (action.name && action.value && actionHandler) {
-                actionHandler(action.name, action.value);
+              if (action.name && action.value && handleAction) {
+                handleAction(action.name, action.value);
               }
             }}
             style={[
@@ -103,4 +118,63 @@ export const AttachmentActions = <
   );
 };
 
-AttachmentActions.displayName = 'AttachmentActions{message{actions}}';
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { actions: prevActions } = prevProps;
+  const { actions: nextActions } = nextProps;
+
+  const actionsEqual = prevActions?.length === nextActions?.length;
+
+  return actionsEqual;
+};
+
+const MemoizedAttachmentActions = React.memo(
+  AttachmentActionsWithContext,
+  areEqual,
+) as typeof AttachmentActionsWithContext;
+
+export type AttachmentActionsProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Attachment<At> &
+  Partial<
+    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>
+  >;
+
+/**
+ * AttachmentActions - The actions you can take on an attachment.
+ * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
+ *
+ * @example ./AttachmentActions.md
+ */
+export const AttachmentActions = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { handleAction } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  return <MemoizedAttachmentActions {...{ handleAction }} {...props} />;
+};
+
+AttachmentActions.displayName = 'AttachmentActions{messageSimple{actions}}';
