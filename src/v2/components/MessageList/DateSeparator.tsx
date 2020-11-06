@@ -129,9 +129,7 @@ const areEqual = <
     message: { date: nextDate },
   } = nextProps;
 
-  const dateEqual = prevDate === nextDate;
-
-  return dateEqual;
+  return prevDate === nextDate;
 };
 
 const MemoizedDateSeparator = React.memo(
