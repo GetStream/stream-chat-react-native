@@ -1,5 +1,6 @@
 export * from './channelContext/ChannelContext';
 export * from './chatContext/ChatContext';
+export * from './imageGalleryContext/ImageGalleryContext';
 export * from './keyboardContext/KeyboardContext';
 export * from './messageContext/MessageContext';
 export * from './messageOverlayContext/MessageOverlayContext';

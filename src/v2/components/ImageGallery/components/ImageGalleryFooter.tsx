@@ -5,13 +5,25 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+import { useTranslationContext } from '../../../contexts';
+
+import type { Photo } from '../ImageGallery';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
 const styles = StyleSheet.create({
+  centerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
   container: {
     flexDirection: 'row',
     height: 56,
+  },
+  imageCount: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -26,11 +38,16 @@ const styles = StyleSheet.create({
 
 type Props = {
   opacity: Animated.SharedValue<number>;
+  photo: Photo;
+  photoLength: number;
+  selectedIndex: number;
   visible: Animated.SharedValue<number>;
 };
 
-export const ImageGalleryFooter: React.FC<Props> = ({ opacity, visible }) => {
+export const ImageGalleryFooter: React.FC<Props> = (props) => {
+  const { opacity, photoLength, selectedIndex, visible } = props;
   const [height, setHeight] = useState(200);
+  const { t } = useTranslationContext();
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
     () => ({
@@ -48,6 +65,10 @@ export const ImageGalleryFooter: React.FC<Props> = ({ opacity, visible }) => {
     }),
     [],
   );
+  // t('{{ firstUser }} and {{ secondUser }} are typing...', {
+  //   firstUser: nonSelfUsers[0],
+  //   secondUser: nonSelfUsers[1],
+  // });
 
   return (
     <Animated.View
@@ -57,7 +78,15 @@ export const ImageGalleryFooter: React.FC<Props> = ({ opacity, visible }) => {
     >
       <ReanimatedSafeAreaView style={[styles.safeArea, footerStyle]}>
         <View style={styles.container}>
-          <Text>Footer</Text>
+          <View style={styles.centerContainer}>
+            <Text style={styles.imageCount}>
+              {/* {t('{{ index }} of {{ photoLength }}', {
+              photoLength,
+              index: selectedIndex + 1,
+            })} */}
+              {`${selectedIndex + 1} of ${photoLength}`}
+            </Text>
+          </View>
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>

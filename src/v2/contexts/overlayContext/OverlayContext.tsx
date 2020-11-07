@@ -5,10 +5,12 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { DeepPartial, ThemeProvider } from '../themeContext/ThemeContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
+import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
 
@@ -29,6 +31,7 @@ export type Overlay = 'none' | 'gallery' | 'message';
 
 export type OverlayContextValue = {
   overlay: Overlay;
+  setBlurType: React.Dispatch<React.SetStateAction<string | undefined>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
 };
@@ -50,16 +53,20 @@ export const OverlayProvider = <
   value,
 }: PropsWithChildren<{ value?: Partial<OverlayContextValue> }>) => {
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
+  const [blurType, setBlurType] = useState<string | undefined>();
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(1);
+
   const overlayStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       opacity: overlayOpacity.value,
     }),
     [],
   );
+
   const overlayContext = {
     overlay,
+    setBlurType,
     setOverlay,
     style: value?.style,
   };
@@ -67,15 +74,24 @@ export const OverlayProvider = <
   return (
     <OverlayContext.Provider value={overlayContext}>
       <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-        {children}
-        <ThemeProvider style={overlayContext.style}>
-          {overlay !== 'none' && (
-            <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
-              <BlurView style={[StyleSheet.absoluteFill, { height, width }]} />
-            </Animated.View>
-          )}
-          <MessageOverlay />
-        </ThemeProvider>
+        <ImageGalleryProvider>
+          {children}
+          <ThemeProvider style={overlayContext.style}>
+            {overlay !== 'none' && (
+              <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
+                <BlurView
+                  blurType={blurType}
+                  style={[StyleSheet.absoluteFill, { height, width }]}
+                />
+              </Animated.View>
+            )}
+            <MessageOverlay />
+            <ImageGallery
+              overlayOpacity={overlayOpacity}
+              visible={overlay === 'gallery'}
+            />
+          </ThemeProvider>
+        </ImageGalleryProvider>
       </MessageOverlayProvider>
     </OverlayContext.Provider>
   );

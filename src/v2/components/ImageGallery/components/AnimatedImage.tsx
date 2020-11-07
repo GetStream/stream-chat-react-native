@@ -1,8 +1,9 @@
 import React from 'react';
-import { ImageStyle, StyleProp, View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { vw } from '../../../utils/utils';
+
+import type { ImageStyle, StyleProp } from 'react-native';
 
 const halfScreenWidth = vw(50);
 
@@ -69,7 +70,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={style} />;
+      return <Animated.View style={[style, AnimatedGalleryImageStyle]} />;
     }
 
     return (

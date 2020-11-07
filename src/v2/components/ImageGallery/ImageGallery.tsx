@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, ImageStyle, StyleSheet } from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  Keyboard,
+  StyleSheet,
+  ViewStyle,
+} from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -11,6 +17,8 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
+  // @ts-expect-error TODO: Remove on next Reanimated update with new types
+  runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useDerivedValue,
@@ -23,11 +31,12 @@ import { AnimatedGalleryImage } from './components/AnimatedImage';
 import { ImageGalleryFooter } from './components/ImageGalleryFooter';
 import { ImageGalleryHeader } from './components/ImageGalleryHeader';
 
-import { useOverlayContext } from '../../contexts';
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useImageGalleryContext, useOverlayContext } from '../../contexts';
 import { vh, vw } from '../../utils/utils';
 
-import type { Attachment } from 'stream-chat';
+import type SeamlessImmutable from 'seamless-immutable';
+import type { Attachment, UserResponse } from 'stream-chat';
+import type { DefaultUserType } from 'src/types/types';
 
 const screenHeight = vh(100);
 const halfScreenHeight = vh(50);
@@ -60,6 +69,18 @@ const styles = StyleSheet.create({
   },
 });
 
+export type Photo = {
+  created_at: string | SeamlessImmutable.ImmutableDate | undefined;
+  id: string;
+  uri: string;
+  user:
+    | UserResponse<DefaultUserType>
+    | SeamlessImmutable.ImmutableObject<DefaultUserType>
+    | null
+    | undefined;
+  user_id: string | undefined;
+};
+
 type Props = {
   overlayOpacity: Animated.SharedValue<number>;
   visible: boolean;
@@ -67,8 +88,29 @@ type Props = {
 
 export const ImageGallery: React.FC<Props> = (props) => {
   const { overlayOpacity, visible } = props;
-  const { setOverlay } = useOverlayContext();
+  const { setBlurType, setOverlay } = useOverlayContext();
   const { images } = useImageGalleryContext();
+
+  /**
+   * Fade animation for screen, it is always rendered with pointerEvents
+   * set to none for fast opening
+   */
+  const screenOpacity = useSharedValue(0);
+  const fadeScreen = (show: boolean) => {
+    'worklet';
+    screenOpacity.value = withTiming(show ? 1 : 0, {
+      duration: 200,
+      easing: Easing.out(Easing.ease),
+    });
+  };
+
+  /**
+   * Run the fade animation on visible change
+   */
+  useEffect(() => {
+    Keyboard.dismiss();
+    fadeScreen(visible);
+  }, [visible]);
 
   /**
    * Image height from URL or default to full screen height
@@ -184,7 +226,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = images.reduce((acc: Array<{ uri: string }>, cur) => {
+  const photos = images.reduce((acc: Array<Photo>, cur) => {
     const attachmentImages = (cur.attachments as Attachment[])?.filter(
       (attachment) =>
         attachment.type === 'image' &&
@@ -220,6 +262,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
    * to the proper scaled height based on the width being restricted to the
    * screen width when the dimensions are received.
    */
+  const uriForCurrentImage = photos[selectedIndex]?.uri;
   useEffect(() => {
     setCurrentImageHeight(vh(100));
     if (photos[index.value]?.uri) {
@@ -230,7 +273,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
         );
       });
     }
-  }, [index.value]);
+  }, [uriForCurrentImage]);
 
   /**
    * We use simultaneousHandlers to allow pan and pinch gesture handlers
@@ -318,7 +361,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
            * calculate a final position based on the current position and
            * event velocity
            */
-          const finalXPosition = evt.translationX + evt.velocityX * 0.3;
+          const finalXPosition = evt.translationX - evt.velocityX * 0.3;
           const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
           /**
@@ -328,8 +371,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
            */
           if (
             index.value < photoLength - 1 &&
-            Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) <
-              3 &&
+            Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) < 3 &&
             translateX.value < 0 &&
             finalXPosition < -halfScreenWidth &&
             isSwiping.value === IsSwiping.TRUE
@@ -344,7 +386,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
               () => {
                 resetMovementValues();
                 index.value = index.value + 1;
-                setSelectedIndex(index.value);
+                runOnJS(setSelectedIndex)(index.value);
               },
             );
 
@@ -355,7 +397,8 @@ export const ImageGallery: React.FC<Props> = (props) => {
              */
           } else if (
             index.value > 0 &&
-            Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) < 3 &&
+            Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) <
+              3 &&
             translateX.value > 0 &&
             finalXPosition > halfScreenWidth &&
             isSwiping.value === IsSwiping.TRUE
@@ -370,7 +413,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
               () => {
                 resetMovementValues();
                 index.value = index.value - 1;
-                setSelectedIndex(index.value);
+                runOnJS(setSelectedIndex)(index.value);
               },
             );
           }
@@ -399,7 +442,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
                     halfScreenWidth * (scale.value - 1),
                   ],
                   deceleration: 0.99,
-                  velocity: evt.velocityX,
+                  velocity: -evt.velocityX,
                 });
 
           /**
@@ -452,13 +495,16 @@ export const ImageGallery: React.FC<Props> = (props) => {
             finalYPosition > halfScreenHeight &&
             offsetY.value + 8 >=
               (currentImageHeight / 2) * scale.value - halfScreenHeight &&
+            isSwiping.value !== IsSwiping.TRUE &&
             !(
-              offsetX.value === -halfScreenWidth * (scale.value - 1) &&
+              Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) <
+                3 &&
               translateX.value < 0 &&
               finalXPosition < -halfScreenWidth
             ) &&
             !(
-              offsetX.value === halfScreenWidth * (scale.value - 1) &&
+              Math.abs(-halfScreenWidth * (scale.value - 1) + offsetX.value) <
+                3 &&
               translateX.value > 0 &&
               finalXPosition > halfScreenWidth
             )
@@ -472,7 +518,11 @@ export const ImageGallery: React.FC<Props> = (props) => {
                 duration: 200,
                 easing: Easing.out(Easing.ease),
               },
-              () => setOverlay('none'),
+              () => {
+                screenOpacity.value = 0;
+                runOnJS(setOverlay)('none');
+                runOnJS(setBlurType)(undefined);
+              },
             );
             scale.value = withTiming(0.6, {
               duration: 200,
@@ -527,7 +577,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
          * We calculate the adjusted focal point on the photo using the events
          * focal position on the screen, screen size, and current photo offset
          */
-        adjustedFocalX.value = evt.focalX - (halfScreenWidth + offsetX.value);
+        adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
         adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
 
         /**
@@ -568,7 +618,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
           oldFocalX.value = adjustedFocalX.value + focalOffsetX.value;
           oldFocalY.value = adjustedFocalY.value + focalOffsetY.value;
           translateX.value =
-            offsetX.value + oldFocalX.value - localEvtScale * originX.value;
+            offsetX.value - oldFocalX.value + localEvtScale * originX.value;
           translateY.value =
             offsetY.value + oldFocalY.value - localEvtScale * originY.value;
 
@@ -581,8 +631,8 @@ export const ImageGallery: React.FC<Props> = (props) => {
           oldFocalX.value = adjustedFocalX.value;
           oldFocalY.value = adjustedFocalY.value;
           translateX.value =
-            offsetX.value +
-            adjustedFocalX.value -
+            offsetX.value -
+            adjustedFocalX.value +
             localEvtScale * originX.value;
           translateY.value =
             offsetY.value +
@@ -661,7 +711,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
         numberOfPinchFingers.value = evt.numberOfPointers;
         offsetX.value = translateX.value;
         offsetY.value = translateY.value;
-        adjustedFocalX.value = evt.focalX - (halfScreenWidth + offsetX.value);
+        adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
         adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
         originX.value = adjustedFocalX.value;
         originY.value = adjustedFocalY.value;
@@ -737,9 +787,13 @@ export const ImageGallery: React.FC<Props> = (props) => {
     [currentImageHeight],
   );
 
+  /**
+   * This transition and scaleX reverse lets use scroll left
+   */
   const pagerStyle = useAnimatedStyle<ImageStyle>(
     () => ({
       transform: [
+        { scaleX: -1 },
         {
           translateX: translationX.value,
         },
@@ -748,20 +802,35 @@ export const ImageGallery: React.FC<Props> = (props) => {
     [visible],
   );
 
-  // const containerBackground = useAnimatedStyle<ViewStyle>(
-  //   () => ({
-  //     backgroundColor:
-  //       offsetY.value === 0 && offsetX.value === 0 ? '#F2F2F2' : '#F2F2F200',
-  //   }),
-  //   [],
-  // );
+  /**
+   * Simple background color animation on Y movement
+   */
+  const containerBackground = useAnimatedStyle<ViewStyle>(
+    () => ({
+      backgroundColor: '#F2F2F2',
+      opacity: headerFooterOpacity.value,
+    }),
+    [headerFooterOpacity],
+  );
 
-  if (!visible) {
-    return null;
-  }
+  /**
+   * Fade in style as component is always rendered
+   */
+  const fadeInStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      opacity: screenOpacity.value,
+    }),
+    [],
+  );
 
   return (
-    <Animated.View style={StyleSheet.absoluteFillObject}>
+    <Animated.View
+      pointerEvents={visible ? 'auto' : 'none'}
+      style={[StyleSheet.absoluteFillObject, fadeInStyle]}
+    >
+      <Animated.View
+        style={[StyleSheet.absoluteFillObject, containerBackground]}
+      />
       <TapGestureHandler
         minPointers={1}
         numberOfTaps={1}
@@ -805,8 +874,9 @@ export const ImageGallery: React.FC<Props> = (props) => {
                         pagerStyle,
                         {
                           transform: [
+                            { scaleX: -1 }, // Also only here for opening, wrong direction when not included
                             {
-                              translateX: translationX.value, // TODO: See if beta 8 fixes issue on reopen index
+                              translateX: translationX.value, // Only here for opening, wrong index when this is not included
                             },
                           ],
                         },
@@ -840,10 +910,14 @@ export const ImageGallery: React.FC<Props> = (props) => {
       </TapGestureHandler>
       <ImageGalleryHeader
         opacity={headerFooterOpacity}
+        photo={photos[selectedIndex]}
         visible={headerFooterVisible}
       />
       <ImageGalleryFooter
         opacity={headerFooterOpacity}
+        photo={photos[selectedIndex]}
+        photoLength={photoLength}
+        selectedIndex={selectedIndex}
         visible={headerFooterVisible}
       />
     </Animated.View>
