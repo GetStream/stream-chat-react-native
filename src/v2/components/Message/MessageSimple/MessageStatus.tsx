@@ -126,15 +126,18 @@ const areEqual = <
   const { message: prevMessage, threadList: prevThreadList } = prevProps;
   const { message: nextMessage, threadList: nextThreadList } = nextProps;
 
+  const threadListEqual = prevThreadList === nextThreadList;
+  if (!threadListEqual) return false;
+
   const messageEqual =
     prevMessage.status === nextMessage.status &&
     ((Array.isArray(prevMessage.readBy) &&
       Array.isArray(nextMessage.readBy) &&
       prevMessage.readBy.length === nextMessage.readBy.length) ||
       prevMessage.readBy === nextMessage.readBy);
-  const threadListEqual = prevThreadList === nextThreadList;
+  if (!messageEqual) return false;
 
-  return messageEqual && threadListEqual;
+  return true;
 };
 
 const MemoizedMessageStatus = React.memo(

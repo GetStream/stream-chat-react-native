@@ -109,11 +109,14 @@ const areEqual = <
   const { message: prevMessage, threadList: prevThreadList } = prevProps;
   const { message: nextMessage, threadList: nextThreadList } = nextProps;
 
+  const threadListEqual = prevThreadList === nextThreadList;
+  if (!threadListEqual) return false;
+
   const messageReplyCountEqual =
     prevMessage.reply_count === nextMessage.reply_count;
-  const threadListEqual = prevThreadList === nextThreadList;
+  if (!messageReplyCountEqual) return false;
 
-  return messageReplyCountEqual && threadListEqual;
+  return true;
 };
 
 const MemoizedMessageReplies = React.memo(

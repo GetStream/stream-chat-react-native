@@ -172,48 +172,26 @@ export const FileAttachment = <
 >(
   props: FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    additionalTouchableProps: propAdditionalTouchableProps,
-    attachment,
-    AttachmentActions: PropAttachmentActions,
-    AttachmentFileIcon: PropAttachmentFileIcon,
-    onLongPress: propOnLongPress,
-  } = props;
-
-  const { onLongPress: contextOnLongPress } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const {
-    additionalTouchableProps: contextAdditionalTouchableProps,
-    AttachmentActions: ContextAttachmentActions,
-    AttachmentFileIcon: ContextAttachmentFileIcon,
+    additionalTouchableProps,
+    AttachmentActions,
+    AttachmentFileIcon,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-
-  const additionalTouchableProps =
-    propAdditionalTouchableProps || contextAdditionalTouchableProps;
-  const AttachmentActions =
-    PropAttachmentActions ||
-    ContextAttachmentActions ||
-    AttachmentActionsDefault;
-  const AttachmentFileIcon =
-    PropAttachmentFileIcon || ContextAttachmentFileIcon || FileIconDefault;
-  const onLongPress = propOnLongPress || contextOnLongPress;
 
   return (
     <FileAttachmentWithContext
       {...{
+        AttachmentActions: AttachmentActionsDefault,
+        AttachmentFileIcon: FileIconDefault,
+      }}
+      {...{
         additionalTouchableProps,
-        attachment,
         AttachmentActions,
         AttachmentFileIcon,
         onLongPress,
       }}
+      {...props}
     />
   );
 };

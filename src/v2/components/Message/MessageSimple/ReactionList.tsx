@@ -345,6 +345,8 @@ const areEqual = <
 
   const messageContentWidthEqual =
     prevMessageContentWidth === nextMessageContentWidth;
+  if (!messageContentWidthEqual) return false;
+
   const reactionsEqual =
     prevReactions.ownReactions.length === nextReactions.ownReactions.length &&
     prevReactions.latestReactions.every(
@@ -352,8 +354,9 @@ const areEqual = <
         nextReactions.latestReactions[index].own === latestReaction.own &&
         nextReactions.latestReactions[index].type === latestReaction.type,
     );
+  if (!reactionsEqual) return false;
 
-  return messageContentWidthEqual && reactionsEqual;
+  return true;
 };
 
 const MemoizedReactionList = React.memo(

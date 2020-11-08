@@ -134,7 +134,7 @@
     "@types/lodash": "4.14.165",
     "@types/mime-types": "2.1.0",
     "@types/react": "16.9.56",
-    "@types/react-native": "0.63.32",
+    "@types/react-native": "0.63.33",
     "@types/react-native-actionsheet": "2.4.2",
     "@types/react-test-renderer": "16.9.3",
     "@types/styled-components": "5.1.4",

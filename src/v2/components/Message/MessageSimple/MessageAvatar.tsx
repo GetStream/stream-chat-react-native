@@ -95,12 +95,15 @@ const areEqual = <
   } = nextProps;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
   const userEqual =
     prevMessage.user?.image === nextMessage.user?.image &&
     prevMessage.user?.name === nextMessage.user?.name &&
     prevMessage.user?.id === nextMessage.user?.id;
+  if (!userEqual) return false;
 
-  return lastGroupMessageEqual && userEqual;
+  return true;
 };
 
 const MemoizedMessageAvatar = React.memo(
