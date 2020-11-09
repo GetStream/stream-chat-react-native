@@ -61,3 +61,6 @@
 # hermes
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.jni.** { *; }
+
+# React Native Reanimated
+-keep class com.facebook.react.turbomodule.** { *; }

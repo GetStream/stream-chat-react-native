@@ -1,5 +1,4 @@
 import React from 'react';
-import { View } from 'react-native';
 import {
   cleanup,
   fireEvent,
@@ -339,31 +338,6 @@ describe('Message', () => {
 
     await waitFor(() => {
       expect(onLongPress).toHaveBeenCalledTimes(1);
-    });
-  });
-
-  it('renders a custom action sheet when the `ActionSheet` prop exists', async () => {
-    const message = generateMessage({ user });
-    // eslint-disable-next-line
-    const ActionSheet = React.forwardRef((props, ref) => (
-      <View {...props} testID='action-sheet-prop' />
-    ));
-
-    const { getByTestId, queryAllByTestId } = renderMessage({
-      ActionSheet,
-      message,
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('message-wrapper')).toBeTruthy();
-      expect(getByTestId('message-content-wrapper')).toBeTruthy();
-      expect(queryAllByTestId('action-sheet-prop')).toHaveLength(0);
-    });
-
-    fireEvent(getByTestId('message-content-wrapper'), 'longPress');
-
-    await waitFor(() => {
-      expect(getByTestId('action-sheet-prop')).toBeTruthy();
     });
   });
 });

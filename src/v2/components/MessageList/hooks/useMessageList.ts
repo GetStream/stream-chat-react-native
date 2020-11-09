@@ -6,6 +6,7 @@ import {
   isDateSeparator,
 } from '../utils/insertDates';
 
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -41,6 +42,7 @@ export const useMessageList = <
   params: UseMessageListParams,
 ): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
   const { noGroupByUser, threadList } = params;
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -57,7 +59,9 @@ export const useMessageList = <
     messagesWithDates,
     noGroupByUser,
   });
+
   const readData = getReadStates<At, Ch, Co, Ev, Me, Re, Us>(
+    client.userID,
     messagesWithDates,
     readList,
   );
@@ -71,8 +75,8 @@ export const useMessageList = <
           : [],
       readBy:
         !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
-          ? readData[msg.id] || []
-          : [],
+          ? readData[msg.id] || false
+          : false,
     }))
     .reverse();
 };

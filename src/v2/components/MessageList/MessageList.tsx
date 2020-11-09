@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   DateSeparatorProps,
@@ -44,11 +43,6 @@ import {
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import type { UserResponse } from 'stream-chat';
-
-import type { FileIconProps } from '../Attachment/FileIcon';
-import type { ActionSheetStyles } from '../Message/MessageSimple/MessageActionSheet';
-import type { MessageSimpleProps } from '../Message/MessageSimple/MessageSimple';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -107,13 +101,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : uuidv4())
+        : new Date().getTime().toString())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return uuidv4();
+  return new Date().getTime().toString();
 };
 
 export type MessageListProps<
@@ -125,11 +119,6 @@ export type MessageListProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles?: ActionSheetStyles;
   /**
    * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
    * to attach some additional props to underlying FlatList, you can add it to following prop.
@@ -148,11 +137,6 @@ export type MessageListProps<
     FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
-  /**
    * Date separator UI component to render
    *
    * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
@@ -161,8 +145,6 @@ export type MessageListProps<
     DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   disableWhileEditing?: boolean;
-  /** Should keyboard be dismissed when messaged is touched */
-  dismissKeyboardOnMessageTouch?: boolean;
   /**
    * UI component for header of message list. By default message list doesn't have any header.
    * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -170,16 +152,6 @@ export type MessageListProps<
    *
    */
   HeaderComponent?: React.ReactElement;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   */
-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
-   * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
-   * If all the actions need to be disabled, empty array or false should be provided as value of prop.
-   */
-  messageActions?: boolean | string[];
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
@@ -211,7 +183,9 @@ export type MessageListProps<
   setFlatListRef?: (
     ref: FlatList<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
-  /** Whether or not the MessageList is part of a Thread */
+  /**
+   * Boolean whether or not the Messages in the MessageList are part of a Thread
+   **/
   threadList?: boolean;
   /**
    * Typing indicator UI component to render
@@ -244,20 +218,15 @@ export const MessageList = <
   props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    actionSheetStyles,
     additionalFlatListProps,
-    AttachmentFileIcon,
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
-    dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
-    Message: MessageFromProps,
     MessageSystem = DefaultMessageSystem,
-    messageActions,
     noGroupByUser,
     onThreadSelect,
     setFlatListRef,
-    threadList,
+    threadList = false,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
@@ -274,7 +243,6 @@ export const MessageList = <
     clearEditingState,
     editing,
     loadMore: mainLoadMore,
-    Message: MessageFromContext,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
@@ -305,6 +273,13 @@ export const MessageList = <
    * change to the loading state is registered.
    */
   const [messagesLoading, setMessagesLoading] = useState(false);
+
+  useEffect(() => {
+    if (channel) {
+      channel.markRead();
+    }
+  }, [channel]);
+
   useEffect(() => {
     setMessagesLoading(!!loading);
   }, [loading]);
@@ -342,11 +317,9 @@ export const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
-  const Message = MessageFromProps || MessageFromContext;
-
   const renderItem = (message: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (isDateSeparator(message)) {
-      return <DateSeparator message={message} />;
+      return <DateSeparator<At, Ch, Co, Ev, Me, Re, Us> message={message} />;
     }
     if (message.type === 'system') {
       return <MessageSystem message={message} />;
@@ -354,18 +327,12 @@ export const MessageList = <
     if (message.type !== 'message.read') {
       return (
         <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-          actionSheetStyles={actionSheetStyles}
-          AttachmentFileIcon={AttachmentFileIcon}
-          dismissKeyboardOnMessageTouch={dismissKeyboardOnMessageTouch}
           groupStyles={message.groupStyles as GroupType[]}
           lastReceivedId={
             lastReceivedId === message.id ? lastReceivedId : undefined
           }
-          Message={Message}
           message={message}
-          messageActions={messageActions}
           onThreadSelect={onThreadSelect}
-          readBy={(message.readBy as UserResponse<Us>[]) || []}
           threadList={threadList}
         />
       );
@@ -419,7 +386,7 @@ export const MessageList = <
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
           inverted
-          keyboardShouldPersistTaps='always'
+          keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={HeaderComponent}
           maintainVisibleContentPosition={{
@@ -456,7 +423,7 @@ export const MessageList = <
             testID='error-notification'
           >
             <Text style={[styles.errorNotificationText, errorNotificationText]}>
-              {t('Connection failure, reconnecting now ...')}
+              {t('Connection failure, reconnecting now...')}
             </Text>
           </View>
         )}

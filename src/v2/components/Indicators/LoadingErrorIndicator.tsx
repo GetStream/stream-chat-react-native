@@ -67,7 +67,7 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
       return (
         <LoadingErrorWrapper
           onPress={retry}
-          text={t('Error loading channel list ...')}
+          text={t('Error loading channel list...')}
         >
           <Text style={[styles.retryText, retryText]}>⟳</Text>
         </LoadingErrorWrapper>
@@ -75,7 +75,7 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
     case 'message':
       return (
         <LoadingErrorWrapper
-          text={t('Error loading messages for this channel ...')}
+          text={t('Error loading messages for this channel...')}
         />
       );
     default:

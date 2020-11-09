@@ -49,21 +49,22 @@ const App = () => {
           LocalMessageType,
           LocalResponseType,
           LocalUserType
-        > />
-        <Drawer.Navigator
-          drawerContent={(props) => <MenuDrawer {...props} />}
-          drawerStyle={{
-            width: 300,
-          }}
-          initialRouteName={chatClient ? 'HomeScreen' : 'UserSelectorScreen'}
-        >
-          <Drawer.Screen component={HomeScreen} name='HomeScreen' />
-          <Drawer.Screen
-            component={UserSelectorScreen}
-            name='UserSelectorScreen'
-            options={{ gestureEnabled: false }}
-          />
-        </Drawer.Navigator>
+        >>
+          <Drawer.Navigator
+            drawerContent={(props) => <MenuDrawer {...props} />}
+            drawerStyle={{
+              width: 300,
+            }}
+            initialRouteName={chatClient ? 'HomeScreen' : 'UserSelectorScreen'}
+          >
+            <Drawer.Screen component={HomeScreen} name='HomeScreen' />
+            <Drawer.Screen
+              component={UserSelectorScreen}
+              name='UserSelectorScreen'
+              options={{ gestureEnabled: false }}
+            />
+          </Drawer.Navigator>
+        </OverlayProvider>
       </AppContext.Provider>
     </NavigationContainer>
   );

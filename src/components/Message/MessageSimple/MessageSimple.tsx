@@ -357,6 +357,7 @@ export type MessageSimpleProps<
       icon: string;
       id: string;
     }[];
+    textBeforeAttachment?: boolean;
     /**
      * Custom UI component to display enriched url preview.
      * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx

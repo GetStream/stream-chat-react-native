@@ -1,10 +1,5 @@
-import React, { useState } from 'react';
-import { Keyboard, TouchableOpacity } from 'react-native';
-
-import {
-  MessageSimple as DefaultMessageSimple,
-  MessageSimpleProps,
-} from './MessageSimple/MessageSimple';
+import React from 'react';
+import { Clipboard, GestureResponderEvent, Keyboard } from 'react-native';
 
 import {
   ChannelContextValue,
@@ -19,22 +14,53 @@ import {
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
 import {
+  Alignment,
+  MessageContextValue,
+  MessageProvider,
+  Reactions,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessageAction,
+  MessageOverlayContextValue,
+  useMessageOverlayContext,
+} from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import {
   GroupType,
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../contexts/threadContext/ThreadContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
+
+import { Copy } from '../../icons/Copy';
+import { CurveLineLeftUp } from '../../icons/CurveLineLeftUp';
+import { Delete } from '../../icons/Delete';
+import { Edit } from '../../icons/Edit';
+import { Mute } from '../../icons/Mute';
+import { SendUp } from '../../icons/SendUp';
+import { ThreadReply } from '../../icons/ThreadReply';
+import { UserDelete } from '../../icons/UserDelete';
 
 import type {
   MessageResponse,
   Reaction,
   ReactionResponse,
   Message as StreamMessage,
-  UserResponse,
 } from 'stream-chat';
 
-import type { ActionSheetStyles } from './MessageSimple/MessageActionSheet';
-import type { FileIconProps } from '../Attachment/FileIcon';
 import type { Message as InsertDatesMessage } from '../MessageList/utils/insertDates';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -46,11 +72,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-export type ActionProps = {
-  reactionsEnabled?: boolean;
-  repliesEnabled?: boolean;
-};
-
 export type MessagePropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -59,56 +80,112 @@ export type MessagePropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = MessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  channel: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['channel'];
-  client: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>['client'];
-  disabled: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['disabled'];
-  dismissKeyboard: KeyboardContextValue['dismissKeyboard'];
-  emojiData: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
-  removeMessage: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['removeMessage'];
-  retrySendMessage: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['retrySendMessage'];
-  setEditingState: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['setEditingState'];
-  updateMessage: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['updateMessage'];
-};
+> = Pick<
+  ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'channel' | 'disabled' | 'isAdmin' | 'isModerator' | 'isOwner'
+> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<KeyboardContextValue, 'dismissKeyboard'> &
+  Partial<
+    Omit<
+      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'groupStyles' | 'message'
+    >
+  > &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'groupStyles' | 'message'
+  > &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'dismissKeyboardOnMessageTouch'
+    | 'MessageSimple'
+    | 'removeMessage'
+    | 'reactionsEnabled'
+    | 'retrySendMessage'
+    | 'setEditingState'
+    | 'supportedReactions'
+    | 'updateMessage'
+  > &
+  Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
+  Pick<OverlayContextValue, 'setOverlay'> &
+  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
+  Pick<TranslationContextValue, 't'> & {
+    /**
+     * Whether or not users are able to long press messages.
+     */
+    enableLongPress?: boolean;
+    /**
+     * Force alignment of message to left or right - 'left' | 'right'
+     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
+     * */
+    forceAlign?: Alignment | boolean;
+    /** Handler to delete a current message */
+    handleDelete?: () => Promise<void>;
+    /**
+     * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
+     * The `editing` prop is used by the MessageInput component to switch to edit mode.
+     */
+    handleEdit?: () => void;
+    /** Handler to flag the message */
+    handleFlag?: () => Promise<void>;
+    /** Handler to mute the user */
+    handleMute?: () => Promise<void>;
+    /** Handler to process a reaction */
+    handleReaction?: (reactionType: string) => Promise<void>;
+    /** Handler to resend the message */
+    handleRetry?: () => Promise<void>;
+    /**
+     * Array of allowed actions on message
+     * If all the actions need to be disabled an empty array should be provided as value of prop
+     */
+    messageActions?: MessageAction[];
+    /**
+     * You can call methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     *
+     * By default, we show the overlay with all the message actions on long press.
+     *
+     * @param message Message object which was long pressed
+     * @param event   Event object for onLongPress event
+     **/
+    onLongPress?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
+    /**
+     * You can call methods available on the Message
+     * component such as handleEdit, handleDelete, handleAction etc.
+     *
+     * Source - [Message](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/Message.tsx)
+     *
+     * By default, we will dismiss the keyboard on press.
+     *
+     * @param message Message object which was long pressed
+     * @param event   Event object for onLongPress event
+     * */
+    onPress?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      event: GestureResponderEvent,
+    ) => void;
+    /**
+     * Handler to open the thread on message. This is callback for touch event for replies button.
+     *
+     * @param message A message object to open the thread upon.
+     */
+    onThreadSelect?: (
+      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+    ) => void;
+  };
 
 /**
  * Since this component doesn't consume `messages` from `MessagesContext`,
  * we memoized and broke it up to prevent new messages from re-rendering
  * each individual Message component.
  */
-const DefaultMessageWithContext = <
+const MessageWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -125,141 +202,46 @@ const DefaultMessageWithContext = <
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
-    emojiData,
+    enableLongPress = true,
+    forceAlign = false,
+    groupStyles = ['bottom'],
+    isAdmin,
+    isModerator,
+    isOwner,
+    lastReceivedId,
     message,
-    Message: MessageSimple = DefaultMessageSimple,
+    messageActions: messageActionsProp,
+    MessageSimple,
+    onLongPress: onLongPressProp,
+    onPress: onPressProp,
+    onThreadSelect,
+    openThread,
+    reactionsEnabled,
     removeMessage,
     retrySendMessage,
+    setData,
     setEditingState,
+    setOverlay,
+    showAvatar,
+    showMessageStatus,
+    supportedReactions,
+    t,
+    threadList = false,
     updateMessage,
-    ...rest
   } = props;
 
-  const [actionSheetVisible, setActionSheetVisible] = useState(false);
-  const [reactionPickerVisible, setReactionPickerVisible] = useState(false);
+  const {
+    theme: {
+      colors: { danger, primary },
+    },
+  } = useTheme();
 
   const actionsEnabled =
     message.type === 'regular' && message.status === 'received';
 
-  /**
-   * TODO: Remove these functions and replace with booleans
-   */
-  const isMyMessage = () =>
-    client && message && client.user?.id === message.user?.id;
+  const isMyMessage = client && message && client.userID === message.user?.id;
 
-  const isAdmin = () =>
-    client?.user?.role === 'admin' ||
-    channel?.state.membership.role === 'admin';
-
-  const isOwner = () => channel?.state.membership.role === 'owner';
-
-  const isModerator = () =>
-    channel?.state.membership.role === 'channel_moderator' ||
-    channel?.state.membership.role === 'moderator';
-
-  /**
-   * TODO: Consolidate these function into one
-   */
-  const canEditMessage = () =>
-    isMyMessage() || isModerator() || isOwner() || isAdmin();
-
-  const canDeleteMessage = () => canEditMessage();
-
-  const handleEdit = () => setEditingState(message);
-
-  const handleDelete = async () => {
-    if (message.id) {
-      const data = await client.deleteMessage(message.id);
-      updateMessage(data.message);
-    }
-  };
-
-  const handleFlag = async () => {
-    if (message.id) {
-      await client.flagMessage(message.id);
-    }
-  };
-
-  const handleMute = async () => {
-    if (message.user?.id) {
-      await client.muteUser(message.user.id);
-    }
-  };
-
-  const showActionSheet = async () => {
-    await dismissKeyboard();
-    setActionSheetVisible(true);
-  };
-
-  const openReactionPicker = async () => {
-    if (disabled) return;
-    /**
-     * Keyboard closes automatically whenever modal is opened (currently there is no way of avoiding this afaik)
-     * So we need to postpone the calculation for the reaction picker position until after the keyboard closes.
-     * To achieve this, we close the keyboard forcefully and then calculate position of picker in callback.
-     */
-    await dismissKeyboard();
-    setReactionPickerVisible(true);
-  };
-
-  const dismissReactionPicker = () => setReactionPickerVisible(false);
-
-  const handleReaction = async (reactionType: string) => {
-    setReactionPickerVisible(false);
-
-    let userExistingReaction;
-
-    if (Array.isArray(message.own_reactions)) {
-      for (const reaction of message.own_reactions) {
-        /**
-         * Own user should only ever contain the current user id, just in
-         * case we check to prevent bugs with message updates from breaking reactions
-         */
-        if (
-          client.userID === reaction.user?.id &&
-          reaction.type === reactionType
-        ) {
-          userExistingReaction = reaction;
-        } else if (client.userID !== reaction.user?.id) {
-          console.warn(
-            `message.own_reactions contained reactions from a different user, this indicates a bug`,
-          );
-        }
-      }
-    }
-
-    // Add reaction to local state, make API call in background, revert to old message if fails
-    try {
-      if (channel) {
-        if (userExistingReaction) {
-          channel.state.removeReaction(userExistingReaction);
-          if (message.id) {
-            await channel.deleteReaction(message.id, userExistingReaction.type);
-          }
-        } else {
-          const tmpReaction = {
-            created_at: new Date(),
-            message_id: message.id,
-            type: reactionType,
-            updated_at: new Date(),
-            user: client.user,
-          };
-
-          channel.state.addReaction(
-            (tmpReaction as unknown) as ReactionResponse<Re, Us>,
-          );
-          if (message.id) {
-            await channel.sendReaction(message.id, {
-              type: reactionType,
-            } as Reaction<Re, Us>);
-          }
-        }
-      }
-    } catch (_error) {
-      setReactionPickerVisible(true);
-      updateMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-    }
-  };
+  const canModifyMessage = isMyMessage || isModerator || isOwner || isAdmin;
 
   const handleAction = async (name: string, value: string) => {
     if (message.id) {
@@ -279,83 +261,255 @@ const DefaultMessageWithContext = <
     }
   };
 
-  const handleRetry = async () =>
-    await retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
-
-  const getTotalReactionCount = (
-    supportedReactions: {
-      icon: string;
-      id: string;
-    }[],
+  const onPress = (
+    error = message.type === 'error' || message.status === 'failed',
   ) => {
-    let count = 0;
-    if (!supportedReactions) {
-      supportedReactions = emojiData;
-    }
-
-    const reactionCounts = message.reaction_counts;
-
-    if (reactionCounts && Object.keys(reactionCounts).length > 0) {
-      Object.keys(reactionCounts).forEach((key) => {
-        if (
-          supportedReactions.find(
-            (supportedReaction) => supportedReaction.id === key,
-          )
-        ) {
-          count += reactionCounts[key];
-        }
-      });
-    }
-    return count;
-  };
-
-  const actionProps = {} as ActionProps;
-  if (typeof channel?.getConfig === 'function') {
-    const reactions = channel.getConfig()?.reactions;
-    actionProps.reactionsEnabled = reactions;
-    actionProps.repliesEnabled = reactions;
-  }
-
-  const onPress = () => {
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
+    if (error) {
+      showMessageOverlay(false, true);
+    }
+  };
+
+  const alignment =
+    forceAlign && (forceAlign === 'left' || forceAlign === 'right')
+      ? forceAlign
+      : isMyMessage
+      ? 'right'
+      : 'left';
+
+  const files =
+    (Array.isArray(message.attachments) &&
+      message.attachments.filter((item) => item.type === 'file')) ||
+    [];
+
+  const forwardedGroupStyles =
+    !!reactionsEnabled &&
+    message.latest_reactions &&
+    message.latest_reactions.length > 0
+      ? (['bottom'] as GroupType[])
+      : groupStyles;
+
+  const images =
+    (Array.isArray(message.attachments) &&
+      message.attachments.filter(
+        (item) =>
+          item.type === 'image' && !item.title_link && !item.og_scrape_url,
+      )) ||
+    [];
+
+  const onOpenThread = () => {
+    if (onThreadSelect) {
+      onThreadSelect(message);
+    } else if (openThread) {
+      openThread(message);
+    }
+  };
+
+  const hasReactions =
+    !!reactionsEnabled &&
+    !!message.latest_reactions &&
+    message.latest_reactions.length > 0;
+
+  const clientId = client.userID;
+
+  const reactions = hasReactions
+    ? supportedReactions.reduce(
+        (acc, cur) => {
+          const reactionType = cur.type;
+          const hasOwnReaction = (message.own_reactions as ReactionResponse<
+            Re,
+            Us
+          >[]).some((reaction) => reaction.type === reactionType);
+          const hasOtherReaction = (message.latest_reactions as ReactionResponse<
+            Re,
+            Us
+          >[]).some(
+            (reaction) =>
+              reaction.type === reactionType && reaction.user_id !== clientId,
+          );
+          if (hasOwnReaction) {
+            if (hasOtherReaction) {
+              acc.latestReactions.push({ own: true, type: reactionType });
+            } else {
+              acc.ownReactions.push(reactionType);
+            }
+          } else {
+            if (hasOtherReaction) {
+              acc.latestReactions.push({ own: false, type: reactionType });
+            }
+          }
+
+          return acc;
+        },
+        { latestReactions: [], ownReactions: [] } as Reactions,
+      )
+    : { latestReactions: [], ownReactions: [] };
+
+  const showMessageOverlay = async (
+    messageReactions = false,
+    error = message.type === 'error' || message.status === 'failed',
+  ) => {
+    await dismissKeyboard();
+
+    const blockUser = {
+      action: () => async () => {
+        if (message.user?.id) {
+          await client.banUser(message.user.id);
+        }
+      },
+      icon: <UserDelete />,
+      title: t('Block User'),
+    };
+
+    const copyMessage = {
+      // using depreciated Clipboard from react-native until expo supports the community version or their own
+      action: () => Clipboard.setString(message.text || ''),
+      icon: <Copy />,
+      title: t('Copy Message'),
+    };
+
+    const deleteMessage = {
+      action: async () => {
+        if (message.id) {
+          const data = await client.deleteMessage(message.id);
+          updateMessage(data.message);
+        }
+      },
+      icon: <Delete pathFill={danger} />,
+      title: t('Delete Message'),
+      titleStyle: { color: danger },
+    };
+
+    const editMessage = {
+      action: () => setEditingState(message),
+      icon: <Edit />,
+      title: t('Edit Message'),
+    };
+
+    const handleReaction =
+      !error && messageReactions
+        ? async (reactionType: string) => {
+            const messageId = message.id;
+            const ownReaction =
+              reactions.ownReactions.includes(reactionType) ||
+              !!reactions.latestReactions.find(
+                (reaction) => reaction.own && reaction.type === reactionType,
+              );
+
+            // Change reaction in local state, make API call in background, revert to old message if fails
+            try {
+              if (channel && messageId) {
+                if (ownReaction) {
+                  await channel.deleteReaction(messageId, reactionType);
+                } else {
+                  await channel.sendReaction(messageId, {
+                    type: reactionType,
+                  } as Reaction<Re, Us>);
+                }
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          }
+        : undefined;
+
+    const muteUser = {
+      action: async () => {
+        if (message.user?.id) {
+          await client.muteUser(message.user.id);
+        }
+      },
+      icon: <Mute />,
+      title: t('Mute User'),
+    };
+
+    const reply = {
+      action: onOpenThread,
+      icon: <CurveLineLeftUp />,
+      title: t('Reply'),
+    };
+
+    const threadReply = {
+      action: onOpenThread,
+      icon: <ThreadReply />,
+      title: t('Thread Reply'),
+    };
+
+    setData({
+      alignment,
+      clientId: client.userID,
+      groupStyles,
+      handleReaction,
+      message,
+      messageActions: error
+        ? messageActionsProp || [
+            {
+              action: async () =>
+                await retrySendMessage(
+                  message as MessageResponse<At, Ch, Co, Me, Re, Us>,
+                ),
+              icon: <SendUp pathFill={primary} />,
+              title: t('Resend'),
+            },
+            editMessage,
+            deleteMessage,
+          ]
+        : messageReactions
+        ? undefined
+        : messageActionsProp || canModifyMessage
+        ? message.text
+          ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
+          : [reply, threadReply, editMessage, deleteMessage]
+        : message.text
+        ? [reply, threadReply, copyMessage, muteUser, blockUser, deleteMessage]
+        : [reply, threadReply, muteUser, blockUser, deleteMessage],
+      messageReactionTitle:
+        !error && messageReactions ? t('Message Reactions') : undefined,
+      supportedReactions,
+    });
+
+    setOverlay('message');
+  };
+
+  const messageContext = {
+    actionsEnabled,
+    alignment,
+    canModifyMessage,
+    files,
+    groupStyles: forwardedGroupStyles,
+    handleAction,
+    hasReactions,
+    images,
+    isMyMessage,
+    lastGroupMessage:
+      forwardedGroupStyles[0] === 'single' ||
+      forwardedGroupStyles[0] === 'bottom',
+    lastReceivedId,
+    message,
+    onLongPress:
+      onLongPressProp && !disabled
+        ? (event: GestureResponderEvent) => onLongPressProp(message, event)
+        : enableLongPress
+        ? () => showMessageOverlay(false)
+        : () => null,
+    onOpenThread,
+    onPress: onPressProp
+      ? (event: GestureResponderEvent) => onPressProp(message, event)
+      : () => onPress(),
+    reactions,
+    showAvatar,
+    showMessageOverlay,
+    showMessageStatus:
+      typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
+    threadList,
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={onPress}
-      testID='message-wrapper'
-    >
-      <MessageSimple<At, Ch, Co, Ev, Me, Re, Us>
-        {...rest}
-        {...actionProps}
-        actionsEnabled={actionsEnabled}
-        actionSheetVisible={actionSheetVisible}
-        canDeleteMessage={canDeleteMessage}
-        canEditMessage={canEditMessage}
-        dismissReactionPicker={dismissReactionPicker}
-        getTotalReactionCount={getTotalReactionCount}
-        handleAction={handleAction}
-        handleDelete={handleDelete}
-        handleEdit={handleEdit}
-        handleFlag={handleFlag}
-        handleMute={handleMute}
-        handleReaction={handleReaction}
-        handleRetry={handleRetry}
-        isAdmin={isAdmin}
-        isModerator={isModerator}
-        isMyMessage={isMyMessage}
-        message={message}
-        Message={MessageSimple}
-        onPress={onPress}
-        openReactionPicker={openReactionPicker}
-        reactionPickerVisible={reactionPickerVisible}
-        setActionSheetVisible={setActionSheetVisible}
-        showActionSheet={showActionSheet}
-      />
-    </TouchableOpacity>
+    <MessageProvider value={messageContext}>
+      <MessageSimple />
+    </MessageProvider>
   );
 };
 
@@ -371,22 +525,59 @@ const areEqual = <
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
+  const {
+    lastReceivedId: prevLastReceivedId,
+    message: prevMessage,
+  } = prevProps;
+  const {
+    lastReceivedId: nextLastReceivedId,
+    message: nextMessage,
+  } = nextProps;
 
-  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
-  const reactionsEqual =
-    prevMessage.latest_reactions?.length ===
-    nextMessage.latest_reactions?.length;
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+  if (!repliesEqual) return false;
 
-  return messageEqual && reactionsEqual && repliesEqual;
+  const lastReceivedIdChangedAndMatters =
+    prevLastReceivedId !== nextLastReceivedId &&
+    (prevLastReceivedId === prevMessage.id ||
+      prevLastReceivedId === nextMessage.id ||
+      nextLastReceivedId === prevMessage.id ||
+      nextLastReceivedId === nextMessage.id);
+  if (!lastReceivedIdChangedAndMatters) return false;
+
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.updated_at === nextMessage.update_at;
+  if (!messageEqual) return false;
+
+  const attachmentsEqual =
+    Array.isArray(prevMessage.attachments) ===
+      Array.isArray(nextMessage.attachments) &&
+    ((Array.isArray(prevMessage.attachments) &&
+      Array.isArray(nextMessage.attachments) &&
+      prevMessage.attachments.length === nextMessage.attachments.length) ||
+      prevMessage.attachments === nextMessage.attachments);
+  if (!attachmentsEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage.latest_reactions) ===
+      Array.isArray(nextMessage.latest_reactions) &&
+    ((Array.isArray(prevMessage.latest_reactions) &&
+      Array.isArray(nextMessage.latest_reactions) &&
+      prevMessage.latest_reactions.length ===
+        nextMessage.latest_reactions.length) ||
+      prevMessage.latest_reactions === nextMessage.latest_reactions);
+  if (!latestReactionsEqual) return false;
+
+  return true;
 };
 
-const MemoizedDefaultMessage = React.memo(
-  DefaultMessageWithContext,
+const MemoizedMessage = React.memo(
+  MessageWithContext,
   areEqual,
-) as typeof DefaultMessageWithContext;
+) as typeof MessageWithContext;
 
 export type MessageProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -396,60 +587,16 @@ export type MessageProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Position of message in group - top, bottom, middle, single.
-   *
-   * Message group is a group of consecutive messages from same user. groupStyles can be used to style message as per their position in message group
-   * e.g., user avatar (to which message belongs to) is only showed for last (bottom) message in group.
-   */
-  groupStyles: GroupType[];
-  /**
-   * Current [message object](https://getstream.io/chat/docs/#message_format)
-   */
-  message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Style object for action sheet (used to message actions).
-   * Supported styles: https://github.com/beefe/react-native-actionsheet/blob/master/lib/styles.js
-   */
-  actionSheetStyles?: ActionSheetStyles;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
-  /** Should keyboard be dismissed when messaged is touched */
-  dismissKeyboardOnMessageTouch?: boolean;
-  /**
-   * Latest message id on current channel
-   */
-  lastReceivedId?: string;
-  /**
-   * Custom UI component to display a message in MessageList component
-   * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
-   * */
-  Message?: React.ComponentType<MessageSimpleProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /**
-   * Custom message actions to display on open of the action sheet
-   */
-  messageActions?: boolean | string[];
-  /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
-   *
-   * @param message A message object to open the thread upon.
-   */
-  onThreadSelect?: (
-    message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => void;
-  /**
-   * A list of users that have read this message
-   **/
-  readBy?: UserResponse<Us>[];
-  /**
-   * Whether or not the MessageList is part of a Thread
-   */
-  threadList?: boolean;
-};
+> = Partial<
+  Omit<
+    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'groupStyles' | 'message'
+  >
+> &
+  Pick<
+    MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'groupStyles' | 'message'
+  >;
 
 /**
  * Message - A high level component which implements all the logic required for a message.
@@ -468,31 +615,54 @@ export const Message = <
 >(
   props: MessageProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { channel, disabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    channel,
+    disabled,
+    isAdmin,
+    isModerator,
+    isOwner,
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
+  const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    emojiData,
+    dismissKeyboardOnMessageTouch,
+    MessageSimple,
+    reactionsEnabled,
     removeMessage,
     retrySendMessage,
     setEditingState,
+    supportedReactions,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setOverlay } = useOverlayContext();
+  const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { t } = useTranslationContext();
 
   return (
-    <MemoizedDefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-      {...props}
+    <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
       {...{
         channel,
         client,
         disabled,
         dismissKeyboard,
-        emojiData,
+        dismissKeyboardOnMessageTouch,
+        isAdmin,
+        isModerator,
+        isOwner,
+        MessageSimple,
+        openThread,
+        reactionsEnabled,
         removeMessage,
         retrySendMessage,
+        setData,
         setEditingState,
+        setOverlay,
+        supportedReactions,
+        t,
         updateMessage,
       }}
+      {...props}
     />
   );
 };
