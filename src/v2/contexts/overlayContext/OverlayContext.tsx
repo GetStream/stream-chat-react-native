@@ -31,7 +31,9 @@ export type Overlay = 'none' | 'gallery' | 'message';
 
 export type OverlayContextValue = {
   overlay: Overlay;
-  setBlurType: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setBlurType: React.Dispatch<
+    React.SetStateAction<'light' | 'dark' | undefined>
+  >;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
 };
@@ -53,7 +55,7 @@ export const OverlayProvider = <
   value,
 }: PropsWithChildren<{ value?: Partial<OverlayContextValue> }>) => {
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
-  const [blurType, setBlurType] = useState<string | undefined>();
+  const [blurType, setBlurType] = useState<'light' | 'dark' | undefined>();
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(1);
 

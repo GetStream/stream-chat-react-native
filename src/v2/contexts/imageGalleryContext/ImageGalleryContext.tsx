@@ -24,11 +24,13 @@ export type ImageGalleryContextValue<
   Us extends UnknownType = DefaultUserType
 > = {
   images: Message<At, Ch, Co, Ev, Me, Re, Us>[];
-  index: number;
+  setImage: React.Dispatch<
+    React.SetStateAction<{ messageId?: string; url?: string } | undefined>
+  >;
   setImages: React.Dispatch<
     React.SetStateAction<Message<At, Ch, Co, Ev, Me, Re, Us>[]>
   >;
-  setIndex: React.Dispatch<React.SetStateAction<number>>;
+  image?: { messageId?: string; url?: string };
 };
 
 export const ImageGalleryContext = React.createContext<
@@ -49,13 +51,13 @@ export const ImageGalleryProvider = <
   const [images, setImages] = useState<Message<At, Ch, Co, Ev, Me, Re, Us>[]>(
     [],
   );
-  const [index, setIndex] = useState<number>(0);
+  const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 
   const imageGalleryContext = {
+    image,
     images,
-    index,
+    setImage,
     setImages,
-    setIndex,
   };
 
   return (

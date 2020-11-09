@@ -22,6 +22,8 @@ import { Left } from '../../../icons';
 
 import type { Photo } from '../ImageGallery';
 
+import type { DefaultUserType, UnknownType } from '../../../types/types';
+
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
 const styles = StyleSheet.create({
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   },
   right: {
     marginRight: 8,
-    width: 24,
+    width: 24, // Width of icon currently on left
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -58,12 +60,15 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
+type Props<Us extends UnknownType = DefaultUserType> = {
   opacity: Animated.SharedValue<number>;
   visible: Animated.SharedValue<number>;
-  photo?: Photo;
+  photo?: Photo<Us>;
 };
-export const ImageGalleryHeader: React.FC<Props> = (props) => {
+
+export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
+  props: Props<Us>,
+) => {
   const { opacity, photo, visible } = props;
   const [height, setHeight] = useState(200);
   const { t, tDateTimeParser } = useTranslationContext();

@@ -1,4 +1,5 @@
 import React from 'react';
+import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { vw } from '../../../utils/utils';
@@ -59,9 +60,10 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
           {
             scale: selected ? scale.value : 1,
           },
+          { scaleX: -1 },
         ],
       }),
-      [selected],
+      [previous, selected],
     );
 
     /**
@@ -70,14 +72,18 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <Animated.View style={[style, AnimatedGalleryImageStyle]} />;
+      return <View style={style} />;
     }
 
     return (
       <Animated.Image
         resizeMode={'contain'}
         source={{ uri: photo.uri }}
-        style={[style, AnimatedGalleryImageStyle]}
+        style={[
+          style,
+          AnimatedGalleryImageStyle,
+          { transform: [{ scaleX: -1 }] },
+        ]}
       />
     );
   },

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import {
   Image,
   ImageStyle,
@@ -17,6 +17,7 @@ import {
 import Animated, {
   cancelAnimation,
   Easing,
+  interpolate,
   // @ts-expect-error TODO: Remove on next Reanimated update with new types
   runOnJS,
   useAnimatedGestureHandler,
@@ -36,10 +37,20 @@ import { vh, vw } from '../../utils/utils';
 
 import type SeamlessImmutable from 'seamless-immutable';
 import type { Attachment, UserResponse } from 'stream-chat';
-import type { DefaultUserType } from 'src/types/types';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const screenHeight = vh(100);
 const halfScreenHeight = vh(50);
+const quarterScreenHeight = vh(25);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const MARGIN = 32;
@@ -69,16 +80,16 @@ const styles = StyleSheet.create({
   },
 });
 
-export type Photo = {
-  created_at: string | SeamlessImmutable.ImmutableDate | undefined;
+export type Photo<Us extends UnknownType = DefaultUserType> = {
   id: string;
   uri: string;
-  user:
-    | UserResponse<DefaultUserType>
-    | SeamlessImmutable.ImmutableObject<DefaultUserType>
-    | null
-    | undefined;
-  user_id: string | undefined;
+  created_at?: string | SeamlessImmutable.ImmutableDate;
+  messageId?: string;
+  user?:
+    | UserResponse<Us>
+    | SeamlessImmutable.Immutable<UserResponse<Us>>
+    | null;
+  user_id?: string;
 };
 
 type Props = {
@@ -86,20 +97,38 @@ type Props = {
   visible: boolean;
 };
 
-export const ImageGallery: React.FC<Props> = (props) => {
+export const ImageGallery = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithChildren<Props>,
+) => {
   const { overlayOpacity, visible } = props;
   const { setBlurType, setOverlay } = useOverlayContext();
-  const { images } = useImageGalleryContext();
+  const { image, images } = useImageGalleryContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   /**
    * Fade animation for screen, it is always rendered with pointerEvents
    * set to none for fast opening
    */
-  const screenOpacity = useSharedValue(0);
+  const showScreen = useSharedValue(0);
   const fadeScreen = (show: boolean) => {
     'worklet';
-    screenOpacity.value = withTiming(show ? 1 : 0, {
-      duration: 200,
+    showScreen.value = withTiming(show ? 1 : 0, {
+      duration: 250,
       easing: Easing.out(Easing.ease),
     });
   };
@@ -226,20 +255,22 @@ export const ImageGallery: React.FC<Props> = (props) => {
    * Photos array created from all currently available
    * photo attachments
    */
-  const photos = images.reduce((acc: Array<Photo>, cur) => {
-    const attachmentImages = (cur.attachments as Attachment[])?.filter(
-      (attachment) =>
-        attachment.type === 'image' &&
-        !attachment.title_link &&
-        !attachment.og_scrape_url &&
-        (attachment.image_url || attachment.thumb_url),
-    );
+  const photos = images.reduce((acc: Photo<Us>[], cur) => {
+    const attachmentImages =
+      (cur.attachments as Attachment<At>[])?.filter(
+        (attachment) =>
+          attachment.type === 'image' &&
+          !attachment.title_link &&
+          !attachment.og_scrape_url &&
+          (attachment.image_url || attachment.thumb_url),
+      ) || [];
 
     const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
       created_at: cur.created_at,
       id: `photoId-${cur.id}-${
         attachmentImage.image_url || attachmentImage.thumb_url
       }`,
+      messageId: cur.id,
       uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
       user: cur.user,
       user_id: cur.user_id,
@@ -247,6 +278,22 @@ export const ImageGallery: React.FC<Props> = (props) => {
 
     return [...acc, ...attachmentPhotos];
   }, []);
+
+  /**
+   * Set selected photo when changed via pressing in the message list
+   */
+  useEffect(() => {
+    const newIndex = photos.findIndex(
+      (photo) =>
+        photo.messageId === image?.messageId && photo.uri === image?.url,
+    );
+
+    if (newIndex > -1) {
+      index.value = newIndex;
+      translationX.value = -(screenWidth + MARGIN) * newIndex;
+      setSelectedIndex(newIndex);
+    }
+  }, [image]);
 
   /**
    * Photos length needs to be kept as a const here so if the length
@@ -496,6 +543,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
             offsetY.value + 8 >=
               (currentImageHeight / 2) * scale.value - halfScreenHeight &&
             isSwiping.value !== IsSwiping.TRUE &&
+            translateY.value !== 0 &&
             !(
               Math.abs(halfScreenWidth * (scale.value - 1) + offsetX.value) <
                 3 &&
@@ -519,7 +567,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
                 easing: Easing.out(Easing.ease),
               },
               () => {
-                screenOpacity.value = 0;
+                showScreen.value = 0;
                 runOnJS(setOverlay)('none');
                 runOnJS(setBlurType)(undefined);
               },
@@ -528,11 +576,20 @@ export const ImageGallery: React.FC<Props> = (props) => {
               duration: 200,
               easing: Easing.out(Easing.ease),
             });
-            translateY.value = withDecay({
-              velocity: evt.velocityY,
-            });
+            translateY.value =
+              evt.velocityY > 1000
+                ? withDecay({
+                    velocity: evt.velocityY,
+                  })
+                : withTiming(
+                    halfScreenHeight + (currentImageHeight / 2) * scale.value,
+                    {
+                      duration: 200,
+                      easing: Easing.out(Easing.ease),
+                    },
+                  );
             translateX.value = withDecay({
-              velocity: evt.velocityX,
+              velocity: -evt.velocityX,
             });
           }
         }
@@ -775,14 +832,14 @@ export const ImageGallery: React.FC<Props> = (props) => {
   const headerFooterOpacity = useDerivedValue(
     () =>
       currentImageHeight * scale.value < screenHeight && translateY.value > 0
-        ? 1 - translateY.value / screenHeight
+        ? 1 - translateY.value / quarterScreenHeight
         : currentImageHeight * scale.value > screenHeight &&
           translateY.value >
             (currentImageHeight / 2) * scale.value - halfScreenHeight
         ? 1 -
           (translateY.value -
             ((currentImageHeight / 2) * scale.value - halfScreenHeight)) /
-            screenHeight
+            quarterScreenHeight
         : 1,
     [currentImageHeight],
   );
@@ -814,11 +871,17 @@ export const ImageGallery: React.FC<Props> = (props) => {
   );
 
   /**
-   * Fade in style as component is always rendered
+   * Show screen style as component is always rendered we hide it
+   * down and up and set opacity to 0 for good measure
    */
-  const fadeInStyle = useAnimatedStyle<ViewStyle>(
+  const showScreenStyle = useAnimatedStyle<ViewStyle>(
     () => ({
-      opacity: screenOpacity.value,
+      opacity: interpolate(showScreen.value, [0, 0.01, 1], [0, 1, 1]),
+      transform: [
+        {
+          translateY: interpolate(showScreen.value, [0, 1], [screenHeight, 0]),
+        },
+      ],
     }),
     [],
   );
@@ -826,7 +889,7 @@ export const ImageGallery: React.FC<Props> = (props) => {
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
-      style={[StyleSheet.absoluteFillObject, fadeInStyle]}
+      style={[StyleSheet.absoluteFillObject, showScreenStyle]}
     >
       <Animated.View
         style={[StyleSheet.absoluteFillObject, containerBackground]}
@@ -908,12 +971,12 @@ export const ImageGallery: React.FC<Props> = (props) => {
           </TapGestureHandler>
         </Animated.View>
       </TapGestureHandler>
-      <ImageGalleryHeader
+      <ImageGalleryHeader<Us>
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         visible={headerFooterVisible}
       />
-      <ImageGalleryFooter
+      <ImageGalleryFooter<Us>
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         photoLength={photoLength}
