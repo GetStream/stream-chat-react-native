@@ -8,11 +8,24 @@ import {
 } from 'react-native';
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { Chat } from 'stream-chat-react-native/v2';
 import { AppContext } from '../context/AppContext';
 import { NavigationParamsList } from '../types';
 import { streamTheme } from '../utils/streamTheme';
 import { LeftArrow } from '../icons/LeftArrow';
+
+import {
+  Channel,
+  ChannelList,
+  Chat,
+  DeepPartial,
+  MessageInput,
+  MessageList,
+  OverlayProvider,
+  Streami18n,
+  Theme,
+  Thread,
+  ThreadContextValue,
+} from 'stream-chat-react-native/v2';
 
 export type ChannelScreenProps = {
   navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
@@ -54,14 +67,37 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ title }) => {
   );
 };
 
-export const ChannelScreen: React.FC<ChannelScreenProps> = () => {
+export const ChannelScreen: React.FC<ChannelScreenProps> = ({ route: {params: {channelId}} }) => {
   const { chatClient } = useContext(AppContext);
-
+  const channel = chatClient?.channel('messaging', channelId);
   return (
     <SafeAreaView>
       <Chat client={chatClient} style={streamTheme}>
         <View style={{ height: '100%' }}>
           <ChannelHeader title={'User'} />
+          <Chat client={chatClient}>
+            <Channel channel={channel}>
+              <View style={{ flex: 1 }}>
+                <MessageList<
+                  LocalAttachmentType,
+                  LocalChannelType,
+                  LocalCommandType,
+                  LocalEventType,
+                  LocalMessageType,
+                  LocalResponseType,
+                  LocalUserType
+                >
+                  onThreadSelect={(thread) => {
+                    setThread(thread);
+                    if (channel?.id) {
+                      navigation.navigate('Thread', { channelId: channel.id });
+                    }
+                  }}
+                />
+                <MessageInput />
+              </View>
+            </Channel>
+          </Chat>
         </View>
       </Chat>
     </SafeAreaView>

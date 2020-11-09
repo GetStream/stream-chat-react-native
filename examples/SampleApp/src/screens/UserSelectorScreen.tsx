@@ -1,5 +1,6 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
 import React from 'react';
+import { useContext } from 'react';
 import { useEffect } from 'react';
 import {
   Image,
@@ -11,13 +12,14 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { USERS } from '../ChatUsers';
+import { AppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import AsyncStore from '../utils/AsyncStore';
 
-export const UserSelectorScreen = () => {
+export const UserSelectorScreen = ({ navigation }) => {
   const { colors } = useTheme();
-  const navigation = useNavigation();
+  const { switchUser } = useContext(AppContext);
   useEffect(() => {
     AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
   }, []);
@@ -57,9 +59,9 @@ export const UserSelectorScreen = () => {
           {Object.values(USERS).map((u, index) => (
             <TouchableOpacity
               key={index}
-              onPress={async () => {
-                await AsyncStore.setItem('@stream-rn-sampleapp-user-id', u.id);
-                navigation.navigate('HomeScreen');
+              onPress={() => {
+                switchUser(u.id);
+                navigation.jumpTo('HomeScreen');
               }}
               style={{
                 borderBottomColor: colors.borderLight,

@@ -26,7 +26,7 @@ export const ScreenHeader = ({ title = 'Stream Chat' }) => {
           },
         ]}
       >
-        <TouchableOpacity onPress={navigation.openDrawer}>
+        <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <Image
             source={{
               uri: chatClient.user?.image,

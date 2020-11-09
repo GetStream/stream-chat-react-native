@@ -15,7 +15,7 @@ export const NewGroupChannelScreen = ({ navigation }) => (
     <View style={styles.headerContainer}>
       <TouchableOpacity
         onPress={() => {
-          navigation.jumpTo('Home');
+          navigation.goBack();
         }}
         style={styles.backButton}
       >

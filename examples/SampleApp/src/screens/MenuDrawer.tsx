@@ -9,7 +9,7 @@ import { NewGroupIcon } from '../icons/NewGroupIcon';
 import { SignOut } from '../icons/SignOut';
 
 export const MenuDrawer = ({ navigation }) => {
-  const parentNavigation = useNavigation();
+  // const parentNavigation = useNavigation();
   const { colors } = useTheme();
   const { chatClient } = useContext(AppContext);
   if (!chatClient) return null;
@@ -43,7 +43,7 @@ export const MenuDrawer = ({ navigation }) => {
         <View style={styles.menuContainer}>
           <View>
             <TouchableOpacity
-              onPress={() => navigation.jumpTo('NewDirectMessagingScreen')}
+              onPress={() => navigation.navigate('NewDirectMessagingScreen')}
               style={styles.menuItem}
             >
               <NewDirectMessageIcon height={24} width={24} />
@@ -59,7 +59,7 @@ export const MenuDrawer = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.jumpTo('NewGroupChannelScreen')}
+              onPress={() => navigation.navigate('NewGroupChannelScreen')}
               style={styles.menuItem}
             >
               <NewGroupIcon height={24} width={24} />
@@ -77,7 +77,7 @@ export const MenuDrawer = ({ navigation }) => {
           </View>
           <TouchableOpacity
             onPress={() => {
-              parentNavigation.reset({
+              navigation.reset({
                 index: 0,
                 routes: [{ name: 'UserSelectorScreen' }],
               });
