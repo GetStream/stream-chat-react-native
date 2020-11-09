@@ -17,14 +17,12 @@ export const RootSvg: React.FC<IconProps> = (props) => {
     backgroundFill = 'none',
     children,
     height = 24,
-    onPress,
     viewBox = '0 0 24 24',
     width = 24,
   } = props;
   const animatedProps = useAnimatedProps(() => ({
     fill: backgroundFill,
     height,
-    onPress,
     viewBox,
     width,
   }));
@@ -35,8 +33,7 @@ export const RootSvg: React.FC<IconProps> = (props) => {
   );
 };
 
-export type RootPathProps = {
-  d: PathProps['d'];
+export type RootPathProps = Pick<PathProps, 'd'> & {
   pathFill?: SvgProps['fill'];
   pathOpacity?: PathProps['opacity'];
 };

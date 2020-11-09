@@ -276,7 +276,7 @@ In current context, dependencies such as `react-native-document-picker` and (if 
 
 As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.
 
-## ✈️ Internationalisation
+## ✈️ Internationalization
 
 Please read [Internationalization doc](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n)) for details.
 

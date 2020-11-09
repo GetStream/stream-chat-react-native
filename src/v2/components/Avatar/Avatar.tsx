@@ -35,14 +35,14 @@ const getInitials = (fullName?: string) =>
     : null;
 
 export type AvatarProps = {
+  /** size in pixels */
+  size: number;
   containerStyle?: StyleProp<ViewStyle>;
   fallbackStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
   name?: string;
-  /** size in pixels */
-  size?: number;
   testID?: string;
 };
 
