@@ -2,8 +2,10 @@ import React from 'react';
 import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
 
 registerNativeHandlers({
@@ -11,6 +13,15 @@ registerNativeHandlers({
   BlurView: ({ blurAmount = 100, blurType = 'dark', style }) => (
     <ExpoBlurView intensity={blurAmount} style={style} tint={blurType} />
   ),
+  deleteFile: async ({ uri }) => {
+    try {
+      await FileSystem.deleteAsync(uri, { idempotent: true });
+      return true;
+    } catch (error) {
+      console.log('File deletion failed...');
+      return false;
+    }
+  },
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;
@@ -95,6 +106,23 @@ registerNativeHandlers({
       return {
         cancelled: true,
       };
+    }
+  },
+  saveFile: async ({ fileName, fromUrl }) => {
+    try {
+      const path = FileSystem.documentDirectory + fileName;
+      const downloadedImage = await FileSystem.downloadAsync(fromUrl, path);
+      return downloadedImage.uri;
+    } catch (error) {
+      throw new Error('Downloading image failed...');
+    }
+  },
+  shareImage: async ({ type, url }) => {
+    try {
+      await Sharing.shareAsync(url, { mimeType: type, UTI: type });
+      return true;
+    } catch (error) {
+      throw new Error('Sharing failed...');
     }
   },
 });

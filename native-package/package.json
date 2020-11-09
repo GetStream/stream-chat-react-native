@@ -17,7 +17,9 @@
     "@react-native-community/netinfo": ">=2.0.7",
     "react-native": ">=0.60.0",
     "react-native-document-picker": ">=3.2.0",
-    "react-native-image-crop-picker": ">=0.33.2"
+    "react-native-fs": "^2.16.6",
+    "react-native-image-crop-picker": ">=0.33.2",
+    "react-native-share": "^4.1.0"
   },
   "scripts": {
     "prepack": " cp ../README.md .",
