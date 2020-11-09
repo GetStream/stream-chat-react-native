@@ -798,24 +798,50 @@ export const ImageGallery = <
         Math.abs(tapX.value - evt.absoluteX) < 32 &&
         Math.abs(tapY.value - evt.absoluteY) < 32
       ) {
-        offsetScale.value = 1;
-        scale.value = withTiming(1, {
-          duration: 200,
-          easing: Easing.out(Easing.ease),
-        });
-        offsetX.value = 0;
-        offsetY.value = 0;
-        translateX.value = withTiming(0, {
-          duration: 200,
-          easing: Easing.out(Easing.ease),
-        });
-        translateY.value = withTiming(0, {
-          duration: 200,
-          easing: Easing.out(Easing.ease),
-        });
-        if (headerFooterVisible.value !== 0) {
-          cancelAnimation(headerFooterVisible);
-          headerFooterVisible.value = withTiming(0);
+        if (
+          offsetScale.value === 1 &&
+          offsetX.value === 0 &&
+          offsetY.value === 0
+        ) {
+          offsetScale.value = 2;
+          scale.value = withTiming(2, {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          });
+          translateX.value = withTiming(evt.absoluteX - halfScreenWidth, {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          });
+          if (currentImageHeight * 2 > screenHeight) {
+            const translateYTopBottom =
+              evt.absoluteY > halfScreenHeight
+                ? -(currentImageHeight * 2 - screenHeight) / 2
+                : (currentImageHeight * 2 - screenHeight) / 2;
+            translateY.value = withTiming(translateYTopBottom, {
+              duration: 200,
+              easing: Easing.out(Easing.ease),
+            });
+          }
+        } else {
+          offsetScale.value = 1;
+          scale.value = withTiming(1, {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          });
+          offsetX.value = 0;
+          offsetY.value = 0;
+          translateX.value = withTiming(0, {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          });
+          translateY.value = withTiming(0, {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          });
+          if (headerFooterVisible.value !== 0) {
+            cancelAnimation(headerFooterVisible);
+            headerFooterVisible.value = withTiming(0);
+          }
         }
       }
     },
