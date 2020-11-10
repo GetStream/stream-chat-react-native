@@ -6,9 +6,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@react-navigation/native';
 import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { AppTheme } from '../types';
 
-export const BottomTabs = ({ navigation, state }) => {
-  const { colors } = useTheme();
+export const BottomTabs: React.FC<BottomTabBarProps> = ({
+  navigation,
+  state,
+}) => {
+  const { colors } = useTheme() as AppTheme;
   const insets = useSafeAreaInsets();
 
   const getTitle = (key: string) => {
@@ -49,12 +54,7 @@ export const BottomTabs = ({ navigation, state }) => {
         const isFocused = state.index === index;
 
         const onPress = () => {
-          const event = navigation.emit({
-            target: route.key,
-            type: 'tabPress',
-          });
-
-          if (!isFocused && !event.defaultPrevented) {
+          if (!isFocused) {
             navigation.navigate(route.name);
           }
         };

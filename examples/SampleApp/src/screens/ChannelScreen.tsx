@@ -9,7 +9,7 @@ import {
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../context/AppContext';
-import { NavigationParamsList } from '../types';
+import { AppTheme, StackNavigatorParamList } from '../types';
 import { streamTheme } from '../utils/streamTheme';
 import { LeftArrow } from '../icons/LeftArrow';
 import {
@@ -28,9 +28,17 @@ import {
   MessageList,
 } from 'stream-chat-react-native/v2';
 
+export type ChannelScreenNavigationProp = StackNavigationProp<
+  StackNavigatorParamList,
+  'ChannelScreen'
+>;
+export type ChannelScreenRouteProp = RouteProp<
+  StackNavigatorParamList,
+  'ChannelScreen'
+>;
 export type ChannelScreenProps = {
-  navigation: StackNavigationProp<NavigationParamsList, 'Channel'>;
-  route: RouteProp<NavigationParamsList, 'Channel'>;
+  navigation: ChannelScreenNavigationProp;
+  route: ChannelScreenRouteProp;
 };
 
 export type ChannelHeaderProps = {
@@ -38,8 +46,8 @@ export type ChannelHeaderProps = {
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ title }) => {
-  const navigation = useNavigation();
-  const { colors } = useTheme();
+  const navigation = useNavigation<ChannelScreenNavigationProp>();
+  const { colors } = useTheme() as AppTheme;
   return (
     <View
       style={[
@@ -76,6 +84,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   const { chatClient } = useContext(AppContext);
   const channel = chatClient?.channel('messaging', channelId);
 
+  if (!channel || !chatClient) return null;
   return (
     <SafeAreaView>
       <View style={{ height: '100%' }}>

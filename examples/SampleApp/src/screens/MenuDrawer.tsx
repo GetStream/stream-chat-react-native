@@ -1,4 +1,5 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
+import { useTheme } from '@react-navigation/native';
 import React from 'react';
 import { useContext } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
@@ -7,10 +8,12 @@ import { AppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 import { NewGroupIcon } from '../icons/NewGroupIcon';
 import { SignOut } from '../icons/SignOut';
+import { AppTheme } from '../types';
 
-export const MenuDrawer = ({ navigation }) => {
-  // const parentNavigation = useNavigation();
-  const { colors } = useTheme();
+export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
+  navigation,
+}) => {
+  const { colors } = useTheme() as AppTheme;
   const { chatClient } = useContext(AppContext);
   if (!chatClient) return null;
 
@@ -101,11 +104,6 @@ export const MenuDrawer = ({ navigation }) => {
     </SafeAreaView>
   );
 };
-
-const addBorder = () => ({
-  borderColor: 'black',
-  borderWidth: 1,
-});
 
 /* eslint-disable sort-keys */
 const styles = StyleSheet.create({

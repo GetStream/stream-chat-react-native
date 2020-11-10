@@ -25,12 +25,13 @@ import {
   LocalMessageType,
   LocalResponseType,
   LocalUserType,
+  StackNavigatorParamList,
 } from './src/types';
 // LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<StackNavigatorParamList>();
 const Drawer = createDrawerNavigator();
 
 const App = () => {
@@ -57,11 +58,15 @@ const App = () => {
             }}
             initialRouteName={chatClient ? 'HomeScreen' : 'UserSelectorScreen'}
           >
-            <Drawer.Screen component={HomeScreen} name='HomeScreen' />
+            <Drawer.Screen
+              component={HomeScreen}
+              name='HomeScreen'
+              options={{ headerShown: false }}
+            />
             <Drawer.Screen
               component={UserSelectorScreen}
               name='UserSelectorScreen'
-              options={{ gestureEnabled: false }}
+              options={{ gestureEnabled: false, headerShown: false }}
             />
           </Drawer.Navigator>
         </OverlayProvider>
@@ -71,10 +76,10 @@ const App = () => {
 };
 
 const HomeScreen = () => (
-  <Stack.Navigator initialRouteName='Chat'>
+  <Stack.Navigator initialRouteName='ChatScreen'>
     <Stack.Screen
       component={ChatScreen}
-      name='Chat'
+      name='ChatScreen'
       options={{ headerShown: false }}
     />
     <Stack.Screen

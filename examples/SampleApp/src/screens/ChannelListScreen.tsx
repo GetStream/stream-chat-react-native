@@ -1,11 +1,17 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import {
+  CompositeNavigationProp,
+  useNavigation,
+  useTheme,
+} from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { ChannelSort } from 'stream-chat';
 import { ChannelList, Chat } from 'stream-chat-react-native/v2';
 import { AppContext } from '../context/AppContext';
 import {
+  AppTheme,
+  BottomTabNavigatorParamList,
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -13,9 +19,10 @@ import {
   LocalMessageType,
   LocalResponseType,
   LocalUserType,
-  NavigationParamsList,
+  StackNavigatorParamList,
 } from '../types';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const filters = {
   example: 'example-apps',
@@ -28,14 +35,19 @@ const options = {
   watch: true,
 };
 
-export type ChannelListScreenProps = {
-  navigation: StackNavigationProp<NavigationParamsList, 'ChannelList'>;
-};
+type ChannelListScreenNavigationProp = CompositeNavigationProp<
+  BottomTabNavigationProp<BottomTabNavigatorParamList, 'ChannelListScreen'>,
+  StackNavigationProp<StackNavigatorParamList>
+>;
 
-export const ChannelListScreen: React.FC<ChannelListScreenProps> = () => {
+// type Props = {
+//   navigation: ChannelListScreenNavigationProp;
+// };
+
+export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
-  const { colors } = useTheme();
-  const navigation = useNavigation();
+  const { colors } = useTheme() as AppTheme;
+  const navigation = useNavigation<ChannelListScreenNavigationProp>();
   return (
     <>
       <View

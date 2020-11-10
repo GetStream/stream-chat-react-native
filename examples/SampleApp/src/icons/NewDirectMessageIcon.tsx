@@ -15,12 +15,11 @@ export const NewDirectMessageIcon: React.FC<IconProps> = ({
       height={height}
       viewBox={`0 0 ${height} ${width}`}
       width={width}
-      xmlns='http://www.w3.org/2000/svg'
     >
       <G opacity={active ? 1 : 0.5}>
         <Path
           clipRule='evenodd'
-          d='M21 21H3V16.757L16.435 3.32201C16.8255 2.93163 17.4585 2.93163 17.849 3.32201L20.678 6.15101C21.0684 6.54151 21.0684 7.17451 20.678 7.56501L9.243 19H21V21ZM5 19H6.414L15.728 9.68601L14.314 8.27201L5 17.586V19ZM18.556 6.85801L17.142 8.27201L15.728 6.85801L17.142 5.44401L18.556 6.85801Z'
+          d='M21 21H3v-4.243L16.435 3.322a1 1 0 011.414 0l2.829 2.829a1 1 0 010 1.414L9.243 19H21v2zM5 19h1.414l9.314-9.314-1.414-1.414L5 17.586V19zM18.556 6.858l-1.414 1.414-1.414-1.414 1.414-1.414 1.414 1.414z'
           fill={color || colors.text}
           fillRule='evenodd'
         />

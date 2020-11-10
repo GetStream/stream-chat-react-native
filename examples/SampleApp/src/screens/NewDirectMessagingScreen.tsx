@@ -1,7 +1,7 @@
 /* eslint-disable sort-keys */
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
-  Image,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -9,8 +9,18 @@ import {
   View,
 } from 'react-native';
 import { LeftArrow } from '../icons/LeftArrow';
+import { StackNavigatorParamList } from '../types';
 
-export const NewDirectMessagingScreen = ({ navigation }) => (
+export type NewDirectMessagingScreenProps = {
+  navigation: StackNavigationProp<
+    StackNavigatorParamList,
+    'NewDirectMessagingScreen'
+  >;
+};
+
+export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
+  navigation,
+}) => (
   <SafeAreaView>
     <View style={styles.headerContainer}>
       <TouchableOpacity

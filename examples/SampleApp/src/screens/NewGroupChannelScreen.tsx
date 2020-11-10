@@ -1,4 +1,5 @@
 /* eslint-disable sort-keys */
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
   Image,
@@ -9,8 +10,18 @@ import {
   View,
 } from 'react-native';
 import { LeftArrow } from '../icons/LeftArrow';
+import { StackNavigatorParamList } from '../types';
 
-export const NewGroupChannelScreen = ({ navigation }) => (
+export type NewGroupChannelScreenProps = {
+  navigation: StackNavigationProp<
+    StackNavigatorParamList,
+    'NewGroupChannelScreen'
+  >;
+};
+
+export const NewGroupChannelScreen: React.FC<NewGroupChannelScreenProps> = ({
+  navigation,
+}) => (
   <SafeAreaView>
     <View style={styles.headerContainer}>
       <TouchableOpacity

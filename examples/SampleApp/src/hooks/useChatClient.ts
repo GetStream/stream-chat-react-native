@@ -13,15 +13,27 @@ import {
 import AsyncStore from '../utils/AsyncStore';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 export const useChatClient = () => {
-  const [chatClient, setChatClient] = useState<StreamChat<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalResponseType,
-    LocalUserType
-  > | null>(null);
+  const [chatClient, setChatClient] = useState<
+    StreamChat<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >
+  >(
+    new StreamChat<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >('q95x9hkbyd6p'),
+  );
 
   const [isChatClientReady, setIsChatClientReady] = useState(false);
   const switchUser = async (userId?: string) => {

@@ -1,4 +1,5 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 import React from 'react';
 import { useContext } from 'react';
 import { useEffect } from 'react';
@@ -15,10 +16,21 @@ import { USERS } from '../ChatUsers';
 import { AppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
+import { AppTheme, DrawerNavigatorParamList } from '../types';
 import AsyncStore from '../utils/AsyncStore';
+export type UserSelectorScreenNavigationProp = DrawerNavigationProp<
+  DrawerNavigatorParamList,
+  'UserSelectorScreen'
+>;
 
-export const UserSelectorScreen = ({ navigation }) => {
-  const { colors } = useTheme();
+export type UserSelectorScreenProps = {
+  navigation: UserSelectorScreenNavigationProp;
+};
+
+export const UserSelectorScreen: React.FC<UserSelectorScreenProps> = ({
+  navigation,
+}) => {
+  const { colors } = useTheme() as AppTheme;
   const { switchUser } = useContext(AppContext);
   useEffect(() => {
     AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');

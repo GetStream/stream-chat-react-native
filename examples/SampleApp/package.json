@@ -29,7 +29,7 @@
     "react-native-safe-area-context": "3.1.8",
     "react-native-screens": "2.11.0",
     "react-native-svg": "12.1.0",
-    "stream-chat": "2.7.0",
+    "stream-chat": "^2.7.0",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {

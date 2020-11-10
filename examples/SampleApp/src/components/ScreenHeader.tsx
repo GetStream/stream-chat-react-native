@@ -2,17 +2,31 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { useNavigation, useTheme } from '@react-navigation/native';
+import {
+  CompositeNavigationProp,
+  useNavigation,
+  useTheme,
+} from '@react-navigation/native';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
+import {
+  AppTheme,
+  DrawerNavigatorParamList,
+  StackNavigatorParamList,
+} from '../types';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type ScreenHeaderNavigationProp = CompositeNavigationProp<
+  DrawerNavigationProp<DrawerNavigatorParamList>,
+  StackNavigationProp<StackNavigatorParamList>
+>;
 export const ScreenHeader = ({ title = 'Stream Chat' }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ScreenHeaderNavigationProp>();
   const insets = useSafeAreaInsets();
   const { chatClient } = useContext(AppContext);
-  const { colors } = useTheme();
+  const { colors } = useTheme() as AppTheme;
 
   return (
     <>
@@ -50,11 +64,16 @@ export const ScreenHeader = ({ title = 'Stream Chat' }) => {
         </Text>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('NewDirectMessageScreen');
+            navigation.navigate('NewDirectMessagingScreen');
           }}
           style={styles.newDMButton}
         >
-          <NewDirectMessageIcon color={'#006CFF'} height={25} width={25} />
+          <NewDirectMessageIcon
+            active
+            color={'#006CFF'}
+            height={25}
+            width={25}
+          />
         </TouchableOpacity>
       </View>
     </>
