@@ -1,18 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import truncate from 'lodash/truncate';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Svg, { Circle } from 'react-native-svg';
 
-import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
+import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
+import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 
 import { Avatar } from '../Avatar/Avatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Check } from '../../icons/Check';
+import { CheckAll } from '../../icons/CheckAll';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
 import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,30 +31,54 @@ import type {
 
 const styles = StyleSheet.create({
   container: {
-    borderBottomColor: '#EBEBEB',
     borderBottomWidth: 1,
+    flex: 1,
     flexDirection: 'row',
-    padding: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
   },
+  contentContainer: { flexGrow: 1, flexShrink: 1 },
   date: {
-    color: '#767676',
-    fontSize: 11,
+    fontSize: 12,
     textAlign: 'right',
   },
-  details: {
-    flex: 1,
-    paddingLeft: 10,
+  flexRow: {
+    flexDirection: 'row',
   },
-  detailsTop: {
+  message: {
+    flexShrink: 1,
+    fontSize: 12.5,
+  },
+  presenceIndicatorContainer: {
+    height: 12,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 12,
+  },
+  row: {
+    alignItems: 'center',
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingLeft: 8,
   },
-  styledMessage: {
-    fontSize: 13,
+  skeletonContainer: {
+    flex: 1,
+    flexDirection: 'row',
   },
-  title: {
-    fontSize: 14,
-    fontWeight: 'bold',
+  title: { fontSize: 14, fontWeight: '700' },
+  unreadContainer: {
+    alignItems: 'center',
+    borderRadius: 8,
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  unreadText: {
+    fontSize: 11,
+    fontWeight: '700',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
   },
 });
 
@@ -78,8 +107,6 @@ export type ChannelPreviewMessengerProps<
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
-  /** Length at which latest message should be truncated */
-  latestMessageLength?: number;
   /** Number of unread messages on the channel */
   unread?: number;
 };
@@ -104,7 +131,6 @@ export const ChannelPreviewMessenger = <
   const {
     channel,
     formatLatestMessageDate,
-    latestMessageLength = 30,
     latestMessagePreview,
     setActiveChannel,
     unread,
@@ -113,62 +139,88 @@ export const ChannelPreviewMessenger = <
   const {
     theme: {
       channelPreview: {
+        checkAllIcon,
+        checkIcon,
         container,
+        contentContainer,
         date,
-        details,
-        detailsTop,
-        message: {
-          color,
-          fontWeight,
-          unreadColor,
-          unreadFontWeight,
-          ...message
-        },
+        message,
+        presenceIndicator,
+        presenceIndicatorContainer,
+        row,
         title,
+        unreadContainer,
+        unreadText,
       },
     },
   } = useTheme();
 
   const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(channel);
+  const displayPresence = useChannelPreviewDisplayPresence(channel);
   const latestMessageDate = latestMessagePreview?.messageObject?.created_at?.asMutable();
+  const status = latestMessagePreview.status;
 
   return (
     <TouchableOpacity
-      onPress={() => setActiveChannel?.(channel)}
+      onPress={() => {
+        if (setActiveChannel) {
+          setActiveChannel(channel);
+        }
+      }}
       style={[styles.container, container]}
       testID='channel-preview-button'
     >
-      <Avatar image={displayAvatar.image} name={displayAvatar.name} size={40} />
-      <View style={[styles.details, details]}>
-        <View style={[styles.detailsTop, detailsTop]}>
-          <Text
-            ellipsizeMode='tail'
-            numberOfLines={1}
-            style={[styles.title, title]}
+      <View>
+        <Avatar
+          image={displayAvatar.image}
+          name={displayAvatar.name}
+          size={40}
+        />
+        {displayPresence && (
+          <View
+            style={[
+              styles.presenceIndicatorContainer,
+              presenceIndicatorContainer,
+            ]}
           >
+            <Svg>
+              <Circle {...presenceIndicator} />
+            </Svg>
+          </View>
+        )}
+      </View>
+      <View style={[styles.contentContainer, contentContainer]}>
+        <View style={[styles.row, row]}>
+          <Text numberOfLines={1} style={[styles.title, title]}>
             {displayName}
           </Text>
-          <Text style={[styles.date, date]}>
-            {formatLatestMessageDate && latestMessageDate
-              ? formatLatestMessageDate(latestMessageDate)
-              : latestMessagePreview?.created_at}
-          </Text>
+          <View style={[styles.unreadContainer, unreadContainer]}>
+            {!!unread && (
+              <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
+                {unread}
+              </Text>
+            )}
+          </View>
         </View>
-        <Text
-          style={[
-            styles.styledMessage,
-            unread
-              ? { color: unreadColor, fontWeight: unreadFontWeight }
-              : { color, fontWeight },
-            message,
-          ]}
-        >
-          {latestMessagePreview?.text &&
-            truncate(latestMessagePreview.text.replace(/\n/g, ' '), {
-              length: latestMessageLength,
-            })}
-        </Text>
+        <View style={[styles.row, row]}>
+          <Text numberOfLines={1} style={[styles.message, message]}>
+            {latestMessagePreview?.text &&
+              latestMessagePreview.text.replace(/\n/g, ' ')}
+          </Text>
+          <View style={styles.flexRow}>
+            {status === 2 ? (
+              <CheckAll {...checkAllIcon} />
+            ) : status === 1 ? (
+              <Check {...checkIcon} />
+            ) : null}
+            <Text style={[styles.date, date]}>
+              {formatLatestMessageDate && latestMessageDate
+                ? formatLatestMessageDate(latestMessageDate)
+                : latestMessagePreview?.created_at}
+            </Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );

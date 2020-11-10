@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
 
 import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
 import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
 import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
+import { Skeleton } from './Skeleton';
+
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -26,6 +29,11 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+const styles = StyleSheet.create({
+  flatList: { flex: 1 },
+  flatListContentContainer: { flexGrow: 1 },
+});
+
 export type ChannelListMessengerProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -41,7 +49,7 @@ export type ChannelListMessengerProps<
   channels: Channel<At, Ch, Co, Ev, Me, Re, Us>[];
   /**
    * Error in channels query, if any
-   * */
+   */
   error?: boolean;
   /**
    * Incremental number change to force update the FlatList
@@ -57,15 +65,19 @@ export type ChannelListMessengerProps<
   loadingChannels?: boolean;
   /**
    * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
-   * */
+   */
   loadingNextPage?: boolean;
   /**
    * Loads the next page of `channels`, which is present as a required prop
-   * */
+   */
   loadNextPage?: () => Promise<void>;
   /**
+   * Number of skeletons that should show when loading. Default: 6
+   */
+  numberOfSkeletons?: number;
+  /**
    * Triggered when the channel list is refreshing, displays a loading spinner at the top of the list
-   * */
+   */
   refreshing?: boolean;
   /**
    * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
@@ -81,7 +93,7 @@ export type ChannelListMessengerProps<
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
    *
    * @param channel A channel object
-   * */
+   */
   setActiveChannel?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
   /**
    * Function to gain access to the inner FlatList ref
@@ -98,6 +110,39 @@ export type ChannelListMessengerProps<
   setFlatListRef?: (
     ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
+};
+
+const HeaderIndicator = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: Pick<
+    ChannelListMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'error'
+    | 'HeaderErrorIndicator'
+    | 'HeaderNetworkDownIndicator'
+    | 'LoadingIndicator'
+    | 'refreshList'
+  > & { isOnline?: boolean },
+) => {
+  const {
+    error,
+    HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
+    HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
+    isOnline,
+    refreshList,
+  } = props;
+  if (!isOnline) {
+    return <HeaderNetworkDownIndicator />;
+  } else if (error) {
+    return <HeaderErrorIndicator onPress={refreshList} />;
+  }
+  return null;
 };
 
 /**
@@ -133,6 +178,7 @@ export const ChannelListMessenger = <
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold = 2,
     loadNextPage,
+    numberOfSkeletons = 6,
     refreshing,
     refreshList,
     reloadList,
@@ -151,15 +197,6 @@ export const ChannelListMessenger = <
     setLoading(!!loadingChannels);
   }, [loadingChannels]);
 
-  const HeaderIndicator: React.FC = () => {
-    if (!isOnline) {
-      return <HeaderNetworkDownIndicator />;
-    } else if (error) {
-      return <HeaderErrorIndicator onPress={refreshList} />;
-    }
-    return null;
-  };
-
   const renderItem = (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => (
     <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> {...props} channel={channel} />
   );
@@ -177,15 +214,28 @@ export const ChannelListMessenger = <
 
   return (
     <>
-      <HeaderIndicator />
+      <HeaderIndicator
+        {...{
+          error,
+          HeaderErrorIndicator,
+          HeaderNetworkDownIndicator,
+          isOnline,
+          LoadingIndicator,
+          refreshList,
+        }}
+      />
       <FlatList
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={styles.flatListContentContainer}
         data={channels}
         extraData={forceUpdate}
         keyExtractor={(item) => item.cid}
         ListEmptyComponent={
           loading ? (
-            <LoadingIndicator listType='channel' />
+            <View>
+              {Array.from(Array(numberOfSkeletons)).map((_, index) => (
+                <Skeleton key={`${new Date().getTime()}_${index}`} />
+              ))}
+            </View>
           ) : (
             <EmptyStateIndicator listType='channel' />
           )
@@ -199,7 +249,7 @@ export const ChannelListMessenger = <
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={({ item }) => renderItem(item)}
-        style={{ flex: 1 }}
+        style={styles.flatList}
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />

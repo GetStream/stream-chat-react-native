@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
+import isEqual from 'lodash/isEqual';
 
 import { useIsOnline } from './hooks/useIsOnline';
 import { useStreami18n } from './hooks/useStreami18n';
@@ -33,7 +34,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-type ChatProps<
+export type ChatProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -100,31 +101,7 @@ type ChatProps<
   style?: DeepPartial<Theme>;
 };
 
-/**
- * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
- * This Chat component provides the ChatContext to all other components.
- *
- * The ChatContext provides the following props:
- *
- * - channel - currently active channel
- * - client - client connection
- * - connectionRecovering - whether or not websocket is reconnecting
- * - isOnline - whether or not set user is active
- * - logger - custom logging function
- * - setActiveChannel - function to set the currently active channel
- *
- * The Chat Component takes the following generics in order:
- * - At (AttachmentType) - custom Attachment object extension
- * - Ct (ChannelType) - custom Channel object extension
- * - Co (CommandType) - custom Command string union extension
- * - Ev (EventType) - custom Event object extension
- * - Me (MessageType) - custom Message object extension
- * - Re (ReactionType) - custom Reaction object extension
- * - Us (UserType) - custom User object extension
- *
- * @example ./Chat.md
- */
-export const Chat = <
+const ChatWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -142,8 +119,6 @@ export const Chat = <
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
-
-  const { style: overlayStyle } = useOverlayContext();
 
   // Setup translators
   useStreami18n({ i18nInstance, setTranslators });
@@ -182,8 +157,71 @@ export const Chat = <
   return (
     <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
       <TranslationProvider value={translators}>
-        <ThemeProvider style={style || overlayStyle}>{children}</ThemeProvider>
+        <ThemeProvider style={style}>{children}</ThemeProvider>
       </TranslationProvider>
     </ChatProvider>
   );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  nextProps: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const { style: prevStyle } = prevProps;
+  const { style: nextStyle } = nextProps;
+
+  return isEqual(prevStyle, nextStyle);
+};
+
+const MemoizedChat = React.memo(
+  ChatWithContext,
+  areEqual,
+) as typeof ChatWithContext;
+
+/**
+ * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
+ * This Chat component provides the ChatContext to all other components.
+ *
+ * The ChatContext provides the following props:
+ *
+ * - channel - currently active channel
+ * - client - client connection
+ * - connectionRecovering - whether or not websocket is reconnecting
+ * - isOnline - whether or not set user is active
+ * - logger - custom logging function
+ * - setActiveChannel - function to set the currently active channel
+ *
+ * The Chat Component takes the following generics in order:
+ * - At (AttachmentType) - custom Attachment object extension
+ * - Ct (ChannelType) - custom Channel object extension
+ * - Co (CommandType) - custom Command string union extension
+ * - Ev (EventType) - custom Event object extension
+ * - Me (MessageType) - custom Message object extension
+ * - Re (ReactionType) - custom Reaction object extension
+ * - Us (UserType) - custom User object extension
+ *
+ * @example ./Chat.md
+ */
+export const Chat = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const { style } = useOverlayContext();
+
+  return <MemoizedChat {...{ style }} {...props} />;
 };

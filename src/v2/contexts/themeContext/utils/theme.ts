@@ -1,4 +1,5 @@
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
@@ -6,9 +7,11 @@ export const BASE_FONT_SIZE = 16;
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
+  background: '#FCFCFC',
   black: '#000000',
   danger: '#FF3742',
-  grey: '#E6E6E6',
+  green: '#20E070',
+  grey: '#E5E5E5',
   light: '#EBEBEB',
   primary: '#006CFF',
   secondary: '#111111',
@@ -83,18 +86,30 @@ export type Theme = {
     container: ViewStyle;
     errorText: TextStyle;
   };
-  channelPreview: {
+  channelListSkeleton: {
+    animationTime: number;
+    background: ViewStyle;
     container: ViewStyle;
+    gradientStart: StopProps;
+    gradientStop: StopProps;
+    height: number;
+  };
+  channelPreview: {
+    checkAllIcon: IconProps;
+    checkIcon: IconProps;
+    container: ViewStyle;
+    contentContainer: ViewStyle;
     date: TextStyle;
-    details: ViewStyle;
-    detailsTop: ViewStyle;
     message: TextStyle & {
       color: TextStyle['color'];
       fontWeight: TextStyle['fontWeight'];
-      unreadColor: TextStyle['color'];
-      unreadFontWeight: TextStyle['fontWeight'];
     };
+    presenceIndicator: CircleProps;
+    presenceIndicatorContainer: ViewStyle;
+    row: ViewStyle;
     title: TextStyle;
+    unreadContainer: ViewStyle;
+    unreadText: TextStyle;
   };
   closeButton: {
     container: ViewStyle;
@@ -384,18 +399,55 @@ export const defaultTheme: Theme = {
     container: {},
     errorText: {},
   },
-  channelPreview: {
-    container: {},
-    date: {},
-    details: {},
-    detailsTop: {},
-    message: {
-      color: '#767676',
-      fontWeight: 'normal',
-      unreadColor: '#000',
-      unreadFontWeight: 'bold',
+  channelListSkeleton: {
+    animationTime: 1000, // in milliseconds
+    background: {
+      backgroundColor: Colors.light,
     },
+    container: {},
+    gradientStart: {},
+    gradientStop: {},
+    height: 64,
+  },
+  channelPreview: {
+    checkAllIcon: {
+      height: DEFAULT_STATUS_ICON_SIZE,
+      pathFill: Colors.primary,
+      width: DEFAULT_STATUS_ICON_SIZE,
+    },
+    checkIcon: {
+      height: DEFAULT_STATUS_ICON_SIZE,
+      width: DEFAULT_STATUS_ICON_SIZE,
+    },
+    container: {
+      backgroundColor: Colors.background,
+      borderBottomColor: Colors.light,
+    },
+    contentContainer: {},
+    date: {
+      color: Colors.textGrey,
+    },
+    message: {
+      color: Colors.textGrey,
+      fontWeight: '400',
+    },
+    presenceIndicator: {
+      cx: 8,
+      cy: 4,
+      fill: Colors.green,
+      r: 4,
+      stroke: Colors.white,
+      strokeWidth: 2,
+    },
+    presenceIndicatorContainer: {},
+    row: {},
     title: {},
+    unreadContainer: {
+      backgroundColor: Colors.danger,
+    },
+    unreadText: {
+      color: Colors.white,
+    },
   },
   closeButton: {
     container: {},

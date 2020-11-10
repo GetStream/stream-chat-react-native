@@ -78,6 +78,7 @@ const filters = {
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 const options = {
+  presence: true,
   state: true,
   watch: true,
 };
@@ -101,7 +102,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <View style={{ height: '100%', padding: 10 }}>
+        <View style={{ height: '100%' }}>
           <ChannelList<
             LocalAttachmentType,
             LocalChannelType,

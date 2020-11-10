@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   ChannelListMessenger,
@@ -17,7 +17,8 @@ import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
 
-import type { FlatList, FlatListProps } from 'react-native';
+import type { FlatListProps } from 'react-native';
+import type { FlatList } from 'react-native-gesture-handler';
 import type {
   Channel,
   ChannelFilters,
@@ -287,9 +288,6 @@ export const ChannelList = <
     sort = DEFAULT_SORT,
   } = props;
 
-  const listRef = useRef<FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null>(
-    null,
-  );
   const [forceUpdate, setForceUpdate] = useState(0);
 
   const {
@@ -373,8 +371,9 @@ export const ChannelList = <
       setFlatListRef={(
         ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
       ) => {
-        listRef.current = ref;
-        setFlatListRef && setFlatListRef(ref);
+        if (setFlatListRef) {
+          setFlatListRef(ref);
+        }
       }}
     />
   );
