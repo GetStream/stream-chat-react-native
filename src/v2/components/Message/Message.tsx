@@ -388,32 +388,31 @@ const MessageWithContext = <
       title: t('Edit Message'),
     };
 
-    const handleReaction =
-      !error && messageReactions
-        ? async (reactionType: string) => {
-            const messageId = message.id;
-            const ownReaction =
-              reactions.ownReactions.includes(reactionType) ||
-              !!reactions.latestReactions.find(
-                (reaction) => reaction.own && reaction.type === reactionType,
-              );
+    const handleReaction = !error
+      ? async (reactionType: string) => {
+          const messageId = message.id;
+          const ownReaction =
+            reactions.ownReactions.includes(reactionType) ||
+            !!reactions.latestReactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
 
-            // Change reaction in local state, make API call in background, revert to old message if fails
-            try {
-              if (channel && messageId) {
-                if (ownReaction) {
-                  await channel.deleteReaction(messageId, reactionType);
-                } else {
-                  await channel.sendReaction(messageId, {
-                    type: reactionType,
-                  } as Reaction<Re, Us>);
-                }
+          // Change reaction in local state, make API call in background, revert to old message if fails
+          try {
+            if (channel && messageId) {
+              if (ownReaction) {
+                await channel.deleteReaction(messageId, reactionType);
+              } else {
+                await channel.sendReaction(messageId, {
+                  type: reactionType,
+                } as Reaction<Re, Us>);
               }
-            } catch (err) {
-              console.log(err);
             }
+          } catch (err) {
+            console.log(err);
           }
-        : undefined;
+        }
+      : undefined;
 
     const muteUser = {
       action: async () => {

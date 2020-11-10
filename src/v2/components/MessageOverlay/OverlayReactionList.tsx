@@ -1,5 +1,13 @@
 import React from 'react';
-import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity as TouchableOpacityIOS,
+  useWindowDimensions,
+  View,
+  ViewStyle,
+} from 'react-native';
+import { TouchableOpacity as TouchableOpacityAndroid } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -28,9 +36,11 @@ import type {
 } from '../../types/types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const TouchableOpacity =
+  Platform.OS === 'ios' ? TouchableOpacityIOS : TouchableOpacityAndroid;
 
 const styles = StyleSheet.create({
-  reaction: {
+  notLastReaction: {
     marginRight: 8,
   },
   reactionList: {
@@ -158,7 +168,25 @@ const OverlayReactionListWithContext = <
         style={[styles.reactionList, animatedStyle, reactionList]}
       >
         {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
-          <Icon
+          <TouchableOpacity
+            hitSlop={{
+              bottom:
+                Number(reaction.paddingVertical || 0) ||
+                Number(reaction.paddingBottom || 0) ||
+                styles.reactionList.paddingVertical,
+              left:
+                (Number(reaction.paddingHorizontal || 0) ||
+                  Number(reaction.paddingLeft || 0) ||
+                  styles.notLastReaction.marginRight) / 2,
+              right:
+                (Number(reaction.paddingHorizontal || 0) ||
+                  Number(reaction.paddingRight || 0) ||
+                  styles.notLastReaction.marginRight) / 2,
+              top:
+                Number(reaction.paddingVertical || 0) ||
+                Number(reaction.paddingTop || 0) ||
+                styles.reactionList.paddingVertical,
+            }}
             key={`${type}_${index}`}
             onPress={() => {
               if (handleReaction) {
@@ -166,13 +194,15 @@ const OverlayReactionListWithContext = <
                 reset();
               }
             }}
-            pathFill={ownReactionTypes.includes(type) ? primary : textGrey}
-            style={
-              index !== reactionData.length - 1
-                ? [styles.reaction, reaction]
-                : {}
-            }
-          />
+            style={[
+              index !== reactionData.length - 1 ? styles.notLastReaction : {},
+              reaction,
+            ]}
+          >
+            <Icon
+              pathFill={ownReactionTypes.includes(type) ? primary : textGrey}
+            />
+          </TouchableOpacity>
         ))}
       </Animated.View>
     </View>
