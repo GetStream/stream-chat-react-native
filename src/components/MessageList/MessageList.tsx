@@ -210,6 +210,8 @@ export type MessageListProps<
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
   TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
+  /** Whether or not the FlatList is inverted. Defaults to true */
+  invertedList?: boolean;
 };
 
 /**
@@ -249,6 +251,7 @@ export const MessageList = <
     onThreadSelect,
     setFlatListRef,
     threadList,
+    invertedList = true,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
@@ -273,6 +276,7 @@ export const MessageList = <
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     noGroupByUser,
     threadList,
+    invertedList,
   });
 
   const flatListRef = useRef<FlatList<
@@ -407,10 +411,12 @@ export const MessageList = <
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
-          inverted
+          inverted={invertedList}
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
-          ListFooterComponent={HeaderComponent}
+          {...(invertedList
+            ? { ListFooterComponent: HeaderComponent }
+            : { ListHeaderComponent: HeaderComponent })}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,
