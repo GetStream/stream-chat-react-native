@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - v2-design
+      - v2-designs
 jobs:
   build_and_deploy_ios:
     runs-on: [macos-latest]

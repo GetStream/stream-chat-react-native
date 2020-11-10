@@ -47,6 +47,7 @@ const MessageAvatarWithContext = <
   const { alignment, lastGroupMessage, message, showAvatar } = props;
   const {
     theme: {
+      avatar: { BASE_AVATAR_SIZE },
       messageSimple: {
         avatarWrapper: { container, leftAlign, rightAlign, spacer },
       },
@@ -65,6 +66,7 @@ const MessageAvatarWithContext = <
         <Avatar
           image={message.user?.image}
           name={message.user?.name || message.user?.id}
+          size={BASE_AVATAR_SIZE}
         />
       ) : (
         <View style={spacer} testID='spacer' />
