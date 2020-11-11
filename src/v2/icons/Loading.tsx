@@ -3,7 +3,7 @@ import { Defs, LinearGradient, Stop, StopProps } from 'react-native-svg';
 
 import { IconProps, RootPath, RootSvg } from './utils/base';
 
-export type LoadingProps = IconProps &
+type LoadingProps = IconProps &
   Partial<Pick<StopProps, 'stopOpacity'>> & {
     startColor?: StopProps['stopColor'];
     stopColor?: StopProps['stopColor'];

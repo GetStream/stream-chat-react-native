@@ -12,7 +12,6 @@ import {
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
-import { enableScreens } from 'react-native-screens';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -29,7 +28,6 @@ import {
 } from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
-enableScreens();
 
 type LocalAttachmentType = Record<string, unknown>;
 type LocalChannelType = Record<string, unknown>;
