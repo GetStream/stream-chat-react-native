@@ -13,31 +13,19 @@ import {
 import AsyncStore from '../utils/AsyncStore';
 import { USER_TOKENS, USERS } from '../ChatUsers';
 export const useChatClient = () => {
-  const [chatClient, setChatClient] = useState<
-    StreamChat<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalResponseType,
-      LocalUserType
-    >
-  >(
-    new StreamChat<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalResponseType,
-      LocalUserType
-    >('q95x9hkbyd6p'),
-  );
+  const [chatClient, setChatClient] = useState<StreamChat<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalResponseType,
+    LocalUserType
+  > | null>(null);
 
-  const [isChatClientReady, setIsChatClientReady] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(true);
   const switchUser = async (userId?: string) => {
-    setIsChatClientReady(false);
+    setIsConnecting(true);
     try {
       let id = userId;
       if (!id) {
@@ -55,7 +43,9 @@ export const useChatClient = () => {
           LocalMessageType,
           LocalResponseType,
           LocalUserType
-        >('q95x9hkbyd6p');
+        >('q95x9hkbyd6p', {
+          timeout: 6000,
+        });
 
         await client.setUser(user, userToken);
         await AsyncStore.setItem('@stream-rn-sampleapp-user-id', id);
@@ -65,7 +55,7 @@ export const useChatClient = () => {
     } catch (e) {
       console.warn(e);
     }
-    setIsChatClientReady(true);
+    setIsConnecting(false);
   };
 
   useEffect(() => {
@@ -74,7 +64,7 @@ export const useChatClient = () => {
 
   return {
     chatClient,
-    isChatClientReady,
+    isConnecting,
     switchUser,
   };
 };

@@ -34,7 +34,9 @@ export type AppTheme = Theme & {
     backgroundNavigation: string;
     backgroundSecondary: string;
     borderLight: string;
+    footnote: string;
     text: string;
+    textLight: string;
     textSecondary: string;
   };
 };

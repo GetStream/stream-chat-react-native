@@ -32,7 +32,7 @@ type AppContextType = {
     LocalMessageType,
     LocalResponseType,
     LocalUserType
-  >;
+  > | null;
   switchUser: (userId?: string) => void;
   // setChannel: React.Dispatch<
   //   React.SetStateAction<
