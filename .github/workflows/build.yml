@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-      - vishal/basic-navigation
+      - v2-designs
 jobs:
   build_and_deploy_ios:
     runs-on: [macos-latest]
