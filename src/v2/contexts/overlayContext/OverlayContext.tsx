@@ -1,5 +1,16 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
-import { StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import {
+  BackHandler,
+  StyleSheet,
+  useWindowDimensions,
+  ViewStyle,
+} from 'react-native';
+import Dayjs from 'dayjs';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,11 +19,16 @@ import Animated, {
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { DeepPartial, ThemeProvider } from '../themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  TranslationProvider,
+} from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
+import { useStreami18n } from '../../utils/useStreami18n';
 
 import type { Theme } from '../themeContext/utils/theme';
 
@@ -26,6 +42,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { Streami18n } from '../../utils/Streami18n';
 
 export type Overlay = 'none' | 'gallery' | 'message';
 
@@ -42,6 +59,11 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
   {} as OverlayContextValue,
 );
 
+type Props = PropsWithChildren<{
+  i18nInstance?: Streami18n;
+  value?: Partial<OverlayContextValue>;
+}>;
+
 export const OverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -50,14 +72,41 @@ export const OverlayProvider = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->({
-  children,
-  value,
-}: PropsWithChildren<{ value?: Partial<OverlayContextValue> }>) => {
+>(
+  props: Props,
+) => {
+  const { children, i18nInstance, value } = props;
+
+  const [translators, setTranslators] = useState<TranslationContextValue>({
+    t: (key: string) => key,
+    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
+  });
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
   const [blurType, setBlurType] = useState<'light' | 'dark' | undefined>();
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (overlay !== 'none') {
+        setBlurType(undefined);
+        setOverlay('none');
+        return true;
+      }
+
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [overlay]);
+
+  // Setup translators
+  useStreami18n({ i18nInstance, setTranslators });
 
   const overlayStyle = useAnimatedStyle<ViewStyle>(
     () => ({
@@ -74,28 +123,30 @@ export const OverlayProvider = <
   };
 
   return (
-    <OverlayContext.Provider value={overlayContext}>
-      <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-        <ImageGalleryProvider>
-          {children}
-          <ThemeProvider style={overlayContext.style}>
-            {overlay !== 'none' && (
-              <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
-                <BlurView
-                  blurType={blurType}
-                  style={[StyleSheet.absoluteFill, { height, width }]}
-                />
-              </Animated.View>
-            )}
-            <MessageOverlay />
-            <ImageGallery
-              overlayOpacity={overlayOpacity}
-              visible={overlay === 'gallery'}
-            />
-          </ThemeProvider>
-        </ImageGalleryProvider>
-      </MessageOverlayProvider>
-    </OverlayContext.Provider>
+    <TranslationProvider value={translators}>
+      <OverlayContext.Provider value={overlayContext}>
+        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+          <ImageGalleryProvider>
+            {children}
+            <ThemeProvider style={overlayContext.style}>
+              {overlay !== 'none' && (
+                <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
+                  <BlurView
+                    blurType={blurType}
+                    style={[StyleSheet.absoluteFill, { height, width }]}
+                  />
+                </Animated.View>
+              )}
+              <MessageOverlay />
+              <ImageGallery
+                overlayOpacity={overlayOpacity}
+                visible={overlay === 'gallery'}
+              />
+            </ThemeProvider>
+          </ImageGalleryProvider>
+        </MessageOverlayProvider>
+      </OverlayContext.Provider>
+    </TranslationProvider>
   );
 };
 

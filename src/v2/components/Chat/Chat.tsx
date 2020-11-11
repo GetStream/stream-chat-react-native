@@ -3,7 +3,6 @@ import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
 import { useIsOnline } from './hooks/useIsOnline';
-import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
@@ -15,6 +14,7 @@ import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../../package.json';
 

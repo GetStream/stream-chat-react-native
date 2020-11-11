@@ -312,6 +312,7 @@ export default () => {
           LocalResponseType,
           LocalUserType
         >
+          i18nInstance={streami18n}
           value={{ style: theme }}
         >
           {clientReady && (

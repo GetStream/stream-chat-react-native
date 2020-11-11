@@ -18,7 +18,7 @@ import {
   useOverlayContext,
   useTranslationContext,
 } from '../../../contexts';
-import { Left } from '../../../icons';
+import { Close } from '../../../icons';
 
 import type { Photo } from '../ImageGallery';
 
@@ -77,7 +77,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
   const dateString = photo
     ? typeof photo.created_at === 'string'
       ? photo.created_at
-      : photo.created_at?.asMutable().toDateString()
+      : photo.created_at?.asMutable()
     : undefined;
 
   const parsedDate = tDateTimeParser(dateString);
@@ -114,7 +114,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
         <View style={styles.container}>
           <TouchableOpacity onPress={hideOverlay}>
             <View style={styles.left}>
-              <Left />
+              <Close />
             </View>
           </TouchableOpacity>
           <View style={styles.centerContainer}>

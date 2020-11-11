@@ -122,7 +122,7 @@ registerNativeHandlers({
       await Sharing.shareAsync(url, { mimeType: type, UTI: type });
       return true;
     } catch (error) {
-      throw new Error('Sharing failed...');
+      throw new Error('Sharing failed or cancelled...');
     }
   },
 });

@@ -3,6 +3,7 @@ import {
   Image,
   ImageStyle,
   Keyboard,
+  Platform,
   StyleSheet,
   ViewStyle,
 } from 'react-native';
@@ -48,12 +49,19 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+const isAndroid = Platform.OS === 'android';
+
 const screenHeight = vh(100);
 const halfScreenHeight = vh(50);
 const quarterScreenHeight = vh(25);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 const MARGIN = 32;
+
+export enum HasPinched {
+  FALSE = 0,
+  TRUE,
+}
 
 export enum IsSwiping {
   UNDETERMINED = 0,
@@ -199,6 +207,7 @@ export const ImageGallery = <
   const numberOfPinchFingers = useSharedValue(0);
   const isSwiping = useSharedValue(0);
   const isPinch = useSharedValue(false);
+  const hasPinched = useSharedValue(0);
 
   /**
    * Reset gesture values for use on touch release
@@ -333,14 +342,27 @@ export const ImageGallery = <
       onActive: (evt) => {
         if (evt.numberOfPointers === 1 && !isPinch.value) {
           /**
+           * If Android where a second finger cannot be added back and
+           * removing one finger returns to Pan Handler then adjust origin
+           * on finger remove and set swiping false
+           */
+          if (isAndroid && hasPinched.value === HasPinched.TRUE) {
+            hasPinched.value = HasPinched.FALSE;
+            isSwiping.value === IsSwiping.FALSE;
+            offsetX.value = translateX.value + evt.translationX;
+            offsetY.value = translateY.value - evt.translationY;
+          }
+
+          /**
            * isSwiping is used to prevent Y movement if a clear swipe to next
            * or previous is begun when at the edge of a photo. The value is
            * either 0, 1, or 2, via the IsSwiping enum designating undetermined,
            * true, or false and is reset on releasing the touch
            */
           if (isSwiping.value === IsSwiping.UNDETERMINED) {
+            const maxXYRatio = isAndroid ? 1 : 0.25;
             if (
-              Math.abs(evt.translationX / evt.translationY) > 0.25 &&
+              Math.abs(evt.translationX / evt.translationY) > maxXYRatio &&
               (Math.abs(-halfScreenWidth * (scale.value - 1) - offsetX.value) <
                 3 ||
                 Math.abs(halfScreenWidth * (scale.value - 1) - offsetX.value) <
@@ -367,8 +389,8 @@ export const ImageGallery = <
            */
           translateX.value =
             scale.value !== offsetScale.value
-              ? offsetX.value * localEvtScale + evt.translationX
-              : offsetX.value + evt.translationX;
+              ? offsetX.value * localEvtScale - evt.translationX
+              : offsetX.value - evt.translationX;
           translateY.value =
             isSwiping.value !== IsSwiping.TRUE
               ? scale.value !== offsetScale.value
@@ -402,7 +424,7 @@ export const ImageGallery = <
         }
       },
       onFinish: (evt) => {
-        if (!isPinch.value) {
+        if (!isPinch.value && evt.numberOfPointers < 2) {
           /**
            * To determine if the fling should page to the next image we
            * calculate a final position based on the current position and
@@ -607,6 +629,11 @@ export const ImageGallery = <
           offsetX.value = translateX.value;
           offsetY.value = translateY.value;
         }
+
+        /**
+         * Reset hasPinched for Android single finger offset
+         */
+        hasPinched.value = HasPinched.FALSE;
       },
     },
     [currentImageHeight, photoLength],
@@ -620,6 +647,51 @@ export const ImageGallery = <
   const onPinch = useAnimatedGestureHandler<PinchGestureHandlerGestureEvent>(
     {
       onActive: (evt) => {
+        /**
+         * Android starts with a zero event with 1 touch instead of two
+         * we therefore must wait to capture starting info until the double
+         * touch begins
+         */
+        if (!isPinch.value && isAndroid) {
+          /**
+           * Set hasPinched to true so when removing one finger the pan active
+           * state adjusts the offset
+           */
+          hasPinched.value = HasPinched.TRUE;
+
+          /**
+           * Cancel any previous motion animation on translations when a touch
+           * begins to interrupt the animation and take over the position handling
+           */
+          cancelAnimation(translateX);
+          cancelAnimation(translateY);
+          cancelAnimation(scale);
+
+          /**
+           * Reset isSwiping as now the pan gesture handler is no longer running
+           */
+          isSwiping.value = IsSwiping.UNDETERMINED;
+
+          /**
+           * Set initial values for pinch gesture interaction handler
+           */
+          numberOfPinchFingers.value = evt.numberOfPointers;
+          offsetX.value = translateX.value;
+          offsetY.value = translateY.value;
+          adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
+          adjustedFocalY.value =
+            evt.focalY - (halfScreenHeight + offsetY.value);
+          originX.value = adjustedFocalX.value;
+          originY.value = adjustedFocalY.value;
+          offsetScale.value = scale.value;
+        }
+
+        /**
+         * Set pinch to true to stop all pan gesture interactions, we do this
+         * again here for Android outside the check that creates type
+         */
+        isPinch.value = true;
+
         /**
          * The scale is clamped to a minimum of 1 and maximum of 8 for aesthetics.
          * We use the clamped value to determine a local event scale so the focal
@@ -698,81 +770,95 @@ export const ImageGallery = <
         }
       },
       onFinish: () => {
-        /**
-         * When the pinch is finished if the scale is less than 1 return the
-         * photo to center, if the photo is inside the edges of the screen
-         * return the photo to line up with the edges, otherwise leave the
-         * photo in its current position
-         */
-        translateX.value =
-          scale.value < 1
-            ? withTiming(0)
-            : translateX.value > halfScreenWidth * (scale.value - 1)
-            ? withTiming(halfScreenWidth * (scale.value - 1))
-            : translateX.value < -halfScreenWidth * (scale.value - 1)
-            ? withTiming(-halfScreenWidth * (scale.value - 1))
-            : translateX.value;
+        if (isPinch.value) {
+          /**
+           * When the pinch is finished if the scale is less than 1 return the
+           * photo to center, if the photo is inside the edges of the screen
+           * return the photo to line up with the edges, otherwise leave the
+           * photo in its current position
+           */
+          translateX.value =
+            scale.value < 1
+              ? withTiming(0)
+              : translateX.value > halfScreenWidth * (scale.value - 1)
+              ? withTiming(halfScreenWidth * (scale.value - 1))
+              : translateX.value < -halfScreenWidth * (scale.value - 1)
+              ? withTiming(-halfScreenWidth * (scale.value - 1))
+              : translateX.value;
 
-        /**
-         * When the pinch is finished if the height is less than the screen
-         * height return the photo to center, if the photo is inside the
-         * edges of the screen return the photo to line up with the edges,
-         * otherwise leave the photo in its current position
-         */
-        translateY.value =
-          currentImageHeight * scale.value < screenHeight
-            ? withTiming(0)
-            : translateY.value >
-              (currentImageHeight / 2) * scale.value - screenHeight / 2
-            ? withTiming(
-                (currentImageHeight / 2) * scale.value - screenHeight / 2,
-              )
-            : translateY.value <
-              (-currentImageHeight / 2) * scale.value + screenHeight / 2
-            ? withTiming(
-                (-currentImageHeight / 2) * scale.value + screenHeight / 2,
-              )
-            : translateY.value;
+          /**
+           * When the pinch is finished if the height is less than the screen
+           * height return the photo to center, if the photo is inside the
+           * edges of the screen return the photo to line up with the edges,
+           * otherwise leave the photo in its current position
+           */
+          translateY.value =
+            currentImageHeight * scale.value < screenHeight
+              ? withTiming(0)
+              : translateY.value >
+                (currentImageHeight / 2) * scale.value - screenHeight / 2
+              ? withTiming(
+                  (currentImageHeight / 2) * scale.value - screenHeight / 2,
+                )
+              : translateY.value <
+                (-currentImageHeight / 2) * scale.value + screenHeight / 2
+              ? withTiming(
+                  (-currentImageHeight / 2) * scale.value + screenHeight / 2,
+                )
+              : translateY.value;
 
-        /**
-         * If the scale has been reduced below one, i.e. zoomed out, translate
-         * the zoom back to one
-         */
-        offsetScale.value = scale.value < 1 ? 1 : scale.value;
-        scale.value = scale.value < 1 ? withTiming(1) : scale.value;
-
-        resetTouchValues();
+          /**
+           * If the scale has been reduced below one, i.e. zoomed out, translate
+           * the zoom back to one
+           */
+          offsetScale.value = scale.value < 1 ? 1 : scale.value;
+          scale.value = scale.value < 1 ? withTiming(1) : scale.value;
+          resetTouchValues();
+        }
       },
       onStart: (evt) => {
         /**
-         * Cancel any previous motion animation on translations when a touch
-         * begins to interrupt the animation and take over the position handling
+         * Android starts with a zero event with 1 touch instead of two
+         * we therefore must wait to capture starting info until the double
+         * touch begins
          */
-        cancelAnimation(translateX);
-        cancelAnimation(translateY);
-        cancelAnimation(scale);
+        if (!isAndroid) {
+          /**
+           * Cancel any previous motion animation on translations when a touch
+           * begins to interrupt the animation and take over the position handling
+           */
+          cancelAnimation(translateX);
+          cancelAnimation(translateY);
+          cancelAnimation(scale);
+
+          /**
+           * Set pinch to true to stop all pan gesture interactions
+           */
+          isPinch.value = true;
+
+          /**
+           * Reset isSwiping as now the pan gesture handler is no longer running
+           */
+          isSwiping.value = IsSwiping.UNDETERMINED;
+
+          /**
+           * Set initial values for pinch gesture interaction handler
+           */
+          numberOfPinchFingers.value = evt.numberOfPointers;
+          offsetX.value = translateX.value;
+          offsetY.value = translateY.value;
+          adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
+          adjustedFocalY.value =
+            evt.focalY - (halfScreenHeight + offsetY.value);
+          originX.value = adjustedFocalX.value;
+          originY.value = adjustedFocalY.value;
+          offsetScale.value = scale.value;
+        }
 
         /**
-         * Set pinch to true to stop all pan gesture interactions
+         * Reset hasPinched for Android single finger offset
          */
-        isPinch.value = true;
-
-        /**
-         * Reset isSwiping as now the pan gesture handler is no longer running
-         */
-        isSwiping.value = IsSwiping.UNDETERMINED;
-
-        /**
-         * Set initial values for pinch gesture interaction handler
-         */
-        numberOfPinchFingers.value = evt.numberOfPointers;
-        offsetX.value = translateX.value;
-        offsetY.value = translateY.value;
-        adjustedFocalX.value = evt.focalX - (halfScreenWidth - offsetX.value);
-        adjustedFocalY.value = evt.focalY - (halfScreenHeight + offsetY.value);
-        originX.value = adjustedFocalX.value;
-        originY.value = adjustedFocalY.value;
-        offsetScale.value = scale.value;
+        hasPinched.value = HasPinched.FALSE;
       },
     },
     [currentImageHeight],
@@ -795,8 +881,8 @@ export const ImageGallery = <
   const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>({
     onActive: (evt) => {
       if (
-        Math.abs(tapX.value - evt.absoluteX) < 32 &&
-        Math.abs(tapY.value - evt.absoluteY) < 32
+        Math.abs(tapX.value - evt.absoluteX) < 64 &&
+        Math.abs(tapY.value - evt.absoluteY) < 64
       ) {
         if (
           offsetScale.value === 1 &&
@@ -936,59 +1022,55 @@ export const ImageGallery = <
             numberOfTaps={2}
             onGestureEvent={onDoubleTap}
             ref={doubleTapRef}
-            simultaneousHandlers={[panRef, pinchRef, singleTapRef]}
           >
             <Animated.View style={StyleSheet.absoluteFillObject}>
               <PinchGestureHandler
                 onGestureEvent={onPinch}
                 ref={pinchRef}
-                simultaneousHandlers={[doubleTapRef, panRef, singleTapRef]}
+                simultaneousHandlers={[panRef]}
               >
                 <Animated.View style={StyleSheet.absoluteFill}>
                   <PanGestureHandler
-                    maxPointers={1}
+                    maxPointers={isAndroid ? undefined : 1}
                     minDist={10}
                     onGestureEvent={onPan}
                     ref={panRef}
-                    simultaneousHandlers={[
-                      doubleTapRef,
-                      pinchRef,
-                      singleTapRef,
-                    ]}
+                    simultaneousHandlers={[pinchRef]}
                   >
-                    <Animated.View
-                      style={[
-                        StyleSheet.absoluteFill,
-                        styles.animatedContainer,
-                        pagerStyle,
-                        {
-                          transform: [
-                            { scaleX: -1 }, // Also only here for opening, wrong direction when not included
-                            {
-                              translateX: translationX.value, // Only here for opening, wrong index when this is not included
-                            },
-                          ],
-                        },
-                      ]}
-                    >
-                      {photos.map((photo, i) => (
-                        <AnimatedGalleryImage
-                          key={`${photo.uri}-${i}`}
-                          offsetScale={offsetScale}
-                          photo={photo}
-                          previous={selectedIndex > i}
-                          scale={scale}
-                          selected={selectedIndex === i}
-                          shouldRender={Math.abs(selectedIndex - i) < 4}
-                          style={{
-                            height: screenHeight,
-                            marginRight: MARGIN,
-                            width: screenWidth,
-                          }}
-                          translateX={translateX}
-                          translateY={translateY}
-                        />
-                      ))}
+                    <Animated.View style={StyleSheet.absoluteFill}>
+                      <Animated.View
+                        style={[
+                          styles.animatedContainer,
+                          pagerStyle,
+                          {
+                            transform: [
+                              { scaleX: -1 }, // Also only here for opening, wrong direction when not included
+                              {
+                                translateX: translationX.value, // Only here for opening, wrong index when this is not included
+                              },
+                            ],
+                          },
+                        ]}
+                      >
+                        {photos.map((photo, i) => (
+                          <AnimatedGalleryImage
+                            key={`${photo.uri}-${i}`}
+                            offsetScale={offsetScale}
+                            photo={photo}
+                            previous={selectedIndex > i}
+                            scale={scale}
+                            selected={selectedIndex === i}
+                            shouldRender={Math.abs(selectedIndex - i) < 4}
+                            style={{
+                              height: screenHeight,
+                              marginRight: MARGIN,
+                              width: screenWidth,
+                            }}
+                            translateX={translateX}
+                            translateY={translateY}
+                          />
+                        ))}
+                      </Animated.View>
                     </Animated.View>
                   </PanGestureHandler>
                 </Animated.View>

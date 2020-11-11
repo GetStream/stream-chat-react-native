@@ -120,6 +120,9 @@ registerNativeHandlers({
     try {
       const path = RNFS.DocumentDirectoryPath + '/' + fileName;
       await RNFS.downloadFile({ fromUrl, toFile: path });
+      if (Platform.OS === 'android') {
+        return 'file://' + path;
+      }
       return path;
     } catch (error) {
       throw new Error('Downloading image failed...');
@@ -127,10 +130,28 @@ registerNativeHandlers({
   },
   shareImage: async ({ type, url }) => {
     try {
-      await RNShare.open({ type, url });
+      const options = {
+        excludedActivityTypes: [],
+        message: '',
+        title: '',
+        type,
+      };
+      if (Platform.OS === 'android') {
+        const base64Image = await RNFS.readFile(url, 'base64');
+        const androidUrl = `data:${type};base64,${base64Image}`;
+        await RNShare.open({
+          ...options,
+          url: androidUrl,
+        });
+      } else {
+        await RNShare.open({
+          ...options,
+          url,
+        });
+      }
       return true;
     } catch (error) {
-      throw new Error('Sharing failed...');
+      throw new Error('Sharing failed or cancelled...');
     }
   },
 });

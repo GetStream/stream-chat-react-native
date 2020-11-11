@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
 } from 'react-native-reanimated';
+
 import { useTranslationContext } from '../../../contexts';
+import { Share as ShareIcon } from '../../../icons';
+import { deleteFile, saveFile, shareImage } from '../../../native';
 
 import type { Photo } from '../ImageGallery';
+
+import type { DefaultUserType, UnknownType } from '../../../types/types';
 
 const ReanimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
 
@@ -25,6 +37,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  left: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 8,
+  },
+  right: {
+    marginRight: 8,
+    width: 24, // Width of icon currently on left
+  },
   safeArea: {
     backgroundColor: '#FFFFFF',
   },
@@ -36,16 +57,18 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
+type Props<Us extends UnknownType = DefaultUserType> = {
   opacity: Animated.SharedValue<number>;
-  photo: Photo;
+  photo: Photo<Us>;
   photoLength: number;
   selectedIndex: number;
   visible: Animated.SharedValue<number>;
 };
 
-export const ImageGalleryFooter: React.FC<Props> = (props) => {
-  const { opacity, photoLength, selectedIndex, visible } = props;
+export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
+  props: Props<Us>,
+) => {
+  const { opacity, photo, photoLength, selectedIndex, visible } = props;
   const [height, setHeight] = useState(200);
   const { t } = useTranslationContext();
 
@@ -65,10 +88,27 @@ export const ImageGalleryFooter: React.FC<Props> = (props) => {
     }),
     [],
   );
-  // t('{{ firstUser }} and {{ secondUser }} are typing...', {
-  //   firstUser: nonSelfUsers[0],
-  //   secondUser: nonSelfUsers[1],
-  // });
+
+  const share = async () => {
+    try {
+      const localImage = await saveFile({
+        fileName: `${photo.user?.name || photo.user_id || 'ChatPhoto'}-${
+          photo.messageId
+        }-${selectedIndex}.jpg`,
+        fromUrl: photo.uri,
+      });
+      /**
+       * We add a 100ms timeout here as a wait, the file system seems to not
+       * register the file as an image otherwise and does not present the full
+       * sharing options for an image otherwise, likely file size related
+       */
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await shareImage({ type: 'image/jpeg', url: localImage });
+      await deleteFile({ uri: localImage });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Animated.View
@@ -78,15 +118,20 @@ export const ImageGalleryFooter: React.FC<Props> = (props) => {
     >
       <ReanimatedSafeAreaView style={[styles.safeArea, footerStyle]}>
         <View style={styles.container}>
+          <TouchableOpacity onPress={share}>
+            <View style={styles.left}>
+              <ShareIcon />
+            </View>
+          </TouchableOpacity>
           <View style={styles.centerContainer}>
             <Text style={styles.imageCount}>
-              {/* {t('{{ index }} of {{ photoLength }}', {
-              photoLength,
-              index: selectedIndex + 1,
-            })} */}
-              {`${selectedIndex + 1} of ${photoLength}`}
+              {t('{{ index }} of {{ photoLength }}', {
+                index: selectedIndex + 1,
+                photoLength,
+              })}
             </Text>
           </View>
+          <View style={styles.right} />
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>
