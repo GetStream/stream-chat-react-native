@@ -1,5 +1,5 @@
-import { UserResponse } from "stream-chat";
-import { LocalUserType } from "./types";
+import { UserResponse } from 'stream-chat';
+import { LocalUserType } from './types';
 
 export const USER_TOKENS: Record<string, string> = {
   cilvia:
@@ -46,26 +46,26 @@ export const USERS: Record<string, UserResponse<LocalUserType>> = {
     image: 'https://ca.slack-edge.com/T02RM6X6B-UD6TCA6P6-2b60e1b19771-512',
     name: 'Marcelo Pires',
   },
-  merel: {
-    id: 'merel',
-    image: 'https://ca.slack-edge.com/T02RM6X6B-ULM9UDW58-4c56462d52a4-512',
-    name: 'Merel',
+  vishal: {
+    id: 'vishal',
+    image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
+    name: 'Vishal Narkhede',
   },
   thierry: {
     id: 'thierry',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U02RM6X6D-g28a1278a98e-512',
     name: 'Thierry',
   },
-  tommaso: {
-    id: 'tommaso',
-    image: 'https://ca.slack-edge.com/T02RM6X6B-U02U7SJP4-0f65a5997877-512',
-    name: 'Tommaso Barbugli',
-  },
-  vishal: {
-    id: 'vishal',
-    image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
-    name: 'Vishal Narkhede',
-  },
+  // merel: {
+  //   id: 'merel',
+  //   image: 'https://ca.slack-edge.com/T02RM6X6B-ULM9UDW58-4c56462d52a4-512',
+  //   name: 'Merel',
+  // },
+  // tommaso: {
+  //   id: 'tommaso',
+  //   image: 'https://ca.slack-edge.com/T02RM6X6B-U02U7SJP4-0f65a5997877-512',
+  //   name: 'Tommaso Barbugli',
+  // },
   // luke: {
   //   id: 'luke',
   //   name: 'Luke',

@@ -48,6 +48,9 @@ export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
   const { colors } = useTheme() as AppTheme;
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
+
+  if (!chatClient) return null;
+
   return (
     <>
       <View

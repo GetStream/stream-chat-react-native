@@ -7,7 +7,14 @@ import { Channel as ChannelType, StreamChat } from 'stream-chat';
 import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { MenuDrawer } from './src/screens/MenuDrawer';
-import { LogBox, useColorScheme } from 'react-native';
+import {
+  ActivityIndicator,
+  LogBox,
+  SafeAreaView,
+  useColorScheme,
+  Vibration,
+  View,
+} from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { DarkTheme, LightTheme } from './src/appTheme';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
@@ -27,7 +34,8 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from './src/types';
-// LogBox.ignoreAllLogs(true);
+import { LoadingScreen } from './src/screens/LoadingScreen';
+LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
 
@@ -37,8 +45,16 @@ const Drawer = createDrawerNavigator();
 const App = () => {
   const scheme = useColorScheme();
 
-  const { chatClient, isChatClientReady, switchUser } = useChatClient();
-  if (!isChatClientReady) return null;
+  const { chatClient, isConnecting, switchUser } = useChatClient();
+
+  if (isConnecting) {
+    return (
+      <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
+        <LoadingScreen />
+      </NavigationContainer>
+    );
+  }
+
   return (
     <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
       <AppContext.Provider value={{ chatClient, switchUser }}>
