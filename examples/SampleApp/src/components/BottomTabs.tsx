@@ -18,13 +18,13 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
 
   const getTitle = (key: string) => {
     switch (key) {
-      case 'chats':
+      case 'ChatScreen':
         return {
           icon: <ChatsTab height={25} width={25} />,
           iconActive: <ChatsTab active height={25} width={25} />,
           title: 'Home',
         };
-      case 'mentions':
+      case 'MentionsScreen':
         return {
           icon: <MentionsTab height={25} width={25} />,
           iconActive: <MentionsTab active height={25} width={25} />,
