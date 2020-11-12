@@ -199,7 +199,7 @@ export const ChannelListMessenger = <
         ref={setFlatListRef}
         refreshing={refreshing}
         renderItem={({ item }) => renderItem(item)}
-        style={{ flex: 1 }}
+        style={{ flexGrow: 1, flexShrink: 1 }}
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />

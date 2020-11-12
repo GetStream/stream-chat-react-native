@@ -137,20 +137,46 @@ const areEqual = <
     message: nextMessage,
   } = nextProps;
 
+  const hasReactionsEqual = prevHasReactions === nextHasReactions;
+  if (!hasReactionsEqual) return false;
+
+  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+  if (!repliesEqual) return false;
+
+  const groupStylesEqual = prevGroupStyles.length === nextGroupStyles.length;
+  if (!groupStylesEqual) return false;
+
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.updated_at === nextMessage.update_at;
+  if (!messageEqual) return false;
+
   const channelEqual =
     prevChannel?.state.messages.length === nextChannel?.state.messages.length;
-  const groupStylesEqual = prevGroupStyles.length === nextGroupStyles.length;
-  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+  if (!channelEqual) return false;
 
-  return (
-    channelEqual &&
-    groupStylesEqual &&
-    hasReactionsEqual &&
-    messageEqual &&
-    repliesEqual
-  );
+  const attachmentsEqual =
+    Array.isArray(prevMessage.attachments) ===
+      Array.isArray(nextMessage.attachments) &&
+    ((Array.isArray(prevMessage.attachments) &&
+      Array.isArray(nextMessage.attachments) &&
+      prevMessage.attachments.length === nextMessage.attachments.length) ||
+      prevMessage.attachments === nextMessage.attachments);
+  if (!attachmentsEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage.latest_reactions) ===
+      Array.isArray(nextMessage.latest_reactions) &&
+    ((Array.isArray(prevMessage.latest_reactions) &&
+      Array.isArray(nextMessage.latest_reactions) &&
+      prevMessage.latest_reactions.length ===
+        nextMessage.latest_reactions.length) ||
+      prevMessage.latest_reactions === nextMessage.latest_reactions);
+  if (!latestReactionsEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessageSimple = React.memo(

@@ -40,6 +40,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
 }: MentionsItemProps<Us>) => {
   const {
     theme: {
+      avatar: { BASE_AVATAR_SIZE },
       messageInput: {
         suggestions: {
           mention: { container, name: nameStyle },
@@ -50,7 +51,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
 
   return (
     <View style={[styles.container, container]}>
-      <Avatar image={image} name={name} />
+      <Avatar image={image} name={name} size={BASE_AVATAR_SIZE} />
       <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
         {name || id}
       </Text>

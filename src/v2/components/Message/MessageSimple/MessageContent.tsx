@@ -370,21 +370,42 @@ const areEqual = <
   } = nextProps;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
+  if (!hasReactionsEqual) return false;
+
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
   const membersEqual =
     Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  const messageEqual =
-    Array.isArray(prevMessage.attachments) &&
-    Array.isArray(nextMessage.attachments) &&
-    prevMessage.attachments.length === nextMessage.attachments.length &&
-    prevMessage.deleted_at === nextMessage.deleted_at &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.updated_at === nextMessage.update_at;
+  if (!membersEqual) return false;
 
-  return (
-    hasReactionsEqual && lastGroupMessageEqual && membersEqual && messageEqual
-  );
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.updated_at === nextMessage.update_at;
+  if (!messageEqual) return false;
+
+  const attachmentsEqual =
+    Array.isArray(prevMessage.attachments) ===
+      Array.isArray(nextMessage.attachments) &&
+    ((Array.isArray(prevMessage.attachments) &&
+      Array.isArray(nextMessage.attachments) &&
+      prevMessage.attachments.length === nextMessage.attachments.length) ||
+      prevMessage.attachments === nextMessage.attachments);
+  if (!attachmentsEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage.latest_reactions) ===
+      Array.isArray(nextMessage.latest_reactions) &&
+    ((Array.isArray(prevMessage.latest_reactions) &&
+      Array.isArray(nextMessage.latest_reactions) &&
+      prevMessage.latest_reactions.length ===
+        nextMessage.latest_reactions.length) ||
+      prevMessage.latest_reactions === nextMessage.latest_reactions);
+  if (!latestReactionsEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessageContent = React.memo(

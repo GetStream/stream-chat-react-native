@@ -47,6 +47,7 @@ const MessageAvatarWithContext = <
   const { alignment, lastGroupMessage, message, showAvatar } = props;
   const {
     theme: {
+      avatar: { BASE_AVATAR_SIZE },
       messageSimple: {
         avatarWrapper: { container, leftAlign, rightAlign, spacer },
       },
@@ -65,6 +66,7 @@ const MessageAvatarWithContext = <
         <Avatar
           image={message.user?.image}
           name={message.user?.name || message.user?.id}
+          size={BASE_AVATAR_SIZE}
         />
       ) : (
         <View style={spacer} testID='spacer' />
@@ -95,12 +97,15 @@ const areEqual = <
   } = nextProps;
 
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
   const userEqual =
     prevMessage.user?.image === nextMessage.user?.image &&
     prevMessage.user?.name === nextMessage.user?.name &&
     prevMessage.user?.id === nextMessage.user?.id;
+  if (!userEqual) return false;
 
-  return lastGroupMessageEqual && userEqual;
+  return true;
 };
 
 const MemoizedMessageAvatar = React.memo(

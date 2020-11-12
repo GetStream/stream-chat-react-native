@@ -29,8 +29,8 @@ lane :match_me do
     app_identifier: [
         "io.getstream.reactnative.SampleApp",
     ],
-    readonly: is_ci,
-    force_for_new_devices: true
+    readonly: true,
+    force_for_new_devices: !is_ci
   )
 end
 

@@ -390,32 +390,31 @@ const MessageWithContext = <
       title: t('Edit Message'),
     };
 
-    const handleReaction =
-      !error && messageReactions
-        ? async (reactionType: string) => {
-            const messageId = message.id;
-            const ownReaction =
-              reactions.ownReactions.includes(reactionType) ||
-              !!reactions.latestReactions.find(
-                (reaction) => reaction.own && reaction.type === reactionType,
-              );
+    const handleReaction = !error
+      ? async (reactionType: string) => {
+          const messageId = message.id;
+          const ownReaction =
+            reactions.ownReactions.includes(reactionType) ||
+            !!reactions.latestReactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
 
-            // Change reaction in local state, make API call in background, revert to old message if fails
-            try {
-              if (channel && messageId) {
-                if (ownReaction) {
-                  await channel.deleteReaction(messageId, reactionType);
-                } else {
-                  await channel.sendReaction(messageId, {
-                    type: reactionType,
-                  } as Reaction<Re, Us>);
-                }
+          // Change reaction in local state, make API call in background, revert to old message if fails
+          try {
+            if (channel && messageId) {
+              if (ownReaction) {
+                await channel.deleteReaction(messageId, reactionType);
+              } else {
+                await channel.sendReaction(messageId, {
+                  type: reactionType,
+                } as Reaction<Re, Us>);
               }
-            } catch (err) {
-              console.log(err);
             }
+          } catch (err) {
+            console.log(err);
           }
-        : undefined;
+        }
+      : undefined;
 
     const muteUser = {
       action: async () => {
@@ -460,7 +459,7 @@ const MessageWithContext = <
           ]
         : messageReactions
         ? undefined
-        : messageActionsProp || isMyMessage
+        : messageActionsProp || canModifyMessage
         ? message.text
           ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
           : [reply, threadReply, editMessage, deleteMessage]
@@ -537,24 +536,44 @@ const areEqual = <
     message: nextMessage,
   } = nextProps;
 
+  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+  if (!repliesEqual) return false;
+
   const lastReceivedIdChangedAndMatters =
     prevLastReceivedId !== nextLastReceivedId &&
     (prevLastReceivedId === prevMessage.id ||
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
-  const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
-  const reactionsEqual =
-    prevMessage.latest_reactions?.length ===
-    nextMessage.latest_reactions?.length;
-  const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
+  if (!lastReceivedIdChangedAndMatters) return false;
 
-  return (
-    !lastReceivedIdChangedAndMatters &&
-    messageEqual &&
-    reactionsEqual &&
-    repliesEqual
-  );
+  const messageEqual =
+    prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.status === nextMessage.status &&
+    prevMessage.type === nextMessage.type &&
+    prevMessage.updated_at === nextMessage.update_at;
+  if (!messageEqual) return false;
+
+  const attachmentsEqual =
+    Array.isArray(prevMessage.attachments) ===
+      Array.isArray(nextMessage.attachments) &&
+    ((Array.isArray(prevMessage.attachments) &&
+      Array.isArray(nextMessage.attachments) &&
+      prevMessage.attachments.length === nextMessage.attachments.length) ||
+      prevMessage.attachments === nextMessage.attachments);
+  if (!attachmentsEqual) return false;
+
+  const latestReactionsEqual =
+    Array.isArray(prevMessage.latest_reactions) ===
+      Array.isArray(nextMessage.latest_reactions) &&
+    ((Array.isArray(prevMessage.latest_reactions) &&
+      Array.isArray(nextMessage.latest_reactions) &&
+      prevMessage.latest_reactions.length ===
+        nextMessage.latest_reactions.length) ||
+      prevMessage.latest_reactions === nextMessage.latest_reactions);
+  if (!latestReactionsEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessage = React.memo(

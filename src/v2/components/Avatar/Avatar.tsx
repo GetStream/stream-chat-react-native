@@ -35,14 +35,14 @@ const getInitials = (fullName?: string) =>
     : null;
 
 export type AvatarProps = {
+  /** size in pixels */
+  size: number;
   containerStyle?: StyleProp<ViewStyle>;
   fallbackStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
   /** name of the picture, used for title tag fallback */
   name?: string;
-  /** size in pixels */
-  size?: number;
   testID?: string;
 };
 
@@ -75,21 +75,9 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
 
   const [imageError, setImageError] = useState(false);
 
-  return (
-    <View style={[styles.container, container, containerStyle]}>
-      {imageProp && !imageError ? (
-        <Image
-          accessibilityLabel='initials'
-          onError={() => setImageError(true)}
-          resizeMethod='resize'
-          source={{ uri: imageProp }}
-          style={[
-            image,
-            size ? { borderRadius: size / 2, height: size, width: size } : {},
-          ]}
-          testID={testID || 'avatar-image'}
-        />
-      ) : (
+  if (imageError || !imageProp || imageProp.indexOf('random_svg') > -1) {
+    return (
+      <View style={[styles.container, container, containerStyle]}>
         <View
           style={[
             styles.fallback,
@@ -121,7 +109,23 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
             {getInitials(name)}
           </Text>
         </View>
-      )}
+      </View>
+    );
+  }
+
+  return (
+    <View style={[styles.container, container, containerStyle]}>
+      <Image
+        accessibilityLabel='initials'
+        onError={() => setImageError(true)}
+        resizeMethod='resize'
+        source={{ uri: imageProp }}
+        style={[
+          image,
+          size ? { borderRadius: size / 2, height: size, width: size } : {},
+        ]}
+        testID={testID || 'avatar-image'}
+      />
     </View>
   );
 };
