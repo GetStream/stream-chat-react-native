@@ -98,6 +98,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   navigation,
 }) => {
   const { setChannel } = useContext(AppContext);
+
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
@@ -130,13 +131,17 @@ type ChannelScreenProps = {
 };
 
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
-  const { channel, setThread } = useContext(AppContext);
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <Channel channel={channel} keyboardVerticalOffset={headerHeight}>
+        <Channel
+          channel={channel}
+          keyboardVerticalOffset={headerHeight}
+          thread={thread}
+        >
           <View style={{ flex: 1 }}>
             <MessageList<
               LocalAttachmentType,
@@ -167,7 +172,7 @@ type ThreadScreenProps = {
 };
 
 const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
-  const { thread } = useContext(AppContext);
+  const { setThread, thread } = useContext(AppContext);
   const [channel] = useState(
     chatClient.channel('messaging', route.params.channelId),
   );
@@ -195,7 +200,9 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
               LocalMessageType,
               LocalResponseType,
               LocalUserType
-            > />
+            >
+              onThreadDismount={() => setThread(null)}
+            />
           </View>
         </Channel>
       </Chat>
@@ -312,6 +319,7 @@ export default () => {
           LocalResponseType,
           LocalUserType
         >
+          i18nInstance={streami18n}
           value={{ style: theme }}
         >
           {clientReady && (

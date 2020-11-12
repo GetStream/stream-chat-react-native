@@ -30,6 +30,7 @@ registerNativeHandlersV1({
 
 registerNativeHandlersV2({
   BlurView: () => null,
+  deleteFile: () => null,
   NetInfo: {
     addEventListener: () => {},
     fetch: () =>
@@ -39,6 +40,8 @@ registerNativeHandlersV2({
   },
   pickDocument: () => null,
   pickImage: () => null,
+  saveFile: () => null,
+  shareImage: () => null,
 });
 
 jest.mock('react-native-reanimated', () =>

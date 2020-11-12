@@ -64,6 +64,8 @@ export type ThreadProps<
   >;
   /** Make input focus on mounting thread */
   autoFocus?: boolean;
+  /** Closes thread on dismount, defaults to true */
+  closeThreadOnDismount?: boolean;
   /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
   disabled?: boolean;
   /**
@@ -80,6 +82,10 @@ export type ThreadProps<
   MessageList?: React.ComponentType<
     MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /**
+   * Call custom function on closing thread if handling thread state elsewhere
+   */
+  onThreadDismount?: () => void;
 };
 
 /**
@@ -108,9 +114,11 @@ export const Thread = <
     additionalMessageInputProps,
     additionalMessageListProps,
     autoFocus = true,
+    closeThreadOnDismount = true,
     disabled,
     MessageInput = DefaultMessageInput,
     MessageList = DefaultMessageList,
+    onThreadDismount,
   } = props;
 
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -122,7 +130,7 @@ export const Thread = <
       },
     },
   } = useTheme();
-  const { loadMoreThread, thread } = useThreadContext<
+  const { closeThread, loadMoreThread, thread } = useThreadContext<
     At,
     Ch,
     Co,
@@ -143,6 +151,18 @@ export const Thread = <
     }
   }, []);
 
+  useEffect(
+    () => () => {
+      if (closeThreadOnDismount) {
+        closeThread();
+      }
+      if (onThreadDismount) {
+        onThreadDismount();
+      }
+    },
+    [closeThread, closeThreadOnDismount, onThreadDismount],
+  );
+
   if (!thread) return null;
 
   const headerComponent = (
@@ -152,6 +172,7 @@ export const Thread = <
         enableLongPress={false}
         groupStyles={['single']}
         message={thread}
+        preventPress
         threadList
       />
       <View style={[styles.newThread, newThread]}>

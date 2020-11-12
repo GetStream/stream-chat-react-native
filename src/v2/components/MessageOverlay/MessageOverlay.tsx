@@ -188,6 +188,7 @@ const MessageOverlayWithContext = <
                   <Gallery<At, Ch, Co, Ev, Me, Re, Us>
                     alignment={alignment}
                     images={images}
+                    preventPress
                   />
                   <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
                     alignment={alignment}
