@@ -14,6 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   useTranslationContext,
@@ -32,22 +33,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  container: {
-    flexDirection: 'row',
-    height: 56,
-  },
   date: {
     fontSize: 12,
     fontWeight: '500',
     marginTop: 4,
     opacity: 0.5,
   },
-  left: {
+  innerContainer: {
+    flexDirection: 'row',
+    height: 56,
+  },
+  leftContainer: {
     flex: 1,
     justifyContent: 'center',
     marginLeft: 8,
   },
-  right: {
+  rightContainer: {
     marginRight: 8,
     width: 24, // Width of icon currently on left
   },
@@ -60,7 +61,28 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryHeaderCustomComponent<
+  Us extends UnknownType = DefaultUserType
+> = ({
+  hideOverlay,
+  photo,
+}: {
+  hideOverlay: () => void;
+  photo?: Photo<Us>;
+}) => React.ReactElement | null;
+
+export type ImageGalleryHeaderCustomComponentProps<
+  Us extends UnknownType = DefaultUserType
+> = {
+  centerElement?: ImageGalleryHeaderCustomComponent<Us>;
+  CloseIcon?: React.ReactElement;
+  leftElement?: ImageGalleryHeaderCustomComponent<Us>;
+  rightElement?: ImageGalleryHeaderCustomComponent<Us>;
+};
+
+type Props<
+  Us extends UnknownType = DefaultUserType
+> = ImageGalleryHeaderCustomComponentProps<Us> & {
   opacity: Animated.SharedValue<number>;
   visible: Animated.SharedValue<number>;
   photo?: Photo<Us>;
@@ -69,8 +91,31 @@ type Props<Us extends UnknownType = DefaultUserType> = {
 export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
   props: Props<Us>,
 ) => {
-  const { opacity, photo, visible } = props;
+  const {
+    centerElement,
+    CloseIcon,
+    leftElement,
+    opacity,
+    photo,
+    rightElement,
+    visible,
+  } = props;
   const [height, setHeight] = useState(200);
+  const {
+    theme: {
+      imageGallery: {
+        header: {
+          centerContainer,
+          container,
+          dateText,
+          innerContainer,
+          leftContainer,
+          rightContainer,
+          usernameText,
+        },
+      },
+    },
+  } = useTheme();
   const { t, tDateTimeParser } = useTranslationContext();
   const { setBlurType, setOverlay } = useOverlayContext();
 
@@ -110,20 +155,32 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView style={[styles.safeArea, headerStyle]}>
-        <View style={styles.container}>
-          <TouchableOpacity onPress={hideOverlay}>
-            <View style={styles.left}>
-              <Close />
+      <ReanimatedSafeAreaView style={[styles.safeArea, container, headerStyle]}>
+        <View style={[styles.innerContainer, innerContainer]}>
+          {leftElement ? (
+            leftElement({ hideOverlay, photo })
+          ) : (
+            <TouchableOpacity onPress={hideOverlay}>
+              <View style={[styles.leftContainer, leftContainer]}>
+                {CloseIcon ? CloseIcon : <Close />}
+              </View>
+            </TouchableOpacity>
+          )}
+          {centerElement ? (
+            centerElement({ hideOverlay, photo })
+          ) : (
+            <View style={[styles.centerContainer, centerContainer]}>
+              <Text style={[styles.userName, usernameText]}>
+                {photo?.user?.name || t('Unknown User')}
+              </Text>
+              <Text style={[styles.date, dateText]}>{date}</Text>
             </View>
-          </TouchableOpacity>
-          <View style={styles.centerContainer}>
-            <Text style={styles.userName}>
-              {photo?.user?.name || t('Unknown User')}
-            </Text>
-            <Text style={styles.date}>{date}</Text>
-          </View>
-          <View style={styles.right} />
+          )}
+          {rightElement ? (
+            rightElement({ hideOverlay, photo })
+          ) : (
+            <View style={[styles.rightContainer, rightContainer]} />
+          )}
         </View>
       </ReanimatedSafeAreaView>
     </View>

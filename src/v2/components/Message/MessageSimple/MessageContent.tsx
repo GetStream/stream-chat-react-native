@@ -242,7 +242,7 @@ export const MessageContentWithContext = <
   return (
     <TouchableOpacity
       activeOpacity={0.7}
-      disabled={disabled || preventPress}
+      disabled={disabled}
       onLongPress={onLongPress}
       {...additionalTouchableProps}
       /**

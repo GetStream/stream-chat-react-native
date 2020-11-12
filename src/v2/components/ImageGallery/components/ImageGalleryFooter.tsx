@@ -13,8 +13,9 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Share as ShareIcon } from '../../../icons';
+import { Share as ShareIconDefault } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
 import type { Photo } from '../ImageGallery';
@@ -29,20 +30,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  container: {
-    flexDirection: 'row',
-    height: 56,
-  },
-  imageCount: {
+  imageCountText: {
     fontSize: 16,
     fontWeight: '600',
   },
-  left: {
+  innerContainer: {
+    flexDirection: 'row',
+    height: 56,
+  },
+  leftContainer: {
     flex: 1,
     justifyContent: 'center',
     marginLeft: 8,
   },
-  right: {
+  rightContainer: {
     marginRight: 8,
     width: 24, // Width of icon currently on left
   },
@@ -57,7 +58,28 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props<Us extends UnknownType = DefaultUserType> = {
+export type ImageGalleryFooterCustomComponent<
+  Us extends UnknownType = DefaultUserType
+> = ({
+  photo,
+  share,
+}: {
+  share: () => Promise<void>;
+  photo?: Photo<Us>;
+}) => React.ReactElement | null;
+
+export type ImageGalleryFooterCustomComponentProps<
+  Us extends UnknownType = DefaultUserType
+> = {
+  centerElement?: ImageGalleryFooterCustomComponent<Us>;
+  leftElement?: ImageGalleryFooterCustomComponent<Us>;
+  rightElement?: ImageGalleryFooterCustomComponent<Us>;
+  ShareIcon?: React.ReactElement;
+};
+
+type Props<
+  Us extends UnknownType = DefaultUserType
+> = ImageGalleryFooterCustomComponentProps<Us> & {
   opacity: Animated.SharedValue<number>;
   photo: Photo<Us>;
   photoLength: number;
@@ -68,8 +90,32 @@ type Props<Us extends UnknownType = DefaultUserType> = {
 export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
   props: Props<Us>,
 ) => {
-  const { opacity, photo, photoLength, selectedIndex, visible } = props;
+  const {
+    centerElement,
+    leftElement,
+    opacity,
+    photo,
+    photoLength,
+    rightElement,
+    selectedIndex,
+    ShareIcon,
+    visible,
+  } = props;
   const [height, setHeight] = useState(200);
+  const {
+    theme: {
+      imageGallery: {
+        footer: {
+          centerContainer,
+          container,
+          imageCountText,
+          innerContainer,
+          leftContainer,
+          rightContainer,
+        },
+      },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
 
   const footerStyle = useAnimatedStyle<ViewStyle>(
@@ -116,22 +162,34 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[styles.safeArea, footerStyle]}>
-        <View style={styles.container}>
-          <TouchableOpacity onPress={share}>
-            <View style={styles.left}>
-              <ShareIcon />
+      <ReanimatedSafeAreaView style={[styles.safeArea, container, footerStyle]}>
+        <View style={[styles.innerContainer, innerContainer]}>
+          {leftElement ? (
+            leftElement({ photo, share })
+          ) : (
+            <TouchableOpacity onPress={share}>
+              <View style={[styles.leftContainer, leftContainer]}>
+                {ShareIcon ? ShareIcon : <ShareIconDefault />}
+              </View>
+            </TouchableOpacity>
+          )}
+          {centerElement ? (
+            centerElement({ photo, share })
+          ) : (
+            <View style={[styles.centerContainer, centerContainer]}>
+              <Text style={[styles.imageCountText, imageCountText]}>
+                {t('{{ index }} of {{ photoLength }}', {
+                  index: selectedIndex + 1,
+                  photoLength,
+                })}
+              </Text>
             </View>
-          </TouchableOpacity>
-          <View style={styles.centerContainer}>
-            <Text style={styles.imageCount}>
-              {t('{{ index }} of {{ photoLength }}', {
-                index: selectedIndex + 1,
-                photoLength,
-              })}
-            </Text>
-          </View>
-          <View style={styles.right} />
+          )}
+          {rightElement ? (
+            rightElement({ photo, share })
+          ) : (
+            <View style={[styles.rightContainer, rightContainer]} />
+          )}
         </View>
       </ReanimatedSafeAreaView>
     </Animated.View>

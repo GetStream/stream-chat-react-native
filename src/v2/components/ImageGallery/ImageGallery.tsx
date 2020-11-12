@@ -30,11 +30,18 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AnimatedGalleryImage } from './components/AnimatedImage';
-import { ImageGalleryFooter } from './components/ImageGalleryFooter';
-import { ImageGalleryHeader } from './components/ImageGalleryHeader';
+import {
+  ImageGalleryFooter,
+  ImageGalleryFooterCustomComponentProps,
+} from './components/ImageGalleryFooter';
+import {
+  ImageGalleryHeader,
+  ImageGalleryHeaderCustomComponentProps,
+} from './components/ImageGalleryHeader';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vh, vw } from '../../utils/utils';
 
 import type SeamlessImmutable from 'seamless-immutable';
@@ -101,10 +108,21 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
   user_id?: string;
 };
 
-type Props = {
-  overlayOpacity: Animated.SharedValue<number>;
-  visible: boolean;
+export type ImageGalleryCustomComponents<
+  Us extends UnknownType = DefaultUserType
+> = {
+  imageGalleryCustomComponents?: {
+    footer?: ImageGalleryFooterCustomComponentProps<Us>;
+    header?: ImageGalleryHeaderCustomComponentProps<Us>;
+  };
 };
+
+type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
+  ImageGalleryCustomComponents<Us> & {
+    overlayOpacity: Animated.SharedValue<number>;
+    visible: boolean;
+  }
+>;
 
 export const ImageGallery = <
   At extends UnknownType = DefaultAttachmentType,
@@ -115,9 +133,14 @@ export const ImageGallery = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<Props>,
+  props: Props<Us>,
 ) => {
-  const { overlayOpacity, visible } = props;
+  const { imageGalleryCustomComponents, overlayOpacity, visible } = props;
+  const {
+    theme: {
+      imageGallery: { backgroundColor },
+    },
+  } = useTheme();
   const { setBlurType, setOverlay } = useOverlayContext();
   const { image, images } = useImageGalleryContext<
     At,
@@ -977,7 +1000,7 @@ export const ImageGallery = <
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: '#F2F2F2',
+      backgroundColor: backgroundColor || '#F2F2F2',
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],
@@ -1084,6 +1107,7 @@ export const ImageGallery = <
         opacity={headerFooterOpacity}
         photo={photos[selectedIndex]}
         visible={headerFooterVisible}
+        {...imageGalleryCustomComponents?.header}
       />
       <ImageGalleryFooter<Us>
         opacity={headerFooterOpacity}
@@ -1091,6 +1115,7 @@ export const ImageGallery = <
         photoLength={photoLength}
         selectedIndex={selectedIndex}
         visible={headerFooterVisible}
+        {...imageGalleryCustomComponents?.footer}
       />
     </Animated.View>
   );

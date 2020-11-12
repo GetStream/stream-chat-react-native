@@ -25,7 +25,10 @@ import {
 } from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
+import {
+  ImageGallery,
+  ImageGalleryCustomComponents,
+} from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
 import { useStreami18n } from '../../utils/useStreami18n';
@@ -59,10 +62,12 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
   {} as OverlayContextValue,
 );
 
-type Props = PropsWithChildren<{
-  i18nInstance?: Streami18n;
-  value?: Partial<OverlayContextValue>;
-}>;
+type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
+  ImageGalleryCustomComponents<Us> & {
+    i18nInstance?: Streami18n;
+    value?: Partial<OverlayContextValue>;
+  }
+>;
 
 export const OverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -73,9 +78,9 @@ export const OverlayProvider = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: Props,
+  props: Props<Us>,
 ) => {
-  const { children, i18nInstance, value } = props;
+  const { children, i18nInstance, imageGalleryCustomComponents, value } = props;
 
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
@@ -138,7 +143,8 @@ export const OverlayProvider = <
                 </Animated.View>
               )}
               <MessageOverlay />
-              <ImageGallery
+              <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                imageGalleryCustomComponents={imageGalleryCustomComponents}
                 overlayOpacity={overlayOpacity}
                 visible={overlay === 'gallery'}
               />

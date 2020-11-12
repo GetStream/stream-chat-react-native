@@ -152,6 +152,7 @@ const GalleryWithContext = <
 
   const {
     theme: {
+      imageGallery: { blurType },
       messageSimple: {
         gallery: {
           doubleSize,
@@ -190,12 +191,13 @@ const GalleryWithContext = <
   if (galleryImages.length === 1) {
     return (
       <TouchableOpacity
-        disabled={preventPress}
         onLongPress={onLongPress}
         onPress={() => {
-          setImage({ messageId, url: galleryImages[0].url });
-          setBlurType('light');
-          setOverlay('gallery');
+          if (!preventPress) {
+            setImage({ messageId, url: galleryImages[0].url });
+            setBlurType(blurType || 'light');
+            setOverlay('gallery');
+          }
         }}
         style={[
           styles.single,
@@ -240,13 +242,14 @@ const GalleryWithContext = <
       {galleryImages.slice(0, 4).map((image, i) => (
         <TouchableOpacity
           activeOpacity={0.8}
-          disabled={preventPress}
           key={`gallery-item-${i}`}
           onLongPress={onLongPress}
           onPress={() => {
-            setImage({ messageId, url: galleryImages[i].url });
-            setBlurType('light');
-            setOverlay('gallery');
+            if (!preventPress) {
+              setImage({ messageId, url: galleryImages[i].url });
+              setBlurType(blurType || 'light');
+              setOverlay('gallery');
+            }
           }}
           style={[
             {
