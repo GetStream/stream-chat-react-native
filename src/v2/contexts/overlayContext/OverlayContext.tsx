@@ -47,13 +47,13 @@ import type {
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 
+export type BlurType = 'light' | 'dark' | undefined;
+
 export type Overlay = 'none' | 'gallery' | 'message';
 
 export type OverlayContextValue = {
   overlay: Overlay;
-  setBlurType: React.Dispatch<
-    React.SetStateAction<'light' | 'dark' | undefined>
-  >;
+  setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   style?: DeepPartial<Theme>;
 };
@@ -87,7 +87,7 @@ export const OverlayProvider = <
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
-  const [blurType, setBlurType] = useState<'light' | 'dark' | undefined>();
+  const [blurType, setBlurType] = useState<BlurType>();
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(1);
 
