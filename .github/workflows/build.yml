@@ -49,8 +49,10 @@ jobs:
           yarn;
       - name: Build
         run: |
-          cd examples/SampleApp/android
-          rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
+          cd examples/SampleApp
+          mkdir android/app/src/main/assets
+          react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+          rm -rf $HOME/.gradle/caches/ && ./android/gradlew assembleRelease
       - name: Deploy
         uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
         with:
