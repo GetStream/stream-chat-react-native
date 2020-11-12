@@ -79,6 +79,9 @@ import com.android.build.OutputFile
 
 project.ext.react = [
     enableHermes: true,  // clean and rebuild if changing
+    entryFile: "index.js",
+    bundleAssetName: "index.android.bundle",
+    bundleInRelease: true
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -133,8 +136,8 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
-        versionCode 2
-        versionName "0.0.2"
+        versionCode 7
+        versionName "0.0.7"
     }
     splits {
         abi {

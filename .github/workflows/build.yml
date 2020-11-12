@@ -39,9 +39,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '12.x'
+          java-version: 1.8
       - name: RN setup
         run: |
+          yarn add global react-native-cli;
           yarn;
           cd native-package
           yarn;
@@ -49,8 +50,12 @@ jobs:
           yarn;
       - name: Build
         run: |
-          cd examples/SampleApp/android
-          ./gradlew assembleRelease
+          cd examples/SampleApp
+          mkdir android/app/src/main/assets
+          mkdir tmp
+          yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest tmp
+          cd android
+          rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
       - name: Deploy
         uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
         with:
