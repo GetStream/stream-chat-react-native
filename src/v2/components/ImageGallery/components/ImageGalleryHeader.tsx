@@ -13,11 +13,11 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
+import { useOverlayContext } from '../../../contexts/overlayContext/OverlayContext';
 import {
   isDayOrMoment,
-  useOverlayContext,
   useTranslationContext,
-} from '../../../contexts';
+} from '../../../contexts/translationContext/TranslationContext';
 import { Close } from '../../../icons';
 
 import type { Photo } from '../ImageGallery';

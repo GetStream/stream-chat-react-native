@@ -13,7 +13,7 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 
-import { useTranslationContext } from '../../../contexts';
+import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Share as ShareIcon } from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 

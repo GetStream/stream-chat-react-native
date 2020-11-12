@@ -36,15 +36,17 @@ import { Message as DefaultMessage } from '../Message/Message';
 
 import {
   GroupType,
-  ThreadContextValue,
-  useChannelContext,
-  useChatContext,
-  useImageGalleryContext,
   useMessagesContext,
-  useTheme,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
+  ThreadContextValue,
   useThreadContext,
-  useTranslationContext,
-} from '../../contexts';
+} from '../../contexts/threadContext/ThreadContext';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 import type { Attachment } from 'stream-chat';
 
@@ -255,7 +257,15 @@ export const MessageList = <
       messageList: { errorNotification, errorNotificationText, listContainer },
     },
   } = useTheme();
-  const { loadMoreThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadMoreThread, thread } = useThreadContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { t } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
@@ -389,8 +399,10 @@ export const MessageList = <
   }) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 
   useEffect(() => {
-    setImages(messagesWithImages);
-  }, [messagesWithImages.length]);
+    if ((threadList && thread) || (!threadList && !thread)) {
+      setImages(messagesWithImages);
+    }
+  }, [messagesWithImages.length, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196

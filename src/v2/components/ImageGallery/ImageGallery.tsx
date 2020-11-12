@@ -33,7 +33,8 @@ import { AnimatedGalleryImage } from './components/AnimatedImage';
 import { ImageGalleryFooter } from './components/ImageGalleryFooter';
 import { ImageGalleryHeader } from './components/ImageGalleryHeader';
 
-import { useImageGalleryContext, useOverlayContext } from '../../contexts';
+import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { vh, vw } from '../../utils/utils';
 
 import type SeamlessImmutable from 'seamless-immutable';

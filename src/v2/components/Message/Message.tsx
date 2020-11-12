@@ -216,6 +216,7 @@ const MessageWithContext = <
     onPress: onPressProp,
     onThreadSelect,
     openThread,
+    preventPress,
     reactionsEnabled,
     removeMessage,
     retrySendMessage,
@@ -302,7 +303,8 @@ const MessageWithContext = <
   const onOpenThread = () => {
     if (onThreadSelect) {
       onThreadSelect(message);
-    } else if (openThread) {
+    }
+    if (openThread) {
       openThread(message);
     }
   };
@@ -498,6 +500,7 @@ const MessageWithContext = <
     onPress: onPressProp
       ? (event: GestureResponderEvent) => onPressProp(message, event)
       : () => onPress(),
+    preventPress,
     reactions,
     showAvatar,
     showMessageOverlay,

@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { KeyboardAvoidingViewProps, StyleSheet, Text } from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
@@ -310,6 +315,8 @@ export const Channel = <
       if (channel && threadProps?.id) {
         setThreadMessages(channel.state.threads?.[threadProps.id] || []);
       }
+    } else {
+      setThread(null);
     }
   }, [threadProps]);
 
@@ -765,10 +772,10 @@ export const Channel = <
     Me,
     Re,
     Us
-  >['closeThread'] = () => {
+  >['closeThread'] = useCallback(() => {
     setThread(null);
     setThreadMessages(Immutable([]));
-  };
+  }, [setThread, setThreadMessages]);
 
   const loadMoreThreadFinished = (
     newThreadHasMore: boolean,

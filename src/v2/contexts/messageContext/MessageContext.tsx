@@ -98,6 +98,8 @@ export type MessageContextValue<
   threadList: boolean;
   /** Latest message id on current channel */
   lastReceivedId?: string;
+  /** Prevent message being pressed for image viewer view */
+  preventPress?: boolean;
   /** Whether or not the avatar show show next to Message */
   showAvatar?: boolean;
 };

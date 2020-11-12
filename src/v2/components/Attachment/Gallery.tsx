@@ -12,17 +12,21 @@ import { Immutable, isImmutable } from 'seamless-immutable';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
+import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   MessageContextValue,
-  MessagesContextValue,
-  TranslationContextValue,
-  useImageGalleryContext,
   useMessageContext,
+} from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
   useMessagesContext,
-  useOverlayContext,
-  useTheme,
+} from '../../contexts/messagesContext/MessagesContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  TranslationContextValue,
   useTranslationContext,
-} from '../../contexts';
+} from '../../contexts/translationContext/TranslationContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
 import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
