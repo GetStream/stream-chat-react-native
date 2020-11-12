@@ -42,6 +42,7 @@ jobs:
           java-version: 1.8
       - name: RN setup
         run: |
+          yarn add global react-native-cli;
           yarn;
           cd native-package
           yarn;
@@ -51,8 +52,10 @@ jobs:
         run: |
           cd examples/SampleApp
           mkdir android/app/src/main/assets
-          react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
-          rm -rf $HOME/.gradle/caches/ && ./android/gradlew assembleRelease
+          mkdir tmp
+          yarn react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest tmp
+          cd android
+          rm -rf $HOME/.gradle/caches/ && ./gradlew assembleRelease
       - name: Deploy
         uses: wzieba/Firebase-Distribution-Github-Action@v1.2.1
         with:
