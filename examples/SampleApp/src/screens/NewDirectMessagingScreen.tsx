@@ -244,7 +244,14 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                       <RoundButton>
                         <Contacts height={25} width={25} />
                       </RoundButton>
-                      <Text style={styles.createGroupButtonText}>
+                      <Text
+                        style={[
+                          styles.createGroupButtonText,
+                          {
+                            color: colors.text,
+                          },
+                        ]}
+                      >
                         Create a Group
                       </Text>
                     </TouchableOpacity>
