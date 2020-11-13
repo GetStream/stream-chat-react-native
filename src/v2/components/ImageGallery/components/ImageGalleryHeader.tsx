@@ -186,3 +186,5 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
     </View>
   );
 };
+
+ImageGalleryHeader.displayName = 'ImageGalleryHeader{imageGallery{header}}';

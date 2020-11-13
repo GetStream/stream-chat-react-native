@@ -12,8 +12,10 @@ import {
 } from 'react-native';
 import Dayjs from 'dayjs';
 import Animated, {
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
+  withTiming,
 } from 'react-native-reanimated';
 
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
@@ -89,7 +91,7 @@ export const OverlayProvider = <
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
   const [blurType, setBlurType] = useState<BlurType>();
   const { height, width } = useWindowDimensions();
-  const overlayOpacity = useSharedValue(1);
+  const overlayOpacity = useSharedValue(0);
 
   useEffect(() => {
     const backAction = () => {
@@ -108,6 +110,15 @@ export const OverlayProvider = <
     );
 
     return () => backHandler.remove();
+  }, [overlay]);
+
+  useEffect(() => {
+    cancelAnimation(overlayOpacity);
+    if (overlay !== 'none') {
+      overlayOpacity.value = withTiming(1);
+    } else {
+      overlayOpacity.value = withTiming(0);
+    }
   }, [overlay]);
 
   // Setup translators
@@ -134,15 +145,20 @@ export const OverlayProvider = <
           <ImageGalleryProvider>
             {children}
             <ThemeProvider style={overlayContext.style}>
-              {overlay !== 'none' && (
-                <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
-                  <BlurView
-                    blurType={blurType}
-                    style={[StyleSheet.absoluteFill, { height, width }]}
-                  />
-                </Animated.View>
-              )}
-              <MessageOverlay />
+              <Animated.View
+                pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                style={[StyleSheet.absoluteFill, overlayStyle]}
+              >
+                <BlurView
+                  blurType={blurType}
+                  style={[StyleSheet.absoluteFill, { height, width }]}
+                />
+              </Animated.View>
+
+              <MessageOverlay
+                overlayOpacity={overlayOpacity}
+                visible={overlay === 'message'}
+              />
               <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
                 imageGalleryCustomComponents={imageGalleryCustomComponents}
                 overlayOpacity={overlayOpacity}

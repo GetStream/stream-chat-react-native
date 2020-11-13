@@ -2,8 +2,6 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import { useOverlayContext } from '../overlayContext/OverlayContext';
-
 import type { StyleProp, TextStyle } from 'react-native';
 
 import type { Message } from '../../components/MessageList/utils/insertDates';
@@ -83,11 +81,8 @@ export const MessageOverlayProvider = <
 }>) => {
   const [data, setData] = useState(value?.data);
 
-  const { setOverlay } = useOverlayContext();
-
   const reset = () => {
     setData(value?.data);
-    setOverlay('none');
   };
 
   const messageOverlayContext = {

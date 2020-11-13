@@ -195,3 +195,5 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
     </Animated.View>
   );
 };
+
+ImageGalleryFooter.displayName = 'ImageGalleryFooter{imageGallery{footer}}';
