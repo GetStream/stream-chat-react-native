@@ -34,7 +34,7 @@ export type SendButtonProps = {
   /** Disables the button */
   disabled?: boolean;
   /** Function that sends message */
-  sendMessage?: (event: GestureResponderEvent) => void;
+  sendMessage?: (event?: GestureResponderEvent) => void;
 };
 
 /**
