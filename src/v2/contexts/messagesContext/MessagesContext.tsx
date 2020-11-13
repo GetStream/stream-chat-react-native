@@ -49,6 +49,8 @@ export type ActionProps = {
 
 export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
 
+export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
+
 export type MessageWithDates<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -143,6 +145,8 @@ export type MessagesContextValue<
   MessageContent: React.ComponentType<
     MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /** Order to render the message content */
+  messageContentOrder: MessageContentType[];
   /**
    * Custom message replies component
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
@@ -180,8 +184,6 @@ export type MessagesContextValue<
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
-  /** Whether message text should be rendered before attachments */
-  textBeforeAttachments: boolean;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
     extraState?: {
@@ -269,9 +271,9 @@ const areEqual = <
       hasMore: prevHasMore,
       loadingMore: prevLoadingMore,
       markdownRules: prevMarkdownRules,
+      messageContentOrder: prevMessageContentOrder,
       messages: prevMessages,
       supportedReactions: prevSupportedReactions,
-      textBeforeAttachments: prevTextBeforeAttachments,
     },
   } = prevProps;
   const {
@@ -282,9 +284,9 @@ const areEqual = <
       hasMore: nextHasMore,
       loadingMore: nextLoadingMore,
       markdownRules: nextMarkdownRules,
+      messageContentOrder: nextMessageContentOrder,
       messages: nextMessages,
       supportedReactions: nextSupportedReactions,
-      textBeforeAttachments: nextTextBeforeAttachments,
     },
   } = nextProps;
 
@@ -301,9 +303,13 @@ const areEqual = <
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
 
-  const textBeforeAttachmentsEqual =
-    prevTextBeforeAttachments === nextTextBeforeAttachments;
-  if (!textBeforeAttachmentsEqual) return false;
+  const messageContentOrderEqual =
+    prevMessageContentOrder.length === nextMessageContentOrder.length &&
+    prevMessageContentOrder.every(
+      (messageContentType, index) =>
+        messageContentType === nextMessageContentOrder[index],
+    );
+  if (!messageContentOrderEqual) return false;
 
   const supportedReactionsEqual =
     prevSupportedReactions.length === nextSupportedReactions.length;

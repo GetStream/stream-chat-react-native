@@ -216,6 +216,7 @@ export const Channel = <
     Message = MessageDefault,
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
+    messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
     MessageFooter,
     MessageHeader,
     MessageReplies = MessageRepliesDefault,
@@ -224,7 +225,6 @@ export const Channel = <
     MessageText,
     ReactionList = ReactionListDefault,
     supportedReactions = reactionDataDefault,
-    textBeforeAttachments = false,
     thread: threadProps,
     UrlPreview = CardDefault,
   } = props;
@@ -881,6 +881,7 @@ export const Channel = <
     Message,
     MessageAvatar,
     MessageContent,
+    messageContentOrder,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -894,7 +895,6 @@ export const Channel = <
     sendMessage,
     setEditingState,
     supportedReactions,
-    textBeforeAttachments,
     updateMessage,
     UrlPreview,
   };

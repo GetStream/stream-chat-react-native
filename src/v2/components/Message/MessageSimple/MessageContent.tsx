@@ -44,6 +44,12 @@ import type {
 } from '../../../types/types';
 
 const styles = StyleSheet.create({
+  containerInner: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
   leftAlignContent: {
     justifyContent: 'flex-start',
   },
@@ -73,10 +79,13 @@ export type MessageContentPropsWithContext<
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'alignment'
+    | 'groupStyles'
     | 'hasReactions'
     | 'lastGroupMessage'
     | 'message'
     | 'onLongPress'
+    | 'onlyEmojis'
+    | 'otherAttachments'
     | 'preventPress'
     | 'showMessageStatus'
   > &
@@ -87,6 +96,7 @@ export type MessageContentPropsWithContext<
     | 'FileAttachmentGroup'
     | 'formatDate'
     | 'Gallery'
+    | 'messageContentOrder'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageReplies'
@@ -94,7 +104,6 @@ export type MessageContentPropsWithContext<
     | 'ReactionList'
     | 'reactionsEnabled'
     | 'repliesEnabled'
-    | 'textBeforeAttachments'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -122,26 +131,30 @@ export const MessageContentWithContext = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    groupStyles,
     hasReactions,
     lastGroupMessage,
     members,
     message,
+    messageContentOrder,
     MessageFooter,
     MessageHeader,
     MessageReplies,
     MessageStatus,
     onLongPress,
+    onlyEmojis,
+    otherAttachments,
     preventPress,
     repliesEnabled,
     setMessageContentWidth,
     showMessageStatus,
     t,
     tDateTimeParser,
-    textBeforeAttachments,
   } = props;
 
   const {
     theme: {
+      colors: { attachmentBackground, grey, transparent },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -239,6 +252,8 @@ export const MessageContentWithContext = <
 
   const error = message.type === 'error' || message.status === 'failed';
 
+  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -250,28 +265,8 @@ export const MessageContentWithContext = <
        * Otherwise background is transparent, so border radius is not really visible.
        */
       style={[
-        {
-          borderTopLeftRadius: borderRadiusL,
-          borderTopRightRadius: borderRadiusL,
-        },
-        ...(alignment === 'left'
-          ? [
-              styles.leftAlignContent,
-              styles.leftAlignItems,
-              {
-                borderBottomLeftRadius: borderRadiusS,
-                borderBottomRightRadius: borderRadiusL,
-              },
-            ]
-          : [
-              styles.rightAlignContent,
-              styles.rightAlignItems,
-              {
-                borderBottomLeftRadius: borderRadiusL,
-                borderBottomRightRadius: borderRadiusS,
-              },
-            ]),
-        hasReactions ? { paddingTop: reactionSize / 2 + radius } : {},
+        alignment === 'left' ? styles.leftAlignItems : styles.rightAlignItems,
+        { paddingTop: hasReactions ? reactionSize / 2 + radius : 2 },
         error ? errorContainer : {},
         container,
       ]}
@@ -280,42 +275,63 @@ export const MessageContentWithContext = <
       <View onLayout={onLayout}>
         <View
           style={[
-            alignment === 'left'
-              ? styles.leftAlignItems
-              : styles.rightAlignItems,
+            styles.containerInner,
             {
-              flexDirection: textBeforeAttachments
-                ? 'column-reverse'
-                : 'column',
+              backgroundColor: onlyEmojis
+                ? transparent
+                : otherAttachments.length
+                ? attachmentBackground
+                : alignment === 'left' || error
+                ? transparent
+                : grey,
+              borderBottomLeftRadius:
+                groupStyle === 'left_bottom' || groupStyle === 'left_single'
+                  ? borderRadiusS
+                  : borderRadiusL,
+              borderBottomRightRadius:
+                groupStyle === 'right_bottom' || groupStyle === 'right_single'
+                  ? borderRadiusS
+                  : borderRadiusL,
             },
+            onlyEmojis || otherAttachments.length ? { borderWidth: 0 } : {},
             containerInner,
           ]}
           testID='message-content-wrapper'
         >
-          <>
-            {Array.isArray(message.attachments) &&
-              message.attachments.map((attachment, index) => {
-                // We handle files separately
-                if (
-                  attachment.type === 'file' ||
-                  (attachment.type === 'image' &&
-                    !attachment.title_link &&
-                    !attachment.og_scrape_url)
-                ) {
-                  return null;
-                }
-
-                return (
-                  <Attachment
-                    attachment={attachment}
-                    key={`${message.id}-${index}`}
-                  />
-                );
-              })}
-            <FileAttachmentGroup messageId={message.id} />
-            <Gallery preventPress={preventPress} />
-          </>
-          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us> />
+          {messageContentOrder.map(
+            (messageContentType, messageContentOrderIndex) => {
+              switch (messageContentType) {
+                case 'attachments':
+                  return otherAttachments.map((attachment, attachmentIndex) => (
+                    <Attachment
+                      attachment={attachment}
+                      key={`${message.id}-${attachmentIndex}`}
+                    />
+                  ));
+                case 'files':
+                  return (
+                    <FileAttachmentGroup
+                      key={`file_attachment_group_${messageContentOrderIndex}`}
+                      messageId={message.id}
+                    />
+                  );
+                case 'gallery':
+                  return (
+                    <Gallery
+                      key={`gallery_${messageContentOrderIndex}`}
+                      preventPress={preventPress}
+                    />
+                  );
+                case 'text':
+                default:
+                  return (
+                    <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
+                      key={`message_text_container_${messageContentOrderIndex}`}
+                    />
+                  );
+              }
+            },
+          )}
         </View>
         {error && (
           <View style={StyleSheet.absoluteFill}>
@@ -357,16 +373,28 @@ const areEqual = <
   nextProps: MessageContentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    groupStyles: prevGroupStyles,
     hasReactions: prevHasReactions,
     lastGroupMessage: prevLastGroupMessage,
     members: prevMembers,
     message: prevMessage,
+    messageContentOrder: prevMessageContentOrder,
+    onlyEmojis: prevOnlyEmojis,
+    otherAttachments: prevOtherAttachments,
+    t: prevT,
+    tDateTimeParser: prevTDateTimeParser,
   } = prevProps;
   const {
+    groupStyles: nextGroupStyles,
     hasReactions: nextHasReactions,
     lastGroupMessage: nextLastGroupMessage,
     members: nextMembers,
     message: nextMessage,
+    messageContentOrder: nextMessageContentOrder,
+    onlyEmojis: nextOnlyEmojis,
+    otherAttachments: nextOtherAttachments,
+    t: nextT,
+    tDateTimeParser: nextTDateTimeParser,
   } = nextProps;
 
   const hasReactionsEqual = prevHasReactions === nextHasReactions;
@@ -375,9 +403,21 @@ const areEqual = <
   const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
   if (!lastGroupMessageEqual) return false;
 
+  const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
+  if (!onlyEmojisEqual) return false;
+
+  const otherAttachmentsEqual =
+    prevOtherAttachments.length === nextOtherAttachments.length;
+  if (!otherAttachmentsEqual) return false;
+
   const membersEqual =
     Object.keys(prevMembers).length === Object.keys(nextMembers).length;
   if (!membersEqual) return false;
+
+  const groupStylesEqual =
+    prevGroupStyles.length === nextGroupStyles.length &&
+    prevGroupStyles[0] === nextGroupStyles[0];
+  if (!groupStylesEqual) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
@@ -404,6 +444,20 @@ const areEqual = <
         nextMessage.latest_reactions.length) ||
       prevMessage.latest_reactions === nextMessage.latest_reactions);
   if (!latestReactionsEqual) return false;
+
+  const messageContentOrderEqual =
+    prevMessageContentOrder.length === nextMessageContentOrder.length &&
+    prevMessageContentOrder.every(
+      (messageContentType, index) =>
+        messageContentType === nextMessageContentOrder[index],
+    );
+  if (!messageContentOrderEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const tDateTimeParserEqual = prevTDateTimeParser === nextTDateTimeParser;
+  if (!tDateTimeParserEqual) return false;
 
   return true;
 };
@@ -449,10 +503,13 @@ export const MessageContent = <
   const { disabled, members } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     alignment,
+    groupStyles,
     hasReactions,
     lastGroupMessage,
     message,
     onLongPress,
+    onlyEmojis,
+    otherAttachments,
     preventPress,
     showMessageStatus,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -462,6 +519,7 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
+    messageContentOrder,
     MessageFooter,
     MessageHeader,
     MessageReplies,
@@ -469,7 +527,6 @@ export const MessageContent = <
     ReactionList,
     reactionsEnabled,
     repliesEnabled,
-    textBeforeAttachments,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
@@ -483,15 +540,19 @@ export const MessageContent = <
         FileAttachmentGroup,
         formatDate,
         Gallery,
+        groupStyles,
         hasReactions,
         lastGroupMessage,
         members,
         message,
+        messageContentOrder,
         MessageFooter,
         MessageHeader,
         MessageReplies,
         MessageStatus,
         onLongPress,
+        onlyEmojis,
+        otherAttachments,
         preventPress,
         ReactionList,
         reactionsEnabled,
@@ -499,7 +560,6 @@ export const MessageContent = <
         showMessageStatus,
         t,
         tDateTimeParser,
-        textBeforeAttachments,
       }}
       {...props}
     />

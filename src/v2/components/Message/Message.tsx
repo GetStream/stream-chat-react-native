@@ -51,8 +51,10 @@ import { Mute } from '../../icons/Mute';
 import { SendUp } from '../../icons/SendUp';
 import { ThreadReply } from '../../icons/ThreadReply';
 import { UserDelete } from '../../icons/UserDelete';
+import { emojiRegex } from '../../utils/utils';
 
 import type {
+  Attachment,
   MessageResponse,
   Reaction,
   ReactionResponse,
@@ -99,6 +101,7 @@ export type MessagePropsWithContext<
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'dismissKeyboardOnMessageTouch'
+    | 'messageContentOrder'
     | 'MessageSimple'
     | 'removeMessage'
     | 'reactionsEnabled'
@@ -211,6 +214,7 @@ const MessageWithContext = <
     lastReceivedId,
     message,
     messageActions: messageActionsProp,
+    messageContentOrder,
     MessageSimple,
     onLongPress: onLongPressProp,
     onPress: onPressProp,
@@ -280,10 +284,45 @@ const MessageWithContext = <
       ? 'right'
       : 'left';
 
-  const files =
-    (Array.isArray(message.attachments) &&
-      message.attachments.filter((item) => item.type === 'file')) ||
-    [];
+  /**
+   * attachments contain files/images or other attachments
+   *
+   * if a URL attachment is present with a file/image then we
+   * show just the text and markdown should make the link
+   * clickable
+   */
+  const attachments = Array.isArray(message.attachments)
+    ? message.attachments.reduce(
+        (acc, cur) => {
+          if (cur.type === 'file') {
+            acc.files.push(cur);
+            acc.other = []; // remove other attachments if a file exists
+          } else if (
+            cur.type === 'image' &&
+            !cur.title_link &&
+            !cur.og_scrape_url &&
+            (cur.image_url || cur.thumb_url)
+          ) {
+            acc.images.push(cur);
+            acc.other = []; // remove other attachments if an image exists
+            // only add other attachments if there are no files/images
+          } else if (!acc.files.length && !acc.images.length) {
+            acc.other.push(cur);
+          }
+
+          return acc;
+        },
+        {
+          files: [] as Attachment<At>[],
+          images: [] as Attachment<At>[],
+          other: [] as Attachment<At>[],
+        },
+      )
+    : {
+        files: [] as Attachment<At>[],
+        images: [] as Attachment<At>[],
+        other: [] as Attachment<At>[],
+      };
 
   const forwardedGroupStyles =
     !!reactionsEnabled &&
@@ -292,13 +331,12 @@ const MessageWithContext = <
       ? (['bottom'] as GroupType[])
       : groupStyles;
 
-  const images =
-    (Array.isArray(message.attachments) &&
-      message.attachments.filter(
-        (item) =>
-          item.type === 'image' && !item.title_link && !item.og_scrape_url,
-      )) ||
-    [];
+  const onlyEmojis =
+    !attachments.files.length &&
+    !attachments.images.length &&
+    !attachments.other.length &&
+    !!message.text &&
+    emojiRegex.test(message.text);
 
   const onOpenThread = () => {
     if (onThreadSelect) {
@@ -317,37 +355,23 @@ const MessageWithContext = <
   const clientId = client.userID;
 
   const reactions = hasReactions
-    ? supportedReactions.reduce(
-        (acc, cur) => {
-          const reactionType = cur.type;
-          const hasOwnReaction = (message.own_reactions as ReactionResponse<
-            Re,
-            Us
-          >[]).some((reaction) => reaction.type === reactionType);
-          const hasOtherReaction = (message.latest_reactions as ReactionResponse<
-            Re,
-            Us
-          >[]).some(
-            (reaction) =>
-              reaction.type === reactionType && reaction.user_id !== clientId,
-          );
-          if (hasOwnReaction) {
-            if (hasOtherReaction) {
-              acc.latestReactions.push({ own: true, type: reactionType });
-            } else {
-              acc.ownReactions.push(reactionType);
-            }
-          } else {
-            if (hasOtherReaction) {
-              acc.latestReactions.push({ own: false, type: reactionType });
-            }
-          }
+    ? supportedReactions.reduce((acc, cur) => {
+        const reactionType = cur.type;
+        const reactionsOfReactionType = (message.latest_reactions as ReactionResponse<
+          Re,
+          Us
+        >[]).filter((reaction) => reaction.type === reactionType);
 
-          return acc;
-        },
-        { latestReactions: [], ownReactions: [] } as Reactions,
-      )
-    : { latestReactions: [], ownReactions: [] };
+        if (reactionsOfReactionType.length) {
+          const hasOwnReaction = reactionsOfReactionType.some(
+            (reaction) => reaction.user_id === clientId,
+          );
+          acc.push({ own: hasOwnReaction, type: reactionType });
+        }
+
+        return acc;
+      }, [] as Reactions)
+    : [];
 
   const showMessageOverlay = async (
     messageReactions = false,
@@ -393,11 +417,9 @@ const MessageWithContext = <
     const handleReaction = !error
       ? async (reactionType: string) => {
           const messageId = message.id;
-          const ownReaction =
-            reactions.ownReactions.includes(reactionType) ||
-            !!reactions.latestReactions.find(
-              (reaction) => reaction.own && reaction.type === reactionType,
-            );
+          const ownReaction = !!reactions.find(
+            (reaction) => reaction.own && reaction.type === reactionType,
+          );
 
           // Change reaction in local state, make API call in background, revert to old message if fails
           try {
@@ -441,8 +463,10 @@ const MessageWithContext = <
     setData({
       alignment,
       clientId: client.userID,
+      files: attachments.files,
       groupStyles,
       handleReaction,
+      images: attachments.images,
       message,
       messageActions: error
         ? messageActionsProp || [
@@ -460,14 +484,25 @@ const MessageWithContext = <
         : messageReactions
         ? undefined
         : messageActionsProp || canModifyMessage
-        ? message.text
+        ? threadList
+          ? message.text
+            ? [editMessage, copyMessage, deleteMessage]
+            : [editMessage, deleteMessage]
+          : message.text
           ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
           : [reply, threadReply, editMessage, deleteMessage]
+        : threadList
+        ? message.text
+          ? [copyMessage, muteUser, blockUser, deleteMessage]
+          : [muteUser, blockUser, deleteMessage]
         : message.text
         ? [reply, threadReply, copyMessage, muteUser, blockUser, deleteMessage]
         : [reply, threadReply, muteUser, blockUser, deleteMessage],
+      messageContentOrder,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
+      onlyEmojis,
+      otherAttachments: attachments.other,
       supportedReactions,
     });
 
@@ -478,11 +513,11 @@ const MessageWithContext = <
     actionsEnabled,
     alignment,
     canModifyMessage,
-    files,
+    files: attachments.files,
     groupStyles: forwardedGroupStyles,
     handleAction,
     hasReactions,
-    images,
+    images: attachments.images,
     isMyMessage,
     lastGroupMessage:
       forwardedGroupStyles[0] === 'single' ||
@@ -495,10 +530,12 @@ const MessageWithContext = <
         : enableLongPress
         ? () => showMessageOverlay(false)
         : () => null,
+    onlyEmojis,
     onOpenThread,
     onPress: onPressProp
       ? (event: GestureResponderEvent) => onPressProp(message, event)
       : () => onPress(),
+    otherAttachments: attachments.other,
     preventPress,
     reactions,
     showAvatar,
@@ -530,10 +567,12 @@ const areEqual = <
   const {
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
+    t: prevT,
   } = prevProps;
   const {
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
+    t: nextT,
   } = nextProps;
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
@@ -572,6 +611,9 @@ const areEqual = <
         nextMessage.latest_reactions.length) ||
       prevMessage.latest_reactions === nextMessage.latest_reactions);
   if (!latestReactionsEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
 
   return true;
 };
@@ -629,6 +671,7 @@ export const Message = <
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     dismissKeyboardOnMessageTouch,
+    messageContentOrder,
     MessageSimple,
     reactionsEnabled,
     removeMessage,
@@ -652,6 +695,7 @@ export const Message = <
         isAdmin,
         isModerator,
         isOwner,
+        messageContentOrder,
         MessageSimple,
         openThread,
         reactionsEnabled,
