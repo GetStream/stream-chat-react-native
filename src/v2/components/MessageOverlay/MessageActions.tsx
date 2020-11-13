@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { StyleSheet, Text, ViewStyle } from 'react-native';
 import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -140,8 +141,12 @@ export type MessageActionsPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
-  Pick<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'messageActions'> & {
+  Pick<
+    MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
+    'alignment' | 'messageActions'
+  > & {
     light: Theme['colors']['light'];
+    showScreen: Animated.SharedValue<number>;
   };
 const MessageActionsWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -154,17 +159,50 @@ const MessageActionsWithContext = <
 >(
   props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { light, messageActions, reset } = props;
+  const { alignment, light, messageActions, reset, showScreen } = props;
+  const height = useSharedValue(0);
+  const width = useSharedValue(0);
+
+  const showScreenStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(
+            showScreen.value,
+            [0, 1],
+            [-height.value / 2, 0],
+          ),
+        },
+        {
+          translateX: interpolate(
+            showScreen.value,
+            [0, 1],
+            [alignment === 'left' ? -width.value / 2 : width.value / 2, 0],
+          ),
+        },
+        {
+          scale: showScreen.value,
+        },
+      ],
+    }),
+    [alignment],
+  );
 
   return (
-    <View style={[styles.container, { backgroundColor: light }]}>
+    <Animated.View
+      onLayout={({ nativeEvent: { layout } }) => {
+        width.value = layout.width;
+        height.value = layout.height;
+      }}
+      style={[styles.container, { backgroundColor: light }, showScreenStyle]}
+    >
       {messageActions?.map((messageAction, index) => (
         <MemoizedMessageAction<At, Ch, Co, Ev, Me, Re, Us>
           key={messageAction.title}
           {...{ ...messageAction, index, length: messageActions.length, reset }}
         />
       ))}
-    </View>
+    </Animated.View>
   );
 };
 
@@ -202,7 +240,13 @@ export type MessageActionsProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<
+  Omit<MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'showScreen'>
+> &
+  Pick<
+    MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'showScreen'
+  >;
 
 /**
  * MessageActions - A high level component which implements all the logic required for MessageActions
@@ -222,6 +266,7 @@ export const MessageActions = <
     light: propLight,
     messageActions: propMessageActions,
     reset: propReset,
+    showScreen,
   } = props;
 
   const { data, reset: contextReset } = useMessageOverlayContext<
@@ -239,7 +284,7 @@ export const MessageActions = <
     },
   } = useTheme();
 
-  const { messageActions: contextMessageActions } = data || {};
+  const { alignment, messageActions: contextMessageActions } = data || {};
 
   const messageActions = propMessageActions || contextMessageActions;
   const reset = propReset || contextReset;
@@ -248,5 +293,9 @@ export const MessageActions = <
 
   const light = propLight || contextLight;
 
-  return <MemoizedMessageActions {...{ light, messageActions, reset }} />;
+  return (
+    <MemoizedMessageActions
+      {...{ alignment, light, messageActions, reset, showScreen }}
+    />
+  );
 };

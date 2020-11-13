@@ -5,7 +5,13 @@ import {
   Text,
   useWindowDimensions,
   View,
+  ViewStyle,
 } from 'react-native';
+import Animated, {
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import Svg, { Circle } from 'react-native-svg';
 
 import { Avatar } from '../Avatar/Avatar';
@@ -65,7 +71,9 @@ export type Reaction = {
 
 export type OverlayReactionsProps = {
   reactions: Reaction[];
+  showScreen: Animated.SharedValue<number>;
   title: string;
+  alignment?: Alignment;
   supportedReactions?: ReactionData[];
 };
 
@@ -86,7 +94,15 @@ const ReactionIcon: React.FC<
  * OverlayReactions - A high level component which implements all the logic required for message overlay reactions
  */
 export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
-  const { reactions, supportedReactions = reactionData, title } = props;
+  const {
+    alignment: overlayAlignment,
+    reactions,
+    supportedReactions = reactionData,
+    showScreen,
+    title,
+  } = props;
+  const layoutHeight = useSharedValue(0);
+  const layoutWidth = useSharedValue(0);
 
   const {
     theme: {
@@ -233,8 +249,44 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     );
   };
 
+  const showScreenStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(
+            showScreen.value,
+            [0, 1],
+            [-layoutHeight.value / 2, 0],
+          ),
+        },
+        {
+          translateX: interpolate(
+            showScreen.value,
+            [0, 1],
+            [
+              overlayAlignment === 'left'
+                ? -layoutWidth.value / 2
+                : layoutWidth.value / 2,
+              0,
+            ],
+          ),
+        },
+        {
+          scale: showScreen.value,
+        },
+      ],
+    }),
+    [overlayAlignment],
+  );
+
   return (
-    <View style={[styles.container, container]}>
+    <Animated.View
+      onLayout={({ nativeEvent: { layout } }) => {
+        layoutWidth.value = layout.width;
+        layoutHeight.value = layout.height;
+      }}
+      style={[styles.container, container, showScreenStyle]}
+    >
       <Text style={[styles.title, titleStyle]}>{title}</Text>
       <FlatList
         data={reactions}
@@ -243,7 +295,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         renderItem={renderItem}
         style={[styles.flatListContainer, flatListContainer]}
       />
-    </View>
+    </Animated.View>
   );
 };
 

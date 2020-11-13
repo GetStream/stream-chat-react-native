@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { TouchableOpacity as TouchableOpacityAndroid } from 'react-native-gesture-handler';
 import Animated, {
+  interpolate,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
@@ -65,7 +66,7 @@ export type OverlayReactionListPropsWithContext<
 > = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
   Pick<
     MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-    'handleReaction' | 'supportedReactions'
+    'handleReaction' | 'supportedReactions' | 'alignment'
   > & {
     messageLayout: Animated.SharedValue<{
       x: number;
@@ -73,6 +74,7 @@ export type OverlayReactionListPropsWithContext<
     }>;
     ownReactionTypes: string[];
     reactionListHeight: Animated.SharedValue<number>;
+    showScreen: Animated.SharedValue<number>;
     fill?: FillProps['fill'];
   };
 
@@ -88,12 +90,14 @@ const OverlayReactionListWithContext = <
   props: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    alignment,
     fill,
     handleReaction,
     messageLayout,
     ownReactionTypes,
     reactionListHeight,
     reset,
+    showScreen,
     supportedReactions = reactionData,
   } = props;
 
@@ -107,10 +111,14 @@ const OverlayReactionListWithContext = <
     },
   } = useTheme();
 
-  const reactionListLayout = useSharedValue({
-    height: 0,
-    width: 0,
-  });
+  const reactionBubbleWidth = useSharedValue(0);
+  const reactionListLayout = useSharedValue(
+    {
+      height: 0,
+      width: 0,
+    },
+    false,
+  );
 
   const { width } = useWindowDimensions();
 
@@ -150,60 +158,97 @@ const OverlayReactionListWithContext = <
     r: radius,
   }));
 
+  const showScreenStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          translateY: interpolate(
+            showScreen.value,
+            [0, 1],
+            [-reactionListHeight.value / 2, 0],
+          ),
+        },
+        {
+          translateX: interpolate(
+            showScreen.value,
+            [0, 1],
+            [
+              alignment === 'left'
+                ? -reactionBubbleWidth.value / 2
+                : reactionBubbleWidth.value / 2,
+              0,
+            ],
+          ),
+        },
+        {
+          scale: interpolate(showScreen.value, [0, 0.8, 1], [0, 0, 1]),
+        },
+      ],
+    }),
+    [alignment],
+  );
+
   return (
     <View style={StyleSheet.absoluteFill}>
-      <Svg>
-        <AnimatedCircle animatedProps={animatedBigCircleProps} />
-        <AnimatedCircle animatedProps={animateSmallCircleProps} />
-      </Svg>
       <Animated.View
-        onLayout={({
-          nativeEvent: {
-            layout: { height, width: layoutWidth },
-          },
-        }) => {
-          reactionListLayout.value = { height, width: layoutWidth };
-          reactionListHeight.value = height;
+        onLayout={({ nativeEvent: { layout } }) => {
+          reactionBubbleWidth.value = layout.width;
         }}
-        style={[styles.reactionList, animatedStyle, reactionList]}
+        style={showScreenStyle}
       >
-        {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
-          <TouchableOpacity
-            hitSlop={{
-              bottom:
-                Number(reaction.paddingVertical || 0) ||
-                Number(reaction.paddingBottom || 0) ||
-                styles.reactionList.paddingVertical,
-              left:
-                (Number(reaction.paddingHorizontal || 0) ||
-                  Number(reaction.paddingLeft || 0) ||
-                  styles.notLastReaction.marginRight) / 2,
-              right:
-                (Number(reaction.paddingHorizontal || 0) ||
-                  Number(reaction.paddingRight || 0) ||
-                  styles.notLastReaction.marginRight) / 2,
-              top:
-                Number(reaction.paddingVertical || 0) ||
-                Number(reaction.paddingTop || 0) ||
-                styles.reactionList.paddingVertical,
-            }}
-            key={`${type}_${index}`}
-            onPress={() => {
-              if (handleReaction) {
-                handleReaction(type);
-                reset();
-              }
-            }}
-            style={[
-              index !== reactionData.length - 1 ? styles.notLastReaction : {},
-              reaction,
-            ]}
-          >
-            <Icon
-              pathFill={ownReactionTypes.includes(type) ? primary : textGrey}
-            />
-          </TouchableOpacity>
-        ))}
+        <Svg>
+          <AnimatedCircle animatedProps={animatedBigCircleProps} />
+          <AnimatedCircle animatedProps={animateSmallCircleProps} />
+        </Svg>
+        <Animated.View
+          onLayout={({
+            nativeEvent: {
+              layout: { height, width: layoutWidth },
+            },
+          }) => {
+            reactionListLayout.value = { height, width: layoutWidth };
+            reactionListHeight.value = height;
+          }}
+          style={[styles.reactionList, animatedStyle, reactionList]}
+        >
+          {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
+            <TouchableOpacity
+              hitSlop={{
+                bottom:
+                  Number(reaction.paddingVertical || 0) ||
+                  Number(reaction.paddingBottom || 0) ||
+                  styles.reactionList.paddingVertical,
+                left:
+                  (Number(reaction.paddingHorizontal || 0) ||
+                    Number(reaction.paddingLeft || 0) ||
+                    styles.notLastReaction.marginRight) / 2,
+                right:
+                  (Number(reaction.paddingHorizontal || 0) ||
+                    Number(reaction.paddingRight || 0) ||
+                    styles.notLastReaction.marginRight) / 2,
+                top:
+                  Number(reaction.paddingVertical || 0) ||
+                  Number(reaction.paddingTop || 0) ||
+                  styles.reactionList.paddingVertical,
+              }}
+              key={`${type}_${index}`}
+              onPress={() => {
+                if (handleReaction) {
+                  handleReaction(type);
+                  reset();
+                }
+              }}
+              style={[
+                index !== reactionData.length - 1 ? styles.notLastReaction : {},
+                reaction,
+              ]}
+            >
+              <Icon
+                pathFill={ownReactionTypes.includes(type) ? primary : textGrey}
+              />
+            </TouchableOpacity>
+          ))}
+        </Animated.View>
       </Animated.View>
     </View>
   );
@@ -222,13 +267,18 @@ const areEqual = <
   nextProps: OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    alignment: prevAlignment,
     ownReactionTypes: prevOwnReactionTypes,
     reactionListHeight: prevReactionListHeight,
   } = prevProps;
   const {
+    alignment: nextAlignment,
     ownReactionTypes: nextOwnReactionTypes,
     reactionListHeight: nextReactionListHeight,
   } = nextProps;
+
+  const alignmentEqual = prevAlignment === nextAlignment;
+  if (!alignmentEqual) return false;
 
   const reactionListHeightEqual =
     prevReactionListHeight === nextReactionListHeight;
@@ -286,6 +336,7 @@ export const OverlayReactionList = <
     ownReactionTypes,
     reactionListHeight,
     reset: propReset,
+    showScreen,
     supportedReactions: propSupportedReactions,
   } = props;
 
@@ -306,12 +357,14 @@ export const OverlayReactionList = <
   return (
     <MemoizedOverlayReactionList
       {...{
+        alignment: data?.alignment,
         fill,
         handleReaction,
         messageLayout,
         ownReactionTypes,
         reactionListHeight,
         reset,
+        showScreen,
         supportedReactions,
       }}
     />

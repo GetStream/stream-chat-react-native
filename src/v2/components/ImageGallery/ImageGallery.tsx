@@ -141,7 +141,7 @@ export const ImageGallery = <
       imageGallery: { backgroundColor },
     },
   } = useTheme();
-  const { setBlurType, setOverlay } = useOverlayContext();
+  const { overlay, setBlurType, setOverlay } = useOverlayContext();
   const { image, images } = useImageGalleryContext<
     At,
     Ch,
@@ -1055,6 +1055,7 @@ export const ImageGallery = <
               >
                 <Animated.View style={StyleSheet.absoluteFill}>
                   <PanGestureHandler
+                    enabled={overlay === 'gallery'}
                     maxPointers={isAndroid ? undefined : 1}
                     minDist={10}
                     onGestureEvent={onPan}
@@ -1120,3 +1121,5 @@ export const ImageGallery = <
     </Animated.View>
   );
 };
+
+ImageGallery.displayName = 'ImageGallery{imageGallery}';
