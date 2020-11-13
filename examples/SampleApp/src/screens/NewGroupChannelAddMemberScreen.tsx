@@ -15,6 +15,7 @@ import { Avatar, ThemeProvider } from '../../../../src/v2';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { useUserSelector } from '../hooks/useUserSelector';
+import { Close } from '../icons/Close';
 import { LeftArrow } from '../icons/LeftArrow';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
@@ -122,13 +123,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                   value={searchText}
                 />
               </View>
-              <View
-                style={{
-                  alignItems: 'flex-start',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                }}
-              >
+              <View style={styles.selectedUsersContainer}>
                 <FlatList
                   data={selectedUsers}
                   horizontal
@@ -137,11 +132,19 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                       onPress={() => {
                         toggleUser?.(user);
                       }}
-                      style={{
-                        margin: 8,
-                      }}
+                      style={styles.selectedUserItem}
                     >
                       <Avatar image={user.image} size={64} />
+                      <View
+                        style={[
+                          styles.selectedUserRemoveIcon,
+                          {
+                            backgroundColor: colors.background,
+                          },
+                        ]}
+                      >
+                        <Close height={24} width={24} />
+                      </View>
                     </TouchableOpacity>
                   )}
                 />
@@ -198,46 +201,23 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     padding: 0,
   },
-  searchResultContainer: {
-    alignItems: 'center',
+
+  selectedUsersContainer: {
+    alignItems: 'flex-start',
     flexDirection: 'row',
-    padding: 8,
+    flexWrap: 'wrap',
   },
-  searchResultUserImage: {
-    height: 30,
-    width: 30,
-    borderRadius: 20,
+  selectedUserItem: {
+    margin: 8,
   },
-  searchResultUserDetails: {
-    paddingLeft: 8,
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  searchResultUserName: { fontSize: 14 },
-  searchResultUserLastOnline: { fontSize: 12.5 },
-  emptyResultIndicator: {
-    height: 300,
+  selectedUserRemoveIcon: {
+    borderRadius: 15,
+    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  emptyResultIndicatorEmoji: {
-    fontSize: 60,
-  },
-  textInputContainer: {
-    minWidth: 100,
-    height: 32,
-    margin: 4,
-    borderRadius: 16,
-    backgroundColor: '#ccc',
-  },
-
-  textInput: {
-    margin: 0,
-    padding: 0,
-    paddingLeft: 12,
-    paddingRight: 12,
-    height: 32,
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.87)',
+    right: -2,
+    top: -2,
+    height: 24,
+    width: 24,
   },
 });
