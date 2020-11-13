@@ -93,6 +93,9 @@ export const OverlayProvider = <
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(0);
 
+  // Setup translators
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+
   useEffect(() => {
     const backAction = () => {
       if (overlay !== 'none') {
@@ -137,6 +140,8 @@ export const OverlayProvider = <
     setOverlay,
     style: value?.style,
   };
+
+  if (loadingTranslators) return null;
 
   return (
     <TranslationProvider value={translators}>

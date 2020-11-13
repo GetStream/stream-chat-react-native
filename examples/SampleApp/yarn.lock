@@ -6458,10 +6458,10 @@ react-native-actionsheet@2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-document-picker@4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.0.0.tgz#b9bcb6a1996bd8f7e902cef184cee8ca312026e1"
-  integrity sha512-tjIOBBcyjv4j5E1MDL2OvEKNpXxQybLNkjjfpTyDUzek7grZ5eOvSlp6i/Y3EfuIGLByeaw++9R1SZtOij6R7w==
+react-native-document-picker@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.1.0.tgz#8092c09727018587da34358bf731fe948d4171a5"
+  integrity sha512-tHYNng9GrnVrOoLk9K2j+T1xa8gAfC2Mk2dbJq32QBYD3zkHGMkFYGd2FZt0nuYxCBnd768tOQWuEZXwXM1tsg==
 
 react-native-fs@2.16.6:
   version "2.16.6"
@@ -6541,10 +6541,10 @@ react-native-safe-area-context@3.1.8:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.1.8.tgz#7a9883aa0f38f9c77d4bef2b89e4e285bc1024a3"
   integrity sha512-9gUlsDZ96QwT9AKzA6aVWM/NX5rlJgauZ9HgCDVzKbe29UQYT1740QJnnaI2GExmkFGp6o7ZLNhCXZW95eYVFA==
 
-react-native-screens@2.11.0:
-  version "2.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.11.0.tgz#34b30b07c2d04aa100cba984b944b303bfa43ea6"
-  integrity sha512-vJzJE3zI1XUtqthrX3Dh2TBQWB+xFyaGhF52KBq9FjJUN5ws4xpLZJxBWa1KbGV3DilmcSZ4jmZR5LGordwE7w==
+react-native-screens@2.13.0:
+  version "2.13.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.13.0.tgz#6360dfd65d51f73479bea14373a8e289cd58a327"
+  integrity sha512-B0kPYq5ZK/2G7pPhcAFLflDfm+HXktdVEeLFHnP/+oPnao+b28hXsOBCi0IgK72gxbdPtnpZME8KONRIKOBDug==
 
 react-native-share@4.1.0:
   version "4.1.0"
