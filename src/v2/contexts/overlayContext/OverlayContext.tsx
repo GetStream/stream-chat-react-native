@@ -90,6 +90,8 @@ export const OverlayProvider = <
   const [blurType, setBlurType] = useState<BlurType>();
   const { height, width } = useWindowDimensions();
   const overlayOpacity = useSharedValue(1);
+  // Setup translators
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
   useEffect(() => {
     const backAction = () => {
@@ -110,9 +112,6 @@ export const OverlayProvider = <
     return () => backHandler.remove();
   }, [overlay]);
 
-  // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
-
   const overlayStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       opacity: overlayOpacity.value,
@@ -126,6 +125,8 @@ export const OverlayProvider = <
     setOverlay,
     style: value?.style,
   };
+
+  if (loadingTranslators) return null;
 
   return (
     <TranslationProvider value={translators}>

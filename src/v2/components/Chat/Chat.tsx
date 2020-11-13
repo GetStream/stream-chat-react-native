@@ -146,7 +146,7 @@ export const Chat = <
   const { style: overlayStyle } = useOverlayContext();
 
   // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
   const { connectionRecovering, isOnline } = useIsOnline<
@@ -168,7 +168,7 @@ export const Chat = <
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
     setChannel(newChannel);
 
-  if (!translators.t) return null;
+  if (loadingTranslators) return null;
 
   const chatContext = {
     channel,
