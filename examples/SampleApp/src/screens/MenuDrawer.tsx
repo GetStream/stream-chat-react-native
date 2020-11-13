@@ -62,7 +62,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.navigate('NewGroupChannelScreen')}
+              onPress={() => navigation.navigate('NewGroupChannelAddMemberScreen')}
               style={styles.menuItem}
             >
               <NewGroupIcon height={24} width={24} />

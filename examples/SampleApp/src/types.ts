@@ -1,4 +1,5 @@
 import type { Theme } from '@react-navigation/native';
+import { UserResponse } from 'stream-chat';
 export type LocalAttachmentType = Record<string, unknown>;
 export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
@@ -20,7 +21,10 @@ export type StackNavigatorParamList = {
   };
   ChatScreen: undefined;
   NewDirectMessagingScreen: undefined;
-  NewGroupChannelScreen: undefined;
+  NewGroupChannelAddMemberScreen: undefined;
+  NewGroupChannelAssignNameScreen: {
+    selectedUsers: UserResponse<LocalUserType>[];
+  };
 };
 
 export type BottomTabNavigatorParamList = {
@@ -31,10 +35,13 @@ export type BottomTabNavigatorParamList = {
 export type AppTheme = Theme & {
   colors: {
     background: string;
+    backgroundFadeGradient: string;
     backgroundNavigation: string;
     backgroundSecondary: string;
     borderLight: string;
     footnote: string;
+    greyContentBackground: string;
+    iconButtonBackground: string;
     text: string;
     textLight: string;
     textSecondary: string;
