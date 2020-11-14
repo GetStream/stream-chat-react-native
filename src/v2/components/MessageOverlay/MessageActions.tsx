@@ -9,7 +9,6 @@ import Animated, {
 
 import {
   MessageAction as MessageActionType,
-  MessageOverlayContextValue,
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
@@ -49,32 +48,13 @@ const styles = StyleSheet.create({
   },
 });
 
-type MessageActionProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
-  MessageActionType & {
-    index: number;
-    length: number;
-  };
+type MessageActionProps = MessageActionType & {
+  index: number;
+  length: number;
+};
 
-const MessageAction = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  props: MessageActionProps<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const { action, icon, index, length, reset, title, titleStyle } = props;
+const MessageAction: React.FC<MessageActionProps> = (props) => {
+  const { action, icon, index, length, title, titleStyle } = props;
 
   const opacity = useSharedValue(1);
 
@@ -90,7 +70,6 @@ const MessageAction = <
         }
 
         if (state === State.END) {
-          reset();
           action();
           opacity.value = 1;
         }
@@ -114,17 +93,9 @@ const MessageAction = <
   );
 };
 
-const messageActionIsEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: MessageActionProps<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: MessageActionProps<At, Ch, Co, Ev, Me, Re, Us>,
+const messageActionIsEqual = (
+  prevProps: MessageActionProps,
+  nextProps: MessageActionProps,
 ) => prevProps.length === nextProps.length;
 
 const MemoizedMessageAction = React.memo(
@@ -140,14 +111,13 @@ export type MessageActionsPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
-  Pick<
-    MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'messageActions'
-  > & {
-    light: Theme['colors']['light'];
-    showScreen: Animated.SharedValue<number>;
-  };
+> = Pick<
+  MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'messageActions'
+> & {
+  light: Theme['colors']['light'];
+  showScreen: Animated.SharedValue<number>;
+};
 const MessageActionsWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -159,7 +129,7 @@ const MessageActionsWithContext = <
 >(
   props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, light, messageActions, reset, showScreen } = props;
+  const { alignment, light, messageActions, showScreen } = props;
   const height = useSharedValue(0);
   const width = useSharedValue(0);
 
@@ -197,9 +167,9 @@ const MessageActionsWithContext = <
       style={[styles.container, { backgroundColor: light }, showScreenStyle]}
     >
       {messageActions?.map((messageAction, index) => (
-        <MemoizedMessageAction<At, Ch, Co, Ev, Me, Re, Us>
+        <MemoizedMessageAction
           key={messageAction.title}
-          {...{ ...messageAction, index, length: messageActions.length, reset }}
+          {...{ ...messageAction, index, length: messageActions.length }}
         />
       ))}
     </Animated.View>
@@ -265,19 +235,10 @@ export const MessageActions = <
   const {
     light: propLight,
     messageActions: propMessageActions,
-    reset: propReset,
     showScreen,
   } = props;
 
-  const { data, reset: contextReset } = useMessageOverlayContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
       colors: { light: contextLight },
@@ -287,7 +248,6 @@ export const MessageActions = <
   const { alignment, messageActions: contextMessageActions } = data || {};
 
   const messageActions = propMessageActions || contextMessageActions;
-  const reset = propReset || contextReset;
 
   if (!messageActions?.length) return null;
 
@@ -295,7 +255,7 @@ export const MessageActions = <
 
   return (
     <MemoizedMessageActions
-      {...{ alignment, light, messageActions, reset, showScreen }}
+      {...{ alignment, light, messageActions, showScreen }}
     />
   );
 };

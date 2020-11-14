@@ -19,6 +19,7 @@ import type { FileAttachmentProps } from '../../components/Attachment/FileAttach
 import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
+import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
@@ -48,6 +49,8 @@ export type ActionProps = {
 };
 
 export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
+
+export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
 
 export type MessageWithDates<
   At extends UnknownType = DefaultAttachmentType,
@@ -126,7 +129,7 @@ export type MessagesContextValue<
    * Custom UI component to display Giphy image.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  Giphy: React.ComponentType<CardProps<At>>;
+  Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
@@ -143,6 +146,8 @@ export type MessagesContextValue<
   MessageContent: React.ComponentType<
     MessageContentProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /** Order to render the message content */
+  messageContentOrder: MessageContentType[];
   /**
    * Custom message replies component
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx
@@ -180,8 +185,6 @@ export type MessagesContextValue<
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
-  /** Whether message text should be rendered before attachments */
-  textBeforeAttachments: boolean;
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,
     extraState?: {
@@ -269,9 +272,9 @@ const areEqual = <
       hasMore: prevHasMore,
       loadingMore: prevLoadingMore,
       markdownRules: prevMarkdownRules,
+      messageContentOrder: prevMessageContentOrder,
       messages: prevMessages,
       supportedReactions: prevSupportedReactions,
-      textBeforeAttachments: prevTextBeforeAttachments,
     },
   } = prevProps;
   const {
@@ -282,9 +285,9 @@ const areEqual = <
       hasMore: nextHasMore,
       loadingMore: nextLoadingMore,
       markdownRules: nextMarkdownRules,
+      messageContentOrder: nextMessageContentOrder,
       messages: nextMessages,
       supportedReactions: nextSupportedReactions,
-      textBeforeAttachments: nextTextBeforeAttachments,
     },
   } = nextProps;
 
@@ -301,9 +304,13 @@ const areEqual = <
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
 
-  const textBeforeAttachmentsEqual =
-    prevTextBeforeAttachments === nextTextBeforeAttachments;
-  if (!textBeforeAttachmentsEqual) return false;
+  const messageContentOrderEqual =
+    prevMessageContentOrder.length === nextMessageContentOrder.length &&
+    prevMessageContentOrder.every(
+      (messageContentType, index) =>
+        messageContentType === nextMessageContentOrder[index],
+    );
+  if (!messageContentOrderEqual) return false;
 
   const supportedReactionsEqual =
     prevSupportedReactions.length === nextSupportedReactions.length;

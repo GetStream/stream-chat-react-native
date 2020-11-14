@@ -63,7 +63,6 @@ const MessageRepliesWithContext = <
 
   const {
     theme: {
-      colors: { primary },
       messageSimple: {
         replies: { container, messageRepliesText },
       },
@@ -77,13 +76,7 @@ const MessageRepliesWithContext = <
       style={[styles.container, container]}
       testID='message-replies'
     >
-      <Text
-        style={[
-          styles.messageRepliesText,
-          { color: primary },
-          messageRepliesText,
-        ]}
-      >
+      <Text style={[styles.messageRepliesText, messageRepliesText]}>
         {message.reply_count === 1
           ? t('1 Thread Reply')
           : t('{{ replyCount }} Thread Replies', {
@@ -106,8 +99,16 @@ const areEqual = <
   prevProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: prevMessage, threadList: prevThreadList } = prevProps;
-  const { message: nextMessage, threadList: nextThreadList } = nextProps;
+  const {
+    message: prevMessage,
+    t: prevT,
+    threadList: prevThreadList,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    t: nextT,
+    threadList: nextThreadList,
+  } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
@@ -115,6 +116,9 @@ const areEqual = <
   const messageReplyCountEqual =
     prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
 
   return true;
 };

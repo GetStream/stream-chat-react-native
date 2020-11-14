@@ -33,8 +33,26 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
+  authorName: { fontSize: 14.5, fontWeight: '600' },
+  authorNameContainer: {
+    borderTopRightRadius: 15,
+    paddingHorizontal: 8,
+    paddingTop: 8,
+  },
+  authorNameFooter: {
+    fontSize: 14.5,
+    fontWeight: '600',
+    padding: 8,
+  },
+  authorNameMask: {
+    bottom: 0,
+    left: 8,
+    position: 'absolute',
+  },
   cardCover: {
-    height: 150,
+    borderRadius: 8,
+    height: 140,
+    marginHorizontal: 8,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -42,15 +60,16 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   container: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     overflow: 'hidden',
-    width: 250,
+    width: 256,
+  },
+  description: {
+    fontSize: 12,
+  },
+  title: {
+    fontSize: 12,
   },
 });
-
-const trimUrl = (url?: string) =>
-  url && url.replace(/^(?:https?:\/\/)?(?:www\.)?/i, '').split('/')[0];
 
 const goToURL = (url?: string) => {
   if (!url) return;
@@ -72,10 +91,7 @@ export type CardPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Attachment<At> &
-  Pick<
-    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'onLongPress'
-  > &
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -94,7 +110,7 @@ const CardWithContext = <
 ) => {
   const {
     additionalTouchableProps,
-    alignment,
+    author_name,
     CardCover,
     CardFooter,
     CardHeader,
@@ -104,17 +120,21 @@ const CardWithContext = <
     text,
     thumb_url,
     title,
-    title_link,
   } = props;
 
   const {
     theme: {
-      colors: { light },
       messageSimple: {
         card: {
+          authorName,
+          authorNameContainer,
+          authorNameFooter,
+          authorNameFooterContainer,
+          authorNameMask,
           container,
           cover,
-          footer: { description, link, title: titleStyle, ...footerStyle },
+          footer: { description, title: titleStyle, ...footerStyle },
+          noURI,
         },
       },
     },
@@ -125,36 +145,49 @@ const CardWithContext = <
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
-      onPress={() => goToURL(og_scrape_url || image_url || thumb_url)}
-      style={[
-        styles.container,
-        {
-          backgroundColor: light,
-          borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
-          borderBottomRightRadius: alignment === 'left' ? 16 : 2,
-        },
-        container,
-      ]}
+      onPress={() => goToURL(og_scrape_url || uri)}
+      style={[styles.container, container]}
       testID='card-attachment'
       {...additionalTouchableProps}
     >
       {CardHeader && <CardHeader {...props} />}
       {CardCover && <CardCover {...props} />}
       {uri && !CardCover && (
-        <Image
-          resizeMode='cover'
-          source={{ uri: makeImageCompatibleUrl(uri) }}
-          style={[styles.cardCover, cover]}
-        />
+        <View>
+          <Image
+            resizeMode='cover'
+            source={{ uri: makeImageCompatibleUrl(uri) }}
+            style={[styles.cardCover, cover]}
+          />
+          {author_name && (
+            <View style={[styles.authorNameMask, authorNameMask]}>
+              <View style={[styles.authorNameContainer, authorNameContainer]}>
+                <Text style={[styles.authorName, authorName]}>
+                  {author_name}
+                </Text>
+              </View>
+            </View>
+          )}
+        </View>
       )}
       {CardFooter ? (
         <CardFooter {...props} />
       ) : (
         <View style={[styles.cardFooter, footerStyle]}>
-          <View style={{ backgroundColor: 'transparent' }}>
-            {title && <Text style={titleStyle}>{title}</Text>}
-            {text && <Text style={description}>{text}</Text>}
-            <Text style={link}>{trimUrl(title_link || og_scrape_url)}</Text>
+          <View style={[authorNameFooterContainer, !uri ? noURI : {}]}>
+            {!uri && author_name && (
+              <Text style={[styles.authorNameFooter, authorNameFooter]}>
+                {author_name}
+              </Text>
+            )}
+            {title && (
+              <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+                {title}
+              </Text>
+            )}
+            {text && (
+              <Text style={[styles.description, description]}>{text}</Text>
+            )}
           </View>
         </View>
       )}
@@ -177,10 +210,7 @@ export type CardProps<
   Us extends UnknownType = DefaultUserType
 > = Attachment<At> &
   Partial<
-    Pick<
-      MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-      'alignment' | 'onLongPress'
-    > &
+    Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
       Pick<
         MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
@@ -203,15 +233,7 @@ export const Card = <
 >(
   props: CardProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, onLongPress } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps,
     CardCover,
@@ -223,7 +245,6 @@ export const Card = <
     <MemoizedCard
       {...{
         additionalTouchableProps,
-        alignment,
         CardCover,
         CardFooter,
         CardHeader,

@@ -13,8 +13,6 @@ import {
 } from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import { emojiRegex } from '../../../utils/utils';
-
 import type {
   MarkdownStyle,
   Theme,
@@ -31,13 +29,7 @@ import type {
 } from '../../../types/types';
 
 const styles = StyleSheet.create({
-  textContainer: { marginTop: 2, maxWidth: 250, paddingHorizontal: 16 },
-  textContainerAlignmentLeft: {
-    alignSelf: 'flex-start',
-  },
-  textContainerAlignmentRight: {
-    alignSelf: 'flex-end',
-  },
+  textContainer: { maxWidth: 250, paddingHorizontal: 16 },
 });
 
 export type MessageTextProps<
@@ -65,7 +57,7 @@ export type MessageTextContainerPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'groupStyles' | 'message'
+  'message' | 'onlyEmojis'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -84,33 +76,20 @@ const MessageTextContainerWithContext = <
   props: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    alignment,
-    groupStyles,
     markdownRules,
     markdownStyles: propMarkdownStyles = {},
     message,
     MessageText,
+    onlyEmojis,
     theme,
   } = props;
 
   const {
     theme: {
-      colors: { light, transparent },
       messageSimple: {
         content: {
           markdown,
-          textContainer: {
-            borderRadiusL,
-            borderRadiusS,
-            leftBorderColor,
-            leftBorderWidth,
-            onlyEmojiLeftBorderColor,
-            onlyEmojiMarkdown,
-            onlyEmojiRightBorderColor,
-            rightBorderColor,
-            rightBorderWidth,
-            ...textContainer
-          },
+          textContainer: { onlyEmojiMarkdown, ...textContainer },
         },
       },
     },
@@ -118,56 +97,11 @@ const MessageTextContainerWithContext = <
 
   if (!message.text) return null;
 
-  const onlyEmojis = emojiRegex.test(message.text);
-
-  const groupStyle = `${alignment}_${(Array.isArray(message.attachments) &&
-  message.attachments.length > 0
-    ? 'bottom'
-    : groupStyles[0]
-  ).toLowerCase()}`;
-
   const markdownStyles = propMarkdownStyles || markdown || {};
 
   return (
     <View
-      style={[
-        styles.textContainer,
-        alignment === 'left'
-          ? {
-              ...styles.textContainerAlignmentLeft,
-              borderColor: onlyEmojis
-                ? onlyEmojiLeftBorderColor
-                : leftBorderColor,
-              borderWidth: leftBorderWidth,
-            }
-          : {
-              ...styles.textContainerAlignmentRight,
-              borderColor: onlyEmojis
-                ? onlyEmojiRightBorderColor
-                : rightBorderColor,
-              borderWidth: rightBorderWidth,
-            },
-        {
-          backgroundColor: onlyEmojis
-            ? transparent
-            : alignment === 'left' ||
-              message.type === 'error' ||
-              message.status === 'failed'
-            ? '#FFFFFF'
-            : light,
-          borderBottomLeftRadius:
-            groupStyle === 'left_bottom' || groupStyle === 'left_single'
-              ? borderRadiusS
-              : borderRadiusL,
-          borderBottomRightRadius:
-            groupStyle === 'right_bottom' || groupStyle === 'right_single'
-              ? borderRadiusS
-              : borderRadiusL,
-          borderTopLeftRadius: borderRadiusL,
-          borderTopRightRadius: borderRadiusL,
-        },
-        textContainer,
-      ]}
+      style={[styles.textContainer, textContainer]}
       testID='message-text-container'
     >
       {MessageText ? (
@@ -198,12 +132,16 @@ const areEqual = <
   prevProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageTextContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
+  const { message: prevMessage, onlyEmojis: prevOnlyEmojis } = prevProps;
+  const { message: nextMessage, onlyEmojis: nextOnlyEmojis } = nextProps;
 
   const messageTextEqual = prevMessage.text === nextMessage.text;
+  if (!messageTextEqual) return false;
 
-  return messageTextEqual;
+  const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
+  if (!onlyEmojisEqual) return false;
+
+  return true;
 };
 
 const MemoizedMessageTextContainer = React.memo(
@@ -232,7 +170,7 @@ export const MessageTextContainer = <
 >(
   props: MessageTextContainerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, groupStyles, message } = useMessageContext<
+  const { message, onlyEmojis } = useMessageContext<
     At,
     Ch,
     Co,
@@ -255,11 +193,10 @@ export const MessageTextContainer = <
   return (
     <MemoizedMessageTextContainer
       {...{
-        alignment,
-        groupStyles,
         markdownRules,
         message,
         MessageText,
+        onlyEmojis,
         theme,
       }}
       {...props}

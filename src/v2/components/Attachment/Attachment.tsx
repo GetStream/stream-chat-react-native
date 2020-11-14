@@ -3,6 +3,7 @@ import React from 'react';
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
 import { Card as CardDefault } from '../../components/Attachment/Card';
 import { Gallery as GalleryDefault } from '../../components/Attachment/Gallery';
+import { Giphy as GiphyDefault } from '../../components/Attachment/Giphy';
 import { FileAttachment as FileAttachmentDefault } from '../../components/Attachment/FileAttachment';
 import {
   MessagesContextValue,
@@ -71,19 +72,7 @@ const AttachmentWithContext = <
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    if (hasAttachmentActions) {
-      return (
-        <>
-          <Giphy {...attachment} />
-          <AttachmentActions
-            key={`key-actions-${attachment.id}`}
-            {...attachment}
-          />
-        </>
-      );
-    } else {
-      return <Giphy {...attachment} />;
-    }
+    return <Giphy attachment={attachment} />;
   }
 
   if (
@@ -153,7 +142,9 @@ const areEqual = <
   const { attachment: nextAttachment } = nextProps;
 
   const attachmentEqual =
-    prevAttachment.actions?.length === nextAttachment.actions?.length;
+    prevAttachment.actions?.length === nextAttachment.actions?.length &&
+    prevAttachment.image_url === nextAttachment.image_url &&
+    prevAttachment.thumb_url === nextAttachment.thumb_url;
 
   return attachmentEqual;
 };
@@ -231,7 +222,7 @@ export const Attachment = <
   const FileAttachment =
     PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
-  const Giphy = PropGiphy || ContextGiphy || CardDefault;
+  const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
 
   return (
