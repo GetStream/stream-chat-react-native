@@ -372,7 +372,9 @@ const MessageOverlayWithContext = <
                               backgroundColor: onlyEmojis
                                 ? transparent
                                 : otherAttachments?.length
-                                ? attachmentBackground
+                                ? otherAttachments[0].type === 'giphy'
+                                  ? transparent
+                                  : attachmentBackground
                                 : alignment === 'left'
                                 ? transparent
                                 : grey,
@@ -423,7 +425,8 @@ const MessageOverlayWithContext = <
                                   );
                                 case 'text':
                                 default:
-                                  return (
+                                  return otherAttachments?.length &&
+                                    otherAttachments[0].actions ? null : (
                                     <MessageTextContainer<
                                       At,
                                       Ch,
