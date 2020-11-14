@@ -56,19 +56,20 @@ export type GalleryPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'groupStyles' | 'images' | 'onLongPress'
-> &
+> = Pick<ImageGalleryContextValue, 'setImage'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'alignment' | 'groupStyles' | 'images' | 'onLongPress'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
-  > & {
+  > &
+  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
     messageId?: string;
     messageText?: string;
     preventPress?: boolean;
-  } & Pick<ImageGalleryContextValue, 'setImage'> &
-  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'>;
+  };
 
 const GalleryWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -324,9 +325,12 @@ export const Gallery = <
     messageText,
     onLongPress: propOnLongPress,
     preventPress,
+    setBlurType: propSetBlurType,
+    setImage: propSetImage,
+    setOverlay: propSetOverlay,
   } = props;
 
-  const { setImage } = useImageGalleryContext();
+  const { setImage: contextSetImage } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -337,7 +341,10 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setBlurType, setOverlay } = useOverlayContext();
+  const {
+    setBlurType: contextSetBlurType,
+    setOverlay: contextSetOverlay,
+  } = useOverlayContext();
 
   const images = propImages || contextImages;
 
@@ -348,6 +355,9 @@ export const Gallery = <
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
+  const setBlurType = propSetBlurType || contextSetBlurType;
+  const setImage = propSetImage || contextSetImage;
+  const setOverlay = propSetOverlay || contextSetOverlay;
 
   return (
     <MemoizedGallery

@@ -10,7 +10,6 @@ export const SignOut: React.FC<IconProps> = ({ height, width }) => {
       height={height}
       viewBox={`0 0 ${height} ${width}`}
       width={width}
-      xmlns='http://www.w3.org/2000/svg'
     >
       <G opacity='0.5'>
         <Path

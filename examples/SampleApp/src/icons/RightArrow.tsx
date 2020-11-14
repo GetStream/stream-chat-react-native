@@ -7,7 +7,6 @@ export const RightArrow: React.FC<IconProps> = ({ active, height, width }) => (
     height={height}
     viewBox={`0 0 ${height} ${width}`}
     width={width}
-    xmlns='http://www.w3.org/2000/svg'
   >
     <G opacity={active ? 1 : 0.5}>
       <Path

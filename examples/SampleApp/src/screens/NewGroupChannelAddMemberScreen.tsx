@@ -33,6 +33,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
   >();
   const { chatClient } = useContext(AppContext);
   const {
+    loading: loadingResults,
     onChangeSearchText,
     onFocusInput,
     results,
@@ -66,7 +67,10 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
           </TouchableOpacity>
           <Text style={{ fontWeight: 'bold' }}>Add Group Members</Text>
           <TouchableOpacity
+            disabled={selectedUsers.length === 0}
             onPress={() => {
+              if (selectedUsers.length === 0) return;
+
               navigation.navigate('NewGroupChannelAssignNameScreen', {
                 selectedUsers,
               });
@@ -154,6 +158,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
           {results && results.length >= 0 && (
             <View style={{ flexGrow: 1, flexShrink: 1 }}>
               <UserSearchResults
+                loading={loadingResults}
                 results={results}
                 searchText={searchText}
                 selectedUserIds={selectedUserIds}
