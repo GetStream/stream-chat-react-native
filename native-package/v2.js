@@ -119,39 +119,45 @@ registerNativeHandlers({
   saveFile: async ({ fileName, fromUrl }) => {
     try {
       const path = RNFS.DocumentDirectoryPath + '/' + fileName;
-      await RNFS.downloadFile({ fromUrl, toFile: path });
-      if (Platform.OS === 'android') {
-        return 'file://' + path;
-      }
-      return path;
+      await RNFS.downloadFile({ fromUrl, toFile: path }).promise;
+      return 'file://' + path;
     } catch (error) {
       throw new Error('Downloading image failed...');
     }
   },
   shareImage: async ({ type, url }) => {
     try {
-      const options = {
+      const base64Image = await RNFS.readFile(url, 'base64');
+      const base64Url = `data:${type};base64,${base64Image}`;
+      await RNShare.open({
+        activityItemSources:
+          Platform.OS === 'ios'
+            ? [
+                {
+                  item: {
+                    default: {
+                      content: url,
+                      type: 'url',
+                    },
+                  },
+                  linkMetadata: {
+                    icon: url,
+                  },
+                  placeholderItem: {
+                    content: url,
+                    type: 'url',
+                  },
+                },
+              ]
+            : undefined,
         excludedActivityTypes: [],
-        message: '',
-        title: '',
+        failOnCancel: false,
         type,
-      };
-      if (Platform.OS === 'android') {
-        const base64Image = await RNFS.readFile(url, 'base64');
-        const androidUrl = `data:${type};base64,${base64Image}`;
-        await RNShare.open({
-          ...options,
-          url: androidUrl,
-        });
-      } else {
-        await RNShare.open({
-          ...options,
-          url,
-        });
-      }
+        url: Platform.OS === 'android' ? base64Url : undefined,
+      });
       return true;
     } catch (error) {
-      throw new Error('Sharing failed or cancelled...');
+      throw new Error('Sharing failed...');
     }
   },
 });

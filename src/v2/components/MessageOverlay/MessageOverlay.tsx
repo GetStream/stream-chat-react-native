@@ -140,14 +140,17 @@ const MessageOverlayWithContext = <
     }
     showScreen.value = show
       ? withSpring(1, {
-          damping: 10,
+          damping: 600,
           mass: 0.5,
-          velocity: 8,
+          restDisplacementThreshold: 0.01,
+          restSpeedThreshold: 0.01,
+          stiffness: 200,
+          velocity: 32,
         })
       : withTiming(
           0,
           {
-            duration: 200,
+            duration: 150,
             easing: Easing.out(Easing.ease),
           },
           () => {

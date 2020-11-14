@@ -213,7 +213,7 @@ const GalleryWithContext = <
       >
         <Image
           resizeMode='cover'
-          source={{ uri: galleryImages[0].url }}
+          source={{ cache: 'force-cache', uri: galleryImages[0].url }}
           style={{ flex: 1 }}
         />
       </TouchableOpacity>
@@ -265,7 +265,7 @@ const GalleryWithContext = <
             <View style={{ flex: 1 }}>
               <Image
                 resizeMode='cover'
-                source={{ uri: galleryImages[i].url }}
+                source={{ cache: 'force-cache', uri: galleryImages[i].url }}
                 style={{ flex: 1, opacity: 0.5 }}
               />
               <View
@@ -298,7 +298,7 @@ const GalleryWithContext = <
           ) : (
             <Image
               resizeMode='cover'
-              source={{ uri: image?.url }}
+              source={{ cache: 'force-cache', uri: image?.url }}
               style={{ flex: 1 }}
             />
           )}
