@@ -46,6 +46,7 @@ import {
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vh } from '../../utils/utils';
 
 import type { ReactionResponse } from 'stream-chat';
@@ -67,6 +68,13 @@ const styles = StyleSheet.create({
   center: {
     flexGrow: 1,
     justifyContent: 'center',
+  },
+  containerInner: {
+    borderColor: '#E6E6E6',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
   flex: {
     flex: 1,
@@ -109,15 +117,32 @@ const MessageOverlayWithContext = <
   const {
     alignment,
     clientId,
+    files,
     groupStyles,
+    images,
     message,
     messageActions,
+    messageContentOrder,
     messageReactionTitle,
+    onlyEmojis,
+    otherAttachments,
     overlayOpacity,
     reset,
     visible,
   } = props;
   const { overlay, setOverlay } = useOverlayContext();
+
+  const {
+    theme: {
+      colors: { attachmentBackground, grey, transparent },
+      messageSimple: {
+        content: {
+          container: { borderRadiusL, borderRadiusS },
+          containerInner,
+        },
+      },
+    },
+  } = useTheme();
 
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -259,19 +284,9 @@ const MessageOverlayWithContext = <
     [alignment],
   );
 
-  const images = message
-    ? (Array.isArray(message.attachments) &&
-        message.attachments.filter(
-          (item) =>
-            item.type === 'image' && !item.title_link && !item.og_scrape_url,
-        )) ||
-      []
-    : [];
-  const files = message
-    ? (Array.isArray(message.attachments) &&
-        message.attachments.filter((item) => item.type === 'file')) ||
-      []
-    : [];
+  const groupStyle = `${alignment}_${(
+    groupStyles?.[0] || 'bottom'
+  ).toLowerCase()}`;
 
   return (
     <Animated.View
@@ -353,40 +368,85 @@ const MessageOverlayWithContext = <
                             {...{ alignment, message, showAvatar: true }}
                           />
                         )}
-                        <View style={styles.alignEnd}>
-                          {Array.isArray(message.attachments) &&
-                            message.attachments.map((attachment, index) => {
-                              // We handle files separately
-                              if (
-                                attachment.type === 'file' ||
-                                (attachment.type === 'image' &&
-                                  !attachment.title_link &&
-                                  !attachment.og_scrape_url)
-                              ) {
-                                return null;
+                        <View
+                          style={[
+                            styles.containerInner,
+                            {
+                              backgroundColor: onlyEmojis
+                                ? transparent
+                                : otherAttachments?.length
+                                ? otherAttachments[0].type === 'giphy'
+                                  ? transparent
+                                  : attachmentBackground
+                                : alignment === 'left'
+                                ? transparent
+                                : grey,
+                              borderBottomLeftRadius:
+                                groupStyle === 'left_bottom' ||
+                                groupStyle === 'left_single'
+                                  ? borderRadiusS
+                                  : borderRadiusL,
+                              borderBottomRightRadius:
+                                groupStyle === 'right_bottom' ||
+                                groupStyle === 'right_single'
+                                  ? borderRadiusS
+                                  : borderRadiusL,
+                            },
+                            onlyEmojis || otherAttachments?.length
+                              ? { borderWidth: 0 }
+                              : {},
+                            containerInner,
+                          ]}
+                        >
+                          {messageContentOrder?.map(
+                            (messageContentType, messageContentOrderIndex) => {
+                              switch (messageContentType) {
+                                case 'attachments':
+                                  return otherAttachments?.map(
+                                    (attachment, attachmentIndex) => (
+                                      <Attachment
+                                        attachment={attachment}
+                                        key={`${message.id}-${attachmentIndex}`}
+                                      />
+                                    ),
+                                  );
+                                case 'files':
+                                  return (
+                                    <FileAttachmentGroup
+                                      files={files}
+                                      key={`file_attachment_group_${messageContentOrderIndex}`}
+                                      messageId={message.id}
+                                    />
+                                  );
+                                case 'gallery':
+                                  return (
+                                    <Gallery
+                                      images={images}
+                                      key={`gallery_${messageContentOrderIndex}`}
+                                      preventPress
+                                    />
+                                  );
+                                case 'text':
+                                default:
+                                  return otherAttachments?.length &&
+                                    otherAttachments[0].actions ? null : (
+                                    <MessageTextContainer<
+                                      At,
+                                      Ch,
+                                      Co,
+                                      Ev,
+                                      Me,
+                                      Re,
+                                      Us
+                                    >
+                                      key={`message_text_container_${messageContentOrderIndex}`}
+                                      message={message}
+                                      onlyEmojis={onlyEmojis}
+                                    />
+                                  );
                               }
-
-                              return (
-                                <Attachment<At, Ch, Co, Ev, Me, Re, Us>
-                                  attachment={attachment}
-                                  key={`${message.id}-${index}`}
-                                />
-                              );
-                            })}
-                          <FileAttachmentGroup<At, Ch, Co, Ev, Me, Re, Us>
-                            files={files}
-                            messageId={message.id}
-                          />
-                          <Gallery<At, Ch, Co, Ev, Me, Re, Us>
-                            alignment={alignment}
-                            images={images}
-                            preventPress
-                          />
-                          <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-                            alignment={alignment}
-                            groupStyles={groupStyles || ['bottom']}
-                            message={message}
-                          />
+                            },
+                          )}
                         </View>
                       </Animated.View>
                       {messageActions && (
@@ -440,14 +500,12 @@ const areEqual = <
 ) => {
   const {
     alignment: prevAlignment,
-    groupStyles: prevGroupStyles,
     message: prevMessage,
     messageReactionTitle: prevMessageReactionTitle,
     visible: prevVisible,
   } = prevProps;
   const {
     alignment: nextAlignment,
-    groupStyles: nextGroupStyles,
     message: nextMessage,
     messageReactionTitle: nextMessageReactionTitle,
     visible: nextVisible,
@@ -462,9 +520,6 @@ const areEqual = <
   const messageReactionTitleEqual =
     prevMessageReactionTitle === nextMessageReactionTitle;
   if (!messageReactionTitleEqual) return false;
-
-  const groupStylesEqual = prevGroupStyles?.[0] === nextGroupStyles?.[0];
-  if (!groupStylesEqual) return false;
 
   const latestReactionsEqual =
     Array.isArray(prevMessage?.latest_reactions) ===
@@ -520,10 +575,15 @@ export const MessageOverlay = <
   const {
     alignment: propAlignment,
     clientId: propClientId,
+    files: propFiles,
     groupStyles: propGroupStyles,
+    images: propImages,
     message: propMessage,
     messageActions: propMessageActions,
+    messageContentOrder: propMessageContentOrder,
     messageReactionTitle: propMessageReactionTitle,
+    onlyEmojis: propOnlyEmojis,
+    otherAttachments: propOtherAttachments,
     overlayOpacity,
     reset: propReset,
     visible,
@@ -542,19 +602,30 @@ export const MessageOverlay = <
   const {
     alignment: contextAlignment,
     clientId: contextClientId,
-    groupStyles: contextGroupStyle,
+    files: contextFiles,
+    groupStyles: contextGroupStyles,
+    images: contextImages,
     message: contextMessage,
     messageActions: contextMessageActions,
+    messageContentOrder: contextMessageContentOrder,
     messageReactionTitle: contextMessageReactionTitle,
+    onlyEmojis: contextOnlyEmojis,
+    otherAttachments: contextOtherAttachments,
   } = data || {};
 
   const alignment = propAlignment || contextAlignment;
   const clientId = propClientId || contextClientId;
-  const groupStyles = propGroupStyles || contextGroupStyle;
+  const files = propFiles || contextFiles;
+  const groupStyles = propGroupStyles || contextGroupStyles;
+  const images = propImages || contextImages;
   const message = propMessage || contextMessage;
   const messageActions = propMessageActions || contextMessageActions;
+  const messageContentOrder =
+    propMessageContentOrder || contextMessageContentOrder;
   const messageReactionTitle =
     propMessageReactionTitle || contextMessageReactionTitle;
+  const onlyEmojis = propOnlyEmojis || contextOnlyEmojis;
+  const otherAttachments = propOtherAttachments || contextOtherAttachments;
   const reset = propReset || contextReset;
 
   return (
@@ -562,10 +633,15 @@ export const MessageOverlay = <
       {...{
         alignment,
         clientId,
+        files,
         groupStyles,
+        images,
         message,
         messageActions,
+        messageContentOrder,
         messageReactionTitle,
+        onlyEmojis,
+        otherAttachments,
         overlayOpacity,
         reset,
         visible,

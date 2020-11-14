@@ -34,8 +34,6 @@ import type {
 } from '../../../types/types';
 import type { ReactionData } from '../../../utils/utils';
 
-const screenPadding = 8;
-
 const styles = StyleSheet.create({
   container: {
     left: 0,
@@ -99,6 +97,7 @@ export type ReactionListPropsWithContext<
     radius?: number; // not recommended to change this
     reactionSize?: number;
     stroke?: string;
+    strokeSize?: number; // not recommended to change this
   };
 
 const ReactionListWithContext = <
@@ -121,6 +120,7 @@ const ReactionListWithContext = <
     reactionSize: propReactionSize,
     showMessageOverlay,
     stroke: propStroke,
+    strokeSize: propStrokeSize,
     supportedReactions,
   } = props;
 
@@ -136,8 +136,10 @@ const ReactionListWithContext = <
           reactionBubble,
           reactionBubbleBackground,
           reactionSize: themeReactionSize,
+          strokeSize: themeStrokeSize,
         },
       },
+      screenPadding,
     },
   } = useTheme();
 
@@ -147,15 +149,32 @@ const ReactionListWithContext = <
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
   const stroke = propStroke || white;
+  const strokeSize = propStrokeSize || themeStrokeSize;
 
-  const x =
-    alignment === 'left'
-      ? messageContentWidth +
-        (Number(leftAlign.marginRight) || 0) +
-        (Number(spacer.width) || 0)
-      : width - screenPadding * 2 - messageContentWidth - radius * 2;
-  const y1 = reactionSize + radius;
-  const y2 = reactionSize - radius * 1.25;
+  const alignmentLeft = alignment === 'left';
+  const x1 = alignmentLeft
+    ? messageContentWidth +
+      (Number(leftAlign.marginRight) || 0) +
+      (Number(spacer.width) || 0) -
+      radius * 0.5
+    : width - screenPadding * 2 - messageContentWidth - radius * 1.5;
+  const x2 = x1 + radius * 2 * (alignmentLeft ? 1 : -1);
+  const y1 = reactionSize + radius * 2;
+  const y2 = reactionSize - radius;
+
+  const insideLeftBound =
+    x2 - (reactionSize * reactions.length) / 2 > screenPadding;
+  const insideRightBound =
+    x2 + strokeSize + (reactionSize * reactions.length) / 2 <
+    width - screenPadding;
+  const left =
+    reactions.length === 1
+      ? x1 + (alignmentLeft ? -radius : radius - reactionSize)
+      : !insideLeftBound
+      ? screenPadding
+      : !insideRightBound
+      ? width - screenPadding - reactionSize * reactions.length
+      : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
   return (
     <TouchableOpacity
@@ -169,37 +188,42 @@ const ReactionListWithContext = <
         container,
       ]}
     >
-      {reactions.ownReactions.length ? (
+      {reactions.length ? (
         <View style={StyleSheet.absoluteFill}>
           <Svg>
+            <Circle cx={x1} cy={y1} fill={stroke} r={radius + strokeSize * 3} />
             <Circle
-              cx={x + (radius * 2 - radius / 4)}
+              cx={x2}
               cy={y2}
               fill={stroke}
-              r={radius * 2}
-              stroke={fill}
-              strokeWidth={radius / 2}
+              r={radius * 2 + strokeSize * 3}
+            />
+            <Circle cx={x1} cy={y1} fill={fill} r={radius + strokeSize} />
+            <Circle cx={x2} cy={y2} fill={fill} r={radius * 2 + strokeSize} />
+            <Circle
+              cx={x1}
+              cy={y1}
+              fill={alignmentLeft ? fill : stroke}
+              r={radius}
             />
             <Circle
-              cx={x}
-              cy={y1}
-              fill={stroke}
-              r={radius}
-              stroke={fill}
-              strokeWidth={radius / 2}
+              cx={x2}
+              cy={y2}
+              fill={alignmentLeft ? fill : stroke}
+              r={radius * 2}
             />
           </Svg>
           <View
             style={[
               styles.reactionBubbleBackground,
               {
-                backgroundColor: stroke,
+                backgroundColor: alignmentLeft ? fill : stroke,
                 borderColor: fill,
                 borderRadius: reactionSize,
-                borderWidth: radius,
+                borderWidth: strokeSize,
                 height: reactionSize,
-                left: x - radius,
-                width: reactionSize * reactions.ownReactions.length,
+                left,
+                width: reactionSize * reactions.length,
               },
               reactionBubbleBackground,
             ]}
@@ -207,10 +231,10 @@ const ReactionListWithContext = <
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle
-                cx={x + radius * 2 - radius / 4}
+                cx={x2}
                 cy={y2}
-                fill={stroke}
-                r={radius * 2 - radius / 2}
+                fill={alignmentLeft ? fill : stroke}
+                r={radius * 2}
               />
             </Svg>
           </View>
@@ -218,94 +242,17 @@ const ReactionListWithContext = <
             style={[
               styles.reactionBubble,
               {
-                backgroundColor: stroke,
-                borderRadius: reactionSize,
-                height: reactionSize - radius,
-                left: x - radius / 2,
-                top: radius / 2,
-                width: reactionSize * reactions.ownReactions.length - radius,
+                backgroundColor: alignmentLeft ? fill : stroke,
+                borderRadius: reactionSize - strokeSize * 2,
+                height: reactionSize - strokeSize * 2,
+                left: left + strokeSize,
+                top: strokeSize,
+                width: reactionSize * reactions.length - strokeSize * 2,
               },
               reactionBubble,
             ]}
           >
-            {reactions.ownReactions.map((reaction, index) => (
-              <Icon
-                key={`${reaction}_${index}`}
-                pathFill={primary}
-                size={reactionSize / 2}
-                style={middleIcon}
-                supportedReactions={supportedReactions}
-                type={reaction}
-              />
-            ))}
-          </View>
-        </View>
-      ) : null}
-      {reactions.latestReactions.length ? (
-        <View style={StyleSheet.absoluteFill}>
-          <Svg>
-            <Circle
-              cx={x - radius * 2 - radius / 4}
-              cy={y2}
-              fill={fill}
-              r={radius * 2}
-              stroke={stroke}
-              strokeWidth={radius / 2}
-            />
-            <Circle
-              cx={x}
-              cy={y1}
-              fill={fill}
-              r={radius}
-              stroke={stroke}
-              strokeWidth={radius / 2}
-            />
-          </Svg>
-          <View
-            style={[
-              styles.reactionBubbleBackground,
-              {
-                backgroundColor: fill,
-                borderColor: stroke,
-                borderRadius: reactionSize,
-                borderWidth: radius,
-                height: reactionSize,
-                left:
-                  x + radius - reactionSize * reactions.latestReactions.length,
-                width: reactionSize * reactions.latestReactions.length,
-              },
-              reactionBubbleBackground,
-            ]}
-          />
-          <View style={[StyleSheet.absoluteFill]}>
-            <Svg>
-              <Circle
-                cx={x - radius * 2 - radius / 4}
-                cy={y2}
-                fill={fill}
-                r={radius * 2 - radius / 2}
-              />
-            </Svg>
-          </View>
-          <View
-            style={[
-              styles.reactionBubble,
-              {
-                backgroundColor: fill,
-                borderRadius: reactionSize,
-                height: reactionSize - radius,
-                left:
-                  x +
-                  radius -
-                  reactionSize * reactions.latestReactions.length +
-                  radius / 2,
-                top: radius / 2,
-                width: reactionSize * reactions.latestReactions.length - radius,
-              },
-              reactionBubble,
-            ]}
-          >
-            {reactions.latestReactions.map((reaction, index) => (
+            {reactions.map((reaction, index) => (
               <Icon
                 key={`${reaction.type}_${index}`}
                 pathFill={reaction.own ? primary : textGrey}
@@ -348,11 +295,11 @@ const areEqual = <
   if (!messageContentWidthEqual) return false;
 
   const reactionsEqual =
-    prevReactions.ownReactions.length === nextReactions.ownReactions.length &&
-    prevReactions.latestReactions.every(
+    prevReactions.length === nextReactions.length &&
+    prevReactions.every(
       (latestReaction, index) =>
-        nextReactions.latestReactions[index].own === latestReaction.own &&
-        nextReactions.latestReactions[index].type === latestReaction.type,
+        nextReactions[index].own === latestReaction.own &&
+        nextReactions[index].type === latestReaction.type,
     );
   if (!reactionsEqual) return false;
 

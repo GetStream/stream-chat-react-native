@@ -62,7 +62,12 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  container: { alignItems: 'center', flex: 1, width: '100%' },
+  container: {
+    alignItems: 'center',
+    backgroundColor: '#FCFCFC',
+    flex: 1,
+    width: '100%',
+  },
   editStateMask: {
     backgroundColor: 'black',
     height: '100%',

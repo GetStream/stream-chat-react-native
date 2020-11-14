@@ -81,7 +81,6 @@ export const getReadStates = <
            * the user from the list of users being checked
            */
           if (message.updated_at < member.last_read) {
-            const currentMessageReadData = readData[message.id];
             /**
              * if this is a direct message the length will be 1
              * as we already deleted the current user from the object
@@ -89,6 +88,7 @@ export const getReadStates = <
             if (Object.keys(readList).length === 1) {
               readData[message.id] = true;
             } else {
+              const currentMessageReadData = readData[message.id];
               readData[message.id] =
                 typeof currentMessageReadData === 'boolean'
                   ? 1

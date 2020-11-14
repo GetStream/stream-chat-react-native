@@ -7,6 +7,7 @@ export const BASE_FONT_SIZE = 16;
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
+  attachmentBackground: '#E9F2FF',
   background: '#FCFCFC',
   black: '#000000',
   danger: '#FF3742',
@@ -258,13 +259,18 @@ export type Theme = {
       spacer: ViewStyle;
     };
     card: {
+      authorName: TextStyle;
+      authorNameContainer: ViewStyle;
+      authorNameFooter: TextStyle;
+      authorNameFooterContainer: ViewStyle;
+      authorNameMask: ViewStyle;
       container: ViewStyle;
       cover: ImageStyle;
       footer: ViewStyle & {
         description: TextStyle;
-        link: TextStyle;
         title: TextStyle;
       };
+      noURI: ViewStyle;
     };
     container: ViewStyle;
     content: {
@@ -293,19 +299,7 @@ export type Theme = {
       metaContainer: ViewStyle;
       metaText: TextStyle;
       textContainer: ViewStyle & {
-        borderRadiusL: ViewStyle[
-          | 'borderBottomLeftRadius'
-          | 'borderTopLeftRadius'];
-        borderRadiusS: ViewStyle[
-          | 'borderBottomRightRadius'
-          | 'borderTopRightRadius'];
-        leftBorderColor: ViewStyle['borderLeftColor'];
-        leftBorderWidth: ViewStyle['borderLeftWidth'];
-        onlyEmojiLeftBorderColor: ViewStyle['borderLeftColor'];
         onlyEmojiMarkdown: MarkdownStyle;
-        onlyEmojiRightBorderColor: ViewStyle['borderRightColor'];
-        rightBorderColor: ViewStyle['borderRightColor'];
-        rightBorderWidth: ViewStyle['borderRightWidth'];
       };
     };
     file: {
@@ -315,18 +309,34 @@ export type Theme = {
       icon: IconProps;
       title: TextStyle;
     };
+    fileAttachmentGroup: {
+      container: ViewStyle;
+    };
     gallery: {
-      doubleSize: ViewStyle['height'];
       galleryContainer: ViewStyle;
+      galleryItemColumn: ViewStyle;
       halfSize: ViewStyle['height'];
-      header: {
-        button: ViewStyle;
-        container: ViewStyle;
-      };
+      image: ImageStyle;
       imageContainer: ViewStyle;
-      single: ViewStyle;
+      moreImagesContainer: ViewStyle;
+      moreImagesText: TextStyle;
       size: ViewStyle['height'];
       width: ViewStyle['width'];
+    };
+    giphy: {
+      cancel: TextStyle;
+      cancelContainer: ViewStyle;
+      container: ViewStyle;
+      giphy: ImageStyle;
+      giphyContainer: ViewStyle;
+      giphyMask: ViewStyle;
+      giphyText: TextStyle;
+      selectionContainer: ViewStyle;
+      selector: ViewStyle;
+      send: TextStyle;
+      sendContainer: ViewStyle;
+      shuffleButton: ViewStyle;
+      title: TextStyle;
     };
     reactionList: {
       container: ViewStyle;
@@ -335,6 +345,7 @@ export type Theme = {
       reactionBubble: ViewStyle;
       reactionBubbleBackground: ViewStyle;
       reactionSize: number;
+      strokeSize: number;
     };
     reactionPicker: {
       column: ViewStyle;
@@ -374,6 +385,7 @@ export type Theme = {
       reactionList: ViewStyle;
     };
   };
+  screenPadding: number;
   spinner: ViewStyle;
   thread: {
     newThread: ViewStyle & {
@@ -611,12 +623,26 @@ export const defaultTheme: Theme = {
       },
     },
     card: {
+      authorName: { color: Colors.primary },
+      authorNameContainer: { backgroundColor: Colors.attachmentBackground },
+      authorNameFooter: { color: Colors.primary },
+      authorNameFooterContainer: { backgroundColor: Colors.transparent },
+      authorNameMask: {},
       container: {},
       cover: {},
       footer: {
-        description: {},
-        link: {},
-        title: {},
+        description: {
+          color: Colors.textDark,
+        },
+        title: {
+          color: Colors.textDark,
+          fontWeight: '700',
+        },
+      },
+      noURI: {
+        borderLeftColor: Colors.primary,
+        borderLeftWidth: 2,
+        paddingLeft: 8,
       },
     },
     container: {},
@@ -625,7 +651,9 @@ export const defaultTheme: Theme = {
         borderRadiusL: 16,
         borderRadiusS: 2,
       },
-      containerInner: {},
+      containerInner: {
+        borderColor: Colors.grey,
+      },
       deletedContainer: {},
       deletedMetaText: {
         paddingHorizontal: 10,
@@ -668,15 +696,7 @@ export const defaultTheme: Theme = {
         fontSize: 12,
       },
       textContainer: {
-        borderRadiusL: 16,
-        borderRadiusS: 2,
-        leftBorderColor: '#00000014', // 14 = 8% opacity
-        leftBorderWidth: 0.5,
-        onlyEmojiLeftBorderColor: Colors.transparent,
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
-        onlyEmojiRightBorderColor: Colors.transparent,
-        rightBorderColor: Colors.transparent,
-        rightBorderWidth: 0,
       },
     },
     file: {
@@ -688,18 +708,57 @@ export const defaultTheme: Theme = {
       icon: {},
       title: {},
     },
+    fileAttachmentGroup: {
+      container: {},
+    },
     gallery: {
-      doubleSize: 250,
       galleryContainer: {},
-      halfSize: 80,
-      header: {
-        button: {},
-        container: {},
-      },
+      galleryItemColumn: {},
+      halfSize: 100,
+      image: {},
       imageContainer: {},
-      single: {},
-      size: 125,
+      moreImagesContainer: {
+        backgroundColor: `${Colors.black}4D`, // 4D = 30% opacity
+      },
+      moreImagesText: {
+        color: Colors.white,
+      },
+      size: 200,
       width: 250,
+    },
+    giphy: {
+      cancel: {
+        color: Colors.textGrey,
+      },
+      cancelContainer: {
+        borderRightColor: Colors.light,
+      },
+      container: {},
+      giphy: {},
+      giphyContainer: {
+        backgroundColor: Colors.textGrey,
+      },
+      giphyMask: {},
+      giphyText: {
+        color: Colors.white,
+      },
+      selectionContainer: {
+        backgroundColor: Colors.white,
+        borderColor: `${Colors.black}0D`, // 0D = 5% opacity
+      },
+      selector: {
+        borderBottomColor: Colors.light,
+      },
+      send: {
+        color: Colors.primary,
+      },
+      sendContainer: {},
+      shuffleButton: {
+        borderColor: Colors.light,
+      },
+      title: {
+        color: Colors.black,
+      },
     },
     reactionList: {
       container: {},
@@ -708,6 +767,7 @@ export const defaultTheme: Theme = {
       reactionBubble: {},
       reactionBubbleBackground: {},
       reactionSize: 24,
+      strokeSize: 1, // not recommended to change this
     },
     reactionPicker: {
       column: {},
@@ -718,7 +778,9 @@ export const defaultTheme: Theme = {
     },
     replies: {
       container: {},
-      messageRepliesText: {},
+      messageRepliesText: {
+        color: Colors.primary,
+      },
     },
     status: {
       checkAllIcon: {
@@ -761,6 +823,7 @@ export const defaultTheme: Theme = {
       },
     },
   },
+  screenPadding: 8,
   spinner: {},
   thread: {
     newThread: {

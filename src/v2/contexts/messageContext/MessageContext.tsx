@@ -22,12 +22,9 @@ import type {
 export type Alignment = 'right' | 'left';
 
 export type Reactions = {
-  latestReactions: {
-    own: boolean;
-    type: string;
-  }[];
-  ownReactions: string[];
-};
+  own: boolean;
+  type: string;
+}[];
 
 export type MessageContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -78,6 +75,8 @@ export type MessageContextValue<
    * @param event   Event object for onLongPress event
    */
   onLongPress: (event: GestureResponderEvent) => void;
+  /** Whether the message is only text and the text is only emojis */
+  onlyEmojis: boolean;
   /** Handler to open a thread on a message */
   onOpenThread: () => void;
   /**
@@ -91,6 +90,8 @@ export type MessageContextValue<
    * @param event   Event object for onPress event
    */
   onPress: (event: GestureResponderEvent) => void;
+  /** The images attached to a message */
+  otherAttachments: Attachment<At>[];
   reactions: Reactions;
   showMessageOverlay: (messageReactions?: boolean) => void;
   showMessageStatus: boolean;
@@ -192,11 +193,11 @@ const areEqual = <
   if (!imagesEqual) return false;
 
   const reactionsEqual =
-    prevReactions.ownReactions.length === nextReactions.ownReactions.length &&
-    prevReactions.latestReactions.every(
+    prevReactions.length === nextReactions.length &&
+    prevReactions.every(
       (latestReaction, index) =>
-        nextReactions.latestReactions[index].own === latestReaction.own &&
-        nextReactions.latestReactions[index].type === latestReaction.type,
+        nextReactions[index].own === latestReaction.own &&
+        nextReactions[index].type === latestReaction.type,
     );
   if (!reactionsEqual) return false;
 

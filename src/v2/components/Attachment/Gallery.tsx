@@ -1,16 +1,5 @@
-import React, { useEffect } from 'react';
-import {
-  GestureResponderEvent,
-  Image,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Immutable, isImmutable } from 'seamless-immutable';
-
-import { CloseButton } from '../CloseButton/CloseButton';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
@@ -23,13 +12,7 @@ import {
 } from '../../contexts/messagesContext/MessagesContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
-
-import type { IImageInfo } from 'react-native-image-zoom-viewer/built/image-viewer.type';
 
 import type {
   DefaultAttachmentType,
@@ -43,70 +26,21 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   galleryContainer: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13,
     flexDirection: 'row',
     flexWrap: 'wrap',
     overflow: 'hidden',
   },
-  headerButton: {
+  imageContainer: { flex: 1, padding: 1 },
+  moreImagesContainer: {
     alignItems: 'center',
-    borderRadius: 20,
-    height: 30,
     justifyContent: 'center',
-    marginRight: 32,
-    marginTop: 32,
-    width: 30,
   },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    position: 'absolute',
-    width: '100%',
-    zIndex: 1000,
-  },
-  single: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    height: 200,
-    overflow: 'hidden',
-  },
+  moreImagesText: { fontSize: 26, fontWeight: '700' },
 });
-
-type GalleryHeaderProps = {
-  handleDismiss: ((event: GestureResponderEvent) => void) | undefined;
-};
-
-const GalleryHeader: React.FC<GalleryHeaderProps> = ({ handleDismiss }) => {
-  const {
-    theme: {
-      messageSimple: {
-        gallery: {
-          header: { button, container },
-        },
-      },
-    },
-  } = useTheme();
-
-  useEffect(() => {
-    StatusBar.setHidden(true);
-    return () => StatusBar.setHidden(false);
-  }, []);
-
-  return (
-    <View style={[styles.headerContainer, container]}>
-      <TouchableOpacity
-        onPress={handleDismiss}
-        style={[styles.headerButton, button]}
-      >
-        <CloseButton />
-      </TouchableOpacity>
-    </View>
-  );
-};
-
-GalleryHeader.displayName = 'GalleryHeader{messageSimple{gallery{header}}}';
 
 export type GalleryPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -118,13 +52,12 @@ export type GalleryPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'images' | 'onLongPress'
+  'images' | 'onLongPress'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
-  > &
-  Pick<TranslationContextValue, 't'> & {
+  > & {
     messageId?: string;
     preventPress?: boolean;
   };
@@ -142,12 +75,10 @@ const GalleryWithContext = <
 ) => {
   const {
     additionalTouchableProps,
-    alignment,
     images,
     messageId,
     onLongPress,
     preventPress,
-    t,
   } = props;
 
   const {
@@ -155,11 +86,13 @@ const GalleryWithContext = <
       imageGallery: { blurType },
       messageSimple: {
         gallery: {
-          doubleSize,
           galleryContainer,
+          galleryItemColumn,
           halfSize,
+          image,
           imageContainer,
-          single,
+          moreImagesContainer,
+          moreImagesText,
           size,
           width,
         },
@@ -171,138 +104,97 @@ const GalleryWithContext = <
 
   if (!images?.length) return null;
 
-  const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
-    const url = currentImage.image_url || currentImage.thumb_url;
-    if (url) {
-      returnArray.push({ url: makeImageCompatibleUrl(url) } as Immutable<
-        IImageInfo
-      >);
-    }
-    return returnArray;
-  }, [] as Immutable<IImageInfo>[]);
-
-  const galleryImages: IImageInfo[] = [];
-
-  immutableGalleryImages.forEach((image) => {
-    const galleryImage = isImmutable(image) ? image.asMutable() : image;
-    galleryImages.push(galleryImage);
-  });
-
-  if (galleryImages.length === 1) {
-    return (
-      <TouchableOpacity
-        onLongPress={onLongPress}
-        onPress={() => {
-          if (!preventPress) {
-            setImage({ messageId, url: galleryImages[0].url });
-            setBlurType(blurType || 'light');
-            setOverlay('gallery');
+  // [[{ url: string }], [{ url: string }, { url: string }]]
+  const galleryImages = images
+    .slice(0, 3)
+    .reduce((returnArray, currentImage, index) => {
+      const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
+      if (attachmentUrl) {
+        const url = makeImageCompatibleUrl(attachmentUrl);
+        if (images.length <= 2) {
+          returnArray[0] = [
+            ...(returnArray[0] || []),
+            { height: size || 200, url },
+          ];
+        } else {
+          if (index === 0) {
+            returnArray[0] = [{ height: size || 200, url }];
+          } else {
+            returnArray[1] = [
+              ...(returnArray[1] || []),
+              { height: halfSize || 100, url },
+            ];
           }
-        }}
-        style={[
-          styles.single,
-          {
-            borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
-            borderBottomRightRadius: alignment === 'left' ? 16 : 2,
-            width,
-          },
-          single,
-        ]}
-        testID='image-attachment-single'
-        {...additionalTouchableProps}
-      >
-        <Image
-          resizeMode='cover'
-          source={{ cache: 'force-cache', uri: galleryImages[0].url }}
-          style={{ flex: 1 }}
-        />
-      </TouchableOpacity>
-    );
-  }
+        }
+      }
+      return returnArray;
+    }, [] as { height: number | string; url: string }[][]);
 
   return (
     <View
       style={[
         styles.galleryContainer,
         {
-          borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
-          borderBottomRightRadius: alignment === 'left' ? 16 : 2,
-          height:
-            galleryImages.length >= 4
-              ? doubleSize
-              : galleryImages.length === 3
-              ? halfSize
-              : size,
           width,
         },
         galleryContainer,
       ]}
       testID='image-multiple-container'
     >
-      {galleryImages.slice(0, 4).map((image, i) => (
-        <TouchableOpacity
-          activeOpacity={0.8}
-          key={`gallery-item-${i}`}
-          onLongPress={onLongPress}
-          onPress={() => {
-            if (!preventPress) {
-              setImage({ messageId, url: galleryImages[i].url });
-              setBlurType(blurType || 'light');
-              setOverlay('gallery');
-            }
-          }}
+      {galleryImages.map((column, colIndex) => (
+        <View
+          key={`gallery-item-column-${colIndex}`}
           style={[
+            styles.flex,
             {
-              height: galleryImages.length !== 3 ? size : halfSize,
-              width: galleryImages.length !== 3 ? size : halfSize,
+              flexDirection: images.length === 2 ? 'row' : 'column',
             },
-            imageContainer,
+            galleryItemColumn,
           ]}
-          testID='image-multiple'
-          {...additionalTouchableProps}
         >
-          {i === 3 && galleryImages.length > 4 ? (
-            <View style={{ flex: 1 }}>
+          {column.map(({ height, url }, rowIndex) => (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              key={`gallery-item-${url}`}
+              onLongPress={onLongPress}
+              onPress={() => {
+                if (!preventPress) {
+                  setImage({ messageId, url });
+                  setBlurType(blurType || 'light');
+                  setOverlay('gallery');
+                }
+              }}
+              style={[
+                styles.imageContainer,
+                {
+                  height,
+                },
+                imageContainer,
+              ]}
+              testID='image-multiple'
+              {...additionalTouchableProps}
+            >
               <Image
                 resizeMode='cover'
-                source={{ cache: 'force-cache', uri: galleryImages[i].url }}
-                style={{ flex: 1, opacity: 0.5 }}
+                source={{ cache: 'force-cache', uri: url }}
+                style={[styles.flex, image]}
               />
-              <View
-                style={[
-                  StyleSheet.absoluteFillObject,
-                  { alignItems: 'center', justifyContent: 'center' },
-                ]}
-              >
+              {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
                 <View
-                  style={{
-                    alignItems: 'center',
-                    backgroundColor: '#000000B0',
-                    borderRadius: 20,
-                    height: '40%',
-                    justifyContent: 'center',
-                    width: '90%',
-                  }}
+                  style={[
+                    StyleSheet.absoluteFillObject,
+                    styles.moreImagesContainer,
+                    moreImagesContainer,
+                  ]}
                 >
-                  <Text
-                    style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}
-                  >
-                    +
-                    {t('{{ imageCount }} more', {
-                      imageCount: galleryImages.length - i,
-                    })}
+                  <Text style={[styles.moreImagesText, moreImagesText]}>
+                    {`+${images.length - 3}`}
                   </Text>
                 </View>
-              </View>
-            </View>
-          ) : (
-            <Image
-              resizeMode='cover'
-              source={{ cache: 'force-cache', uri: image?.url }}
-              style={{ flex: 1 }}
-            />
-          )}
-        </TouchableOpacity>
+              ) : null}
+            </TouchableOpacity>
+          ))}
+        </View>
       ))}
     </View>
   );
@@ -361,15 +253,12 @@ export const Gallery = <
 ) => {
   const {
     additionalTouchableProps: propAdditionalTouchableProps,
-    alignment: propAlignment,
     images: propImages,
     onLongPress: propOnLongPress,
     preventPress,
-    t: propT,
   } = props;
 
   const {
-    alignment: contextAlignment,
     images: contextImages,
     message,
     onLongPress: contextOnLongPress,
@@ -377,7 +266,6 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t: contextT } = useTranslationContext();
 
   const images = propImages || contextImages;
 
@@ -385,20 +273,16 @@ export const Gallery = <
 
   const additionalTouchableProps =
     propAdditionalTouchableProps || contextAdditionalTouchableProps;
-  const alignment = propAlignment || contextAlignment;
   const onLongPress = propOnLongPress || contextOnLongPress;
-  const t = propT || contextT;
 
   return (
     <MemoizedGallery
       {...{
         additionalTouchableProps,
-        alignment,
         images,
         messageId: message?.id,
         onLongPress,
         preventPress,
-        t,
       }}
     />
   );

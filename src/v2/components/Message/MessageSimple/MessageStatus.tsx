@@ -131,10 +131,8 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.status === nextMessage.status &&
-    ((Array.isArray(prevMessage.readBy) &&
-      Array.isArray(nextMessage.readBy) &&
-      prevMessage.readBy.length === nextMessage.readBy.length) ||
-      prevMessage.readBy === nextMessage.readBy);
+    prevMessage.type === nextMessage.type &&
+    prevMessage.readBy === nextMessage.readBy;
   if (!messageEqual) return false;
 
   return true;

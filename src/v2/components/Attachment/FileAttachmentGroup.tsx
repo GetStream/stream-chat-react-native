@@ -7,7 +7,7 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
-import { useMessageOverlayContext } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
   DefaultAttachmentType,
@@ -22,9 +22,6 @@ import type {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E5E5E5',
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
     padding: 4,
   },
 });
@@ -37,10 +34,7 @@ export type FileAttachmentGroupPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'files'
-> & {
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> & {
   /**
    * The unique id for the message with file attachments
    */
@@ -58,21 +52,18 @@ const FileAttachmentGroupWithContext = <
 >(
   props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, files, messageId } = props;
+  const { files, messageId } = props;
 
-  const borderBottomLeftRadius = alignment === 'right' ? 16 : 2;
-  const borderBottomRightRadius = alignment === 'left' ? 16 : 2;
+  const {
+    theme: {
+      messageSimple: {
+        fileAttachmentGroup: { container },
+      },
+    },
+  } = useTheme();
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          borderBottomLeftRadius,
-          borderBottomRightRadius,
-        },
-      ]}
-    >
+    <View style={[styles.container, container]}>
       {files.map((file, index) => (
         <View
           key={`${messageId}-${index}`}
@@ -140,27 +131,31 @@ export const FileAttachmentGroup = <
 >(
   props: FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment: propAlignment, files: propFiles, messageId } = props;
+  const { files: propFiles, messageId } = props;
 
-  const {
-    alignment: contextAlignment,
-    files: contextFiles,
-  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { files: contextFiles } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   const files = propFiles || contextFiles;
 
   if (!files.length) return null;
 
-  const alignment = propAlignment || contextAlignment || data?.alignment;
-
   return (
     <MemoizedFileAttachmentGroup
       {...{
-        alignment,
         files,
         messageId,
       }}
     />
   );
 };
+
+FileAttachmentGroup.displayName =
+  'FileAttachmentGroup{messageSimple{fileAttachmentGroup}}';

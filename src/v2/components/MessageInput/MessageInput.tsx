@@ -89,13 +89,12 @@ const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#0000000D', // 0D = 5% opacity
-    borderRadius: 10,
-    marginHorizontal: 10,
+    borderBottomWidth: 2,
+    borderColor: '#00000014',
+    borderTopWidth: 2,
   },
   editingBoxContainer: {
     backgroundColor: '#FFFFFF',
-    paddingHorizontal: 0,
     shadowColor: '#808080',
     shadowOpacity: 0.5,
     zIndex: 100,

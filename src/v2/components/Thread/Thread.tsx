@@ -169,7 +169,6 @@ export const Thread = <
     <>
       <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
         alignment={'left'}
-        enableLongPress={false}
         groupStyles={['single']}
         message={thread}
         preventPress
