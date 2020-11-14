@@ -1,7 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -10,7 +13,10 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -61,7 +67,8 @@ export type GalleryPropsWithContext<
     messageId?: string;
     messageText?: string;
     preventPress?: boolean;
-  };
+  } & Pick<ImageGalleryContextValue, 'setImage'> &
+  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'>;
 
 const GalleryWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -83,6 +90,9 @@ const GalleryWithContext = <
     messageText,
     onLongPress,
     preventPress,
+    setBlurType,
+    setImage,
+    setOverlay,
   } = props;
 
   const {
@@ -106,8 +116,6 @@ const GalleryWithContext = <
       },
     },
   } = useTheme();
-  const { setBlurType, setOverlay } = useOverlayContext();
-  const { setImage } = useImageGalleryContext();
 
   if (!images?.length) return null;
 
@@ -289,7 +297,16 @@ export type GalleryProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<
+  Omit<
+    GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'setBlurType' | 'setImage' | 'setOverlay'
+  >
+> &
+  Pick<
+    GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'setBlurType' | 'setImage' | 'setOverlay'
+  >;
 
 /**
  * UI component for card in attachments.
@@ -318,6 +335,7 @@ export const Gallery = <
     preventPress,
   } = props;
 
+  const { setImage } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -328,6 +346,7 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setBlurType, setOverlay } = useOverlayContext();
 
   const images = propImages || contextImages;
 
@@ -350,6 +369,9 @@ export const Gallery = <
         messageText: messageText || message?.text,
         onLongPress,
         preventPress,
+        setBlurType,
+        setImage,
+        setOverlay,
       }}
     />
   );

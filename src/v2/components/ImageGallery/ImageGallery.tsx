@@ -313,6 +313,14 @@ export const ImageGallery = <
   }, []);
 
   /**
+   * Photos length needs to be kept as a const here so if the length
+   * changes it causes the pan gesture handler function to refresh. This
+   * does not work if the calculation for the length of the array is left
+   * inside the gesture handler as it will have an array as a dependency
+   */
+  const photoLength = photos.length;
+
+  /**
    * Set selected photo when changed via pressing in the message list
    */
   useEffect(() => {
@@ -326,15 +334,7 @@ export const ImageGallery = <
       translationX.value = -(screenWidth + MARGIN) * newIndex;
       setSelectedIndex(newIndex);
     }
-  }, [image, photos]);
-
-  /**
-   * Photos length needs to be kept as a const here so if the length
-   * changes it causes the pan gesture handler function to refresh. This
-   * does not work if the calculation for the length of the array is left
-   * inside the gesture handler as it will have an array as a dependency
-   */
-  const photoLength = photos.length;
+  }, [image, photoLength]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
