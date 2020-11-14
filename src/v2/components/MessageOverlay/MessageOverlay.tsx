@@ -421,8 +421,12 @@ const MessageOverlayWithContext = <
                                 case 'gallery':
                                   return (
                                     <Gallery
+                                      alignment={alignment}
+                                      groupStyles={groupStyles}
                                       images={images}
                                       key={`gallery_${messageContentOrderIndex}`}
+                                      messageId={message.id}
+                                      messageText={message.text}
                                       preventPress
                                     />
                                   );

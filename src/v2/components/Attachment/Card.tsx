@@ -186,7 +186,9 @@ const CardWithContext = <
               </Text>
             )}
             {text && (
-              <Text style={[styles.description, description]}>{text}</Text>
+              <Text numberOfLines={3} style={[styles.description, description]}>
+                {text}
+              </Text>
             )}
           </View>
         </View>
