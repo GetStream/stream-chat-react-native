@@ -124,6 +124,27 @@ export type Theme = {
     container: ViewStyle;
     image: ImageStyle;
   };
+  imageGallery: {
+    footer: {
+      centerContainer?: ViewStyle;
+      container?: ViewStyle;
+      imageCountText?: TextStyle;
+      innerContainer?: ViewStyle;
+      leftContainer?: ViewStyle;
+      rightContainer?: ViewStyle;
+    };
+    header: {
+      centerContainer?: ViewStyle;
+      container?: ViewStyle;
+      dateText?: TextStyle;
+      innerContainer?: ViewStyle;
+      leftContainer?: ViewStyle;
+      rightContainer?: ViewStyle;
+      usernameText?: TextStyle;
+    };
+    backgroundColor?: string;
+    blurType?: 'light' | 'dark';
+  };
   loadingErrorIndicator: {
     container: ViewStyle;
     errorText: TextStyle;
@@ -463,6 +484,10 @@ export const defaultTheme: Theme = {
   iconSquare: {
     container: {},
     image: {},
+  },
+  imageGallery: {
+    footer: {},
+    header: {},
   },
   loadingErrorIndicator: {
     container: {},

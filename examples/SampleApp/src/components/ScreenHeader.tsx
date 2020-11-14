@@ -17,6 +17,7 @@ import {
 } from '../types';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RoundButton } from './RoundButton';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
@@ -62,11 +63,10 @@ export const ScreenHeader = ({ title = 'Stream Chat' }) => {
         >
           {title}
         </Text>
-        <TouchableOpacity
+        <RoundButton
           onPress={() => {
             navigation.navigate('NewDirectMessagingScreen');
           }}
-          style={styles.newDMButton}
         >
           <NewDirectMessageIcon
             active
@@ -74,7 +74,7 @@ export const ScreenHeader = ({ title = 'Stream Chat' }) => {
             height={25}
             width={25}
           />
-        </TouchableOpacity>
+        </RoundButton>
       </View>
     </>
   );

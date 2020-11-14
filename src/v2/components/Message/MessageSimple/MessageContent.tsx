@@ -77,6 +77,7 @@ export type MessageContentPropsWithContext<
     | 'lastGroupMessage'
     | 'message'
     | 'onLongPress'
+    | 'preventPress'
     | 'showMessageStatus'
   > &
   Pick<
@@ -130,6 +131,7 @@ export const MessageContentWithContext = <
     MessageReplies,
     MessageStatus,
     onLongPress,
+    preventPress,
     repliesEnabled,
     setMessageContentWidth,
     showMessageStatus,
@@ -311,7 +313,7 @@ export const MessageContentWithContext = <
                 );
               })}
             <FileAttachmentGroup messageId={message.id} />
-            <Gallery />
+            <Gallery preventPress={preventPress} />
           </>
           <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us> />
         </View>
@@ -451,6 +453,7 @@ export const MessageContent = <
     lastGroupMessage,
     message,
     onLongPress,
+    preventPress,
     showMessageStatus,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
@@ -489,6 +492,7 @@ export const MessageContent = <
         MessageReplies,
         MessageStatus,
         onLongPress,
+        preventPress,
         ReactionList,
         reactionsEnabled,
         repliesEnabled,

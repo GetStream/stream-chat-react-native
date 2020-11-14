@@ -4,7 +4,6 @@ import Dayjs from 'dayjs';
 import isEqual from 'lodash/isEqual';
 
 import { useIsOnline } from './hooks/useIsOnline';
-import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
@@ -16,6 +15,7 @@ import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../../package.json';
 
@@ -121,7 +121,7 @@ const ChatWithContext = <
   });
 
   // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
 
   // Setup connection event listeners
   const { connectionRecovering, isOnline } = useIsOnline<
@@ -143,7 +143,7 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
     setChannel(newChannel);
 
-  if (!translators.t) return null;
+  if (loadingTranslators) return null;
 
   const chatContext = {
     channel,

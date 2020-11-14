@@ -1,4 +1,5 @@
 import debounce from 'lodash/debounce';
+import { Dimensions, Platform, StatusBar } from 'react-native';
 
 import { LOLReaction } from '../icons/LOLReaction';
 import { LoveReaction } from '../icons/LoveReaction';
@@ -374,6 +375,25 @@ export const ACITriggerSettings = <
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
+
+export const vw = (percentageWidth: number, rounded = false) => {
+  const value = Dimensions.get('window').width * (percentageWidth / 100);
+  return rounded ? Math.round(value) : value;
+};
+
+export const vh = (percentageHeight: number, rounded = false) => {
+  let height = Dimensions.get('window').height;
+
+  /**
+   * Android includes `statusbar` height to the Dimensions.get('window').height
+   */
+  if (Platform.OS === 'android' && StatusBar.currentHeight) {
+    height -= StatusBar.currentHeight;
+  }
+
+  const value = height * (percentageHeight / 100);
+  return rounded ? Math.round(value) : value;
+};
 
 // source: https://raw.githubusercontent.com/mathiasbynens/emoji-regex/master/RGI_Emoji.js
 // [#\*0-9]\uFE0F\u20E3 was replaced with [#*0-9]\uFE0F\u20E3 due to a lint warning

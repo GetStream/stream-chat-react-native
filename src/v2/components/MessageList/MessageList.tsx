@@ -26,22 +26,29 @@ import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 
 import { useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
-import { isDateSeparator, MessageOrDate } from './utils/insertDates';
+import {
+  isDateSeparator,
+  MessageOrDate,
+  Message as MessageType,
+} from './utils/insertDates';
 
 import { Message as DefaultMessage } from '../Message/Message';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import {
   GroupType,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
+import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+
+import type { Attachment } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -239,6 +246,7 @@ export const MessageList = <
     markRead,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     clearEditingState,
     editing,
@@ -249,7 +257,15 @@ export const MessageList = <
       messageList: { errorNotification, errorNotificationText, listContainer },
     },
   } = useTheme();
-  const { loadMoreThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadMoreThread, thread } = useThreadContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { t } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
@@ -365,6 +381,28 @@ export const MessageList = <
       if (!threadList) markRead();
     }
   };
+
+  const messagesWithImages = messageList.filter((message) => {
+    if (isDateSeparator(message)) {
+      return false;
+    }
+    if (message.attachments) {
+      return (message.attachments as Attachment<At>[]).some(
+        (attachment) =>
+          attachment.type === 'image' &&
+          !attachment.title_link &&
+          !attachment.og_scrape_url &&
+          (attachment.image_url || attachment.thumb_url),
+      );
+    }
+    return false;
+  }) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
+
+  useEffect(() => {
+    if ((threadList && thread) || (!threadList && !thread)) {
+      setImages(messagesWithImages);
+    }
+  }, [messagesWithImages.length, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196

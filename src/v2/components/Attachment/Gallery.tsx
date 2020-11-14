@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   GestureResponderEvent,
   Image,
-  Modal,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import ImageViewer from 'react-native-image-zoom-viewer';
 import { Immutable, isImmutable } from 'seamless-immutable';
 
 import { CloseButton } from '../CloseButton/CloseButton';
 
+import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -22,6 +21,7 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
@@ -124,7 +124,10 @@ export type GalleryPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
   > &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> & {
+    messageId?: string;
+    preventPress?: boolean;
+  };
 
 const GalleryWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -137,10 +140,19 @@ const GalleryWithContext = <
 >(
   props: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { additionalTouchableProps, alignment, images, onLongPress, t } = props;
+  const {
+    additionalTouchableProps,
+    alignment,
+    images,
+    messageId,
+    onLongPress,
+    preventPress,
+    t,
+  } = props;
 
   const {
     theme: {
+      imageGallery: { blurType },
       messageSimple: {
         gallery: {
           doubleSize,
@@ -154,9 +166,8 @@ const GalleryWithContext = <
       },
     },
   } = useTheme();
-
-  const [viewerModalImageIndex, setViewerModalImageIndex] = useState(0);
-  const [viewerModalOpen, setViewerModalOpen] = useState(false);
+  const { setBlurType, setOverlay } = useOverlayContext();
+  const { setImage } = useImageGalleryContext();
 
   if (!images?.length) return null;
 
@@ -179,161 +190,121 @@ const GalleryWithContext = <
 
   if (galleryImages.length === 1) {
     return (
-      <>
-        <TouchableOpacity
-          onLongPress={onLongPress}
-          onPress={() => setViewerModalOpen(true)}
-          style={[
-            styles.single,
-            {
-              borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
-              borderBottomRightRadius: alignment === 'left' ? 16 : 2,
-              width,
-            },
-            single,
-          ]}
-          testID='image-attachment-single'
-          {...additionalTouchableProps}
-        >
-          <Image
-            resizeMode='cover'
-            source={{ uri: galleryImages[0].url }}
-            style={{ flex: 1 }}
-          />
-        </TouchableOpacity>
-        {viewerModalOpen && (
-          <Modal
-            onRequestClose={() => setViewerModalOpen(false)}
-            transparent
-            visible
-          >
-            <ImageViewer
-              // TODO: We don't have 'save image' functionality.
-              // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-              // opens up popup menu to with an option "Save to the album", which basically does nothing.
-              enableSwipeDown
-              imageUrls={galleryImages}
-              onCancel={() => setViewerModalOpen(false)}
-              renderHeader={() => (
-                <GalleryHeader
-                  handleDismiss={() => setViewerModalOpen(false)}
-                />
-              )}
-              saveToLocalByLongPress={false}
-              useNativeDriver
-            />
-          </Modal>
-        )}
-      </>
+      <TouchableOpacity
+        onLongPress={onLongPress}
+        onPress={() => {
+          if (!preventPress) {
+            setImage({ messageId, url: galleryImages[0].url });
+            setBlurType(blurType || 'light');
+            setOverlay('gallery');
+          }
+        }}
+        style={[
+          styles.single,
+          {
+            borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
+            borderBottomRightRadius: alignment === 'left' ? 16 : 2,
+            width,
+          },
+          single,
+        ]}
+        testID='image-attachment-single'
+        {...additionalTouchableProps}
+      >
+        <Image
+          resizeMode='cover'
+          source={{ cache: 'force-cache', uri: galleryImages[0].url }}
+          style={{ flex: 1 }}
+        />
+      </TouchableOpacity>
     );
   }
 
   return (
-    <>
-      <View
-        style={[
-          styles.galleryContainer,
-          {
-            borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
-            borderBottomRightRadius: alignment === 'left' ? 16 : 2,
-            height:
-              galleryImages.length >= 4
-                ? doubleSize
-                : galleryImages.length === 3
-                ? halfSize
-                : size,
-            width,
-          },
-          galleryContainer,
-        ]}
-        testID='image-multiple-container'
-      >
-        {galleryImages.slice(0, 4).map((image, i) => (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            key={`gallery-item-${i}`}
-            onLongPress={onLongPress}
-            onPress={() => {
-              setViewerModalOpen(true);
-              setViewerModalImageIndex(i);
-            }}
-            style={[
-              {
-                height: galleryImages.length !== 3 ? size : halfSize,
-                width: galleryImages.length !== 3 ? size : halfSize,
-              },
-              imageContainer,
-            ]}
-            testID='image-multiple'
-            {...additionalTouchableProps}
-          >
-            {i === 3 && galleryImages.length > 4 ? (
-              <View style={{ flex: 1 }}>
-                <Image
-                  resizeMode='cover'
-                  source={{ uri: galleryImages[i].url }}
-                  style={{ flex: 1, opacity: 0.5 }}
-                />
-                <View
-                  style={[
-                    StyleSheet.absoluteFillObject,
-                    { alignItems: 'center', justifyContent: 'center' },
-                  ]}
-                >
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      backgroundColor: '#000000B0',
-                      borderRadius: 20,
-                      height: '40%',
-                      justifyContent: 'center',
-                      width: '90%',
-                    }}
-                  >
-                    <Text
-                      style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}
-                    >
-                      +
-                      {t('{{ imageCount }} more', {
-                        imageCount: galleryImages.length - i,
-                      })}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ) : (
+    <View
+      style={[
+        styles.galleryContainer,
+        {
+          borderBottomLeftRadius: alignment === 'right' ? 16 : 2,
+          borderBottomRightRadius: alignment === 'left' ? 16 : 2,
+          height:
+            galleryImages.length >= 4
+              ? doubleSize
+              : galleryImages.length === 3
+              ? halfSize
+              : size,
+          width,
+        },
+        galleryContainer,
+      ]}
+      testID='image-multiple-container'
+    >
+      {galleryImages.slice(0, 4).map((image, i) => (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          key={`gallery-item-${i}`}
+          onLongPress={onLongPress}
+          onPress={() => {
+            if (!preventPress) {
+              setImage({ messageId, url: galleryImages[i].url });
+              setBlurType(blurType || 'light');
+              setOverlay('gallery');
+            }
+          }}
+          style={[
+            {
+              height: galleryImages.length !== 3 ? size : halfSize,
+              width: galleryImages.length !== 3 ? size : halfSize,
+            },
+            imageContainer,
+          ]}
+          testID='image-multiple'
+          {...additionalTouchableProps}
+        >
+          {i === 3 && galleryImages.length > 4 ? (
+            <View style={{ flex: 1 }}>
               <Image
                 resizeMode='cover'
-                source={{ uri: image?.url }}
-                style={{ flex: 1 }}
+                source={{ cache: 'force-cache', uri: galleryImages[i].url }}
+                style={{ flex: 1, opacity: 0.5 }}
               />
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-      {viewerModalOpen && (
-        <Modal
-          onRequestClose={() => setViewerModalOpen(false)}
-          transparent
-          visible
-        >
-          <ImageViewer
-            // TODO: We don't have 'save image' functionality.
-            // Until we do, lets disable this feature. saveToLocalByLongPress prop basically
-            // opens up popup menu to with an option "Save to the album", which basically does nothing.
-            enableSwipeDown
-            imageUrls={galleryImages}
-            index={viewerModalImageIndex}
-            onCancel={() => setViewerModalOpen(false)}
-            renderHeader={() => (
-              <GalleryHeader handleDismiss={() => setViewerModalOpen(false)} />
-            )}
-            saveToLocalByLongPress={false}
-            useNativeDriver
-          />
-        </Modal>
-      )}
-    </>
+              <View
+                style={[
+                  StyleSheet.absoluteFillObject,
+                  { alignItems: 'center', justifyContent: 'center' },
+                ]}
+              >
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#000000B0',
+                    borderRadius: 20,
+                    height: '40%',
+                    justifyContent: 'center',
+                    width: '90%',
+                  }}
+                >
+                  <Text
+                    style={{ color: '#fff', fontSize: 20, fontWeight: '700' }}
+                  >
+                    +
+                    {t('{{ imageCount }} more', {
+                      imageCount: galleryImages.length - i,
+                    })}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          ) : (
+            <Image
+              resizeMode='cover'
+              source={{ cache: 'force-cache', uri: image?.url }}
+              style={{ flex: 1 }}
+            />
+          )}
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 };
 
@@ -393,12 +364,14 @@ export const Gallery = <
     alignment: propAlignment,
     images: propImages,
     onLongPress: propOnLongPress,
+    preventPress,
     t: propT,
   } = props;
 
   const {
     alignment: contextAlignment,
     images: contextImages,
+    message,
     onLongPress: contextOnLongPress,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
@@ -418,7 +391,15 @@ export const Gallery = <
 
   return (
     <MemoizedGallery
-      {...{ additionalTouchableProps, alignment, images, onLongPress, t }}
+      {...{
+        additionalTouchableProps,
+        alignment,
+        images,
+        messageId: message?.id,
+        onLongPress,
+        preventPress,
+        t,
+      }}
     />
   );
 };
