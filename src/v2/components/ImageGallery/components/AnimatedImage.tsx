@@ -78,7 +78,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
     return (
       <Animated.Image
         resizeMode={'contain'}
-        source={{ uri: photo.uri }}
+        source={{ cache: 'force-cache', uri: photo.uri }}
         style={[
           style,
           AnimatedGalleryImageStyle,

@@ -63,8 +63,10 @@ export type ImageGalleryFooterCustomComponent<
 > = ({
   photo,
   share,
+  shareMenuOpen,
 }: {
   share: () => Promise<void>;
+  shareMenuOpen: boolean;
   photo?: Photo<Us>;
 }) => React.ReactElement | null;
 
@@ -102,6 +104,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
     visible,
   } = props;
   const [height, setHeight] = useState(200);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const {
     theme: {
       imageGallery: {
@@ -136,6 +139,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
   );
 
   const share = async () => {
+    setShareMenuOpen(true);
     try {
       const localImage = await saveFile({
         fileName: `${photo.user?.name || photo.user_id || 'ChatPhoto'}-${
@@ -143,17 +147,12 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
         }-${selectedIndex}.jpg`,
         fromUrl: photo.uri,
       });
-      /**
-       * We add a 100ms timeout here as a wait, the file system seems to not
-       * register the file as an image otherwise and does not present the full
-       * sharing options for an image otherwise, likely file size related
-       */
-      await new Promise((resolve) => setTimeout(resolve, 100));
       await shareImage({ type: 'image/jpeg', url: localImage });
       await deleteFile({ uri: localImage });
     } catch (error) {
       console.log(error);
     }
+    setShareMenuOpen(false);
   };
 
   return (
@@ -165,16 +164,16 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       <ReanimatedSafeAreaView style={[styles.safeArea, container, footerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
-            leftElement({ photo, share })
+            leftElement({ photo, share, shareMenuOpen })
           ) : (
-            <TouchableOpacity onPress={share}>
+            <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
               <View style={[styles.leftContainer, leftContainer]}>
                 {ShareIcon ? ShareIcon : <ShareIconDefault />}
               </View>
             </TouchableOpacity>
           )}
           {centerElement ? (
-            centerElement({ photo, share })
+            centerElement({ photo, share, shareMenuOpen })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, imageCountText]}>
@@ -186,7 +185,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
             </View>
           )}
           {rightElement ? (
-            rightElement({ photo, share })
+            rightElement({ photo, share, shareMenuOpen })
           ) : (
             <View style={[styles.rightContainer, rightContainer]} />
           )}

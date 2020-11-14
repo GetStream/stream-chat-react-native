@@ -176,7 +176,7 @@ const GalleryWithContext = <
             >
               <Image
                 resizeMode='cover'
-                source={{ uri: url }}
+                source={{ cache: 'force-cache', uri: url }}
                 style={[styles.flex, image]}
               />
               {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
