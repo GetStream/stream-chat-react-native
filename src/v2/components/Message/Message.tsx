@@ -291,38 +291,39 @@ const MessageWithContext = <
    * show just the text and markdown should make the link
    * clickable
    */
-  const attachments = Array.isArray(message.attachments)
-    ? message.attachments.reduce(
-        (acc, cur) => {
-          if (cur.type === 'file') {
-            acc.files.push(cur);
-            acc.other = []; // remove other attachments if a file exists
-          } else if (
-            cur.type === 'image' &&
-            !cur.title_link &&
-            !cur.og_scrape_url &&
-            (cur.image_url || cur.thumb_url)
-          ) {
-            acc.images.push(cur);
-            acc.other = []; // remove other attachments if an image exists
-            // only add other attachments if there are no files/images
-          } else if (!acc.files.length && !acc.images.length) {
-            acc.other.push(cur);
-          }
+  const attachments =
+    !message.deleted_at && Array.isArray(message.attachments)
+      ? message.attachments.reduce(
+          (acc, cur) => {
+            if (cur.type === 'file') {
+              acc.files.push(cur);
+              acc.other = []; // remove other attachments if a file exists
+            } else if (
+              cur.type === 'image' &&
+              !cur.title_link &&
+              !cur.og_scrape_url &&
+              (cur.image_url || cur.thumb_url)
+            ) {
+              acc.images.push(cur);
+              acc.other = []; // remove other attachments if an image exists
+              // only add other attachments if there are no files/images
+            } else if (!acc.files.length && !acc.images.length) {
+              acc.other.push(cur);
+            }
 
-          return acc;
-        },
-        {
+            return acc;
+          },
+          {
+            files: [] as Attachment<At>[],
+            images: [] as Attachment<At>[],
+            other: [] as Attachment<At>[],
+          },
+        )
+      : {
           files: [] as Attachment<At>[],
           images: [] as Attachment<At>[],
           other: [] as Attachment<At>[],
-        },
-      )
-    : {
-        files: [] as Attachment<At>[],
-        images: [] as Attachment<At>[],
-        other: [] as Attachment<At>[],
-      };
+        };
 
   const forwardedGroupStyles =
     !!reactionsEnabled &&

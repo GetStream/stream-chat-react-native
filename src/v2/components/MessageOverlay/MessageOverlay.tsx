@@ -134,7 +134,7 @@ const MessageOverlayWithContext = <
 
   const {
     theme: {
-      colors: { attachmentBackground, grey, transparent },
+      colors: { attachmentBackground, background, grey, transparent },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS },
@@ -379,7 +379,7 @@ const MessageOverlayWithContext = <
                                   ? transparent
                                   : attachmentBackground
                                 : alignment === 'left'
-                                ? transparent
+                                ? background
                                 : grey,
                               borderBottomLeftRadius:
                                 groupStyle === 'left_bottom' ||

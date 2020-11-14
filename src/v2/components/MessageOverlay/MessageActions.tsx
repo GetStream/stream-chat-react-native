@@ -115,7 +115,7 @@ export type MessageActionsPropsWithContext<
   MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'messageActions'
 > & {
-  light: Theme['colors']['light'];
+  background: Theme['colors']['background'];
   showScreen: Animated.SharedValue<number>;
 };
 const MessageActionsWithContext = <
@@ -129,7 +129,7 @@ const MessageActionsWithContext = <
 >(
   props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, light, messageActions, showScreen } = props;
+  const { alignment, background, messageActions, showScreen } = props;
   const height = useSharedValue(0);
   const width = useSharedValue(0);
 
@@ -164,7 +164,11 @@ const MessageActionsWithContext = <
         width.value = layout.width;
         height.value = layout.height;
       }}
-      style={[styles.container, { backgroundColor: light }, showScreenStyle]}
+      style={[
+        styles.container,
+        { backgroundColor: background },
+        showScreenStyle,
+      ]}
     >
       {messageActions?.map((messageAction, index) => (
         <MemoizedMessageAction
@@ -233,7 +237,7 @@ export const MessageActions = <
   props: MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    light: propLight,
+    background: propBackground,
     messageActions: propMessageActions,
     showScreen,
   } = props;
@@ -241,7 +245,7 @@ export const MessageActions = <
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
-      colors: { light: contextLight },
+      colors: { background: contextBackground },
     },
   } = useTheme();
 
@@ -251,11 +255,11 @@ export const MessageActions = <
 
   if (!messageActions?.length) return null;
 
-  const light = propLight || contextLight;
+  const background = propBackground || contextBackground;
 
   return (
     <MemoizedMessageActions
-      {...{ alignment, light, messageActions, showScreen }}
+      {...{ alignment, background, messageActions, showScreen }}
     />
   );
 };

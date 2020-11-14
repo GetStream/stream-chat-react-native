@@ -7,6 +7,7 @@ export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
   attachmentBackground: '#E9F2FF',
+  background: '#FCFCFC',
   black: '#000000',
   danger: '#FF3742',
   grey: '#E6E6E6',
@@ -765,7 +766,7 @@ export const defaultTheme: Theme = {
       radius: 2.5,
       reaction: {},
       reactionList: {
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.background,
       },
     },
   },
