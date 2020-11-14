@@ -19,6 +19,7 @@ import type { FileAttachmentProps } from '../../components/Attachment/FileAttach
 import type { FileAttachmentGroupProps } from '../../components/Attachment/FileAttachmentGroup';
 import type { FileIconProps } from '../../components/Attachment/FileIcon';
 import type { GalleryProps } from '../../components/Attachment/Gallery';
+import type { GiphyProps } from '../../components/Attachment/Giphy';
 import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
@@ -128,7 +129,7 @@ export type MessagesContextValue<
    * Custom UI component to display Giphy image.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  Giphy: React.ComponentType<CardProps<At>>;
+  Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;

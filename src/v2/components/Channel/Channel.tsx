@@ -22,11 +22,12 @@ import {
 
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
+import { Card as CardDefault } from '../Attachment/Card';
 import { FileAttachment as FileAttachmentDefault } from '../Attachment/FileAttachment';
 import { FileAttachmentGroup as FileAttachmentGroupDefault } from '../Attachment/FileAttachmentGroup';
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
-import { Card as CardDefault } from '../Attachment/Card';
+import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
@@ -206,7 +207,7 @@ export const Channel = <
     FileAttachmentGroup = FileAttachmentGroupDefault,
     formatDate,
     Gallery = GalleryDefault,
-    Giphy = CardDefault,
+    Giphy = GiphyDefault,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,

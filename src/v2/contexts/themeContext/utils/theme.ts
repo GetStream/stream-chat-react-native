@@ -308,6 +308,21 @@ export type Theme = {
       size: ViewStyle['height'];
       width: ViewStyle['width'];
     };
+    giphy: {
+      cancel: TextStyle;
+      cancelContainer: ViewStyle;
+      container: ViewStyle;
+      giphy: ImageStyle;
+      giphyContainer: ViewStyle;
+      giphyMask: ViewStyle;
+      giphyText: TextStyle;
+      selectionContainer: ViewStyle;
+      selector: ViewStyle;
+      send: TextStyle;
+      sendContainer: ViewStyle;
+      shuffleButton: ViewStyle;
+      title: TextStyle;
+    };
     reactionList: {
       container: ViewStyle;
       middleIcon: ViewStyle;
@@ -656,6 +671,40 @@ export const defaultTheme: Theme = {
       },
       size: 200,
       width: 250,
+    },
+    giphy: {
+      cancel: {
+        color: Colors.textGrey,
+      },
+      cancelContainer: {
+        borderRightColor: Colors.light,
+      },
+      container: {},
+      giphy: {},
+      giphyContainer: {
+        backgroundColor: Colors.textGrey,
+      },
+      giphyMask: {},
+      giphyText: {
+        color: Colors.white,
+      },
+      selectionContainer: {
+        backgroundColor: Colors.white,
+        borderColor: `${Colors.black}0D`, // 0D = 5% opacity
+      },
+      selector: {
+        borderBottomColor: Colors.light,
+      },
+      send: {
+        color: Colors.primary,
+      },
+      sendContainer: {},
+      shuffleButton: {
+        borderColor: Colors.light,
+      },
+      title: {
+        color: Colors.black,
+      },
     },
     reactionList: {
       container: {},

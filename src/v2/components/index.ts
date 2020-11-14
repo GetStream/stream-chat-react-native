@@ -5,6 +5,7 @@ export * from './Attachment/FileAttachment';
 export * from './Attachment/FileAttachmentGroup';
 export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
+export * from './Attachment/Giphy';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
 export * from './AutoCompleteInput/CommandsItem';

@@ -280,7 +280,9 @@ export const MessageContentWithContext = <
               backgroundColor: onlyEmojis
                 ? transparent
                 : otherAttachments.length
-                ? attachmentBackground
+                ? otherAttachments[0].type === 'giphy'
+                  ? transparent
+                  : attachmentBackground
                 : alignment === 'left' || error
                 ? transparent
                 : grey,
@@ -324,7 +326,8 @@ export const MessageContentWithContext = <
                   );
                 case 'text':
                 default:
-                  return (
+                  return otherAttachments.length &&
+                    otherAttachments[0].actions ? null : (
                     <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
                       key={`message_text_container_${messageContentOrderIndex}`}
                     />
@@ -345,6 +348,22 @@ export const MessageContentWithContext = <
       {MessageFooter && <MessageFooter testID='message-footer' />}
       {!MessageFooter && lastGroupMessage && (
         <View style={metaContainer} testID='message-status-time'>
+          {otherAttachments.length && otherAttachments[0].actions ? (
+            <>
+              <Eye {...eyeIcon} />
+              <Text
+                style={[
+                  {
+                    textAlign: alignment,
+                  },
+                  metaText,
+                  deletedMetaText,
+                ]}
+              >
+                {t('Only visible to you')}
+              </Text>
+            </>
+          ) : null}
           {Object.keys(members).length > 2 &&
           alignment === 'left' &&
           message.user?.name ? (
