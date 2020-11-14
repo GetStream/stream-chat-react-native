@@ -53,11 +53,10 @@ export const useUserSelector = () => {
 
   const onFocusInput = () => {
     if (!searchText) {
-      setResults(initialResults || []); // <-- here
-      setLoading(false);
-    } else {
-      fetchUsers(searchText);
+      return;
     }
+
+    fetchUsers(searchText);
   };
 
   const onChangeSearchText = (newText: string) => {

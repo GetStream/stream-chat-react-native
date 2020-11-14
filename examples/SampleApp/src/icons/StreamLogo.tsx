@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconProps } from '../utils/base';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from '@react-navigation/native';
+
 export const StreamLogo: React.FC<IconProps> = ({
   height = 40,
   width = 80,
@@ -11,7 +11,6 @@ export const StreamLogo: React.FC<IconProps> = ({
     height={height}
     viewBox={`0 0 ${width} ${height}`}
     width={width}
-    xmlns='http://www.w3.org/2000/svg'
   >
     <Path
       clipRule='evenodd'

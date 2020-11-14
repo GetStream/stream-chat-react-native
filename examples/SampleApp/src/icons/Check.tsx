@@ -1,7 +1,6 @@
 import React from 'react';
-import { IconProps, RootPath, RootSvg } from '../utils/base';
-import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from '@react-navigation/native';
+import { IconProps } from '../utils/base';
+import Svg, { Path } from 'react-native-svg';
 export const Check: React.FC<IconProps> = ({ fill, height, width }) => (
   <Svg
     fill='none'

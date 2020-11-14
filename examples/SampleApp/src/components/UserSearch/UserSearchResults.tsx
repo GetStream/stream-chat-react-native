@@ -84,7 +84,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           </Text>
         </View>
       )}
-      {loading && results.length === 0 && !searchText ? (
+      {loading && results.length === 0 && searchText === '' ? (
         <ActivityIndicator size='small' />
       ) : (
         <SectionList<UserResponse<LocalUserType>>
@@ -94,6 +94,8 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
             <View style={styles.emptyResultIndicator}>
               <EmptySearchState height={124} width={124} />
               <Text>No user matches these keywords</Text>
+              <Text>{loading ? 'true' : 'false'}</Text>
+              <Text>{results.length}</Text>
             </View>
           )}
           renderItem={({ item }) => (
