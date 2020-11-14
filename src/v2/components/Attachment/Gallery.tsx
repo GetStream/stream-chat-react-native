@@ -297,16 +297,7 @@ export type GalleryProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<
-  Omit<
-    GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'setBlurType' | 'setImage' | 'setOverlay'
-  >
-> &
-  Pick<
-    GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'setBlurType' | 'setImage' | 'setOverlay'
-  >;
+> = Partial<GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
  * UI component for card in attachments.
