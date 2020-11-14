@@ -209,7 +209,9 @@ const GalleryWithContext = <
                     borderTopLeftRadius:
                       colIndex === 0 && rowIndex === 0 ? 13 : 0,
                     borderTopRightRadius:
-                      (colIndex === 1 || images.length === 1) && rowIndex === 0
+                      ((colIndex === 1 || images.length === 1) &&
+                        rowIndex === 0) ||
+                      (colIndex === 0 && rowIndex === 1)
                         ? 13
                         : 0,
                   },
