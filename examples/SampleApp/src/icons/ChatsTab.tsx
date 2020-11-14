@@ -2,11 +2,7 @@ import React from 'react';
 import { IconProps, RootPath, RootSvg } from '../utils/base';
 import Svg, { G, Path } from 'react-native-svg';
 import { useTheme } from '@react-navigation/native';
-export const ChatsTab: React.FC<IconProps> = ({
-  active,
-  height,
-  width,
-}) => {
+export const ChatsTab: React.FC<IconProps> = ({ active, height, width }) => {
   const { colors } = useTheme();
   return (
     <Svg
@@ -14,7 +10,6 @@ export const ChatsTab: React.FC<IconProps> = ({
       height={height}
       viewBox={`0 0 ${height} ${width}`}
       width={width}
-      xmlns='http://www.w3.org/2000/svg'
     >
       <G opacity={active ? 1 : 0.5}>
         <Path
