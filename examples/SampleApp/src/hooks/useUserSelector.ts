@@ -1,23 +1,13 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import {
-  FlatList,
-  Image,
-  SafeAreaView,
-  SectionList,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { UserResponse } from 'stream-chat';
 import { AppContext } from '../context/AppContext';
 import { LocalUserType } from '../types';
+
 export const useUserSelector = () => {
   const { chatClient } = useContext(AppContext);
   const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<UserResponse[]>([]);
-  const [sectionData, setSectionData] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState<
     UserResponse<LocalUserType>[]
   >([]);
@@ -61,63 +51,36 @@ export const useUserSelector = () => {
     setSelectedUsers(newSelectedUsers);
   };
 
-  const onFocusInput = async () => {
+  const onFocusInput = () => {
     if (!searchText) {
       setResults(initialResults || []); // <-- here
+      setLoading(false);
     } else {
-      const res = await chatClient?.queryUsers(
-        {
-          name: { $autocomplete: searchText },
-        },
-        { last_active: -1 },
-        { presence: true },
-      );
-      setResults(res?.users || initialResults || []);
+      fetchUsers(searchText);
     }
   };
 
-  const onChangeSearchText = async (text: string) => {
-    setSearchText(text);
-    if (!text) {
-      return setResults(initialResults || []); // <-- here
+  const onChangeSearchText = (newText: string) => {
+    setSearchText(newText);
+    if (!newText) {
+      setResults(initialResults || []); // <-- here
+      setLoading(false);
+    } else {
+      fetchUsers(newText);
     }
+  };
+
+  const fetchUsers = async (q: string) => {
+    setLoading(true);
     const res = await chatClient?.queryUsers(
       {
-        name: { $autocomplete: text },
+        name: { $autocomplete: q },
       },
       { last_active: -1 },
       { presence: true },
     );
-
     setResults(res?.users || initialResults || []);
-    setSectionData(getSections(res?.users || initialResults || []));
-  };
-
-  const getSections = (result: UserResponse[]) => {
-    const sections: Record<
-      string,
-      {
-        data: UserResponse[];
-        title: string;
-      }
-    > = {};
-
-    result.forEach((user, index) => {
-      const initial = user.name?.toLowerCase().slice(0, 1);
-
-      if (!initial) return;
-
-      if (!sections[initial]) {
-        sections[initial] = {
-          data: [user],
-          title: initial,
-        };
-      } else {
-        sections[initial].data.push(user);
-      }
-    });
-
-    return Object.values(sections);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -131,6 +94,7 @@ export const useUserSelector = () => {
       );
       setInitialResults(res?.users || []);
       setResults(res?.users || []);
+      setLoading(false);
     };
 
     init();
@@ -138,9 +102,9 @@ export const useUserSelector = () => {
 
   /* eslint-disable sort-keys */
   return {
+    loading,
     searchText,
     setSearchText,
-    sectionData,
     results,
     setResults,
     selectedUsers,
