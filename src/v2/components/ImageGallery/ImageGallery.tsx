@@ -326,7 +326,7 @@ export const ImageGallery = <
       translationX.value = -(screenWidth + MARGIN) * newIndex;
       setSelectedIndex(newIndex);
     }
-  }, [image]);
+  }, [image, photos]);
 
   /**
    * Photos length needs to be kept as a const here so if the length
