@@ -349,6 +349,7 @@ const MessageWithContext = <
 
   const hasReactions =
     !!reactionsEnabled &&
+    !message.deleted_at &&
     !!message.latest_reactions &&
     message.latest_reactions.length > 0;
 
