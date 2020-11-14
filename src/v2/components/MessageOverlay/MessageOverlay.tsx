@@ -134,7 +134,7 @@ const MessageOverlayWithContext = <
 
   const {
     theme: {
-      colors: { attachmentBackground, grey, transparent },
+      colors: { attachmentBackground, background, grey, transparent },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS },
@@ -379,7 +379,7 @@ const MessageOverlayWithContext = <
                                   ? transparent
                                   : attachmentBackground
                                 : alignment === 'left'
-                                ? transparent
+                                ? background
                                 : grey,
                               borderBottomLeftRadius:
                                 groupStyle === 'left_bottom' ||
@@ -421,8 +421,12 @@ const MessageOverlayWithContext = <
                                 case 'gallery':
                                   return (
                                     <Gallery
+                                      alignment={alignment}
+                                      groupStyles={groupStyles}
                                       images={images}
                                       key={`gallery_${messageContentOrderIndex}`}
+                                      messageId={message.id}
+                                      messageText={message.text}
                                       preventPress
                                     />
                                   );

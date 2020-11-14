@@ -52,13 +52,14 @@ export type GalleryPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'images' | 'onLongPress'
+  'alignment' | 'groupStyles' | 'images' | 'onLongPress'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
   > & {
     messageId?: string;
+    messageText?: string;
     preventPress?: boolean;
   };
 
@@ -75,8 +76,11 @@ const GalleryWithContext = <
 ) => {
   const {
     additionalTouchableProps,
+    alignment,
+    groupStyles,
     images,
     messageId,
+    messageText,
     onLongPress,
     preventPress,
   } = props;
@@ -85,6 +89,9 @@ const GalleryWithContext = <
     theme: {
       imageGallery: { blurType },
       messageSimple: {
+        content: {
+          container: { borderRadiusL },
+        },
         gallery: {
           galleryContainer,
           galleryItemColumn,
@@ -129,6 +136,8 @@ const GalleryWithContext = <
       }
       return returnArray;
     }, [] as { height: number | string; url: string }[][]);
+
+  const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
 
   return (
     <View
@@ -177,7 +186,35 @@ const GalleryWithContext = <
               <Image
                 resizeMode='cover'
                 source={{ cache: 'force-cache', uri: url }}
-                style={[styles.flex, image]}
+                style={[
+                  styles.flex,
+                  {
+                    borderBottomLeftRadius:
+                      (images.length === 1 ||
+                        (colIndex === 0 && rowIndex === 0)) &&
+                      !messageText &&
+                      groupStyle !== 'left_bottom' &&
+                      groupStyle !== 'left_single'
+                        ? borderRadiusL
+                        : 0,
+                    borderBottomRightRadius:
+                      (images.length === 1 ||
+                        (colIndex === 1 &&
+                          (images.length === 2 || rowIndex === 1))) &&
+                      !messageText &&
+                      groupStyle !== 'right_bottom' &&
+                      groupStyle !== 'right_single'
+                        ? borderRadiusL
+                        : 0,
+                    borderTopLeftRadius:
+                      colIndex === 0 && rowIndex === 0 ? 13 : 0,
+                    borderTopRightRadius:
+                      (colIndex === 1 || images.length === 1) && rowIndex === 0
+                        ? 13
+                        : 0,
+                  },
+                  image,
+                ]}
               />
               {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
                 <View
@@ -212,12 +249,29 @@ const areEqual = <
   prevProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: GalleryPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { images: prevImages } = prevProps;
-  const { images: nextImages } = nextProps;
+  const {
+    groupStyles: prevGroupStyles,
+    images: prevImages,
+    messageText: prevMessageText,
+  } = prevProps;
+  const {
+    groupStyles: nextGroupStyles,
+    images: nextImages,
+    messageText: nextMessageText,
+  } = nextProps;
 
   const imagesEqual = prevImages.length === nextImages.length;
+  if (!imagesEqual) return false;
 
-  return imagesEqual;
+  const messageTextEqual = prevMessageText === nextMessageText;
+  if (!messageTextEqual) return false;
+
+  const groupStylesEqual =
+    prevGroupStyles.length === nextGroupStyles.length &&
+    prevGroupStyles[0] === nextGroupStyles[0];
+  if (!groupStylesEqual) return false;
+
+  return true;
 };
 
 const MemoizedGallery = React.memo(
@@ -253,12 +307,18 @@ export const Gallery = <
 ) => {
   const {
     additionalTouchableProps: propAdditionalTouchableProps,
+    alignment: propAlignment,
+    groupStyles: propGroupStyles,
     images: propImages,
+    messageId,
+    messageText,
     onLongPress: propOnLongPress,
     preventPress,
   } = props;
 
   const {
+    alignment: contextAlignment,
+    groupStyles: contextGroupStyles,
     images: contextImages,
     message,
     onLongPress: contextOnLongPress,
@@ -273,14 +333,19 @@ export const Gallery = <
 
   const additionalTouchableProps =
     propAdditionalTouchableProps || contextAdditionalTouchableProps;
+  const alignment = propAlignment || contextAlignment;
+  const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
 
   return (
     <MemoizedGallery
       {...{
         additionalTouchableProps,
+        alignment,
+        groupStyles,
         images,
-        messageId: message?.id,
+        messageId: messageId || message?.id,
+        messageText: messageText || message?.text,
         onLongPress,
         preventPress,
       }}

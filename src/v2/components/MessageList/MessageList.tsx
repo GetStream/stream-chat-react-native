@@ -391,7 +391,7 @@ export const MessageList = <
     if (isDateSeparator(message)) {
       return false;
     }
-    if (message.attachments) {
+    if (!message.deleted_at && message.attachments) {
       return (message.attachments as Attachment<At>[]).some(
         (attachment) =>
           attachment.type === 'image' &&

@@ -819,7 +819,7 @@ export const defaultTheme: Theme = {
       radius: 2.5,
       reaction: {},
       reactionList: {
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.background,
       },
     },
   },
