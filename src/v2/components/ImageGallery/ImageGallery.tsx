@@ -1000,7 +1000,7 @@ export const ImageGallery = <
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || '#F2F2F2',
+      backgroundColor: backgroundColor || '#FCFCFC',
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],

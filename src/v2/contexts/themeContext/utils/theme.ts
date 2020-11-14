@@ -423,9 +423,11 @@ export const defaultTheme: Theme = {
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
     background: {
-      backgroundColor: Colors.light,
+      backgroundColor: Colors.background,
     },
-    container: {},
+    container: {
+      borderBottomColor: Colors.light,
+    },
     gradientStart: {},
     gradientStop: {},
     height: 64,

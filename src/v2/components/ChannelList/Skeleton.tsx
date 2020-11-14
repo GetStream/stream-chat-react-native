@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   container: {
-    borderBottomColor: '#EBEBEB',
     borderBottomWidth: 1,
     flex: 1,
     flexDirection: 'row',
@@ -44,7 +43,7 @@ export const Skeleton: React.FC = () => {
         gradientStop,
         height = 64,
       },
-      colors: { background: backgroundColor, black },
+      colors: { background: backgroundColor, black, grey },
     },
   } = useTheme();
 
@@ -125,7 +124,9 @@ export const Skeleton: React.FC = () => {
       style={[styles.container, container]}
       testID='channel-preview-skeleton'
     >
-      <View style={[styles.background, background]} />
+      <View
+        style={[styles.background, background, { backgroundColor: grey }]}
+      />
       <Animated.View style={[animatedStyle, styles.background]}>
         <Svg height={height} width={width}>
           <Rect

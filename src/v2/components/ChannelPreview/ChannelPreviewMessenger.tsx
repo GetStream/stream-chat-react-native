@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import Svg, { Circle } from 'react-native-svg';
 
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
@@ -12,6 +13,8 @@ import { Avatar } from '../Avatar/Avatar';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Check } from '../../icons/Check';
 import { CheckAll } from '../../icons/CheckAll';
+import { Delete } from '../../icons/Delete';
+import { MenuPointHorizontal } from '../../icons/MenuPointHorizontal';
 
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
@@ -162,67 +165,87 @@ export const ChannelPreviewMessenger = <
   const status = latestMessagePreview.status;
 
   return (
-    <TouchableOpacity
-      onPress={() => {
-        if (setActiveChannel) {
-          setActiveChannel(channel);
-        }
-      }}
-      style={[styles.container, container]}
-      testID='channel-preview-button'
+    <Swipeable
+      renderRightActions={(progress, dragX) => (
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: '#F5F5F5',
+            flexDirection: 'row',
+            padding: 20,
+          }}
+        >
+          <RectButton style={{ paddingRight: 20 }}>
+            <MenuPointHorizontal />
+          </RectButton>
+          <RectButton>
+            <Delete />
+          </RectButton>
+        </View>
+      )}
     >
-      <View>
-        <Avatar
-          image={displayAvatar.image}
-          name={displayAvatar.name}
-          size={40}
-        />
-        {displayPresence && (
-          <View
-            style={[
-              styles.presenceIndicatorContainer,
-              presenceIndicatorContainer,
-            ]}
-          >
-            <Svg>
-              <Circle {...presenceIndicator} />
-            </Svg>
-          </View>
-        )}
-      </View>
-      <View style={[styles.contentContainer, contentContainer]}>
-        <View style={[styles.row, row]}>
-          <Text numberOfLines={1} style={[styles.title, title]}>
-            {displayName}
-          </Text>
-          <View style={[styles.unreadContainer, unreadContainer]}>
-            {!!unread && (
-              <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-                {unread}
-              </Text>
-            )}
-          </View>
+      <TouchableOpacity
+        onPress={() => {
+          if (setActiveChannel) {
+            setActiveChannel(channel);
+          }
+        }}
+        style={[styles.container, container]}
+        testID='channel-preview-button'
+      >
+        <View>
+          <Avatar
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={40}
+          />
+          {displayPresence && (
+            <View
+              style={[
+                styles.presenceIndicatorContainer,
+                presenceIndicatorContainer,
+              ]}
+            >
+              <Svg>
+                <Circle {...presenceIndicator} />
+              </Svg>
+            </View>
+          )}
         </View>
-        <View style={[styles.row, row]}>
-          <Text numberOfLines={1} style={[styles.message, message]}>
-            {latestMessagePreview?.text &&
-              latestMessagePreview.text.replace(/\n/g, ' ')}
-          </Text>
-          <View style={styles.flexRow}>
-            {status === 2 ? (
-              <CheckAll {...checkAllIcon} />
-            ) : status === 1 ? (
-              <Check {...checkIcon} />
-            ) : null}
-            <Text style={[styles.date, date]}>
-              {formatLatestMessageDate && latestMessageDate
-                ? formatLatestMessageDate(latestMessageDate)
-                : latestMessagePreview?.created_at}
+        <View style={[styles.contentContainer, contentContainer]}>
+          <View style={[styles.row, row]}>
+            <Text numberOfLines={1} style={[styles.title, title]}>
+              {displayName}
             </Text>
+            <View style={[styles.unreadContainer, unreadContainer]}>
+              {!!unread && (
+                <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
+                  {unread}
+                </Text>
+              )}
+            </View>
+          </View>
+          <View style={[styles.row, row]}>
+            <Text numberOfLines={1} style={[styles.message, message]}>
+              {latestMessagePreview?.text &&
+                latestMessagePreview.text.replace(/\n/g, ' ')}
+            </Text>
+            <View style={styles.flexRow}>
+              {status === 2 ? (
+                <CheckAll {...checkAllIcon} />
+              ) : status === 1 ? (
+                <Check {...checkIcon} />
+              ) : null}
+              <Text style={[styles.date, date]}>
+                {formatLatestMessageDate && latestMessageDate
+                  ? formatLatestMessageDate(latestMessageDate)
+                  : latestMessagePreview?.created_at}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Swipeable>
   );
 };
 
