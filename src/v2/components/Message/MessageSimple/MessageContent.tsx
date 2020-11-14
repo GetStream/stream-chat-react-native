@@ -426,7 +426,9 @@ const areEqual = <
   if (!onlyEmojisEqual) return false;
 
   const otherAttachmentsEqual =
-    prevOtherAttachments.length === nextOtherAttachments.length;
+    prevOtherAttachments.length === nextOtherAttachments.length &&
+    prevOtherAttachments?.[0]?.actions?.length ===
+      nextOtherAttachments?.[0]?.actions?.length;
   if (!otherAttachmentsEqual) return false;
 
   const membersEqual =

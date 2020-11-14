@@ -381,6 +381,7 @@ const MessageWithContext = <
 
     const blockUser = {
       action: () => async () => {
+        setOverlay('none');
         if (message.user?.id) {
           await client.banUser(message.user.id);
         }
@@ -391,13 +392,17 @@ const MessageWithContext = <
 
     const copyMessage = {
       // using depreciated Clipboard from react-native until expo supports the community version or their own
-      action: () => Clipboard.setString(message.text || ''),
+      action: () => {
+        setOverlay('none');
+        Clipboard.setString(message.text || '');
+      },
       icon: <Copy />,
       title: t('Copy Message'),
     };
 
     const deleteMessage = {
       action: async () => {
+        setOverlay('none');
         if (message.id) {
           const data = await client.deleteMessage(message.id);
           updateMessage(data.message);
@@ -409,7 +414,10 @@ const MessageWithContext = <
     };
 
     const editMessage = {
-      action: () => setEditingState(message),
+      action: () => {
+        setOverlay('none');
+        setEditingState(message);
+      },
       icon: <Edit />,
       title: t('Edit Message'),
     };
@@ -440,6 +448,7 @@ const MessageWithContext = <
 
     const muteUser = {
       action: async () => {
+        setOverlay('none');
         if (message.user?.id) {
           await client.muteUser(message.user.id);
         }
@@ -449,13 +458,19 @@ const MessageWithContext = <
     };
 
     const reply = {
-      action: onOpenThread,
+      action: () => {
+        setOverlay('none');
+        onOpenThread();
+      },
       icon: <CurveLineLeftUp />,
       title: t('Reply'),
     };
 
     const threadReply = {
-      action: onOpenThread,
+      action: () => {
+        setOverlay('none');
+        onOpenThread();
+      },
       icon: <ThreadReply />,
       title: t('Thread Reply'),
     };
