@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  SectionList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { AppTheme, LocalUserType } from '../../types';
 import { UserResponse } from 'stream-chat';
@@ -14,12 +20,14 @@ type UserSearchResultsProps = {
   selectedUserIds: string[];
   toggleSelectedUser: (user: UserResponse<LocalUserType>) => void;
   groupedAlphabetically?: boolean;
+  loading?: boolean;
   searchText?: string;
   showOnlineStatus?: boolean;
 };
 
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   groupedAlphabetically = true,
+  loading = false,
   results,
   searchText,
   selectedUserIds,
@@ -59,7 +67,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
 
   return (
     <View style={{ flexGrow: 1, flexShrink: 1 }}>
-      {results.length > 0 && groupedAlphabetically && (
+      {groupedAlphabetically && (
         <View
           style={{
             backgroundColor: colors.backgroundFadeGradient,
@@ -76,81 +84,85 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           </Text>
         </View>
       )}
-      <SectionList<UserResponse<LocalUserType>>
-        keyboardDismissMode='none'
-        keyboardShouldPersistTaps='always'
-        ListEmptyComponent={() => (
-          <View style={styles.emptyResultIndicator}>
-            <EmptySearchState height={124} width={124} />
-            <Text>No user matches these keywords</Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => {
-              // TODO: Add logic for checking for duplicates
-              toggleSelectedUser(item);
-            }}
-            style={[
-              styles.searchResultContainer,
-              {
-                borderBottomColor: colors.borderLight,
-                borderBottomWidth: 1,
-              },
-            ]}
-          >
-            <Avatar image={item.image} name={item.name} size={40} />
-            <View style={styles.searchResultUserDetails}>
-              <Text
-                style={[
-                  styles.searchResultUserName,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-              >
-                {item.name}
-              </Text>
-              {showOnlineStatus && (
+      {loading && results.length === 0 && !searchText ? (
+        <ActivityIndicator size='small' />
+      ) : (
+        <SectionList<UserResponse<LocalUserType>>
+          keyboardDismissMode='none'
+          keyboardShouldPersistTaps='always'
+          ListEmptyComponent={() => (
+            <View style={styles.emptyResultIndicator}>
+              <EmptySearchState height={124} width={124} />
+              <Text>No user matches these keywords</Text>
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                // TODO: Add logic for checking for duplicates
+                toggleSelectedUser(item);
+              }}
+              style={[
+                styles.searchResultContainer,
+                {
+                  borderBottomColor: colors.borderLight,
+                  borderBottomWidth: 1,
+                },
+              ]}
+            >
+              <Avatar image={item.image} name={item.name} size={40} />
+              <View style={styles.searchResultUserDetails}>
                 <Text
                   style={[
-                    styles.searchResultUserLastOnline,
+                    styles.searchResultUserName,
                     {
-                      color: colors.textLight,
+                      color: colors.text,
                     },
                   ]}
                 >
-                  Last online {Dayjs(item.last_active).calendar()}
+                  {item.name}
                 </Text>
-              )}
-            </View>
-            {selectedUserIds.indexOf(item.id) > -1 && (
-              <View>
-                <CheckSend height={24} width={24} />
+                {showOnlineStatus && (
+                  <Text
+                    style={[
+                      styles.searchResultUserLastOnline,
+                      {
+                        color: colors.textLight,
+                      },
+                    ]}
+                  >
+                    Last online {Dayjs(item.last_active).calendar()}
+                  </Text>
+                )}
               </View>
-            )}
-          </TouchableOpacity>
-        )}
-        renderSectionHeader={({ section: { title } }) => {
-          if (searchText || !groupedAlphabetically) {
-            return null;
-          }
+              {selectedUserIds.indexOf(item.id) > -1 && (
+                <View>
+                  <CheckSend height={24} width={24} />
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => {
+            if (searchText || !groupedAlphabetically) {
+              return null;
+            }
 
-          return (
-            <Text
-              style={{
-                backgroundColor: colors.greyContentBackground,
-                color: colors.textLight,
-                padding: 6,
-              }}
-            >
-              {title.toUpperCase()}
-            </Text>
-          );
-        }}
-        sections={sections}
-        stickySectionHeadersEnabled
-      />
+            return (
+              <Text
+                style={{
+                  backgroundColor: colors.greyContentBackground,
+                  color: colors.textLight,
+                  padding: 6,
+                }}
+              >
+                {title.toUpperCase()}
+              </Text>
+            );
+          }}
+          sections={sections}
+          stickySectionHeadersEnabled
+        />
+      )}
     </View>
   );
 };

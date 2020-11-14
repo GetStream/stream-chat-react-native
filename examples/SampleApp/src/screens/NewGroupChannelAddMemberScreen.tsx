@@ -66,7 +66,10 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
           </TouchableOpacity>
           <Text style={{ fontWeight: 'bold' }}>Add Group Members</Text>
           <TouchableOpacity
+            disabled={selectedUsers.length === 0}
             onPress={() => {
+              if (selectedUsers.length === 0) return;
+
               navigation.navigate('NewGroupChannelAssignNameScreen', {
                 selectedUsers,
               });
