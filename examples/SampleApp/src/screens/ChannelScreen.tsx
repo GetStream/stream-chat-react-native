@@ -89,7 +89,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     <SafeAreaView>
       <View style={{ height: '100%' }}>
         <Chat client={chatClient} style={streamTheme}>
-          <ChannelHeader title={'User'} />
+          <ChannelHeader title={channel.data.name || 'Channel Name'} />
           <View style={{ flexGrow: 1, flexShrink: 1 }}>
             <Channel channel={channel}>
               <MessageList<

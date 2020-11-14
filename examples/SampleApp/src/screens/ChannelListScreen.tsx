@@ -25,8 +25,6 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const filters = {
-  example: 'example-apps',
-  members: { $in: ['ron'] },
   type: 'messaging',
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
@@ -79,7 +77,12 @@ export const ChannelListScreen: React.FC = () => {
                 LocalResponseType,
                 LocalUserType
               >
-                filters={filters}
+                filters={{
+                  ...filters,
+                  members: {
+                    $in: [chatClient.user?.id],
+                  },
+                }}
                 onSelect={(channel) => {
                   navigation.navigate('ChannelScreen', {
                     channelId: channel.id,

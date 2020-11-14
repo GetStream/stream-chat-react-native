@@ -1,24 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
-import { Channel as ChannelType, StreamChat } from 'stream-chat';
 
 import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { MenuDrawer } from './src/screens/MenuDrawer';
-import {
-  ActivityIndicator,
-  LogBox,
-  SafeAreaView,
-  useColorScheme,
-  Vibration,
-  View,
-} from 'react-native';
+import { useColorScheme } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { DarkTheme, LightTheme } from './src/appTheme';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
-import { NewGroupChannelScreen } from './src/screens/NewGroupChannelScreen';
+import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
+import { NewGroupChannelAssignNameScreen } from './src/screens/NewGroupChannelAssignNameScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
@@ -35,7 +27,7 @@ import {
   StackNavigatorParamList,
 } from './src/types';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-LogBox.ignoreAllLogs(true);
+// LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
 
@@ -109,8 +101,13 @@ const HomeScreen = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      component={NewGroupChannelScreen}
-      name='NewGroupChannelScreen'
+      component={NewGroupChannelAddMemberScreen}
+      name='NewGroupChannelAddMemberScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={NewGroupChannelAssignNameScreen}
+      name='NewGroupChannelAssignNameScreen'
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
