@@ -42,6 +42,7 @@ import {
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { triggerHaptic } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
 import type SeamlessImmutable from 'seamless-immutable';
@@ -169,7 +170,9 @@ export const ImageGallery = <
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    Keyboard.dismiss();
+    if (visible) {
+      Keyboard.dismiss();
+    }
     fadeScreen(visible);
   }, [visible]);
 
@@ -189,6 +192,12 @@ export const ImageGallery = <
    * Header visible value for animating in out
    */
   const headerFooterVisible = useSharedValue(1);
+
+  /**
+   * Values to track scale for haptic feedback firing
+   */
+  const hasHitBottomScale = useSharedValue(1);
+  const hasHitTopScale = useSharedValue(0);
 
   /**
    * Gesture handler refs
@@ -725,6 +734,21 @@ export const ImageGallery = <
          */
         scale.value = clamp(offsetScale.value * evt.scale, 1, 8);
         const localEvtScale = scale.value / offsetScale.value;
+
+        /**
+         * When we hit the top or bottom of the scale clamping we run a haptic
+         * trigger, we track if it has been run to not spam the trigger
+         */
+        if (scale.value !== 8 && scale.value !== 1) {
+          hasHitTopScale.value = 0;
+          hasHitBottomScale.value = 0;
+        } else if (scale.value === 8 && hasHitTopScale.value === 0) {
+          hasHitTopScale.value = 1;
+          runOnJS(triggerHaptic)('impactLight');
+        } else if (scale.value === 1 && hasHitBottomScale.value === 0) {
+          hasHitBottomScale.value = 1;
+          runOnJS(triggerHaptic)('impactLight');
+        }
 
         /**
          * We calculate the adjusted focal point on the photo using the events

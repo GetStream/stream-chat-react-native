@@ -4,6 +4,7 @@ import { BlurView as RNBlurView } from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
+import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ImagePicker from 'react-native-image-crop-picker';
 import RNShare from 'react-native-share';
 import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
@@ -159,6 +160,12 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed...');
     }
+  },
+  triggerHaptic: (method) => {
+    ReactNativeHapticFeedback.trigger(method, {
+      enableVibrateFallback: false,
+      ignoreAndroidSystemSettings: false,
+    });
   },
 });
 

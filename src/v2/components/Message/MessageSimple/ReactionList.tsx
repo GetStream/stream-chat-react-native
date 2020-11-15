@@ -86,7 +86,7 @@ export type ReactionListPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'reactions' | 'showMessageOverlay'
+  'alignment' | 'onLongPress' | 'reactions' | 'showMessageOverlay'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -115,6 +115,7 @@ const ReactionListWithContext = <
     alignment,
     fill: propFill,
     messageContentWidth,
+    onLongPress,
     radius: propRadius,
     reactions,
     reactionSize: propReactionSize,
@@ -178,6 +179,7 @@ const ReactionListWithContext = <
 
   return (
     <TouchableOpacity
+      onLongPress={onLongPress}
       onPress={() => showMessageOverlay(true)}
       style={[
         styles.container,
@@ -344,15 +346,12 @@ export const ReactionList = <
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, reactions, showMessageOverlay } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    alignment,
+    onLongPress,
+    reactions,
+    showMessageOverlay,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { supportedReactions } = useMessagesContext<
     At,
     Ch,
@@ -365,7 +364,13 @@ export const ReactionList = <
 
   return (
     <MemoizedReactionList
-      {...{ alignment, reactions, showMessageOverlay, supportedReactions }}
+      {...{
+        alignment,
+        onLongPress,
+        reactions,
+        showMessageOverlay,
+        supportedReactions,
+      }}
       {...props}
     />
   );

@@ -1,5 +1,25 @@
 import React from 'react';
-import { Clipboard, GestureResponderEvent, Keyboard } from 'react-native';
+import {
+  Clipboard,
+  GestureResponderEvent,
+  Keyboard,
+  Platform,
+  ViewStyle,
+} from 'react-native';
+import {
+  TapGestureHandler,
+  TapGestureHandlerGestureEvent,
+} from 'react-native-gesture-handler';
+import Animated, {
+  cancelAnimation,
+  // @ts-expect-error TODO: Remove on next Reanimated update with new types
+  runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 import {
   ChannelContextValue,
@@ -51,6 +71,7 @@ import { Mute } from '../../icons/Mute';
 import { SendUp } from '../../icons/SendUp';
 import { ThreadReply } from '../../icons/ThreadReply';
 import { UserDelete } from '../../icons/UserDelete';
+import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
 
 import type {
@@ -200,6 +221,7 @@ const MessageWithContext = <
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    animatedLongPress = Platform.OS === 'ios',
     channel,
     client,
     disabled,
@@ -240,6 +262,19 @@ const MessageWithContext = <
       colors: { danger, primary },
     },
   } = useTheme();
+
+  const pressActive = useSharedValue(false);
+  const scale = useSharedValue(1);
+  const scaleStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          scale: scale.value,
+        },
+      ],
+    }),
+    [],
+  );
 
   const actionsEnabled =
     message.type === 'regular' && message.status === 'received';
@@ -526,9 +561,17 @@ const MessageWithContext = <
     setOverlay('message');
   };
 
+  const onLongPressMessage =
+    onLongPressProp && !disabled
+      ? (event: GestureResponderEvent) => onLongPressProp(message, event)
+      : enableLongPress
+      ? () => showMessageOverlay(false)
+      : () => null;
+
   const messageContext = {
     actionsEnabled,
     alignment,
+    animatedLongPress,
     canModifyMessage,
     files: attachments.files,
     groupStyles: forwardedGroupStyles,
@@ -541,12 +584,7 @@ const MessageWithContext = <
       forwardedGroupStyles[0] === 'bottom',
     lastReceivedId,
     message,
-    onLongPress:
-      onLongPressProp && !disabled
-        ? (event: GestureResponderEvent) => onLongPressProp(message, event)
-        : enableLongPress
-        ? () => showMessageOverlay(false)
-        : () => null,
+    onLongPress: animatedLongPress ? () => null : onLongPressMessage,
     onlyEmojis,
     onOpenThread,
     onPress: onPressProp
@@ -562,10 +600,51 @@ const MessageWithContext = <
     threadList,
   };
 
+  const onLongPressTouchable = useAnimatedGestureHandler<
+    TapGestureHandlerGestureEvent
+  >(
+    {
+      onFinish: () => {
+        pressActive.value = false;
+        cancelAnimation(scale);
+        scale.value = withTiming(1, { duration: 100 });
+      },
+      onStart: () => {
+        pressActive.value = true;
+        cancelAnimation(scale);
+        /**
+         * React native longPress active occurs on 370ms,
+         * to hijack this we must make sure the timing is
+         * longer, otherwise onPress will fire instead
+         */
+        scale.value = withSequence(
+          withTiming(1, { duration: 100 }),
+          withTiming(0.98, { duration: 400 }, () => {
+            if (pressActive.value) {
+              runOnJS(triggerHaptic)('impactMedium');
+              runOnJS(onLongPressMessage)();
+            }
+          }),
+          withTiming(1.02, { duration: 100 }),
+          withTiming(1.0, { duration: 300 }),
+        );
+      },
+    },
+    [onLongPressMessage],
+  );
+
   return (
-    <MessageProvider value={messageContext}>
-      <MessageSimple />
-    </MessageProvider>
+    <TapGestureHandler
+      enabled={animatedLongPress}
+      maxDurationMs={3000}
+      onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
+    >
+      <Animated.View style={scaleStyle}>
+        <MessageProvider value={messageContext}>
+          <MessageSimple />
+        </MessageProvider>
+      </Animated.View>
+    </TapGestureHandler>
   );
 };
 
