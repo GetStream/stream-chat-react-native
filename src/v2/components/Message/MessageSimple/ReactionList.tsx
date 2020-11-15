@@ -167,14 +167,14 @@ const ReactionListWithContext = <
     x2 - (reactionSize * reactions.length) / 2 > screenPadding;
   const insideRightBound =
     x2 + strokeSize + (reactionSize * reactions.length) / 2 <
-    width - screenPadding;
+    width - screenPadding * 2;
   const left =
     reactions.length === 1
       ? x1 + (alignmentLeft ? -radius : radius - reactionSize)
       : !insideLeftBound
       ? screenPadding
       : !insideRightBound
-      ? width - screenPadding - reactionSize * reactions.length
+      ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
   return (
@@ -256,7 +256,7 @@ const ReactionListWithContext = <
           >
             {reactions.map((reaction, index) => (
               <Icon
-                key={`${reaction.type}_${index}`}
+                key={`${reaction.type}_${index}_${new Date().getTime()}`}
                 pathFill={reaction.own ? primary : textGrey}
                 size={reactionSize / 2}
                 style={middleIcon}
