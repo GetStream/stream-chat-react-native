@@ -430,7 +430,10 @@ export const OverlayReactionList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >(
-  props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: Omit<
+    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+    'setOverlay'
+  >,
 ) => {
   const {
     fill,
