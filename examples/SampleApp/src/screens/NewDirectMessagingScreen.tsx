@@ -198,7 +198,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                     ]}
                   >
                     <TextInput
-                      autoFocus
                       onChangeText={onChangeSearchText}
                       onFocus={onFocusInput}
                       placeholder={'Type a name'}
