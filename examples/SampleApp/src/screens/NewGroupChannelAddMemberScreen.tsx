@@ -105,7 +105,6 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
               >
                 <Search height={24} width={24} />
                 <TextInput
-                  autoFocus
                   onBlur={() => {
                     // setResults([]);
                   }}
