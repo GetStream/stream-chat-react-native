@@ -40,6 +40,10 @@ export type MessageContextValue<
   /** Position of the message, either 'right' or 'left' */
   alignment: Alignment;
   /**
+   * Should use gesture handler to animate longPress
+   */
+  animatedLongPress: boolean;
+  /**
    * Function that returns a boolean indicating whether or not the user can edit/delete the message.
    */
   canModifyMessage: boolean;
@@ -127,6 +131,7 @@ const areEqual = <
     value: {
       actionsEnabled: prevActionsEnabled,
       alignment: prevAlignment,
+      animatedLongPress: prevAnimateLongPress,
       files: prevFiles,
       groupStyles: prevGroupStyles,
       hasReactions: prevHasReactions,
@@ -144,6 +149,7 @@ const areEqual = <
     value: {
       actionsEnabled: nextActionsEnabled,
       alignment: nextAlignment,
+      animatedLongPress: nextAnimateLongPress,
       files: nextFiles,
       groupStyles: nextGroupStyles,
       hasReactions: nextHasReactions,
@@ -200,6 +206,9 @@ const areEqual = <
         nextReactions[index].type === latestReaction.type,
     );
   if (!reactionsEqual) return false;
+
+  const animateLongPressQual = prevAnimateLongPress === nextAnimateLongPress;
+  if (!animateLongPressQual) return false;
 
   const attachmentsEqual =
     Array.isArray(prevMessage.attachments) ===

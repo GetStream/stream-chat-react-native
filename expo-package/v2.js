@@ -3,6 +3,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
+import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as Sharing from 'expo-sharing';
@@ -123,6 +124,30 @@ registerNativeHandlers({
       return true;
     } catch (error) {
       throw new Error('Sharing failed or cancelled...');
+    }
+  },
+  triggerHaptic: (method) => {
+    switch (method) {
+      case 'impactHeavy':
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+        break;
+      case 'impactLight':
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        break;
+      case 'impactMedium':
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        break;
+      case 'notificationError':
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        break;
+      case 'notificationSuccess':
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        break;
+      case 'notificationWarning':
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+        break;
+      default:
+        Haptics.selectionAsync();
     }
   },
 });

@@ -16,6 +16,7 @@
     "expo-blur": "8.2.0",
     "expo-document-picker": "8.4.1",
     "expo-file-system": "9.2.0",
+    "expo-haptics": "8.3.0",
     "expo-image-picker": "9.1.1",
     "expo-permissions": "9.3.0",
     "expo-sharing": "8.4.1",
