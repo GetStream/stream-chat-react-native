@@ -2,7 +2,7 @@ import React from 'react';
 import { IconProps } from '../utils/base';
 import Svg, { G, Path } from 'react-native-svg';
 import { useTheme } from '@react-navigation/native';
-export const LeftArrow: React.FC<IconProps> = ({ active, height, width }) => {
+export const GoBack: React.FC<IconProps> = ({ active, height, width }) => {
   const { colors } = useTheme();
   return (
     <Svg

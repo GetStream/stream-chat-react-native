@@ -1,20 +1,22 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { UserResponse } from 'stream-chat';
+import { QueryFilter, UserFilters, UserResponse } from 'stream-chat';
 import { AppContext } from '../context/AppContext';
 import { LocalUserType } from '../types';
 
-export const useUserSelector = () => {
+export const usePaginatedUsers = () => {
   const { chatClient } = useContext(AppContext);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
-  const [results, setResults] = useState<UserResponse[]>([]);
+  const [results, setResults] = useState<UserResponse<LocalUserType>[]>([]);
+  let offset = useRef(0).current;
+  let hasMoreResults = useRef(true).current;
   const [selectedUsers, setSelectedUsers] = useState<
     UserResponse<LocalUserType>[]
   >([]);
   const selectedUserIds = useRef<string[]>([]).current;
-  const [initialResults, setInitialResults] = useState<UserResponse[] | null>(
-    null,
-  );
+  const [initialResults, setInitialResults] = useState<
+    UserResponse<LocalUserType>[] | null
+  >(null);
 
   const toggleUser = (user: UserResponse<LocalUserType>) => {
     if (!user || !user.name) {
@@ -34,7 +36,7 @@ export const useUserSelector = () => {
     setSelectedUsers(newSelectedUsers);
     selectedUserIds.push(user.id);
     setSearchText('');
-    setResults(initialResults);
+    setResults(initialResults || []);
   };
 
   const removeUser = (index: number) => {
@@ -69,39 +71,79 @@ export const useUserSelector = () => {
     }
   };
 
-  const fetchUsers = async (q: string) => {
+  const fetchUsers = async (q = '') => {
     setLoading(true);
-    const res = await chatClient?.queryUsers(
-      {
-        name: { $autocomplete: q },
-      },
-      { last_active: -1 },
-      { presence: true },
-    );
-    setResults(res?.users || initialResults || []);
+    try {
+      const filter: UserFilters = {
+        role: 'user',
+      };
+
+      if (q) filter.name = { $autocomplete: q };
+
+      if (q !== searchText) {
+        offset = 0;
+        hasMoreResults = true;
+      } else {
+        offset = offset + results.length;
+      }
+
+      if (!hasMoreResults) return;
+
+      console.warn(offset, q, searchText);
+      const res = await chatClient?.queryUsers(
+        filter,
+        { name: 1, id: 1 },
+        {
+          limit: 10,
+          offset,
+          presence: true,
+        },
+      );
+
+      if (!res?.users) return;
+
+      // Dumb check to avoid duplicates
+      if (
+        q === searchText &&
+        results.findIndex((r) => res?.users[0].id === r.id) > -1
+      ) {
+        console.warn('repeated >?>>>>>')
+        return;
+      }
+
+      setResults((r) => {
+        if (q !== searchText) {
+          return res?.users;
+        }
+        return r.concat(res?.users || []);
+      });
+
+      if (res?.users.length < 10) {
+        hasMoreResults = false;
+      }
+
+      if (!q && offset === 0) {
+        setInitialResults(res?.users || []);
+      }
+    } catch (e) {
+      // do nothing;
+    }
+
     setLoading(false);
   };
 
-  useEffect(() => {
-    const init = async () => {
-      const res = await chatClient?.queryUsers(
-        {
-          role: 'user',
-        },
-        { name: 1 },
-        { presence: true },
-      );
-      setInitialResults(res?.users || []);
-      setResults(res?.users || []);
-      setLoading(false);
-    };
+  const loadMore = () => {
+    fetchUsers(searchText);
+  };
 
-    init();
+  useEffect(() => {
+    fetchUsers();
   }, []);
 
   /* eslint-disable sort-keys */
   return {
     loading,
+    loadMore,
     searchText,
     setSearchText,
     results,
