@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { QueryFilter, UserFilters, UserResponse } from 'stream-chat';
+import { UserFilters, UserResponse } from 'stream-chat';
 import { AppContext } from '../context/AppContext';
 import { LocalUserType } from '../types';
 
@@ -8,8 +8,9 @@ export const usePaginatedUsers = () => {
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState<UserResponse<LocalUserType>[]>([]);
-  let offset = useRef(0).current;
-  let hasMoreResults = useRef(true).current;
+  const offset = useRef(0);
+  const hasMoreResults = useRef(true);
+  const queryInProgress = useRef(false);
   const [selectedUsers, setSelectedUsers] = useState<
     UserResponse<LocalUserType>[]
   >([]);
@@ -72,8 +73,11 @@ export const usePaginatedUsers = () => {
   };
 
   const fetchUsers = async (q = '') => {
+    if (queryInProgress.current) return;
     setLoading(true);
+
     try {
+      queryInProgress.current = true;
       const filter: UserFilters = {
         role: 'user',
       };
@@ -81,33 +85,38 @@ export const usePaginatedUsers = () => {
       if (q) filter.name = { $autocomplete: q };
 
       if (q !== searchText) {
-        offset = 0;
-        hasMoreResults = true;
+        offset.current = 0;
+        hasMoreResults.current = true;
       } else {
-        offset = offset + results.length;
+        offset.current = offset.current + results.length;
       }
 
-      if (!hasMoreResults) return;
+      if (!hasMoreResults.current) {
+        queryInProgress.current = false;
+        return;
+      }
 
-      console.warn(offset, q, searchText);
       const res = await chatClient?.queryUsers(
         filter,
-        { name: 1, id: 1 },
+        { name: 1 },
         {
           limit: 10,
-          offset,
+          offset: offset.current,
           presence: true,
         },
       );
 
-      if (!res?.users) return;
+      if (!res?.users) {
+        queryInProgress.current = false;
+        return;
+      }
 
       // Dumb check to avoid duplicates
       if (
         q === searchText &&
         results.findIndex((r) => res?.users[0].id === r.id) > -1
       ) {
-        console.warn('repeated >?>>>>>')
+        queryInProgress.current = false;
         return;
       }
 
@@ -118,17 +127,20 @@ export const usePaginatedUsers = () => {
         return r.concat(res?.users || []);
       });
 
-      if (res?.users.length < 10) {
-        hasMoreResults = false;
+      if (
+        res?.users.length < 10 &&
+        (offset.current === 0 || q === searchText)
+      ) {
+        hasMoreResults.current = false;
       }
 
-      if (!q && offset === 0) {
+      if (!q && offset.current === 0) {
         setInitialResults(res?.users || []);
       }
     } catch (e) {
       // do nothing;
     }
-
+    queryInProgress.current = false;
     setLoading(false);
   };
 
