@@ -371,6 +371,10 @@ export const MessageInput = <
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
+
+    if (!editing) {
+      resetInput();
+    }
   }, [editing]);
 
   const sendMessageAsync = (id: string) => {
@@ -697,6 +701,16 @@ export const MessageInput = <
       </Container>
     );
   };
+  const resetInput = (pendingAttachments: Attachment[] = []) => {
+    setFileUploads([]);
+    setImageUploads([]);
+    setMentionedUsers([]);
+    setNumberOfUploads(
+      (prevNumberOfUploads) =>
+        prevNumberOfUploads - (pendingAttachments?.length || 0),
+    );
+    setText('');
+  };
 
   const sendMessage = async () => {
     if (sending.current) {
@@ -784,14 +798,7 @@ export const MessageInput = <
       const updateMessagePromise = editMessage(updatedMessage).then(
         clearEditingState,
       );
-      setFileUploads([]);
-      setImageUploads([]);
-      setMentionedUsers([]);
-      setNumberOfUploads(
-        (prevNumberOfUploads) =>
-          prevNumberOfUploads - (attachments?.length || 0),
-      );
-      setText('');
+      resetInput(attachments);
       logChatPromiseExecution(updateMessagePromise, 'update message');
 
       sending.current = false;
@@ -805,14 +812,7 @@ export const MessageInput = <
         } as unknown) as StreamMessage<At, Me, Us>);
 
         sending.current = false;
-        setFileUploads([]);
-        setImageUploads([]);
-        setMentionedUsers([]);
-        setNumberOfUploads(
-          (prevNumberOfUploads) =>
-            prevNumberOfUploads - (attachments?.length || 0),
-        );
-        setText('');
+        resetInput(attachments);
       } catch (_error) {
         sending.current = false;
         setText(prevText);
@@ -841,7 +841,7 @@ export const MessageInput = <
         } as StreamMessage<At, Me, Us>);
       }
 
-      setText('');
+      resetInput();
       clearEditingState();
     } catch (error) {
       console.log(error);
@@ -1038,8 +1038,8 @@ export const MessageInput = <
         <IconSquare
           icon={iconClose}
           onPress={() => {
+            resetInput();
             clearEditingState();
-            setText('');
           }}
         />
       </EditingBoxHeader>
