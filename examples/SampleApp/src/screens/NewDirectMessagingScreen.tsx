@@ -22,7 +22,7 @@ import {
 
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
-import { useUserSelector } from '../hooks/useUserSelector';
+import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { AddUser } from '../icons/AddUser';
 import { GoBack } from '../icons/GoBack';
 import { AppTheme, StackNavigatorParamList } from '../types';
@@ -65,6 +65,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const {
     loading: loadingResults,
+    loadMore,
     onChangeSearchText,
     onFocusInput,
     results,
@@ -72,7 +73,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     selectedUserIds,
     selectedUsers,
     toggleUser,
-  } = useUserSelector();
+  } = usePaginatedUsers();
 
   const [channel, setChannel] = useState<
     StreamChatChannel<
@@ -258,6 +259,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                 <View style={{ flexGrow: 1, flexShrink: 1 }}>
                   <UserSearchResults
                     loading={loadingResults}
+                    loadMore={loadMore}
                     results={results}
                     searchText={searchText}
                     selectedUserIds={selectedUserIds}

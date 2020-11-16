@@ -14,7 +14,7 @@ import {
 import { Avatar, ThemeProvider } from '../../../../src/v2';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
-import { useUserSelector } from '../hooks/useUserSelector';
+import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { Close } from '../icons/Close';
 import { GoBack } from '../icons/GoBack';
 import { RightArrow } from '../icons/RightArrow';
@@ -34,6 +34,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
   const {
     loading: loadingResults,
+    loadMore,
     onChangeSearchText,
     onFocusInput,
     results,
@@ -41,11 +42,11 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
     selectedUserIds,
     selectedUsers,
     toggleUser,
-  } = useUserSelector();
+  } = usePaginatedUsers();
   if (!chatClient) return null;
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ height: '100%' }}>
       <ThemeProvider>
         <View
           style={[
@@ -105,18 +106,10 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
               >
                 <Search height={24} width={24} />
                 <TextInput
-                  onBlur={() => {
-                    // setResults([]);
-                  }}
                   onChangeText={onChangeSearchText}
                   onFocus={onFocusInput}
                   placeholder={'Search'}
                   placeholderTextColor={colors.textLight}
-                  ref={(ref) => {
-                    if (!ref) return;
-
-                    inputRef = ref;
-                  }}
                   style={[
                     styles.inputBox,
                     {
@@ -130,8 +123,9 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                 <FlatList
                   data={selectedUsers}
                   horizontal
-                  renderItem={({ index, item: user }) => (
+                  renderItem={({ item: user }) => (
                     <TouchableOpacity
+                      key={user.id}
                       onPress={() => {
                         toggleUser?.(user);
                       }}
@@ -158,6 +152,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
             <View style={{ flexGrow: 1, flexShrink: 1 }}>
               <UserSearchResults
                 loading={loadingResults}
+                loadMore={loadMore}
                 results={results}
                 searchText={searchText}
                 selectedUserIds={selectedUserIds}

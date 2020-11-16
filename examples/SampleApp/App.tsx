@@ -5,7 +5,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { MenuDrawer } from './src/screens/MenuDrawer';
-import { useColorScheme } from 'react-native';
+import { LogBox, useColorScheme } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 import { DarkTheme, LightTheme } from './src/appTheme';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
@@ -28,7 +28,7 @@ import {
 } from './src/types';
 import { LoadingScreen } from './src/screens/LoadingScreen';
 import { UserDetailsScreen } from './src/screens/UserDetailsScreen';
-// LogBox.ignoreAllLogs(true);
+LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
 
