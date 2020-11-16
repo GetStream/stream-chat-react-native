@@ -734,7 +734,10 @@ export const MessageInput = <
         }
       }
 
-      if (image.state === FileState.UPLOADED) {
+      if (
+        image.state === FileState.UPLOADED ||
+        image.state === FileState.FINISHED
+      ) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
@@ -752,7 +755,10 @@ export const MessageInput = <
         sending.current = false;
         return;
       }
-      if (file.state === FileState.UPLOADED) {
+      if (
+        file.state === FileState.UPLOADED ||
+        file.state === FileState.FINISHED
+      ) {
         attachments.push({
           asset_url: file.url,
           file_size: file.file.size,
@@ -779,10 +785,17 @@ export const MessageInput = <
 
       // TODO: Remove this line and show an error when submit fails
       clearEditingState();
-
       const updateMessagePromise = editMessage(updatedMessage).then(
         clearEditingState,
       );
+      setFileUploads([]);
+      setImageUploads([]);
+      setMentionedUsers([]);
+      setNumberOfUploads(
+        (prevNumberOfUploads) =>
+          prevNumberOfUploads - (attachments?.length || 0),
+      );
+      setText('');
       logChatPromiseExecution(updateMessagePromise, 'update message');
 
       sending.current = false;

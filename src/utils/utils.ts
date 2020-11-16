@@ -53,6 +53,10 @@ export const emojiData = [
 ];
 
 export const FileState = Object.freeze({
+  // finished and uploaded state are the same thing. First is set on frontend,
+  // while later is set on backend side
+  // TODO: Unify both of them
+  FINISHED: 'finished',
   NO_FILE: 'no_file',
   UPLOAD_FAILED: 'upload_failed',
   UPLOADED: 'uploaded',
