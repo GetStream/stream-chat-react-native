@@ -50,9 +50,7 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
 }) => {
   const { colors } = useTheme() as AppTheme;
   const { chatClient } = useContext(AppContext);
-  const [muted, setMuted] = useState(
-    chatClient.mutes.findIndex((m) => m.user.id === user.id) > -1,
-  );
+  const [muted, setMuted] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const navigation = useNavigation();
