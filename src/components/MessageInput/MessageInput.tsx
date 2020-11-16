@@ -309,7 +309,7 @@ export const MessageInput = <
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialValue,
     Input,
-    maxNumberOfFiles,
+    maxNumberOfFiles = 10,
     onChangeText: onChangeTextProp,
     parent_id,
     SendButton = SendButtonDefault,
@@ -525,14 +525,13 @@ export const MessageInput = <
   };
 
   const pickFile = async () => {
-    if (
-      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
-      numberOfUploads > 10
-    ) {
+    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
 
-    const result = await pickDocument({ maxNumberOfFiles });
+    const result = await pickDocument({
+      maxNumberOfFiles: maxNumberOfFiles - numberOfUploads,
+    });
     if (!result.cancelled && result.docs) {
       result.docs.forEach((doc) => {
         const mimeType = lookup(doc.name);
@@ -547,16 +546,13 @@ export const MessageInput = <
   };
 
   const pickImage = async () => {
-    if (
-      (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) ||
-      numberOfUploads > 10
-    ) {
+    if (maxNumberOfFiles && numberOfUploads >= maxNumberOfFiles) {
       return;
     }
 
     const result = await pickImageNative({
       compressImageQuality,
-      maxNumberOfFiles,
+      maxNumberOfFiles: maxNumberOfFiles - numberOfUploads,
     });
 
     if (!result.cancelled && result.images) {
