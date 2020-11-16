@@ -1,8 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, ViewStyle } from 'react-native';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import {
+  TapGestureHandler,
+  TapGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 import Animated, {
   interpolate,
+  // @ts-expect-error TODO: Remove on next Reanimated update with new types
+  runOnJS,
+  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
@@ -58,27 +64,27 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
 
   const opacity = useSharedValue(1);
 
+  const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
+    {
+      onEnd: () => {
+        runOnJS(action)();
+      },
+      onFinish: () => {
+        opacity.value = 1;
+      },
+      onStart: () => {
+        opacity.value = 0.2;
+      },
+    },
+    [action],
+  );
+
   const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
     opacity: opacity.value,
   }));
 
   return (
-    <TapGestureHandler
-      onHandlerStateChange={({ nativeEvent: { state } }) => {
-        if (state === State.BEGAN) {
-          opacity.value = 0.2;
-        }
-
-        if (state === State.END) {
-          action();
-          opacity.value = 1;
-        }
-
-        if (state === State.CANCELLED || state === State.FAILED) {
-          opacity.value = 1;
-        }
-      }}
-    >
+    <TapGestureHandler onHandlerStateChange={onTap}>
       <Animated.View
         style={[
           styles.row,

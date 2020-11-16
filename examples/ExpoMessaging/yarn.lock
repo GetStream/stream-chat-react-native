@@ -2877,6 +2877,11 @@ expo-font@~8.3.0:
     fbjs "1.0.0"
     fontfaceobserver "^2.1.0"
 
+expo-haptics@8.3.0:
+  version "8.3.0"
+  resolved "https://registry.yarnpkg.com/expo-haptics/-/expo-haptics-8.3.0.tgz#9556b39cda70af7870a4991527110becb037be43"
+  integrity sha512-LzNPSIvly9GBPoBNj1pbVX3RepA1NIU9mfs04mX0bKFlnIiw3Iinjywv1FiwpOZaQpWaA1LofPQlv06fxZlEgA==
+
 expo-image-picker@9.1.1:
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/expo-image-picker/-/expo-image-picker-9.1.1.tgz#42abe9deb595fa9f9d8ac0d2ba8aad2cd6f69581"

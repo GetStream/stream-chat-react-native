@@ -64,15 +64,16 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   dummyChannel.initialized = true;
 
   const {
+    loading: loadingResults,
     onChangeSearchText,
     onFocusInput,
     results,
     searchText,
     selectedUserIds,
     selectedUsers,
-    setResults,
     toggleUser,
   } = useUserSelector();
+
   const [channel, setChannel] = useState<
     StreamChatChannel<
       LocalAttachmentType,
@@ -197,11 +198,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                     ]}
                   >
                     <TextInput
-                      autoFocus
-                      onBlur={() => {
-                        setResults([]);
-                        setFocusOnSearchInput(false);
-                      }}
                       onChangeText={onChangeSearchText}
                       onFocus={onFocusInput}
                       placeholder={'Type a name'}
@@ -261,6 +257,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
               {results && results.length >= 0 && focusOnSearchInput && (
                 <View style={{ flexGrow: 1, flexShrink: 1 }}>
                   <UserSearchResults
+                    loading={loadingResults}
                     results={results}
                     searchText={searchText}
                     selectedUserIds={selectedUserIds}

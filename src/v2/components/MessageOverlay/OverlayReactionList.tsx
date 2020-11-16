@@ -1,30 +1,39 @@
 import React from 'react';
+import { StyleSheet, useWindowDimensions, View, ViewStyle } from 'react-native';
 import {
-  Platform,
-  StyleSheet,
-  TouchableOpacity as TouchableOpacityIOS,
-  useWindowDimensions,
-  View,
-  ViewStyle,
-} from 'react-native';
-import { TouchableOpacity as TouchableOpacityAndroid } from 'react-native-gesture-handler';
+  TapGestureHandler,
+  TapGestureHandlerStateChangeEvent,
+} from 'react-native-gesture-handler';
 import Animated, {
+  cancelAnimation,
   interpolate,
+  // @ts-expect-error TODO: Remove on next Reanimated update with new types
+  runOnJS,
+  useAnimatedGestureHandler,
   useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
+  withDelay,
+  withSequence,
+  withTiming,
 } from 'react-native-reanimated';
 import Svg, { Circle, CircleProps, FillProps } from 'react-native-svg';
 
 import {
-  MessageOverlayContextValue,
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
+import { triggerHaptic } from '../../native';
 import { ReactionData, reactionData } from '../../utils/utils';
 
+import type { IconProps } from '../../icons';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -37,8 +46,6 @@ import type {
 } from '../../types/types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
-const TouchableOpacity =
-  Platform.OS === 'ios' ? TouchableOpacityIOS : TouchableOpacityAndroid;
 
 const styles = StyleSheet.create({
   notLastReaction: {
@@ -55,6 +62,133 @@ const styles = StyleSheet.create({
   },
 });
 
+type ReactionButtonProps = Pick<
+  OverlayReactionListPropsWithContext,
+  'ownReactionTypes' | 'handleReaction' | 'setOverlay'
+> & {
+  Icon: React.FC<IconProps>;
+  index: number;
+  numberOfReactions: number;
+  showScreen: Animated.SharedValue<number>;
+  type: string;
+};
+
+export const ReactionButton: React.FC<ReactionButtonProps> = (props) => {
+  const {
+    handleReaction,
+    Icon,
+    index,
+    numberOfReactions,
+    ownReactionTypes,
+    setOverlay,
+    showScreen,
+    type,
+  } = props;
+  const {
+    theme: {
+      colors: { primary, textGrey },
+      overlay: {
+        reactionsList: { reaction },
+      },
+    },
+  } = useTheme();
+  const animationScale = useSharedValue(0);
+  const hasShown = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
+    {
+      onEnd: () => {
+        runOnJS(triggerHaptic)('impactLight');
+        if (handleReaction) {
+          runOnJS(handleReaction)(type);
+        }
+        runOnJS(setOverlay)('none');
+      },
+      onFinish: () => {
+        cancelAnimation(scale);
+        scale.value = withTiming(1, { duration: 100 });
+      },
+      onStart: () => {
+        cancelAnimation(scale);
+        scale.value = withTiming(1.5, { duration: 100 });
+      },
+    },
+    [handleReaction, setOverlay, type],
+  );
+
+  useAnimatedReaction(
+    () => {
+      if (showScreen.value > 0.8 && hasShown.value === 0) {
+        return 1;
+      }
+      return 0;
+    },
+    (result) => {
+      if (hasShown.value === 0 && result !== 0) {
+        hasShown.value = 1;
+        animationScale.value = withSequence(
+          withDelay(
+            60 * (numberOfReactions - (index + 1)),
+            withTiming(1.5, { duration: 300 }),
+          ),
+          withTiming(1, { duration: 200 }),
+        );
+      }
+    },
+    [index, numberOfReactions],
+  );
+
+  const iconStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      transform: [
+        {
+          scale: animationScale.value,
+        },
+        {
+          scale: scale.value,
+        },
+      ],
+    }),
+    [],
+  );
+
+  return (
+    <TapGestureHandler
+      hitSlop={{
+        bottom:
+          Number(reaction.paddingVertical || 0) ||
+          Number(reaction.paddingBottom || 0) ||
+          styles.reactionList.paddingVertical,
+        left:
+          (Number(reaction.paddingHorizontal || 0) ||
+            Number(reaction.paddingLeft || 0) ||
+            styles.notLastReaction.marginRight) / 2,
+        right:
+          (Number(reaction.paddingHorizontal || 0) ||
+            Number(reaction.paddingRight || 0) ||
+            styles.notLastReaction.marginRight) / 2,
+        top:
+          Number(reaction.paddingVertical || 0) ||
+          Number(reaction.paddingTop || 0) ||
+          styles.reactionList.paddingVertical,
+      }}
+      maxDurationMs={3000}
+      onHandlerStateChange={onTap}
+    >
+      <Animated.View
+        style={[
+          index !== reactionData.length - 1 ? styles.notLastReaction : {},
+          reaction,
+          iconStyle,
+        ]}
+      >
+        <Icon pathFill={ownReactionTypes.includes(type) ? primary : textGrey} />
+      </Animated.View>
+    </TapGestureHandler>
+  );
+};
+
 export type OverlayReactionListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -63,11 +197,11 @@ export type OverlayReactionListPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
-  Pick<
-    MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-    'handleReaction' | 'supportedReactions' | 'alignment'
-  > & {
+> = Pick<
+  MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
+  'handleReaction' | 'supportedReactions' | 'alignment'
+> &
+  Pick<OverlayContextValue, 'setOverlay'> & {
     messageLayout: Animated.SharedValue<{
       x: number;
       y: number;
@@ -96,17 +230,17 @@ const OverlayReactionListWithContext = <
     messageLayout,
     ownReactionTypes,
     reactionListHeight,
-    reset,
     showScreen,
+    setOverlay,
     supportedReactions = reactionData,
   } = props;
 
   const {
     theme: {
-      colors: { grey, primary, textGrey },
+      colors: { grey },
       overlay: {
         padding: screenPadding,
-        reactionsList: { radius, reaction, reactionList },
+        reactionsList: { radius, reactionList },
       },
     },
   } = useTheme();
@@ -188,6 +322,8 @@ const OverlayReactionListWithContext = <
     [alignment],
   );
 
+  const numberOfReactions = supportedReactions.length;
+
   return (
     <View style={StyleSheet.absoluteFill}>
       <Animated.View
@@ -212,41 +348,17 @@ const OverlayReactionListWithContext = <
           style={[styles.reactionList, animatedStyle, reactionList]}
         >
           {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
-            <TouchableOpacity
-              hitSlop={{
-                bottom:
-                  Number(reaction.paddingVertical || 0) ||
-                  Number(reaction.paddingBottom || 0) ||
-                  styles.reactionList.paddingVertical,
-                left:
-                  (Number(reaction.paddingHorizontal || 0) ||
-                    Number(reaction.paddingLeft || 0) ||
-                    styles.notLastReaction.marginRight) / 2,
-                right:
-                  (Number(reaction.paddingHorizontal || 0) ||
-                    Number(reaction.paddingRight || 0) ||
-                    styles.notLastReaction.marginRight) / 2,
-                top:
-                  Number(reaction.paddingVertical || 0) ||
-                  Number(reaction.paddingTop || 0) ||
-                  styles.reactionList.paddingVertical,
-              }}
+            <ReactionButton
+              handleReaction={handleReaction}
+              Icon={Icon}
+              index={index}
               key={`${type}_${index}`}
-              onPress={() => {
-                if (handleReaction) {
-                  handleReaction(type);
-                  reset();
-                }
-              }}
-              style={[
-                index !== reactionData.length - 1 ? styles.notLastReaction : {},
-                reaction,
-              ]}
-            >
-              <Icon
-                pathFill={ownReactionTypes.includes(type) ? primary : textGrey}
-              />
-            </TouchableOpacity>
+              numberOfReactions={numberOfReactions}
+              ownReactionTypes={ownReactionTypes}
+              setOverlay={setOverlay}
+              showScreen={showScreen}
+              type={type}
+            />
           ))}
         </Animated.View>
       </Animated.View>
@@ -304,16 +416,7 @@ export type OverlayReactionListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = Omit<
-  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  'reset'
-> &
-  Partial<
-    Pick<
-      OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-      'reset'
-    >
-  >;
+> = OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
 
 /**
  * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
@@ -327,7 +430,10 @@ export const OverlayReactionList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >(
-  props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: Omit<
+    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
+    'setOverlay'
+  >,
 ) => {
   const {
     fill,
@@ -335,23 +441,13 @@ export const OverlayReactionList = <
     messageLayout,
     ownReactionTypes,
     reactionListHeight,
-    reset: propReset,
     showScreen,
     supportedReactions: propSupportedReactions,
   } = props;
 
-  const { data, reset: contextReset } = useMessageOverlayContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-
+  const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setOverlay } = useOverlayContext();
   const handleReaction = propHandleReaction || data?.handleReaction;
-  const reset = propReset || contextReset;
   const supportedReactions = propSupportedReactions || data?.supportedReactions;
 
   return (
@@ -363,7 +459,7 @@ export const OverlayReactionList = <
         messageLayout,
         ownReactionTypes,
         reactionListHeight,
-        reset,
+        setOverlay,
         showScreen,
         supportedReactions,
       }}

@@ -42,6 +42,7 @@ import {
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { triggerHaptic } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
 import type SeamlessImmutable from 'seamless-immutable';
@@ -169,7 +170,9 @@ export const ImageGallery = <
    * Run the fade animation on visible change
    */
   useEffect(() => {
-    Keyboard.dismiss();
+    if (visible) {
+      Keyboard.dismiss();
+    }
     fadeScreen(visible);
   }, [visible]);
 
@@ -189,6 +192,12 @@ export const ImageGallery = <
    * Header visible value for animating in out
    */
   const headerFooterVisible = useSharedValue(1);
+
+  /**
+   * Values to track scale for haptic feedback firing
+   */
+  const hasHitBottomScale = useSharedValue(1);
+  const hasHitTopScale = useSharedValue(0);
 
   /**
    * Gesture handler refs
@@ -313,6 +322,14 @@ export const ImageGallery = <
   }, []);
 
   /**
+   * Photos length needs to be kept as a const here so if the length
+   * changes it causes the pan gesture handler function to refresh. This
+   * does not work if the calculation for the length of the array is left
+   * inside the gesture handler as it will have an array as a dependency
+   */
+  const photoLength = photos.length;
+
+  /**
    * Set selected photo when changed via pressing in the message list
    */
   useEffect(() => {
@@ -326,15 +343,7 @@ export const ImageGallery = <
       translationX.value = -(screenWidth + MARGIN) * newIndex;
       setSelectedIndex(newIndex);
     }
-  }, [image, photos]);
-
-  /**
-   * Photos length needs to be kept as a const here so if the length
-   * changes it causes the pan gesture handler function to refresh. This
-   * does not work if the calculation for the length of the array is left
-   * inside the gesture handler as it will have an array as a dependency
-   */
-  const photoLength = photos.length;
+  }, [image, photoLength]);
 
   /**
    * Image heights are not provided and therefore need to be calculated.
@@ -725,6 +734,21 @@ export const ImageGallery = <
          */
         scale.value = clamp(offsetScale.value * evt.scale, 1, 8);
         const localEvtScale = scale.value / offsetScale.value;
+
+        /**
+         * When we hit the top or bottom of the scale clamping we run a haptic
+         * trigger, we track if it has been run to not spam the trigger
+         */
+        if (scale.value !== 8 && scale.value !== 1) {
+          hasHitTopScale.value = 0;
+          hasHitBottomScale.value = 0;
+        } else if (scale.value === 8 && hasHitTopScale.value === 0) {
+          hasHitTopScale.value = 1;
+          runOnJS(triggerHaptic)('impactLight');
+        } else if (scale.value === 1 && hasHitBottomScale.value === 0) {
+          hasHitBottomScale.value = 1;
+          runOnJS(triggerHaptic)('impactLight');
+        }
 
         /**
          * We calculate the adjusted focal point on the photo using the events

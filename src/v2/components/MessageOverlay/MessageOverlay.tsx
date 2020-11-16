@@ -187,7 +187,9 @@ const MessageOverlayWithContext = <
   };
 
   useEffect(() => {
-    Keyboard.dismiss();
+    if (visible) {
+      Keyboard.dismiss();
+    }
     fadeScreen(!!visible);
   }, [visible]);
 

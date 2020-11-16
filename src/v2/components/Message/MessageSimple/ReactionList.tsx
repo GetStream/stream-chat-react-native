@@ -86,7 +86,7 @@ export type ReactionListPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'reactions' | 'showMessageOverlay'
+  'alignment' | 'onLongPress' | 'reactions' | 'showMessageOverlay'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -115,6 +115,7 @@ const ReactionListWithContext = <
     alignment,
     fill: propFill,
     messageContentWidth,
+    onLongPress,
     radius: propRadius,
     reactions,
     reactionSize: propReactionSize,
@@ -166,18 +167,19 @@ const ReactionListWithContext = <
     x2 - (reactionSize * reactions.length) / 2 > screenPadding;
   const insideRightBound =
     x2 + strokeSize + (reactionSize * reactions.length) / 2 <
-    width - screenPadding;
+    width - screenPadding * 2;
   const left =
     reactions.length === 1
       ? x1 + (alignmentLeft ? -radius : radius - reactionSize)
       : !insideLeftBound
       ? screenPadding
       : !insideRightBound
-      ? width - screenPadding - reactionSize * reactions.length
+      ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
   return (
     <TouchableOpacity
+      onLongPress={onLongPress}
       onPress={() => showMessageOverlay(true)}
       style={[
         styles.container,
@@ -254,7 +256,7 @@ const ReactionListWithContext = <
           >
             {reactions.map((reaction, index) => (
               <Icon
-                key={`${reaction.type}_${index}`}
+                key={`${reaction.type}_${index}_${new Date().getTime()}`}
                 pathFill={reaction.own ? primary : textGrey}
                 size={reactionSize / 2}
                 style={middleIcon}
@@ -344,15 +346,12 @@ export const ReactionList = <
 >(
   props: ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, reactions, showMessageOverlay } = useMessageContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    alignment,
+    onLongPress,
+    reactions,
+    showMessageOverlay,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { supportedReactions } = useMessagesContext<
     At,
     Ch,
@@ -365,7 +364,13 @@ export const ReactionList = <
 
   return (
     <MemoizedReactionList
-      {...{ alignment, reactions, showMessageOverlay, supportedReactions }}
+      {...{
+        alignment,
+        onLongPress,
+        reactions,
+        showMessageOverlay,
+        supportedReactions,
+      }}
       {...props}
     />
   );

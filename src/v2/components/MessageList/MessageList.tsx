@@ -403,11 +403,12 @@ export const MessageList = <
     return false;
   }) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 
+  const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [messagesWithImages.length, thread, threadList]);
+  }, [numberOfMessagesWithImages, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196

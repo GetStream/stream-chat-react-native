@@ -69,6 +69,17 @@ type ShareOptions = {
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 export let shareImage: ShareImage = fail;
 
+type HapticFeedbackMethod =
+  | 'selection'
+  | 'impactLight'
+  | 'impactMedium'
+  | 'impactHeavy'
+  | 'notificationSuccess'
+  | 'notificationWarning'
+  | 'notificationError';
+type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
+export let triggerHaptic: TriggerHaptic = fail;
+
 type Handlers = {
   BlurView?: BlurView;
   deleteFile?: DeleteFile;
@@ -77,6 +88,7 @@ type Handlers = {
   pickImage?: PickImage;
   saveFile?: SaveFile;
   shareImage?: ShareImage;
+  triggerHaptic?: TriggerHaptic;
 };
 
 export const registerNativeHandlers = (handlers: Handlers) => {
@@ -106,5 +118,9 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.shareImage) {
     shareImage = handlers.shareImage;
+  }
+
+  if (handlers.triggerHaptic) {
+    triggerHaptic = handlers.triggerHaptic;
   }
 };

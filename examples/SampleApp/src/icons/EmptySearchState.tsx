@@ -1,11 +1,8 @@
 import React from 'react';
 import { IconProps, RootPath, RootSvg } from '../utils/base';
 import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from '@react-navigation/native';
-export const EmptySearchState: React.FC<IconProps> = ({
-  height,
-  width,
-}) => (
+
+export const EmptySearchState: React.FC<IconProps> = ({ height, width }) => (
   <Svg
     fill='none'
     height={height}

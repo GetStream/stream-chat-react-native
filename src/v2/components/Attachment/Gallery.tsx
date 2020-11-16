@@ -1,7 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
+import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   MessageContextValue,
   useMessageContext,
@@ -10,7 +13,10 @@ import {
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { makeImageCompatibleUrl } from '../../utils/utils';
 
@@ -50,14 +56,16 @@ export type GalleryPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'alignment' | 'groupStyles' | 'images' | 'onLongPress'
-> &
+> = Pick<ImageGalleryContextValue, 'setImage'> &
+  Pick<
+    MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'alignment' | 'groupStyles' | 'images' | 'onLongPress'
+  > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
-  > & {
+  > &
+  Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
     messageId?: string;
     messageText?: string;
     preventPress?: boolean;
@@ -83,6 +91,9 @@ const GalleryWithContext = <
     messageText,
     onLongPress,
     preventPress,
+    setBlurType,
+    setImage,
+    setOverlay,
   } = props;
 
   const {
@@ -106,8 +117,6 @@ const GalleryWithContext = <
       },
     },
   } = useTheme();
-  const { setBlurType, setOverlay } = useOverlayContext();
-  const { setImage } = useImageGalleryContext();
 
   if (!images?.length) return null;
 
@@ -316,8 +325,12 @@ export const Gallery = <
     messageText,
     onLongPress: propOnLongPress,
     preventPress,
+    setBlurType: propSetBlurType,
+    setImage: propSetImage,
+    setOverlay: propSetOverlay,
   } = props;
 
+  const { setImage: contextSetImage } = useImageGalleryContext();
   const {
     alignment: contextAlignment,
     groupStyles: contextGroupStyles,
@@ -328,6 +341,10 @@ export const Gallery = <
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    setBlurType: contextSetBlurType,
+    setOverlay: contextSetOverlay,
+  } = useOverlayContext();
 
   const images = propImages || contextImages;
 
@@ -338,6 +355,9 @@ export const Gallery = <
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
+  const setBlurType = propSetBlurType || contextSetBlurType;
+  const setImage = propSetImage || contextSetImage;
+  const setOverlay = propSetOverlay || contextSetOverlay;
 
   return (
     <MemoizedGallery
@@ -350,6 +370,9 @@ export const Gallery = <
         messageText: messageText || message?.text,
         onLongPress,
         preventPress,
+        setBlurType,
+        setImage,
+        setOverlay,
       }}
     />
   );
