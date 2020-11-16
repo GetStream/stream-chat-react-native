@@ -11,7 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../context/AppContext';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { streamTheme } from '../utils/streamTheme';
-import { LeftArrow } from '../icons/LeftArrow';
+import { GoBack } from '../icons/GoBack';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -22,11 +22,14 @@ import {
   LocalUserType,
 } from '../types';
 import {
+  Avatar,
   Channel,
   Chat,
+  getChannelPreviewDisplayName,
   MessageInput,
   MessageList,
 } from 'stream-chat-react-native/v2';
+import { Channel as StreamChatChannel } from 'stream-chat';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -42,12 +45,64 @@ export type ChannelScreenProps = {
 };
 
 export type ChannelHeaderProps = {
-  title: string;
+  channel: StreamChatChannel;
 };
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = ({ title }) => {
+const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
+  const { chatClient } = useContext(AppContext);
   const { colors } = useTheme() as AppTheme;
+  const isOneOnOneConversation =
+    Object.values(channel.state.members).length === 2;
+
+  if (isOneOnOneConversation) {
+    const { user } = Object.values(channel.state.members).find(
+      (m) => m.user?.id !== chatClient?.user?.id,
+    );
+    return (
+      <View
+        style={[
+          styles.headerContainer,
+          {
+            backgroundColor: colors.backgroundNavigation,
+            height: 55,
+          },
+        ]}
+      >
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <GoBack height={24} width={24} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('UserDetailsScreen', {
+              user,
+            });
+          }}
+        >
+          <Text
+            style={[
+              styles.headerTitle,
+              {
+                color: colors.text,
+              },
+            ]}
+          >
+            {user.name}
+          </Text>
+          <Text>Online for 10 mins</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('UserDetailsScreen', {
+              user,
+            });
+          }}
+        >
+          <Avatar image={user.image} size={40} />
+        </TouchableOpacity>
+      </View>
+    );
+  }
   return (
     <View
       style={[
@@ -59,18 +114,24 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ title }) => {
       ]}
     >
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <LeftArrow height={24} width={24} />
+        <GoBack height={24} width={24} />
       </TouchableOpacity>
-      <Text
-        style={[
-          styles.headerTitle,
-          {
-            color: colors.text,
-          },
-        ]}
+      <TouchableOpacity
+        onPress={() => {
+          // navigation.navigate('UserDetailsScreen');
+        }}
       >
-        {title}
-      </Text>
+        <Text
+          style={[
+            styles.headerTitle,
+            {
+              color: colors.text,
+            },
+          ]}
+        >
+          {getChannelPreviewDisplayName(channel, chatClient)}
+        </Text>
+      </TouchableOpacity>
       <TouchableOpacity />
     </View>
   );
@@ -89,7 +150,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     <SafeAreaView>
       <View style={{ height: '100%' }}>
         <Chat client={chatClient} style={streamTheme}>
-          <ChannelHeader title={channel.data.name || 'Channel Name'} />
+          <ChannelHeader channel={channel} />
           <View style={{ flexGrow: 1, flexShrink: 1 }}>
             <Channel channel={channel}>
               <MessageList<

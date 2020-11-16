@@ -17,7 +17,7 @@ import { RoundButton } from '../components/RoundButton';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { Check } from '../icons/Check';
-import { LeftArrow } from '../icons/LeftArrow';
+import { GoBack } from '../icons/GoBack';
 import { AppTheme, StackNavigatorParamList } from '../types';
 
 type NewGroupChannelAssignNameScreenNavigationProp = StackNavigationProp<
@@ -62,7 +62,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             }}
             style={styles.backButton}
           >
-            <LeftArrow height={24} width={24} />
+            <GoBack height={24} width={24} />
           </TouchableOpacity>
           <Text style={{ fontWeight: 'bold' }}>Name of Group Chat</Text>
           <View style={styles.backButton}>

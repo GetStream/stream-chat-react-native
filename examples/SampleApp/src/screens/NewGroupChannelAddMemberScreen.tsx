@@ -16,7 +16,7 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { useUserSelector } from '../hooks/useUserSelector';
 import { Close } from '../icons/Close';
-import { LeftArrow } from '../icons/LeftArrow';
+import { GoBack } from '../icons/GoBack';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
 import { AppTheme, StackNavigatorParamList } from '../types';
@@ -63,7 +63,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
             }}
             style={styles.navigationButton}
           >
-            <LeftArrow height={24} width={24} />
+            <GoBack height={24} width={24} />
           </TouchableOpacity>
           <Text style={{ fontWeight: 'bold' }}>Add Group Members</Text>
           <TouchableOpacity

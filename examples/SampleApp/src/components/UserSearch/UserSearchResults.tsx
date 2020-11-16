@@ -88,8 +88,8 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         <ActivityIndicator size='small' />
       ) : (
         <SectionList<UserResponse<LocalUserType>>
-          keyboardDismissMode='none'
-          keyboardShouldPersistTaps='always'
+          keyboardDismissMode='interactive'
+          keyboardShouldPersistTaps='handled'
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
               <EmptySearchState height={124} width={124} />

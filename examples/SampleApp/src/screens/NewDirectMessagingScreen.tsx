@@ -24,7 +24,7 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { useUserSelector } from '../hooks/useUserSelector';
 import { AddUser } from '../icons/AddUser';
-import { LeftArrow } from '../icons/LeftArrow';
+import { GoBack } from '../icons/GoBack';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import {
   LocalAttachmentType,
@@ -132,7 +132,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             }}
             style={styles.backButton}
           >
-            <LeftArrow height={24} width={24} />
+            <GoBack height={24} width={24} />
           </TouchableOpacity>
           <Text style={{ fontWeight: 'bold' }}>New Chat</Text>
           <View />

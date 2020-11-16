@@ -27,6 +27,7 @@ import {
   StackNavigatorParamList,
 } from './src/types';
 import { LoadingScreen } from './src/screens/LoadingScreen';
+import { UserDetailsScreen } from './src/screens/UserDetailsScreen';
 // LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
@@ -83,6 +84,7 @@ const App = () => {
   );
 };
 
+// TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => (
   <Stack.Navigator initialRouteName='ChatScreen'>
     <Stack.Screen
@@ -108,6 +110,11 @@ const HomeScreen = () => (
     <Stack.Screen
       component={NewGroupChannelAssignNameScreen}
       name='NewGroupChannelAssignNameScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={UserDetailsScreen}
+      name='UserDetailsScreen'
       options={{ headerShown: false }}
     />
   </Stack.Navigator>
