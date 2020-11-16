@@ -16,6 +16,7 @@ import { CheckSend } from '../../icons/CheckSend';
 import Dayjs from 'dayjs';
 
 type UserSearchResultsProps = {
+  loadMore: () => void;
   results: UserResponse[];
   selectedUserIds: string[];
   toggleSelectedUser: (user: UserResponse<LocalUserType>) => void;
@@ -28,6 +29,7 @@ type UserSearchResultsProps = {
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   groupedAlphabetically = true,
   loading = false,
+  loadMore = () => null,
   results,
   searchText,
   selectedUserIds,
@@ -60,7 +62,6 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         sections[initial].data.push(user);
       }
     });
-
     // @ts-ignore
     setSections(Object.values(sections));
   }, [results]);
@@ -88,8 +89,8 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         <ActivityIndicator size='small' />
       ) : (
         <SectionList<UserResponse<LocalUserType>>
-          keyboardDismissMode='none'
-          keyboardShouldPersistTaps='always'
+          keyboardDismissMode='interactive'
+          keyboardShouldPersistTaps='handled'
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
               <EmptySearchState height={124} width={124} />
@@ -98,8 +99,12 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               <Text>{results.length}</Text>
             </View>
           )}
+          onEndReached={() => {
+            loadMore();
+          }}
           renderItem={({ item }) => (
             <TouchableOpacity
+              key={item.id}
               onPress={() => {
                 // TODO: Add logic for checking for duplicates
                 toggleSelectedUser(item);
@@ -151,6 +156,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
 
             return (
               <Text
+                key={title}
                 style={{
                   backgroundColor: colors.greyContentBackground,
                   color: colors.textLight,

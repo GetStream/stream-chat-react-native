@@ -25,6 +25,9 @@ export type StackNavigatorParamList = {
   NewGroupChannelAssignNameScreen: {
     selectedUsers: UserResponse<LocalUserType>[];
   };
+  UserDetailsScreen: {
+    user: UserResponse<LocalUserType>;
+  };
 };
 
 export type BottomTabNavigatorParamList = {
@@ -39,9 +42,11 @@ export type AppTheme = Theme & {
     backgroundNavigation: string;
     backgroundSecondary: string;
     borderLight: string;
+    danger: string;
     footnote: string;
     greyContentBackground: string;
     iconButtonBackground: string;
+    success: string;
     text: string;
     textLight: string;
     textSecondary: string;

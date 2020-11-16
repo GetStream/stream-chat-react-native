@@ -22,6 +22,8 @@ export * from './ChannelList/ChannelListHeaderNetworkDownIndicator';
 export * from './ChannelList/ChannelListMessenger';
 
 export * from './ChannelPreview/ChannelPreview';
+export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
+export * from './ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 export * from './ChannelPreview/ChannelPreviewMessenger';
 
 export * from './Chat/Chat';
