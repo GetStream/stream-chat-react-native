@@ -81,7 +81,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 
   return (
     <>
-      <ScreenHeader title={'Photos and Videos'} />
+      <ScreenHeader title={'Files'} />
       <ThemeProvider>
         <SectionList<Attachment>
           onEndReached={loadMore}
