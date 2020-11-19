@@ -7,12 +7,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewToken,
 } from 'react-native';
 
-import {
-  DateSeparatorProps,
-  DateSeparator as DefaultDateSeparator,
-} from './DateSeparator';
 import { MessageNotification } from './MessageNotification';
 import {
   MessageSystem as DefaultMessageSystem,
@@ -24,13 +21,8 @@ import {
 } from './TypingIndicator';
 import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 
-import { useMessageList } from './hooks/useMessageList';
+import { Message, useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
-import {
-  isDateSeparator,
-  MessageOrDate,
-  Message as MessageType,
-} from './utils/insertDates';
 
 import { Message as DefaultMessage } from '../Message/Message';
 
@@ -46,9 +38,10 @@ import { useChannelContext } from '../../contexts/channelContext/ChannelContext'
 import { useChatContext } from '../../contexts/chatContext/ChatContext';
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-
-import type { Attachment } from 'stream-chat';
+import {
+  isDayOrMoment,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 
 import type {
   DefaultAttachmentType,
@@ -60,6 +53,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { DateHeader } from './DateHeader';
 
 const styles = StyleSheet.create({
   container: {
@@ -93,6 +87,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     width: '100%',
   },
+  stickyHeader: {
+    position: 'absolute',
+    top: 0,
+  },
 });
 
 const keyExtractor = <
@@ -104,23 +102,14 @@ const keyExtractor = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  item: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  if (!isDateSeparator(item)) {
-    return (
-      item.id ||
-      (item.created_at
-        ? typeof item.created_at === 'string'
-          ? item.created_at
-          : item.created_at.toISOString()
-        : new Date().getTime().toString())
-    );
-  }
-  if (item.date && typeof item.date !== 'string') {
-    return item.date.toISOString();
-  }
-  return new Date().getTime().toString();
-};
+  item: Message<At, Ch, Co, Ev, Me, Re, Us>,
+) =>
+  item.id ||
+  (item.created_at
+    ? typeof item.created_at === 'string'
+      ? item.created_at
+      : item.created_at.toISOString()
+    : new Date().getTime().toString());
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -146,15 +135,7 @@ export type MessageListProps<
    * ```
    */
   additionalFlatListProps?: Partial<
-    FlatListProps<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>>
-  >;
-  /**
-   * Date separator UI component to render
-   *
-   * Defaults to and accepts same props as: [DateSeparator](https://getstream.github.io/stream-chat-react-native/#dateseparator)
-   */
-  DateSeparator?: React.ComponentType<
-    DateSeparatorProps<At, Ch, Co, Ev, Me, Re, Us>
+    FlatListProps<Message<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   disableWhileEditing?: boolean;
   /**
@@ -193,7 +174,7 @@ export type MessageListProps<
    * ```
    */
   setFlatListRef?: (
-    ref: FlatList<MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ref: FlatList<Message<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
   /**
    * Boolean whether or not the Messages in the MessageList are part of a Thread
@@ -231,7 +212,6 @@ export const MessageList = <
 ) => {
   const {
     additionalFlatListProps,
-    DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     HeaderComponent,
     MessageSystem = DefaultMessageSystem,
@@ -271,7 +251,7 @@ export const MessageList = <
     Re,
     Us
   >();
-  const { t } = useTranslationContext();
+  const { t, tDateTimeParser } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     noGroupByUser,
@@ -279,7 +259,7 @@ export const MessageList = <
   });
 
   const flatListRef = useRef<FlatList<
-    MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>
+    Message<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
 
@@ -294,6 +274,26 @@ export const MessageList = <
    * change to the loading state is registered.
    */
   const [messagesLoading, setMessagesLoading] = useState(false);
+
+  const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
+  const stickyHeaderDateRef = useRef(new Date());
+  const updateStickyDate = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems?.length) {
+        const lastItem = viewableItems.pop();
+
+        if (
+          lastItem?.item?.created_at?.asMutable &&
+          !lastItem.item.deleted_at &&
+          lastItem.item.created_at.asMutable().toDateString() !==
+            stickyHeaderDateRef.current.toDateString()
+        ) {
+          stickyHeaderDateRef.current = lastItem.item.created_at.asMutable();
+          setStickyHeaderDate(lastItem.item.created_at.asMutable() as Date);
+        }
+      }
+    },
+  );
 
   useEffect(() => {
     if (channel) {
@@ -338,10 +338,7 @@ export const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
-  const renderItem = (message: MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>) => {
-    if (isDateSeparator(message)) {
-      return <DateSeparator<At, Ch, Co, Ev, Me, Re, Us> message={message} />;
-    }
+  const renderItem = (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (message.type === 'system') {
       return <MessageSystem message={message} />;
     }
@@ -388,11 +385,8 @@ export const MessageList = <
   };
 
   const messagesWithImages = messageList.filter((message) => {
-    if (isDateSeparator(message)) {
-      return false;
-    }
     if (!message.deleted_at && message.attachments) {
-      return (message.attachments as Attachment<At>[]).some(
+      return message.attachments.some(
         (attachment) =>
           attachment.type === 'image' &&
           !attachment.title_link &&
@@ -401,7 +395,7 @@ export const MessageList = <
       );
     }
     return false;
-  }) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
+  });
 
   const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
@@ -422,6 +416,15 @@ export const MessageList = <
     );
   }
 
+  const stickyHeaderFormatDate =
+    stickyHeaderDate.getFullYear() === new Date().getFullYear()
+      ? 'MMM D'
+      : 'MMM D, YYYY';
+  const tStickyHeaderDate = tDateTimeParser(stickyHeaderDate);
+  const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
+    ? tStickyHeaderDate.format(stickyHeaderFormatDate)
+    : new Date(tStickyHeaderDate).toDateString();
+
   return (
     <>
       <View collapsable={false} style={styles.container}>
@@ -439,6 +442,7 @@ export const MessageList = <
           }}
           onEndReached={loadMore}
           onScroll={handleScroll}
+          onViewableItemsChanged={updateStickyDate.current}
           ref={(fl) => {
             flatListRef.current = fl;
             if (setFlatListRef) {
@@ -448,8 +452,14 @@ export const MessageList = <
           renderItem={({ item }) => renderItem(item)}
           style={[styles.listContainer, listContainer]}
           testID='message-flat-list'
+          viewabilityConfig={{
+            viewAreaCoveragePercentThreshold: 50,
+          }}
           {...additionalFlatListProps}
         />
+        <View style={styles.stickyHeader}>
+          <DateHeader dateString={stickyHeaderDateToRender} />
+        </View>
         {TypingIndicator && (
           <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
             <TypingIndicator />

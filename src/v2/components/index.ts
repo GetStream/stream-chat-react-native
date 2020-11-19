@@ -54,7 +54,6 @@ export * from './MessageInput/MessageInput';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/UploadProgressIndicator';
 
-export * from './MessageList/DateSeparator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageNotification';
 export * from './MessageList/MessageSystem';

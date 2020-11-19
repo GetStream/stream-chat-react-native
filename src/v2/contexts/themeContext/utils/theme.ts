@@ -102,6 +102,10 @@ export type Theme = {
     container: ViewStyle;
   };
   colors: typeof Colors;
+  dateHeader: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   iconBadge: {
     icon: ViewStyle;
     iconInner: ViewStyle;
@@ -202,12 +206,6 @@ export type Theme = {
     };
   };
   messageList: {
-    dateSeparator: {
-      container: ViewStyle;
-      date: TextStyle;
-      dateText: TextStyle;
-      line: ViewStyle;
-    };
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     listContainer: ViewStyle;
@@ -437,6 +435,10 @@ export const defaultTheme: Theme = {
   colors: {
     ...Colors,
   },
+  dateHeader: {
+    container: {},
+    text: {},
+  },
   iconBadge: {
     icon: {},
     iconInner: {},
@@ -520,12 +522,6 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
-    dateSeparator: {
-      container: {},
-      date: {},
-      dateText: {},
-      line: {},
-    },
     errorNotification: {},
     errorNotificationText: {},
     listContainer: {},

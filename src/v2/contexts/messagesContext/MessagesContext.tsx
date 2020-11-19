@@ -28,7 +28,7 @@ import type { MessageStatusProps } from '../../components/Message/MessageSimple/
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
-import type { Message } from '../../components/MessageList/utils/insertDates';
+import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { TDateTimeParserInput } from '../../contexts/translationContext/TranslationContext';
 import type {
