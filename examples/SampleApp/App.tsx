@@ -27,7 +27,10 @@ import {
   StackNavigatorParamList,
 } from './src/types';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-import { UserDetailsScreen } from './src/screens/UserDetailsScreen';
+import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
+import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
+import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
+import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
@@ -113,9 +116,33 @@ const HomeScreen = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      component={UserDetailsScreen}
-      name='UserDetailsScreen'
+      component={OneOnOneChannelDetailScreen}
+      name='OneOnOneChannelDetailScreen'
       options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelImagesScreen}
+      name='ChannelImagesScreen'
+      options={{
+        headerTitle: 'Photos and Videos',
+        headerBackTitle: '',
+      }}
+    />
+    <Stack.Screen
+      component={ChannelFilesScreen}
+      name='ChannelFilesScreen'
+      options={{
+        headerTitle: 'Files',
+        headerBackTitle: '',
+      }}
+    />
+    <Stack.Screen
+      component={SharedGroupsScreen}
+      name='SharedGroupsScreen'
+      options={{
+        headerTitle: 'Shared groups',
+        headerBackTitle: '',
+      }}
     />
   </Stack.Navigator>
 );

@@ -74,8 +74,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('UserDetailsScreen', {
-              user,
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
             });
           }}
         >
@@ -87,14 +87,14 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
               },
             ]}
           >
-            {user.name}
+            {getChannelPreviewDisplayName(channel)}
           </Text>
           <Text>Online for 10 mins</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('UserDetailsScreen', {
-              user,
+            navigation.navigate('OneOnOneChannelDetailScreen', {
+              channel,
             });
           }}
         >
@@ -118,7 +118,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={() => {
-          // navigation.navigate('UserDetailsScreen');
+          // navigation.navigate('OneOnOneChannelDetailScreen');
         }}
       >
         <Text

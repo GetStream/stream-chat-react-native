@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const getFileSizeDisplayText = (size?: number | string) => {
+export const getFileSizeDisplayText = (size?: number | string) => {
   if (!size) return;
   if (typeof size === 'string') {
     size = parseFloat(size);
@@ -65,7 +65,7 @@ const getFileSizeDisplayText = (size?: number | string) => {
   return `${Math.floor(size / 10000) / 100} MB`;
 };
 
-const goToURL = (url?: string) => {
+export const goToURL = (url?: string) => {
   if (!url) return;
   Linking.canOpenURL(url).then((supported) => {
     if (supported) {
