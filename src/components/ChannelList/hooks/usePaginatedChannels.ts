@@ -99,6 +99,7 @@ export const usePaginatedChannels = <
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
+      setError(false);
     } catch (e) {
       await wait(2000);
 
