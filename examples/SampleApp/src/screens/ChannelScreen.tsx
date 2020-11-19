@@ -31,6 +31,8 @@ import {
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -89,9 +91,22 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const channel = chatClient?.channel('messaging', channelId);
+  const [channel, setChannel] = useState(null);
+
+  useEffect(() => {
+    const initChannel = async () => {
+      const channel = chatClient?.channel('messaging', channelId);
+      if (!channel?.initialized) {
+        await channel?.watch();
+      }
+      setChannel(channel);
+    };
+
+    initChannel();
+  }, []);
 
   if (!channel || !chatClient) return null;
+
   return (
     <View style={{ height: '100%' }}>
       <Chat client={chatClient} style={streamTheme}>

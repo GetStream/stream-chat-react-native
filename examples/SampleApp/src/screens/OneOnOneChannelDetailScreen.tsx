@@ -289,7 +289,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('SharedGroupsScreen', {
-                channel,
+                user,
               });
             }}
             style={[
