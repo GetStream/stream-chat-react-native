@@ -280,7 +280,10 @@ const DefaultMessageWithContext = <
   };
 
   const handleRetry = async () =>
-    await retrySendMessage(message as MessageResponse<At, Ch, Co, Me, Re, Us>);
+    await retrySendMessage({
+      ...message,
+      updated_at: undefined,
+    } as MessageResponse<At, Ch, Co, Me, Re, Us>);
 
   const getTotalReactionCount = (
     supportedReactions: {
