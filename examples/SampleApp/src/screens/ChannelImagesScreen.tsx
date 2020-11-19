@@ -96,11 +96,14 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       <ScreenHeader title={'Photos and Videos'} />
       <SectionList
         onEndReached={loadMore}
-        renderItem={({ item }) => (
-          <View style={{ flexDirection: 'row', marginTop: -37 }}>
+        renderItem={({ item, index }) => (
+          <View style={{ flexDirection: 'row' }}>
             {item.map((a) => (
               <TouchableOpacity
                 key={a.id}
+                style={{
+                  marginTop: index === 0 ? -37 : 0,
+                }}
                 onPress={() => {
                   // setImages(messages);
                   // setImage({ messageId: a.messageId, url: a.image_url });
@@ -111,7 +114,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
                 <Image
                   source={{ uri: a.image_url }}
                   style={{
-                    height: screen / 3 - 2,
+                    height: screen / 3,
                     margin: 1,
                     width: screen / 3 - 2,
                   }}
