@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  SafeAreaView,
   SectionList,
   StyleSheet,
   Text,
@@ -18,6 +19,7 @@ import Dayjs from 'dayjs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 // type ChannelFilesScreenNavigationProp = StackNavigationProp<
 //   StackNavigatorParamList,
@@ -78,51 +80,54 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   }, [messages]);
 
   return (
-    <ThemeProvider>
-      <SectionList<Attachment>
-        onEndReached={loadMore}
-        renderItem={({ item: attachment }) => (
-          <TouchableOpacity
-            key={attachment.id}
-            onPress={() => goToURL(attachment.asset_url)}
-          >
-            <View style={[styles.container]}>
-              <FileIcon mimeType={attachment.mime_type} />
-              <View style={[styles.details]}>
-                <Text numberOfLines={2} style={[styles.title]}>
-                  {attachment.title}
-                </Text>
-                <Text style={[styles.size]}>
-                  {getFileSizeDisplayText(attachment.file_size)}
-                </Text>
+    <>
+      <ScreenHeader title={'Photos and Videos'} />
+      <ThemeProvider>
+        <SectionList<Attachment>
+          onEndReached={loadMore}
+          renderItem={({ item: attachment }) => (
+            <TouchableOpacity
+              key={attachment.id}
+              onPress={() => goToURL(attachment.asset_url)}
+            >
+              <View style={[styles.container]}>
+                <FileIcon mimeType={attachment.mime_type} />
+                <View style={[styles.details]}>
+                  <Text numberOfLines={2} style={[styles.title]}>
+                    {attachment.title}
+                  </Text>
+                  <Text style={[styles.size]}>
+                    {getFileSizeDisplayText(attachment.file_size)}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <View
-            style={{
-              backgroundColor: colors.background,
-              borderRadius: 10,
-              padding: 16,
-              paddingTop: 16,
-            }}
-          >
-            <Text
+            </TouchableOpacity>
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <View
               style={{
-                color: colors.text,
-                fontSize: 12,
+                backgroundColor: colors.background,
+                borderRadius: 10,
+                padding: 16,
+                paddingTop: 16,
               }}
             >
-              {title}
-            </Text>
-          </View>
-        )}
-        sections={sections}
-        stickySectionHeadersEnabled
-        style={{ paddingLeft: 16 }}
-      />
-    </ThemeProvider>
+              <Text
+                style={{
+                  color: colors.text,
+                  fontSize: 12,
+                }}
+              >
+                {title}
+              </Text>
+            </View>
+          )}
+          sections={sections}
+          stickySectionHeadersEnabled
+          style={{ paddingLeft: 16 }}
+        />
+      </ThemeProvider>
+    </>
   );
 };
 

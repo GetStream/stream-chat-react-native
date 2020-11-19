@@ -2,22 +2,15 @@
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext, useState } from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
-import {  ThemeProvider } from '../../../../src/v2';
+import { ThemeProvider } from '../../../../src/v2';
 import { RoundButton } from '../components/RoundButton';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { Check } from '../icons/Check';
-import { GoBack } from '../icons/GoBack';
 import { AppTheme, StackNavigatorParamList } from '../types';
 
 type NewGroupChannelAssignNameScreenNavigationProp = StackNavigationProp<
@@ -46,26 +39,10 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
   if (!chatClient) return null;
 
   return (
-    <SafeAreaView>
-      <ThemeProvider>
-        <View
-          style={[
-            styles.headerContainer,
-            {
-              backgroundColor: colors.backgroundNavigation,
-            },
-          ]}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.backButton}
-          >
-            <GoBack height={24} width={24} />
-          </TouchableOpacity>
-          <Text style={{ fontWeight: 'bold' }}>Name of Group Chat</Text>
-          <View style={styles.backButton}>
+    <ThemeProvider>
+      <ScreenHeader
+        RightContent={() => (
+          <View style={{ marginRight: 15 }}>
             <RoundButton
               disabled={!groupName}
               onPress={() => {
@@ -93,80 +70,81 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
               />
             </RoundButton>
           </View>
-        </View>
-        <View>
-          <View style={{ flexGrow: 1, flexShrink: 1 }}>
-            <View
-              style={[
-                styles.searchContainer,
-                {
-                  borderBottomColor: colors.borderLight,
-                },
-              ]}
-            >
-              <View
-                style={{
-                  flexGrow: 1,
-                  flexShrink: 1,
-                }}
-              >
-                <View
-                  style={[
-                    styles.inputBoxContainer,
-                    {
-                      borderColor: colors.border,
-                    },
-                  ]}
-                >
-                  <Text>Name</Text>
-                  <TextInput
-                    autoFocus
-                    onChangeText={(text) => {
-                      setGroupName(text);
-                    }}
-                    placeholder={'Choose a group chat name'}
-                    placeholderTextColor={colors.textLight}
-                    style={[
-                      styles.inputBox,
-                      {
-                        color: colors.text,
-                      },
-                    ]}
-                    value={groupName}
-                  />
-                </View>
-              </View>
-            </View>
+        )}
+        title={'Name of Group Chat'}
+      />
+      <View>
+        <View style={{ flexGrow: 1, flexShrink: 1 }}>
+          <View
+            style={[
+              styles.searchContainer,
+              {
+                borderBottomColor: colors.borderLight,
+              },
+            ]}
+          >
             <View
               style={{
-                backgroundColor: colors.backgroundFadeGradient,
-                padding: 5,
-                paddingLeft: 8,
+                flexGrow: 1,
+                flexShrink: 1,
               }}
             >
-              <Text
-                style={{
-                  color: colors.text,
-                }}
+              <View
+                style={[
+                  styles.inputBoxContainer,
+                  {
+                    borderColor: colors.border,
+                  },
+                ]}
               >
-                {selectedUsers.length} Members
-              </Text>
-            </View>
-            {selectedUsers && selectedUsers.length >= 0 && (
-              <View style={{ flexGrow: 1, flexShrink: 1 }}>
-                <UserSearchResults
-                  groupedAlphabetically={false}
-                  results={selectedUsers}
-                  selectedUserIds={selectedUsers.map((u) => u.id)}
-                  showOnlineStatus={false}
-                  toggleSelectedUser={() => null}
+                <Text>Name</Text>
+                <TextInput
+                  autoFocus
+                  onChangeText={(text) => {
+                    setGroupName(text);
+                  }}
+                  placeholder={'Choose a group chat name'}
+                  placeholderTextColor={colors.textLight}
+                  style={[
+                    styles.inputBox,
+                    {
+                      color: colors.text,
+                    },
+                  ]}
+                  value={groupName}
                 />
               </View>
-            )}
+            </View>
           </View>
+          <View
+            style={{
+              backgroundColor: colors.backgroundFadeGradient,
+              padding: 5,
+              paddingLeft: 8,
+            }}
+          >
+            <Text
+              style={{
+                color: colors.text,
+              }}
+            >
+              {selectedUsers.length} Members
+            </Text>
+          </View>
+          {selectedUsers && selectedUsers.length >= 0 && (
+            <View style={{ flexGrow: 1, flexShrink: 1 }}>
+              <UserSearchResults
+                groupedAlphabetically={false}
+                results={selectedUsers}
+                selectedUserIds={selectedUsers.map((u) => u.id)}
+                showOnlineStatus={false}
+                toggleSelectedUser={() => null}
+              />
+            </View>
+          )}
         </View>
-      </ThemeProvider>
-    </SafeAreaView>
+      </View>
+    </ThemeProvider>
   );
 };
 
@@ -200,12 +178,12 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     width: '100%',
     backgroundColor: 'white',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   inputBox: {
     flex: 1,
     marginLeft: 10,
-    padding: 0
+    padding: 0,
   },
   searchResultContainer: {
     alignItems: 'center',

@@ -3,11 +3,10 @@ import { useTheme } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext, useEffect, useRef } from 'react';
 import { useState } from 'react';
-import { TextInput } from 'react-native';
 import {
-  SafeAreaView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -24,7 +23,6 @@ import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { AddUser } from '../icons/AddUser';
-import { GoBack } from '../icons/GoBack';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import {
   LocalAttachmentType,
@@ -38,6 +36,7 @@ import {
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { RoundButton } from '../components/RoundButton';
 import { Contacts } from '../icons/Contacts';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 export type NewDirectMessagingScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -124,20 +123,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   if (!chatClient) return null;
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
+    <View style={{ height: '100%' }}>
       <Chat client={chatClient}>
-        <View style={styles.headerContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.backButton}
-          >
-            <GoBack height={24} width={24} />
-          </TouchableOpacity>
-          <Text style={{ fontWeight: 'bold' }}>New Chat</Text>
-          <View />
-        </View>
+        <ScreenHeader title={'New Chat'} />
         <View
           style={{
             paddingTop: 15,
@@ -306,7 +294,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           </Channel>
         </View>
       </Chat>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -343,10 +331,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 56,
   },
-  backButton: {
-    padding: 15,
-  },
-
   searchContainer: {
     display: 'flex',
     flexDirection: 'row',

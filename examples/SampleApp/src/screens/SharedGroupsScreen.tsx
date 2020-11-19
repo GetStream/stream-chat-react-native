@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { useContext } from 'react';
 import { useState } from 'react';
-import { FlatList, TouchableOpacity } from 'react-native';
+import { FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Channel, UserResponse } from 'stream-chat';
 import { Avatar } from '../../../../src/v2';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 import {
   LocalAttachmentType,
@@ -100,4 +101,8 @@ export const SharedGroupsScreen = ({
   route: {
     params: { user },
   },
-}) => null;
+}) => (
+  <SafeAreaView>
+    <ScreenHeader title={'Shared Groups'} />
+  </SafeAreaView>
+);

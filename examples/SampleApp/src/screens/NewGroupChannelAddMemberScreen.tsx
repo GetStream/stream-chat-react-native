@@ -4,19 +4,17 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext } from 'react';
 import {
   FlatList,
-  SafeAreaView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { Avatar, ThemeProvider } from '../../../../src/v2';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { Close } from '../icons/Close';
-import { GoBack } from '../icons/GoBack';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
 import { AppTheme, StackNavigatorParamList } from '../types';
@@ -46,41 +44,30 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
   if (!chatClient) return null;
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
+    <>
       <ThemeProvider>
-        <View
-          style={[
-            styles.headerContainer,
-            {
-              backgroundColor: colors.backgroundNavigation,
-              borderBottomColor: colors.border,
-              borderBottomWidth: 1,
-            },
-          ]}
-        >
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={styles.navigationButton}
-          >
-            <GoBack height={24} width={24} />
-          </TouchableOpacity>
-          <Text style={{ fontWeight: 'bold' }}>Add Group Members</Text>
-          <TouchableOpacity
-            disabled={selectedUsers.length === 0}
-            onPress={() => {
-              if (selectedUsers.length === 0) return;
+        <ScreenHeader
+          RightContent={() => (
+            <TouchableOpacity
+              disabled={selectedUsers.length === 0}
+              onPress={() => {
+                if (selectedUsers.length === 0) return;
 
-              navigation.navigate('NewGroupChannelAssignNameScreen', {
-                selectedUsers,
-              });
-            }}
-            style={styles.navigationButton}
-          >
-            {selectedUsers.length > 0 && <RightArrow height={24} width={24} />}
-          </TouchableOpacity>
-        </View>
+                navigation.navigate('NewGroupChannelAssignNameScreen', {
+                  selectedUsers,
+                });
+              }}
+              style={styles.navigationButton}
+            >
+              {selectedUsers.length > 0 ? (
+                <RightArrow height={24} width={24} />
+              ) : (
+                <View style={{ height: 24, width: 24 }} />
+              )}
+            </TouchableOpacity>
+          )}
+          title={'Add Group Members'}
+        />
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <View
             style={[
@@ -164,7 +151,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
           )}
         </View>
       </ThemeProvider>
-    </SafeAreaView>
+    </>
   );
 };
 

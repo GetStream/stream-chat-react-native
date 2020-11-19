@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Image, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  SafeAreaView,
+  SectionList,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Attachment } from 'stream-chat';
 import { useEffect } from 'react';
 import { Dimensions } from 'react-native';
@@ -8,6 +15,7 @@ import Dayjs from 'dayjs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 // type ChannelImagesScreenNavigationProp = StackNavigationProp<
 //   StackNavigatorParamList,
@@ -84,56 +92,59 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   }, [messages]);
 
   return (
-    <SectionList
-      onEndReached={loadMore}
-      renderItem={({ item }) => (
-        <View style={{ flexDirection: 'row', marginTop: -37 }}>
-          {item.map((a) => (
-            <TouchableOpacity
-              key={a.id}
-              onPress={() => {
-                // setImages(messages);
-                // setImage({ messageId: a.messageId, url: a.image_url });
-                // setBlurType('light');
-                // setOverlay('gallery');
-              }}
-            >
-              <Image
-                source={{ uri: a.image_url }}
-                style={{
-                  height: screen / 3 - 2,
-                  margin: 1,
-                  width: screen / 3 - 2,
+    <>
+      <ScreenHeader title={'Photos and Videos'} />
+      <SectionList
+        onEndReached={loadMore}
+        renderItem={({ item }) => (
+          <View style={{ flexDirection: 'row', marginTop: -37 }}>
+            {item.map((a) => (
+              <TouchableOpacity
+                key={a.id}
+                onPress={() => {
+                  // setImages(messages);
+                  // setImage({ messageId: a.messageId, url: a.image_url });
+                  // setBlurType('light');
+                  // setOverlay('gallery');
                 }}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
-      renderSectionHeader={({ section: { title } }) => (
-        <View
-          style={{
-            alignSelf: 'center',
-            backgroundColor: colors.dateStampBackground,
-            borderRadius: 10,
-            marginTop: 15,
-            padding: 8,
-            paddingBottom: 4,
-            paddingTop: 4,
-          }}
-        >
-          <Text
+              >
+                <Image
+                  source={{ uri: a.image_url }}
+                  style={{
+                    height: screen / 3 - 2,
+                    margin: 1,
+                    width: screen / 3 - 2,
+                  }}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <View
             style={{
-              color: colors.textInverted,
-              fontSize: 12,
+              alignSelf: 'center',
+              backgroundColor: colors.dateStampBackground,
+              borderRadius: 10,
+              marginTop: 15,
+              padding: 8,
+              paddingBottom: 4,
+              paddingTop: 4,
             }}
           >
-            {title}
-          </Text>
-        </View>
-      )}
-      sections={sections}
-      stickySectionHeadersEnabled
-    />
+            <Text
+              style={{
+                color: colors.textInverted,
+                fontSize: 12,
+              }}
+            >
+              {title}
+            </Text>
+          </View>
+        )}
+        sections={sections}
+        stickySectionHeadersEnabled
+      />
+    </>
   );
 };

@@ -31,6 +31,7 @@ import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetail
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
+
 LogBox.ignoreAllLogs(true);
 enableScreens();
 console.assert = () => null;
@@ -103,7 +104,9 @@ const HomeScreen = () => (
     <Stack.Screen
       component={NewDirectMessagingScreen}
       name='NewDirectMessagingScreen'
-      options={{ headerShown: false }}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       component={NewGroupChannelAddMemberScreen}
@@ -123,26 +126,17 @@ const HomeScreen = () => (
     <Stack.Screen
       component={ChannelImagesScreen}
       name='ChannelImagesScreen'
-      options={{
-        headerTitle: 'Photos and Videos',
-        headerBackTitle: '',
-      }}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       component={ChannelFilesScreen}
       name='ChannelFilesScreen'
-      options={{
-        headerTitle: 'Files',
-        headerBackTitle: '',
-      }}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       component={SharedGroupsScreen}
       name='SharedGroupsScreen'
-      options={{
-        headerTitle: 'Shared groups',
-        headerBackTitle: '',
-      }}
+      options={{ headerShown: false }}
     />
   </Stack.Navigator>
 );

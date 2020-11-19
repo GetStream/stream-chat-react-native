@@ -1,15 +1,12 @@
 /* eslint-disable sort-keys */
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   CompositeNavigationProp,
   useNavigation,
   useTheme,
 } from '@react-navigation/native';
-import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
-import { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
 import {
   AppTheme,
   DrawerNavigatorParamList,
@@ -17,78 +14,100 @@ import {
 } from '../types';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RoundButton } from './RoundButton';
+import { GoBack } from '../icons/GoBack';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
-export const ScreenHeader = ({ title = 'Stream Chat' }) => {
+export const BackButton = () => {
   const navigation = useNavigation<ScreenHeaderNavigationProp>();
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.goBack();
+      }}
+      style={{
+        padding: 10,
+      }}
+    >
+      <GoBack height={24} width={24} />
+    </TouchableOpacity>
+  );
+};
+
+type ScreenHeaderProps = {
+  title: string;
+  LeftContent?: React.ElementType;
+  RightContent?: React.ElementType;
+  subtitle?: string | boolean;
+};
+
+export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
+  LeftContent = BackButton,
+  RightContent = () => <View style={{ height: 24, width: 24 }} />,
+  title = 'Stream Chat',
+  subtitle = false,
+}) => {
   const insets = useSafeAreaInsets();
-  const { chatClient } = useContext(AppContext);
   const { colors } = useTheme() as AppTheme;
 
   return (
     <>
       <View
         style={[
-          styles.container,
+          styles.safeAreaContainer,
           {
             backgroundColor: colors.backgroundNavigation,
-            height: 55 + insets.top,
-            paddingTop: insets.top,
           },
         ]}
       >
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <Image
-            source={{
-              uri: chatClient?.user?.image,
-            }}
-            style={{
-              borderRadius: 20,
-              height: 40,
-              width: 40,
-            }}
-          />
-        </TouchableOpacity>
-        <Text
+        <View
           style={[
-            styles.title,
+            styles.contentContainer,
             {
-              color: colors.text,
+              marginTop: insets.top,
+              height: 55,
+              paddingBottom: 10,
+              paddingLeft: 10,
+              paddingRight: 10,
             },
           ]}
         >
-          {title}
-        </Text>
-        <RoundButton
-          onPress={() => {
-            navigation.navigate('NewDirectMessagingScreen');
-          }}
-        >
-          <NewDirectMessageIcon
-            active
-            color={'#006CFF'}
-            height={25}
-            width={25}
-          />
-        </RoundButton>
+          <LeftContent />
+          <View
+            style={{
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={[
+                styles.title,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              {title}
+            </Text>
+            {subtitle && <Text>{subtitle}</Text>}
+          </View>
+          <RightContent />
+        </View>
       </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingLeft: 20,
-    paddingRight: 20,
+  safeAreaContainer: {
+    borderBottomColor: 'rgba(0, 0, 0, 0.0677)',
+    borderBottomWidth: 1,
+  },
+  contentContainer: {
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
-    borderBottomColor: 'rgba(0, 0, 0, 0.0677)',
-    borderBottomWidth: 1,
   },
   logo: {
     height: 30,

@@ -30,6 +30,7 @@ import {
   MessageList,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
+import { ScreenHeader } from '../components/ScreenHeader';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -60,80 +61,25 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       (m) => m.user?.id !== chatClient?.user?.id,
     );
     return (
-      <View
-        style={[
-          styles.headerContainer,
-          {
-            backgroundColor: colors.backgroundNavigation,
-            height: 55,
-          },
-        ]}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <GoBack height={24} width={24} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('OneOnOneChannelDetailScreen', {
-              channel,
-            });
-          }}
-        >
-          <Text
-            style={[
-              styles.headerTitle,
-              {
-                color: colors.text,
-              },
-            ]}
+      <ScreenHeader
+        RightContent={() => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('OneOnOneChannelDetailScreen', {
+                channel,
+              });
+            }}
           >
-            {getChannelPreviewDisplayName(channel)}
-          </Text>
-          <Text>Online for 10 mins</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('OneOnOneChannelDetailScreen', {
-              channel,
-            });
-          }}
-        >
-          <Avatar image={user.image} size={40} />
-        </TouchableOpacity>
-      </View>
+            <Avatar image={user.image} size={40} />
+          </TouchableOpacity>
+        )}
+        subtitle={'Online for 10 mins'}
+        title={getChannelPreviewDisplayName(channel, chatClient)}
+      />
     );
   }
   return (
-    <View
-      style={[
-        styles.headerContainer,
-        {
-          backgroundColor: colors.backgroundNavigation,
-          height: 55,
-        },
-      ]}
-    >
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <GoBack height={24} width={24} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          // navigation.navigate('OneOnOneChannelDetailScreen');
-        }}
-      >
-        <Text
-          style={[
-            styles.headerTitle,
-            {
-              color: colors.text,
-            },
-          ]}
-        >
-          {getChannelPreviewDisplayName(channel, chatClient)}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity />
-    </View>
+    <ScreenHeader title={getChannelPreviewDisplayName(channel, chatClient)} />
   );
 };
 
@@ -147,27 +93,25 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   if (!channel || !chatClient) return null;
   return (
-    <SafeAreaView>
-      <View style={{ height: '100%' }}>
-        <Chat client={chatClient} style={streamTheme}>
-          <ChannelHeader channel={channel} />
-          <View style={{ flexGrow: 1, flexShrink: 1 }}>
-            <Channel channel={channel}>
-              <MessageList<
-                LocalAttachmentType,
-                LocalChannelType,
-                LocalCommandType,
-                LocalEventType,
-                LocalMessageType,
-                LocalResponseType,
-                LocalUserType
-              > />
-              <MessageInput />
-            </Channel>
-          </View>
-        </Chat>
-      </View>
-    </SafeAreaView>
+    <View style={{ height: '100%' }}>
+      <Chat client={chatClient} style={streamTheme}>
+        <ChannelHeader channel={channel} />
+        <View style={{ flexGrow: 1, flexShrink: 1 }}>
+          <Channel channel={channel}>
+            <MessageList<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
+            > />
+            <MessageInput />
+          </Channel>
+        </View>
+      </Chat>
+    </View>
   );
 };
 
