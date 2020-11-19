@@ -52,6 +52,7 @@ export type ChannelContextValue<
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   lastRead?: Date;
+  StickyHeader?: React.ComponentType<{ dateString: string }>;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 };
 

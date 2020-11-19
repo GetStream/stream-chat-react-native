@@ -229,6 +229,7 @@ export const MessageList = <
     loading,
     LoadingIndicator,
     markRead,
+    StickyHeader,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -424,7 +425,7 @@ export const MessageList = <
   const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
     : new Date(tStickyHeaderDate).toDateString();
-
+  console.log(StickyHeader);
   return (
     <>
       <View collapsable={false} style={styles.container}>
@@ -458,7 +459,11 @@ export const MessageList = <
           {...additionalFlatListProps}
         />
         <View style={styles.stickyHeader}>
-          <DateHeader dateString={stickyHeaderDateToRender} />
+          {StickyHeader ? (
+            <StickyHeader dateString={stickyHeaderDateToRender} />
+          ) : (
+            <DateHeader dateString={stickyHeaderDateToRender} />
+          )}
         </View>
         {TypingIndicator && (
           <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>

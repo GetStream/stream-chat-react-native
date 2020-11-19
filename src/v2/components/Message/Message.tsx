@@ -522,9 +522,10 @@ const MessageWithContext = <
         ? messageActionsProp || [
             {
               action: async () =>
-                await retrySendMessage(
-                  message as MessageResponse<At, Ch, Co, Me, Re, Us>,
-                ),
+                await retrySendMessage({
+                  ...message,
+                  updated_at: undefined,
+                } as MessageResponse<At, Ch, Co, Me, Re, Us>),
               icon: <SendUp pathFill={primary} />,
               title: t('Resend'),
             },
