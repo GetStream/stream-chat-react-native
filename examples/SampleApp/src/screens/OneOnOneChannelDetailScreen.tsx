@@ -315,6 +315,17 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           </TouchableOpacity>
           <Spacer />
           <TouchableOpacity
+            onPress={async () => {
+              await channel.delete();
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'ChatScreen',
+                  },
+                ],
+              });
+            }}
             style={[
               styles.actionContainer,
               {

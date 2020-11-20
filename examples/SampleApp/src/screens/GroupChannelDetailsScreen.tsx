@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import { View } from 'react-native';
@@ -25,7 +26,6 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import { DownArrow } from '../icons/DownArrow';
-import { TextInput } from 'react-native-gesture-handler';
 import { CircleClose } from '../icons/CircleClose';
 import { Check } from '../icons/Check';
 import { useRef } from 'react';
@@ -60,7 +60,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { chatClient } = useContext(AppContext);
   const memberCount = Object.keys(channel.state.members).length;
   const textInputRef = useRef<TextInput>(null);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(
+    chatClient?.mutedChannels &&
+      chatClient?.mutedChannels?.findIndex(
+        (mute) => mute.channel.id === channel?.id,
+      ) > -1,
+  );
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [groupName, setGroupName] = useState(channel.data?.name);
   const allMembers = Object.values(channel.state.members);
@@ -176,7 +181,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   <TouchableOpacity
                     onPress={() => {
                       setGroupName(channel.data?.name);
-                      textInputRef.current.blur();
+                      textInputRef.current && textInputRef.current.blur();
                     }}
                     style={{
                       marginHorizontal: 4,
@@ -190,7 +195,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                         ...channel.data,
                         name: groupName,
                       });
-                      textInputRef.current.blur();
+                      textInputRef.current && textInputRef.current.blur();
                       // Alert.alert('Succesfully updated the name');
                     }}
                     style={{
@@ -226,13 +231,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <View>
                 <Switch
                   onValueChange={async () => {
-                    if (notificationsEnabled) {
-                      const r = await channel.unmute();
-                      console.warn(r);
-                    } else {
-                      const r = await channel.mute();
-                      console.warn(r);
-                    }
+                    // if (notificationsEnabled) {
+                    //   const r = await channel.unmute();
+                    //   console.warn(r);
+                    // } else {
+                    //   const r = await channel.mute();
+                    //   console.warn(r);
+                    // }
 
                     setNotificationsEnabled((previousState) => !previousState);
                   }}
@@ -265,14 +270,14 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <View>
                 <Switch
                   onValueChange={async () => {
-                    if (muted) {
-                      const r = await chatClient?.unmuteUser(user.id);
+                    if (notificationsEnabled) {
+                      const r = await channel.unmute();
                       console.warn(r);
                     } else {
-                      const r = await chatClient?.muteUser(user.id);
-
+                      const r = await channel.mute();
                       console.warn(r);
                     }
+
                     setMuted((previousState) => !previousState);
                   }}
                   trackColor={{
@@ -340,6 +345,19 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             </TouchableOpacity>
             <Spacer />
             <TouchableOpacity
+              onPress={async () => {
+                if (!chatClient?.user?.id) return;
+
+                await channel.removeMembers([chatClient?.user?.id]);
+                navigation.reset({
+                  index: 0,
+                  routes: [
+                    {
+                      name: 'ChatScreen',
+                    },
+                  ],
+                });
+              }}
               style={[
                 styles.actionContainer,
                 {
