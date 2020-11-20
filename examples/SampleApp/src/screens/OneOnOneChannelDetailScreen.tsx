@@ -20,6 +20,7 @@ import { Delete } from '../icons/Delete';
 import { GoBack } from '../icons/GoBack';
 import Dayjs from 'dayjs';
 import { AppContext } from '../context/AppContext';
+import { Picture } from '../icons/Picture';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -244,7 +245,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Notification height={24} width={24} />
+              <Picture height={24} width={24} />
               <Text
                 style={{
                   color: colors.text,

@@ -26,6 +26,7 @@ import {
   ThemeProvider,
 } from '../../../../src/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { Picture } from '../icons/Picture';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -192,7 +193,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <Notification height={24} width={24} />
+                <Picture height={24} width={24} />
                 <Text
                   style={{
                     color: colors.text,

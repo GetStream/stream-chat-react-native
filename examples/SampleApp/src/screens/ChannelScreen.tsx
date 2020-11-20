@@ -49,9 +49,7 @@ export type ChannelScreenProps = {
   route: ChannelScreenRouteProp;
 };
 
-export type ChannelHeaderProps = {
-  channel: StreamChatChannel;
-};
+export type ChannelHeaderProps = unknown;
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
@@ -93,7 +91,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
         >
           <Avatar
             {...getChannelPreviewDisplayAvatar(channel, chatClient)}
-            size={32}
+            size={40}
           />
         </TouchableOpacity>
       )}
