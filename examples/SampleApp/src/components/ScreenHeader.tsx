@@ -85,6 +85,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                 styles.title,
                 {
                   color: colors.text,
+                  fontSize: 16
                 },
               ]}
             >
@@ -94,6 +95,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
               <Text
                 style={{
                   color: colors.textLight,
+                  fontSize: 12
                 }}
               >
                 {subtitle}

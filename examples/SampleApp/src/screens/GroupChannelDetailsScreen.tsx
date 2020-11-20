@@ -27,6 +27,7 @@ import {
 } from '../../../../src/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -89,8 +90,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
                 <View style={{ marginLeft: 8 }}>
                   <Text>{m.user?.name}</Text>
-                  <Text style={{ color: colors.textLight }}>
-                    Last seen 4 mins ago
+                  <Text style={{ color: colors.textLight, fontSize: 12.5 }}>
+                    {getUserActivityStatus(m.user)}
                   </Text>
                 </View>
               </View>

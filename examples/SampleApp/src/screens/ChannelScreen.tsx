@@ -35,6 +35,8 @@ import { Channel as StreamChatChannel } from 'stream-chat';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+import truncate from 'lodash/truncate';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -76,7 +78,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
             <Avatar image={user.image} size={40} />
           </TouchableOpacity>
         )}
-        subtitle={'Online for 10 mins'}
+        subtitle={getUserActivityStatus(user)}
         title={getChannelPreviewDisplayName(channel, chatClient)}
       />
     );
@@ -96,6 +98,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
         </TouchableOpacity>
       )}
       title={getChannelPreviewDisplayName(channel, chatClient)}
+      subtitle={`${Object.keys(channel?.state.members).length} members`}
     />
   );
 };

@@ -21,6 +21,7 @@ import { GoBack } from '../icons/GoBack';
 import Dayjs from 'dayjs';
 import { AppContext } from '../context/AppContext';
 import { Picture } from '../icons/Picture';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -99,15 +100,12 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           >
             {user.name}
           </Text>
-          {user.online && (
-            <View style={styles.onlineStatusContainer}>
-              <View style={styles.onlineIndicator} />
-              <Text style={styles.onlineStatus}>
-                Online for {Dayjs().diff(Dayjs(user.last_active), 'minute')}{' '}
-                minutes
-              </Text>
-            </View>
-          )}
+          <View style={styles.onlineStatusContainer}>
+            {user.online && <View style={styles.onlineIndicator} />}
+            <Text style={styles.onlineStatus}>
+              {getUserActivityStatus(user)}
+            </Text>
+          </View>
           <View
             style={[
               styles.userNameContainer,
