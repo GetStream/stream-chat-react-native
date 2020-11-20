@@ -232,6 +232,7 @@ export const MessageList = <
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     clearEditingState,
+    disableTypingIndicator,
     editing,
     loadMore: mainLoadMore,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -462,7 +463,7 @@ export const MessageList = <
             <DateHeader dateString={stickyHeaderDateToRender} />
           )}
         </View>
-        {TypingIndicator && (
+        {!disableTypingIndicator && TypingIndicator && (
           <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
             <TypingIndicator />
           </TypingIndicatorContainer>

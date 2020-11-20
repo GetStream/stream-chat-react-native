@@ -226,6 +226,7 @@ export type MessagesContextValue<
    * Accepts the same props as Card component.
    */
   CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  disableTypingIndicator?: boolean;
   /**
    * Optional function to custom format the message date
    */
@@ -267,6 +268,7 @@ const areEqual = <
   const {
     value: {
       additionalTouchableProps: prevAdditionalTouchableProps,
+      disableTypingIndicator: prevDisableTypingIndicator,
       dismissKeyboardOnMessageTouch: prevDismissKeyboardOnMessageTouch,
       editing: prevEditing,
       hasMore: prevHasMore,
@@ -280,6 +282,7 @@ const areEqual = <
   const {
     value: {
       additionalTouchableProps: nextAdditionalTouchableProps,
+      disableTypingIndicator: nextDisableTypingIndicator,
       dismissKeyboardOnMessageTouch: nextDismissKeyboardOnMessageTouch,
       editing: nextEditing,
       hasMore: nextHasMore,
@@ -290,6 +293,10 @@ const areEqual = <
       supportedReactions: nextSupportedReactions,
     },
   } = nextProps;
+
+  const disableTypingIndicatorEqual =
+    prevDisableTypingIndicator === nextDisableTypingIndicator;
+  if (!disableTypingIndicatorEqual) return false;
 
   const dismissKeyboardOnMessageTouchEqual =
     prevDismissKeyboardOnMessageTouch === nextDismissKeyboardOnMessageTouch;
