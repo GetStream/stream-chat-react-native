@@ -58,6 +58,9 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const { chatClient } = useContext(AppContext);
   const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
+
+  if (!channel) return null;
+
   const isOneOnOneConversation =
     Object.values(channel.state.members).length === 2;
 
@@ -83,6 +86,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
       />
     );
   }
+
   return (
     <ScreenHeader
       RightContent={() => (
@@ -97,8 +101,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           />
         </TouchableOpacity>
       )}
-      title={getChannelPreviewDisplayName(channel, chatClient)}
       subtitle={`${Object.keys(channel?.state.members).length} members`}
+      title={getChannelPreviewDisplayName(channel, chatClient)}
     />
   );
 };

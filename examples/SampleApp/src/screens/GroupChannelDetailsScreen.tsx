@@ -28,6 +28,8 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+import { useEffect } from 'react';
+import { DownArrow } from '../icons/DownArrow';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -60,11 +62,15 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const memberCount = Object.keys(channel.state.members).length;
 
   const [muted, setMuted] = useState(false);
-  const [blocked, setBlocked] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const allMembers = Object.values(channel.state.members);
+  const [members, setMembers] = useState(
+    Object.values(channel.state.members).slice(0, 3),
+  );
   const navigation = useNavigation();
 
   const { colors } = useTheme() as AppTheme;
+
   return (
     <>
       <ScreenHeader
@@ -73,7 +79,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       />
       <ScrollView>
         <ThemeProvider>
-          {Object.values(channel.state.members).map((m) => (
+          {members.map((m) => (
             <View
               key={m.user.id}
               style={{
@@ -100,6 +106,33 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               </Text>
             </View>
           ))}
+          {allMembers.length !== members.length && (
+            <TouchableOpacity
+              onPress={() => {
+                setMembers(Object.values(channel.state.members));
+              }}
+              style={{
+                alignItems: 'center',
+                borderBottomColor: colors.borderLight,
+                borderBottomWidth: 1,
+                flexDirection: 'row',
+                padding: 21,
+                width: '100%',
+              }}
+            >
+              <DownArrow height={24} width={24} />
+              <View style={{ marginLeft: 21 }}>
+                <Text
+                  style={{
+                    color: colors.textLight,
+                  }}
+                >
+                  {`${allMembers.length - members.length} more`}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
           <Spacer />
           <View style={styles.actionListContainer}>
             <TouchableOpacity
