@@ -2,23 +2,19 @@
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView, View } from 'react-native';
+import { View } from 'react-native';
 import { Notification } from '../icons/Notification';
-import { BlockUser } from '../icons/BlockUser';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { Mute } from '../icons/Mute';
 import { File } from '../icons/File';
 import { GoForward } from '../icons/GoForward';
 import { Delete } from '../icons/Delete';
-import { GoBack } from '../icons/GoBack';
-import Dayjs from 'dayjs';
 import { AppContext } from '../context/AppContext';
 import {
   Avatar,
@@ -28,8 +24,11 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-import { useEffect } from 'react';
 import { DownArrow } from '../icons/DownArrow';
+import { TextInput } from 'react-native-gesture-handler';
+import { CircleClose } from '../icons/CircleClose';
+import { Check } from '../icons/Check';
+import { useRef } from 'react';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -60,13 +59,15 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const memberCount = Object.keys(channel.state.members).length;
-
+  const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [groupName, setGroupName] = useState(channel.data?.name);
   const allMembers = Object.values(channel.state.members);
   const [members, setMembers] = useState(
     Object.values(channel.state.members).slice(0, 3),
   );
+  const [textInputFocused, setTextInputFocused] = useState(false);
   const navigation = useNavigation();
 
   const { colors } = useTheme() as AppTheme;
@@ -77,7 +78,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         subtitle={`${memberCount} members`}
         title={getChannelPreviewDisplayName(channel, chatClient)}
       />
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>
           {members.map((m) => (
             <View
@@ -92,10 +93,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 width: '100%',
               }}
             >
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
                 <View style={{ marginLeft: 8 }}>
-                  <Text>{m.user?.name}</Text>
+                  <Text style={{ fontWeight: '500' }}>{m.user?.name}</Text>
                   <Text style={{ color: colors.textLight, fontSize: 12.5 }}>
                     {getUserActivityStatus(m.user)}
                   </Text>
@@ -135,6 +136,74 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
           <Spacer />
           <View style={styles.actionListContainer}>
+            <View
+              style={[
+                styles.actionContainer,
+                {
+                  borderBottomColor: colors.border,
+                  paddingLeft: 7,
+                },
+              ]}
+            >
+              <View
+                style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}
+              >
+                <Text style={{ color: colors.textLight }}>NAME</Text>
+                <TextInput
+                  onBlur={() => {
+                    setTextInputFocused(false);
+                  }}
+                  onChangeText={(name) => {
+                    setGroupName(name);
+                  }}
+                  onFocus={() => {
+                    setTextInputFocused(true);
+                  }}
+                  placeholder={'Add a group name'}
+                  ref={(ref) => {
+                    textInputRef.current = ref;
+                  }}
+                  style={{
+                    marginLeft: 13,
+                    flexGrow: 1,
+                    flexShrink: 1,
+                  }}
+                  value={groupName}
+                />
+              </View>
+              {textInputFocused && (
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setGroupName(channel.data?.name);
+                      textInputRef.current.blur();
+                    }}
+                    style={{
+                      marginHorizontal: 4,
+                    }}
+                  >
+                    <CircleClose height={24} width={24} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      await channel.update({
+                        ...channel.data,
+                        name: groupName,
+                      });
+                      textInputRef.current.blur();
+                      // Alert.alert('Succesfully updated the name');
+                    }}
+                    style={{
+                      marginHorizontal: 4,
+                    }}
+                  >
+                    {!!groupName && (
+                      <Check fill={'#006CFF'} height={24} width={24} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
             <TouchableOpacity
               style={[
                 styles.actionContainer,
@@ -348,6 +417,7 @@ const styles = StyleSheet.create({
 
   actionListContainer: {},
   actionContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
