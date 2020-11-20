@@ -136,6 +136,11 @@ export type Theme = {
     backgroundColor?: string;
     blurType?: 'light' | 'dark';
   };
+  loadingDots: {
+    container: ViewStyle;
+    loadingDot: ViewStyle;
+    spacing: number;
+  };
   loadingErrorIndicator: {
     container: ViewStyle;
     errorText: TextStyle;
@@ -451,6 +456,11 @@ export const defaultTheme: Theme = {
   imageGallery: {
     footer: {},
     header: {},
+  },
+  loadingDots: {
+    container: {},
+    loadingDot: {},
+    spacing: 4,
   },
   loadingErrorIndicator: {
     container: {},

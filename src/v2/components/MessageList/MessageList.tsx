@@ -15,10 +15,7 @@ import {
   MessageSystem as DefaultMessageSystem,
   MessageSystemProps,
 } from './MessageSystem';
-import {
-  TypingIndicator as DefaultTypingIndicator,
-  TypingIndicatorProps,
-} from './TypingIndicator';
+import { TypingIndicator as DefaultTypingIndicator } from './TypingIndicator';
 import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 
 import { Message, useMessageList } from './hooks/useMessageList';
@@ -185,7 +182,7 @@ export type MessageListProps<
    *
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
-  TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
+  TypingIndicator?: React.ComponentType;
 };
 
 /**
@@ -425,7 +422,7 @@ export const MessageList = <
   const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
     : new Date(tStickyHeaderDate).toDateString();
-  console.log(StickyHeader);
+
   return (
     <>
       <View collapsable={false} style={styles.container}>
