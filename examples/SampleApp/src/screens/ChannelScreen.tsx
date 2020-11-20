@@ -25,9 +25,11 @@ import {
   Avatar,
   Channel,
   Chat,
+  getChannelPreviewDisplayAvatar,
   getChannelPreviewDisplayName,
   MessageInput,
   MessageList,
+  useChannelContext,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -51,9 +53,10 @@ export type ChannelHeaderProps = {
   channel: StreamChatChannel;
 };
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
+const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
+  const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
   const isOneOnOneConversation =
     Object.values(channel.state.members).length === 2;
@@ -81,7 +84,21 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
     );
   }
   return (
-    <ScreenHeader title={getChannelPreviewDisplayName(channel, chatClient)} />
+    <ScreenHeader
+      RightContent={() => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('GroupChannelDetailsScreen', { channel });
+          }}
+        >
+          <Avatar
+            {...getChannelPreviewDisplayAvatar(channel, chatClient)}
+            size={32}
+          />
+        </TouchableOpacity>
+      )}
+      title={getChannelPreviewDisplayName(channel, chatClient)}
+    />
   );
 };
 
@@ -110,9 +127,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   return (
     <View style={{ height: '100%' }}>
       <Chat client={chatClient} style={streamTheme}>
-        <ChannelHeader channel={channel} />
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <Channel channel={channel}>
+            <ChannelHeader />
             <MessageList<
               LocalAttachmentType,
               LocalChannelType,

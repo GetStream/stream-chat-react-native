@@ -31,6 +31,7 @@ import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetail
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
+import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 
 LogBox.ignoreAllLogs(true);
 enableScreens();
@@ -121,6 +122,11 @@ const HomeScreen = () => (
     <Stack.Screen
       component={OneOnOneChannelDetailScreen}
       name='OneOnOneChannelDetailScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={GroupChannelDetailsScreen}
+      name='GroupChannelDetailsScreen'
       options={{ headerShown: false }}
     />
     <Stack.Screen

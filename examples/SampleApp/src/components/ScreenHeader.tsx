@@ -90,7 +90,15 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             >
               {title}
             </Text>
-            {subtitle && <Text>{subtitle}</Text>}
+            {subtitle && (
+              <Text
+                style={{
+                  color: colors.textLight,
+                }}
+              >
+                {subtitle}
+              </Text>
+            )}
           </View>
           <RightContent />
         </View>

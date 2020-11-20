@@ -26,6 +26,9 @@ export type StackNavigatorParamList = {
     channelId?: string;
   };
   ChatScreen: undefined;
+  GroupChannelDetailsScreen: {
+    channel: Channel;
+  };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: {
