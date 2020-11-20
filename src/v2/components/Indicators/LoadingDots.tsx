@@ -33,7 +33,7 @@ export const LoadingDots: React.FC<Props> = (props) => {
 
   return (
     <View style={[{ flexDirection: 'row' }, container, style]}>
-      {[...Array(numberOfDots).keys()].map((_item, index) => (
+      {Array.from(Array(numberOfDots)).map((_item, index) => (
         <LoadingDot
           diameter={diameter}
           duration={duration}
