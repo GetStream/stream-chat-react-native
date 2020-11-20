@@ -5,7 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { ChannelState } from 'stream-chat';
 
 import type { MessageWithDates } from '../messagesContext/MessagesContext';
-import type { Message } from '../../components/MessageList/utils/insertDates';
+import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

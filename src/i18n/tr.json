@@ -39,12 +39,15 @@
   "Upload a file": "Dosya yükle",
   "Upload a photo": "Fotoğraf yükle",
   "Write your message": "Yeni mesaj yaz",
+  "{{ commaSeparatedUsers }} and {{ lastUser }} are typing": "{{ commaSeparatedUsers }} ve {{ lastUser }} yazıyor",
   "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} ve {{ lastUser }} yazıyor...",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} ve {{ secondUser }} yazıyor",
   "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} ve {{ secondUser }} yazıyor...",
   "{{ imageCount }} more": "{{ imageCount }} adet daha",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapları",
   "{{ replyCount }} replies": "{{ replyCount }} cevaplar",
+  "{{ user }} is typing": "{{ user }} yazıyor",
   "{{ user }} is typing...": "{{ user }} yazıyor...",
   "🏙 Attachment...": "🏙 Ek..."
 }

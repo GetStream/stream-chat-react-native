@@ -1,12 +1,10 @@
-import {
-  InsertDatesResponse,
-  isDateSeparator,
-  Message,
-} from '../utils/insertDates';
-
 import type { ImmutableDate } from 'seamless-immutable';
 
+import type { Message } from '../hooks/useMessageList';
+
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
+import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -28,18 +26,21 @@ export const getReadStates = <
   Us extends UnknownType = DefaultUserType
 >(
   clientUserId: string | undefined,
-  messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>,
+  messages:
+    | MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'],
   read?: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'],
 ) => {
-  const readData = messages.reduce((acc, cur) => {
-    if (!isDateSeparator(cur) && cur.id) {
+  const readData = messages.asMutable().reduce((acc, cur) => {
+    if (cur.id) {
       acc[cur.id] = false;
     }
     return acc;
   }, {} as { [key: string]: boolean | number });
 
   const filteredMessagesReversed = messages
-    .filter((msg) => !isDateSeparator(msg) && msg.updated_at)
+    .asMutable()
+    .filter((msg) => msg.updated_at)
     .reverse() as Array<
     Message<At, Ch, Co, Ev, Me, Re, Us> & {
       updated_at: string | ImmutableDate;

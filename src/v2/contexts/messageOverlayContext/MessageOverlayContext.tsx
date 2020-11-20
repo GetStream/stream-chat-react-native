@@ -5,7 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
-import type { Message } from '../../components/MessageList/utils/insertDates';
+import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type { Alignment } from '../messageContext/MessageContext';
 import type {
   GroupType,

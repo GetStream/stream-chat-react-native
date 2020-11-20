@@ -39,12 +39,15 @@
   "Upload a file": "Отправить файл",
   "Upload a photo": "Отправить фото",
   "Write your message": "Напишите сообщение",
+  "{{ commaSeparatedUsers }} and {{ lastUser }} are typing": "{{ commaSeparatedUsers }} и {{ lastUser }} пишут",
   "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} и {{ lastUser }} пишут...",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} и {{ secondUser }} пишут",
   "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} и {{ secondUser }} пишут...",
   "{{ imageCount }} more": "Ещё {{ imageCount }}",
   "{{ index }} of {{ photoLength }}": "{{ index }} из {{ photoLength }}",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Ответы в темах",
   "{{ replyCount }} replies": "{{ replyCount }} ответов",
+  "{{ user }} is typing": "{{ user }} пишет",
   "{{ user }} is typing...": "{{ user }} пишет...",
   "🏙 Attachment...": "🏙 Вложение..."
 }
