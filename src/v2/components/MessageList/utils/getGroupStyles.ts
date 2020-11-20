@@ -1,6 +1,8 @@
-import { InsertDatesResponse, isDateSeparator } from './insertDates';
-
-import type { GroupType } from '../../../contexts/messagesContext/MessagesContext';
+import type {
+  GroupType,
+  MessagesContextValue,
+} from '../../../contexts/messagesContext/MessagesContext';
+import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -21,7 +23,9 @@ export type GetGroupStylesParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  messagesWithDates: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>;
+  messages:
+    | MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
+    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
   noGroupByUser?: boolean;
 };
 
@@ -36,13 +40,13 @@ export const getGroupStyles = <
 >(
   params: GetGroupStylesParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { messagesWithDates, noGroupByUser } = params;
+  const { messages, noGroupByUser } = params;
   const messageGroupStyles: { [key: string]: GroupType[] } = {};
 
-  for (let i = 0; i < messagesWithDates.length; i++) {
-    const previousMessage = messagesWithDates[i - 1];
-    const message = messagesWithDates[i];
-    const nextMessage = messagesWithDates[i + 1];
+  for (let i = 0; i < messages.length; i++) {
+    const previousMessage = messages[i - 1];
+    const message = messages[i];
+    const nextMessage = messages[i + 1];
     const groupStyles: GroupType[] = [];
 
     /**
@@ -52,15 +56,10 @@ export const getGroupStyles = <
       continue;
     }
 
-    if (isDateSeparator(message)) {
-      continue;
-    }
-
     const userId = message?.user?.id || null;
 
     const isTopMessage =
       !previousMessage ||
-      isDateSeparator(previousMessage) ||
       previousMessage.type === 'system' ||
       previousMessage.type === 'channel.event' ||
       (previousMessage.attachments &&
@@ -71,7 +70,6 @@ export const getGroupStyles = <
 
     const isBottomMessage =
       !nextMessage ||
-      isDateSeparator(nextMessage) ||
       nextMessage.type === 'system' ||
       nextMessage.type === 'channel.event' ||
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||

@@ -8,7 +8,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Message } from './utils/insertDates';
+import type { Message } from './hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,

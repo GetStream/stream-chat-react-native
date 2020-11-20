@@ -61,7 +61,7 @@ import { reactionData as reactionDataDefault } from '../../utils/utils';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
-import type { Message as MessageType } from '../MessageList/utils/insertDates';
+import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -198,6 +198,7 @@ export const Channel = <
     children,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
+    disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
     doMarkReadRequest,
     doSendMessageRequest,
@@ -225,6 +226,7 @@ export const Channel = <
     MessageStatus = MessageStatusDefault,
     MessageText,
     ReactionList = ReactionListDefault,
+    StickyHeader,
     supportedReactions = reactionDataDefault,
     thread: threadProps,
     UrlPreview = CardDefault,
@@ -314,7 +316,9 @@ export const Channel = <
     if (threadProps) {
       setThread(threadProps);
       if (channel && threadProps?.id) {
-        setThreadMessages(channel.state.threads?.[threadProps.id] || []);
+        setThreadMessages(
+          channel.state.threads?.[threadProps.id] || Immutable([]),
+        );
       }
     } else {
       setThread(null);
@@ -851,6 +855,7 @@ export const Channel = <
     members,
     read,
     setLastRead,
+    StickyHeader,
     typing,
     watcherCount,
     watchers,
@@ -867,6 +872,7 @@ export const Channel = <
     CardFooter,
     CardHeader,
     clearEditingState,
+    disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     editing,
     editMessage,
