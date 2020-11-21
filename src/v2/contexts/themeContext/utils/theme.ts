@@ -482,6 +482,8 @@ export const defaultTheme: Theme = {
     },
     attachButton: {},
     attachButtonIcon: {},
+    commandsButton: {},
+    composerContainer: {},
     container: {
       conditionalPadding: 20,
     },

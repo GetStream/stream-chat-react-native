@@ -727,7 +727,7 @@ export const MessageInput = <
                 triggerSettings={triggerSettings}
                 value={text}
               />
-              <SendButton<At, Ch, Co, Ev, Me, Re, Us>
+              <SendButton
                 disabled={disabled || sending.current || !isValidMessage()}
                 sendMessage={sendMessage}
               />
