@@ -719,7 +719,11 @@ export const MessageInput = <
                   handleOnPress={handleOnPress}
                 />
               )}
-              <CommandsButton />
+              <CommandsButton
+                handleOnPress={() => {
+                  appendText('/');
+                }}
+              />
               <AutoCompleteInput<Co, Us>
                 additionalTextInputProps={additionalTextInputProps || {}}
                 onChange={onChangeText}
