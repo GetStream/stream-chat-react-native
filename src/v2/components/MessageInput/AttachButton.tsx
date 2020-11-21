@@ -9,11 +9,8 @@ import { Attach } from '../../icons';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
-  attachButtonIcon: {
-    height: 15,
-    width: 15,
-  },
   container: {
+    marginBottom: 8,
     marginRight: 8,
   },
 });

@@ -147,7 +147,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           <Channel
             channel={channel}
             disableTypingIndicator
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
           >
             <ChannelHeader />
             <MessageList<

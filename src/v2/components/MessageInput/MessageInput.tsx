@@ -93,9 +93,9 @@ const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.
 
 const styles = StyleSheet.create({
   composerContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     flexDirection: 'row',
-    marginVertical: 10,
+    marginVertical: 4,
     minHeight: 46,
     paddingHorizontal: 10,
   },

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import {
   isSuggestionUser,
@@ -34,8 +34,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     justifyContent: 'center',
-    padding: 12,
+    minHeight: 40,
+    paddingBottom: 12,
     paddingHorizontal: 16,
+    paddingTop: 12,
   },
 });
 
@@ -104,7 +106,7 @@ export const AutoCompleteInput = <
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
-
+  const [inputHeight, setInputHeight] = useState(40);
   const handleChange = (text: string, fromUpdate = false) => {
     if (!fromUpdate) {
       onChange(text);
@@ -298,16 +300,35 @@ export const AutoCompleteInput = <
   };
 
   return (
-    <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+    <View
+      style={[
+        styles.inputBoxContainer,
+        inputBoxContainer,
+        {
+          // TODO: Investigate why iOS doesn't respoect the padding on container while growing height.
+          height: Math.min(inputHeight, 100) + (Platform.OS === 'ios' ? 20 : 0),
+        },
+      ]}
+    >
       <TextInput
         multiline
         onChangeText={(text) => {
           handleChange(text);
         }}
+        onContentSizeChange={(e) => {
+          setInputHeight(e.nativeEvent.contentSize.height);
+          console.warn('changed ', e.nativeEvent.contentSize.height);
+        }}
         onSelectionChange={handleSelectionChange}
         placeholder={t('Write your message')}
         ref={setInputBoxRef}
-        style={[styles.inputBox, inputBox]}
+        style={[
+          styles.inputBox,
+          inputBox,
+          {
+            minHeight: Math.min(inputHeight, 100),
+          },
+        ]}
         testID='auto-complete-text-input'
         value={value}
         {...additionalTextInputProps}

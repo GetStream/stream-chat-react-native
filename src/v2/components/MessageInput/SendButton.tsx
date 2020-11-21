@@ -9,11 +9,8 @@ import { SendRight, SendUp } from '../../icons';
 
 const styles = StyleSheet.create({
   container: {
+    marginBottom: 8,
     marginLeft: 8,
-  },
-  sendButtonIcon: {
-    height: 15,
-    width: 15,
   },
 });
 
