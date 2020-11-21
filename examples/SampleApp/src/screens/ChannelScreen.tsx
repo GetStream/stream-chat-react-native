@@ -41,6 +41,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import truncate from 'lodash/truncate';
+import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -62,6 +63,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const { chatClient } = useContext(AppContext);
   const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
+  const typing = useTypingString();
 
   if (!channel) return null;
 
@@ -85,7 +87,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
             <Avatar image={user.image} size={40} />
           </TouchableOpacity>
         )}
-        subtitle={getUserActivityStatus(user)}
+        subtitle={typing ? typing : getUserActivityStatus(user)}
         title={getChannelPreviewDisplayName(channel, chatClient)}
       />
     );
@@ -105,7 +107,11 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           />
         </TouchableOpacity>
       )}
-      subtitle={`${Object.keys(channel?.state.members).length} members`}
+      subtitle={
+        typing
+          ? typing
+          : `${Object.keys(channel?.state.members).length} members`
+      }
       title={getChannelPreviewDisplayName(channel, chatClient)}
     />
   );
@@ -138,6 +144,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <Channel
             channel={channel}
+            disableTypingIndicator
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
           >
             <ChannelHeader />
