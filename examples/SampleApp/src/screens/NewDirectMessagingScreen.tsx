@@ -38,6 +38,7 @@ import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
 import { RoundButton } from '../components/RoundButton';
 import { Contacts } from '../icons/Contacts';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type NewDirectMessagingScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -55,7 +56,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput>(null);
   const searchInputRef = useRef<TextInput>(null);
-
+  const insets = useSafeAreaInsets();
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
 
@@ -124,7 +125,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   if (!chatClient) return null;
 
   return (
-    <View style={{ height: '100%' }}>
+    <View style={{ height: '100%', paddingBottom: insets.bottom }}>
       <Chat client={chatClient}>
         <ScreenHeader title={'New Chat'} />
         <View
@@ -138,7 +139,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           <Channel
             channel={channel}
             EmptyStateIndicator={EmptyMessagesIndicator}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : -300}
           >
             <View
               style={{

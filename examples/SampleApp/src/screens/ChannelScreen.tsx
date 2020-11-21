@@ -42,6 +42,7 @@ import { useState } from 'react';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import truncate from 'lodash/truncate';
 import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -124,6 +125,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const [channel, setChannel] = useState(null);
+  const insets = useSafeAreaInsets();
   useEffect(() => {
     const initChannel = async () => {
       const channel = chatClient?.channel('messaging', channelId);
@@ -139,7 +141,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View style={{ height: '100%' }}>
+    <View style={{ height: '100%', paddingBottom: insets.bottom }}>
       <Chat client={chatClient} style={streamTheme}>
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <Channel

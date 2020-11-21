@@ -1,24 +1,11 @@
 import React from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
-import { useMessagesContext } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-import type { GestureResponderEvent, ImageRequireSource } from 'react-native';
+import type { GestureResponderEvent } from 'react-native';
 
-import type {
-  DefaultAttachmentType,
-  DefaultChannelType,
-  DefaultCommandType,
-  DefaultEventType,
-  DefaultMessageType,
-  DefaultReactionType,
-  DefaultUserType,
-  UnknownType,
-} from '../../types/types';
-
-const iconEdit: ImageRequireSource = require('../../../images/icons/icon_edit.png');
-const iconSendNewMessage: ImageRequireSource = require('../../../images/icons/icon_new_message.png');
+import { SendRight, SendUp } from '../../icons';
 
 const styles = StyleSheet.create({
   container: {
@@ -42,22 +29,11 @@ export type SendButtonProps = {
  *
  * @example ./SendButton.md
  */
-export const SendButton = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  props: SendButtonProps,
-) => {
+export const SendButton = (props: SendButtonProps) => {
   const { disabled = false, sendMessage } = props;
-  const { editing } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
-      messageInput: { sendButton, sendButtonIcon },
+      messageInput: { sendButton },
     },
   } = useTheme();
 
@@ -68,10 +44,8 @@ export const SendButton = <
       style={[styles.container, sendButton]}
       testID='send-button'
     >
-      <Image
-        source={editing ? iconEdit : iconSendNewMessage}
-        style={[styles.sendButtonIcon, sendButtonIcon]}
-      />
+      {disabled && <SendRight height={24} width={24} />}
+      {!disabled && <SendUp height={24} width={24} />}
     </TouchableOpacity>
   );
 };

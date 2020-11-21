@@ -4,12 +4,12 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Attach } from '../../icons';
+import { Lightning } from '../../icons';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const styles = StyleSheet.create({
-  attachButtonIcon: {
+  commandsButtonIcon: {
     height: 15,
     width: 15,
   },
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type AttachButtonProps = {
+export type CommandsButtonProps = {
   /** Disables the button */
   disabled?: boolean;
   /** Function that opens an attachment action sheet */
@@ -28,13 +28,13 @@ export type AttachButtonProps = {
 /**
  * UI Component for attach button in MessageInput component.
  *
- * @example ./AttachButton.md
+ * @example ./CommandsButton.md
  */
-export const AttachButton: React.FC<AttachButtonProps> = (props) => {
+export const CommandsButton: React.FC<CommandsButtonProps> = (props) => {
   const { disabled = false, handleOnPress } = props;
   const {
     theme: {
-      messageInput: { attachButton },
+      messageInput: { commandsButton },
     },
   } = useTheme();
 
@@ -42,12 +42,12 @@ export const AttachButton: React.FC<AttachButtonProps> = (props) => {
     <TouchableOpacity
       disabled={disabled}
       onPress={handleOnPress}
-      style={[styles.container, attachButton]}
+      style={[styles.container, commandsButton]}
       testID='attach-button'
     >
-      <Attach height={24} width={24} />
+      <Lightning height={24} width={24} />
     </TouchableOpacity>
   );
 };
 
-AttachButton.displayName = 'AttachButton{messageInput}';
+CommandsButton.displayName = 'CommandsButton{messageInput}';

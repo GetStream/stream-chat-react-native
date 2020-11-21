@@ -159,6 +159,8 @@ export type Theme = {
     };
     attachButton: ViewStyle;
     attachButtonIcon: ImageStyle;
+    commandsButton: ViewStyle;
+    composerContainer: ViewStyle;
     container: ViewStyle & {
       conditionalPadding: ViewStyle['paddingTop'];
     };

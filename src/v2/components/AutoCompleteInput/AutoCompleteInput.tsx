@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 
 import {
   isSuggestionUser,
@@ -25,7 +25,17 @@ const styles = StyleSheet.create({
   inputBox: {
     flex: 1,
     margin: -5,
-    maxHeight: 60,
+  },
+  inputBoxContainer: {
+    alignContent: 'center',
+    borderColor: '#EBEBEB',
+    borderRadius: 20,
+    borderWidth: 1,
+    flexGrow: 1,
+    flexShrink: 1,
+    justifyContent: 'center',
+    padding: 12,
+    paddingHorizontal: 16,
   },
 });
 
@@ -81,7 +91,7 @@ export const AutoCompleteInput = <
 
   const {
     theme: {
-      messageInput: { inputBox },
+      messageInput: { inputBox, inputBoxContainer },
     },
   } = useTheme();
 
@@ -288,19 +298,21 @@ export const AutoCompleteInput = <
   };
 
   return (
-    <TextInput
-      multiline
-      onChangeText={(text) => {
-        handleChange(text);
-      }}
-      onSelectionChange={handleSelectionChange}
-      placeholder={t('Write your message')}
-      ref={setInputBoxRef}
-      style={[styles.inputBox, inputBox]}
-      testID='auto-complete-text-input'
-      value={value}
-      {...additionalTextInputProps}
-    />
+    <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+      <TextInput
+        multiline
+        onChangeText={(text) => {
+          handleChange(text);
+        }}
+        onSelectionChange={handleSelectionChange}
+        placeholder={t('Write your message')}
+        ref={setInputBoxRef}
+        style={[styles.inputBox, inputBox]}
+        testID='auto-complete-text-input'
+        value={value}
+        {...additionalTextInputProps}
+      />
+    </View>
   );
 };
 
