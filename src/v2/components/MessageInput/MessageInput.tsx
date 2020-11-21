@@ -374,6 +374,10 @@ export const MessageInput = <
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
     }
+
+    if (!editing) {
+      resetInput();
+    }
   }, [editing]);
 
   const sendMessageAsync = (id: string) => {
@@ -382,7 +386,10 @@ export const MessageInput = <
       return;
     }
 
-    if (image.state === FileState.UPLOADED) {
+    if (
+      image.state === FileState.UPLOADED ||
+      image.state === FileState.FINISHED
+    ) {
       const attachments = [
         {
           image_url: image.url,
@@ -411,6 +418,17 @@ export const MessageInput = <
         console.log('Failed');
       }
     }
+  };
+
+  const resetInput = (pendingAttachments: Attachment[] = []) => {
+    setFileUploads([]);
+    setImageUploads([]);
+    setMentionedUsers([]);
+    setNumberOfUploads(
+      (prevNumberOfUploads) =>
+        prevNumberOfUploads - (pendingAttachments?.length || 0),
+    );
+    setText('');
   };
 
   useEffect(() => {
@@ -741,7 +759,10 @@ export const MessageInput = <
         }
       }
 
-      if (image.state === FileState.UPLOADED) {
+      if (
+        image.state === FileState.UPLOADED ||
+        image.state === FileState.FINISHED
+      ) {
         attachments.push({
           fallback: image.file.name,
           image_url: image.url,
@@ -759,7 +780,10 @@ export const MessageInput = <
         sending.current = false;
         return;
       }
-      if (file.state === FileState.UPLOADED) {
+      if (
+        file.state === FileState.UPLOADED ||
+        file.state === FileState.FINISHED
+      ) {
         attachments.push({
           asset_url: file.url,
           file_size: file.file.size,
@@ -792,6 +816,7 @@ export const MessageInput = <
       const updateMessagePromise = editMessage(updatedMessage).then(
         clearEditingState,
       );
+      resetInput(attachments);
       logChatPromiseExecution(updateMessagePromise, 'update message');
 
       sending.current = false;
@@ -805,14 +830,7 @@ export const MessageInput = <
         } as unknown) as StreamMessage<At, Me, Us>);
 
         sending.current = false;
-        setFileUploads([]);
-        setImageUploads([]);
-        setMentionedUsers([]);
-        setNumberOfUploads(
-          (prevNumberOfUploads) =>
-            prevNumberOfUploads - (attachments?.length || 0),
-        );
-        setText('');
+        resetInput(attachments);
       } catch (_error) {
         sending.current = false;
         setText(prevText);
@@ -841,7 +859,7 @@ export const MessageInput = <
         } as Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0]);
       }
 
-      setText('');
+      resetInput();
       clearEditingState();
     } catch (error) {
       console.log(error);
@@ -1043,8 +1061,8 @@ export const MessageInput = <
         <IconSquare
           icon={iconClose}
           onPress={() => {
+            resetInput();
             clearEditingState();
-            setText('');
           }}
         />
       </View>
