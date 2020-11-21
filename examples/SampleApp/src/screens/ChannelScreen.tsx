@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import {
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -32,7 +33,10 @@ import {
   useChannelContext,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
-import { ScreenHeader } from '../components/ScreenHeader';
+import {
+  ScreenHeader,
+  useScreenHeaderHeight,
+} from '../components/ScreenHeader';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
@@ -114,7 +118,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const [channel, setChannel] = useState(null);
-
   useEffect(() => {
     const initChannel = async () => {
       const channel = chatClient?.channel('messaging', channelId);
@@ -133,7 +136,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     <View style={{ height: '100%' }}>
       <Chat client={chatClient} style={streamTheme}>
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
-          <Channel channel={channel}>
+          <Channel
+            channel={channel}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+          >
             <ChannelHeader />
             <MessageList<
               LocalAttachmentType,

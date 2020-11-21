@@ -43,6 +43,8 @@ type ScreenHeaderProps = {
   subtitle?: string | boolean;
 };
 
+const HEADER_CONTENT_HEIGHT = 55;
+
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   LeftContent = BackButton,
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
@@ -59,6 +61,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           styles.safeAreaContainer,
           {
             backgroundColor: colors.backgroundNavigation,
+            height: HEADER_CONTENT_HEIGHT + insets.top,
           },
         ]}
       >
@@ -67,7 +70,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             styles.contentContainer,
             {
               marginTop: insets.top,
-              height: 55,
+              height: HEADER_CONTENT_HEIGHT,
               paddingBottom: 10,
               paddingLeft: 10,
               paddingRight: 10,
@@ -85,7 +88,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                 styles.title,
                 {
                   color: colors.text,
-                  fontSize: 16
+                  fontSize: 16,
                 },
               ]}
             >
@@ -95,7 +98,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
               <Text
                 style={{
                   color: colors.textLight,
-                  fontSize: 12
+                  fontSize: 12,
                 }}
               >
                 {subtitle}

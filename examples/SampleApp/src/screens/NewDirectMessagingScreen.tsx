@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext, useEffect, useRef } from 'react';
 import { useState } from 'react';
 import {
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -137,7 +138,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           <Channel
             channel={channel}
             EmptyStateIndicator={EmptyMessagesIndicator}
-            keyboardVerticalOffset={100}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
           >
             <View
               style={{
