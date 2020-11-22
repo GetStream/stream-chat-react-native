@@ -15,7 +15,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const getChannelPreviewDisplayAvatar = <
+export const getChannelPreviewDisplayAvatar = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,

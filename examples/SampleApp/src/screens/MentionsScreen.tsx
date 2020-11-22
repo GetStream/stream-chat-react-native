@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import { AppTheme, BottomTabNavigatorParamList } from '../types';
-import { ScreenHeader } from '../components/ScreenHeader';
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
 
 export type MentionsScreenProps = {
   navigation: StackNavigationProp<
@@ -24,7 +24,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
           },
         ]}
       >
-        <ScreenHeader />
+        <ChatScreenHeader />
         <View
           style={{
             backgroundColor: colors.background,

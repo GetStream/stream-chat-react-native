@@ -26,8 +26,13 @@ import {
   StackNavigatorParamList,
 } from './src/types';
 import { LoadingScreen } from './src/screens/LoadingScreen';
-import { UserDetailsScreen } from './src/screens/UserDetailsScreen';
+import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetailScreen';
+import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
+import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
+import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
+import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { streamTheme } from './src/utils/streamTheme';
+
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
 
@@ -101,7 +106,9 @@ const HomeScreen = () => (
     <Stack.Screen
       component={NewDirectMessagingScreen}
       name='NewDirectMessagingScreen'
-      options={{ headerShown: false }}
+      options={{
+        headerShown: false,
+      }}
     />
     <Stack.Screen
       component={NewGroupChannelAddMemberScreen}
@@ -114,8 +121,28 @@ const HomeScreen = () => (
       options={{ headerShown: false }}
     />
     <Stack.Screen
-      component={UserDetailsScreen}
-      name='UserDetailsScreen'
+      component={OneOnOneChannelDetailScreen}
+      name='OneOnOneChannelDetailScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={GroupChannelDetailsScreen}
+      name='GroupChannelDetailsScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelImagesScreen}
+      name='ChannelImagesScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelFilesScreen}
+      name='ChannelFilesScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={SharedGroupsScreen}
+      name='SharedGroupsScreen'
       options={{ headerShown: false }}
     />
   </Stack.Navigator>

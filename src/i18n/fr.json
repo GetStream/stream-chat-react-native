@@ -43,12 +43,15 @@
   "Upload a file": "Charger un fichier",
   "Upload a photo": "Charger une photo",
   "Write your message": "Rédigez votre message",
+  "{{ commaSeparatedUsers }} and {{ lastUser }} are typing": "{{ commaSeparatedUsers }} et {{ lastUser }} sont en train d'écrire",
   "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} et {{ lastUser }} sont en train d'écrire...",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} et {{ secondUser }} sont en train d'écrire",
   "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} et {{ secondUser }} sont en train d'écrire...",
   "{{ imageCount }} more": "{{ imageCount }} supplémentaires",
   "{{ index }} of {{ photoLength }}": "{{ index }} sur {{ photoLength }}",
   "{{ replyCount }} Thread Replies": "{{replyCount}} Réponses à la discussion",
   "{{ replyCount }} replies": "{{ replyCount }} réponses",
+  "{{ user }} is typing": "{{ user }} est en train d'écrire",
   "{{ user }} is typing...": "{{ user }} est en train d'écrire...",
   "🏙 Attachment...": "🏙 Pièce jointe..."
 }

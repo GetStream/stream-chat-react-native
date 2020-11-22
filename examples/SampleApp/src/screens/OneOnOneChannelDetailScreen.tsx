@@ -1,3 +1,4 @@
+/* eslint-disable sort-keys */
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
@@ -19,14 +20,16 @@ import { Delete } from '../icons/Delete';
 import { GoBack } from '../icons/GoBack';
 import Dayjs from 'dayjs';
 import { AppContext } from '../context/AppContext';
+import { Picture } from '../icons/Picture';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
-type UserDetailsScreenRouteProp = RouteProp<
+type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
-  'UserDetailsScreen'
+  'OneOnOneChannelDetailScreen'
 >;
 
-type UserDetailsScreenProps = {
-  route: UserDetailsScreenRouteProp;
+type OneOnOneChannelDetailScreenProps = {
+  route: OneOnOneChannelDetailScreenRouteProp;
 };
 
 const Spacer = () => {
@@ -43,17 +46,32 @@ const Spacer = () => {
   );
 };
 
-export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
+export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenProps> = ({
   route: {
-    params: { user },
+    params: { channel },
   },
 }) => {
   const { colors } = useTheme() as AppTheme;
   const { chatClient } = useContext(AppContext);
-  const [muted, setMuted] = useState(false);
+  const member = Object.values(channel.state.members).find(
+    (m) => m.user?.id !== chatClient?.user?.id,
+  );
+
+  const user = member?.user;
+  const [muted, setMuted] = useState(
+    chatClient?.mutes &&
+      chatClient?.mutes?.findIndex((m) => m.target.id === user?.id) > -1,
+  );
   const [blocked, setBlocked] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    chatClient?.mutedChannels &&
+      chatClient.mutedChannels.findIndex((m) => m.channel?.id === channel.id) >
+        -1,
+  );
   const navigation = useNavigation();
+
+  if (!user) return null;
+
   return (
     <SafeAreaView style={{ height: '100%' }}>
       <ScrollView style={{ flex: 1 }}>
@@ -63,10 +81,10 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
               navigation.goBack();
             }}
             style={{
-              position: 'absolute',
-              top: 0,
               left: 0,
               paddingLeft: 16,
+              position: 'absolute',
+              top: 0,
             }}
           >
             <GoBack height={24} width={24} />
@@ -82,15 +100,12 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
           >
             {user.name}
           </Text>
-          {user.online && (
-            <View style={styles.onlineStatusContainer}>
-              <View style={styles.onlineIndicator} />
-              <Text style={styles.onlineStatus}>
-                Online for {Dayjs().diff(Dayjs(user.last_active), 'minute')}{' '}
-                minutes
-              </Text>
-            </View>
-          )}
+          <View style={styles.onlineStatusContainer}>
+            {user.online && <View style={styles.onlineIndicator} />}
+            <Text style={styles.onlineStatus}>
+              {getUserActivityStatus(user)}
+            </Text>
+          </View>
           <View
             style={[
               styles.userNameContainer,
@@ -126,9 +141,17 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
             <View>
               <Switch
-                onValueChange={() =>
-                  setNotificationsEnabled((previousState) => !previousState)
-                }
+                onValueChange={async () => {
+                  if (notificationsEnabled) {
+                    const r = await channel.unmute();
+                    console.warn(r);
+                  } else {
+                    const r = await channel.mute();
+                    console.warn(r);
+                  }
+
+                  setNotificationsEnabled((previousState) => !previousState);
+                }}
                 trackColor={{
                   true: colors.success,
                 }}
@@ -137,9 +160,6 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              chatClient?.muteUser(user.id);
-            }}
             style={[
               styles.actionContainer,
               {
@@ -160,9 +180,17 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
             <View>
               <Switch
-                onValueChange={() =>
-                  setMuted((previousState) => !previousState)
-                }
+                onValueChange={async () => {
+                  if (muted) {
+                    const r = await chatClient?.unmuteUser(user.id);
+                    console.warn(r);
+                  } else {
+                    const r = await chatClient?.muteUser(user.id);
+
+                    console.warn(r);
+                  }
+                  setMuted((previousState) => !previousState);
+                }}
                 trackColor={{
                   true: colors.success,
                 }}
@@ -202,6 +230,11 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelImagesScreen', {
+                channel,
+              });
+            }}
             style={[
               styles.actionContainer,
               {
@@ -210,7 +243,7 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Notification height={24} width={24} />
+              <Picture height={24} width={24} />
               <Text
                 style={{
                   color: colors.text,
@@ -225,6 +258,11 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelFilesScreen', {
+                channel,
+              });
+            }}
             style={[
               styles.actionContainer,
               {
@@ -248,6 +286,11 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('SharedGroupsScreen', {
+                user,
+              });
+            }}
             style={[
               styles.actionContainer,
               {
@@ -272,6 +315,17 @@ export const UserDetailsScreen: React.FC<UserDetailsScreenProps> = ({
           </TouchableOpacity>
           <Spacer />
           <TouchableOpacity
+            onPress={async () => {
+              await channel.delete();
+              navigation.reset({
+                index: 0,
+                routes: [
+                  {
+                    name: 'ChatScreen',
+                  },
+                ],
+              });
+            }}
             style={[
               styles.actionContainer,
               {

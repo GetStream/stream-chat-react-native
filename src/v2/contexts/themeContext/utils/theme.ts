@@ -145,6 +145,10 @@ export type Theme = {
     container: ViewStyle;
   };
   colors: typeof Colors;
+  dateHeader: {
+    container: ViewStyle;
+    text: TextStyle;
+  };
   emptyStateIndicator: {
     channelContainer: ViewStyle;
     channelDetails: TextStyle;
@@ -183,6 +187,11 @@ export type Theme = {
     };
     backgroundColor?: string;
     blurType?: 'light' | 'dark';
+  };
+  loadingDots: {
+    container: ViewStyle;
+    loadingDot: ViewStyle;
+    spacing: number;
   };
   loadingErrorIndicator: {
     container: ViewStyle;
@@ -254,12 +263,6 @@ export type Theme = {
     };
   };
   messageList: {
-    dateSeparator: {
-      container: ViewStyle;
-      date: TextStyle;
-      dateText: TextStyle;
-      line: ViewStyle;
-    };
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     listContainer: ViewStyle;
@@ -568,6 +571,10 @@ export const defaultTheme: Theme = {
   colors: {
     ...Colors,
   },
+  dateHeader: {
+    container: {},
+    text: {},
+  },
   emptyStateIndicator: {
     channelContainer: {},
     channelDetails: {},
@@ -591,6 +598,11 @@ export const defaultTheme: Theme = {
   imageGallery: {
     footer: {},
     header: {},
+  },
+  loadingDots: {
+    container: {},
+    loadingDot: {},
+    spacing: 4,
   },
   loadingErrorIndicator: {
     container: {},
@@ -662,12 +674,6 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
-    dateSeparator: {
-      container: {},
-      date: {},
-      dateText: {},
-      line: {},
-    },
     errorNotification: {},
     errorNotificationText: {},
     listContainer: {},

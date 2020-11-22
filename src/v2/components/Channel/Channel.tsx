@@ -68,7 +68,7 @@ import {
 } from '../../contexts/translationContext/TranslationContext';
 import { reactionData as reactionDataDefault } from '../../utils/utils';
 
-import type { Message as MessageType } from '../MessageList/utils/insertDates';
+import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -96,7 +96,7 @@ export type ChannelPropsWithContext<
 > = Partial<
   Pick<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'channel' | 'EmptyStateIndicator' | 'LoadingIndicator'
+    'channel' | 'EmptyStateIndicator' | 'LoadingIndicator' | 'StickyHeader'
   >
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
@@ -112,6 +112,7 @@ export type ChannelPropsWithContext<
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
+      | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'FileAttachment'
       | 'FileAttachmentGroup'
@@ -233,6 +234,7 @@ export const ChannelWithContext = <
     client,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
+    disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
     doMarkReadRequest,
     doSendMessageRequest,
@@ -260,6 +262,7 @@ export const ChannelWithContext = <
     MessageStatus = MessageStatusDefault,
     MessageText,
     ReactionList = ReactionListDefault,
+    StickyHeader,
     supportedReactions = reactionDataDefault,
     t,
     thread: threadProps,
@@ -348,7 +351,9 @@ export const ChannelWithContext = <
     if (threadProps) {
       setThread(threadProps);
       if (channel && threadProps?.id) {
-        setThreadMessages(channel.state.threads?.[threadProps.id] || []);
+        setThreadMessages(
+          channel.state.threads?.[threadProps.id] || Immutable([]),
+        );
       }
     } else {
       setThread(null);
@@ -885,6 +890,7 @@ export const ChannelWithContext = <
     members,
     read,
     setLastRead,
+    StickyHeader,
     typing,
     watcherCount,
     watchers,
@@ -901,6 +907,7 @@ export const ChannelWithContext = <
     CardFooter,
     CardHeader,
     clearEditingState,
+    disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     editing,
     editMessage,

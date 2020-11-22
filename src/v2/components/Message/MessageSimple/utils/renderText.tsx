@@ -13,7 +13,7 @@ import {
   ReactNodeOutput,
 } from 'simple-markdown';
 
-import type { Message } from '../../../MessageList/utils/insertDates';
+import type { Message } from '../../../MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import {
+  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -25,11 +26,22 @@ import {
   Avatar,
   Channel,
   Chat,
+  getChannelPreviewDisplayAvatar,
   getChannelPreviewDisplayName,
   MessageInput,
   MessageList,
+  useChannelContext,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
+import {
+  ScreenHeader,
+  useScreenHeaderHeight,
+} from '../components/ScreenHeader';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+import truncate from 'lodash/truncate';
+import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -44,14 +56,17 @@ export type ChannelScreenProps = {
   route: ChannelScreenRouteProp;
 };
 
-export type ChannelHeaderProps = {
-  channel: StreamChatChannel;
-};
+export type ChannelHeaderProps = unknown;
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
+const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
+  const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
+  const typing = useTypingString();
+
+  if (!channel) return null;
+
   const isOneOnOneConversation =
     Object.values(channel.state.members).length === 2;
 
@@ -60,80 +75,45 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
       (m) => m.user?.id !== chatClient?.user?.id,
     );
     return (
-      <View
-        style={[
-          styles.headerContainer,
-          {
-            backgroundColor: colors.backgroundNavigation,
-            height: 55,
-          },
-        ]}
-      >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <GoBack height={24} width={24} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('UserDetailsScreen', {
-              user,
-            });
-          }}
-        >
-          <Text
-            style={[
-              styles.headerTitle,
-              {
-                color: colors.text,
-              },
-            ]}
+      <ScreenHeader
+        RightContent={() => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('OneOnOneChannelDetailScreen', {
+                channel,
+              });
+            }}
           >
-            {user.name}
-          </Text>
-          <Text>Online for 10 mins</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('UserDetailsScreen', {
-              user,
-            });
-          }}
-        >
-          <Avatar image={user.image} size={40} />
-        </TouchableOpacity>
-      </View>
+            <Avatar image={user.image} size={40} />
+          </TouchableOpacity>
+        )}
+        subtitle={typing ? typing : getUserActivityStatus(user)}
+        title={getChannelPreviewDisplayName(channel, chatClient)}
+      />
     );
   }
+
   return (
-    <View
-      style={[
-        styles.headerContainer,
-        {
-          backgroundColor: colors.backgroundNavigation,
-          height: 55,
-        },
-      ]}
-    >
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <GoBack height={24} width={24} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => {
-          // navigation.navigate('UserDetailsScreen');
-        }}
-      >
-        <Text
-          style={[
-            styles.headerTitle,
-            {
-              color: colors.text,
-            },
-          ]}
+    <ScreenHeader
+      RightContent={() => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('GroupChannelDetailsScreen', { channel });
+          }}
         >
-          {getChannelPreviewDisplayName(channel, chatClient)}
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity />
-    </View>
+          <Avatar
+            {...getChannelPreviewDisplayAvatar(channel, chatClient)}
+            size={40}
+          />
+        </TouchableOpacity>
+      )}
+      subtitle={
+        typing
+          ? typing
+          : `${Object.keys(channel?.state.members).length} members`
+      }
+      title={getChannelPreviewDisplayName(channel, chatClient)}
+    />
   );
 };
 
@@ -143,31 +123,45 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const channel = chatClient?.channel('messaging', channelId);
+  const [channel, setChannel] = useState(null);
+  useEffect(() => {
+    const initChannel = async () => {
+      const channel = chatClient?.channel('messaging', channelId);
+      if (!channel?.initialized) {
+        await channel?.watch();
+      }
+      setChannel(channel);
+    };
+
+    initChannel();
+  }, []);
 
   if (!channel || !chatClient) return null;
+
   return (
-    <SafeAreaView>
-      <View style={{ height: '100%' }}>
-        <Chat client={chatClient} style={streamTheme}>
-          <ChannelHeader channel={channel} />
-          <View style={{ flexGrow: 1, flexShrink: 1 }}>
-            <Channel channel={channel}>
-              <MessageList<
-                LocalAttachmentType,
-                LocalChannelType,
-                LocalCommandType,
-                LocalEventType,
-                LocalMessageType,
-                LocalResponseType,
-                LocalUserType
-              > />
-              <MessageInput />
-            </Channel>
-          </View>
-        </Chat>
-      </View>
-    </SafeAreaView>
+    <View style={{ height: '100%' }}>
+      <Chat client={chatClient} style={streamTheme}>
+        <View style={{ flexGrow: 1, flexShrink: 1 }}>
+          <Channel
+            channel={channel}
+            disableTypingIndicator
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+          >
+            <ChannelHeader />
+            <MessageList<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
+            > />
+            <MessageInput />
+          </Channel>
+        </View>
+      </Chat>
+    </View>
   );
 };
 

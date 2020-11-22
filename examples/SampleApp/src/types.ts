@@ -1,5 +1,5 @@
 import type { Theme } from '@react-navigation/native';
-import { UserResponse } from 'stream-chat';
+import { Channel, UserResponse } from 'stream-chat';
 export type LocalAttachmentType = Record<string, unknown>;
 export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
@@ -16,17 +16,29 @@ export type DrawerNavigatorParamList = {
 };
 
 export type StackNavigatorParamList = {
+  ChannelFilesScreen: {
+    channel: Channel;
+  };
+  ChannelImagesScreen: {
+    channel: Channel;
+  };
   ChannelScreen: {
     channelId?: string;
   };
   ChatScreen: undefined;
+  GroupChannelDetailsScreen: {
+    channel: Channel;
+  };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
   NewGroupChannelAssignNameScreen: {
     selectedUsers: UserResponse<LocalUserType>[];
   };
-  UserDetailsScreen: {
-    user: UserResponse<LocalUserType>;
+  OneOnOneChannelDetailScreen: {
+    channel: Channel;
+  };
+  SharedGroupsScreen: {
+    channel: Channel;
   };
 };
 
@@ -43,11 +55,13 @@ export type AppTheme = Theme & {
     backgroundSecondary: string;
     borderLight: string;
     danger: string;
+    dateStampBackground: string;
     footnote: string;
     greyContentBackground: string;
     iconButtonBackground: string;
     success: string;
     text: string;
+    textInverted: string;
     textLight: string;
     textSecondary: string;
   };

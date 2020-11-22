@@ -19,9 +19,6 @@ import type {
 const styles = StyleSheet.create({
   container: {
     bottom: 0,
-    height: 30,
-    paddingLeft: 16,
-    paddingVertical: 3,
     position: 'absolute',
     width: '100%',
   },

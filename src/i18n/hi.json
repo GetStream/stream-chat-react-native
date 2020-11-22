@@ -43,12 +43,15 @@
   "Upload a file": "फाइल अपलोड करें",
   "Upload a photo": "फोटो अपलोड करो",
   "Write your message": "अपना मैसेज लिखें",
+  "{{ commaSeparatedUsers }} and {{ lastUser }} are typing": "{{ commaSeparatedUsers }} और {{ secondUser }} टाइप कर रहे हैं",
   "{{ commaSeparatedUsers }} and {{ lastUser }} are typing...": "{{ commaSeparatedUsers }} और {{ secondUser }} टाइप कर रहे हैं...",
+  "{{ firstUser }} and {{ secondUser }} are typing": "{{ firstUser }} और {{ secondUser }} टाइप कर रहे हैं",
   "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} और {{ secondUser }} टाइप कर रहे हैं...",
   "{{ imageCount }} more": "{{ imageCount }} और",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
   "{{ replyCount }} Thread Replies": "{{ replyCount }}} थ्रेड उत्तर",
   "{{ replyCount }} replies": "{{ replyCount }} रिप्लाई",
+  "{{ user }} is typing": "{{ user }} टाइप कर रहा है",
   "{{ user }} is typing...": "{{ user }} टाइप कर रहा है...",
   "🏙 Attachment...": "🏙 अटैचमेंट..."
 }

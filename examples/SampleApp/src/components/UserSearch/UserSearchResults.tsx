@@ -16,12 +16,12 @@ import { CheckSend } from '../../icons/CheckSend';
 import Dayjs from 'dayjs';
 
 type UserSearchResultsProps = {
-  loadMore: () => void;
   results: UserResponse[];
   selectedUserIds: string[];
   toggleSelectedUser: (user: UserResponse<LocalUserType>) => void;
   groupedAlphabetically?: boolean;
   loading?: boolean;
+  loadMore?: () => void;
   searchText?: string;
   showOnlineStatus?: boolean;
 };

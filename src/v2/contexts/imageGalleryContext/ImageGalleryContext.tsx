@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { Message } from '../../components/MessageList/utils/insertDates';
+import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

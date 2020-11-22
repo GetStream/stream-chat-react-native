@@ -21,7 +21,7 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { ScreenHeader } from '../components/ScreenHeader';
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const filters = {
@@ -60,7 +60,7 @@ export const ChannelListScreen: React.FC = () => {
           },
         ]}
       >
-        <ScreenHeader />
+        <ChatScreenHeader />
 
         <View style={styles.listContainer}>
           <Chat client={chatClient}>

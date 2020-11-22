@@ -81,7 +81,7 @@ import type {
   Message as StreamMessage,
 } from 'stream-chat';
 
-import type { Message as InsertDatesMessage } from '../MessageList/utils/insertDates';
+import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -175,7 +175,7 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      **/
     onLongPress?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
       event?: GestureResponderEvent,
     ) => void;
     /**
@@ -190,7 +190,7 @@ export type MessagePropsWithContext<
      * @param event   Event object for onLongPress event
      * */
     onPress?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
+      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
       event: GestureResponderEvent,
     ) => void;
     /**
@@ -198,9 +198,7 @@ export type MessagePropsWithContext<
      *
      * @param message A message object to open the thread upon.
      */
-    onThreadSelect?: (
-      message: InsertDatesMessage<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => void;
+    onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   };
 
 /**
