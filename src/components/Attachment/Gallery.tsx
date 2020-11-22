@@ -143,9 +143,9 @@ export const Gallery = <At extends UnknownType = DefaultAttachmentType>(
   const immutableGalleryImages = images.reduce((returnArray, currentImage) => {
     const url = currentImage.image_url || currentImage.thumb_url;
     if (url) {
-      returnArray.push({ url: makeImageCompatibleUrl(url) } as Immutable<
-        IImageInfo
-      >);
+      returnArray.push({
+        url: makeImageCompatibleUrl(url),
+      } as Immutable<IImageInfo>);
     }
     return returnArray;
   }, [] as Immutable<IImageInfo>[]);

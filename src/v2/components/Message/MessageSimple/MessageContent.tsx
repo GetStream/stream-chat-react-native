@@ -83,6 +83,7 @@ export type MessageContentPropsWithContext<
     | 'hasReactions'
     | 'lastGroupMessage'
     | 'message'
+    | 'messageContentOrder'
     | 'onLongPress'
     | 'onlyEmojis'
     | 'otherAttachments'
@@ -96,7 +97,6 @@ export type MessageContentPropsWithContext<
     | 'FileAttachmentGroup'
     | 'formatDate'
     | 'Gallery'
-    | 'messageContentOrder'
     | 'MessageFooter'
     | 'MessageHeader'
     | 'MessageReplies'
@@ -444,26 +444,22 @@ const areEqual = <
     prevMessage.deleted_at === nextMessage.deleted_at &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.updated_at === nextMessage.update_at;
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
   const attachmentsEqual =
-    Array.isArray(prevMessage.attachments) ===
-      Array.isArray(nextMessage.attachments) &&
-    ((Array.isArray(prevMessage.attachments) &&
+    (Array.isArray(prevMessage.attachments) &&
       Array.isArray(nextMessage.attachments) &&
       prevMessage.attachments.length === nextMessage.attachments.length) ||
-      prevMessage.attachments === nextMessage.attachments);
+    prevMessage.attachments === nextMessage.attachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) ===
-      Array.isArray(nextMessage.latest_reactions) &&
-    ((Array.isArray(prevMessage.latest_reactions) &&
+    (Array.isArray(prevMessage.latest_reactions) &&
       Array.isArray(nextMessage.latest_reactions) &&
       prevMessage.latest_reactions.length ===
         nextMessage.latest_reactions.length) ||
-      prevMessage.latest_reactions === nextMessage.latest_reactions);
+    prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
   const messageContentOrderEqual =
@@ -528,6 +524,7 @@ export const MessageContent = <
     hasReactions,
     lastGroupMessage,
     message,
+    messageContentOrder,
     onLongPress,
     onlyEmojis,
     otherAttachments,
@@ -540,7 +537,6 @@ export const MessageContent = <
     FileAttachmentGroup,
     formatDate,
     Gallery,
-    messageContentOrder,
     MessageFooter,
     MessageHeader,
     MessageReplies,

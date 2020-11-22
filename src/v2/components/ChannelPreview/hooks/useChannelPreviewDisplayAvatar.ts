@@ -49,6 +49,12 @@ const getChannelPreviewDisplayAvatar = <
         name: channelName || otherMembers[0].user?.name,
       };
     }
+    return {
+      images: otherMembers
+        .slice(0, 4)
+        .map((member) => member.user?.image || ''),
+      names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
+    };
   }
   return {
     name: channelName,
@@ -63,7 +69,7 @@ const getChannelPreviewDisplayAvatar = <
  */
 export const useChannelPreviewDisplayAvatar = <
   At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
+  Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,

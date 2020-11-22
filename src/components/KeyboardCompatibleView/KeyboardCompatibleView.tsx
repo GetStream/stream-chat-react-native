@@ -151,7 +151,7 @@ export class KeyboardCompatibleView extends React.Component<
     });
   };
 
-  dismissKeyboard = () => {
+  dismissKeyboard: () => Promise<void> | undefined = () => {
     if (!this.state.isKeyboardOpen) {
       return;
     }

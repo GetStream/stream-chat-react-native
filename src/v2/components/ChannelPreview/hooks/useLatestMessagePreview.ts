@@ -38,8 +38,11 @@ export type LatestMessagePreview<
   | {
       created_at: string;
       messageObject: undefined;
+      preview: {
+        boldIndexEnd: number;
+        text: string;
+      };
       status: number;
-      text: string;
     }
   | {
       created_at: string | number | Date;
@@ -48,8 +51,11 @@ export type LatestMessagePreview<
           ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
         >
       >;
+      preview: {
+        boldIndexEnd: number;
+        text: string;
+      };
       status: number;
-      text: string;
     };
 
 const getLatestMessageDisplayText = <
@@ -61,17 +67,37 @@ const getLatestMessageDisplayText = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   message: Immutable<
     ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
   >,
   t: (key: string) => string,
 ) => {
-  if (!message) return t('Nothing yet...');
-  if (message.deleted_at) return t('Message deleted');
-  if (message.text) return message.text;
-  if (message.command) return '/' + message.command;
-  if (message.attachments?.length) return t('🏙 Attachment...');
-  return t('Empty message...');
+  if (!message) return { boldIndexEnd: 0, text: t('Nothing yet...') };
+  if (message.deleted_at)
+    return { boldIndexEnd: 0, text: t('Message deleted') };
+  const currentUserId = client.userID;
+  const messageOwnerId = message.user?.id;
+  const members = Object.keys(channel.state.members);
+  const owner =
+    messageOwnerId === currentUserId
+      ? 'You'
+      : members.length > 2
+      ? message.user?.name || message.user?.username || message.user?.id || ''
+      : '';
+  const ownerText = owner ? `${owner === 'You' ? '' : '@'}${owner}: ` : '';
+  const boldIndexEnd = ownerText.includes('@') ? ownerText.length - 1 : 0;
+  if (message.text) {
+    return { boldIndexEnd, text: `${ownerText}${message.text}` };
+  }
+  if (message.command) {
+    return { boldIndexEnd, text: `${ownerText}/${message.command}` };
+  }
+  if (message.attachments?.length) {
+    return { boldIndexEnd, text: `${ownerText}${t('🏙 Attachment...')}` };
+  }
+  return { boldIndexEnd, text: `${ownerText}${t('Empty message...')}` };
 };
 
 const getLatestMessageDisplayDate = <
@@ -119,7 +145,7 @@ const getLatestMessageReadStatus = <
     ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
   >,
 ) => {
-  const currentUserId = client.user?.id;
+  const currentUserId = client.userID;
   if (currentUserId !== message.user?.id) return 0;
 
   const readList = channel.state.read.asMutable();
@@ -150,12 +176,15 @@ const getLatestMessagePreview = <
 ) => {
   const messages = channel.state.messages;
 
-  if (!messages?.length) {
+  if (!messages.length) {
     return {
       created_at: '',
       messageObject: undefined,
+      preview: {
+        boldIndexEnd: 0,
+        text: '',
+      },
       status: 0,
-      text: '',
     };
   }
 
@@ -163,8 +192,8 @@ const getLatestMessagePreview = <
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
+    preview: getLatestMessageDisplayText(channel, client, message, t),
     status: getLatestMessageReadStatus(channel, client, message),
-    text: getLatestMessageDisplayText(message, t),
   };
 };
 
@@ -195,11 +224,19 @@ export const useLatestMessagePreview = <
   const messages = channel.state.messages;
   const message = messages[messages.length - 1];
 
-  const lastMessageId = lastMessage?.id || message.id;
+  const lastMessageId = lastMessage?.id || message?.id;
 
-  const [latestMessagePreview, setLatestMessagePreview] = useState(
-    getLatestMessagePreview(channel, client, t, tDateTimeParser),
-  );
+  const [latestMessagePreview, setLatestMessagePreview] = useState<
+    LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>
+  >({
+    created_at: '',
+    messageObject: undefined,
+    preview: {
+      boldIndexEnd: 0,
+      text: '',
+    },
+    status: 0,
+  });
 
   useEffect(() => {
     setLatestMessagePreview(

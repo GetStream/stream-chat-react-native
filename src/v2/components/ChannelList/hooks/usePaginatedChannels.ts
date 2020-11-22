@@ -99,6 +99,7 @@ export const usePaginatedChannels = <
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
+      setError(false);
     } catch (e) {
       await wait(2000);
 
@@ -130,16 +131,14 @@ export const usePaginatedChannels = <
 
   return {
     channels,
+    error,
     hasNextPage,
+    loadingChannels,
+    loadingNextPage,
     loadNextPage,
+    refreshing,
     refreshList,
     reloadList,
     setChannels,
-    status: {
-      error,
-      loadingChannels,
-      loadingNextPage,
-      refreshing,
-    },
   };
 };

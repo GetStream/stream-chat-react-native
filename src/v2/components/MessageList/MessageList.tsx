@@ -113,13 +113,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : new Date().getTime().toString())
+        : Date.now().toString())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return new Date().getTime().toString();
+  return Date.now().toString();
 };
 
 export type MessageListProps<

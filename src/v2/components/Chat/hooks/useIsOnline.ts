@@ -27,9 +27,10 @@ export const useIsOnline = <
 >(
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const [unsubscribeNetInfo, setUnsubscribeNetInfo] = useState<
-    NetInfoSubscription
-  >();
+  const [
+    unsubscribeNetInfo,
+    setUnsubscribeNetInfo,
+  ] = useState<NetInfoSubscription>();
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 

@@ -7,7 +7,10 @@ import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
 import type { Message } from '../../components/MessageList/utils/insertDates';
-import type { GroupType } from '../../contexts/messagesContext/MessagesContext';
+import type {
+  GroupType,
+  MessageContentType,
+} from '../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -68,6 +71,8 @@ export type MessageContextValue<
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  /** Order to render the message content */
+  messageContentOrder: MessageContentType[];
   /**
    * You can call methods available on the Message
    * component such as handleEdit, handleDelete, handleAction etc.
@@ -78,7 +83,7 @@ export type MessageContextValue<
    *
    * @param event   Event object for onLongPress event
    */
-  onLongPress: (event: GestureResponderEvent) => void;
+  onLongPress: (event?: GestureResponderEvent) => void;
   /** Whether the message is only text and the text is only emojis */
   onlyEmojis: boolean;
   /** Handler to open a thread on a message */
@@ -211,29 +216,25 @@ const areEqual = <
   if (!animateLongPressQual) return false;
 
   const attachmentsEqual =
-    Array.isArray(prevMessage.attachments) ===
-      Array.isArray(nextMessage.attachments) &&
-    ((Array.isArray(prevMessage.attachments) &&
+    (Array.isArray(prevMessage.attachments) &&
       Array.isArray(nextMessage.attachments) &&
       prevMessage.attachments.length === nextMessage.attachments.length) ||
-      prevMessage.attachments === nextMessage.attachments);
+    prevMessage.attachments === nextMessage.attachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) ===
-      Array.isArray(nextMessage.latest_reactions) &&
-    ((Array.isArray(prevMessage.latest_reactions) &&
+    (Array.isArray(prevMessage.latest_reactions) &&
       Array.isArray(nextMessage.latest_reactions) &&
       prevMessage.latest_reactions.length ===
         nextMessage.latest_reactions.length) ||
-      prevMessage.latest_reactions === nextMessage.latest_reactions);
+    prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.updated_at === nextMessage.update_at;
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
   return true;

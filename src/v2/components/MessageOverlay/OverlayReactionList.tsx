@@ -7,7 +7,6 @@ import {
 import Animated, {
   cancelAnimation,
   interpolate,
-  // @ts-expect-error TODO: Remove on next Reanimated update with new types
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedProps,

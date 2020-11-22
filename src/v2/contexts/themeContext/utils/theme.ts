@@ -9,6 +9,7 @@ export const DEFAULT_STATUS_ICON_SIZE = 16;
 export const Colors = {
   attachmentBackground: '#E9F2FF',
   background: '#FCFCFC',
+  background2: '#F5F5F5',
   black: '#000000',
   danger: '#FF3742',
   green: '#20E070',
@@ -18,7 +19,7 @@ export const Colors = {
   secondary: '#111111',
   textDark: '#000000',
   textGrey: '#00000080',
-  textLight: '#FFFFFF',
+  textLight: '#00000014', // 14 = 8% opacity
   transparent: 'transparent',
   white: '#FFFFFF',
 };
@@ -50,6 +51,7 @@ export type MarkdownStyle = Partial<{
   listItemText: StyleProp<TextStyle>;
   listRow: StyleProp<ViewStyle>;
   mailTo: StyleProp<TextStyle>;
+  mentions: StyleProp<TextStyle>;
   newline: StyleProp<TextStyle>;
   noMargin: StyleProp<TextStyle>;
   paragraph: StyleProp<TextStyle>;
@@ -70,15 +72,34 @@ export type MarkdownStyle = Partial<{
 
 export type Theme = {
   avatar: {
-    BASE_AVATAR_FALLBACK_TEXT_SIZE: number;
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
-    fallback: ViewStyle;
     image: ImageStyle;
-    text: TextStyle;
+    presenceIndicator: CircleProps;
+    presenceIndicatorContainer: ViewStyle;
   };
   channel: {
     selectChannel: TextStyle;
+  };
+  channelInfoOverlay: {
+    avatarPresenceIndicator: CircleProps;
+    avatarPresenceIndicatorStyle: ViewStyle;
+    avatarSize: number;
+    channelName: TextStyle;
+    channelStatus: TextStyle;
+    container: ViewStyle;
+    containerInner: ViewStyle;
+    deleteRow: ViewStyle;
+    deleteText: TextStyle;
+    detailsContainer: ViewStyle;
+    flatList: ViewStyle;
+    flatListContent: ViewStyle;
+    leaveGroupRow: ViewStyle;
+    leaveGroupText: TextStyle;
+    row: ViewStyle;
+    rowInner: ViewStyle;
+    userItemContainer: ViewStyle;
+    userName: TextStyle;
   };
   channelListFooterLoadingIndicator: {
     container: ViewStyle;
@@ -86,6 +107,13 @@ export type Theme = {
   channelListHeaderErrorIndicator: {
     container: ViewStyle;
     errorText: TextStyle;
+  };
+  channelListMessenger: {
+    flatList: ViewStyle;
+    flatListContent: ViewStyle;
+    header: ViewStyle;
+    searchContainer: ViewStyle;
+    searchInput: TextStyle;
   };
   channelListSkeleton: {
     animationTime: number;
@@ -101,13 +129,14 @@ export type Theme = {
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
+    leftSwipeableButton: ViewStyle;
     message: TextStyle & {
       color: TextStyle['color'];
       fontWeight: TextStyle['fontWeight'];
     };
-    presenceIndicator: CircleProps;
-    presenceIndicatorContainer: ViewStyle;
+    rightSwipeableButton: ViewStyle;
     row: ViewStyle;
+    swipeableContainer: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
@@ -116,6 +145,15 @@ export type Theme = {
     container: ViewStyle;
   };
   colors: typeof Colors;
+  emptyStateIndicator: {
+    channelContainer: ViewStyle;
+    channelDetails: TextStyle;
+    channelTitle: TextStyle;
+  };
+  groupAvatar: {
+    container: ViewStyle;
+    image: ImageStyle;
+  };
   iconBadge: {
     icon: ViewStyle;
     iconInner: ViewStyle;
@@ -403,34 +441,78 @@ export type Theme = {
 
 export const defaultTheme: Theme = {
   avatar: {
-    BASE_AVATAR_FALLBACK_TEXT_SIZE: 14,
     BASE_AVATAR_SIZE: 32,
     container: {},
-    fallback: {
-      backgroundColor: Colors.primary,
-      borderRadius: 16,
-      height: 16,
-      width: 16,
-    },
     image: {
       borderRadius: 16,
       height: 32,
       width: 32,
     },
-    text: {
-      color: Colors.textLight,
-      fontSize: 14,
+    presenceIndicator: {
+      cx: 8,
+      cy: 4,
+      fill: Colors.green,
+      r: 4,
+      stroke: Colors.white,
+      strokeWidth: 2,
     },
+    presenceIndicatorContainer: {},
   },
   channel: {
     selectChannel: {},
+  },
+  channelInfoOverlay: {
+    avatarPresenceIndicator: { cx: 6, cy: 6, r: 6 },
+    avatarPresenceIndicatorStyle: {
+      right: 4,
+      top: 1,
+    },
+    avatarSize: 64,
+    channelName: {},
+    channelStatus: {
+      color: Colors.textGrey,
+    },
+    container: {},
+    containerInner: {
+      backgroundColor: Colors.white,
+    },
+    deleteRow: {
+      borderBottomColor: Colors.textLight,
+      borderBottomWidth: 1,
+    },
+    deleteText: { color: Colors.danger },
+    detailsContainer: {},
+    flatList: {},
+    flatListContent: {},
+    leaveGroupRow: {},
+    leaveGroupText: {},
+    row: {
+      borderTopColor: Colors.textLight,
+    },
+    rowInner: {},
+    userItemContainer: {},
+    userName: {},
   },
   channelListFooterLoadingIndicator: {
     container: {},
   },
   channelListHeaderErrorIndicator: {
     container: {},
-    errorText: {},
+    errorText: {
+      color: Colors.white,
+    },
+  },
+  channelListMessenger: {
+    flatList: {
+      backgroundColor: Colors.background,
+    },
+    flatListContent: {},
+    header: {},
+    searchContainer: {
+      backgroundColor: Colors.white,
+      borderColor: Colors.textLight,
+    },
+    searchInput: {},
   },
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
@@ -462,20 +544,16 @@ export const defaultTheme: Theme = {
     date: {
       color: Colors.textGrey,
     },
+    leftSwipeableButton: {},
     message: {
       color: Colors.textGrey,
       fontWeight: '400',
     },
-    presenceIndicator: {
-      cx: 8,
-      cy: 4,
-      fill: Colors.green,
-      r: 4,
-      stroke: Colors.white,
-      strokeWidth: 2,
-    },
-    presenceIndicatorContainer: {},
+    rightSwipeableButton: {},
     row: {},
+    swipeableContainer: {
+      backgroundColor: Colors.background2,
+    },
     title: {},
     unreadContainer: {
       backgroundColor: Colors.danger,
@@ -489,6 +567,17 @@ export const defaultTheme: Theme = {
   },
   colors: {
     ...Colors,
+  },
+  emptyStateIndicator: {
+    channelContainer: {},
+    channelDetails: {},
+    channelTitle: {},
+  },
+  groupAvatar: {
+    container: {},
+    image: {
+      resizeMode: 'cover',
+    },
   },
   iconBadge: {
     icon: {},
@@ -685,7 +774,15 @@ export const defaultTheme: Theme = {
         pathFill: Colors.textGrey,
         width: 16,
       },
-      markdown: {},
+      markdown: {
+        autolink: {
+          color: Colors.primary,
+          textDecorationLine: 'underline',
+        },
+        mentions: {
+          color: Colors.primary,
+        },
+      },
       messageUser: { fontSize: 12, fontWeight: '700', paddingRight: 6 },
       metaContainer: {
         flexDirection: 'row',

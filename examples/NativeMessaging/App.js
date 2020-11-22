@@ -26,9 +26,6 @@ const theme = {
       width: 32,
     },
   },
-  colors: {
-    primary: 'blue',
-  },
   spinner: {
     height: 15,
     width: 15,

@@ -104,9 +104,8 @@ const getMembers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const members = (channel.state.members as unknown) as ChannelMemberResponse<
-    Us
-  >[];
+  const members = (channel.state
+    .members as unknown) as ChannelMemberResponse<Us>[];
 
   return members && Object.values(members).length
     ? (Object.values(members).filter((member) => member.user) as Array<

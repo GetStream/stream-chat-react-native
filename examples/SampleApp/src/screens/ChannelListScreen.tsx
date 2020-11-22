@@ -29,6 +29,7 @@ const filters = {
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 const options = {
+  presence: true,
   state: true,
   watch: true,
 };
@@ -63,11 +64,7 @@ export const ChannelListScreen: React.FC = () => {
 
         <View style={styles.listContainer}>
           <Chat client={chatClient}>
-            <View
-              style={{
-                padding: 10,
-              }}
-            >
+            <View>
               <ChannelList<
                 LocalAttachmentType,
                 LocalChannelType,
@@ -80,7 +77,7 @@ export const ChannelListScreen: React.FC = () => {
                 filters={{
                   ...filters,
                   members: {
-                    $in: [chatClient.user?.id],
+                    $in: [chatClient.user?.id || ''],
                   },
                 }}
                 onSelect={(channel) => {

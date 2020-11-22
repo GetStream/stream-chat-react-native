@@ -27,7 +27,7 @@ const getChannelPreviewDisplayPresence = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const currentUserId = client.user?.id;
+  const currentUserId = client.userID;
 
   if (currentUserId) {
     const members = Object.values(channel.state.members);
@@ -61,16 +61,14 @@ export const useChannelPreviewDisplayPresence = <
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const currentUserId = client.user?.id;
+  const currentUserId = client.userID;
   const members = Object.values(channel.state.members).filter(
     (member) =>
       !!member.user?.id && !!currentUserId && member.user?.id !== currentUserId,
   );
   const channelMemberOnline = members.some((member) => member.user?.online);
 
-  const [displayPresence, setDisplayPresence] = useState(
-    getChannelPreviewDisplayPresence(channel, client),
-  );
+  const [displayPresence, setDisplayPresence] = useState(false);
 
   useEffect(() => {
     setDisplayPresence(getChannelPreviewDisplayPresence(channel, client));

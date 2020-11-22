@@ -107,7 +107,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
     updateBottomIfNecessary();
   }, [keyboardEvent.current]);
 
-  const dismissKeyboard = () => {
+  const dismissKeyboard: () => Promise<void> | undefined = () => {
     if (!isKeyboardOpen) {
       return;
     }

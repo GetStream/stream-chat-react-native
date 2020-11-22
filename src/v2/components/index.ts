@@ -12,14 +12,18 @@ export * from './AutoCompleteInput/CommandsItem';
 export * from './AutoCompleteInput/MentionsItem';
 
 export * from './Avatar/Avatar';
+export * from './Avatar/GroupAvatar';
 
 export * from './Channel/Channel';
+
+export * from './ChannelInfoOverlay/ChannelInfoOverlay';
 
 export * from './ChannelList/ChannelList';
 export * from './ChannelList/ChannelListFooterLoadingIndicator';
 export * from './ChannelList/ChannelListHeaderErrorIndicator';
 export * from './ChannelList/ChannelListHeaderNetworkDownIndicator';
 export * from './ChannelList/ChannelListMessenger';
+export * from './ChannelList/Skeleton';
 
 export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';

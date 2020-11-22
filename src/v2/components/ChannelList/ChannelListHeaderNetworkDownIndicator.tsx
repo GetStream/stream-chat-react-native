@@ -7,16 +7,13 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FAE6E8',
+    backgroundColor: '#7A7A7AE6',
     justifyContent: 'center',
-    padding: 3,
+    padding: 8,
     width: '100%',
   },
   errorText: {
-    color: '#FF0000',
-    fontSize: 12,
-    fontWeight: 'bold',
-    padding: 3,
+    fontSize: 14,
   },
 });
 
@@ -30,9 +27,7 @@ export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.errorText, errorText]}>
-        {t('Connection failure, reconnecting now...')}
-      </Text>
+      <Text style={[styles.errorText, errorText]}>{t('Reconnecting...')}</Text>
     </View>
   );
 };
