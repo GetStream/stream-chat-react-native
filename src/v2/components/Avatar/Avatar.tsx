@@ -1,48 +1,45 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  StyleProp,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import Svg, { Circle, CircleProps } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
+const randomImageBaseUrl = 'https://getstream.io/random_png/';
+const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
-  fallback: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    textTransform: 'uppercase',
+  presenceIndicatorContainer: {
+    height: 12,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 12,
   },
 });
 
-const getInitials = (fullName?: string) =>
+const getInitials = (fullName: string) =>
   fullName
-    ? fullName
-        .split(' ')
-        .slice(0, 2)
-        .map((name) => name.charAt(0))
-    : null;
+    .split(' ')
+    .slice(0, 2)
+    .map((name) => name.charAt(0))
+    .join(' ');
 
 export type AvatarProps = {
   /** size in pixels */
   size: number;
   containerStyle?: StyleProp<ViewStyle>;
-  fallbackStyle?: StyleProp<ViewStyle>;
   /** image url */
   image?: string;
-  /** name of the picture, used for title tag fallback */
+  /** name of the picture, used for fallback */
   name?: string;
+  online?: boolean;
+  presenceIndicator?: CircleProps;
+  presenceIndicatorContainerStyle?: StyleProp<ViewStyle>;
   testID?: string;
 };
 
@@ -54,78 +51,82 @@ export type AvatarProps = {
 export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
     containerStyle,
-    fallbackStyle,
     image: imageProp,
     name,
+    online,
+    presenceIndicator: presenceIndicatorProp,
+    presenceIndicatorContainerStyle,
     size,
     testID,
   } = props;
   const {
     theme: {
       avatar: {
-        BASE_AVATAR_FALLBACK_TEXT_SIZE,
-        BASE_AVATAR_SIZE,
         container,
-        fallback,
         image,
-        text,
+        presenceIndicator,
+        presenceIndicatorContainer,
       },
     },
   } = useTheme();
 
   const [imageError, setImageError] = useState(false);
 
-  if (imageError || !imageProp || imageProp.indexOf('random_svg') > -1) {
-    return (
-      <View style={[styles.container, container, containerStyle]}>
-        <View
+  return (
+    <View>
+      <View
+        style={[
+          styles.container,
+          container,
+          containerStyle,
+          {
+            borderRadius: size / 2,
+            height: size,
+            width: size,
+          },
+        ]}
+      >
+        <Image
+          accessibilityLabel={testID || 'avatar-image'}
+          onError={() => setImageError(true)}
+          source={{
+            uri:
+              imageError ||
+              !imageProp ||
+              imageProp.includes(randomImageBaseUrl) ||
+              imageProp.includes(randomSvgBaseUrl)
+                ? `${randomImageBaseUrl}${
+                    name ? `?name=${getInitials(name)}&size=${size}` : ''
+                  }`
+                : imageProp,
+          }}
           style={[
-            styles.fallback,
-            fallback,
+            image,
             size
               ? {
                   borderRadius: size / 2,
                   height: size,
+                  resizeMode: 'contain',
                   width: size,
                 }
               : {},
-            fallbackStyle,
+          ]}
+          testID={testID || 'avatar-image'}
+        />
+      </View>
+      {online && (
+        <View
+          style={[
+            styles.presenceIndicatorContainer,
+            presenceIndicatorContainer,
+            presenceIndicatorContainerStyle,
           ]}
         >
-          <Text
-            style={[
-              styles.text,
-              text,
-              size
-                ? {
-                    fontSize:
-                      BASE_AVATAR_FALLBACK_TEXT_SIZE *
-                      (size / BASE_AVATAR_SIZE),
-                  }
-                : {},
-            ]}
-            testID={testID || 'avatar-text'}
-          >
-            {getInitials(name)}
-          </Text>
+          <Svg>
+            <Circle {...presenceIndicator} {...presenceIndicatorProp} />
+          </Svg>
         </View>
-      </View>
-    );
-  }
-
-  return (
-    <View style={[styles.container, container, containerStyle]}>
-      <Image
-        accessibilityLabel='initials'
-        onError={() => setImageError(true)}
-        resizeMethod='resize'
-        source={{ uri: imageProp }}
-        style={[
-          image,
-          size ? { borderRadius: size / 2, height: size, width: size } : {},
-        ]}
-        testID={testID || 'avatar-image'}
-      />
+      )}
     </View>
   );
 };

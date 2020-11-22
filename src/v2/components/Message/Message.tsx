@@ -12,7 +12,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
-  // @ts-expect-error TODO: Remove on next Reanimated update with new types
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -177,7 +176,7 @@ export type MessagePropsWithContext<
      **/
     onLongPress?: (
       message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-      event: GestureResponderEvent,
+      event?: GestureResponderEvent,
     ) => void;
     /**
      * You can call methods available on the Message
@@ -219,7 +218,7 @@ const MessageWithContext = <
   props: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    animatedLongPress = Platform.OS === 'ios',
+    animatedLongPress = Platform.OS === 'ios' && !props.message.deleted_at,
     channel,
     client,
     disabled,
@@ -234,7 +233,7 @@ const MessageWithContext = <
     lastReceivedId,
     message,
     messageActions: messageActionsProp,
-    messageContentOrder,
+    messageContentOrder: messageContentOrderProp,
     MessageSimple,
     onLongPress: onLongPressProp,
     onPress: onPressProp,
@@ -358,6 +357,20 @@ const MessageWithContext = <
           other: [] as Attachment<At>[],
         };
 
+  const messageContentOrder = messageContentOrderProp.filter((content) => {
+    switch (content) {
+      case 'attachments':
+        return !!attachments.other.length;
+      case 'files':
+        return !!attachments.files.length;
+      case 'gallery':
+        return !!attachments.images.length;
+      case 'text':
+      default:
+        return !!message.text;
+    }
+  });
+
   const forwardedGroupStyles =
     !!reactionsEnabled &&
     message.latest_reactions &&
@@ -418,11 +431,15 @@ const MessageWithContext = <
       action: () => async () => {
         setOverlay('none');
         if (message.user?.id) {
-          await client.banUser(message.user.id);
+          if (message.user.banned) {
+            await client.unbanUser(message.user.id);
+          } else {
+            await client.banUser(message.user.id);
+          }
         }
       },
       icon: <UserDelete />,
-      title: t('Block User'),
+      title: message.user?.banned ? t('Unblock User') : t('Block User'),
     };
 
     const copyMessage = {
@@ -481,15 +498,22 @@ const MessageWithContext = <
         }
       : undefined;
 
+    const isMuted = (channel?.state.mutedUsers || []).some(
+      (user) => user.id === message.user?.id,
+    );
     const muteUser = {
       action: async () => {
         setOverlay('none');
         if (message.user?.id) {
-          await client.muteUser(message.user.id);
+          if (isMuted) {
+            await client.unmuteUser(message.user.id);
+          } else {
+            await client.muteUser(message.user.id);
+          }
         }
       },
       icon: <Mute />,
-      title: t('Mute User'),
+      title: isMuted ? t('Unmute User') : t('Mute User'),
     };
 
     const reply = {
@@ -521,11 +545,13 @@ const MessageWithContext = <
       messageActions: error
         ? messageActionsProp || [
             {
-              action: async () =>
+              action: async () => {
+                setOverlay('none');
                 await retrySendMessage({
                   ...message,
                   updated_at: undefined,
-                } as MessageResponse<At, Ch, Co, Me, Re, Us>),
+                } as MessageResponse<At, Ch, Co, Me, Re, Us>);
+              },
               icon: <SendUp pathFill={primary} />,
               title: t('Resend'),
             },
@@ -562,7 +588,7 @@ const MessageWithContext = <
 
   const onLongPressMessage =
     onLongPressProp && !disabled
-      ? (event: GestureResponderEvent) => onLongPressProp(message, event)
+      ? (event?: GestureResponderEvent) => onLongPressProp(message, event)
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
@@ -583,6 +609,7 @@ const MessageWithContext = <
       forwardedGroupStyles[0] === 'bottom',
     lastReceivedId,
     message,
+    messageContentOrder,
     onLongPress: animatedLongPress ? () => null : onLongPressMessage,
     onlyEmojis,
     onOpenThread,
@@ -599,9 +626,7 @@ const MessageWithContext = <
     threadList,
   };
 
-  const onLongPressTouchable = useAnimatedGestureHandler<
-    TapGestureHandlerGestureEvent
-  >(
+  const onLongPressTouchable = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
     {
       onFinish: () => {
         pressActive.value = false;
@@ -660,11 +685,13 @@ const areEqual = <
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    channel: prevChannel,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
     t: prevT,
   } = prevProps;
   const {
+    channel: nextChannel,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
     t: nextT,
@@ -679,33 +706,39 @@ const areEqual = <
       prevLastReceivedId === nextMessage.id ||
       nextLastReceivedId === prevMessage.id ||
       nextLastReceivedId === nextMessage.id);
-  if (!lastReceivedIdChangedAndMatters) return false;
+  if (lastReceivedIdChangedAndMatters) return false;
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.updated_at === nextMessage.update_at;
+    prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
+  const messageUserBannedEqual =
+    prevMessage.user?.banned === nextMessage.user?.banned;
+  if (!messageUserBannedEqual) return false;
+
   const attachmentsEqual =
-    Array.isArray(prevMessage.attachments) ===
-      Array.isArray(nextMessage.attachments) &&
-    ((Array.isArray(prevMessage.attachments) &&
+    (Array.isArray(prevMessage.attachments) &&
       Array.isArray(nextMessage.attachments) &&
       prevMessage.attachments.length === nextMessage.attachments.length) ||
-      prevMessage.attachments === nextMessage.attachments);
+    prevMessage.attachments === nextMessage.attachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    Array.isArray(prevMessage.latest_reactions) ===
-      Array.isArray(nextMessage.latest_reactions) &&
-    ((Array.isArray(prevMessage.latest_reactions) &&
+    (Array.isArray(prevMessage.latest_reactions) &&
       Array.isArray(nextMessage.latest_reactions) &&
       prevMessage.latest_reactions.length ===
         nextMessage.latest_reactions.length) ||
-      prevMessage.latest_reactions === nextMessage.latest_reactions);
+    prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
+
+  const mutedUserSame =
+    !!prevChannel &&
+    !!nextChannel &&
+    prevChannel.state.mutedUsers.length === nextChannel.state.mutedUsers.length;
+  if (!mutedUserSame) return false;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;

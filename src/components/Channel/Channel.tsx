@@ -784,7 +784,7 @@ export const Channel = <
 
   const channelContext: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
     channel,
-    disabled: channel?.data?.frozen && disableIfFrozenChannel,
+    disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
     error,
     eventHistory,

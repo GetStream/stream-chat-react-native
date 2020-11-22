@@ -8,9 +8,7 @@ declare module 'styled-components/native' {
   export interface DefaultTheme extends Theme {}
 }
 
-const appStyledComponents = styledComponents as styledComponents.ReactNativeThemedStyledComponentsModule<
-  Theme
->;
+const appStyledComponents = styledComponents as styledComponents.ReactNativeThemedStyledComponentsModule<Theme>;
 
 const {
   css,

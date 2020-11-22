@@ -26,6 +26,7 @@ export * from './Group';
 export * from './Left';
 export * from './Lightning';
 export * from './Link';
+export * from './Loading';
 export * from './Logo';
 export * from './LOLReaction';
 export * from './LoveReaction';

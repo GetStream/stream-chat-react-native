@@ -127,6 +127,7 @@ const GalleryWithContext = <
       const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
       if (attachmentUrl) {
         const url = makeImageCompatibleUrl(attachmentUrl);
+        Image.prefetch(url);
         if (images.length <= 2) {
           returnArray[0] = [
             ...(returnArray[0] || []),
@@ -194,7 +195,7 @@ const GalleryWithContext = <
             >
               <Image
                 resizeMode='cover'
-                source={{ cache: 'force-cache', uri: url }}
+                source={{ uri: url }}
                 style={[
                   styles.flex,
                   {

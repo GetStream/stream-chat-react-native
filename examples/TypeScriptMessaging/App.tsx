@@ -12,7 +12,6 @@ import {
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
-import { enableScreens } from 'react-native-screens';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -29,7 +28,6 @@ import {
 } from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
-enableScreens();
 
 type LocalAttachmentType = Record<string, unknown>;
 type LocalChannelType = Record<string, unknown>;
@@ -46,9 +44,6 @@ const theme: DeepPartial<Theme> = {
       height: 32,
       width: 32,
     },
-  },
-  colors: {
-    primary: 'blue',
   },
   spinner: {
     height: 15,
@@ -78,6 +73,7 @@ const filters = {
 };
 const sort: ChannelSort<LocalChannelType> = { last_message_at: -1 };
 const options = {
+  presence: true,
   state: true,
   watch: true,
 };
@@ -102,7 +98,7 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   return (
     <SafeAreaView>
       <Chat client={chatClient} i18nInstance={streami18n}>
-        <View style={{ height: '100%', padding: 10 }}>
+        <View style={{ height: '100%' }}>
           <ChannelList<
             LocalAttachmentType,
             LocalChannelType,

@@ -129,7 +129,7 @@ describe('Attachment', () => {
     const { getByTestId } = render(
       getAttachmentComponent({
         attachment: generateCardAttachment({
-          type: new Date().getTime().toString(),
+          type: Date.now().toString(),
         }),
       }),
     );

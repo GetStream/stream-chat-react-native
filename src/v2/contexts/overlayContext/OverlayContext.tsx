@@ -18,6 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { ChannelInfoOverlayProvider } from '../channelInfoOverlayContext/ChannelInfoOverlayContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { DeepPartial, ThemeProvider } from '../themeContext/ThemeContext';
@@ -27,6 +28,7 @@ import {
 } from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
+import { ChannelInfoOverlay } from '../../components/ChannelInfoOverlay/ChannelInfoOverlay';
 import {
   ImageGallery,
   ImageGalleryCustomComponents,
@@ -51,13 +53,26 @@ import type { Streami18n } from '../../utils/Streami18n';
 
 export type BlurType = 'light' | 'dark' | undefined;
 
-export type Overlay = 'none' | 'gallery' | 'message';
+export type Overlay =
+  | 'channelInfo'
+  | 'gallery'
+  | 'message'
+  | 'none'
+  | 'wildcard';
 
 export type OverlayContextValue = {
   overlay: Overlay;
   setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
+  setWildcard: React.Dispatch<
+    React.SetStateAction<
+      React.ComponentType<{
+        visible: boolean;
+      }>
+    >
+  >;
   style?: DeepPartial<Theme>;
+  Wildcard?: React.ComponentType<{ visible: boolean }>;
 };
 
 export const OverlayContext = React.createContext<OverlayContextValue>(
@@ -70,6 +85,8 @@ type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
     value?: Partial<OverlayContextValue>;
   }
 >;
+
+const WildcardDefault: React.FC<{ visible: boolean }> = () => null;
 
 export const OverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -88,10 +105,14 @@ export const OverlayProvider = <
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
   });
-  const [overlay, setOverlay] = useState(value?.overlay || 'none');
   const [blurType, setBlurType] = useState<BlurType>();
-  const { height, width } = useWindowDimensions();
+  const [overlay, setOverlay] = useState(value?.overlay || 'none');
+  const [Wildcard, setWildcard] = useState<
+    React.ComponentType<{ visible: boolean }>
+  >(value?.Wildcard || WildcardDefault);
+
   const overlayOpacity = useSharedValue(0);
+  const { height, width } = useWindowDimensions();
 
   // Setup translators
   const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
@@ -138,7 +159,9 @@ export const OverlayProvider = <
     overlay,
     setBlurType,
     setOverlay,
+    setWildcard,
     style: value?.style,
+    Wildcard,
   };
 
   if (loadingTranslators) return null;
@@ -146,32 +169,37 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={translators}>
       <OverlayContext.Provider value={overlayContext}>
-        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-          <ImageGalleryProvider>
-            {children}
-            <ThemeProvider style={overlayContext.style}>
-              <Animated.View
-                pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                style={[StyleSheet.absoluteFill, overlayStyle]}
-              >
-                <BlurView
-                  blurType={blurType}
-                  style={[StyleSheet.absoluteFill, { height, width }]}
+        <ChannelInfoOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+          <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+            <ImageGalleryProvider>
+              {children}
+              <ThemeProvider style={overlayContext.style}>
+                <Animated.View
+                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                  style={[StyleSheet.absoluteFill, overlayStyle]}
+                >
+                  <BlurView
+                    blurType={blurType}
+                    style={[StyleSheet.absoluteFill, { height, width }]}
+                  />
+                </Animated.View>
+                {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
+                <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  visible={overlay === 'channelInfo'}
                 />
-              </Animated.View>
-
-              <MessageOverlay
-                overlayOpacity={overlayOpacity}
-                visible={overlay === 'message'}
-              />
-              <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                imageGalleryCustomComponents={imageGalleryCustomComponents}
-                overlayOpacity={overlayOpacity}
-                visible={overlay === 'gallery'}
-              />
-            </ThemeProvider>
-          </ImageGalleryProvider>
-        </MessageOverlayProvider>
+                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  overlayOpacity={overlayOpacity}
+                  visible={overlay === 'message'}
+                />
+                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  overlayOpacity={overlayOpacity}
+                  visible={overlay === 'gallery'}
+                />
+              </ThemeProvider>
+            </ImageGalleryProvider>
+          </MessageOverlayProvider>
+        </ChannelInfoOverlayProvider>
       </OverlayContext.Provider>
     </TranslationProvider>
   );

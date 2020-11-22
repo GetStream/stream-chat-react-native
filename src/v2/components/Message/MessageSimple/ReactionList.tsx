@@ -256,7 +256,7 @@ const ReactionListWithContext = <
           >
             {reactions.map((reaction, index) => (
               <Icon
-                key={`${reaction.type}_${index}_${new Date().getTime()}`}
+                key={`${reaction.type}_${index}_${Date.now()}`}
                 pathFill={reaction.own ? primary : textGrey}
                 size={reactionSize / 2}
                 style={middleIcon}

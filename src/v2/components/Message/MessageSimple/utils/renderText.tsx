@@ -1,11 +1,17 @@
 import React from 'react';
-import { Linking } from 'react-native';
-// @ts-expect-error
-import Markdown from 'react-native-markdown-package';
+import { Linking, Text } from 'react-native';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
-
-import type { DefaultRules } from 'simple-markdown';
+// @ts-expect-error
+import Markdown from 'react-native-markdown-package';
+import {
+  DefaultRules,
+  defaultRules,
+  MatchFunction,
+  ParseFunction,
+  parseInline,
+  ReactNodeOutput,
+} from 'simple-markdown';
 
 import type { Message } from '../../../MessageList/hooks/useMessageList';
 import type {
@@ -19,13 +25,10 @@ import type {
   UnknownType,
 } from '../../../../types/types';
 
+import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
-  autolink: {
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
   inlineCode: {
     backgroundColor: '#F3F3F3',
     borderColor: '#dddddd',
@@ -58,7 +61,9 @@ export type RenderTextParams<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
+> = Partial<
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
+> & {
   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
@@ -81,11 +86,12 @@ export const renderText = <
     markdownStyles,
     message,
     onLink: onLinkParams,
+    onLongPress,
   } = params;
 
   // take the @ mentions and turn them into markdown?
   // translate links
-  const { mentioned_users = [], text } = message;
+  const { text } = message;
 
   if (!text) return null;
 
@@ -103,15 +109,6 @@ export const renderText = <
     newText = newText.replace(urlInfo.raw, markdown);
   }
 
-  if (mentioned_users.length) {
-    for (let i = 0; i < mentioned_users.length; i++) {
-      const username = mentioned_users[i].name || mentioned_users[i].id;
-      const markdown = `**@${username}**`;
-      const regEx = new RegExp(`@${username}`, 'g');
-      newText = newText.replace(regEx, markdown);
-    }
-  }
-
   newText = newText.replace(/[<&"'>]/g, '\\$&');
   const styles = {
     ...defaultMarkdownStyles,
@@ -119,14 +116,59 @@ export const renderText = <
   };
 
   const onLink = (url: string) =>
-    Linking.canOpenURL(url).then(
-      (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+    onLinkParams
+      ? onLinkParams(url)
+      : Linking.canOpenURL(url).then(
+          (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+        );
+
+  const react: ReactNodeOutput = (node, output, { ...state }) => {
+    state.withinLink = true;
+    const link = React.createElement(
+      Text,
+      {
+        key: state.key,
+        onLongPress,
+        onPress: () => onLink(node.target),
+        style: styles.autolink,
+        suppressHighlighting: true,
+      },
+      output(node.content, state),
     );
+    state.withinLink = false;
+    return link;
+  };
+
+  const regEx = new RegExp('^\\B@\\w+', 'g');
+  const match: MatchFunction = (source) => regEx.exec(source);
+  const mentionsReact: ReactNodeOutput = (node, output, { ...state }) =>
+    React.createElement(
+      Text,
+      {
+        key: state.key,
+        style: styles.mentions,
+      },
+      Array.isArray(node.content)
+        ? node.content[0]?.content || ''
+        : output(node.content, state),
+    );
+  const parse: ParseFunction = (capture, parse, state) => ({
+    content: parseInline(parse, capture[0], state),
+  });
 
   return (
     <Markdown
-      onLink={onLinkParams || onLink}
-      rules={markdownRules}
+      onLink={onLink}
+      rules={{
+        link: { react },
+        mentions: {
+          match,
+          order: defaultRules.text.order - 0.5,
+          parse,
+          react: mentionsReact,
+        },
+        ...markdownRules,
+      }}
       styles={styles}
     >
       {newText}

@@ -42,6 +42,9 @@ export type ChannelContextValue<
    */
   isOwner: boolean;
   loading: boolean;
+  /**
+   * Custom loading indicator to override the Stream default
+   */
   LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: () => void;
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];

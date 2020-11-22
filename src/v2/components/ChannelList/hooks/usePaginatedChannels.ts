@@ -131,16 +131,14 @@ export const usePaginatedChannels = <
 
   return {
     channels,
+    error,
     hasNextPage,
+    loadingChannels,
+    loadingNextPage,
     loadNextPage,
+    refreshing,
     refreshList,
     reloadList,
     setChannels,
-    status: {
-      error,
-      loadingChannels,
-      loadingNextPage,
-      refreshing,
-    },
   };
 };
