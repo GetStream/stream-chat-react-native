@@ -63,33 +63,31 @@ export const ChannelListScreen: React.FC = () => {
         <ChatScreenHeader />
 
         <View style={styles.listContainer}>
-          <Chat client={chatClient}>
-            <View>
-              <ChannelList<
-                LocalAttachmentType,
-                LocalChannelType,
-                LocalCommandType,
-                LocalEventType,
-                LocalMessageType,
-                LocalResponseType,
-                LocalUserType
-              >
-                filters={{
-                  ...filters,
-                  members: {
-                    $in: [chatClient.user?.id || ''],
-                  },
-                }}
-                onSelect={(channel) => {
-                  navigation.navigate('ChannelScreen', {
-                    channelId: channel.id,
-                  });
-                }}
-                options={options}
-                sort={sort}
-              />
-            </View>
-          </Chat>
+          <View>
+            <ChannelList<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
+            >
+              filters={{
+                ...filters,
+                members: {
+                  $in: [chatClient.user?.id || ''],
+                },
+              }}
+              onSelect={(channel) => {
+                navigation.navigate('ChannelScreen', {
+                  channelId: channel.id,
+                });
+              }}
+              options={options}
+              sort={sort}
+            />
+          </View>
         </View>
       </View>
     </>

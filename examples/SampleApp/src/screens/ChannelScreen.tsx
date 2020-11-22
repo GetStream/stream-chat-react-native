@@ -31,6 +31,7 @@ import {
   MessageInput,
   MessageList,
   useChannelContext,
+  useChannelPreviewDisplayName,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
 import {
@@ -65,7 +66,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
   const typing = useTypingString();
-
+  const displayName = useChannelPreviewDisplayName(channel, 30);
   if (!channel) return null;
 
   const isOneOnOneConversation =
@@ -89,7 +90,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           </TouchableOpacity>
         )}
         subtitle={typing ? typing : getUserActivityStatus(user)}
-        title={getChannelPreviewDisplayName(channel, chatClient)}
+        title={displayName}
       />
     );
   }
@@ -113,7 +114,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           ? typing
           : `${Object.keys(channel?.state.members).length} members`
       }
-      title={getChannelPreviewDisplayName(channel, chatClient)}
+      title={displayName}
     />
   );
 };
@@ -142,27 +143,25 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   return (
     <View style={{ height: '100%', paddingBottom: insets.bottom }}>
-      <Chat client={chatClient} style={streamTheme}>
-        <View style={{ flexGrow: 1, flexShrink: 1 }}>
-          <Channel
-            channel={channel}
-            disableTypingIndicator
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
-          >
-            <ChannelHeader />
-            <MessageList<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalResponseType,
-              LocalUserType
-            > />
-            <MessageInput />
-          </Channel>
-        </View>
-      </Chat>
+      <View style={{ flexGrow: 1, flexShrink: 1 }}>
+        <Channel
+          channel={channel}
+          disableTypingIndicator
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
+        >
+          <ChannelHeader />
+          <MessageList<
+            LocalAttachmentType,
+            LocalChannelType,
+            LocalCommandType,
+            LocalEventType,
+            LocalMessageType,
+            LocalResponseType,
+            LocalUserType
+          > />
+          <MessageInput />
+        </Channel>
+      </View>
     </View>
   );
 };
