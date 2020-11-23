@@ -21,6 +21,7 @@ import {
   Avatar,
   getChannelPreviewDisplayName,
   ThemeProvider,
+  useChannelPreviewDisplayName,
 } from '../../../../src/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
@@ -74,15 +75,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   );
   const [textInputFocused, setTextInputFocused] = useState(false);
   const navigation = useNavigation();
-
+  const displayName = useChannelPreviewDisplayName(channel, 30);
   const { colors } = useTheme() as AppTheme;
 
   return (
     <>
-      <ScreenHeader
-        subtitle={`${memberCount} members`}
-        title={getChannelPreviewDisplayName(channel, chatClient)}
-      />
+      <ScreenHeader subtitle={`${memberCount} members`} title={displayName} />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>
           {members.map((m) => (

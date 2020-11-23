@@ -29,30 +29,28 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
 
   return (
     <SafeAreaView>
-      <Chat client={chatClient} style={streamTheme}>
-        <Channel
-          channel={channel}
-          keyboardVerticalOffset={headerHeight}
-          thread={thread}
+      <Channel
+        channel={channel}
+        keyboardVerticalOffset={headerHeight}
+        thread={thread}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'flex-start',
+          }}
         >
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'flex-start',
-            }}
-          >
-            <Thread<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalResponseType,
-              LocalUserType
-            > />
-          </View>
-        </Channel>
-      </Chat>
+          <Thread<
+            LocalAttachmentType,
+            LocalChannelType,
+            LocalCommandType,
+            LocalEventType,
+            LocalMessageType,
+            LocalResponseType,
+            LocalUserType
+          > />
+        </View>
+      </Channel>
     </SafeAreaView>
   );
 };

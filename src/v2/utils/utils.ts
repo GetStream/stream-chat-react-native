@@ -289,9 +289,15 @@ export const ACITriggerSettings = <
     dataProvider: (query, text, onReady) => {
       if (text.indexOf('/') !== 0) return [];
 
-      const selectedCommands = getCommands(channel).filter(
-        (command) => query && command.name?.indexOf(query) !== -1,
-      );
+      let selectedCommands = [];
+
+      if (!query) {
+        selectedCommands = getCommands(channel);
+      } else {
+        selectedCommands = getCommands(channel).filter(
+          (command) => query && command.name?.indexOf(query) !== -1,
+        );
+      }
 
       // sort alphabetically unless the you're matching the first char
       selectedCommands.sort((a, b) => {

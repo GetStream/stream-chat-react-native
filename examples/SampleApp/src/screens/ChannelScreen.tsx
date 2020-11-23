@@ -31,6 +31,7 @@ import {
   MessageInput,
   MessageList,
   useChannelContext,
+  useChannelPreviewDisplayName,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
 import {
@@ -42,6 +43,7 @@ import { useState } from 'react';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import truncate from 'lodash/truncate';
 import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -64,7 +66,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const { channel } = useChannelContext();
   const { colors } = useTheme() as AppTheme;
   const typing = useTypingString();
-
+  const displayName = useChannelPreviewDisplayName(channel, 30);
   if (!channel) return null;
 
   const isOneOnOneConversation =
@@ -88,7 +90,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           </TouchableOpacity>
         )}
         subtitle={typing ? typing : getUserActivityStatus(user)}
-        title={getChannelPreviewDisplayName(channel, chatClient)}
+        title={displayName}
       />
     );
   }
@@ -112,7 +114,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           ? typing
           : `${Object.keys(channel?.state.members).length} members`
       }
-      title={getChannelPreviewDisplayName(channel, chatClient)}
+      title={displayName}
     />
   );
 };
@@ -124,6 +126,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const [channel, setChannel] = useState(null);
+  const insets = useSafeAreaInsets();
   useEffect(() => {
     const initChannel = async () => {
       const channel = chatClient?.channel('messaging', channelId);
@@ -139,28 +142,26 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View style={{ height: '100%' }}>
-      <Chat client={chatClient} style={streamTheme}>
-        <View style={{ flexGrow: 1, flexShrink: 1 }}>
-          <Channel
-            channel={channel}
-            disableTypingIndicator
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-          >
-            <ChannelHeader />
-            <MessageList<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalResponseType,
-              LocalUserType
-            > />
-            <MessageInput />
-          </Channel>
-        </View>
-      </Chat>
+    <View style={{ height: '100%', paddingBottom: insets.bottom }}>
+      <View style={{ flexGrow: 1, flexShrink: 1 }}>
+        <Channel
+          channel={channel}
+          disableTypingIndicator
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
+        >
+          <ChannelHeader />
+          <MessageList<
+            LocalAttachmentType,
+            LocalChannelType,
+            LocalCommandType,
+            LocalEventType,
+            LocalMessageType,
+            LocalResponseType,
+            LocalUserType
+          > />
+          <MessageInput />
+        </Channel>
+      </View>
     </View>
   );
 };

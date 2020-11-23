@@ -211,6 +211,8 @@ export type Theme = {
     };
     attachButton: ViewStyle;
     attachButtonIcon: ImageStyle;
+    commandsButton: ViewStyle;
+    composerContainer: ViewStyle;
     container: ViewStyle & {
       conditionalPadding: ViewStyle['paddingTop'];
     };
@@ -622,6 +624,8 @@ export const defaultTheme: Theme = {
     },
     attachButton: {},
     attachButtonIcon: {},
+    commandsButton: {},
+    composerContainer: {},
     container: {
       conditionalPadding: 20,
     },

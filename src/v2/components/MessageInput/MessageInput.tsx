@@ -84,14 +84,24 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import {
+  CommandsButton as CommandsButtonDefault,
+  CommandsButtonProps,
+} from './CommandsButton';
 
 const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.png');
 
 const styles = StyleSheet.create({
+  composerContainer: {
+    alignItems: 'flex-end',
+    flexDirection: 'row',
+    marginVertical: 4,
+    minHeight: 46,
+    paddingHorizontal: 10,
+  },
   container: {
-    borderBottomWidth: 2,
     borderColor: '#00000014',
-    borderTopWidth: 2,
+    borderTopWidth: 1,
   },
   editingBoxContainer: {
     backgroundColor: '#FFFFFF',
@@ -107,13 +117,6 @@ const styles = StyleSheet.create({
   },
   editingBoxHeaderTitle: {
     fontWeight: 'bold',
-  },
-  inputBoxContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    margin: 10,
-    minHeight: 46,
-    paddingHorizontal: 10,
   },
 });
 
@@ -154,6 +157,12 @@ export type MessageInputProps<
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
    */
   AttachmentFileIcon?: React.ComponentType<FileIconProps>;
+  /**
+   * Custom UI component for commands button.
+   *
+   * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/#commandsbutton)
+   */
+  CommandsButton?: React.ComponentType<CommandsButtonProps>;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -289,6 +298,7 @@ export const MessageInput = <
     actionSheetStyles,
     additionalTextInputProps,
     AttachButton = AttachButtonDefault,
+    CommandsButton = CommandsButtonDefault,
     AttachmentFileIcon,
     compressImageQuality,
     disabled: disabledProp,
@@ -331,11 +341,11 @@ export const MessageInput = <
   const {
     theme: {
       messageInput: {
+        composerContainer,
         container: { conditionalPadding, ...container },
         editingBoxContainer,
         editingBoxHeader,
         editingBoxHeaderTitle,
-        inputBoxContainer,
       },
     },
   } = useTheme();
@@ -666,7 +676,7 @@ export const MessageInput = <
         />
         <View
           ref={setInputBoxContainerRef}
-          style={[styles.inputBoxContainer, inputBoxContainer]}
+          style={[styles.composerContainer, composerContainer]}
         >
           {Input ? (
             <Input
@@ -702,6 +712,11 @@ export const MessageInput = <
                   handleOnPress={handleOnPress}
                 />
               )}
+              <CommandsButton
+                handleOnPress={() => {
+                  appendText('/');
+                }}
+              />
               <AutoCompleteInput<Co, Us>
                 additionalTextInputProps={additionalTextInputProps || {}}
                 onChange={onChangeText}
@@ -709,7 +724,7 @@ export const MessageInput = <
                 triggerSettings={triggerSettings}
                 value={text}
               />
-              <SendButton<At, Ch, Co, Ev, Me, Re, Us>
+              <SendButton
                 disabled={disabled || sending.current || !isValidMessage()}
                 sendMessage={sendMessage}
               />
