@@ -138,6 +138,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         <Channel
           channel={channel}
           EmptyStateIndicator={EmptyMessagesIndicator}
+          key={results.length}
           keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : -300}
         >
           <View
