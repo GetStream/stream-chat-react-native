@@ -12,7 +12,6 @@ import Animated, {
   Easing,
   Extrapolate,
   interpolate,
-  // @ts-expect-error TODO: Remove on next Reanimated update with new types
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -45,7 +44,10 @@ import {
   MessageOverlayData,
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
-import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  OverlayContextValue,
+  useOverlayContext,
+} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vh } from '../../utils/utils';
 
@@ -101,7 +103,11 @@ export type MessageOverlayPropsWithContext<
   Omit<
     MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
     'handleReaction' | 'supportedReactions'
-  > & { overlayOpacity: Animated.SharedValue<number>; visible?: boolean };
+  > &
+  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
+    overlayOpacity: Animated.SharedValue<number>;
+    visible?: boolean;
+  };
 
 const MessageOverlayWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -126,11 +132,12 @@ const MessageOverlayWithContext = <
     messageReactionTitle,
     onlyEmojis,
     otherAttachments,
+    overlay,
     overlayOpacity,
     reset,
+    setOverlay,
     visible,
   } = props;
-  const { overlay, setOverlay } = useOverlayContext();
 
   const {
     theme: {
@@ -338,10 +345,12 @@ const MessageOverlayWithContext = <
                     >
                       <OverlayReactionList
                         messageLayout={messageLayout}
-                        ownReactionTypes={(message?.own_reactions as ReactionResponse<
-                          Re,
-                          Us
-                        >[]).map((reaction) => reaction.type)}
+                        ownReactionTypes={
+                          (message?.own_reactions as ReactionResponse<
+                            Re,
+                            Us
+                          >[])?.map((reaction) => reaction.type) || []
+                        }
                         reactionListHeight={reactionListHeight}
                         showScreen={showScreen}
                       />
@@ -590,8 +599,10 @@ export const MessageOverlay = <
     messageReactionTitle: propMessageReactionTitle,
     onlyEmojis: propOnlyEmojis,
     otherAttachments: propOtherAttachments,
+    overlay: propOverlay,
     overlayOpacity,
     reset: propReset,
+    setOverlay: propSetOverlay,
     visible,
   } = props;
 
@@ -604,6 +615,10 @@ export const MessageOverlay = <
     Re,
     Us
   >();
+  const {
+    overlay: contextOverlay,
+    setOverlay: contextSetOverlay,
+  } = useOverlayContext();
 
   const {
     alignment: contextAlignment,
@@ -632,7 +647,9 @@ export const MessageOverlay = <
     propMessageReactionTitle || contextMessageReactionTitle;
   const onlyEmojis = propOnlyEmojis || contextOnlyEmojis;
   const otherAttachments = propOtherAttachments || contextOtherAttachments;
+  const overlay = propOverlay || contextOverlay;
   const reset = propReset || contextReset;
+  const setOverlay = propSetOverlay || contextSetOverlay;
 
   return (
     <MemoizedMessageOverlay
@@ -648,8 +665,10 @@ export const MessageOverlay = <
         messageReactionTitle,
         onlyEmojis,
         otherAttachments,
+        overlay,
         overlayOpacity,
         reset,
+        setOverlay,
         visible,
       }}
     />

@@ -29,7 +29,10 @@ import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { Gallery as GalleryDefault } from '../Attachment/Gallery';
 import { Giphy as GiphyDefault } from '../Attachment/Giphy';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
-import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
+import {
+  LoadingErrorIndicator as LoadingErrorIndicatorDefault,
+  LoadingErrorProps,
+} from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
@@ -44,7 +47,10 @@ import {
   ChannelContextValue,
   ChannelProvider,
 } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import {
+  ChatContextValue,
+  useChatContext,
+} from '../../contexts/chatContext/ChatContext';
 import {
   ActionProps,
   MessagesContextValue,
@@ -56,11 +62,12 @@ import {
   ThreadContextValue,
   ThreadProvider,
 } from '../../contexts/threadContext/ThreadContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 import { reactionData as reactionDataDefault } from '../../utils/utils';
 
-import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
-import type { LoadingProps } from '../Indicators/LoadingIndicator';
 import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
@@ -78,7 +85,7 @@ const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
 
-export type ChannelProps<
+export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -86,9 +93,49 @@ export type ChannelProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
-  Partial<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
-  Partial<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>> & {
+> = Partial<
+  Pick<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'channel' | 'EmptyStateIndicator' | 'LoadingIndicator' | 'StickyHeader'
+  >
+> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Pick<TranslationContextValue, 't'> &
+  Partial<
+    Pick<
+      MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      | 'additionalTouchableProps'
+      | 'Attachment'
+      | 'AttachmentActions'
+      | 'AttachmentFileIcon'
+      | 'Card'
+      | 'CardCover'
+      | 'CardFooter'
+      | 'CardHeader'
+      | 'disableTypingIndicator'
+      | 'dismissKeyboardOnMessageTouch'
+      | 'FileAttachment'
+      | 'FileAttachmentGroup'
+      | 'formatDate'
+      | 'Gallery'
+      | 'Giphy'
+      | 'markdownRules'
+      | 'Message'
+      | 'MessageAvatar'
+      | 'MessageContent'
+      | 'messageContentOrder'
+      | 'MessageFooter'
+      | 'MessageHeader'
+      | 'MessageReplies'
+      | 'MessageSimple'
+      | 'MessageStatus'
+      | 'MessageText'
+      | 'ReactionList'
+      | 'supportedReactions'
+      | 'UrlPreview'
+    >
+  > &
+  Partial<Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>> & {
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -159,21 +206,9 @@ export type ChannelProps<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
-    /**
-     * Custom loading indicator to override the Stream default
-     */
-    LoadingIndicator?: React.ComponentType<LoadingProps>;
   };
 
-/**
- *
- * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
- * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
- * children of the Channel component to receive the ChannelContext.
- *
- * @example ./Channel.md
- */
-export const Channel = <
+export const ChannelWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -182,7 +217,7 @@ export const Channel = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
+  props: PropsWithChildren<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
     additionalKeyboardAvoidingViewProps,
@@ -196,6 +231,7 @@ export const Channel = <
     CardHeader,
     channel,
     children,
+    client,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
@@ -228,12 +264,11 @@ export const Channel = <
     ReactionList = ReactionListDefault,
     StickyHeader,
     supportedReactions = reactionDataDefault,
+    t,
     thread: threadProps,
     UrlPreview = CardDefault,
   } = props;
 
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
   const {
     theme: {
       channel: { selectChannel },
@@ -516,7 +551,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${new Date().getTime()}`,
+      id: `${client.userID}-${Date.now()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
@@ -841,7 +876,7 @@ export const Channel = <
 
   const channelContext: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
     channel,
-    disabled: channel?.data?.frozen && disableIfFrozenChannel,
+    disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
     error,
     eventHistory,
@@ -943,6 +978,82 @@ export const Channel = <
         </MessagesProvider>
       </ChannelProvider>
     </KeyboardCompatibleView>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel: prevChannel, t: prevT } = prevProps;
+  const { channel: nextChannel, t: nextT } = nextProps;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const channelEqual =
+    (!!prevChannel &&
+      !!nextChannel &&
+      prevChannel.data?.name === nextChannel.data?.name) ||
+    prevChannel === nextChannel;
+  if (!channelEqual) return false;
+
+  return true;
+};
+
+const MemoizedChannel = React.memo(
+  ChannelWithContext,
+  areEqual,
+) as typeof ChannelWithContext;
+
+export type ChannelProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+/**
+ *
+ * The wrapper component for a chat channel. Channel needs to be placed inside a Chat component
+ * to receive the StreamChat client instance. MessageList, Thread, and MessageInput must be
+ * children of the Channel component to receive the ChannelContext.
+ *
+ * @example ./Channel.md
+ */
+export const Channel = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithChildren<ChannelProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { t } = useTranslationContext();
+
+  return (
+    <MemoizedChannel<At, Ch, Co, Ev, Me, Re, Us>
+      {...{
+        client,
+        t,
+      }}
+      {...props}
+    />
   );
 };
 

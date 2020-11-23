@@ -175,15 +175,15 @@ export const FileAttachment = <
   const { onLongPress } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps,
-    AttachmentActions,
-    AttachmentFileIcon,
+    AttachmentActions = AttachmentActionsDefault,
+    AttachmentFileIcon = FileIconDefault,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <FileAttachmentWithContext
       {...{
-        AttachmentActions: AttachmentActionsDefault,
-        AttachmentFileIcon: FileIconDefault,
+        AttachmentActions,
+        AttachmentFileIcon,
       }}
       {...{
         additionalTouchableProps,

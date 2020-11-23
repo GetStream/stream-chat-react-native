@@ -1,15 +1,18 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, ViewStyle } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-const AnimatedView = Animated.createAnimatedComponent(Animated.View);
+import { Loading } from '../../icons/Loading';
 
 const styles = StyleSheet.create({
   spinner: {
-    borderRadius: 30,
-    borderRightColor: 'transparent',
-    borderWidth: 2,
     height: 30,
     justifyContent: 'center',
     margin: 5,
@@ -21,7 +24,7 @@ const styles = StyleSheet.create({
  * @example ./Spinner.md
  */
 export const Spinner: React.FC = () => {
-  const rotateValue = useRef(new Animated.Value(0));
+  const rotation = useSharedValue(0);
 
   const {
     theme: {
@@ -30,38 +33,28 @@ export const Spinner: React.FC = () => {
     },
   } = useTheme();
 
-  const loop = Animated.loop(
-    Animated.timing(rotateValue.current, {
-      duration: 800,
-      easing: Easing.linear,
-      toValue: 1,
-      useNativeDriver: true,
-    }),
-  );
+  const animatedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    transform: [
+      {
+        rotate: `${rotation.value}deg`,
+      },
+    ],
+  }));
 
   useEffect(() => {
-    loop.start();
-    return loop.stop;
-  });
+    rotation.value = withRepeat(
+      withTiming(360, {
+        duration: 800,
+        easing: Easing.linear,
+      }),
+      -1,
+    );
+  }, []);
 
   return (
-    <AnimatedView
-      style={[
-        styles.spinner,
-        {
-          borderColor: primary,
-          transform: [
-            {
-              rotate: rotateValue.current.interpolate({
-                inputRange: [0, 1],
-                outputRange: ['0deg', '360deg'],
-              }),
-            },
-          ],
-        },
-        spinner,
-      ]}
-    />
+    <Animated.View style={[styles.spinner, animatedStyle, spinner]}>
+      <Loading stopColor={primary} />
+    </Animated.View>
   );
 };
 

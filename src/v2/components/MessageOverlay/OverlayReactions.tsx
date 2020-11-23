@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   avatarContainer: {
     padding: 8,
   },
+  avatarInnerContainer: { alignSelf: 'center' },
   avatarName: {
     fontSize: 12,
     fontWeight: '700',
@@ -146,10 +147,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
     item: Reaction;
   }) => {
     const x =
-      overlayPadding +
       avatarSize / 2 -
-      (avatarSize / (radius * 3)) * (alignment === 'left' ? 1 : -1);
-    const y = overlayPadding + avatarSize - radius;
+      (avatarSize / (radius * 4)) * (alignment === 'left' ? 1 : -1);
+    const y = avatarSize - radius;
 
     const left =
       alignment === 'left'
@@ -166,41 +166,8 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
 
     return (
       <View style={[styles.avatarContainer, avatarContainer]}>
-        <Avatar image={image} name={name} size={avatarSize} />
-        <View style={[StyleSheet.absoluteFill]}>
-          <Svg>
-            <Circle
-              cx={
-                x - (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
-              }
-              cy={y - radius * 2 - radius / 4}
-              fill={alignment === 'left' ? grey : white}
-              r={radius * 2}
-              stroke={alignment === 'left' ? white : grey}
-              strokeWidth={radius / 2}
-            />
-            <Circle
-              cx={x}
-              cy={y}
-              fill={alignment === 'left' ? grey : white}
-              r={radius}
-              stroke={alignment === 'left' ? white : grey}
-              strokeWidth={radius / 2}
-            />
-          </Svg>
-          <View
-            style={[
-              styles.reactionBubbleBackground,
-              {
-                backgroundColor: alignment === 'left' ? grey : white,
-                borderColor: alignment === 'left' ? white : grey,
-                borderWidth: radius / 2,
-                left,
-                top,
-              },
-              reactionBubbleBackground,
-            ]}
-          />
+        <View style={styles.avatarInnerContainer}>
+          <Avatar image={image} name={name} size={avatarSize} />
           <View style={[StyleSheet.absoluteFill]}>
             <Svg>
               <Circle
@@ -210,38 +177,74 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
                 }
                 cy={y - radius * 2 - radius / 4}
                 fill={alignment === 'left' ? grey : white}
-                r={radius * 2 - radius / 2}
+                r={radius * 2}
+                stroke={alignment === 'left' ? white : grey}
+                strokeWidth={radius / 2}
+              />
+              <Circle
+                cx={x}
+                cy={y}
+                fill={alignment === 'left' ? grey : white}
+                r={radius}
+                stroke={alignment === 'left' ? white : grey}
+                strokeWidth={radius / 2}
               />
             </Svg>
-          </View>
-          <View
-            style={[
-              styles.reactionBubble,
-              {
-                backgroundColor: alignment === 'left' ? grey : white,
-                height:
-                  (reactionBubble.borderRadius ||
-                    styles.reactionBubble.borderRadius) -
-                  radius / 2,
-                left,
-                top,
-                width:
-                  (reactionBubble.borderRadius ||
-                    styles.reactionBubble.borderRadius) -
-                  radius / 2,
-              },
-              reactionBubble,
-            ]}
-          >
-            <ReactionIcon
-              pathFill={primary}
-              size={
-                (reactionBubble.borderRadius ||
-                  styles.reactionBubble.borderRadius) / 2
-              }
-              supportedReactions={supportedReactions}
-              type={type}
+            <View
+              style={[
+                styles.reactionBubbleBackground,
+                {
+                  backgroundColor: alignment === 'left' ? grey : white,
+                  borderColor: alignment === 'left' ? white : grey,
+                  borderWidth: radius / 2,
+                  left,
+                  top,
+                },
+                reactionBubbleBackground,
+              ]}
             />
+            <View style={[StyleSheet.absoluteFill]}>
+              <Svg>
+                <Circle
+                  cx={
+                    x -
+                    (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
+                  }
+                  cy={y - radius * 2 - radius / 4}
+                  fill={alignment === 'left' ? grey : white}
+                  r={radius * 2 - radius / 2}
+                />
+              </Svg>
+            </View>
+            <View
+              style={[
+                styles.reactionBubble,
+                {
+                  backgroundColor: alignment === 'left' ? grey : white,
+                  height:
+                    (reactionBubble.borderRadius ||
+                      styles.reactionBubble.borderRadius) -
+                    radius / 2,
+                  left,
+                  top,
+                  width:
+                    (reactionBubble.borderRadius ||
+                      styles.reactionBubble.borderRadius) -
+                    radius / 2,
+                },
+                reactionBubble,
+              ]}
+            >
+              <ReactionIcon
+                pathFill={primary}
+                size={
+                  (reactionBubble.borderRadius ||
+                    styles.reactionBubble.borderRadius) / 2
+                }
+                supportedReactions={supportedReactions}
+                type={type}
+              />
+            </View>
           </View>
         </View>
         <Text style={[styles.avatarName, avatarName]}>{name}</Text>

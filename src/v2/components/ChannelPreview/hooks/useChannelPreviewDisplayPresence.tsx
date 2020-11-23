@@ -15,7 +15,7 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-export const getChannelPreviewDisplayAvatar = <
+const getChannelPreviewDisplayPresence = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends DefaultChannelType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -27,49 +27,30 @@ export const getChannelPreviewDisplayAvatar = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const currentUserId = client?.user?.id;
-  const channelData = channel?.data;
-  const channelName = channelData?.name;
-  const channelImage = channelData?.image;
+  const currentUserId = client.userID;
 
-  if (channelImage) {
-    return {
-      image: channelImage,
-      name: channelName,
-    };
-  } else if (currentUserId) {
-    const members = Object.values(channel.state?.members || {});
+  if (currentUserId) {
+    const members = Object.values(channel.state.members);
     const otherMembers = members.filter(
       (member) => member.user?.id !== currentUserId,
     );
 
     if (otherMembers.length === 1) {
-      return {
-        image: otherMembers[0].user?.image,
-        name: channelName || otherMembers[0].user?.name,
-      };
+      return !!otherMembers[0].user?.online;
     }
-    return {
-      images: otherMembers
-        .slice(0, 4)
-        .map((member) => member.user?.image || ''),
-      names: otherMembers.slice(0, 4).map((member) => member.user?.name || ''),
-    };
   }
-  return {
-    name: channelName,
-  };
+  return false;
 };
 
 /**
- * Hook to set the display avatar for channel preview
+ * Hook to set the display avatar presence for channel preview
  * @param {*} channel
  *
- * @returns {object} e.g., { image: 'http://dummyurl.com/test.png', name: 'Uhtred Bebbanburg' }
+ * @returns {boolean} e.g., true
  */
-export const useChannelPreviewDisplayAvatar = <
+export const useChannelPreviewDisplayPresence = <
   At extends UnknownType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
@@ -80,18 +61,18 @@ export const useChannelPreviewDisplayAvatar = <
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const channelData = channel?.data;
-  const image = channelData?.image;
-  const name = channelData?.name;
-  const id = client?.user?.id;
-
-  const [displayAvatar, setDisplayAvatar] = useState(
-    getChannelPreviewDisplayAvatar(channel, client),
+  const currentUserId = client.userID;
+  const members = Object.values(channel.state.members).filter(
+    (member) =>
+      !!member.user?.id && !!currentUserId && member.user?.id !== currentUserId,
   );
+  const channelMemberOnline = members.some((member) => member.user?.online);
+
+  const [displayPresence, setDisplayPresence] = useState(false);
 
   useEffect(() => {
-    setDisplayAvatar(getChannelPreviewDisplayAvatar(channel, client));
-  }, [id, image, name]);
+    setDisplayPresence(getChannelPreviewDisplayPresence(channel, client));
+  }, [channelMemberOnline]);
 
-  return displayAvatar;
+  return displayPresence;
 };

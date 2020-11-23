@@ -65,7 +65,7 @@ describe('Streami18n instance - default', () => {
 
   it('should provide default english translator', async () => {
     const { t: _t } = await streami18n.getTranslators();
-    const text = new Date().getTime().toString();
+    const text = Date.now().toString();
 
     expect(_t(text)).toBe(text);
   });

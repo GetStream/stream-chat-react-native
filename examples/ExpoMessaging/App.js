@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, useHeaderHeight } from '@react-navigation/stack';
-import { enableScreens } from 'react-native-screens';
 import { StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -26,7 +25,6 @@ import {
 } from 'stream-chat-expo/v2';
 
 LogBox.ignoreAllLogs(true);
-enableScreens();
 
 // Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
 const theme = {
@@ -35,9 +33,6 @@ const theme = {
       height: 32,
       width: 32,
     },
-  },
-  colors: {
-    primary: 'blue',
   },
   spinner: {
     height: 15,

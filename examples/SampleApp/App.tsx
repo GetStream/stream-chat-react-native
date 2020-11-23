@@ -6,7 +6,6 @@ import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { MenuDrawer } from './src/screens/MenuDrawer';
 import { LogBox, useColorScheme } from 'react-native';
-import { enableScreens } from 'react-native-screens';
 import { DarkTheme, LightTheme } from './src/appTheme';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
@@ -32,9 +31,9 @@ import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
+import { streamTheme } from './src/utils/streamTheme';
 
 LogBox.ignoreAllLogs(true);
-enableScreens();
 console.assert = () => null;
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
@@ -64,7 +63,9 @@ const App = () => {
           LocalMessageType,
           LocalResponseType,
           LocalUserType
-        >>
+        >
+          value={{ style: streamTheme }}
+        >
           <Drawer.Navigator
             drawerContent={(props) => <MenuDrawer {...props} />}
             drawerStyle={{

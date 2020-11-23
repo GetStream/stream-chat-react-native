@@ -19,7 +19,6 @@ import Animated, {
   cancelAnimation,
   Easing,
   interpolate,
-  // @ts-expect-error TODO: Remove on next Reanimated update with new types
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -1024,7 +1023,7 @@ export const ImageGallery = <
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || '#F2F2F2',
+      backgroundColor: backgroundColor || '#FCFCFC',
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],

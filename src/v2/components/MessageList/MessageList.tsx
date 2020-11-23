@@ -106,7 +106,7 @@ const keyExtractor = <
     ? typeof item.created_at === 'string'
       ? item.created_at
       : item.created_at.toISOString()
-    : new Date().getTime().toString());
+    : Date.now().toString());
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
