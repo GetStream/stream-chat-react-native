@@ -38,10 +38,10 @@ export type LatestMessagePreview<
   | {
       created_at: string;
       messageObject: undefined;
-      preview: {
-        boldIndexEnd: number;
+      previews: {
+        bold: boolean;
         text: string;
-      };
+      }[];
       status: number;
     }
   | {
@@ -51,10 +51,10 @@ export type LatestMessagePreview<
           ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
         >
       >;
-      preview: {
-        boldIndexEnd: number;
+      previews: {
+        bold: boolean;
         text: string;
-      };
+      }[];
       status: number;
     };
 
@@ -74,9 +74,8 @@ const getLatestMessageDisplayText = <
   >,
   t: (key: string) => string,
 ) => {
-  if (!message) return { boldIndexEnd: 0, text: t('Nothing yet...') };
-  if (message.deleted_at)
-    return { boldIndexEnd: 0, text: t('Message deleted') };
+  if (!message) return [{ bold: false, text: t('Nothing yet...') }];
+  if (message.deleted_at) return [{ bold: false, text: t('Message deleted') }];
   const currentUserId = client.userID;
   const messageOwnerId = message.user?.id;
   const members = Object.keys(channel.state.members);
@@ -87,17 +86,48 @@ const getLatestMessageDisplayText = <
       ? message.user?.name || message.user?.username || message.user?.id || ''
       : '';
   const ownerText = owner ? `${owner === 'You' ? '' : '@'}${owner}: ` : '';
-  const boldIndexEnd = ownerText.includes('@') ? ownerText.length - 1 : 0;
+  const boldOwner = ownerText.includes('@');
   if (message.text) {
-    return { boldIndexEnd, text: `${ownerText}${message.text}` };
+    return [
+      { bold: boldOwner, text: ownerText },
+      ...message.text
+        .replace(/\n/g, ' ')
+        .substring(0, 100) // rough guess optimization to limit string preview to max 100 characters
+        .split('')
+        .reduce(
+          (acc, cur) => {
+            if (cur === '@') {
+              acc.push({ bold: true, text: cur });
+            } else if (
+              cur === ' ' &&
+              acc[acc.length - 1].text.startsWith('@')
+            ) {
+              acc.push({ bold: false, text: cur });
+            } else {
+              acc[acc.length - 1].text += cur;
+            }
+            return acc;
+          },
+          [{ bold: false, text: '' }],
+        ),
+    ];
   }
   if (message.command) {
-    return { boldIndexEnd, text: `${ownerText}/${message.command}` };
+    return [
+      { bold: boldOwner, text: ownerText },
+      { bold: false, text: `/${message.command}` },
+    ];
   }
   if (message.attachments?.length) {
-    return { boldIndexEnd, text: `${ownerText}${t('🏙 Attachment...')}` };
+    return [
+      { bold: boldOwner, text: ownerText },
+      { bold: false, text: t('🏙 Attachment...') },
+    ];
   }
-  return { boldIndexEnd, text: `${ownerText}${t('Empty message...')}` };
+  return [
+    { bold: boldOwner, text: ownerText },
+    { bold: false, text: t('Empty message...') },
+  ];
 };
 
 const getLatestMessageDisplayDate = <
@@ -180,10 +210,12 @@ const getLatestMessagePreview = <
     return {
       created_at: '',
       messageObject: undefined,
-      preview: {
-        boldIndexEnd: 0,
-        text: '',
-      },
+      previews: [
+        {
+          bold: false,
+          text: '',
+        },
+      ],
       status: 0,
     };
   }
@@ -192,7 +224,7 @@ const getLatestMessagePreview = <
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
-    preview: getLatestMessageDisplayText(channel, client, message, t),
+    previews: getLatestMessageDisplayText(channel, client, message, t),
     status: getLatestMessageReadStatus(channel, client, message),
   };
 };
@@ -232,10 +264,12 @@ export const useLatestMessagePreview = <
   >({
     created_at: '',
     messageObject: undefined,
-    preview: {
-      boldIndexEnd: 0,
-      text: '',
-    },
+    previews: [
+      {
+        bold: false,
+        text: '',
+      },
+    ],
     status: 0,
   });
 
