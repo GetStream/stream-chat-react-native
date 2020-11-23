@@ -214,6 +214,7 @@ export const useLatestMessagePreview = <
   Us extends UnknownType = DefaultUserType
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  forceUpdate: number,
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>,
@@ -242,7 +243,7 @@ export const useLatestMessagePreview = <
     setLatestMessagePreview(
       getLatestMessagePreview(channel, client, t, tDateTimeParser),
     );
-  }, [lastMessageId]);
+  }, [forceUpdate, lastMessageId]);
 
   return latestMessagePreview;
 };

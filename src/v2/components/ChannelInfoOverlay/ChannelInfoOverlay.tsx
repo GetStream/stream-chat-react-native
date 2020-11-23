@@ -282,6 +282,7 @@ const ChannelInfoOverlayWithContext = <
                           : 1,
                       )}
                     horizontal
+                    keyExtractor={(item, index) => `${item?.id}_${index}`}
                     renderItem={({ item }) =>
                       item ? (
                         <View
