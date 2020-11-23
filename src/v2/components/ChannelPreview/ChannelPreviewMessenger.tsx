@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
 import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
@@ -137,6 +137,17 @@ export type ChannelPreviewMessengerPropsWithContext<
      * default formatted date. This default logic is part of ChannelPreview component.
      */
     formatLatestMessageDate?: (date: Date) => string;
+    /**
+     * This map describes the values to use as inputRange for extra interpolation: AnimatedValue: [startValue, endValue]
+     * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, -]
+     * To support rtl flexbox layouts use flexDirection styling.
+     */
+    renderRightActions?:
+      | ((
+          progressAnimatedValue: Animated.AnimatedInterpolation,
+          dragAnimatedValue: Animated.AnimatedInterpolation,
+        ) => React.ReactNode)
+      | undefined;
     /** Number of unread messages on the channel */
     unread?: number;
   };
@@ -158,6 +169,7 @@ const ChannelPreviewMessengerWithContext = <
     formatLatestMessageDate,
     latestMessagePreview,
     onSelect,
+    renderRightActions,
     setData,
     setOverlay,
     unread,
@@ -195,30 +207,35 @@ const ChannelPreviewMessengerWithContext = <
 
   return (
     <Swipeable
-      renderRightActions={() => (
-        <View style={[styles.swipeableContainer, swipeableContainer]}>
-          <RectButton
-            onPress={() => {
-              setData({ channel, clientId: client.userID });
-              setOverlay('channelInfo');
-            }}
-            style={[styles.leftSwipeableButton, leftSwipeableButton]}
-          >
-            <MenuPointHorizontal />
-          </RectButton>
-          <RectButton
-            onPress={channel.delete}
-            style={[styles.rightSwipeableButton, rightSwipeableButton]}
-          >
-            <Delete pathFill={danger} />
-          </RectButton>
-        </View>
-      )}
+      renderRightActions={(progress, drag) =>
+        renderRightActions ? (
+          renderRightActions(progress, drag)
+        ) : (
+          <View style={[styles.swipeableContainer, swipeableContainer]}>
+            <RectButton
+              onPress={() => {
+                setData({ channel, clientId: client.userID });
+                setOverlay('channelInfo');
+              }}
+              style={[styles.leftSwipeableButton, leftSwipeableButton]}
+            >
+              <MenuPointHorizontal />
+            </RectButton>
+            <RectButton
+              onPress={channel.delete}
+              style={[styles.rightSwipeableButton, rightSwipeableButton]}
+            >
+              <Delete pathFill={danger} />
+            </RectButton>
+          </View>
+        )
+      }
     >
       <TouchableOpacity
         onPress={() => {
           if (onSelect) {
             onSelect(channel);
+            channel.markRead();
           }
         }}
         style={[styles.container, container]}
@@ -253,19 +270,14 @@ const ChannelPreviewMessengerWithContext = <
           </View>
           <View style={[styles.row, row]}>
             <Text numberOfLines={1} style={[styles.message, message]}>
-              <Text style={styles.bold}>
-                {latestMessagePreview.preview.boldIndexEnd
-                  ? latestMessagePreview.preview.text.substring(
-                      0,
-                      latestMessagePreview.preview.boldIndexEnd,
-                    )
-                  : ''}
-              </Text>
-              <Text>
-                {latestMessagePreview.preview.text
-                  .substring(latestMessagePreview.preview.boldIndexEnd)
-                  .replace(/\n/g, ' ')}
-              </Text>
+              {latestMessagePreview.previews.map((preview, index) => (
+                <Text
+                  key={`${preview.text}_${index}`}
+                  style={preview.bold ? styles.bold : {}}
+                >
+                  {preview.text}
+                </Text>
+              ))}
             </Text>
             <View style={styles.flexRow}>
               {status === 2 ? (
@@ -286,65 +298,65 @@ const ChannelPreviewMessengerWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends DefaultChannelType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: ChannelPreviewMessengerPropsWithContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >,
-  nextProps: ChannelPreviewMessengerPropsWithContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >,
-) => {
-  const {
-    channel: prevChannel,
-    latestMessagePreview: prevLatestMessagePreview,
-  } = prevProps;
-  const {
-    channel: nextChannel,
-    latestMessagePreview: nextLatestMessagePreview,
-  } = nextProps;
+// const areEqual = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends DefaultChannelType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: ChannelPreviewMessengerPropsWithContext<
+//     At,
+//     Ch,
+//     Co,
+//     Ev,
+//     Me,
+//     Re,
+//     Us
+//   >,
+//   nextProps: ChannelPreviewMessengerPropsWithContext<
+//     At,
+//     Ch,
+//     Co,
+//     Ev,
+//     Me,
+//     Re,
+//     Us
+//   >,
+// ) => {
+//   const {
+//     channel: prevChannel,
+//     latestMessagePreview: prevLatestMessagePreview,
+//   } = prevProps;
+//   const {
+//     channel: nextChannel,
+//     latestMessagePreview: nextLatestMessagePreview,
+//   } = nextProps;
 
-  const channelEqual =
-    prevChannel.data?.image === nextChannel.data?.image &&
-    prevChannel.data?.name === nextChannel.data?.name &&
-    Object.keys(prevChannel.state.members).every(
-      (memberId) =>
-        nextChannel.state.members[memberId].user?.online ===
-        prevChannel.state.members[memberId].user?.online,
-    );
-  if (!channelEqual) return false;
+//   const channelEqual =
+//     prevChannel.data?.image === nextChannel.data?.image &&
+//     prevChannel.data?.name === nextChannel.data?.name &&
+//     Object.keys(prevChannel.state.members).every(
+//       (memberId) =>
+//         nextChannel.state.members[memberId].user?.online ===
+//         prevChannel.state.members[memberId].user?.online,
+//     );
+//   if (!channelEqual) return false;
 
-  const latestMessagePreviewEqual =
-    prevLatestMessagePreview.preview.text ===
-    nextLatestMessagePreview.preview.text;
-  if (!latestMessagePreviewEqual) return false;
+//   const latestMessagePreviewEqual =
+//     prevLatestMessagePreview.preview.text ===
+//     nextLatestMessagePreview.preview.text;
+//   if (!latestMessagePreviewEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MemoizedChannelPreviewMessenger = React.memo(
-  ChannelPreviewMessengerWithContext,
-  areEqual,
-) as typeof ChannelPreviewMessengerWithContext;
+// const MemoizedChannelPreviewMessenger = React.memo(
+//   ChannelPreviewMessengerWithContext,
+//   areEqual,
+// ) as typeof ChannelPreviewMessengerWithContext;
 
 export type ChannelPreviewMessengerProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -396,7 +408,7 @@ export const ChannelPreviewMessenger = <
   const { setOverlay } = useOverlayContext();
 
   return (
-    <MemoizedChannelPreviewMessenger
+    <ChannelPreviewMessengerWithContext
       {...{ client, onSelect, setData, setOverlay }}
       {...props}
     />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, TextInput, View } from 'react-native';
+import { RefreshControl, StyleSheet, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 
 import { ChannelPreview } from '../ChannelPreview/ChannelPreview';
@@ -10,11 +10,6 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../../contexts/translationContext/TranslationContext';
-import { Search } from '../../icons/Search';
 
 import type { Channel } from 'stream-chat';
 
@@ -66,8 +61,7 @@ export type ChannelListMessengerPropsWithContext<
   | 'HeaderNetworkDownIndicator'
   | 'onSelect'
   | 'Preview'
-> &
-  Pick<TranslationContextValue, 't'>;
+>;
 
 const StatusIndicator = <
   At extends UnknownType = DefaultAttachmentType,
@@ -102,37 +96,37 @@ const StatusIndicator = <
   return null;
 };
 
-const HeaderComponent: React.FC<Pick<TranslationContextValue, 't'>> = ({
-  t,
-}) => {
-  const {
-    theme: {
-      channelListMessenger: { header, searchContainer, searchInput },
-      colors: { textGrey },
-    },
-  } = useTheme();
+// const HeaderComponent: React.FC<Pick<TranslationContextValue, 't'>> = ({
+//   t,
+// }) => {
+//   const {
+//     theme: {
+//       channelListMessenger: { header, searchContainer, searchInput },
+//       colors: { textGrey },
+//     },
+//   } = useTheme();
 
-  return (
-    <View style={[styles.header, header]}>
-      <View style={[styles.searchContainer, searchContainer]}>
-        <Search height={20} width={20} />
-        <TextInput
-          multiline={false}
-          placeholder={t('Search')}
-          placeholderTextColor={textGrey}
-          style={[styles.searchInput, searchInput]}
-        />
-      </View>
-    </View>
-  );
-};
+//   return (
+//     <View style={[styles.header, header]}>
+//       <View style={[styles.searchContainer, searchContainer]}>
+//         <Search height={20} width={20} />
+//         <TextInput
+//           multiline={false}
+//           placeholder={t('Search')}
+//           placeholderTextColor={textGrey}
+//           style={[styles.searchInput, searchInput]}
+//         />
+//       </View>
+//     </View>
+//   );
+// };
 
-HeaderComponent.displayName = 'HeaderComponent{channelListMessenger}';
+// HeaderComponent.displayName = 'HeaderComponent{channelListMessenger}';
 
-const MemoizedHeaderComponent = React.memo(
-  HeaderComponent,
-  () => true,
-) as typeof HeaderComponent;
+// const MemoizedHeaderComponent = React.memo(
+//   HeaderComponent,
+//   () => true,
+// ) as typeof HeaderComponent;
 
 const ChannelListMessengerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -163,7 +157,6 @@ const ChannelListMessengerWithContext = <
     reloadList,
     setFlatListRef,
     Skeleton,
-    t,
   } = props;
 
   const {
@@ -223,9 +216,9 @@ const ChannelListMessengerWithContext = <
         ListFooterComponent={
           loadingNextPage ? <FooterLoadingIndicator /> : undefined
         }
-        ListHeaderComponent={() =>
-          channels.length ? <MemoizedHeaderComponent t={t} /> : null
-        }
+        // ListHeaderComponent={() =>
+        //   channels.length ? <MemoizedHeaderComponent t={t} /> : null
+        // }
         onEndReached={() => {
           if (loadNextPage) {
             loadNextPage();
@@ -358,7 +351,6 @@ export const ChannelListMessenger = <
     setFlatListRef,
     Skeleton,
   } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
 
   return (
     <MemoizedChannelListMessenger
@@ -381,7 +373,6 @@ export const ChannelListMessenger = <
         reloadList,
         setFlatListRef,
         Skeleton,
-        t,
       }}
       {...props}
     />

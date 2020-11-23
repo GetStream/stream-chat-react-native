@@ -70,9 +70,14 @@ const ChannelPreviewWithContext = <
       ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
     >,
   );
+  const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 
-  const latestMessagePreview = useLatestMessagePreview(channel, lastMessage);
+  const latestMessagePreview = useLatestMessagePreview(
+    channel,
+    forceUpdate,
+    lastMessage,
+  );
 
   useEffect(() => {
     const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
@@ -100,6 +105,8 @@ const ChannelPreviewWithContext = <
     const handleReadEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (event.user?.id === client.userID) {
         setUnread(0);
+      } else if (event.user?.id) {
+        setForceUpdate((prev) => prev + 1);
       }
     };
 

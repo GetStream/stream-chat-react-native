@@ -43,7 +43,7 @@ export type LoadingErrorProps = {
   error?: boolean;
   listType?: 'channel' | 'message' | 'default';
   loadNextPage?: () => Promise<void>;
-  retry?: () => Promise<void>;
+  retry?: () => Promise<void> | void;
 };
 
 export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
@@ -64,6 +64,7 @@ export const LoadingErrorIndicator: React.FC<LoadingErrorProps> = (props) => {
     case 'message':
       return (
         <LoadingErrorWrapper
+          onPress={retry}
           text={t('Error loading messages for this channel...')}
         />
       );
