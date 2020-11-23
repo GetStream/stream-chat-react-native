@@ -952,7 +952,15 @@ export const ChannelWithContext = <
   };
 
   if (!channel || error) {
-    return <LoadingErrorIndicator error={error} listType='message' />;
+    return (
+      <LoadingErrorIndicator
+        error={error}
+        listType='message'
+        retry={() => {
+          loadMoreThrottled();
+        }}
+      />
+    );
   }
 
   if (!channel?.cid || !channel.watch) {
