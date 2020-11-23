@@ -81,35 +81,40 @@ const getLatestMessageDisplayText = <
   const members = Object.keys(channel.state.members);
   const owner =
     messageOwnerId === currentUserId
-      ? 'You'
+      ? t('You')
       : members.length > 2
       ? message.user?.name || message.user?.username || message.user?.id || ''
       : '';
-  const ownerText = owner ? `${owner === 'You' ? '' : '@'}${owner}: ` : '';
+  const ownerText = owner ? `${owner === t('You') ? '' : '@'}${owner}: ` : '';
   const boldOwner = ownerText.includes('@');
   if (message.text) {
+    // rough guess optimization to limit string preview to max 100 characters
+    const shortenedText = message.text.substring(0, 100).replace(/\n/g, ' ');
+    const mentionedUsers = Array.isArray(message.mentioned_users)
+      ? message.mentioned_users.reduce((acc, cur) => {
+          const userName = cur.name || cur.id || '';
+          if (userName) {
+            acc += `${acc.length ? '|' : ''}@${userName}`;
+          }
+          return acc;
+        }, '')
+      : '';
+    const regEx = new RegExp(`^(${mentionedUsers})`, 'g');
     return [
       { bold: boldOwner, text: ownerText },
-      ...message.text
-        .replace(/\n/g, ' ')
-        .substring(0, 100) // rough guess optimization to limit string preview to max 100 characters
-        .split('')
-        .reduce(
-          (acc, cur) => {
-            if (cur === '@') {
-              acc.push({ bold: true, text: cur });
-            } else if (
-              cur === ' ' &&
-              acc[acc.length - 1].text.startsWith('@')
-            ) {
-              acc.push({ bold: false, text: cur });
-            } else {
-              acc[acc.length - 1].text += cur;
-            }
-            return acc;
-          },
-          [{ bold: false, text: '' }],
-        ),
+      ...shortenedText.split('').reduce(
+        (acc, cur) => {
+          if (cur === '@') {
+            acc.push({ bold: true, text: cur });
+          } else if (mentionedUsers && regEx.test(acc[acc.length - 1].text)) {
+            acc.push({ bold: false, text: cur });
+          } else {
+            acc[acc.length - 1].text += cur;
+          }
+          return acc;
+        },
+        [{ bold: false, text: '' }],
+      ),
     ];
   }
   if (message.command) {

@@ -185,6 +185,7 @@ export const OverlayProvider = <
                 </Animated.View>
                 {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
                 <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  overlayOpacity={overlayOpacity}
                   visible={overlay === 'channelInfo'}
                 />
                 <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>

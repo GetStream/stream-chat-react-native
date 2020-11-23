@@ -6,14 +6,26 @@ import {
   StyleSheet,
   Text,
   View,
+  ViewStyle,
 } from 'react-native';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import {
+  PanGestureHandler,
+  PanGestureHandlerGestureEvent,
+  State,
+  TapGestureHandler,
+} from 'react-native-gesture-handler';
+import Animated, {
+  cancelAnimation,
   Easing,
+  Extrapolate,
+  interpolate,
   runOnJS,
+  useAnimatedGestureHandler,
+  useAnimatedStyle,
   useSharedValue,
+  withDecay,
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
@@ -30,10 +42,14 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 
 import { Delete } from '../../icons/Delete';
 import { UserMinus } from '../../icons/UserMinus';
-import { vw } from '../../utils/utils';
+import { vh, vw } from '../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -93,6 +109,8 @@ const styles = StyleSheet.create({
   },
 });
 
+const screenHeight = vh(100);
+const halfScreenHeight = vh(50);
 const width = vw(100) - 60;
 
 export type ChannelInfoOverlayPropsWithContext<
@@ -104,8 +122,10 @@ export type ChannelInfoOverlayPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 > = Pick<ChannelInfoOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
+  Pick<TranslationContextValue, 't'> &
   ChannelInfoOverlayData<At, Ch, Co, Ev, Me, Re, Us> &
-  Pick<OverlayContextValue, 'setOverlay'> & {
+  Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
+    overlayOpacity: Animated.SharedValue<number>;
     visible?: boolean;
   };
 
@@ -120,7 +140,16 @@ const ChannelInfoOverlayWithContext = <
 >(
   props: ChannelInfoOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { channel, clientId, reset, setOverlay, visible } = props;
+  const {
+    channel,
+    clientId,
+    overlay,
+    overlayOpacity,
+    reset,
+    setOverlay,
+    t,
+    visible,
+  } = props;
 
   const {
     theme: {
@@ -149,8 +178,9 @@ const ChannelInfoOverlayWithContext = <
   } = useTheme();
 
   const offsetY = useSharedValue(0);
-  const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
+  const translateY = useSharedValue(0);
+  const viewHeight = useSharedValue(0);
 
   const showScreen = useSharedValue(0);
   const fadeScreen = (show: boolean) => {
@@ -190,6 +220,84 @@ const ChannelInfoOverlayWithContext = <
     fadeScreen(!!visible);
   }, [visible]);
 
+  const onPan = useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
+    onActive: (evt) => {
+      translateY.value = offsetY.value + evt.translationY;
+      overlayOpacity.value = interpolate(
+        translateY.value,
+        [0, halfScreenHeight],
+        [1, 0.75],
+        Extrapolate.CLAMP,
+      );
+      scale.value = interpolate(
+        translateY.value,
+        [0, halfScreenHeight],
+        [1, 0.85],
+        Extrapolate.CLAMP,
+      );
+    },
+    onFinish: (evt) => {
+      const finalYPosition = evt.translationY + evt.velocityY * 0.1;
+
+      if (finalYPosition > halfScreenHeight && translateY.value > 0) {
+        cancelAnimation(translateY);
+        overlayOpacity.value = withTiming(
+          0,
+          {
+            duration: 200,
+            easing: Easing.out(Easing.ease),
+          },
+          () => {
+            runOnJS(setOverlay)('none');
+          },
+        );
+        translateY.value =
+          evt.velocityY > 1000
+            ? withDecay({
+                velocity: evt.velocityY,
+              })
+            : withTiming(screenHeight, {
+                duration: 200,
+                easing: Easing.out(Easing.ease),
+              });
+      } else {
+        translateY.value = withTiming(0);
+        scale.value = withTiming(1);
+        overlayOpacity.value = withTiming(1);
+      }
+    },
+    onStart: () => {
+      cancelAnimation(translateY);
+      offsetY.value = translateY.value;
+    },
+  });
+
+  const panStyle = useAnimatedStyle<ViewStyle>(() => ({
+    transform: [
+      {
+        translateY: translateY.value,
+      },
+      {
+        scale: scale.value,
+      },
+    ],
+  }));
+
+  const showScreenStyle = useAnimatedStyle<ViewStyle>(() => ({
+    transform: [
+      {
+        translateY: interpolate(
+          showScreen.value,
+          [0, 1],
+          [viewHeight.value / 2, 0],
+        ),
+      },
+      {
+        scale: showScreen.value,
+      },
+    ],
+  }));
+
   // magic number 8 used as fontSize is 16 so assuming average character width of half
   const maxWidth = channel
     ? Math.floor(
@@ -206,6 +314,7 @@ const ChannelInfoOverlayWithContext = <
           const currentMemberName =
             currentMember.user?.name ||
             currentMember.user?.id ||
+            t('Unknown User') ||
             'Unknown User';
           // a rough approximation of when the +Number shows up
           if (returnStringLength + (currentMemberName.length + 2) < maxWidth) {
@@ -229,106 +338,160 @@ const ChannelInfoOverlayWithContext = <
     : [];
 
   return (
-    <View
+    <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
       style={StyleSheet.absoluteFill}
     >
-      <TapGestureHandler
-        maxDist={32}
-        onHandlerStateChange={({ nativeEvent: { state } }) => {
-          if (state === State.END) {
-            setOverlay('none');
-          }
-        }}
+      <PanGestureHandler
+        enabled={overlay === 'channelInfo'}
+        maxPointers={1}
+        minDist={10}
+        onGestureEvent={onPan}
       >
-        <View style={[styles.container, container]}>
-          {channel && (
-            <View style={[styles.containerInner, containerInner]}>
-              <SafeAreaView>
-                <View style={[styles.detailsContainer, detailsContainer]}>
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.channelName, channelNameStyle]}
-                  >
-                    {channelName}
-                  </Text>
-                  <Text style={[styles.channelStatus, channelStatus]}>
-                    {otherMembers.length === 1
-                      ? otherMembers[0].user?.online
-                        ? 'Online'
-                        : dayjs(otherMembers[0].user?.last_active).fromNow()
-                      : `${
-                          Object.keys(channel.state.members).length
-                        } Members, ${
-                          Object.values(channel.state.members).filter(
-                            (member) => !!member.user?.online,
-                          ).length
-                        } Online`}
-                  </Text>
-                  <FlatList
-                    contentContainerStyle={[
-                      styles.flatListContent,
-                      flatListContent,
-                    ]}
-                    data={Object.values(channel.state.members)
-                      .map((member) => member.user)
-                      .sort((a, b) =>
-                        !!a?.online && !b?.online
-                          ? -1
-                          : a?.id === clientId && b?.id !== clientId
-                          ? -1
-                          : !!a?.online && !!b?.online
-                          ? 0
-                          : 1,
-                      )}
-                    horizontal
-                    keyExtractor={(item, index) => `${item?.id}_${index}`}
-                    renderItem={({ item }) =>
-                      item ? (
-                        <View
-                          style={[styles.userItemContainer, userItemContainer]}
+        <Animated.View style={[StyleSheet.absoluteFillObject]}>
+          <TapGestureHandler
+            maxDist={32}
+            onHandlerStateChange={({ nativeEvent: { state } }) => {
+              if (state === State.END) {
+                setOverlay('none');
+              }
+            }}
+          >
+            <Animated.View style={[styles.container, container, panStyle]}>
+              <Animated.View
+                onLayout={({
+                  nativeEvent: {
+                    layout: { height },
+                  },
+                }) => {
+                  viewHeight.value = height;
+                }}
+                style={[styles.containerInner, containerInner, showScreenStyle]}
+              >
+                <SafeAreaView>
+                  {channel && (
+                    <>
+                      <View style={[styles.detailsContainer, detailsContainer]}>
+                        <Text
+                          numberOfLines={1}
+                          style={[styles.channelName, channelNameStyle]}
                         >
-                          <Avatar
-                            image={item.image}
-                            name={item.name || item.id}
-                            online={item.online}
-                            presenceIndicator={avatarPresenceIndicator}
-                            presenceIndicatorContainerStyle={
-                              avatarPresenceIndicatorStyle
+                          {channelName}
+                        </Text>
+                        <Text style={[styles.channelStatus, channelStatus]}>
+                          {otherMembers.length === 1
+                            ? otherMembers[0].user?.online
+                              ? t('Online')
+                              : dayjs(
+                                  otherMembers[0].user?.last_active,
+                                ).fromNow()
+                            : t(
+                                '{{ channelMembers }} Members, {{ onlineMembers }} Online',
+                                {
+                                  channelMembers: Object.keys(
+                                    channel.state.members,
+                                  ).length,
+                                  onlineMembers: Object.values(
+                                    channel.state.members,
+                                  ).filter((member) => !!member.user?.online)
+                                    .length,
+                                },
+                              )}
+                        </Text>
+                        <FlatList
+                          contentContainerStyle={[
+                            styles.flatListContent,
+                            flatListContent,
+                          ]}
+                          data={Object.values(channel.state.members)
+                            .map((member) => member.user)
+                            .sort((a, b) =>
+                              !!a?.online && !b?.online
+                                ? -1
+                                : a?.id === clientId && b?.id !== clientId
+                                ? -1
+                                : !!a?.online && !!b?.online
+                                ? 0
+                                : 1,
+                            )}
+                          horizontal
+                          keyExtractor={(item, index) => `${item?.id}_${index}`}
+                          renderItem={({ item }) =>
+                            item ? (
+                              <View
+                                style={[
+                                  styles.userItemContainer,
+                                  userItemContainer,
+                                ]}
+                              >
+                                <Avatar
+                                  image={item.image}
+                                  name={item.name || item.id}
+                                  online={item.online}
+                                  presenceIndicator={avatarPresenceIndicator}
+                                  presenceIndicatorContainerStyle={
+                                    avatarPresenceIndicatorStyle
+                                  }
+                                  size={avatarSize}
+                                />
+                                <Text style={[styles.userName, userName]}>
+                                  {item.name || item.id || ''}
+                                </Text>
+                              </View>
+                            ) : null
+                          }
+                          style={[styles.flatList, flatList]}
+                        />
+                      </View>
+                      {otherMembers.length > 1 && (
+                        <TapGestureHandler
+                          onHandlerStateChange={({
+                            nativeEvent: { state },
+                          }) => {
+                            if (state === State.END) {
+                              if (clientId) {
+                                channel.removeMembers([clientId]);
+                              }
+                              setOverlay('none');
                             }
-                            size={avatarSize}
-                          />
-                          <Text style={[styles.userName, userName]}>
-                            {item.name || item.id || ''}
+                          }}
+                        >
+                          <View style={[styles.row, row, leaveGroupRow]}>
+                            <View style={[styles.rowInner, rowInner]}>
+                              <UserMinus pathFill='#7A7A7A' />
+                            </View>
+                            <Text style={[styles.rowText, leaveGroupText]}>
+                              {t('Leave Group')}
+                            </Text>
+                          </View>
+                        </TapGestureHandler>
+                      )}
+                      <TapGestureHandler
+                        onHandlerStateChange={({ nativeEvent: { state } }) => {
+                          if (state === State.END) {
+                            channel.delete();
+                            setOverlay('none');
+                          }
+                        }}
+                      >
+                        <View style={[styles.row, row, deleteRow]}>
+                          <View style={[styles.rowInner, rowInner]}>
+                            <Delete pathFill={danger} />
+                          </View>
+                          <Text style={[styles.rowText, deleteText]}>
+                            {t('Delete')}
                           </Text>
                         </View>
-                      ) : null
-                    }
-                    style={[styles.flatList, flatList]}
-                  />
-                </View>
-                {otherMembers.length > 1 && (
-                  <View style={[styles.row, row, leaveGroupRow]}>
-                    <View style={[styles.rowInner, rowInner]}>
-                      <UserMinus pathFill='#7A7A7A' />
-                    </View>
-                    <Text style={[styles.rowText, leaveGroupText]}>
-                      {'Leave Group'}
-                    </Text>
-                  </View>
-                )}
-                <View style={[styles.row, row, deleteRow]}>
-                  <View style={[styles.rowInner, rowInner]}>
-                    <Delete pathFill={danger} />
-                  </View>
-                  <Text style={[styles.rowText, deleteText]}>{'Delete'}</Text>
-                </View>
-              </SafeAreaView>
-            </View>
-          )}
-        </View>
-      </TapGestureHandler>
-    </View>
+                      </TapGestureHandler>
+                    </>
+                  )}
+                </SafeAreaView>
+              </Animated.View>
+            </Animated.View>
+          </TapGestureHandler>
+        </Animated.View>
+      </PanGestureHandler>
+    </Animated.View>
   );
 };
 
@@ -383,7 +546,16 @@ export type ChannelInfoOverlayProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = Partial<ChannelInfoOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<
+  Omit<
+    ChannelInfoOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'overlayOpacity'
+  >
+> &
+  Pick<
+    ChannelInfoOverlayPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+    'overlayOpacity'
+  >;
 
 /**
  * ChannelInfoOverlay - A high level component which implements all the logic required for a message overlay
@@ -402,8 +574,11 @@ export const ChannelInfoOverlay = <
   const {
     channel: propChannel,
     clientId: propClientId,
+    overlay: propOverlay,
+    overlayOpacity,
     reset: propReset,
     setOverlay: propSetOverlay,
+    t: propT,
     visible,
   } = props;
 
@@ -416,22 +591,31 @@ export const ChannelInfoOverlay = <
     Re,
     Us
   >();
-  const { setOverlay: contextSetOverlay } = useOverlayContext();
+  const {
+    overlay: contextOverlay,
+    setOverlay: contextSetOverlay,
+  } = useOverlayContext();
+  const { t: contextT } = useTranslationContext();
 
   const { channel: contextChannel, clientId: contextClientId } = data || {};
 
   const channel = propChannel || contextChannel;
   const clientId = propClientId || contextClientId;
+  const overlay = propOverlay || contextOverlay;
   const reset = propReset || contextReset;
   const setOverlay = propSetOverlay || contextSetOverlay;
+  const t = propT || contextT;
 
   return (
     <MemoizedChannelInfoOverlay
       {...{
         channel,
         clientId,
+        overlay,
+        overlayOpacity,
         reset,
         setOverlay,
+        t,
         visible,
       }}
     />

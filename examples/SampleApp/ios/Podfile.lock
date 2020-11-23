@@ -314,7 +314,7 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.5.0):
     - React
-  - react-native-netinfo (5.9.7):
+  - react-native-netinfo (5.9.9):
     - React-Core
   - react-native-safe-area-context (3.1.9):
     - React-Core
@@ -384,8 +384,8 @@ PODS:
     - React
   - RNFS (2.16.6):
     - React
-  - RNGestureHandler (1.8.0):
-    - React
+  - RNGestureHandler (1.9.0):
+    - React-Core
   - RNImageCropPicker (0.35.1):
     - React-Core
     - React-RCTImage
@@ -397,7 +397,7 @@ PODS:
     - TOCropViewController
   - RNReactNativeHapticFeedback (1.11.0):
     - React-Core
-  - RNReanimated (2.0.0-alpha.9):
+  - RNReanimated (2.0.0-alpha.9.2):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -655,7 +655,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-document-picker: d870e0a41510b241d5b764e7a2b5ccf129af7967
   react-native-get-random-values: 1404bd5cc0ab0e287f75ee1c489555688fc65f89
-  react-native-netinfo: 250dc0ca126512f618a8a2ca6a936577e1f66586
+  react-native-netinfo: 0212ce8604e88edf686f1481b925b17a42a52449
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
   React-RCTActionSheet: 53ea72699698b0b47a6421cb1c8b4ab215a774aa
   React-RCTAnimation: 1befece0b5183c22ae01b966f5583f42e69a83c2
@@ -670,10 +670,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: b03032fdbdb725bea0bd9e5ec5a7272865ae7398
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
   RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
-  RNReanimated: 51c39025c22b505646c853544600b28f3172cdb5
+  RNReanimated: 174b2c7890664aeb522640bd5b86b464f0abf0ca
   RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
   RNShare: 106a76243ac90f43ddb9028dcb78ade406b8adff
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e

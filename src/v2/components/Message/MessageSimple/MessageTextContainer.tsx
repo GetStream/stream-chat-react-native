@@ -143,6 +143,10 @@ const areEqual = <
   const onlyEmojisEqual = prevOnlyEmojis === nextOnlyEmojis;
   if (!onlyEmojisEqual) return false;
 
+  const mentionedUsersEqual =
+    prevMessage.mentioned_users?.length === nextMessage.mentioned_users?.length;
+  if (!mentionedUsersEqual) return false;
+
   return true;
 };
 

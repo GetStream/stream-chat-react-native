@@ -51,6 +51,10 @@ const defaultMarkdownStyles: MarkdownStyle = {
   },
 };
 
+const parse: ParseFunction = (capture, parse, state) => ({
+  content: parseInline(parse, capture[0], state),
+});
+
 export type MarkdownRules = Partial<DefaultRules>;
 
 export type RenderTextParams<
@@ -91,7 +95,7 @@ export const renderText = <
 
   // take the @ mentions and turn them into markdown?
   // translate links
-  const { text } = message;
+  const { mentioned_users, text } = message;
 
   if (!text) return null;
 
@@ -139,7 +143,17 @@ export const renderText = <
     return link;
   };
 
-  const regEx = new RegExp('^\\B@\\w+', 'g');
+  const mentionedUsers = Array.isArray(mentioned_users)
+    ? mentioned_users.reduce((acc, cur) => {
+        const userName = cur.name || cur.id || '';
+        if (userName) {
+          acc += `${acc.length ? '|' : ''}@${userName}`;
+        }
+        return acc;
+      }, '')
+    : '';
+
+  const regEx = new RegExp(`^\\B(${mentionedUsers})`, 'g');
   const match: MatchFunction = (source) => regEx.exec(source);
   const mentionsReact: ReactNodeOutput = (node, output, { ...state }) =>
     React.createElement(
@@ -152,21 +166,26 @@ export const renderText = <
         ? node.content[0]?.content || ''
         : output(node.content, state),
     );
-  const parse: ParseFunction = (capture, parse, state) => ({
-    content: parseInline(parse, capture[0], state),
-  });
+
+  const customRules = {
+    link: { react },
+    ...(mentionedUsers
+      ? {
+          mentions: {
+            match,
+            order: defaultRules.text.order - 0.5,
+            parse,
+            react: mentionsReact,
+          },
+        }
+      : {}),
+  };
 
   return (
     <Markdown
       onLink={onLink}
       rules={{
-        link: { react },
-        mentions: {
-          match,
-          order: defaultRules.text.order - 0.5,
-          parse,
-          react: mentionsReact,
-        },
+        ...customRules,
         ...markdownRules,
       }}
       styles={styles}

@@ -64,7 +64,11 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: 'row',
   },
-  leftSwipeableButton: { padding: 20 },
+  leftSwipeableButton: {
+    paddingLeft: 20,
+    paddingRight: 10,
+    paddingVertical: 20,
+  },
   message: {
     flexShrink: 1,
     fontSize: 12.5,
@@ -76,7 +80,11 @@ const styles = StyleSheet.create({
     top: 0,
     width: 12,
   },
-  rightSwipeableButton: { paddingRight: 20, paddingVertical: 20 },
+  rightSwipeableButton: {
+    paddingLeft: 10,
+    paddingRight: 20,
+    paddingVertical: 20,
+  },
   row: {
     alignItems: 'center',
     flex: 1,
@@ -222,7 +230,7 @@ const ChannelPreviewMessengerWithContext = <
               <MenuPointHorizontal />
             </RectButton>
             <RectButton
-              onPress={channel.delete}
+              onPress={() => channel.delete()}
               style={[styles.rightSwipeableButton, rightSwipeableButton]}
             >
               <Delete pathFill={danger} />

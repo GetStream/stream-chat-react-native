@@ -239,70 +239,70 @@ const ChannelListMessengerWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const {
-    channels: prevChannels,
-    error: prevError,
-    forceUpdate: prevForceUpdate,
-    loadingChannels: prevLoadingChannels,
-    loadingNextPage: prevLoadingNextPage,
-    refreshing: prevRefreshing,
-  } = prevProps;
-  const {
-    channels: nextChannels,
-    error: nextError,
-    forceUpdate: nextForceUpdate,
-    loadingChannels: nextLoadingChannels,
-    loadingNextPage: nextLoadingNextPage,
-    refreshing: nextRefreshing,
-  } = nextProps;
+// const areEqual = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends UnknownType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+//   nextProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+// ) => {
+//   const {
+//     channels: prevChannels,
+//     error: prevError,
+//     forceUpdate: prevForceUpdate,
+//     loadingChannels: prevLoadingChannels,
+//     loadingNextPage: prevLoadingNextPage,
+//     refreshing: prevRefreshing,
+//   } = prevProps;
+//   const {
+//     channels: nextChannels,
+//     error: nextError,
+//     forceUpdate: nextForceUpdate,
+//     loadingChannels: nextLoadingChannels,
+//     loadingNextPage: nextLoadingNextPage,
+//     refreshing: nextRefreshing,
+//   } = nextProps;
 
-  const refreshingEqual = prevRefreshing === nextRefreshing;
-  if (!refreshingEqual) return false;
+//   const refreshingEqual = prevRefreshing === nextRefreshing;
+//   if (!refreshingEqual) return false;
 
-  const loadingChannelsEqual = prevLoadingChannels === nextLoadingChannels;
-  if (!loadingChannelsEqual) return false;
+//   const loadingChannelsEqual = prevLoadingChannels === nextLoadingChannels;
+//   if (!loadingChannelsEqual) return false;
 
-  const loadingNextPageEqual = prevLoadingNextPage === nextLoadingNextPage;
-  if (!loadingNextPageEqual) return false;
+//   const loadingNextPageEqual = prevLoadingNextPage === nextLoadingNextPage;
+//   if (!loadingNextPageEqual) return false;
 
-  const forceUpdateEqual = prevForceUpdate === nextForceUpdate;
-  if (!forceUpdateEqual) return false;
+//   const forceUpdateEqual = prevForceUpdate === nextForceUpdate;
+//   if (!forceUpdateEqual) return false;
 
-  const errorEqual = prevError === nextError;
-  if (!errorEqual) return false;
+//   const errorEqual = prevError === nextError;
+//   if (!errorEqual) return false;
 
-  const channelsEqual =
-    prevChannels.length === nextChannels.length &&
-    prevChannels.every(
-      (channel, index) =>
-        channel.data?.name === nextChannels[index].data?.name &&
-        Object.keys(channel.state.members).every(
-          (memberId) =>
-            nextChannels[index].state.members[memberId].user?.online ===
-            channel.state.members[memberId].user?.online,
-        ),
-    );
-  if (!channelsEqual) return false;
+//   const channelsEqual =
+//     prevChannels.length === nextChannels.length &&
+//     prevChannels.every(
+//       (channel, index) =>
+//         channel.data?.name === nextChannels[index].data?.name &&
+//         Object.keys(channel.state.members).every(
+//           (memberId) =>
+//             nextChannels[index].state.members[memberId].user?.online ===
+//             channel.state.members[memberId].user?.online,
+//         ),
+//     );
+//   if (!channelsEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MemoizedChannelListMessenger = React.memo(
-  ChannelListMessengerWithContext,
-  areEqual,
-) as typeof ChannelListMessengerWithContext;
+// const MemoizedChannelListMessenger = React.memo(
+//   ChannelListMessengerWithContext,
+//   areEqual,
+// ) as typeof ChannelListMessengerWithContext;
 
 export type ChannelListMessengerProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -353,7 +353,7 @@ export const ChannelListMessenger = <
   } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
-    <MemoizedChannelListMessenger
+    <ChannelListMessengerWithContext
       {...{
         additionalFlatListProps,
         channels,
