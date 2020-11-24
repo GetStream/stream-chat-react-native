@@ -118,12 +118,10 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
 Check out our tutorial on how to build a slack clone using react-native and stream-chat-react-native
 
 <div style="display: inline">
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/4.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/5.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/6.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" />
+  <img src="https://camo.githubusercontent.com/386a2991e444ecff465372637699f1dba6913de1224effbb4b2520ae3a9d7593/68747470733a2f2f73747265616d2d626c6f672d76322e696d6769782e6e65742f626c6f672f77702d636f6e74656e742f75706c6f6164732f38306166346662623734613737613434363536373966363131386166373432372f696d6167652e706e67" alt="IMAGE ALT TEXT HERE"/>
 </div>
 
-- **Tutorial** [https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f](https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f?source=friends_link&sk=b06d7cc0c49bd08bcf398df9c89d48d7)
+- **Tutorial** [https://dev.to/vishalnarkhede/how-to-build-slack-clone-with-react-native-part-2-g5](https://dev.to/vishalnarkhede/how-to-build-slack-clone-with-react-native-part-2-g5)
 
 - **Source code for app**
 
