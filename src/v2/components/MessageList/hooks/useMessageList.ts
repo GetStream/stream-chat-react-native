@@ -107,6 +107,7 @@ export const useMessageList = <
 
   const messagesWithStylesAndRead = messageList
     .asMutable()
+    .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)
     .map((msg) => ({
       ...msg,
       groupStyles: messageGroupStyles[msg.id] || [],
