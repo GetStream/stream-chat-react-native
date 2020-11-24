@@ -12,7 +12,10 @@ import {
   DateSeparatorProps,
   DateSeparator as DefaultDateSeparator,
 } from './DateSeparator';
-import { MessageNotification } from './MessageNotification';
+import {
+  MessageNotification,
+  MessageNotificationProps,
+} from './MessageNotification';
 import {
   MessageSystem as DefaultMessageSystem,
   MessageSystemProps,
@@ -210,6 +213,7 @@ export type MessageListProps<
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
   TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
+  NewMessageNotification?: React.ComponentType<MessageNotificationProps>;
   /** Whether or not the FlatList is inverted. Defaults to true */
   invertedList?: boolean;
 };
@@ -253,6 +257,7 @@ export const MessageList = <
     threadList,
     invertedList = true,
     TypingIndicator = DefaultTypingIndicator,
+    NewMessageNotification = MessageNotification,
   } = props;
 
   const {
@@ -439,7 +444,7 @@ export const MessageList = <
           </TypingIndicatorContainer>
         )}
         {newMessagesNotification && (
-          <MessageNotification
+          <NewMessageNotification
             onPress={goToNewMessages}
             showNotification={newMessagesNotification}
           />
