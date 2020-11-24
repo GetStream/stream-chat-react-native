@@ -989,38 +989,38 @@ export const ChannelWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const { channel: prevChannel, t: prevT } = prevProps;
-  const { channel: nextChannel, t: nextT } = nextProps;
+// const areEqual = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends UnknownType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+//   nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+// ) => {
+//   const { channel: prevChannel, t: prevT } = prevProps;
+//   const { channel: nextChannel, t: nextT } = nextProps;
 
-  const tEqual = prevT === nextT;
-  if (!tEqual) return false;
+//   const tEqual = prevT === nextT;
+//   if (!tEqual) return false;
 
-  const channelEqual =
-    (!!prevChannel &&
-      !!nextChannel &&
-      prevChannel.data?.name === nextChannel.data?.name) ||
-    prevChannel === nextChannel;
-  if (!channelEqual) return false;
+//   const channelEqual =
+//     (!!prevChannel &&
+//       !!nextChannel &&
+//       prevChannel.data?.name === nextChannel.data?.name) ||
+//     prevChannel === nextChannel;
+//   if (!channelEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MemoizedChannel = React.memo(
-  ChannelWithContext,
-  areEqual,
-) as typeof ChannelWithContext;
+// const MemoizedChannel = React.memo(
+//   ChannelWithContext,
+//   areEqual,
+// ) as typeof ChannelWithContext;
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -1054,8 +1054,9 @@ export const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
+  // TODO: Revisit memoization during circle back.
   return (
-    <MemoizedChannel<At, Ch, Co, Ev, Me, Re, Us>
+    <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
       {...{
         client,
         t,
