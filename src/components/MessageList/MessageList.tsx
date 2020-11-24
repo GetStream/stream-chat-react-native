@@ -5,6 +5,8 @@ import {
   ScrollViewProps,
   TouchableOpacity,
   View,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -216,6 +218,7 @@ export type MessageListProps<
   NewMessageNotification?: React.ComponentType<MessageNotificationProps>;
   /** Whether or not the FlatList is inverted. Defaults to true */
   invertedList?: boolean;
+  onListScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 };
 
 /**
@@ -258,6 +261,7 @@ export const MessageList = <
     invertedList = true,
     TypingIndicator = DefaultTypingIndicator,
     NewMessageNotification = MessageNotification,
+    onListScroll,
   } = props;
 
   const {
@@ -368,7 +372,9 @@ export const MessageList = <
     return null;
   };
 
-  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
+  const handleScroll: ScrollViewProps['onScroll'] = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
     const y = event.nativeEvent.contentOffset.y;
     const removeNewMessageNotification = y <= 0;
     if (
@@ -384,6 +390,7 @@ export const MessageList = <
     if (removeNewMessageNotification) {
       setNewMessageNotification(false);
     }
+    onListScroll && onListScroll(event);
   };
 
   const goToNewMessages = () => {
