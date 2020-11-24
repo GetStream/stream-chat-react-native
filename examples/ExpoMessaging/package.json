@@ -34,7 +34,7 @@
     "stream-chat-expo": "link:../../expo-package"
   },
   "devDependencies": {
-    "@babel/core": "7.12.7",
+    "@babel/core": "7.12.8",
     "babel-preset-expo": "8.3.0"
   },
   "private": true
