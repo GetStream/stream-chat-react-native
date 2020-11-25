@@ -165,7 +165,7 @@ export const Thread = <
 
   if (!thread) return null;
 
-  const headerComponent = (
+  const footerComponent = (
     <>
       <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
         alignment={'left'}
@@ -183,7 +183,7 @@ export const Thread = <
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
-        HeaderComponent={headerComponent}
+        FooterComponent={footerComponent}
         threadList
         {...additionalMessageListProps}
       />
