@@ -104,22 +104,20 @@
     "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.8.1",
-    "styled-components": "5.2.0",
-    "uuid": "8.3.1"
+    "stream-chat": "2.8.3",
+    "styled-components": "5.2.0"
   },
   "peerDependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-native": "^0.60.0",
     "react-native-gesture-handler": "^1.7.0",
-    "react-native-get-random-values": "^1.5.0",
     "react-native-reanimated": "^2.0.0-alpha.8",
     "react-native-svg": "^12.1.0"
   },
   "devDependencies": {
     "@babel/cli": "7.12.8",
-    "@babel/core": "7.12.8",
+    "@babel/core": "7.12.9",
     "@babel/plugin-proposal-object-rest-spread": "7.12.1",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.12.7",
@@ -179,6 +177,7 @@
     "stylelint-config-styled-components": "0.1.1",
     "stylelint-processor-styled-components": "1.10.0",
     "typescript": "4.1.2",
+    "uuid": "8.3.1",
     "webpack": "4.44.2"
   },
   "resolutions": {

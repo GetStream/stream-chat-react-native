@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   DateSeparatorProps,
@@ -98,13 +97,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : uuidv4())
+        : Date.now().toString())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return uuidv4();
+  return Date.now().toString();
 };
 
 export type MessageListProps<

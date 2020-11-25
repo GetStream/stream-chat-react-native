@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import 'react-native-gesture-handler';
-import 'react-native-get-random-values';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   LogBox,
