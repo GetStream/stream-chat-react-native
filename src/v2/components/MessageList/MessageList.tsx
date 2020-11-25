@@ -10,7 +10,10 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { MessageNotification } from './MessageNotification';
+import {
+  MessageNotification as DefaultMessageNotification,
+  MessageNotificationProps,
+} from './MessageNotification';
 import {
   MessageSystem as DefaultMessageSystem,
   MessageSystemProps,
@@ -136,12 +139,26 @@ export type MessageListProps<
   >;
   disableWhileEditing?: boolean;
   /**
+   * UI component for footer of message list. By default message list doesn't have any footer.
+   * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+   * used in MessageList. Should be used for header by default if inverted is true or defaulted
+   *
+   */
+  FooterComponent?: React.ReactElement;
+  /**
    * UI component for header of message list. By default message list doesn't have any header.
-   * This is basically a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-   * used in MessageList. Its footer instead of header, since message list is inverted.
+   * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+   * used in MessageList. Should be used for header if inverted is false
    *
    */
   HeaderComponent?: React.ReactElement;
+  /** Whether or not the FlatList is inverted. Defaults to true */
+  inverted?: boolean;
+  /**
+   * Custom UI component to display a notification message
+   * Default component (accepts the same props): [MessageNotification](https://getstream.github.io/stream-chat-react-native/#messagenotification)
+   */
+  MessageNotification?: React.ComponentType<MessageNotificationProps>;
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
@@ -151,6 +168,7 @@ export type MessageListProps<
   >;
   /** Turn off grouping of messages by user */
   noGroupByUser?: boolean;
+  onListScroll?: ScrollViewProps['onScroll'];
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
@@ -210,9 +228,13 @@ export const MessageList = <
   const {
     additionalFlatListProps,
     disableWhileEditing = true,
+    FooterComponent,
     HeaderComponent,
+    inverted = true,
+    MessageNotification = DefaultMessageNotification,
     MessageSystem = DefaultMessageSystem,
     noGroupByUser,
+    onListScroll,
     onThreadSelect,
     setFlatListRef,
     threadList = false,
@@ -253,6 +275,7 @@ export const MessageList = <
   const { t, tDateTimeParser } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+    inverted,
     noGroupByUser,
     threadList,
   });
@@ -373,6 +396,9 @@ export const MessageList = <
     if (removeNewMessageNotification) {
       setNewMessageNotification(false);
     }
+    if (onListScroll) {
+      onListScroll(event);
+    }
   };
 
   const goToNewMessages = () => {
@@ -431,10 +457,11 @@ export const MessageList = <
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
-          inverted
+          inverted={inverted}
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
-          ListFooterComponent={HeaderComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,

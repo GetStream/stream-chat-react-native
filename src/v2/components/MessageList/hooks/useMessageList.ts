@@ -27,6 +27,7 @@ import type {
 import type SeamlessImmutable from 'seamless-immutable';
 
 export type UseMessageListParams = {
+  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
@@ -83,7 +84,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { noGroupByUser, threadList } = params;
+  const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -112,8 +113,9 @@ export const useMessageList = <
       ...msg,
       groupStyles: messageGroupStyles[msg.id] || [],
       readBy: msg.id ? readData[msg.id] || false : false,
-    }))
-    .reverse();
+    }));
 
-  return messagesWithStylesAndRead as Message<At, Ch, Co, Ev, Me, Re, Us>[];
+  return (inverted
+    ? messagesWithStylesAndRead.reverse()
+    : messagesWithStylesAndRead) as Message<At, Ch, Co, Ev, Me, Re, Us>[];
 };
