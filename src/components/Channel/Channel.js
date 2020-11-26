@@ -212,7 +212,7 @@ const Channel = (props) => {
    */
 
   const updateMessage = (updatedMessage, extraState = {}) => {
-    channel.state.addMessageSorted(updatedMessage);
+    channel.state.addMessageSorted(updatedMessage, true);
 
     if (thread && updatedMessage.parent_id) {
       extraState.threadMessages =
