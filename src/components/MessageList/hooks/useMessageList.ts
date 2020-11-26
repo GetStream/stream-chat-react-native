@@ -25,9 +25,9 @@ import type {
 } from '../../../types/types';
 
 export type UseMessageListParams = {
+  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
-  invertedList?: boolean;
 };
 
 export const useMessageList = <
@@ -41,7 +41,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
-  const { noGroupByUser, threadList, invertedList } = params;
+  const { inverted, noGroupByUser, threadList } = params;
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -74,5 +74,5 @@ export const useMessageList = <
         ? readData[msg.id] || []
         : [],
   }));
-  return invertedList ? messagesWithDatesList.reverse() : messagesWithDatesList;
+  return inverted ? messagesWithDatesList.reverse() : messagesWithDatesList;
 };

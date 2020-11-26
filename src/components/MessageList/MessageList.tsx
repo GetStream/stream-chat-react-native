@@ -160,7 +160,10 @@ export type MessageListProps<
    * used in MessageList. Its footer instead of header, since message list is inverted.
    *
    */
+  FooterComponent?: React.ReactElement;
   HeaderComponent?: React.ReactElement;
+  /** Whether or not the FlatList is inverted. Defaults to true */
+  inverted?: boolean;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -210,8 +213,6 @@ export type MessageListProps<
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
   TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
-  /** Whether or not the FlatList is inverted. Defaults to true */
-  invertedList?: boolean;
 };
 
 /**
@@ -244,6 +245,7 @@ export const MessageList = <
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
+    FooterComponent,
     Message: MessageFromProps,
     MessageSystem = DefaultMessageSystem,
     messageActions,
@@ -251,7 +253,7 @@ export const MessageList = <
     onThreadSelect,
     setFlatListRef,
     threadList,
-    invertedList = true,
+    inverted = true,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
@@ -274,9 +276,9 @@ export const MessageList = <
   const { t } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+    inverted,
     noGroupByUser,
     threadList,
-    invertedList,
   });
 
   const flatListRef = useRef<FlatList<
@@ -411,12 +413,11 @@ export const MessageList = <
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
-          inverted={invertedList}
+          inverted={inverted}
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
-          {...(invertedList
-            ? { ListFooterComponent: HeaderComponent }
-            : { ListHeaderComponent: HeaderComponent })}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,
