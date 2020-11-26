@@ -5,8 +5,6 @@ import {
   ScrollViewProps,
   TouchableOpacity,
   View,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,7 +13,7 @@ import {
   DateSeparator as DefaultDateSeparator,
 } from './DateSeparator';
 import {
-  MessageNotification,
+  MessageNotification as DefaultMessageNotification,
   MessageNotificationProps,
 } from './MessageNotification';
 import {
@@ -215,8 +213,8 @@ export type MessageListProps<
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
   TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
-  NewMessageNotification?: React.ComponentType<MessageNotificationProps>;
-  onListScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  MessageNotification?: React.ComponentType<MessageNotificationProps>;
+  onListScroll?: ScrollViewProps['onScroll'];
 };
 
 /**
@@ -257,7 +255,7 @@ export const MessageList = <
     setFlatListRef,
     threadList,
     TypingIndicator = DefaultTypingIndicator,
-    NewMessageNotification = MessageNotification,
+    MessageNotification = DefaultMessageNotification,
     onListScroll,
   } = props;
 
@@ -368,9 +366,7 @@ export const MessageList = <
     return null;
   };
 
-  const handleScroll: ScrollViewProps['onScroll'] = (
-    event: NativeSyntheticEvent<NativeScrollEvent>,
-  ) => {
+  const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const y = event.nativeEvent.contentOffset.y;
     const removeNewMessageNotification = y <= 0;
     if (
@@ -386,7 +382,9 @@ export const MessageList = <
     if (removeNewMessageNotification) {
       setNewMessageNotification(false);
     }
-    onListScroll && onListScroll(event);
+    if (onListScroll) {
+      onListScroll(event);
+    }
   };
 
   const goToNewMessages = () => {
@@ -445,7 +443,7 @@ export const MessageList = <
           </TypingIndicatorContainer>
         )}
         {newMessagesNotification && (
-          <NewMessageNotification
+          <MessageNotification
             onPress={goToNewMessages}
             showNotification={newMessagesNotification}
           />
