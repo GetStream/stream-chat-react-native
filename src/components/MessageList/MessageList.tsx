@@ -174,6 +174,7 @@ export type MessageListProps<
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    */
   messageActions?: boolean | string[];
+  MessageNotification?: React.ComponentType<MessageNotificationProps>;
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
@@ -183,6 +184,7 @@ export type MessageListProps<
   >;
   /** Turn off grouping of messages by user */
   noGroupByUser?: boolean;
+  onListScroll?: ScrollViewProps['onScroll'];
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
@@ -213,8 +215,6 @@ export type MessageListProps<
    * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
    */
   TypingIndicator?: React.ComponentType<TypingIndicatorProps>;
-  MessageNotification?: React.ComponentType<MessageNotificationProps>;
-  onListScroll?: ScrollViewProps['onScroll'];
 };
 
 /**
