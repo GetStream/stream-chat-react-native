@@ -15,6 +15,7 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
+  randomId,
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -684,7 +685,7 @@ export const ChannelWithContext = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${Date.now()}`,
+      id: `${client.userID}-${randomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,

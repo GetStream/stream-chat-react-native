@@ -10,11 +10,11 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
+  randomId,
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
 } from 'stream-chat';
-import { v4 as uuidv4 } from 'uuid';
 
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -456,7 +456,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${uuidv4()}`,
+      id: `${client.userID}-${randomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,

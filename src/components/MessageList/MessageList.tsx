@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   DateSeparatorProps,
@@ -42,7 +41,7 @@ import {
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
-import type { UserResponse } from 'stream-chat';
+import { randomId, UserResponse } from 'stream-chat';
 
 import type { FileIconProps } from '../Attachment/FileIcon';
 import type { ActionSheetStyles } from '../Message/MessageSimple/MessageActionSheet';
@@ -98,13 +97,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : uuidv4())
+        : randomId())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return uuidv4();
+  return randomId();
 };
 
 export type MessageListProps<

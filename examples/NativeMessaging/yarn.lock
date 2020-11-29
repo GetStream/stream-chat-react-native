@@ -7324,10 +7324,10 @@ stream-chat@2.8.1:
     uuid "^8.3.1"
     ws "^7.3.1"
 
-stream-chat@2.8.5-dev.0:
-  version "2.8.5-dev.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.5-dev.0.tgz#3f1ff9c212b879de706efffb7fdec662620b0583"
-  integrity sha512-stDB8i25mmoFY458/IaJ640u7bOXxybfsTZmL5kh7K+Nb+rU6yCUftDnaHICGi+I2yWmpFTFQCwuWfFHyp58Ig==
+stream-chat@2.8.5-dev.1:
+  version "2.8.5-dev.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.5-dev.1.tgz#643fda9e2b59f38ea060d8da47106360185f6634"
+  integrity sha512-K74pwfnGqwnLXtadYZ0oUQ6HR2FZbYkU8BWFNl2qIyfSXOBW4rWBup8M4hnEphJQsi1uaFmx5tTLrqb3UBbqSA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

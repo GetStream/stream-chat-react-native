@@ -104,7 +104,7 @@
     "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.8.5-dev.0",
+    "stream-chat": "2.8.5-dev.1",
     "styled-components": "5.2.0",
     "uuid": "8.3.1"
   },
