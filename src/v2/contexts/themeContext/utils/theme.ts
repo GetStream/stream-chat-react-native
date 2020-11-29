@@ -270,7 +270,8 @@ export type Theme = {
     listContainer: ViewStyle;
     messageNotification: {
       container: ViewStyle;
-      text: TextStyle;
+      unreadCountNotificationContainer: ViewStyle;
+      unreadCountNotificationText: TextStyle;
     };
     messageSystem: {
       container: ViewStyle;
@@ -683,7 +684,8 @@ export const defaultTheme: Theme = {
     listContainer: {},
     messageNotification: {
       container: {},
-      text: {},
+      unreadCountNotificationContainer: {},
+      unreadCountNotificationText: {},
     },
     messageSystem: {
       container: {},

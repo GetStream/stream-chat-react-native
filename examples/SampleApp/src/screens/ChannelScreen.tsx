@@ -121,7 +121,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
 
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   route: {
-    params: { channelId },
+    params: { channelId, messageId },
   },
 }) => {
   const { chatClient } = useContext(AppContext);
@@ -148,6 +148,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           channel={channel}
           disableTypingIndicator
           keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
+          messageId={messageId}
         >
           <ChannelHeader />
           <MessageList<

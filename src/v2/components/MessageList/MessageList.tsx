@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   FlatListProps,
   ScrollViewProps,
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
     width: '100%',
   },
   stickyHeader: {
@@ -226,6 +227,7 @@ export const MessageList = <
     loading,
     LoadingIndicator,
     markRead,
+    reloadChannel,
     StickyHeader,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -234,7 +236,10 @@ export const MessageList = <
     clearEditingState,
     disableTypingIndicator,
     editing,
+    hasMoreRecentMessages,
+    loadingMoreForward,
     loadMore: mainLoadMore,
+    loadMoreForward: mainLoadMoreForward,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
@@ -265,8 +270,10 @@ export const MessageList = <
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
+  const [forceRefreshCount, setForceRefreshCount] = useState(0);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
+  const messageScrollPosition = useRef(0);
   /**
    * In order to prevent the LoadingIndicator component from showing up briefly on mount,
    * we set the loading state one cycle behind to ensure the messages are set before the
@@ -295,8 +302,13 @@ export const MessageList = <
   );
 
   useEffect(() => {
+    setForceRefreshCount((c) => c + 1);
+    setNewMessageNotification(false);
+  }, [disabled]);
+
+  useEffect(() => {
     if (channel) {
-      channel.markRead();
+      // channel.markRead();
     }
   }, [channel]);
 
@@ -324,6 +336,10 @@ export const MessageList = <
           setNewMessageNotification(true);
         }
 
+        if (hasMoreRecentMessages()) {
+          setNewMessageNotification(true);
+        }
+
         // remove the scroll notification when we scroll down...
         if (scrollToBottom && flatListRef.current) {
           flatListRef.current.scrollToIndex({ index: 0 });
@@ -337,29 +353,78 @@ export const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
-  const renderItem = (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const renderItem = (
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+    index: number,
+  ) => {
+    if (!channel) return null;
+    const lastRead = channel?.lastRead();
+
+    let shouldShowUnreadLabel = false;
+    let isUnread = false;
+    if (
+      lastRead &&
+      message.created_at &&
+      messageList &&
+      messageList[index + 1] &&
+      messageList[index + 1].created_at &&
+      lastRead < message.created_at &&
+      // @ts-ignore
+      lastRead >= messageList[index + 1].created_at
+    ) {
+      shouldShowUnreadLabel = true;
+    }
+
+    if (lastRead && message.created_at && lastRead < message.created_at) {
+      isUnread = true;
+    }
     if (message.type === 'system') {
       return <MessageSystem message={message} />;
     }
     if (message.type !== 'message.read') {
       return (
-        <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-          groupStyles={message.groupStyles as GroupType[]}
-          lastReceivedId={
-            lastReceivedId === message.id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          threadList={threadList}
-        />
+        <View
+          style={{
+            backgroundColor: isUnread ? '#F9F9F9' : 'white',
+          }}
+        >
+          {!!shouldShowUnreadLabel && (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 10,
+                width: '100%',
+              }}
+            >
+              <Text style={{ color: '#7D7D7D' }}>Unread Messages</Text>
+            </View>
+          )}
+          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+            groupStyles={message.groupStyles as GroupType[]}
+            lastReceivedId={
+              lastReceivedId === message.id ? lastReceivedId : undefined
+            }
+            message={message}
+            onThreadSelect={onThreadSelect}
+            threadList={threadList}
+          />
+        </View>
       );
     }
     return null;
   };
 
+  const loadMoreRecentMessages = () => {
+    if (hasMoreRecentMessages()) {
+      mainLoadMoreForward();
+    }
+  };
+
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const y = event.nativeEvent.contentOffset.y;
-    const removeNewMessageNotification = y <= 0;
+    const removeNewMessageNotification = y <= 10 && !hasMoreRecentMessages();
+
     if (
       !threadList &&
       removeNewMessageNotification &&
@@ -369,13 +434,29 @@ export const MessageList = <
       markRead();
     }
 
+    if (y <= 10) {
+      messageScrollPosition.current = messageList.length;
+      loadMoreRecentMessages();
+    }
+
     yOffset.current = y;
     if (removeNewMessageNotification) {
       setNewMessageNotification(false);
     }
   };
 
-  const goToNewMessages = () => {
+  const goToNewMessages = async () => {
+    if (hasMoreRecentMessages()) {
+      // flatListRef.current.scrollToIndex({ index: 0 });
+      if (!threadList) markRead();
+      setForceRefreshCount((c) => c + 1);
+      await reloadChannel();
+      setNewMessageNotification(false);
+      flatListRef.current && flatListRef.current.scrollToIndex({ index: 0 });
+
+      return;
+    }
+
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({ index: 0 });
       setNewMessageNotification(false);
@@ -430,25 +511,46 @@ export const MessageList = <
         <FlatList
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={disabled}
+          extraData={forceRefreshCount}
+          initialScrollIndex={
+            hasMoreRecentMessages()
+              ? 3
+              : channel?.countUnread() && channel?.countUnread() > 4
+              ? Math.max(channel?.countUnread() - 1, 0)
+              : 0
+          }
           inverted
           keyboardShouldPersistTaps='handled'
           keyExtractor={keyExtractor}
           ListFooterComponent={HeaderComponent}
+          ListHeaderComponent={() => {
+            if (loadingMoreForward) {
+              return (
+                <View style={{ padding: 10, width: '100%' }}>
+                  <ActivityIndicator color={'black'} size={'small'} />
+                </View>
+              );
+            }
+            return null;
+          }}
           maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: 10,
+            autoscrollToTopThreshold: hasMoreRecentMessages() ? undefined : 10,
             minIndexForVisible: 1,
           }}
           onEndReached={loadMore}
           onScroll={handleScroll}
+          onScrollToIndexFailed={() => {
+            // console.log('Scroll failed --- ', info);
+          }}
           onViewableItemsChanged={updateStickyDate.current}
           ref={(fl) => {
             flatListRef.current = fl;
+
             if (setFlatListRef) {
               setFlatListRef(fl);
             }
           }}
-          renderItem={({ item }) => renderItem(item)}
+          renderItem={({ index, item }) => renderItem(item, index)}
           style={[styles.listContainer, listContainer]}
           testID='message-flat-list'
           viewabilityConfig={{
@@ -468,12 +570,19 @@ export const MessageList = <
             <TypingIndicator />
           </TypingIndicatorContainer>
         )}
-        {newMessagesNotification && (
-          <MessageNotification
-            onPress={goToNewMessages}
-            showNotification={newMessagesNotification}
-          />
-        )}
+        <MessageNotification
+          onPress={goToNewMessages}
+          showNotification={newMessagesNotification}
+          unreadCount={channel?.countUnread()}
+        />
+        {/* <MessageNotification
+          onPress={() => {
+            flatListRef.current?.scrollToIndex({
+              index: 100,
+            });
+          }}
+          unreadCount={channel?.countUnread()}
+        /> */}
         {!isOnline && (
           <View
             style={[styles.errorNotification, errorNotification]}

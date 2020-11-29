@@ -80,6 +80,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { ChannelQueryOptions } from 'stream-chat';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -206,6 +207,7 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    messageId?: string;
   };
 
 export const ChannelWithContext = <
@@ -251,6 +253,7 @@ export const ChannelWithContext = <
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     markdownRules,
+    messageId,
     Message = MessageDefault,
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
@@ -305,12 +308,23 @@ export const ChannelWithContext = <
   >();
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [members, setMembers] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+
+  const [loadingMoreForward, setLoadingMoreForward] = useState(false);
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >(Immutable([]));
+  const hasMoreRecentMessages = () =>
+    !!channel?.state.last_message_at &&
+    !!channel.state.messages[channel.state.messages.length - 1] &&
+    !!channel.state.messages[channel.state.messages.length - 1].created_at &&
+    channel?.state.last_message_at >
+      channel.state.messages[
+        channel.state.messages.length - 1
+      ].created_at.asMutable();
+
+  const [members, setMembers] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
+  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
@@ -336,7 +350,15 @@ export const ChannelWithContext = <
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
 
   useEffect(() => {
-    if (channel) initChannel();
+    if (channel) {
+      if (messageId) {
+        loadChannelAtMessage(messageId);
+      } else if (channel.countUnread() > 0) {
+        loadUnreadChannel();
+      } else {
+        loadChannel();
+      }
+    }
 
     return () => {
       client.off('connection.recovered', handleEvent);
@@ -413,9 +435,9 @@ export const ChannelWithContext = <
       setWatcherCount(channel.state.watcher_count);
       setWatchers(channel.state.watchers);
 
-      if (channel.countUnread() > 0) {
-        markReadThrottled();
-      }
+      // if (channel.countUnread() > 0) {
+      //   markReadThrottled();
+      // }
     }
   };
 
@@ -481,12 +503,116 @@ export const ChannelWithContext = <
     channel?.on(handleEvent);
   };
 
-  const initChannel = async () => {
+  const loadUnreadChannel = async () => {
+    if (!channel) return;
+
+    if (channel.countUnread() <= 20 || hasMoreRecentMessages()) {
+      return loadChannel();
+    }
+
     let initError = false;
     setError(false);
     setLoading(true);
 
-    if (channel && !channel.initialized && channel.cid) {
+    // initialScrollPosition on FlatList doesn't work well if the index is outside view window, since
+    // it doesn't exactly know the offset of the index. Thus as a workaround, we are going to slice the messagelist
+    // to ensure that first unread message is in initial loaded viewframe. And then user can load more recent messages
+    // by scrolling down.
+    if (channel.state.messages.length >= channel.countUnread()) {
+      channel.state.messages = channel.state.messages.slice(
+        0,
+        Math.max(channel.state.messages.length - channel.countUnread() + 2, 10),
+      );
+    } else {
+      const queryOptions: ChannelQueryOptions<Ch, Co, Us> = {
+        messages: {
+          limit: 20,
+          offset: Math.max(channel.countUnread() - 10, 0),
+        },
+      };
+
+      try {
+        if (!channel.initialized) {
+          await channel.watch(queryOptions);
+        } else {
+          channel.state.clearMessages();
+          await channel.query(queryOptions);
+        }
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+        initError = true;
+      }
+      setLastRead(new Date());
+    }
+
+    if (!initError) {
+      copyChannelState();
+      listenToChanges();
+    }
+  };
+
+  const loadChannelAtMessage = async (messageId?: string) => {
+    let initError = false;
+    setError(false);
+    setLoading(true);
+
+    if (!channel) return;
+
+    // TODO: Replace following two queries with single query, when backend support is ready.
+    const queryOptions1:
+      | ChannelQueryOptions<Ch, Co, Us>
+      | Record<string, unknown> = messageId
+      ? {
+          messages: {
+            id_lt: messageId,
+            limit: 10,
+          },
+        }
+      : {};
+
+    const queryOptions2:
+      | ChannelQueryOptions<Ch, Co, Us>
+      | Record<string, unknown> = messageId
+      ? {
+          messages: {
+            id_gte: messageId,
+            limit: 5,
+          },
+        }
+      : {};
+
+    try {
+      if (!channel.initialized) {
+        await channel.watch(queryOptions1);
+        await channel.query(queryOptions2);
+      } else {
+        channel.state.clearMessages();
+        await channel.query(queryOptions1);
+        await channel.query(queryOptions2);
+      }
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+      initError = true;
+    }
+
+    setLastRead(new Date());
+
+    if (!initError) {
+      copyChannelState();
+      listenToChanges();
+    }
+  };
+
+  const loadChannel = async () => {
+    let initError = false;
+    setError(false);
+    setLoading(true);
+
+    if (!channel) return;
+
+    if (!channel.initialized) {
       try {
         await channel.watch();
       } catch (err) {
@@ -497,6 +623,7 @@ export const ChannelWithContext = <
     }
 
     setLastRead(new Date());
+
     if (!initError) {
       copyChannelState();
       listenToChanges();
@@ -517,6 +644,12 @@ export const ChannelWithContext = <
     actionProps.reactionsEnabled = reactions;
     actionProps.repliesEnabled = replies;
   }
+
+  const reloadChannel = () => {
+    if (!channel) return;
+
+    return loadChannelAtMessage();
+  };
 
   const updateMessage: MessagesContextValue<
     At,
@@ -652,6 +785,9 @@ export const ChannelWithContext = <
       attachments: message.attachments || [],
     });
 
+    if (hasMoreRecentMessages()) {
+      await reloadChannel();
+    }
     updateMessage(messagePreview, {
       commands: [],
       messageInput: '',
@@ -689,6 +825,23 @@ export const ChannelWithContext = <
     trailing: true,
   });
 
+  const loadMoreForwardFinished = (
+    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+  ) => {
+    setLoadingMoreForward(false);
+    setMessages(newMessages);
+  };
+
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreForwardFinishedDebounced = debounce(
+    loadMoreForwardFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
+
   const loadMore = async () => {
     if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
@@ -721,6 +874,38 @@ export const ChannelWithContext = <
     }
   };
 
+  const loadMoreForward = async () => {
+    if (loadingMoreForward || hasMoreRecentMessages() === false) {
+      return;
+    }
+    setLoadingMoreForward(true);
+
+    if (!messages.length) {
+      return setLoadingMoreForward(false);
+    }
+
+    const recentMessage = messages && messages[messages.length - 1];
+
+    if (recentMessage && recentMessage.status !== 'received') {
+      return setLoadingMoreForward(false);
+    }
+
+    const recentId = recentMessage && recentMessage.id;
+    const limit = 20;
+    try {
+      if (channel) {
+        await channel.query({
+          messages: { id_gt: recentId, limit },
+        });
+
+        loadMoreForwardFinishedDebounced(channel.state.messages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      return setLoadingMoreForward(false);
+    }
+  };
+
   const loadMoreThrottled: MessagesContextValue<
     At,
     Ch,
@@ -730,6 +915,18 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMore'] = throttle(loadMore, 2000, {
+    leading: true,
+    trailing: true,
+  });
+  const loadMoreForwardThrottled: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMore'] = throttle(loadMoreForward, 2000, {
     leading: true,
     trailing: true,
   });
@@ -889,6 +1086,7 @@ export const ChannelWithContext = <
     markRead: markReadThrottled,
     members,
     read,
+    reloadChannel,
     setLastRead,
     StickyHeader,
     typing,
@@ -917,8 +1115,11 @@ export const ChannelWithContext = <
     Gallery,
     Giphy,
     hasMore,
+    hasMoreRecentMessages,
     loadingMore,
+    loadingMoreForward,
     loadMore: loadMoreThrottled,
+    loadMoreForward: loadMoreForwardThrottled,
     markdownRules,
     Message,
     MessageAvatar,

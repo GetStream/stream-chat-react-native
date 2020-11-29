@@ -317,7 +317,6 @@ export const AutoCompleteInput = <
         }}
         onContentSizeChange={(e) => {
           setInputHeight(e.nativeEvent.contentSize.height);
-          console.warn('changed ', e.nativeEvent.contentSize.height);
         }}
         onSelectionChange={handleSelectionChange}
         placeholder={t('Write your message')}

@@ -79,7 +79,7 @@ const areEqual = <
   if (!channelEqual) return false;
 
   const clientEqual =
-    prevClient.UUID === nextClient.UUID &&
+    prevClient.clientID === nextClient.clientID &&
     Object.keys(prevClient.activeChannels).length ===
       Object.keys(nextClient.activeChannels).length &&
     Object.keys(prevClient.listeners).length ===

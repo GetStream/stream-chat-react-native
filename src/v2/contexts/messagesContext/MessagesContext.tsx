@@ -131,8 +131,12 @@ export type MessagesContextValue<
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
+  hasMoreRecentMessages: () => boolean;
   loadingMore: boolean;
+  loadingMoreForward: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
+  loadMoreForward: DebouncedFunc<() => Promise<void>>;
+
   Message: React.ComponentType<MessageProps>;
   /**
    * Custom UI component for the avatar next to a message

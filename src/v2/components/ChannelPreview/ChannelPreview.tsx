@@ -11,12 +11,7 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 
-import type {
-  Channel,
-  ChannelState,
-  Event,
-  MessageResponse,
-} from 'stream-chat';
+import type { Channel, ChannelState, Event } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -63,8 +58,7 @@ const ChannelPreviewWithContext = <
   const { channel, client, Preview } = props;
 
   const [lastMessage, setLastMessage] = useState<
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>
+    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
   >(
     channel.state.messages[channel.state.messages.length - 1] as ReturnType<
       ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
@@ -82,7 +76,7 @@ const ChannelPreviewWithContext = <
   useEffect(() => {
     const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (event.message) {
-        setLastMessage(event.message);
+        setLastMessage(channel.state.messageToImmutable(event.message));
       }
 
       if (event.type === 'message.new') {

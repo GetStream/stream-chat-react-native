@@ -97,6 +97,8 @@ const MessageSimpleWithContext = <
         {
           justifyContent: alignment === 'left' ? 'flex-start' : 'flex-end',
           marginBottom: hasMarginBottom ? (isVeryLastMessage ? 30 : 8) : 0,
+          marginLeft: alignment === 'left' ? 10 : 0,
+          marginRight: alignment === 'left' ? 0 : 10,
           marginTop: showReactions ? 2 : 0,
         },
         container,
