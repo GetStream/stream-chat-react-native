@@ -224,6 +224,7 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
+    initialScrollToFirstUnreadMessage,
     loading,
     LoadingIndicator,
     markRead,
@@ -270,7 +271,9 @@ export const MessageList = <
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
-  const [forceRefreshCount, setForceRefreshCount] = useState(0);
+  const [lastMessageListLength, setLastMessageListLength] = useState(
+    messageList.length,
+  );
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   const messageScrollPosition = useRef(0);
@@ -302,13 +305,12 @@ export const MessageList = <
   );
 
   useEffect(() => {
-    setForceRefreshCount((c) => c + 1);
     setNewMessageNotification(false);
   }, [disabled]);
 
   useEffect(() => {
-    if (channel) {
-      // channel.markRead();
+    if (channel && channel.countUnread() <= 4) {
+      channel.markRead();
     }
   }, [channel]);
 
@@ -320,19 +322,19 @@ export const MessageList = <
     const currentLastMessage = getLastReceivedMessage(messageList);
     if (currentLastMessage) {
       const currentLastReceivedId = currentLastMessage.id;
+      const currentMessageListLength = messageList.length;
       if (currentLastReceivedId) {
-        const hasNewMessage = lastReceivedId !== currentLastReceivedId;
+        const hasNewMessage =
+          lastReceivedId !== currentLastReceivedId &&
+          lastMessageListLength - currentMessageListLength === 1;
         const userScrolledUp = yOffset.current > 0;
         const isOwner =
           currentLastMessage &&
           client &&
           currentLastMessage.user?.id === client.userID;
 
-        // always scroll down when it's your own message that you added..
-        const scrollToBottom = hasNewMessage && (isOwner || !userScrolledUp);
-
         // Check the scroll position... if you're scrolled up show a little notification
-        if (!scrollToBottom && hasNewMessage && !newMessagesNotification) {
+        if (hasNewMessage && (!isOwner || userScrolledUp)) {
           setNewMessageNotification(true);
         }
 
@@ -340,13 +342,22 @@ export const MessageList = <
           setNewMessageNotification(true);
         }
 
+        // always scroll down when it's your own message that you added..
+        const scrollToBottom =
+          !hasMoreRecentMessages() &&
+          hasNewMessage &&
+          (isOwner || !userScrolledUp);
+
         // remove the scroll notification when we scroll down...
         if (scrollToBottom && flatListRef.current) {
           flatListRef.current.scrollToIndex({ index: 0 });
           setNewMessageNotification(false);
         }
 
-        if (hasNewMessage) setLastReceivedId(currentLastReceivedId);
+        if (hasNewMessage) {
+          setLastReceivedId(currentLastReceivedId);
+          setLastMessageListLength(messageList.length);
+        }
       }
     }
   }, [messageList]);
@@ -434,7 +445,7 @@ export const MessageList = <
       markRead();
     }
 
-    if (y <= 10) {
+    if (y <= 30) {
       messageScrollPosition.current = messageList.length;
       loadMoreRecentMessages();
     }
@@ -449,7 +460,6 @@ export const MessageList = <
     if (hasMoreRecentMessages()) {
       // flatListRef.current.scrollToIndex({ index: 0 });
       if (!threadList) markRead();
-      setForceRefreshCount((c) => c + 1);
       await reloadChannel();
       setNewMessageNotification(false);
       flatListRef.current && flatListRef.current.scrollToIndex({ index: 0 });
@@ -511,11 +521,13 @@ export const MessageList = <
         <FlatList
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={forceRefreshCount}
+          extraData={disabled}
           initialScrollIndex={
             hasMoreRecentMessages()
-              ? 3
-              : channel?.countUnread() && channel?.countUnread() > 4
+              ? 1
+              : initialScrollToFirstUnreadMessage &&
+                channel?.countUnread() &&
+                channel?.countUnread() > 6
               ? Math.max(channel?.countUnread() - 1, 0)
               : 0
           }
@@ -534,7 +546,7 @@ export const MessageList = <
             return null;
           }}
           maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: hasMoreRecentMessages() ? undefined : 10,
+            autoscrollToTopThreshold: hasMoreRecentMessages() ? -1000 : -1000,
             minIndexForVisible: 1,
           }}
           onEndReached={loadMore}

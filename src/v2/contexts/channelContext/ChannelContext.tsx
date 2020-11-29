@@ -29,6 +29,7 @@ export type ChannelContextValue<
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
+  initialScrollToFirstUnreadMessage: boolean;
   /**
    * Returns true if the current user has admin privileges
    */

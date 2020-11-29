@@ -87,6 +87,8 @@ const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
 
+export const limitForUnreadScrolledUp = 6;
+
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -182,6 +184,10 @@ export type ChannelPropsWithContext<
         StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
       >[0],
     ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+    /**
+     * When true, messagelist will be scrolled at first unread message, when opened.
+     */
+    initialScrollToFirstUnreadMessage?: boolean;
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
@@ -248,6 +254,7 @@ export const ChannelWithContext = <
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
+    initialScrollToFirstUnreadMessage = false,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
@@ -354,7 +361,10 @@ export const ChannelWithContext = <
     if (channel) {
       if (messageId) {
         loadChannelAtMessage(messageId);
-      } else if (channel.countUnread() > 0) {
+      } else if (
+        initialScrollToFirstUnreadMessage &&
+        channel.countUnread() > 0
+      ) {
         loadUnreadChannel();
       } else {
         loadChannel();
@@ -435,10 +445,6 @@ export const ChannelWithContext = <
       setTyping(channel.state.typing);
       setWatcherCount(channel.state.watcher_count);
       setWatchers(channel.state.watchers);
-
-      // if (channel.countUnread() > 0) {
-      //   markReadThrottled();
-      // }
     }
   };
 
@@ -507,7 +513,10 @@ export const ChannelWithContext = <
   const loadUnreadChannel = async () => {
     if (!channel) return;
 
-    if (channel.countUnread() <= 20 || hasMoreRecentMessages()) {
+    if (
+      channel.countUnread() <= limitForUnreadScrolledUp ||
+      hasMoreRecentMessages()
+    ) {
       return loadChannel();
     }
 
@@ -522,13 +531,19 @@ export const ChannelWithContext = <
     if (channel.state.messages.length >= channel.countUnread()) {
       channel.state.messages = channel.state.messages.slice(
         0,
-        Math.max(channel.state.messages.length - channel.countUnread() + 2, 10),
+        Math.max(
+          channel.state.messages.length - channel.countUnread() + 2,
+          limitForUnreadScrolledUp / 2,
+        ),
       );
     } else {
       const queryOptions: ChannelQueryOptions<Ch, Co, Us> = {
         messages: {
-          limit: 20,
-          offset: Math.max(channel.countUnread() - 10, 0),
+          limit: limitForUnreadScrolledUp,
+          offset: Math.max(
+            channel.countUnread() - limitForUnreadScrolledUp / 2,
+            0,
+          ),
         },
       };
 
@@ -1078,6 +1093,7 @@ export const ChannelWithContext = <
     EmptyStateIndicator,
     error,
     eventHistory,
+    initialScrollToFirstUnreadMessage,
     isAdmin,
     isModerator,
     isOwner,
