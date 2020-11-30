@@ -6718,10 +6718,10 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-reanimated@2.0.0-alpha.9.2:
-  version "2.0.0-alpha.9.2"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-alpha.9.2.tgz#97ac3ced7f7e080d4a6464e14e1953f3583bb228"
-  integrity sha512-JaxvSxpgkF4mjtC/3z4SFIbalTI8/yQpJJdvUA0IDOy3P3/EdRc9FlAsECV/oTkMvHEDOyWAfc9J07UyX/oymg==
+react-native-reanimated@2.0.0-rc.0:
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-rc.0.tgz#7a1b0bfd48e3de9dfa985a524463b6a216531358"
+  integrity sha512-v+SMpeSxQ8kO116B5q3/D6VlFSot4eIRASw0nxxU+6zh9wb4W8shMyQi7/ag/gt246FvjBZOPwxsBS2iTcw8Zg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^3.0.0"
@@ -7536,10 +7536,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.8.3:
-  version "2.8.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.3.tgz#515b7b7b1d2ad6f85053c8cc0d4d5d363f86cb8c"
-  integrity sha512-sO2BKJDhW1UxAxyJtEOK8gmUdDo+etvrHt6GwwOobtwnByIB2+xSNUy90rNf4NzEMAIEhvI/UUn4tu8SNLu3SA==
+stream-chat@2.8.4:
+  version "2.8.4"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.4.tgz#3c361ff59420665a157c01fe8b4758bd1822b475"
+  integrity sha512-dndpzeXST3s051SVR3oR0ComFbmbuLW76kVPh9FMBri6TmFhCfhyjaIuCZuyWPnToKssZHW3asKEXXAgzgsRAg==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

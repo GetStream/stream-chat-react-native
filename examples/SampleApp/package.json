@@ -26,12 +26,12 @@
     "react-native-haptic-feedback": "^1.11.0",
     "react-native-image-crop-picker": "0.35.1",
     "react-native-markdown-package": "1.8.1",
-    "react-native-reanimated": "2.0.0-alpha.9.2",
+    "react-native-reanimated": "2.0.0-rc.0",
     "react-native-safe-area-context": "3.1.9",
     "react-native-screens": "2.15.0",
     "react-native-share": "4.1.0",
     "react-native-svg": "12.1.0",
-    "stream-chat": "2.8.3",
+    "stream-chat": "2.8.4",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {

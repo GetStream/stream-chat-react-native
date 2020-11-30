@@ -73,6 +73,13 @@ export const ChannelListScreen: React.FC = () => {
               LocalResponseType,
               LocalUserType
             >
+              additionalFlatListProps={{
+                getItemLayout: (data, index) => ({
+                  length: 65,
+                  offset: 65 * index,
+                  index,
+                }),
+              }}
               filters={{
                 ...filters,
                 members: {
