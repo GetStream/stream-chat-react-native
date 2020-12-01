@@ -15,7 +15,6 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
-  randomId,
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -81,13 +80,13 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { ChannelQueryOptions } from 'stream-chat';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
 
-export const limitForUnreadScrolledUp = 6;
+export const limitForUnreadScrolledUp = 4;
 
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -365,7 +364,7 @@ export const ChannelWithContext = <
         initialScrollToFirstUnreadMessage &&
         channel.countUnread() > 0
       ) {
-        loadUnreadChannel();
+        loadChannelAtFirstUnreadMessage();
       } else {
         loadChannel();
       }
@@ -467,17 +466,7 @@ export const ChannelWithContext = <
     }
   };
 
-  const handleEventStateChange = (
-    channelState: ChannelState<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
-    setMessages(channelState.messages);
-    setRead(channelState.read);
-    setTyping(channelState.typing);
-    setWatcherCount(channelState.watcher_count);
-    setWatchers(channelState.watchers);
-  };
-
-  const handleEventStateThrottled = throttle(handleEventStateChange, 500, {
+  const handleEventStateThrottled = throttle(copyChannelState, 500, {
     leading: true,
     trailing: true,
   });
@@ -499,7 +488,7 @@ export const ChannelWithContext = <
     if (event.type === 'member.removed') addToEventHistory(event);
 
     if (channel) {
-      handleEventStateThrottled(channel.state);
+      handleEventStateThrottled();
     }
   };
 
@@ -510,103 +499,13 @@ export const ChannelWithContext = <
     channel?.on(handleEvent);
   };
 
-  const loadUnreadChannel = async () => {
-    if (!channel) return;
-
-    if (
-      channel.countUnread() <= limitForUnreadScrolledUp ||
-      hasMoreRecentMessages()
-    ) {
-      return loadChannel();
-    }
-
+  const channelQueryCall = async (queryCall: () => void = () => null) => {
     let initError = false;
     setError(false);
     setLoading(true);
-
-    // initialScrollPosition on FlatList doesn't work well if the index is outside view window, since
-    // it doesn't exactly know the offset of the index. Thus as a workaround, we are going to slice the messagelist
-    // to ensure that first unread message is in initial loaded viewframe. And then user can load more recent messages
-    // by scrolling down.
-    if (channel.state.messages.length >= channel.countUnread()) {
-      channel.state.messages = channel.state.messages.slice(
-        0,
-        Math.max(
-          channel.state.messages.length - channel.countUnread() + 2,
-          limitForUnreadScrolledUp / 2,
-        ),
-      );
-    } else {
-      const queryOptions: ChannelQueryOptions<Ch, Co, Us> = {
-        messages: {
-          limit: limitForUnreadScrolledUp,
-          offset: Math.max(
-            channel.countUnread() - limitForUnreadScrolledUp / 2,
-            0,
-          ),
-        },
-      };
-
-      try {
-        if (!channel.initialized) {
-          await channel.watch(queryOptions);
-        } else {
-          channel.state.clearMessages();
-          await channel.query(queryOptions);
-        }
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-        initError = true;
-      }
-      setLastRead(new Date());
-    }
-
-    if (!initError) {
-      copyChannelState();
-      listenToChanges();
-    }
-  };
-
-  const loadChannelAtMessage = async (messageId?: string) => {
-    let initError = false;
-    setError(false);
-    setLoading(true);
-
-    if (!channel) return;
-
-    // TODO: Replace following two queries with single query, when backend support is ready.
-    const queryOptions1:
-      | ChannelQueryOptions<Ch, Co, Us>
-      | Record<string, unknown> = messageId
-      ? {
-          messages: {
-            id_lt: messageId,
-            limit: 10,
-          },
-        }
-      : {};
-
-    const queryOptions2:
-      | ChannelQueryOptions<Ch, Co, Us>
-      | Record<string, unknown> = messageId
-      ? {
-          messages: {
-            id_gte: messageId,
-            limit: 5,
-          },
-        }
-      : {};
 
     try {
-      if (!channel.initialized) {
-        await channel.watch(queryOptions1);
-        await channel.query(queryOptions2);
-      } else {
-        channel.state.clearMessages();
-        await channel.query(queryOptions1);
-        await channel.query(queryOptions2);
-      }
+      await queryCall();
     } catch (err) {
       setError(err);
       setLoading(false);
@@ -621,28 +520,112 @@ export const ChannelWithContext = <
     }
   };
 
-  const loadChannel = async () => {
-    let initError = false;
-    setError(false);
-    setLoading(true);
-
+  const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
 
-    if (!channel.initialized) {
-      try {
-        await channel.watch();
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-        initError = true;
-      }
+    if (
+      channel.countUnread() <= limitForUnreadScrolledUp ||
+      !channel.state.isUpToDate
+    ) {
+      return loadChannel();
     }
 
-    setLastRead(new Date());
+    channel.state.setIsUptoDate(false);
 
-    if (!initError) {
-      copyChannelState();
-      listenToChanges();
+    return channelQueryCall(() =>
+      queryBeforeOffset(
+        Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
+        30,
+      ),
+    );
+  };
+
+  /**
+   * Loads channel at specific message
+   *
+   * @param messageId If undefined, channel will be loaded at moest recent message.
+   * @param before Number of message to query before messageId
+   * @param after Number of message to query after messageId
+   */
+  const loadChannelAtMessage = (messageId?: string, before = 10, after = 2) =>
+    channelQueryCall(() => queryAtMessage(messageId, before, after));
+
+  const loadChannel = () => channelQueryCall(() => channel?.watch());
+
+  const reloadChannel = () => {
+    if (!channel) return;
+
+    return loadChannelAtMessage(undefined, 30);
+  };
+
+  const queryBeforeOffset = async (offset = 0, limit = 30) => {
+    if (!channel) return;
+    channel.state.clearMessages();
+
+    await channel.query({
+      messages: {
+        limit,
+        offset,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(offset === 0);
+  };
+
+  const queryAtMessage = async (
+    messageId?: string,
+    before = 10,
+    after = 10,
+  ) => {
+    if (!channel) return;
+    channel.state.setIsUptoDate(false);
+    channel.state.clearMessages();
+
+    if (!messageId) {
+      channel.query({
+        messages: {
+          limit: before,
+        },
+        watch: true,
+      });
+
+      channel.state.setIsUptoDate(true);
+      return;
+    }
+
+    await queryBeforeMessage(messageId, before);
+    await queryAfterMessage(messageId, after);
+  };
+
+  const queryBeforeMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+
+    await channel.query({
+      messages: {
+        id_lt: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(false);
+  };
+
+  const queryAfterMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+    const state = await channel.query({
+      messages: {
+        id_gte: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    if (state.messages.length < limit) {
+      channel.state.setIsUptoDate(true);
+    } else {
+      channel.state.setIsUptoDate(false);
     }
   };
 
@@ -660,12 +643,6 @@ export const ChannelWithContext = <
     actionProps.reactionsEnabled = reactions;
     actionProps.repliesEnabled = replies;
   }
-
-  const reloadChannel = () => {
-    if (!channel) return;
-
-    return loadChannelAtMessage();
-  };
 
   const updateMessage: MessagesContextValue<
     At,
@@ -700,7 +677,7 @@ export const ChannelWithContext = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${randomId()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
@@ -801,9 +778,10 @@ export const ChannelWithContext = <
       attachments: message.attachments || [],
     });
 
-    if (hasMoreRecentMessages()) {
+    if (!channel?.state.isUpToDate) {
       await reloadChannel();
     }
+
     updateMessage(messagePreview, {
       commands: [],
       messageInput: '',
@@ -891,7 +869,7 @@ export const ChannelWithContext = <
   };
 
   const loadMoreForward = async () => {
-    if (loadingMoreForward || hasMoreRecentMessages() === false) {
+    if (loadingMoreForward || channel?.state.isUpToDate) {
       return;
     }
     setLoadingMoreForward(true);
@@ -907,12 +885,9 @@ export const ChannelWithContext = <
     }
 
     const recentId = recentMessage && recentMessage.id;
-    const limit = 20;
     try {
       if (channel) {
-        await channel.query({
-          messages: { id_gt: recentId, limit },
-        });
+        await queryAfterMessage(recentId, 20);
 
         loadMoreForwardFinishedDebounced(channel.state.messages);
       }
@@ -1000,7 +975,6 @@ export const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-
   const openThread: ThreadContextValue<
     At,
     Ch,

@@ -243,7 +243,6 @@ const ChannelPreviewMessengerWithContext = <
         onPress={() => {
           if (onSelect) {
             onSelect(channel);
-            // channel.markRead();
           }
         }}
         style={[styles.container, container]}

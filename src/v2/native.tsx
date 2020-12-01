@@ -1,4 +1,8 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type {
+  FlatList as DefaultFlatList,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import type { NetInfoSubscription } from '@react-native-community/netinfo';
 
 const fail = () => {
@@ -23,6 +27,8 @@ type NetInfo = {
   ) => NetInfoSubscription | never;
   fetch: (requestedInterface?: string | undefined) => Promise<boolean> | never;
 };
+
+export let FlatList: DefaultFlatList | null = null;
 
 export let NetInfo: NetInfo = {
   addEventListener: fail,
@@ -81,6 +87,7 @@ type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
 type Handlers = {
+  FlatList: DefaultFlatList | null;
   BlurView?: BlurView;
   deleteFile?: DeleteFile;
   NetInfo?: NetInfo;
@@ -100,6 +107,9 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     deleteFile = handlers.deleteFile;
   }
 
+  if (handlers.FlatList) {
+    FlatList = handlers.FlatList;
+  }
   if (handlers.NetInfo) {
     NetInfo = handlers.NetInfo;
   }

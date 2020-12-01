@@ -1,4 +1,5 @@
 import React from 'react';
+import { FlatList } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
@@ -23,6 +24,7 @@ registerNativeHandlers({
       return false;
     }
   },
+  FlatList,
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;

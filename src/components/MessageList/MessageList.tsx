@@ -41,7 +41,7 @@ import {
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
-import { randomId, UserResponse } from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 
 import type { FileIconProps } from '../Attachment/FileIcon';
 import type { ActionSheetStyles } from '../Message/MessageSimple/MessageActionSheet';
@@ -56,6 +56,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 const ErrorNotification = styled.View`
   align-items: center;
@@ -97,13 +98,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : randomId())
+        : generateRandomId())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return randomId();
+  return generateRandomId();
 };
 
 export type MessageListProps<

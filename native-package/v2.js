@@ -1,5 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import { FlatList } from '@stream-io/flat-list-mvcp';
+
 import { BlurView as RNBlurView } from '@react-native-community/blur';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
@@ -23,6 +25,7 @@ registerNativeHandlers({
       return false;
     }
   },
+  FlatList,
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;

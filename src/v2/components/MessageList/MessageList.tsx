@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { MutableRefObject, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
+  FlatList as DefaultFlatList,
   FlatListProps,
+  Platform,
   ScrollViewProps,
   StyleSheet,
   Text,
@@ -18,7 +19,7 @@ import {
 } from './MessageSystem';
 import { TypingIndicator as DefaultTypingIndicator } from './TypingIndicator';
 import { TypingIndicatorContainer } from './TypingIndicatorContainer';
-
+import { InlineUnreadIndicator as DefaultInlineUnreadIndicator } from './InlineUnreadIndicator';
 import { Message, useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
@@ -52,6 +53,14 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { DateHeader } from './DateHeader';
+
+import { FlatList } from '../../native';
+import {
+  isInlineDateSeparator,
+  isInlineUnreadIndicator,
+  MessageOrInlineSeparator,
+} from './utils/insertDates';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 const styles = StyleSheet.create({
   container: {
@@ -91,6 +100,7 @@ const styles = StyleSheet.create({
   },
 });
 
+const limitForUnreadScrolledUp = 4;
 const keyExtractor = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -101,13 +111,28 @@ const keyExtractor = <
   Us extends UnknownType = DefaultUserType
 >(
   item: Message<At, Ch, Co, Ev, Me, Re, Us>,
-) =>
-  item.id ||
-  (item.created_at
-    ? typeof item.created_at === 'string'
-      ? item.created_at
-      : item.created_at.toISOString()
-    : Date.now().toString());
+) => {
+  if (isInlineUnreadIndicator(item)) {
+    return 'unreadIndicator';
+  }
+
+  if (!isInlineDateSeparator(item)) {
+    return (
+      item.id ||
+      (item.created_at
+        ? typeof item.created_at === 'string'
+          ? item.created_at
+          : item.created_at.toISOString()
+        : generateRandomId())
+    );
+  }
+
+  if (item.date && typeof item.date !== 'string') {
+    return item.date.toISOString();
+  }
+
+  return generateRandomId();
+};
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -143,6 +168,8 @@ export type MessageListProps<
    *
    */
   HeaderComponent?: React.ReactElement;
+  InlineDateSeparator?: React.ReactElement;
+  InlineUnreadIndicator?: React.ReactElement;
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
@@ -172,7 +199,9 @@ export type MessageListProps<
    * ```
    */
   setFlatListRef?: (
-    ref: FlatList<Message<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ref: React.MutableRefObject<DefaultFlatList<
+      MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+    > | null>,
   ) => void;
   /**
    * Boolean whether or not the Messages in the MessageList are part of a Thread
@@ -212,6 +241,8 @@ export const MessageList = <
     additionalFlatListProps,
     disableWhileEditing = true,
     HeaderComponent,
+    InlineDateSeparator = () => null,
+    InlineUnreadIndicator = DefaultInlineUnreadIndicator,
     MessageSystem = DefaultMessageSystem,
     noGroupByUser,
     onThreadSelect,
@@ -237,7 +268,6 @@ export const MessageList = <
     clearEditingState,
     disableTypingIndicator,
     editing,
-    hasMoreRecentMessages,
     loadingMoreForward,
     loadMore: mainLoadMore,
     loadMoreForward: mainLoadMoreForward,
@@ -263,17 +293,15 @@ export const MessageList = <
     threadList,
   });
 
-  const flatListRef = useRef<FlatList<
-    Message<At, Ch, Co, Ev, Me, Re, Us>
+  const flatListRef = useRef<DefaultFlatList<
+    MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
-
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
-  const [lastMessageListLength, setLastMessageListLength] = useState(
-    messageList.length,
-  );
+  const lastReceivedMessage = useRef(getLastReceivedMessage(messageList));
+  const lastMessageListLength = useRef(messageList.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   const messageScrollPosition = useRef(0);
@@ -322,42 +350,41 @@ export const MessageList = <
     const currentLastMessage = getLastReceivedMessage(messageList);
     if (currentLastMessage) {
       const currentLastReceivedId = currentLastMessage.id;
+      const lastReceivedId = lastReceivedMessage.current?.id;
       const currentMessageListLength = messageList.length;
       if (currentLastReceivedId) {
         const hasNewMessage =
           lastReceivedId !== currentLastReceivedId &&
-          lastMessageListLength - currentMessageListLength === 1;
+          currentMessageListLength - lastMessageListLength.current === 1;
         const userScrolledUp = yOffset.current > 0;
         const isOwner =
           currentLastMessage &&
           client &&
           currentLastMessage.user?.id === client.userID;
 
-        // Check the scroll position... if you're scrolled up show a little notification
         if (hasNewMessage && (!isOwner || userScrolledUp)) {
           setNewMessageNotification(true);
         }
 
-        if (hasMoreRecentMessages()) {
+        if (!channel?.state.isUpToDate) {
           setNewMessageNotification(true);
         }
 
         // always scroll down when it's your own message that you added..
         const scrollToBottom =
-          !hasMoreRecentMessages() &&
+          channel?.state.isUpToDate &&
           hasNewMessage &&
           (isOwner || !userScrolledUp);
 
-        // remove the scroll notification when we scroll down...
         if (scrollToBottom && flatListRef.current) {
           flatListRef.current.scrollToIndex({ index: 0 });
           setNewMessageNotification(false);
+          !isOwner && markRead();
         }
 
-        if (hasNewMessage) {
-          setLastReceivedId(currentLastReceivedId);
-          setLastMessageListLength(messageList.length);
-        }
+        setLastReceivedId(currentLastReceivedId);
+        lastReceivedMessage.current = currentLastMessage;
+        lastMessageListLength.current = messageList.length;
       }
     }
   }, [messageList]);
@@ -369,6 +396,17 @@ export const MessageList = <
     index: number,
   ) => {
     if (!channel) return null;
+
+    if (isInlineDateSeparator(message)) {
+      // @ts-ignore
+      return <InlineDateSeparator />;
+    }
+
+    if (isInlineUnreadIndicator(message)) {
+      // @ts-ignore
+      return <InlineUnreadIndicator />;
+    }
+
     const lastRead = channel?.lastRead();
 
     let shouldShowUnreadLabel = false;
@@ -386,12 +424,19 @@ export const MessageList = <
       shouldShowUnreadLabel = true;
     }
 
-    if (lastRead && message.created_at && lastRead < message.created_at) {
+    if (
+      lastRead &&
+      message.created_at &&
+      lastRead < message.created_at &&
+      !(message.id === messageList[0].id && shouldShowUnreadLabel)
+    ) {
       isUnread = true;
     }
+
     if (message.type === 'system') {
       return <MessageSystem message={message} />;
     }
+
     if (message.type !== 'message.read') {
       return (
         <View
@@ -399,18 +444,6 @@ export const MessageList = <
             backgroundColor: isUnread ? '#F9F9F9' : 'white',
           }}
         >
-          {!!shouldShowUnreadLabel && (
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 10,
-                width: '100%',
-              }}
-            >
-              <Text style={{ color: '#7D7D7D' }}>Unread Messages</Text>
-            </View>
-          )}
           <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
             groupStyles={message.groupStyles as GroupType[]}
             lastReceivedId={
@@ -427,15 +460,14 @@ export const MessageList = <
   };
 
   const loadMoreRecentMessages = () => {
-    if (hasMoreRecentMessages()) {
+    if (!channel?.state.isUpToDate) {
       mainLoadMoreForward();
     }
   };
 
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     const y = event.nativeEvent.contentOffset.y;
-    const removeNewMessageNotification = y <= 10 && !hasMoreRecentMessages();
-
+    const removeNewMessageNotification = y <= 10 && channel?.state.isUpToDate;
     if (
       !threadList &&
       removeNewMessageNotification &&
@@ -457,7 +489,7 @@ export const MessageList = <
   };
 
   const goToNewMessages = async () => {
-    if (hasMoreRecentMessages()) {
+    if (!channel?.state.isUpToDate) {
       // flatListRef.current.scrollToIndex({ index: 0 });
       if (!threadList) markRead();
       await reloadChannel();
@@ -515,20 +547,24 @@ export const MessageList = <
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
     : new Date(tStickyHeaderDate).toDateString();
 
+  if (!FlatList) return null;
   return (
     <>
       <View collapsable={false} style={styles.container}>
+        {/* @ts-ignore */}
         <FlatList
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={disabled}
+          extraData={disabled || !channel?.state.isUpToDate}
           initialScrollIndex={
-            hasMoreRecentMessages()
+            !channel?.state.isUpToDate
               ? 1
               : initialScrollToFirstUnreadMessage &&
-                channel?.countUnread() &&
-                channel?.countUnread() > 6
-              ? Math.max(channel?.countUnread() - 1, 0)
+                channel?.countUnread() > limitForUnreadScrolledUp
+              ? Math.min(
+                  channel?.countUnread() - 1,
+                  limitForUnreadScrolledUp - 1,
+                )
               : 0
           }
           inverted
@@ -536,6 +572,9 @@ export const MessageList = <
           keyExtractor={keyExtractor}
           ListFooterComponent={HeaderComponent}
           ListHeaderComponent={() => {
+            // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
+            if (Platform.OS === 'android') return null;
+
             if (loadingMoreForward) {
               return (
                 <View style={{ padding: 10, width: '100%' }}>
@@ -546,7 +585,7 @@ export const MessageList = <
             return null;
           }}
           maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: hasMoreRecentMessages() ? -1000 : -1000,
+            autoscrollToTopThreshold: !channel?.state.isUpToDate ? -1000 : 10,
             minIndexForVisible: 1,
           }}
           onEndReached={loadMore}
@@ -555,13 +594,21 @@ export const MessageList = <
             // console.log('Scroll failed --- ', info);
           }}
           onViewableItemsChanged={updateStickyDate.current}
-          ref={(fl) => {
+          ref={(
+            fl: MutableRefObject<
+              DefaultFlatList<
+                MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+              >
+            >,
+          ) => {
+            // @ts-ignore
             flatListRef.current = fl;
 
             if (setFlatListRef) {
               setFlatListRef(fl);
             }
           }}
+          // @ts-ignore
           renderItem={({ index, item }) => renderItem(item, index)}
           style={[styles.listContainer, listContainer]}
           testID='message-flat-list'
@@ -587,14 +634,6 @@ export const MessageList = <
           showNotification={newMessagesNotification}
           unreadCount={channel?.countUnread()}
         />
-        {/* <MessageNotification
-          onPress={() => {
-            flatListRef.current?.scrollToIndex({
-              index: 100,
-            });
-          }}
-          unreadCount={channel?.countUnread()}
-        /> */}
         {!isOnline && (
           <View
             style={[styles.errorNotification, errorNotification]}

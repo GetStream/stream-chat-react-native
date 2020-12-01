@@ -10,7 +10,6 @@ import {
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
-  randomId,
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
@@ -52,6 +51,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -456,7 +456,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${randomId()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,

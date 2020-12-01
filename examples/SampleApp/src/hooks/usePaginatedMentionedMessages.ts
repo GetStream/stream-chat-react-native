@@ -47,7 +47,7 @@ export const usePaginatedMentionedMessages = () => {
         {
           id: 'channel-ex-slack-demo-15',
         },
-        'Unsatiable on by contrasted to',
+        'Unsatiable',
       );
 
       //   const res = await MockDataService.messageSearchByAttachmentType(

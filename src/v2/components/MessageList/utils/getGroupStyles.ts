@@ -1,8 +1,4 @@
-import type {
-  GroupType,
-  MessagesContextValue,
-} from '../../../contexts/messagesContext/MessagesContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+import type { GroupType } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -13,6 +9,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import { InsertDatesResponse, isInlineSeparator } from './insertDates';
 
 export type GetGroupStylesParams<
   At extends UnknownType = DefaultAttachmentType,
@@ -23,9 +20,7 @@ export type GetGroupStylesParams<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  messages:
-    | MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-    | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'];
+  messages: InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us>;
   noGroupByUser?: boolean;
 };
 
@@ -56,10 +51,15 @@ export const getGroupStyles = <
       continue;
     }
 
+    if (isInlineSeparator(message)) {
+      continue;
+    }
+
     const userId = message?.user?.id || null;
 
     const isTopMessage =
       !previousMessage ||
+      isInlineSeparator(previousMessage) ||
       previousMessage.type === 'system' ||
       previousMessage.type === 'channel.event' ||
       (previousMessage.attachments &&
@@ -70,6 +70,7 @@ export const getGroupStyles = <
 
     const isBottomMessage =
       !nextMessage ||
+      isInlineSeparator(nextMessage) ||
       nextMessage.type === 'system' ||
       nextMessage.type === 'channel.event' ||
       (nextMessage.attachments && nextMessage.attachments.length !== 0) ||
