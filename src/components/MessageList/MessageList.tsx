@@ -248,15 +248,15 @@ export const MessageList = <
     dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
     Message: MessageFromProps,
+    MessageNotification = DefaultMessageNotification,
     MessageSystem = DefaultMessageSystem,
     messageActions,
     noGroupByUser,
+    onListScroll,
     onThreadSelect,
     setFlatListRef,
     threadList,
     TypingIndicator = DefaultTypingIndicator,
-    MessageNotification = DefaultMessageNotification,
-    onListScroll,
   } = props;
 
   const {
