@@ -166,7 +166,7 @@
     "react-dom": "16.13.1",
     "react-native": "0.61.5",
     "react-native-gesture-handler": "1.9.0",
-    "react-native-reanimated": "2.0.0-alpha.9.2",
+    "react-native-reanimated": "2.0.0-rc.0",
     "react-native-svg": "12.1.0",
     "react-native-typescript-transformer": "1.2.13",
     "react-native-web": "0.14.8",
