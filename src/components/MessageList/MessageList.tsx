@@ -244,8 +244,9 @@ export const MessageList = <
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
-    HeaderComponent,
     FooterComponent,
+    HeaderComponent,
+    inverted = true,
     Message: MessageFromProps,
     MessageSystem = DefaultMessageSystem,
     messageActions,
@@ -253,7 +254,6 @@ export const MessageList = <
     onThreadSelect,
     setFlatListRef,
     threadList,
-    inverted = true,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
