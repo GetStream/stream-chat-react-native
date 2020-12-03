@@ -163,7 +163,10 @@ export type MessageListProps<
    * used in MessageList. Its footer instead of header, since message list is inverted.
    *
    */
+  FooterComponent?: React.ReactElement;
   HeaderComponent?: React.ReactElement;
+  /** Whether or not the FlatList is inverted. Defaults to true */
+  inverted?: boolean;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -246,7 +249,9 @@ export const MessageList = <
     DateSeparator = DefaultDateSeparator,
     disableWhileEditing = true,
     dismissKeyboardOnMessageTouch = true,
+    FooterComponent,
     HeaderComponent,
+    inverted = true,
     Message: MessageFromProps,
     MessageNotification = DefaultMessageNotification,
     MessageSystem = DefaultMessageSystem,
@@ -278,6 +283,7 @@ export const MessageList = <
   const { t } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
+    inverted,
     noGroupByUser,
     threadList,
   });
@@ -417,10 +423,11 @@ export const MessageList = <
           data={messageList}
           /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
           extraData={disabled}
-          inverted
+          inverted={inverted}
           keyboardShouldPersistTaps='always'
           keyExtractor={keyExtractor}
-          ListFooterComponent={HeaderComponent}
+          ListFooterComponent={FooterComponent}
+          ListHeaderComponent={HeaderComponent}
           maintainVisibleContentPosition={{
             autoscrollToTopThreshold: 10,
             minIndexForVisible: 1,

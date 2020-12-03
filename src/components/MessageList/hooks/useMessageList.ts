@@ -25,6 +25,7 @@ import type {
 } from '../../../types/types';
 
 export type UseMessageListParams = {
+  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
@@ -40,7 +41,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
-  const { noGroupByUser, threadList } = params;
+  const { inverted, noGroupByUser, threadList } = params;
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -62,17 +63,16 @@ export const useMessageList = <
     readList,
   );
 
-  return messagesWithDates
-    .map((msg) => ({
-      ...msg,
-      groupStyles:
-        !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
-          ? messageGroupStyles[msg.id] || []
-          : [],
-      readBy:
-        !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
-          ? readData[msg.id] || []
-          : [],
-    }))
-    .reverse();
+  const messagesWithDatesList = messagesWithDates.map((msg) => ({
+    ...msg,
+    groupStyles:
+      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
+        ? messageGroupStyles[msg.id] || []
+        : [],
+    readBy:
+      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
+        ? readData[msg.id] || []
+        : [],
+  }));
+  return inverted ? messagesWithDatesList.reverse() : messagesWithDatesList;
 };
