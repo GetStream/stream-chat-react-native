@@ -12,7 +12,10 @@ import {
   DateSeparatorProps,
   DateSeparator as DefaultDateSeparator,
 } from './DateSeparator';
-import { MessageNotification } from './MessageNotification';
+import {
+  MessageNotification as DefaultMessageNotification,
+  MessageNotificationProps,
+} from './MessageNotification';
 import {
   MessageSystem as DefaultMessageSystem,
   MessageSystemProps,
@@ -171,6 +174,7 @@ export type MessageListProps<
    * If all the actions need to be disabled, empty array or false should be provided as value of prop.
    */
   messageActions?: boolean | string[];
+  MessageNotification?: React.ComponentType<MessageNotificationProps>;
   /**
    * Custom UI component to display a system message
    * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
@@ -180,6 +184,7 @@ export type MessageListProps<
   >;
   /** Turn off grouping of messages by user */
   noGroupByUser?: boolean;
+  onListScroll?: ScrollViewProps['onScroll'];
   /**
    * Handler to open the thread on message. This is callback for touch event for replies button.
    *
@@ -243,9 +248,11 @@ export const MessageList = <
     dismissKeyboardOnMessageTouch = true,
     HeaderComponent,
     Message: MessageFromProps,
+    MessageNotification = DefaultMessageNotification,
     MessageSystem = DefaultMessageSystem,
     messageActions,
     noGroupByUser,
+    onListScroll,
     onThreadSelect,
     setFlatListRef,
     threadList,
@@ -374,6 +381,9 @@ export const MessageList = <
     yOffset.current = y;
     if (removeNewMessageNotification) {
       setNewMessageNotification(false);
+    }
+    if (onListScroll) {
+      onListScroll(event);
     }
   };
 
