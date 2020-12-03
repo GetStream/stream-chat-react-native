@@ -19,6 +19,7 @@
     "expo-file-system": "^9.2.0",
     "expo-haptics": "^8.3.0",
     "expo-image-picker": "^6.0.0",
+    "expo-media-library": "^9.2.1",
     "expo-permissions": "^6.0.0",
     "expo-sharing": "^8.4.1"
   },

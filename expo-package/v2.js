@@ -5,6 +5,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
@@ -22,6 +23,13 @@ registerNativeHandlers({
       console.log('File deletion failed...');
       return false;
     }
+  },
+  getPhotos: async ({ after, first }) => {
+    const results = await MediaLibrary.getAssetsAsync({ after, first });
+    const assets = results.assets.map((asset) => asset.uri);
+    const hasNextPage = results.hasNextPage;
+    const endCursor = results.endCursor;
+    return { assets, endCursor, hasNextPage };
   },
   NetInfo: {
     addEventListener(listener) {

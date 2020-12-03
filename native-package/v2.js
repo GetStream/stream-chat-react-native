@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { BlurView as RNBlurView } from '@react-native-community/blur';
+import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -22,6 +23,13 @@ registerNativeHandlers({
       console.log('File deletion failed...');
       return false;
     }
+  },
+  getPhotos: async ({ after, first }) => {
+    const results = await CameraRoll.getPhotos({ after, first });
+    const assets = results.edges.map((edge) => edge.node.image.uri);
+    const hasNextPage = results.page_info.has_next_page;
+    const endCursor = results.page_info.end_cursor;
+    return { assets, endCursor, hasNextPage };
   },
   NetInfo: {
     addEventListener(listener) {

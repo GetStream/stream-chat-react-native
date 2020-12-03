@@ -17,6 +17,17 @@ export let BlurView: BlurView = fail;
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
+type GetPhotos = ({
+  after,
+  first,
+}: {
+  first: number;
+  after?: string;
+}) =>
+  | Promise<{ assets: string[]; endCursor: string; hasNextPage: boolean }>
+  | never;
+export let getPhotos: GetPhotos = fail;
+
 type NetInfo = {
   addEventListener: (
     listener: (isConnected: boolean) => void,
@@ -83,6 +94,7 @@ export let triggerHaptic: TriggerHaptic = fail;
 type Handlers = {
   BlurView?: BlurView;
   deleteFile?: DeleteFile;
+  getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
   pickImage?: PickImage;
@@ -98,6 +110,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.deleteFile) {
     deleteFile = handlers.deleteFile;
+  }
+
+  if (handlers.getPhotos) {
+    getPhotos = handlers.getPhotos;
   }
 
   if (handlers.NetInfo) {
