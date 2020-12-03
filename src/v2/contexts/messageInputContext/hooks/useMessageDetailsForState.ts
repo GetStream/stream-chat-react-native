@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import { generateRandomId } from '../../../utils/utils';
-
 import {
+  FileUpload,
+  ImageUpload,
   isEditingBoolean,
   MessageInputContextValue,
-} from '../../../contexts/messageInputContext/MessageInputContext';
+} from '../MessageInputContext';
+
+import { generateRandomId } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -17,28 +19,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-
-export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
-  id: string;
-  state: string;
-  url?: string;
-};
-
-export type ImageUpload = {
-  file: {
-    name?: string;
-    uri?: string;
-  };
-  id: string;
-  state: string;
-  url?: string;
-};
 
 export const useMessageDetailsForState = <
   At extends DefaultAttachmentType = DefaultAttachmentType,

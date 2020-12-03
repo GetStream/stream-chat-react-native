@@ -16,8 +16,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
-import type { Message as StreamMessage } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -189,7 +187,6 @@ export const Thread = <
       />
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
-        parent_id={thread.id as StreamMessage<At, Me, Us>['parent_id']}
         {...additionalMessageInputProps}
       />
     </React.Fragment>
