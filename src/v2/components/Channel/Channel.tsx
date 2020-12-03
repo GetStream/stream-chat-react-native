@@ -42,6 +42,12 @@ import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimpl
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
+import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButton';
+import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
+import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
+import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
+import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 
 import {
   ChannelContextValue,
@@ -52,11 +58,18 @@ import {
   useChatContext,
 } from '../../contexts/chatContext/ChatContext';
 import {
+  InputMessageInputContextValue,
+  MessageInputProvider,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
   ActionProps,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
-import { SuggestionsProvider } from '../../contexts/suggestionsContext/SuggestionsContext';
+import {
+  SuggestionsContextValue,
+  SuggestionsProvider,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   ThreadContextValue,
@@ -100,6 +113,8 @@ export type ChannelPropsWithContext<
   >
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
+  Partial<InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
+  Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
     Pick<
@@ -221,7 +236,9 @@ export const ChannelWithContext = <
 ) => {
   const {
     additionalKeyboardAvoidingViewProps,
+    additionalTextInputProps,
     additionalTouchableProps,
+    AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
     AttachmentFileIcon = FileIconDefault,
@@ -232,25 +249,37 @@ export const ChannelWithContext = <
     channel,
     children,
     client,
+    closeSuggestions,
+    CommandsButton = CommandsButtonDefault,
+    compressImageQuality,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch = true,
+    doDocUploadRequest,
+    doImageUploadRequest,
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
+    FileUploadPreview = FileUploadPreviewDefault,
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
+    hasFilePicker = true,
+    hasImagePicker = true,
+    ImageUploadPreview = ImageUploadPreviewDefault,
+    initialValue,
+    Input,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
     keyboardVerticalOffset,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     markdownRules,
+    maxNumberOfFiles = 10,
     Message = MessageDefault,
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
@@ -261,11 +290,19 @@ export const ChannelWithContext = <
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageText,
+    onChangeText,
+    openSuggestions,
     ReactionList = ReactionListDefault,
+    SendButton = SendButtonDefault,
+    sendImageAsync = false,
+    setInputBoxContainerRef,
+    setInputRef,
     StickyHeader,
     supportedReactions = reactionDataDefault,
     t,
     thread: threadProps,
+    updateSuggestions,
+    UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
   } = props;
 
@@ -634,7 +671,7 @@ export const ChannelWithContext = <
     }
   };
 
-  const sendMessage: MessagesContextValue<
+  const sendMessage: InputMessageInputContextValue<
     At,
     Ch,
     Co,
@@ -734,7 +771,7 @@ export const ChannelWithContext = <
     trailing: true,
   });
 
-  const editMessage: MessagesContextValue<
+  const editMessage: InputMessageInputContextValue<
     At,
     Ch,
     Co,
@@ -759,7 +796,7 @@ export const ChannelWithContext = <
     setEditing(message);
   };
 
-  const clearEditingState: MessagesContextValue<
+  const clearEditingState: InputMessageInputContextValue<
     At,
     Ch,
     Co,
@@ -896,6 +933,39 @@ export const ChannelWithContext = <
     watchers,
   };
 
+  const messageInputContext: InputMessageInputContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  > = {
+    additionalTextInputProps,
+    AttachButton,
+    clearEditingState,
+    CommandsButton,
+    compressImageQuality,
+    doDocUploadRequest,
+    doImageUploadRequest,
+    editing,
+    editMessage,
+    FileUploadPreview,
+    hasFilePicker,
+    hasImagePicker,
+    ImageUploadPreview,
+    initialValue,
+    Input,
+    maxNumberOfFiles,
+    onChangeText,
+    SendButton,
+    sendImageAsync,
+    sendMessage,
+    setInputRef,
+    UploadProgressIndicator,
+  };
+
   const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
     ...actionProps,
     additionalTouchableProps,
@@ -906,11 +976,8 @@ export const ChannelWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
-    clearEditingState,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
-    editing,
-    editMessage,
     FileAttachment,
     FileAttachmentGroup,
     formatDate,
@@ -934,11 +1001,17 @@ export const ChannelWithContext = <
     ReactionList,
     removeMessage,
     retrySendMessage,
-    sendMessage,
     setEditingState,
     supportedReactions,
     updateMessage,
     UrlPreview,
+  };
+
+  const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
+    closeSuggestions,
+    openSuggestions,
+    setInputBoxContainerRef,
+    updateSuggestions,
   };
 
   const threadContext: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
@@ -981,7 +1054,13 @@ export const ChannelWithContext = <
       <ChannelProvider<At, Ch, Co, Ev, Me, Re, Us> value={channelContext}>
         <MessagesProvider<At, Ch, Co, Ev, Me, Re, Us> value={messagesContext}>
           <ThreadProvider<At, Ch, Co, Ev, Me, Re, Us> value={threadContext}>
-            <SuggestionsProvider<Co, Us>>{children}</SuggestionsProvider>
+            <SuggestionsProvider<Co, Us> value={suggestionsContext}>
+              <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
+                value={messageInputContext}
+              >
+                {children}
+              </MessageInputProvider>
+            </SuggestionsProvider>
           </ThreadProvider>
         </MessagesProvider>
       </ChannelProvider>

@@ -13,10 +13,27 @@ import { UploadProgressIndicator } from './UploadProgressIndicator';
 
 import type { FileUpload } from './hooks/useMessageDetailsForState';
 
-import { FileIcon, FileIconProps } from '../Attachment/FileIcon';
-
+import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
+
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const closeRound: ImageRequireSource = require('../../../images/icons/close-round.png');
 
@@ -61,61 +78,32 @@ const styles = StyleSheet.create({
   },
 });
 
-export type FileUploadPreviewProps = {
-  /**
-   * An array of file objects which are set for upload. It has the following structure:
-   *
-   * ```json
-   *  [
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_1",
-   *      "state": "uploading" // or "finished",
-   *      "url": "https://url1.com",
-   *    },
-   *    {
-   *      "file": // File object,
-   *      "id": "randomly_generated_temp_id_2",
-   *      "state": "uploading" // or "finished",
-   *      "url": "https://url1.com",
-   *    },
-   *  ]
-   * ```
-   *
-   */
-  fileUploads: FileUpload[];
-  /**
-   * Function for removing a file from the upload preview
-   *
-   * @param id string ID of file in `fileUploads` object in state of MessageInput
-   */
-  removeFile: (id: string) => void;
-  /**
-   * Function for attempting to upload a file
-   *
-   * @param id string ID of file in `fileUploads` object in state of MessageInput
-   */
-  retryUpload: ({ newFile }: { newFile: FileUpload }) => Promise<void>;
-  /**
-   * Custom UI component for attachment icon for type 'file' attachment.
-   * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon?: React.ComponentType<FileIconProps>;
-};
+type FileUploadPreviewPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'fileUploads' | 'removeFile' | 'uploadFile'
+> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'AttachmentFileIcon'>;
 
-/**
- * FileUploadPreview
- * UI Component to preview the files set for upload
- *
- * @example ./FileUploadPreview.md
- */
-export const FileUploadPreview: React.FC<FileUploadPreviewProps> = (props) => {
-  const {
-    AttachmentFileIcon = FileIcon,
-    fileUploads,
-    removeFile,
-    retryUpload,
-  } = props;
+const FileUploadPreviewWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { AttachmentFileIcon, fileUploads, removeFile, uploadFile } = props;
 
   const {
     theme: {
@@ -136,9 +124,7 @@ export const FileUploadPreview: React.FC<FileUploadPreviewProps> = (props) => {
     <>
       <UploadProgressIndicator
         action={() => {
-          if (retryUpload) {
-            retryUpload({ newFile: item });
-          }
+          uploadFile({ newFile: item });
         }}
         active={item.state !== FileState.UPLOADED}
         type={
@@ -164,9 +150,7 @@ export const FileUploadPreview: React.FC<FileUploadPreviewProps> = (props) => {
       </UploadProgressIndicator>
       <TouchableOpacity
         onPress={() => {
-          if (removeFile) {
-            removeFile(item.id);
-          }
+          removeFile(item.id);
         }}
         style={[styles.dismiss, dismiss]}
         testID='remove-file-upload-preview'
@@ -195,6 +179,88 @@ export const FileUploadPreview: React.FC<FileUploadPreviewProps> = (props) => {
       />
     </View>
   ) : null;
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { fileUploads: prevFileUploads } = prevProps;
+  const { fileUploads: nextFileUploads } = nextProps;
+
+  return (
+    prevFileUploads.length === nextFileUploads.length &&
+    prevFileUploads.every(
+      (prevFileUpload, index) =>
+        prevFileUpload.state === nextFileUploads[index].state,
+    )
+  );
+};
+
+const MemoizedFileUploadPreview = React.memo(
+  FileUploadPreviewWithContext,
+  areEqual,
+) as typeof FileUploadPreviewWithContext;
+
+export type FileUploadPreviewProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+/**
+ * FileUploadPreview
+ * UI Component to preview the files set for upload
+ *
+ * @example ./FileUploadPreview.md
+ */
+export const FileUploadPreview = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { fileUploads, removeFile, uploadFile } = useMessageInputContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { AttachmentFileIcon } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
+  return (
+    <MemoizedFileUploadPreview
+      {...{ AttachmentFileIcon, fileUploads, removeFile, uploadFile }}
+      {...props}
+    />
+  );
 };
 
 FileUploadPreview.displayName =

@@ -5,7 +5,6 @@ import {
   ScrollViewProps,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewToken,
 } from 'react-native';
@@ -137,7 +136,6 @@ export type MessageListProps<
   additionalFlatListProps?: Partial<
     FlatListProps<Message<At, Ch, Co, Ev, Me, Re, Us>>
   >;
-  disableWhileEditing?: boolean;
   /**
    * UI component for footer of message list. By default message list doesn't have any footer.
    * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -227,7 +225,6 @@ export const MessageList = <
 ) => {
   const {
     additionalFlatListProps,
-    disableWhileEditing = true,
     FooterComponent,
     HeaderComponent,
     inverted = true,
@@ -252,12 +249,15 @@ export const MessageList = <
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    clearEditingState,
-    disableTypingIndicator,
-    editing,
-    loadMore: mainLoadMore,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disableTypingIndicator, loadMore: mainLoadMore } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
     theme: {
       messageList: { errorNotification, errorNotificationText, listContainer },
@@ -451,77 +451,66 @@ export const MessageList = <
     : new Date(tStickyHeaderDate).toDateString();
 
   return (
-    <>
-      <View collapsable={false} style={styles.container}>
-        <FlatList
-          data={messageList}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={disabled}
-          inverted={inverted}
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: 10,
-            minIndexForVisible: 1,
-          }}
-          onEndReached={loadMore}
-          onScroll={handleScroll}
-          onViewableItemsChanged={updateStickyDate.current}
-          ref={(fl) => {
-            flatListRef.current = fl;
-            if (setFlatListRef) {
-              setFlatListRef(fl);
-            }
-          }}
-          renderItem={({ item }) => renderItem(item)}
-          style={[styles.listContainer, listContainer]}
-          testID='message-flat-list'
-          viewabilityConfig={{
-            viewAreaCoveragePercentThreshold: 50,
-          }}
-          {...additionalFlatListProps}
-        />
-        <View style={styles.stickyHeader}>
-          {StickyHeader ? (
-            <StickyHeader dateString={stickyHeaderDateToRender} />
-          ) : (
-            <DateHeader dateString={stickyHeaderDateToRender} />
-          )}
-        </View>
-        {!disableTypingIndicator && TypingIndicator && (
-          <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
-            <TypingIndicator />
-          </TypingIndicatorContainer>
-        )}
-        {newMessagesNotification && (
-          <MessageNotification
-            onPress={goToNewMessages}
-            showNotification={newMessagesNotification}
-          />
-        )}
-        {!isOnline && (
-          <View
-            style={[styles.errorNotification, errorNotification]}
-            testID='error-notification'
-          >
-            <Text style={[styles.errorNotificationText, errorNotificationText]}>
-              {t('Connection failure, reconnecting now...')}
-            </Text>
-          </View>
+    <View collapsable={false} style={styles.container}>
+      <FlatList
+        data={messageList}
+        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+        extraData={disabled}
+        inverted={inverted}
+        keyboardShouldPersistTaps='handled'
+        keyExtractor={keyExtractor}
+        ListFooterComponent={FooterComponent}
+        ListHeaderComponent={HeaderComponent}
+        maintainVisibleContentPosition={{
+          autoscrollToTopThreshold: 10,
+          minIndexForVisible: 1,
+        }}
+        onEndReached={loadMore}
+        onScroll={handleScroll}
+        onViewableItemsChanged={updateStickyDate.current}
+        ref={(fl) => {
+          flatListRef.current = fl;
+          if (setFlatListRef) {
+            setFlatListRef(fl);
+          }
+        }}
+        renderItem={({ item }) => renderItem(item)}
+        style={[styles.listContainer, listContainer]}
+        testID='message-flat-list'
+        viewabilityConfig={{
+          viewAreaCoveragePercentThreshold: 50,
+        }}
+        {...additionalFlatListProps}
+      />
+      <View style={styles.stickyHeader}>
+        {StickyHeader ? (
+          <StickyHeader dateString={stickyHeaderDateToRender} />
+        ) : (
+          <DateHeader dateString={stickyHeaderDateToRender} />
         )}
       </View>
-      {
-        // Mask for edit state
-        editing && disableWhileEditing && (
-          <TouchableOpacity
-            onPress={clearEditingState}
-            style={styles.editStateMask}
-          />
-        )
-      }
-    </>
+      {!disableTypingIndicator && TypingIndicator && (
+        <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
+          <TypingIndicator />
+        </TypingIndicatorContainer>
+      )}
+      {newMessagesNotification && (
+        <MessageNotification
+          onPress={goToNewMessages}
+          showNotification={newMessagesNotification}
+        />
+      )}
+      {!isOnline && (
+        <View
+          style={[styles.errorNotification, errorNotification]}
+          testID='error-notification'
+        >
+          <Text style={[styles.errorNotificationText, errorNotificationText]}>
+            {t('Connection failure, reconnecting now...')}
+          </Text>
+        </View>
+      )}
+    </View>
   );
 };
 

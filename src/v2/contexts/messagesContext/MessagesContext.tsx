@@ -7,7 +7,6 @@ import type { DebouncedFunc } from 'lodash';
 import type {
   ChannelState,
   MessageResponse,
-  StreamChat,
   Message as StreamMessage,
 } from 'stream-chat';
 
@@ -64,18 +63,6 @@ export type MessageWithDates<
   readBy: boolean | number;
 };
 
-export const isEditingBoolean = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  editing: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
-): editing is boolean => typeof editing === 'boolean';
-
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -105,11 +92,8 @@ export type MessagesContextValue<
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
   Card: React.ComponentType<CardProps<At>>;
-  clearEditingState: () => void;
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
-  editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
-  editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
@@ -182,7 +166,6 @@ export type MessagesContextValue<
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
-  sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
   updateMessage: (
@@ -270,7 +253,6 @@ const areEqual = <
       additionalTouchableProps: prevAdditionalTouchableProps,
       disableTypingIndicator: prevDisableTypingIndicator,
       dismissKeyboardOnMessageTouch: prevDismissKeyboardOnMessageTouch,
-      editing: prevEditing,
       hasMore: prevHasMore,
       loadingMore: prevLoadingMore,
       markdownRules: prevMarkdownRules,
@@ -284,7 +266,6 @@ const areEqual = <
       additionalTouchableProps: nextAdditionalTouchableProps,
       disableTypingIndicator: nextDisableTypingIndicator,
       dismissKeyboardOnMessageTouch: nextDismissKeyboardOnMessageTouch,
-      editing: nextEditing,
       hasMore: nextHasMore,
       loadingMore: nextLoadingMore,
       markdownRules: nextMarkdownRules,
@@ -307,9 +288,6 @@ const areEqual = <
 
   const loadingMoreEqual = prevLoadingMore === nextLoadingMore;
   if (!loadingMoreEqual) return false;
-
-  const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
 
   const messageContentOrderEqual =
     prevMessageContentOrder.length === nextMessageContentOrder.length &&
@@ -387,8 +365,8 @@ export const useMessagesContext = <
   >;
 
 /**
- * Typescript currently does not support partial inference so if ChatContext
- * typing is desired while using the HOC withChannelContext the Props for the
+ * Typescript currently does not support partial inference so if MessagesContext
+ * typing is desired while using the HOC withMessagesContext the Props for the
  * wrapped component must be provided as the first generic.
  */
 export const withMessagesContext = <

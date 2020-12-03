@@ -2,24 +2,37 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
   isSuggestionUser,
   Suggestion,
   SuggestionCommand,
+  SuggestionsContextValue,
   SuggestionUser,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 import { isMentionTrigger } from '../../utils/utils';
 
-import type { TextInputProps, TextInput as TextInputType } from 'react-native';
+import type { TextInputProps } from 'react-native';
 
 import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
   DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { Trigger, TriggerSettings } from '../../utils/utils';
+import type { Trigger } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   inputBox: {
@@ -47,48 +60,59 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 const isCommand = (text: string) =>
   text[0] === '/' && text.split(' ').length <= 1;
 
-export type AutoCompleteInputProps<
+type AutoCompleteInputPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
-  additionalTextInputProps: TextInputProps;
-  /**
-   * Handling text change events in the parent
-   *
-   * @param {string} text
-   */
-  onChange: (text: string) => void;
-  /**
-   * Ref callback to set reference on input box
-   */
-  setInputBoxRef: (ref: TextInputType | null) => void;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: TriggerSettings<Co, Us>;
-  /**
-   * Text value of the TextInput
-   */
-  value: string;
-};
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'additionalTextInputProps'
+  | 'onChange'
+  | 'setInputBoxRef'
+  | 'text'
+  | 'triggerSettings'
+> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
+  > &
+  Pick<TranslationContextValue, 't'>;
 
-export const AutoCompleteInput = <
+export type AutoCompleteInputProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+const AutoCompleteInputWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: AutoCompleteInputProps<Co, Us>,
+  props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     additionalTextInputProps,
+    closeSuggestions,
     onChange,
+    openSuggestions,
     setInputBoxRef,
+    t,
+    text,
     triggerSettings,
-    value,
+    updateSuggestions: updateSuggestionsContext,
   } = props;
 
   const {
@@ -97,27 +121,20 @@ export const AutoCompleteInput = <
     },
   } = useTheme();
 
-  const {
-    closeSuggestions,
-    openSuggestions,
-    updateSuggestions: updateSuggestionsContext,
-  } = useSuggestionsContext<Co, Us>();
-  const { t } = useTranslationContext();
-
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
   const [inputHeight, setInputHeight] = useState(40);
-  const handleChange = (text: string, fromUpdate = false) => {
+  const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
-      onChange(text);
+      onChange(newText);
     } else {
-      handleSuggestions(text);
+      handleSuggestions(newText);
     }
   };
 
   useEffect(() => {
-    handleChange(value, true);
-  }, [value]);
+    handleChange(text, true);
+  }, [text]);
 
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
@@ -143,7 +160,7 @@ export const AutoCompleteInput = <
     if (isMentionTrigger(trigger)) {
       await triggerSettings[trigger].dataProvider(
         query as SuggestionUser<Us>['name'],
-        value,
+        text,
         (data, queryCallback) => {
           if (query === queryCallback) {
             updateSuggestionsContext({
@@ -156,7 +173,7 @@ export const AutoCompleteInput = <
     } else {
       await triggerSettings[trigger].dataProvider(
         query as SuggestionCommand<Co>['name'],
-        value,
+        text,
         (data, queryCallback) => {
           if (query !== queryCallback) {
             return;
@@ -201,7 +218,7 @@ export const AutoCompleteInput = <
       }
     }
 
-    const textToModify = value.slice(0, selectionEnd.current);
+    const textToModify = text.slice(0, selectionEnd.current);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -221,7 +238,7 @@ export const AutoCompleteInput = <
     )}${newTokenString}`;
 
     stopTracking();
-    onChange(value.replace(textToModify, modifiedText));
+    onChange(text.replace(textToModify, modifiedText));
 
     selectionEnd.current = newCaretPosition || 0;
 
@@ -305,7 +322,7 @@ export const AutoCompleteInput = <
         styles.inputBoxContainer,
         inputBoxContainer,
         {
-          // TODO: Investigate why iOS doesn't respoect the padding on container while growing height.
+          // TODO: Investigate why iOS doesn't respect the padding on container while growing height.
           height: Math.min(inputHeight, 100) + (Platform.OS === 'ios' ? 20 : 0),
         },
       ]}
@@ -330,10 +347,82 @@ export const AutoCompleteInput = <
           },
         ]}
         testID='auto-complete-text-input'
-        value={value}
+        value={text}
         {...additionalTextInputProps}
       />
     </View>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { t: prevT, text: prevText } = prevProps;
+  const { t: nextT, text: nextText } = nextProps;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const textEqual = prevText === nextText;
+  if (!textEqual) return false;
+
+  return true;
+};
+
+const MemoizedAutoCompleteInput = React.memo(
+  AutoCompleteInputWithContext,
+  areEqual,
+) as typeof AutoCompleteInputWithContext;
+
+export const AutoCompleteInput = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTextInputProps,
+    onChange,
+    setInputBoxRef,
+    text,
+    triggerSettings,
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    closeSuggestions,
+    openSuggestions,
+    updateSuggestions,
+  } = useSuggestionsContext<Co, Us>();
+  const { t } = useTranslationContext();
+
+  return (
+    <MemoizedAutoCompleteInput
+      {...{
+        additionalTextInputProps,
+        closeSuggestions,
+        onChange,
+        openSuggestions,
+        setInputBoxRef,
+        t,
+        text,
+        triggerSettings,
+        updateSuggestions,
+      }}
+      {...props}
+    />
   );
 };
 
