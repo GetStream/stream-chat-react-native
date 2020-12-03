@@ -127,12 +127,6 @@ export type ChannelsContextValue<
    */
   numberOfSkeletons: number;
   /**
-   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
-   *
-   * @param channel A channel object
-   */
-  onSelect: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  /**
    * Custom UI component to display individual channel list items
    *
    * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
@@ -180,6 +174,12 @@ export type ChannelsContextValue<
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/#skeleton)
    */
   Skeleton: React.ComponentType;
+  /**
+   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
+   *
+   * @param channel A channel object
+   */
+  onSelect?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
