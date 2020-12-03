@@ -96,29 +96,27 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   const { setChannel } = useContext(AppContext);
 
   return (
-    <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <View style={{ height: '100%' }}>
-          <ChannelList<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalResponseType,
-            LocalUserType
-          >
-            filters={filters}
-            onSelect={(channel) => {
-              setChannel(channel);
-              navigation.navigate('Channel');
-            }}
-            options={options}
-            sort={sort}
-          />
-        </View>
-      </Chat>
-    </SafeAreaView>
+    <Chat client={chatClient} i18nInstance={streami18n}>
+      <View style={{ height: '100%' }}>
+        <ChannelList<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+          filters={filters}
+          onSelect={(channel) => {
+            setChannel(channel);
+            navigation.navigate('Channel');
+          }}
+          options={options}
+          sort={sort}
+        />
+      </View>
+    </Chat>
   );
 };
 

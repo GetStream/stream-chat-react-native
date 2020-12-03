@@ -2,6 +2,7 @@ import React, {
   PropsWithChildren,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import {
@@ -18,6 +19,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelInfoOverlayProvider } from '../channelInfoOverlayContext/ChannelInfoOverlayContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
@@ -28,6 +30,7 @@ import {
 } from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
+import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
 import { ChannelInfoOverlay } from '../../components/ChannelInfoOverlay/ChannelInfoOverlay';
 import {
   ImageGallery,
@@ -36,6 +39,8 @@ import {
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
 import { useStreami18n } from '../../utils/useStreami18n';
+
+import type BottomSheet from '@gorhom/bottom-sheet';
 
 import type { Theme } from '../themeContext/utils/theme';
 
@@ -101,6 +106,8 @@ export const OverlayProvider = <
 ) => {
   const { children, i18nInstance, imageGalleryCustomComponents, value } = props;
 
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
   const [translators, setTranslators] = useState<TranslationContextValue>({
     t: (key: string) => key,
     tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
@@ -148,6 +155,11 @@ export const OverlayProvider = <
   // Setup translators
   useStreami18n({ i18nInstance, setTranslators });
 
+  const attachmentPickerContext = {
+    closePicker: () => bottomSheetRef.current?.snapTo(0),
+    openPicker: () => bottomSheetRef.current?.snapTo(-1),
+  };
+
   const overlayStyle = useAnimatedStyle<ViewStyle>(
     () => ({
       opacity: overlayOpacity.value,
@@ -171,34 +183,37 @@ export const OverlayProvider = <
       <OverlayContext.Provider value={overlayContext}>
         <ChannelInfoOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
           <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-            <ImageGalleryProvider>
-              {children}
-              <ThemeProvider style={overlayContext.style}>
-                <Animated.View
-                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                  style={[StyleSheet.absoluteFill, overlayStyle]}
-                >
-                  <BlurView
-                    blurType={blurType}
-                    style={[StyleSheet.absoluteFill, { height, width }]}
+            <AttachmentPickerProvider value={attachmentPickerContext}>
+              <ImageGalleryProvider>
+                {children}
+                <ThemeProvider style={overlayContext.style}>
+                  <Animated.View
+                    pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                    style={[StyleSheet.absoluteFill, overlayStyle]}
+                  >
+                    <BlurView
+                      blurType={blurType}
+                      style={[StyleSheet.absoluteFill, { height, width }]}
+                    />
+                  </Animated.View>
+                  {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
+                  <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'channelInfo'}
                   />
-                </Animated.View>
-                {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
-                <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'channelInfo'}
-                />
-                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'message'}
-                />
-                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                  imageGalleryCustomComponents={imageGalleryCustomComponents}
-                  overlayOpacity={overlayOpacity}
-                  visible={overlay === 'gallery'}
-                />
-              </ThemeProvider>
-            </ImageGalleryProvider>
+                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'message'}
+                  />
+                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                    imageGalleryCustomComponents={imageGalleryCustomComponents}
+                    overlayOpacity={overlayOpacity}
+                    visible={overlay === 'gallery'}
+                  />
+                  <AttachmentPicker ref={bottomSheetRef} />
+                </ThemeProvider>
+              </ImageGalleryProvider>
+            </AttachmentPickerProvider>
           </MessageOverlayProvider>
         </ChannelInfoOverlayProvider>
       </OverlayContext.Provider>
