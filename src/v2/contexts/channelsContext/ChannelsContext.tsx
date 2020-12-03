@@ -169,7 +169,7 @@ export type ChannelsContextValue<
     ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
   /**
-   * Custom UI component to display loading channel skeltons
+   * Custom UI component to display loading channel skeletons
    *
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/#skeleton)
    */
