@@ -42,7 +42,6 @@ import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 import { styled } from '../../styles/styledComponents';
 
 import type { UserResponse } from 'stream-chat';
@@ -61,20 +60,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const ErrorNotification = styled.View`
-  align-items: center;
-  background-color: #fae6e8;
-  color: red;
-  padding: 5px;
-  z-index: 10;
-  ${({ theme }) => theme.messageList.errorNotification.css}
-`;
-
-const ErrorNotificationText = styled.Text`
-  background-color: #fae6e8;
-  color: red;
-  ${({ theme }) => theme.messageList.errorNotificationText.css}
-`;
+import { NetworkDownIndicator as DefaultNetworkDownIndicator } from './NetworkDownIndicator';
 
 const ListContainer = (styled(FlatList)`
   flex: 1;
@@ -185,6 +171,12 @@ export type MessageListProps<
   MessageSystem?: React.ComponentType<
     MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /**
+   * Custom UI component to render network down indicator
+   *
+   * Defaults to and accepts same props as: [NetworkDownIndicator](https://getstream.github.io/stream-chat-react-native/#NetworkDownIndicator)
+   */
+  NetworkDownIndicator?: React.ComponentType;
   /** Turn off grouping of messages by user */
   noGroupByUser?: boolean;
   onListScroll?: ScrollViewProps['onScroll'];
@@ -261,6 +253,7 @@ export const MessageList = <
     onThreadSelect,
     setFlatListRef,
     threadList,
+    NetworkDownIndicator = DefaultNetworkDownIndicator,
     TypingIndicator = DefaultTypingIndicator,
   } = props;
 
@@ -280,7 +273,6 @@ export const MessageList = <
     Message: MessageFromContext,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { loadMoreThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -455,13 +447,7 @@ export const MessageList = <
             showNotification={newMessagesNotification}
           />
         )}
-        {!isOnline && (
-          <ErrorNotification testID='error-notification'>
-            <ErrorNotificationText>
-              {t('Connection failure, reconnecting now ...')}
-            </ErrorNotificationText>
-          </ErrorNotification>
-        )}
+        {!isOnline && <NetworkDownIndicator />}
       </View>
       {
         // Mask for edit state
