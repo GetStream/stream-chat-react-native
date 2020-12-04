@@ -54,7 +54,7 @@ const UnMemoizedChannelPreview = <
 >(
   props: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { channel, Preview = ChannelPreviewMessenger } = props;
+  const { channel, forceUpdate, Preview = ChannelPreviewMessenger } = props;
 
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -87,6 +87,10 @@ const UnMemoizedChannelPreview = <
       channel.off('message.deleted', handleEvent);
     };
   }, []);
+
+  useEffect(() => {
+    setUnread(channel.countUnread());
+  }, [forceUpdate]);
 
   useEffect(() => {
     const handleReadEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
@@ -124,7 +128,9 @@ const areEqual = <
   const { last_message_at: previousLast } = prevProps.channel.state;
   const { last_message_at: nextLast } = nextProps.channel.state;
 
-  return previousLast === nextLast;
+  return (
+    previousLast === nextLast && prevProps.forceUpdate === nextProps.forceUpdate
+  );
 };
 
 export const ChannelPreview = React.memo(
