@@ -78,7 +78,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' ? 0 : offset,
+      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : offset,
       ...options,
     };
 
@@ -90,7 +90,7 @@ export const usePaginatedChannels = <
       );
 
       let newChannels;
-      if (queryType === 'reload') {
+      if (queryType === 'reload' || queryType === 'refresh') {
         newChannels = channelQueryResponse;
       } else {
         newChannels = [...channels, ...channelQueryResponse];
