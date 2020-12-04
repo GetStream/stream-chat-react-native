@@ -307,7 +307,7 @@ export const ChannelList = <
   });
 
   useEffect(() => {
-    // TODO: Use sync api endpoint to refresh the list, instead of caliing queryChannels.
+    // TODO: Use sync api endpoint to refresh the list, instead of calling queryChannels.
     refreshList();
   }, [forceUpdate]);
 
