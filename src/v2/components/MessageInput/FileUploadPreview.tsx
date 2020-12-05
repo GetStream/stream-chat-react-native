@@ -11,9 +11,8 @@ import {
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import type { FileUpload } from './hooks/useMessageDetailsForState';
-
 import {
+  FileUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';

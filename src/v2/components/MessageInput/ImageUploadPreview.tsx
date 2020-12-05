@@ -10,9 +10,8 @@ import {
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import type { ImageUpload } from './hooks/useMessageDetailsForState';
-
 import {
+  ImageUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
