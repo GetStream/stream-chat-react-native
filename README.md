@@ -36,8 +36,8 @@
   - [Expo package](#expo-package)
   - [Native package](#native-package)
   - Native Web package _(currently under development. Please follow progress at [#206](https://github.com/GetStream/stream-chat-react-native/issues/206))_
-  - [TypeScript Support](#typescript-support)
-  - [Upgrade](#upgrade)
+  - [TypeScript Support](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support)
+  - [Upgrade](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper)
   - [Common issues](#common-issues)
   - [Contributing](#contributing)
 
