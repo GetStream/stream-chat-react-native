@@ -15,7 +15,7 @@ vendor
 pods
 .gradle
 .idea
-build
+examples/SampleApp/build
 local.properties
 xcuserdata
 .tern-port
