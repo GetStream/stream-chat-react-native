@@ -1636,10 +1636,10 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.8.4:
-  version "2.8.4"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.4.tgz#3c361ff59420665a157c01fe8b4758bd1822b475"
-  integrity sha512-dndpzeXST3s051SVR3oR0ComFbmbuLW76kVPh9FMBri6TmFhCfhyjaIuCZuyWPnToKssZHW3asKEXXAgzgsRAg==
+stream-chat@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.0.tgz#3f0a593ae7dea9f1e2ecf406c72c8d0c60705be4"
+  integrity sha512-Se2lpquvfh1oK6c+M73esYvN3eTtTqKdrMMUCzKz7deMWXOlqYdNtweW/a9raU90QUcOSp756JEXYQ5zSsND5A==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

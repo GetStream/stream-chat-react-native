@@ -104,14 +104,14 @@
     "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.8.4",
+    "stream-chat": "2.9.0",
     "styled-components": "5.2.1"
   },
   "peerDependencies": {
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-native": "^0.60.0",
-    "react-native-gesture-handler": "^1.7.0",
+    "react-native-gesture-handler": "^1.8.0",
     "react-native-reanimated": "^2.0.0-rc.0",
     "react-native-svg": "^12.1.0"
   },

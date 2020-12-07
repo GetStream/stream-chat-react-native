@@ -142,7 +142,7 @@ export type ChannelsContextValue<
    * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
    * from UI before loading the new ones
    */
-  refreshList: () => Promise<void>;
+  refreshList: () => void | Promise<void>;
   /**
    * Removes all the existing channels from UI and loads fresh channels
    * */

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
@@ -57,6 +57,7 @@ export const usePaginatedChannels = <
   >([]);
   const [error, setError] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const lastRefresh = useRef(Date.now());
   const [loadingChannels, setLoadingChannels] = useState(false);
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
@@ -78,7 +79,7 @@ export const usePaginatedChannels = <
 
     const newOptions = {
       limit: options?.limit ?? MAX_QUERY_CHANNELS_LIMIT,
-      offset: queryType === 'reload' ? 0 : offset,
+      offset: queryType === 'reload' || queryType === 'refresh' ? 0 : offset,
       ...options,
     };
 
@@ -90,7 +91,7 @@ export const usePaginatedChannels = <
       );
 
       let newChannels;
-      if (queryType === 'reload') {
+      if (queryType === 'reload' || queryType === 'refresh') {
         newChannels = channelQueryResponse;
       } else {
         newChannels = [...channels, ...channelQueryResponse];
@@ -120,7 +121,16 @@ export const usePaginatedChannels = <
   };
 
   const loadNextPage = hasNextPage ? queryChannels : undefined;
-  const refreshList = () => queryChannels('refresh');
+  const refreshList = () => {
+    const now = Date.now();
+    // Only allow pull-to-refresh 5 seconds after last successful refresh.
+    if (now - lastRefresh.current < 5000 && !error) {
+      return;
+    }
+
+    lastRefresh.current = Date.now();
+    return queryChannels('refresh');
+  };
   const reloadList = () => queryChannels('reload');
 
   useEffect(() => {

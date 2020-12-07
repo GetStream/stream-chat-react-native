@@ -29,7 +29,7 @@
     "react-native-screens": "2.15.0",
     "react-native-svg": "12.1.0",
     "react-native-web": "0.13.12",
-    "stream-chat": "2.8.4",
+    "stream-chat": "2.9.0",
     "stream-chat-expo": "link:../../expo-package"
   },
   "devDependencies": {
