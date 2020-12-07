@@ -13,8 +13,8 @@ import {
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  UpdatedMessage,
 } from 'stream-chat';
-import { v4 as uuidv4 } from 'uuid';
 
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -52,6 +52,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -111,7 +112,7 @@ export type ChannelProps<
    */
   doUpdateMessageRequest?: (
     channelId: string,
-    updatedMessage: StreamMessage<At, Me, Us>,
+    updatedMessage: UpdatedMessage<At, Ch, Co, Me, Re, Us>,
   ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
   /**
@@ -454,7 +455,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${uuidv4()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,

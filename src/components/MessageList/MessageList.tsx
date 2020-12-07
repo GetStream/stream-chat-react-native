@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   DateSeparatorProps,
@@ -61,6 +60,7 @@ import type {
 } from '../../types/types';
 
 import { NetworkDownIndicator as DefaultNetworkDownIndicator } from './NetworkDownIndicator';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 const ListContainer = (styled(FlatList)`
   flex: 1;
@@ -87,13 +87,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : uuidv4())
+        : generateRandomId())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return uuidv4();
+  return generateRandomId();
 };
 
 export type MessageListProps<

@@ -8,6 +8,7 @@ import type {
   MessageResponse,
   StreamChat,
   Message as StreamMessage,
+  UpdatedMessage,
   UserResponse,
 } from 'stream-chat';
 
@@ -66,7 +67,7 @@ export type MessagesContextValue<
   clearEditingState: () => void;
   editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: (
-    updatedMessage: StreamMessage<At, Me, Us>,
+    updatedMessage: UpdatedMessage<At, Ch, Co, Me, Re, Us>,
   ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData: Array<{
     icon: string;

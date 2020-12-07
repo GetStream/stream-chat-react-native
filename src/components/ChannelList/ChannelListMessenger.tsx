@@ -71,7 +71,7 @@ export type ChannelListMessengerProps<
    * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
    * from UI before loading the new ones
    */
-  refreshList?: () => Promise<void>;
+  refreshList?: () => void | Promise<void>;
 
   /**
    * Removes all the existing channels from UI and loads fresh channels
@@ -152,11 +152,14 @@ export const ChannelListMessenger = <
   }, [loadingChannels]);
 
   const HeaderIndicator: React.FC = () => {
+    if (loadingChannels) return null;
+
     if (!isOnline) {
       return <HeaderNetworkDownIndicator />;
     } else if (error) {
       return <HeaderErrorIndicator onPress={refreshList} />;
     }
+
     return null;
   };
 
@@ -164,7 +167,7 @@ export const ChannelListMessenger = <
     <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> {...props} channel={channel} />
   );
 
-  if (error && !refreshing && !channels?.length) {
+  if (error && !refreshing && !loadingChannels && !channels?.length) {
     return (
       <LoadingErrorIndicator
         error={error}
