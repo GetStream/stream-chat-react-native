@@ -61,7 +61,7 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const lastRefresh = useRef(new Date());
+  const lastRefresh = useRef(new Date().getTime());
 
   const queryChannels = async (
     queryType = '',
@@ -122,14 +122,13 @@ export const usePaginatedChannels = <
 
   const loadNextPage = hasNextPage ? queryChannels : undefined;
   const refreshList = () => {
-    const now = new Date();
+    const now = Date.now();
     // Only allow pull-to-refresh 5 seconds after last successful refresh.
-    // @ts-ignore
     if (now - lastRefresh.current < 5000 && !error) {
       return;
     }
 
-    lastRefresh.current = new Date();
+    lastRefresh.current = new Date().getTime();
     return queryChannels('refresh');
   };
 
