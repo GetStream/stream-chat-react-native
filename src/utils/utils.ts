@@ -376,3 +376,15 @@ export const MESSAGE_ACTIONS = {
 
 export const makeImageCompatibleUrl = (url: string) =>
   (url.indexOf('//') === 0 ? `https:${url}` : url).trim();
+
+/** adopted from https://github.com/ai/nanoid/blob/master/non-secure/index.js */
+const alphabet =
+  'ModuleSymbhasOwnPr0123456789ABCDEFGHNRVfgctiUvzKqYTJkLxpZXIjQW';
+export const randomId = () => {
+  let id = '';
+  for (let i = 0; i < 21; i++) {
+    // eslint-disable-next-line no-bitwise
+    id += alphabet[(Math.random() * 64) | 0];
+  }
+  return id;
+};

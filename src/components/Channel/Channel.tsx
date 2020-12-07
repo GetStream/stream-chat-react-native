@@ -13,8 +13,8 @@ import {
   SendMessageAPIResponse,
   StreamChat,
   Message as StreamMessage,
+  UpdatedMessage,
 } from 'stream-chat';
-import { v4 as uuidv4 } from 'uuid';
 
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
@@ -36,7 +36,7 @@ import {
   ThreadProvider,
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { emojiData as emojiDataDefault } from '../../utils/utils';
+import { emojiData as emojiDataDefault, randomId } from '../../utils/utils';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
@@ -111,7 +111,7 @@ export type ChannelProps<
    */
   doUpdateMessageRequest?: (
     channelId: string,
-    updatedMessage: StreamMessage<At, Me, Us>,
+    updatedMessage: UpdatedMessage<At, Ch, Co, Me, Re, Us>,
   ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
   emojiData?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['emojiData'];
   /**
@@ -454,7 +454,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${uuidv4()}`,
+      id: `${client.userID}-${randomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
