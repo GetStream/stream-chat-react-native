@@ -13,6 +13,7 @@ import {
   logChatPromiseExecution,
   SendFileAPIResponse,
   Message as StreamMessage,
+  UpdatedMessage,
   UserResponse,
 } from 'stream-chat';
 
@@ -791,7 +792,7 @@ export const MessageInput = <
         attachments,
         mentioned_users: mentionedUsers,
         text: prevText,
-      } as StreamMessage<At, Me, Us>;
+      } as UpdatedMessage<At, Ch, Co, Me, Re, Us>;
 
       // TODO: Remove this line and show an error when submit fails
       clearEditingState();
@@ -838,7 +839,7 @@ export const MessageInput = <
         await client.updateMessage({
           ...editing,
           text,
-        } as StreamMessage<At, Me, Us>);
+        } as UpdatedMessage<At, Ch, Co, Me, Re, Us>);
       }
 
       resetInput();
