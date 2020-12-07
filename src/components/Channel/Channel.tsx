@@ -36,7 +36,7 @@ import {
   ThreadProvider,
 } from '../../contexts/threadContext/ThreadContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { emojiData as emojiDataDefault, randomId } from '../../utils/utils';
+import { emojiData as emojiDataDefault } from '../../utils/utils';
 
 import type { LoadingErrorProps } from '../Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../Indicators/LoadingIndicator';
@@ -52,6 +52,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -454,7 +455,7 @@ export const Channel = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${randomId()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,

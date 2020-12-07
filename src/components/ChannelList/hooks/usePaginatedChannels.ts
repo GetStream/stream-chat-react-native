@@ -61,7 +61,7 @@ export const usePaginatedChannels = <
   const [loadingNextPage, setLoadingNextPage] = useState(false);
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const lastRefresh = useRef(new Date().getTime());
+  const lastRefresh = useRef(Date.now());
 
   const queryChannels = async (
     queryType = '',
@@ -128,7 +128,7 @@ export const usePaginatedChannels = <
       return;
     }
 
-    lastRefresh.current = new Date().getTime();
+    lastRefresh.current = Date.now();
     return queryChannels('refresh');
   };
 

@@ -60,7 +60,7 @@ import type {
 } from '../../types/types';
 
 import { NetworkDownIndicator as DefaultNetworkDownIndicator } from './NetworkDownIndicator';
-import { randomId } from 'src/utils/utils';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 const ListContainer = (styled(FlatList)`
   flex: 1;
@@ -87,13 +87,13 @@ const keyExtractor = <
         ? typeof item.created_at === 'string'
           ? item.created_at
           : item.created_at.toISOString()
-        : randomId())
+        : generateRandomId())
     );
   }
   if (item.date && typeof item.date !== 'string') {
     return item.date.toISOString();
   }
-  return randomId();
+  return generateRandomId();
 };
 
 export type MessageListProps<
