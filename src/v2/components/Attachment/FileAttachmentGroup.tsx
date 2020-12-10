@@ -1,12 +1,16 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Attachment } from './Attachment';
+import { Attachment as AttachmentDefault } from './Attachment';
 
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
@@ -34,12 +38,17 @@ export type FileAttachmentGroupPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> & {
-  /**
-   * The unique id for the message with file attachments
-   */
-  messageId: string;
-};
+> = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'files'> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Attachment'> & {
+    /**
+     * The unique id for the message with file attachments
+     */
+    messageId: string;
+    styles?: Partial<{
+      attachmentContainer: StyleProp<ViewStyle>;
+      container: StyleProp<ViewStyle>;
+    }>;
+  };
 
 const FileAttachmentGroupWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -52,7 +61,7 @@ const FileAttachmentGroupWithContext = <
 >(
   props: FileAttachmentGroupPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { files, messageId } = props;
+  const { Attachment, files, messageId, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -63,13 +72,16 @@ const FileAttachmentGroupWithContext = <
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
+    <View style={[styles.container, container, stylesProp.container]}>
       {files.map((file, index) => (
         <View
           key={`${messageId}-${index}`}
-          style={{ paddingBottom: index !== files.length - 1 ? 4 : 0 }}
+          style={[
+            { paddingBottom: index !== files.length - 1 ? 4 : 0 },
+            stylesProp.attachmentContainer,
+          ]}
         >
-          <Attachment<At, Ch, Co, Ev, Me, Re, Us> attachment={file} />
+          <Attachment attachment={file} />
         </View>
       ))}
     </View>
@@ -143,6 +155,16 @@ export const FileAttachmentGroup = <
     Us
   >();
 
+  const { Attachment = AttachmentDefault } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+
   const files = propFiles || contextFiles;
 
   if (!files.length) return null;
@@ -150,6 +172,7 @@ export const FileAttachmentGroup = <
   return (
     <MemoizedFileAttachmentGroup
       {...{
+        Attachment,
         files,
         messageId,
       }}

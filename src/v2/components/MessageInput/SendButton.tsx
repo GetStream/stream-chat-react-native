@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import {
   MessageInputContextValue,
@@ -18,13 +18,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 8,
-    marginLeft: 8,
-  },
-});
 
 type SendButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -55,6 +48,7 @@ const SendButtonWithContext = <
   const { disabled = false, sendMessage } = props;
   const {
     theme: {
+      colors: { primary, textGrey },
       messageInput: { sendButton },
     },
   } = useTheme();
@@ -63,11 +57,11 @@ const SendButtonWithContext = <
     <TouchableOpacity
       disabled={disabled}
       onPress={sendMessage}
-      style={[styles.container, sendButton]}
+      style={[sendButton]}
       testID='send-button'
     >
-      {disabled && <SendRight height={24} width={24} />}
-      {!disabled && <SendUp height={24} width={24} />}
+      {disabled && <SendRight pathFill={textGrey} />}
+      {!disabled && <SendUp pathFill={primary} />}
     </TouchableOpacity>
   );
 };

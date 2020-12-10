@@ -49,6 +49,7 @@ import type { CommandsButtonProps } from '../../components/MessageInput/Commands
 import type { FileUploadPreviewProps } from '../../components/MessageInput/FileUploadPreview';
 import type { ImageUploadPreviewProps } from '../../components/MessageInput/ImageUploadPreview';
 import type { MessageInputProps } from '../../components/MessageInput/MessageInput';
+import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
 import type { Message } from '../../components/MessageList/hooks/useMessageList';
@@ -119,6 +120,7 @@ export type LocalMessageInputContext<
    *
    */
   fileUploads: FileUpload[];
+  focused: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -173,6 +175,7 @@ export type LocalMessageInputContext<
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
+  setFocused: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
   /**
    * Ref callback to set reference on input box
@@ -231,6 +234,7 @@ export type InputMessageInputContextValue<
    */
   AttachButton: React.ComponentType<AttachButtonProps>;
   clearEditingState: () => void;
+  clearReplyToState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -255,6 +259,15 @@ export type InputMessageInputContextValue<
   ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
+  /**
+   * Custom UI component for more options button.
+   *
+   * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/#moreoptionsbutton)
+   */
+  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
+  /** Limit on the number of lines in the text input before scrolling */
+  numberOfLines: number;
+  replyTo: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component for send button.
    *
@@ -367,8 +380,10 @@ const areEqual = <
     value: {
       editing: prevEditing,
       fileUploads: prevFileUploads,
+      focused: prevFocused,
       imageUploads: prevImageUploads,
       mentionedUsers: prevMentionedUsers,
+      replyTo: prevReplyTo,
       text: prevText,
     },
   } = prevProps;
@@ -376,8 +391,10 @@ const areEqual = <
     value: {
       editing: nextEditing,
       fileUploads: nextFileUploads,
+      focused: nextFocused,
       imageUploads: nextImageUploads,
       mentionedUsers: nextMentionedUsers,
+      replyTo: nextReplyTo,
       text: nextText,
     },
   } = nextProps;
@@ -385,8 +402,14 @@ const areEqual = <
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
 
+  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
+  if (!replyToEqual) return false;
+
   const textEqual = prevText === nextText;
   if (!textEqual) return false;
+
+  const focusedEqual = prevFocused === nextFocused;
+  if (!focusedEqual) return false;
 
   const mentionedUsersEqual =
     prevMentionedUsers.length === nextMentionedUsers.length;
@@ -457,10 +480,12 @@ const MessageInputProviderWithContext = <
 
   const {
     fileUploads,
+    focused,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
     setFileUploads,
+    setFocused,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
@@ -982,6 +1007,7 @@ const MessageInputProviderWithContext = <
           asyncIds,
           asyncUploads,
           fileUploads,
+          focused,
           imageUploads,
           inputBoxRef,
           isValidMessage,
@@ -999,6 +1025,7 @@ const MessageInputProviderWithContext = <
           setAsyncIds,
           setAsyncUploads,
           setFileUploads,
+          setFocused,
           setImageUploads,
           setInputBoxRef,
           setMentionedUsers,
@@ -1041,14 +1068,17 @@ const areEqualContext = <
   }>,
 ) => {
   const {
-    value: { editing: prevEditing, thread: prevThread },
+    value: { editing: prevEditing, replyTo: prevReplyTo, thread: prevThread },
   } = prevProps;
   const {
-    value: { editing: nextEditing, thread: nextThread },
+    value: { editing: nextEditing, replyTo: nextReplyTo, thread: nextThread },
   } = nextProps;
 
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
+
+  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
+  if (!replyToEqual) return false;
 
   const threadEqual = prevThread?.id === nextThread?.id;
   if (!threadEqual) return false;

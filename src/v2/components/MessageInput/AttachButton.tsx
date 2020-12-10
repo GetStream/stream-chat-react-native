@@ -1,16 +1,14 @@
 import React from 'react';
-import {
-  GestureResponderEvent,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
-import { Attach } from '../../icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Attach } from '../../icons/Attach';
+
+import type { GestureResponderEvent } from 'react-native';
 
 import type {
   DefaultAttachmentType,
@@ -22,13 +20,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 8,
-    marginRight: 8,
-  },
-});
 
 type AttachButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -58,6 +49,7 @@ const AttachButtonWithContext = <
 
   const {
     theme: {
+      colors: { textGrey },
       messageInput: { attachButton },
     },
   } = useTheme();
@@ -66,10 +58,10 @@ const AttachButtonWithContext = <
     <TouchableOpacity
       disabled={disabled}
       onPress={handleOnPress}
-      style={[styles.container, attachButton]}
+      style={[attachButton]}
       testID='attach-button'
     >
-      <Attach height={24} width={24} />
+      <Attach pathFill={textGrey} />
     </TouchableOpacity>
   );
 };

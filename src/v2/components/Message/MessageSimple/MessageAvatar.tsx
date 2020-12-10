@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { Avatar } from '../../Avatar/Avatar';
+import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
 import {
   MessageContextValue,
@@ -31,7 +31,8 @@ export type MessageAvatarPropsWithContext<
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
->;
+> &
+  Partial<Pick<AvatarProps, 'size'>>;
 
 const MessageAvatarWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -44,7 +45,7 @@ const MessageAvatarWithContext = <
 >(
   props: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, lastGroupMessage, message, showAvatar } = props;
+  const { alignment, lastGroupMessage, message, showAvatar, size } = props;
   const {
     theme: {
       avatar: { BASE_AVATAR_SIZE },
@@ -66,7 +67,7 @@ const MessageAvatarWithContext = <
         <Avatar
           image={message.user?.image}
           name={message.user?.name || message.user?.id}
-          size={BASE_AVATAR_SIZE}
+          size={size || BASE_AVATAR_SIZE}
         />
       ) : (
         <View style={spacer} testID='spacer' />

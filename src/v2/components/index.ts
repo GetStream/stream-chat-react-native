@@ -50,11 +50,12 @@ export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 
-export * from './MessageInput/ActionSheetAttachment';
 export * from './MessageInput/AttachButton';
+export * from './MessageInput/CommandsButton';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/MessageInput';
+export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/UploadProgressIndicator';
 
@@ -69,9 +70,8 @@ export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
 
+export * from './Reply/Reply';
+
 export * from './Spinner/Spinner';
 
 export * from './Thread/Thread';
-
-export * from './IconBadge';
-export * from './IconSquare';

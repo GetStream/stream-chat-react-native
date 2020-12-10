@@ -1,14 +1,8 @@
 import React, { useEffect } from 'react';
-import {
-  ImageRequireSource,
-  Keyboard,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
-import { IconSquare } from '../IconSquare';
 
 import {
   ChannelContextValue,
@@ -19,6 +13,10 @@ import {
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
   SuggestionsContextValue,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
@@ -27,6 +25,9 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { CircleClose } from '../../icons/CircleClose';
+import { CurveLineLeftUp } from '../../icons/CurveLineLeftUp';
+import { Edit } from '../../icons/Edit';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -41,35 +42,42 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const iconClose: ImageRequireSource = require('../../../images/icons/icon_close.png');
-
 const styles = StyleSheet.create({
+  attachButtonContainer: { paddingRight: 10 },
+  autoCompleteInputContainer: { paddingHorizontal: 16 },
   composerContainer: {
     alignItems: 'flex-end',
     flexDirection: 'row',
-    marginVertical: 4,
-    minHeight: 46,
-    paddingHorizontal: 10,
   },
   container: {
-    borderColor: '#00000014',
+    borderColor: '#00000029', // 29 = 16% opacity
     borderTopWidth: 1,
-  },
-  editingBoxContainer: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#808080',
-    shadowOpacity: 0.5,
-    zIndex: 100,
+    padding: 10,
   },
   editingBoxHeader: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
+    paddingBottom: 10,
   },
   editingBoxHeaderTitle: {
+    fontSize: 14,
     fontWeight: 'bold',
   },
+  inputBoxContainer: {
+    borderColor: '#00000029', // 29 = 16% opacity
+    borderRadius: 20,
+    borderWidth: 1,
+    flex: 1,
+    paddingVertical: 12,
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    paddingBottom: 10,
+    paddingRight: 10,
+  },
+  replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
+  sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
 });
 
 type MessageInputPropsWithContext<
@@ -93,9 +101,11 @@ type MessageInputPropsWithContext<
     | 'AttachButton'
     | 'CommandsButton'
     | 'clearEditingState'
+    | 'clearReplyToState'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
+    | 'focused'
     | 'hasFilePicker'
     | 'hasImagePicker'
     | 'ImageUploadPreview'
@@ -104,14 +114,17 @@ type MessageInputPropsWithContext<
     | 'inputBoxRef'
     | 'isValidMessage'
     | 'maxNumberOfFiles'
+    | 'MoreOptionsButton'
     | 'numberOfUploads'
     | 'pickFile'
     | 'pickImage'
+    | 'replyTo'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
   > &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<SuggestionsContextValue<Co, Us>, 'setInputBoxContainerRef'> &
   Pick<TranslationContextValue, 't'>;
 
@@ -133,11 +146,13 @@ export const MessageInputWithContext = <
     asyncUploads,
     AttachButton,
     clearEditingState,
+    clearReplyToState,
     CommandsButton,
     disabled,
     editing,
     FileUploadPreview,
     fileUploads,
+    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -147,9 +162,12 @@ export const MessageInputWithContext = <
     isValidMessage,
     maxNumberOfFiles,
     members,
+    MoreOptionsButton,
     numberOfUploads,
     pickFile,
     pickImage,
+    Reply,
+    replyTo,
     resetInput,
     SendButton,
     sending,
@@ -161,12 +179,19 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
+      colors: { grey },
       messageInput: {
+        attachButtonContainer,
+        autoCompleteInputContainer,
+        commandsButtonContainer,
         composerContainer,
-        container: { conditionalPadding, ...container },
-        editingBoxContainer,
+        container: { ...container },
         editingBoxHeader,
         editingBoxHeaderTitle,
+        inputBoxContainer,
+        optionsContainer,
+        replyContainer,
+        sendButtonContainer,
       },
     },
   } = useTheme();
@@ -236,9 +261,7 @@ export const MessageInputWithContext = <
     if (hasImagePicker) {
       if (hasFilePicker) {
         await Keyboard.dismiss();
-        // if (attachActionSheet?.current) {
-        //   attachActionSheet.current.show();
-        // }
+        pickFile();
       } else {
         pickImage();
       }
@@ -247,88 +270,117 @@ export const MessageInputWithContext = <
     }
   };
 
-  const renderInputContainer = () => {
-    const additionalTextInputContainerProps = {
-      editable: disabled ? false : undefined,
-      ...additionalTextInputProps,
-    };
+  const additionalTextInputContainerProps = {
+    editable: disabled ? false : undefined,
+    ...additionalTextInputProps,
+  };
 
-    return (
-      <View
-        style={[
-          styles.container,
-          { paddingTop: imageUploads.length ? conditionalPadding : 0 },
-          container,
-        ]}
-      >
-        {fileUploads && <FileUploadPreview />}
-        {imageUploads && <ImageUploadPreview />}
-
-        {/**
-         * TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-         * work well with async onPress operations. So find a solution.
-         */}
-        {/* <ActionSheetAttachment
-          closeAttachActionSheet={closeAttachActionSheet}
-          pickFile={pickFile}
-          pickImage={pickImage}
-          setAttachActionSheetRef={setAttachActionSheetRef}
-          styles={actionSheetStyles}
-        /> */}
-        <View
-          ref={setInputBoxContainerRef}
-          style={[styles.composerContainer, composerContainer]}
-        >
-          {Input ? (
-            <Input
-              additionalTextInputProps={additionalTextInputContainerProps}
-              getUsers={getUsers}
-              handleOnPress={handleOnPress}
-            />
+  return (
+    <View style={[styles.container, container]}>
+      {(editing || replyTo) && (
+        <View style={[styles.editingBoxHeader, editingBoxHeader]}>
+          {editing ? (
+            <Edit pathFill={grey} />
           ) : (
-            <>
-              {(hasImagePicker || hasFilePicker) && (
-                <AttachButton handleOnPress={handleOnPress} />
+            <CurveLineLeftUp pathFill={grey} />
+          )}
+          <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
+            {editing ? t('Editing Message') : t('Reply to Message')}
+          </Text>
+          <TouchableOpacity
+            disabled={disabled}
+            onPress={() => {
+              resetInput();
+              if (editing) {
+                clearEditingState();
+              }
+              if (replyTo) {
+                clearReplyToState();
+              }
+              if (inputBoxRef.current) {
+                inputBoxRef.current.blur();
+              }
+            }}
+            testID='close-button'
+          >
+            <CircleClose pathFill='#7A7A7A' />
+          </TouchableOpacity>
+        </View>
+      )}
+      <View
+        ref={setInputBoxContainerRef}
+        style={[styles.composerContainer, composerContainer]}
+      >
+        {Input ? (
+          <Input
+            additionalTextInputProps={additionalTextInputContainerProps}
+            getUsers={getUsers}
+            handleOnPress={handleOnPress}
+          />
+        ) : (
+          <>
+            <View style={[styles.optionsContainer, optionsContainer]}>
+              {focused ? (
+                <MoreOptionsButton
+                  handleOnPress={() => {
+                    if (inputBoxRef.current) {
+                      inputBoxRef.current.blur();
+                    }
+                  }}
+                />
+              ) : (
+                <>
+                  {(hasImagePicker || hasFilePicker) && (
+                    <View
+                      style={[
+                        styles.attachButtonContainer,
+                        attachButtonContainer,
+                      ]}
+                    >
+                      <AttachButton handleOnPress={handleOnPress} />
+                    </View>
+                  )}
+                  <View style={[commandsButtonContainer]}>
+                    <CommandsButton
+                      handleOnPress={() => {
+                        appendText('/');
+                        if (inputBoxRef.current) {
+                          inputBoxRef.current.focus();
+                        }
+                      }}
+                    />
+                  </View>
+                </>
               )}
-              <CommandsButton
-                handleOnPress={() => {
-                  appendText('/');
-                }}
-              />
-              <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
-                additionalTextInputProps={additionalTextInputProps}
-              />
+            </View>
+            <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+              {replyTo && (
+                <View style={[styles.replyContainer, replyContainer]}>
+                  <Reply />
+                </View>
+              )}
+              {fileUploads.length ? <FileUploadPreview /> : null}
+              {imageUploads.length ? <ImageUploadPreview /> : null}
+              <View
+                style={[
+                  styles.autoCompleteInputContainer,
+                  autoCompleteInputContainer,
+                ]}
+              >
+                <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
+                  additionalTextInputProps={additionalTextInputProps}
+                />
+              </View>
+            </View>
+            <View style={[styles.sendButtonContainer, sendButtonContainer]}>
               <SendButton
                 disabled={disabled || sending.current || !isValidMessage()}
               />
-            </>
-          )}
-        </View>
+            </View>
+          </>
+        )}
       </View>
-    );
-  };
-
-  return editing ? (
-    <View
-      style={[styles.editingBoxContainer, editingBoxContainer]}
-      testID='editing'
-    >
-      <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-        <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
-          {t('Editing Message')}
-        </Text>
-        <IconSquare
-          icon={iconClose}
-          onPress={() => {
-            resetInput();
-            clearEditingState();
-          }}
-        />
-      </View>
-      {renderInputContainer()}
     </View>
-  ) : (
-    renderInputContainer()
   );
 };
 
@@ -348,7 +400,11 @@ const areEqual = <
     asyncUploads: prevAsyncUploads,
     disabled: prevDisabled,
     editing: prevEditing,
+    fileUploads: prevFileUploads,
+    focused: prevFocused,
+    imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
+    replyTo: prevReplyTo,
     sending: prevSending,
     t: prevT,
   } = prevProps;
@@ -356,7 +412,11 @@ const areEqual = <
     asyncUploads: nextAsyncUploads,
     disabled: nextDisabled,
     editing: nextEditing,
+    fileUploads: nextFileUploads,
+    focused: nextFocused,
+    imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
+    replyTo: nextReplyTo,
     sending: nextSending,
     t: nextT,
   } = nextProps;
@@ -367,8 +427,14 @@ const areEqual = <
   const disabledEqual = prevDisabled === nextDisabled;
   if (!disabledEqual) return false;
 
-  const editingEqual = prevEditing === nextEditing;
+  const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
+
+  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
+  if (!replyToEqual) return false;
+
+  const focusedEqual = prevFocused === nextFocused;
+  if (!focusedEqual) return false;
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
@@ -382,6 +448,12 @@ const areEqual = <
       prevAsyncUploads[key].url === nextAsyncUploads[key].url,
   );
   if (!asyncUploadsEqual) return false;
+
+  const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
+  if (!fileUploadsEqual) return false;
+
+  const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
+  if (!imageUploadsEqual) return false;
 
   return true;
 };
@@ -407,7 +479,6 @@ export type MessageInputProps<
  * [Channel Context](https://getstream.github.io/stream-chat-react-native/#channelcontext),
  * [Chat Context](https://getstream.github.io/stream-chat-react-native/#chatcontext),
  * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/#messageinputcontext),
- * [Messages Context](https://getstream.github.io/stream-chat-react-native/#messagescontext),
  * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
  *
@@ -441,10 +512,12 @@ export const MessageInput = <
     asyncUploads,
     AttachButton,
     clearEditingState,
+    clearReplyToState,
     CommandsButton,
     editing,
     FileUploadPreview,
     fileUploads,
+    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -453,14 +526,18 @@ export const MessageInput = <
     inputBoxRef,
     isValidMessage,
     maxNumberOfFiles,
+    MoreOptionsButton,
     numberOfUploads,
     pickFile,
     pickImage,
+    replyTo,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { setInputBoxContainerRef } = useSuggestionsContext<Co, Us>();
 
@@ -475,11 +552,13 @@ export const MessageInput = <
         asyncUploads,
         AttachButton,
         clearEditingState,
+        clearReplyToState,
         CommandsButton,
         disabled,
         editing,
         FileUploadPreview,
         fileUploads,
+        focused,
         hasFilePicker,
         hasImagePicker,
         ImageUploadPreview,
@@ -489,9 +568,12 @@ export const MessageInput = <
         isValidMessage,
         maxNumberOfFiles,
         members,
+        MoreOptionsButton,
         numberOfUploads,
         pickFile,
         pickImage,
+        Reply,
+        replyTo,
         resetInput,
         SendButton,
         sending,

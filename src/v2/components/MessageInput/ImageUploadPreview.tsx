@@ -2,7 +2,6 @@ import React from 'react';
 import {
   FlatList,
   Image,
-  ImageRequireSource,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -16,6 +15,7 @@ import {
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Close } from '../../icons/Close';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 import type {
@@ -29,38 +29,25 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const closeRound: ImageRequireSource = require('../../../images/icons/close-round.png');
+const IMAGE_PREVIEW_SIZE = 100;
 
 const styles = StyleSheet.create({
-  container: {
-    height: 70,
-    padding: 10,
-  },
   dismiss: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    height: 20,
-    justifyContent: 'center',
+    borderRadius: 24,
     position: 'absolute',
-    right: 5,
-    top: 5,
-    width: 20,
+    right: 8,
+    top: 8,
   },
-  dismissImage: {
-    height: 10,
-    width: 10,
-  },
+  flatList: { paddingBottom: 12 },
   itemContainer: {
-    alignItems: 'flex-start',
     flexDirection: 'row',
-    height: 50,
-    marginLeft: 5,
+    height: IMAGE_PREVIEW_SIZE,
+    marginLeft: 8,
   },
   upload: {
     borderRadius: 10,
-    height: 50,
-    width: 50,
+    height: IMAGE_PREVIEW_SIZE,
+    width: IMAGE_PREVIEW_SIZE,
   },
 });
 
@@ -102,20 +89,27 @@ const ImageUploadPreviewWithContext = <
 
   const {
     theme: {
+      colors: { textGrey, white },
       messageInput: {
-        imageUploadPreview: {
-          container,
-          dismiss,
-          dismissImage,
-          itemContainer,
-          upload,
-        },
+        imageUploadPreview: { dismiss, flatList, itemContainer, upload },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ item }: { item: ImageUpload }) => (
-    <View style={[styles.itemContainer, itemContainer]}>
+  const renderItem = ({
+    index,
+    item,
+  }: {
+    index: number;
+    item: ImageUpload;
+  }) => (
+    <View
+      style={[
+        styles.itemContainer,
+        index === imageUploads.length - 1 ? { marginRight: 8 } : {},
+        itemContainer,
+      ]}
+    >
       <UploadProgressIndicator
         action={() => {
           uploadImage({ newImage: item });
@@ -142,24 +136,24 @@ const ImageUploadPreviewWithContext = <
         style={[styles.dismiss, dismiss]}
         testID='remove-image-upload-preview'
       >
-        <Image
-          source={closeRound}
-          style={[styles.dismissImage, dismissImage]}
-        />
+        <Close backgroundFill={textGrey} pathFill={white} />
       </TouchableOpacity>
     </View>
   );
 
-  return imageUploads?.length > 0 ? (
-    <View style={[styles.container, container]}>
-      <FlatList
-        data={imageUploads}
-        horizontal
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        style={{ flex: 1 }}
-      />
-    </View>
+  return imageUploads.length > 0 ? (
+    <FlatList
+      data={imageUploads}
+      getItemLayout={(_, index) => ({
+        index,
+        length: IMAGE_PREVIEW_SIZE + 8,
+        offset: (IMAGE_PREVIEW_SIZE + 8) * index,
+      })}
+      horizontal
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      style={[styles.flatList, flatList]}
+    />
   ) : null;
 };
 
