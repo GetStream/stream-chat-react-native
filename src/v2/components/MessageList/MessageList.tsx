@@ -316,6 +316,10 @@ export const MessageList = <
     threadList,
   });
 
+  const [autoscrollToTopThreshold, setAutoscrollToTopThreshold] = useState(
+    !channel?.state.isUpToDate ? -1000 : 10,
+  );
+
   const flatListRef = useRef<DefaultFlatList<
     MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
@@ -410,6 +414,13 @@ export const MessageList = <
         lastMessageListLength.current = messageList.length;
       }
     }
+  }, [messageList]);
+
+  useEffect(() => {
+    // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
+    setTimeout(() => {
+      setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
+    });
   }, [messageList]);
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
@@ -584,7 +595,7 @@ export const MessageList = <
           extraData={disabled || !channel?.state.isUpToDate}
           initialScrollIndex={
             !channel?.state.isUpToDate
-              ? 1
+              ? 0
               : initialScrollToFirstUnreadMessage &&
                 channel?.countUnread() > limitForUnreadScrolledUp
               ? Math.min(
@@ -615,7 +626,7 @@ export const MessageList = <
             return null;
           }}
           maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: !channel?.state.isUpToDate ? -1000 : 10,
+            autoscrollToTopThreshold,
             minIndexForVisible: 1,
           }}
           onEndReached={loadMore}
