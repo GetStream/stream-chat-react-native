@@ -11,7 +11,6 @@ import Immutable from 'seamless-immutable';
 import {
   ChannelState,
   Channel as ChannelType,
-  Event,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
@@ -289,26 +288,6 @@ export const ChannelWithContext = <
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [error, setError] = useState(false);
-  /**
-   * We save the events in state so that we can display event message
-   * next to the message after which it was received, in MessageList.
-   *
-   * e.g., eventHistory = {
-   *   message_id_1: [
-   *     { ...event_obj_received_after_message_id_1__1 },
-   *     { ...event_obj_received_after_message_id_1__2 },
-   *     { ...event_obj_received_after_message_id_1__3 },
-   *   ],
-   *   message_id_2: [
-   *     { ...event_obj_received_after_message_id_2__1 },
-   *     { ...event_obj_received_after_message_id_2__2 },
-   *     { ...event_obj_received_after_message_id_2__3 },
-   *   ]
-   * }
-   */
-  const [eventHistory, setEventHistory] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['eventHistory']
-  >({});
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
@@ -447,25 +426,6 @@ export const ChannelWithContext = <
     }
   };
 
-  const addToEventHistory = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
-    const lastMessageId = messages.length
-      ? messages[messages.length - 1].id
-      : 'none';
-
-    if (lastMessageId) {
-      setEventHistory((prevState) => {
-        if (!prevState[lastMessageId]) {
-          return { ...prevState, [lastMessageId]: [event] };
-        } else {
-          return {
-            ...prevState,
-            [lastMessageId]: [...prevState[lastMessageId], event],
-          };
-        }
-      });
-    }
-  };
-
   const handleEventStateThrottled = throttle(copyChannelState, 500, {
     leading: true,
     trailing: true,
@@ -483,9 +443,6 @@ export const ChannelWithContext = <
       const updatedThread = channel.state.messageToImmutable(event.message);
       setThread(updatedThread);
     }
-
-    if (event.type === 'member.added') addToEventHistory(event);
-    if (event.type === 'member.removed') addToEventHistory(event);
 
     if (channel) {
       handleEventStateThrottled();
@@ -1066,7 +1023,6 @@ export const ChannelWithContext = <
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
     error,
-    eventHistory,
     initialScrollToFirstUnreadMessage,
     isAdmin,
     isModerator,

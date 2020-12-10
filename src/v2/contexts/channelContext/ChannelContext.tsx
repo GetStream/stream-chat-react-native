@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { Channel, ChannelState, Event } from 'stream-chat';
+import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -28,7 +28,6 @@ export type ChannelContextValue<
 > = {
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   error: boolean;
-  eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
   initialScrollToFirstUnreadMessage: boolean;
   /**
    * Returns true if the current user has admin privileges
