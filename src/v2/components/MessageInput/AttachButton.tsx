@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Attach } from '../../icons';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -41,6 +42,7 @@ type AttachButtonPropsWithContext<
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: (event: GestureResponderEvent) => void;
+  selectedPicker?: 'images';
 };
 
 const AttachButtonWithContext = <
@@ -54,8 +56,7 @@ const AttachButtonWithContext = <
 >(
   props: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled, handleOnPress } = props;
-
+  const { disabled, handleOnPress, selectedPicker } = props;
   const {
     theme: {
       messageInput: { attachButton },
@@ -69,7 +70,11 @@ const AttachButtonWithContext = <
       style={[styles.container, attachButton]}
       testID='attach-button'
     >
-      <Attach height={24} width={24} />
+      <Attach
+        height={24}
+        pathFill={selectedPicker === 'images' ? '#005FFF' : '#7A7A7A'}
+        width={24}
+      />
     </TouchableOpacity>
   );
 };
@@ -86,9 +91,21 @@ const areEqual = <
   prevProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled: prevDisabled } = prevProps;
-  const { disabled: nextDisabled } = nextProps;
-  return prevDisabled === nextDisabled;
+  const {
+    disabled: prevDisabled,
+    handleOnPress: prevHandleOnPress,
+    selectedPicker: prevSelectedPicker,
+  } = prevProps;
+  const {
+    disabled: nextDisabled,
+    handleOnPress: nextHandleOnPress,
+    selectedPicker: nextSelectedPicker,
+  } = nextProps;
+  return (
+    prevDisabled === nextDisabled &&
+    prevHandleOnPress === nextHandleOnPress &&
+    prevSelectedPicker === nextSelectedPicker
+  );
 };
 
 const MemoizedAttachButton = React.memo(
@@ -123,8 +140,9 @@ export const AttachButton = <
   props: AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { selectedPicker } = useAttachmentPickerContext();
 
-  return <MemoizedAttachButton {...{ disabled }} {...props} />;
+  return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;
 };
 
 AttachButton.displayName = 'AttachButton{messageInput}';

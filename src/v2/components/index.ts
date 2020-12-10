@@ -50,7 +50,6 @@ export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 
-export * from './MessageInput/ActionSheetAttachment';
 export * from './MessageInput/AttachButton';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';

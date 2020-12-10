@@ -60,7 +60,7 @@ export type ChannelListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us> & {
+> = Partial<ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>> & {
   /**
    * Object containing channel query filters
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields

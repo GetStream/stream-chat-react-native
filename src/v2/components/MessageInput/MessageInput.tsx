@@ -7,9 +7,11 @@ import {
   View,
 } from 'react-native';
 
+import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 import { IconSquare } from '../IconSquare';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -106,11 +108,12 @@ type MessageInputPropsWithContext<
     | 'maxNumberOfFiles'
     | 'numberOfUploads'
     | 'pickFile'
-    | 'pickImage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
+    | 'uploadNewImage'
+    | 'removeImage'
   > &
   Pick<SuggestionsContextValue<Co, Us>, 'setInputBoxContainerRef'> &
   Pick<TranslationContextValue, 't'>;
@@ -149,13 +152,14 @@ export const MessageInputWithContext = <
     members,
     numberOfUploads,
     pickFile,
-    pickImage,
+    removeImage,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
     setInputBoxContainerRef,
     t,
+    uploadNewImage,
     watchers,
   } = props;
 
@@ -170,6 +174,58 @@ export const MessageInputWithContext = <
       },
     },
   } = useTheme();
+
+  const {
+    bottomInset,
+    closePicker,
+    openPicker,
+    selectedImages,
+    selectedPicker,
+    setMaxNumberOfFiles,
+    setSelectedImages,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
+
+    return () => {
+      closePicker();
+      setSelectedPicker(undefined);
+    };
+  }, [maxNumberOfFiles]);
+
+  useEffect(() => {
+    if (selectedImages.length > imageUploads.length) {
+      const imagesToUpload = selectedImages.filter((selectedImage) => {
+        const uploadedImage = imageUploads.find(
+          (imageUpload) => imageUpload.file.uri === selectedImage,
+        );
+        return !uploadedImage;
+      });
+      imagesToUpload.forEach((image) => uploadNewImage({ uri: image }));
+    } else if (selectedImages.length < imageUploads.length) {
+      const imagesToRemove = imageUploads.filter(
+        (imageUpload) =>
+          !selectedImages.find(
+            (selectedImage) => selectedImage === imageUpload.file.uri,
+          ),
+      );
+      imagesToRemove.forEach((image) => removeImage(image.id));
+    }
+  }, [selectedImages.length]);
+
+  useEffect(() => {
+    if (imageUploads.length < selectedImages.length) {
+      const updatedSelectedImages = selectedImages.filter((selectedImage) => {
+        const uploadedImage = imageUploads.find(
+          (imageUpload) => imageUpload.file.uri === selectedImage,
+        );
+        return uploadedImage;
+      });
+      setSelectedImages(updatedSelectedImages);
+    }
+  }, [imageUploads.length]);
 
   useEffect(() => {
     if (editing && inputBoxRef.current) {
@@ -228,22 +284,18 @@ export const MessageInputWithContext = <
     return result;
   };
 
-  const handleOnPress = async () => {
-    if (numberOfUploads >= maxNumberOfFiles) {
-      return;
-    }
-
-    if (hasImagePicker) {
-      if (hasFilePicker) {
-        await Keyboard.dismiss();
-        // if (attachActionSheet?.current) {
-        //   attachActionSheet.current.show();
-        // }
-      } else {
-        pickImage();
+  const handleOnPress = () => {
+    if (selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    } else {
+      if (hasImagePicker && !fileUploads.length) {
+        Keyboard.dismiss();
+        openPicker();
+        setSelectedPicker('images');
+      } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
+        pickFile();
       }
-    } else if (hasFilePicker) {
-      pickFile();
     }
   };
 
@@ -254,57 +306,58 @@ export const MessageInputWithContext = <
     };
 
     return (
-      <View
-        style={[
-          styles.container,
-          { paddingTop: imageUploads.length ? conditionalPadding : 0 },
-          container,
-        ]}
-      >
-        {fileUploads && <FileUploadPreview />}
-        {imageUploads && <ImageUploadPreview />}
-
-        {/**
-         * TODO: Use custom action sheet to show icon with titles of button. But it doesn't
-         * work well with async onPress operations. So find a solution.
-         */}
-        {/* <ActionSheetAttachment
-          closeAttachActionSheet={closeAttachActionSheet}
-          pickFile={pickFile}
-          pickImage={pickImage}
-          setAttachActionSheetRef={setAttachActionSheetRef}
-          styles={actionSheetStyles}
-        /> */}
+      <>
         <View
-          ref={setInputBoxContainerRef}
-          style={[styles.composerContainer, composerContainer]}
+          style={[
+            styles.container,
+            { paddingTop: imageUploads.length ? conditionalPadding : 0 },
+            container,
+          ]}
         >
-          {Input ? (
-            <Input
-              additionalTextInputProps={additionalTextInputContainerProps}
-              getUsers={getUsers}
-              handleOnPress={handleOnPress}
-            />
-          ) : (
-            <>
-              {(hasImagePicker || hasFilePicker) && (
-                <AttachButton handleOnPress={handleOnPress} />
-              )}
-              <CommandsButton
-                handleOnPress={() => {
-                  appendText('/');
-                }}
+          {fileUploads && <FileUploadPreview />}
+          {imageUploads && <ImageUploadPreview />}
+
+          <View
+            ref={setInputBoxContainerRef}
+            style={[styles.composerContainer, composerContainer]}
+          >
+            {Input ? (
+              <Input
+                additionalTextInputProps={additionalTextInputContainerProps}
+                getUsers={getUsers}
+                handleOnPress={handleOnPress}
               />
-              <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
-                additionalTextInputProps={additionalTextInputProps}
-              />
-              <SendButton
-                disabled={disabled || sending.current || !isValidMessage()}
-              />
-            </>
-          )}
+            ) : (
+              <>
+                {(hasImagePicker || hasFilePicker) && (
+                  <AttachButton handleOnPress={handleOnPress} />
+                )}
+                <CommandsButton
+                  handleOnPress={() => {
+                    appendText('/');
+                  }}
+                />
+                <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
+                  additionalTextInputProps={additionalTextInputProps}
+                />
+                <SendButton
+                  disabled={disabled || sending.current || !isValidMessage()}
+                />
+              </>
+            )}
+          </View>
         </View>
-      </View>
+        {selectedPicker && (
+          <View
+            style={{
+              backgroundColor: '#F5F5F5',
+              height: 360 - (bottomInset || 0),
+            }}
+          >
+            <AttachmentSelectionBar />
+          </View>
+        )}
+      </>
     );
   };
 
@@ -348,6 +401,7 @@ const areEqual = <
     asyncUploads: prevAsyncUploads,
     disabled: prevDisabled,
     editing: prevEditing,
+    imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
     sending: prevSending,
     t: prevT,
@@ -356,6 +410,7 @@ const areEqual = <
     asyncUploads: nextAsyncUploads,
     disabled: nextDisabled,
     editing: nextEditing,
+    imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
     sending: nextSending,
     t: nextT,
@@ -369,6 +424,9 @@ const areEqual = <
 
   const editingEqual = prevEditing === nextEditing;
   if (!editingEqual) return false;
+
+  const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
+  if (!imageUploadsEqual) return false;
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
@@ -455,11 +513,12 @@ export const MessageInput = <
     maxNumberOfFiles,
     numberOfUploads,
     pickFile,
-    pickImage,
+    removeImage,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
+    uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { setInputBoxContainerRef } = useSuggestionsContext<Co, Us>();
@@ -491,13 +550,14 @@ export const MessageInput = <
         members,
         numberOfUploads,
         pickFile,
-        pickImage,
+        removeImage,
         resetInput,
         SendButton,
         sending,
         sendMessageAsync,
         setInputBoxContainerRef,
         t,
+        uploadNewImage,
         watchers,
       }}
       {...props}

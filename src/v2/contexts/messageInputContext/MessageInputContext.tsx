@@ -40,7 +40,7 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
-import { pickDocument, pickImage as pickImageNative } from '../../native';
+import { pickDocument } from '../../native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -146,7 +146,6 @@ export type LocalMessageInputContext<
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse<Us>) => void;
   pickFile: () => Promise<void>;
-  pickImage: () => Promise<void>;
   /**
    * Function for removing a file from the upload preview
    *
@@ -314,7 +313,7 @@ export type InputMessageInputContextValue<
   Input?: React.ComponentType<
     Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> & {
       getUsers: () => UserResponse<Us>[];
-      handleOnPress: () => Promise<void>;
+      handleOnPress: () => void | Promise<void>;
     }
   >;
   /**
@@ -544,23 +543,6 @@ const MessageInputProviderWithContext = <
         } else {
           uploadNewFile(doc);
         }
-      });
-    }
-  };
-
-  const pickImage = async () => {
-    if (numberOfUploads >= value.maxNumberOfFiles) {
-      return;
-    }
-
-    const result = await pickImageNative({
-      compressImageQuality: value.compressImageQuality,
-      maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
-    });
-
-    if (!result.cancelled && result.images) {
-      result.images.forEach((image) => {
-        uploadNewImage(image);
       });
     }
   };
@@ -990,7 +972,6 @@ const MessageInputProviderWithContext = <
           onChange,
           onSelectItem,
           pickFile,
-          pickImage,
           removeFile,
           removeImage,
           resetInput,

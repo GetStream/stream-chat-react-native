@@ -25,11 +25,15 @@ registerNativeHandlers({
     }
   },
   getPhotos: async ({ after, first }) => {
-    const results = await MediaLibrary.getAssetsAsync({ after, first });
-    const assets = results.assets.map((asset) => asset.uri);
-    const hasNextPage = results.hasNextPage;
-    const endCursor = results.endCursor;
-    return { assets, endCursor, hasNextPage };
+    try {
+      const results = await MediaLibrary.getAssetsAsync({ after, first });
+      const assets = results.assets.map((asset) => asset.uri);
+      const hasNextPage = results.hasNextPage;
+      const endCursor = results.endCursor;
+      return { assets, endCursor, hasNextPage };
+    } catch {
+      throw new Error('getPhotos Error');
+    }
   },
   NetInfo: {
     addEventListener(listener) {
@@ -133,6 +137,18 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed or cancelled...');
     }
+  },
+  takePhoto: async () => {
+    const photo = await ImagePicker.launchImageLibraryAsync();
+    if (photo.height && photo.width && photo.uri) {
+      return {
+        cancelled: false,
+        height: photo.height,
+        uri: photo.uri,
+        width: photo.width,
+      };
+    }
+    return { cancelled: true };
   },
   triggerHaptic: (method) => {
     switch (method) {

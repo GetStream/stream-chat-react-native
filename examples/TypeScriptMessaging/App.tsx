@@ -12,6 +12,10 @@ import {
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -25,6 +29,7 @@ import {
   Theme,
   Thread,
   ThreadContextValue,
+  useAttachmentPickerContext,
 } from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
@@ -127,6 +132,11 @@ type ChannelScreenProps = {
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { setTopInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setTopInset(headerHeight);
+  }, [headerHeight]);
 
   return (
     <SafeAreaView>
@@ -266,7 +276,9 @@ type AppContextType = {
 
 const AppContext = React.createContext({} as AppContextType);
 
-export default () => {
+const App = () => {
+  const { bottom } = useSafeAreaInsets();
+
   const [channel, setChannel] = useState<
     ChannelType<
       LocalAttachmentType,
@@ -315,6 +327,7 @@ export default () => {
         >
           i18nInstance={streami18n}
           value={{ style: theme }}
+          bottomInset={bottom}
         >
           {clientReady && (
             <Stack.Navigator
@@ -379,3 +392,9 @@ export default () => {
     </NavigationContainer>
   );
 };
+
+export default () => (
+  <SafeAreaProvider>
+    <App />
+  </SafeAreaProvider>
+);

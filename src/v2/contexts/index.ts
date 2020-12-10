@@ -1,3 +1,4 @@
+export * from './attachmentPickerContext/AttachmentPickerContext';
 export * from './channelContext/ChannelContext';
 export * from './chatContext/ChatContext';
 export * from './imageGalleryContext/ImageGalleryContext';

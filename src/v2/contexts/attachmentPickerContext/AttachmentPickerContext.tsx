@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useContext } from 'react';
+import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -6,7 +6,16 @@ import type { UnknownType } from '../../types/types';
 
 export type AttachmentPickerContextValue = {
   closePicker: () => void;
+  maxNumberOfFiles: number;
   openPicker: () => void;
+  selectedImages: string[];
+  setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
+  setTopInset: React.Dispatch<React.SetStateAction<number>>;
+  bottomInset?: number;
+  selectedPicker?: 'images';
+  topInset?: number;
 };
 
 export const AttachmentPickerContext = React.createContext<AttachmentPickerContextValue>(
@@ -17,14 +26,36 @@ export const AttachmentPickerProvider = ({
   children,
   value,
 }: PropsWithChildren<{
-  value?: AttachmentPickerContextValue;
-}>) => (
-  <AttachmentPickerContext.Provider
-    value={(value as unknown) as AttachmentPickerContextValue}
-  >
-    {children}
-  </AttachmentPickerContext.Provider>
-);
+  value?: Pick<
+    AttachmentPickerContextValue,
+    'closePicker' | 'openPicker' | 'bottomInset'
+  >;
+}>) => {
+  const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedPicker, setSelectedPicker] = useState<'images'>();
+  const [topInset, setTopInset] = useState<number>();
+
+  const combinedValue = {
+    maxNumberOfFiles,
+    selectedImages,
+    selectedPicker,
+    setMaxNumberOfFiles,
+    setSelectedImages,
+    setSelectedPicker,
+    setTopInset,
+    topInset,
+    ...value,
+  };
+
+  return (
+    <AttachmentPickerContext.Provider
+      value={(combinedValue as unknown) as AttachmentPickerContextValue}
+    >
+      {children}
+    </AttachmentPickerContext.Provider>
+  );
+};
 
 export const useAttachmentPickerContext = () =>
   (useContext(

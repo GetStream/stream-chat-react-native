@@ -40,15 +40,6 @@ export let NetInfo: NetInfo = {
   fetch: fail,
 };
 
-type PickImage = ({
-  compressImageQuality,
-  maxNumberOfFiles,
-}: {
-  compressImageQuality?: number;
-  maxNumberOfFiles?: number;
-}) => Promise<{ cancelled: boolean; images?: { uri: string }[] }> | never;
-export let pickImage: PickImage = fail;
-
 type PickDocument = ({
   maxNumberOfFiles,
 }: {
@@ -80,6 +71,17 @@ type ShareOptions = {
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 export let shareImage: ShareImage = fail;
 
+type TakenPhoto =
+  | {
+      cancelled: false;
+      height: number;
+      uri: string;
+      width: number;
+    }
+  | { cancelled: true };
+type TakePhoto = () => Promise<TakenPhoto> | never;
+export let takePhoto: TakePhoto = fail;
+
 type HapticFeedbackMethod =
   | 'selection'
   | 'impactLight'
@@ -97,9 +99,9 @@ type Handlers = {
   getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
-  pickImage?: PickImage;
   saveFile?: SaveFile;
   shareImage?: ShareImage;
+  takePhoto?: TakePhoto;
   triggerHaptic?: TriggerHaptic;
 };
 
@@ -120,10 +122,6 @@ export const registerNativeHandlers = (handlers: Handlers) => {
     NetInfo = handlers.NetInfo;
   }
 
-  if (handlers.pickImage) {
-    pickImage = handlers.pickImage;
-  }
-
   if (handlers.pickDocument) {
     pickDocument = handlers.pickDocument;
   }
@@ -134,6 +132,10 @@ export const registerNativeHandlers = (handlers: Handlers) => {
 
   if (handlers.shareImage) {
     shareImage = handlers.shareImage;
+  }
+
+  if (handlers.takePhoto) {
+    takePhoto = handlers.takePhoto;
   }
 
   if (handlers.triggerHaptic) {

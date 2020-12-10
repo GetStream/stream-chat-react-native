@@ -25,11 +25,15 @@ registerNativeHandlers({
     }
   },
   getPhotos: async ({ after, first }) => {
-    const results = await CameraRoll.getPhotos({ after, first });
-    const assets = results.edges.map((edge) => edge.node.image.uri);
-    const hasNextPage = results.page_info.has_next_page;
-    const endCursor = results.page_info.end_cursor;
-    return { assets, endCursor, hasNextPage };
+    try {
+      const results = await CameraRoll.getPhotos({ after, first });
+      const assets = results.edges.map((edge) => edge.node.image.uri);
+      const hasNextPage = results.page_info.has_next_page;
+      const endCursor = results.page_info.end_cursor;
+      return { assets, endCursor, hasNextPage };
+    } catch {
+      throw new Error('getPhotos Error');
+    }
   },
   NetInfo: {
     addEventListener(listener) {
@@ -168,6 +172,18 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed...');
     }
+  },
+  takePhoto: async () => {
+    const photo = await ImagePicker.openCamera({});
+    if (photo.height && photo.width && photo.path) {
+      return {
+        cancelled: false,
+        height: photo.height,
+        uri: photo.path,
+        width: photo.width,
+      };
+    }
+    return { cancelled: true };
   },
   triggerHaptic: (method) => {
     ReactNativeHapticFeedback.trigger(method, {

@@ -86,6 +86,7 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
 
 type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
   ImageGalleryCustomComponents<Us> & {
+    bottomInset?: number;
     i18nInstance?: Streami18n;
     value?: Partial<OverlayContextValue>;
   }
@@ -104,7 +105,13 @@ export const OverlayProvider = <
 >(
   props: Props<Us>,
 ) => {
-  const { children, i18nInstance, imageGalleryCustomComponents, value } = props;
+  const {
+    bottomInset,
+    children,
+    i18nInstance,
+    imageGalleryCustomComponents,
+    value,
+  } = props;
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -144,6 +151,7 @@ export const OverlayProvider = <
   }, [overlay]);
 
   useEffect(() => {
+    bottomSheetRef.current?.close();
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
       overlayOpacity.value = withTiming(1);
@@ -156,8 +164,9 @@ export const OverlayProvider = <
   useStreami18n({ i18nInstance, setTranslators });
 
   const attachmentPickerContext = {
-    closePicker: () => bottomSheetRef.current?.snapTo(0),
-    openPicker: () => bottomSheetRef.current?.snapTo(-1),
+    bottomInset,
+    closePicker: () => bottomSheetRef.current?.close(),
+    openPicker: () => bottomSheetRef.current?.snapTo(0),
   };
 
   const overlayStyle = useAnimatedStyle<ViewStyle>(
