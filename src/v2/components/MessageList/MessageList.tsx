@@ -415,7 +415,7 @@ export const MessageList = <
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
   const renderItem = (
-    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+    message: MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>,
     index: number,
   ) => {
     if (!channel) return null;

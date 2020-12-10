@@ -129,8 +129,9 @@ export const useMessageList = <
   const messagesWithStylesAndRead = messagesWithInlineSeparators
     .filter(
       (msg) =>
-        !isInlineSeparator(msg) &&
-        (!msg.deleted_at || msg.user?.id === client.userID),
+        isInlineSeparator(msg) ||
+        !msg.deleted_at ||
+        msg.user?.id === client.userID,
     )
     .map((msg) => ({
       ...msg,

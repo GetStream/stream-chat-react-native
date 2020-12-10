@@ -267,6 +267,10 @@ export type Theme = {
   messageList: {
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
+    inlineUnreadIndicator: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     listContainer: ViewStyle;
     messageNotification: {
       container: ViewStyle;
@@ -681,6 +685,10 @@ export const defaultTheme: Theme = {
   messageList: {
     errorNotification: {},
     errorNotificationText: {},
+    inlineUnreadIndicator: {
+      container: {},
+      text: {},
+    },
     listContainer: {},
     messageNotification: {
       container: {},
