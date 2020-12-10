@@ -327,8 +327,7 @@ export const MessageList = <
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
-  const lastReceivedMessage = useRef(getLastReceivedMessage(messageList));
-  const lastMessageListLength = useRef(messageList.length);
+  const lastMessageListLength = useRef(channel?.state.messages.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
 
   const messageScrollPosition = useRef(0);
@@ -375,12 +374,12 @@ export const MessageList = <
 
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
-    if (currentLastMessage) {
+    if (currentLastMessage && channel) {
       const currentLastReceivedId = currentLastMessage.id;
-      const lastReceivedId = lastReceivedMessage.current?.id;
-      const currentMessageListLength = messageList.length;
+      const currentMessageListLength = channel?.state.messages.length;
       if (currentLastReceivedId) {
         const hasNewMessage =
+          lastMessageListLength.current &&
           lastReceivedId !== currentLastReceivedId &&
           currentMessageListLength - lastMessageListLength.current === 1;
         const userScrolledUp = yOffset.current > 0;
@@ -410,8 +409,7 @@ export const MessageList = <
         }
 
         setLastReceivedId(currentLastReceivedId);
-        lastReceivedMessage.current = currentLastMessage;
-        lastMessageListLength.current = messageList.length;
+        lastMessageListLength.current = channel?.state.messages.length;
       }
     }
   }, [messageList]);
@@ -437,8 +435,11 @@ export const MessageList = <
     }
 
     if (isInlineUnreadIndicator(message)) {
-      // @ts-ignore
-      return <InlineUnreadIndicator />;
+      if (newMessagesNotification) {
+        // @ts-ignore
+        return <InlineUnreadIndicator />;
+      }
+      return null;
     }
 
     const lastRead = channel?.lastRead();
@@ -475,7 +476,8 @@ export const MessageList = <
       return (
         <View
           style={{
-            backgroundColor: isUnread ? '#F9F9F9' : 'white',
+            backgroundColor:
+              isUnread && newMessagesNotification ? '#F9F9F9' : 'white',
           }}
         >
           <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
