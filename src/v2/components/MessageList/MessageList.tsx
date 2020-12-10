@@ -61,14 +61,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
-  editStateMask: {
-    backgroundColor: 'black',
-    height: '100%',
-    opacity: 0.4,
-    position: 'absolute',
-    width: '100%',
-    zIndex: 100,
-  },
   errorNotification: {
     alignItems: 'center',
     backgroundColor: '#FAE6E8',
