@@ -507,7 +507,12 @@ export const ChannelWithContext = <
   const loadChannelAtMessage = (messageId?: string, before = 10, after = 2) =>
     channelQueryCall(() => queryAtMessage(messageId, before, after));
 
-  const loadChannel = () => channelQueryCall(() => channel?.watch());
+  const loadChannel = () =>
+    channelQueryCall(() => {
+      if (!channel?.initialized) {
+        channel?.watch();
+      }
+    });
 
   const reloadChannel = () => {
     if (!channel) return;
