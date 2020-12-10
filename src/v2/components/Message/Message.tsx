@@ -333,11 +333,16 @@ const MessageWithContext = <
             } else if (
               cur.type === 'image' &&
               !cur.title_link &&
-              !cur.og_scrape_url &&
-              (cur.image_url || cur.thumb_url)
+              !cur.og_scrape_url
             ) {
-              acc.images.push(cur);
-              acc.other = []; // remove other attachments if an image exists
+              /**
+               * this next if is not combined with the above one for cases where we have
+               * an image with no url links at all falling back to being an attachment
+               */
+              if (cur.image_url || cur.thumb_url) {
+                acc.images.push(cur);
+                acc.other = []; // remove other attachments if an image exists
+              }
               // only add other attachments if there are no files/images
             } else if (!acc.files.length && !acc.images.length) {
               acc.other.push(cur);
@@ -657,7 +662,7 @@ const MessageWithContext = <
     [onLongPressMessage],
   );
 
-  return (
+  return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
       enabled={animatedLongPress}
       maxDurationMs={3000}
@@ -669,7 +674,7 @@ const MessageWithContext = <
         </MessageProvider>
       </Animated.View>
     </TapGestureHandler>
-  );
+  ) : null;
 };
 
 const areEqual = <

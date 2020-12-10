@@ -1458,10 +1458,10 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.8.5-dev.1:
-  version "2.8.5-dev.1"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.8.5-dev.1.tgz#643fda9e2b59f38ea060d8da47106360185f6634"
-  integrity sha512-K74pwfnGqwnLXtadYZ0oUQ6HR2FZbYkU8BWFNl2qIyfSXOBW4rWBup8M4hnEphJQsi1uaFmx5tTLrqb3UBbqSA==
+stream-chat@2.9.1-dev.0:
+  version "2.9.1-dev.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.1-dev.0.tgz#ce403094d0edc763cc8a8948ae031bf94ff4dd25"
+  integrity sha512-llq2vasCvJQY1gaRdLV1Q7VUMk/zAyPHhN2jMLTiYoQj+Pq5CkUjOD+JhJp2WBWDUUlrmFYfBT88fVmPGPvobA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"
@@ -1560,11 +1560,6 @@ util@^0.10.3:
   integrity sha512-0Pm9hTQ3se5ll1XihRic3FDIku70C+iHUdT/W926rSgHV5QgXsYbKZN8MSC3tJtSkhuROzvsQjAaFENRXr+19A==
   dependencies:
     inherits "2.0.3"
-
-uuid@8.3.1:
-  version "8.3.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
-  integrity sha512-FOmRr+FmWEIG8uhZv6C2bTgEVXsHk08kE7mPlrBbEe+c3r9pjceVPgupIfNIhc4yx55H69OXANrUaSuu9eInKg==
 
 whatwg-fetch@>=0.10.0:
   version "3.4.1"

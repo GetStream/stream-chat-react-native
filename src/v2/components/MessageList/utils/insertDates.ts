@@ -1,4 +1,4 @@
-import type { ChannelState } from 'stream-chat';
+import type { Channel, ChannelState } from 'stream-chat';
 
 import type {
   MessagesContextValue,
@@ -129,7 +129,7 @@ export const insertDates = <
   messages:
     | MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'],
-  lastRead?: Date,
+  lastRead?: ReturnType<Channel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
   userID?: string,
 ) => {
   let unread = false;

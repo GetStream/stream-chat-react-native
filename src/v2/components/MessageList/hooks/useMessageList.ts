@@ -26,12 +26,13 @@ import type {
 } from '../../../types/types';
 import type SeamlessImmutable from 'seamless-immutable';
 import {
-  DateSeparator,
   insertDates,
   isInlineSeparator,
+  MessageOrInlineSeparator,
 } from '../utils/insertDates';
 
 export type UseMessageListParams = {
+  inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
@@ -59,17 +60,6 @@ export type ImmutableMessages<
 > =
   | Message<At, Ch, Co, Ev, Me, Re, Us>[]
   | SeamlessImmutable.ImmutableArray<Message<At, Ch, Co, Ev, Me, Re, Us>>;
-export type MessageOrDate<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> =
-  | Message<At, Ch, Co, Ev, Me, Re, Us>
-  | DateSeparator<At, Ch, Co, Ev, Me, Re, Us>;
 
 export type InsertDatesResponse<
   At extends UnknownType = DefaultAttachmentType,
@@ -79,7 +69,7 @@ export type InsertDatesResponse<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = MessageOrDate<At, Ch, Co, Ev, Me, Re, Us>[];
+> = MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>[];
 
 export const isImmutableMessageArray = <
   At extends UnknownType = DefaultAttachmentType,
@@ -109,7 +99,7 @@ export const useMessageList = <
 >(
   params: UseMessageListParams,
 ) => {
-  const { noGroupByUser, threadList } = params;
+  const { inverted, noGroupByUser, threadList } = params;
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { channel, read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -120,13 +110,13 @@ export const useMessageList = <
     | ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
     | undefined = threadList ? undefined : read;
   const lastRead = channel?.lastRead();
-  const messagesWithDates = insertDates<At, Ch, Co, Ev, Me, Re, Us>(
+  const messagesWithInlineSeparators = insertDates<At, Ch, Co, Ev, Me, Re, Us>(
     messageList,
     lastRead,
     client.user?.id,
   );
   const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({
-    messages: messagesWithDates,
+    messages: messagesWithInlineSeparators,
     noGroupByUser,
   });
 
@@ -136,7 +126,12 @@ export const useMessageList = <
     readList,
   );
 
-  const messagesWithStylesAndRead = messagesWithDates
+  const messagesWithStylesAndRead = messagesWithInlineSeparators
+    .filter(
+      (msg) =>
+        !isInlineSeparator(msg) &&
+        (!msg.deleted_at || msg.user?.id === client.userID),
+    )
     .map((msg) => ({
       ...msg,
       groupStyles:
@@ -147,8 +142,9 @@ export const useMessageList = <
         !isInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
           ? readData[msg.id] || []
           : [],
-    }))
-    .reverse();
+    }));
 
-  return messagesWithStylesAndRead as Message<At, Ch, Co, Ev, Me, Re, Us>[];
+  return (inverted
+    ? messagesWithStylesAndRead.reverse()
+    : messagesWithStylesAndRead) as Message<At, Ch, Co, Ev, Me, Re, Us>[];
 };
