@@ -29,7 +29,7 @@ export const KeyboardCompatibleView: React.FC<KeyboardAvoidingViewProps> = ({
   children,
   contentContainerStyle,
   enabled = true,
-  keyboardVerticalOffset = 66.5,
+  keyboardVerticalOffset = Platform.OS === 'ios' ? 86.5 : -300,
   style,
   ...props
 }) => {

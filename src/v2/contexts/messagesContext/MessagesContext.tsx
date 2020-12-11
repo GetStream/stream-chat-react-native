@@ -29,6 +29,7 @@ import type { MessageTextProps } from '../../components/Message/MessageSimple/Me
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
+import type { ReplyProps } from '../../components/Reply/Reply';
 import type { TDateTimeParserInput } from '../../contexts/translationContext/TranslationContext';
 import type {
   DefaultAttachmentType,
@@ -163,10 +164,17 @@ export type MessagesContextValue<
     id: string;
     parent_id?: StreamMessage<At, Me, Us>['parent_id'];
   }) => void;
+  /**
+   * Custom UI component for reply component.
+   *
+   * Defaults to and accepts same props as: [Reply](https://getstream.github.io/stream-chat-react-native/#reply)
+   */
+  Reply: React.ComponentType<ReplyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  setReplyToState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
   supportedReactions: ReactionData[];
   updateMessage: (
     updatedMessage: MessageResponse<At, Ch, Co, Me, Re, Us>,

@@ -6,7 +6,7 @@ import {
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Lightning } from '../../icons/Lightning';
+import { CircleRight } from '../../icons/CircleRight';
 
 import type { GestureResponderEvent } from 'react-native';
 
@@ -21,7 +21,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-type CommandsButtonPropsWithContext<
+type MoreOptionsButtonPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -30,11 +30,11 @@ type CommandsButtonPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
-  /** Function that opens commands selector */
+  /** Function that opens attachment options bottom sheet */
   handleOnPress?: (event: GestureResponderEvent) => void;
 };
 
-export const CommandsButtonWithContext = <
+const MoreOptionsButtonWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -43,14 +43,14 @@ export const CommandsButtonWithContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled, handleOnPress } = props;
 
   const {
     theme: {
-      colors: { textGrey },
-      messageInput: { commandsButton },
+      colors: { primary },
+      messageInput: { moreOptionsButton },
     },
   } = useTheme();
 
@@ -58,10 +58,10 @@ export const CommandsButtonWithContext = <
     <TouchableOpacity
       disabled={disabled}
       onPress={handleOnPress}
-      style={[commandsButton]}
-      testID='commands-button'
+      style={[moreOptionsButton]}
+      testID='more-options-button'
     >
-      <Lightning pathFill={textGrey} />
+      <CircleRight pathFill={primary} />
     </TouchableOpacity>
   );
 };
@@ -75,20 +75,20 @@ const areEqual = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  prevProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  prevProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled: prevDisabled } = prevProps;
   const { disabled: nextDisabled } = nextProps;
   return prevDisabled === nextDisabled;
 };
 
-const MemoizedCommandsButton = React.memo(
-  CommandsButtonWithContext,
+const MemoizedMoreOptionsButton = React.memo(
+  MoreOptionsButtonWithContext,
   areEqual,
-) as typeof CommandsButtonWithContext;
+) as typeof MoreOptionsButtonWithContext;
 
-export type CommandsButtonProps<
+export type MoreOptionsButtonProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -96,14 +96,14 @@ export type CommandsButtonProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+> = Partial<MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 /**
- * UI Component for attach button in MessageInput component.
+ * UI Component for more options button in MessageInput component.
  *
- * @example ./CommandsButton.md
+ * @example ./MoreOptionsButton.md
  */
-export const CommandsButton = <
+export const MoreOptionsButton = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -112,11 +112,11 @@ export const CommandsButton = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return <MemoizedCommandsButton {...{ disabled }} {...props} />;
+  return <MemoizedMoreOptionsButton {...{ disabled }} {...props} />;
 };
 
-CommandsButton.displayName = 'CommandsButton{messageInput}';
+MoreOptionsButton.displayName = 'MoreOptionsButton{messageInput}';

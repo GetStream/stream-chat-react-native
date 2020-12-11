@@ -1,8 +1,6 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
-  Image,
-  ImageRequireSource,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -11,9 +9,9 @@ import {
 
 import { UploadProgressIndicator } from './UploadProgressIndicator';
 
-import type { FileUpload } from './hooks/useMessageDetailsForState';
-
+import { getFileSizeDisplayText } from '../Attachment/FileAttachment';
 import {
+  FileUpload,
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -22,6 +20,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Close } from '../../icons/Close';
 import { FileState, ProgressIndicatorTypes } from '../../utils/utils';
 
 import type {
@@ -35,47 +34,40 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const closeRound: ImageRequireSource = require('../../../images/icons/close-round.png');
-
-const FILE_PREVIEW_HEIGHT = 50;
-const FILE_PREVIEW_PADDING = 10;
+const FILE_PREVIEW_HEIGHT = 60;
 
 const styles = StyleSheet.create({
-  attachmentContainerView: {
-    alignItems: 'center',
-    borderColor: '#EBEBEB',
-    borderWidth: 0.5,
+  dismiss: {
+    backgroundColor: '#00000033', // 20 = 33% opacity
+    borderRadius: 24,
+    height: 24,
+  },
+  fileContainer: {
+    borderColor: '#00000029', // 29 = 16% opacity
+    borderRadius: 12,
+    borderWidth: 1,
     flexDirection: 'row',
     height: FILE_PREVIEW_HEIGHT,
     justifyContent: 'space-between',
-    marginBottom: 5,
-    padding: FILE_PREVIEW_PADDING,
+    marginBottom: 8,
+    marginLeft: 8,
+    padding: 8,
   },
-  attachmentView: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  container: {
-    marginHorizontal: 10,
-  },
-  dismiss: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    height: 20,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: 5,
-    top: 5,
-    width: 20,
-  },
-  dismissImage: {
-    height: 10,
-    width: 10,
-  },
+  fileContentContainer: { flexDirection: 'row' },
   filenameText: {
+    fontSize: 14,
+    fontWeight: 'bold',
     paddingLeft: 10,
   },
+  fileSizeText: {
+    fontSize: 12,
+    paddingLeft: 10,
+  },
+  fileTextContainer: {
+    height: '100%',
+    justifyContent: 'space-around',
+  },
+  flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
 });
 
 type FileUploadPreviewPropsWithContext<
@@ -105,79 +97,119 @@ const FileUploadPreviewWithContext = <
 ) => {
   const { AttachmentFileIcon, fileUploads, removeFile, uploadFile } = props;
 
+  const flatListRef = useRef<FlatList<FileUpload> | null>(null);
+  const [flatListWidth, setFlatListWidth] = useState(0);
+
   const {
     theme: {
       messageInput: {
         fileUploadPreview: {
-          attachmentContainerView,
-          attachmentView,
-          container,
           dismiss,
-          dismissImage,
+          fileContainer,
+          fileContentContainer,
           filenameText,
+          fileSizeText,
+          fileTextContainer,
+          flatList,
         },
       },
     },
   } = useTheme();
 
-  const renderItem = ({ item }: { item: FileUpload }) => (
-    <>
-      <UploadProgressIndicator
-        action={() => {
-          uploadFile({ newFile: item });
-        }}
-        active={item.state !== FileState.UPLOADED}
-        type={
-          item.state === FileState.UPLOADING
-            ? ProgressIndicatorTypes.IN_PROGRESS
-            : item.state === FileState.UPLOAD_FAILED
-            ? ProgressIndicatorTypes.RETRY
-            : undefined
-        }
+  const renderItem = ({ index, item }: { index: number; item: FileUpload }) => (
+    <UploadProgressIndicator
+      action={() => {
+        uploadFile({ newFile: item });
+      }}
+      active={item.state !== FileState.UPLOADED}
+      type={
+        item.state === FileState.UPLOADING
+          ? ProgressIndicatorTypes.IN_PROGRESS
+          : item.state === FileState.UPLOAD_FAILED
+          ? ProgressIndicatorTypes.RETRY
+          : undefined
+      }
+    >
+      <View
+        style={[
+          styles.fileContainer,
+          index === fileUploads.length - 1
+            ? {
+                marginBottom: 0,
+              }
+            : {},
+          {
+            width: flatListWidth - 16,
+          },
+          fileContainer,
+        ]}
       >
-        <View style={[styles.attachmentContainerView, attachmentContainerView]}>
-          <View style={[styles.attachmentView, attachmentView]}>
-            <AttachmentFileIcon mimeType={item.file.type} size={20} />
-            <Text style={[styles.filenameText, filenameText]}>
-              {item.file.name
-                ? item.file.name.length > 35
-                  ? item.file.name.substring(0, 35).concat('...')
-                  : item.file.name
-                : ''}
+        <View style={[styles.fileContentContainer, fileContentContainer]}>
+          <AttachmentFileIcon mimeType={item.file.type} />
+          <View style={[styles.fileTextContainer, fileTextContainer]}>
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.filenameText,
+                {
+                  width:
+                    flatListWidth -
+                    16 - // 16 = horizontal padding
+                    40 - // 40 = file icon size
+                    24 - // 24 = close icon size
+                    24, // 24 = internal padding
+                },
+                filenameText,
+              ]}
+            >
+              {item.file.name || ''}
+            </Text>
+            <Text style={[styles.fileSizeText, fileSizeText]}>
+              {getFileSizeDisplayText(item.file.size)}
             </Text>
           </View>
         </View>
-      </UploadProgressIndicator>
-      <TouchableOpacity
-        onPress={() => {
-          removeFile(item.id);
-        }}
-        style={[styles.dismiss, dismiss]}
-        testID='remove-file-upload-preview'
-      >
-        <Image
-          source={closeRound}
-          style={[styles.dismissImage, dismissImage]}
-        />
-      </TouchableOpacity>
-    </>
+        <TouchableOpacity
+          onPress={() => {
+            removeFile(item.id);
+          }}
+          style={[styles.dismiss, dismiss]}
+          testID='remove-file-upload-preview'
+        >
+          <Close />
+        </TouchableOpacity>
+      </View>
+    </UploadProgressIndicator>
   );
 
-  return fileUploads?.length > 0 ? (
-    <View
-      style={[
-        styles.container,
-        { height: fileUploads.length * (FILE_PREVIEW_HEIGHT + 5) },
-        container,
-      ]}
-    >
-      <FlatList
-        data={fileUploads}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        style={{ flex: 1 }}
-      />
-    </View>
+  const fileUploadsLength = fileUploads.length;
+
+  useEffect(() => {
+    if (fileUploadsLength && flatListRef.current) {
+      setTimeout(() => flatListRef.current?.scrollToEnd(), 1);
+    }
+  }, [fileUploadsLength]);
+
+  return fileUploadsLength ? (
+    <FlatList
+      data={fileUploads}
+      getItemLayout={(_, index) => ({
+        index,
+        length: FILE_PREVIEW_HEIGHT + 8,
+        offset: (FILE_PREVIEW_HEIGHT + 8) * index,
+      })}
+      keyExtractor={(item) => item.id}
+      onLayout={({
+        nativeEvent: {
+          layout: { width },
+        },
+      }) => {
+        setFlatListWidth(width);
+      }}
+      ref={flatListRef}
+      renderItem={renderItem}
+      style={[styles.flatList, flatList]}
+    />
   ) : null;
 };
 

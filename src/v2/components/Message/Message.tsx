@@ -127,6 +127,7 @@ export type MessagePropsWithContext<
     | 'reactionsEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
+    | 'setReplyToState'
     | 'supportedReactions'
     | 'updateMessage'
   > &
@@ -246,6 +247,7 @@ const MessageWithContext = <
     setData,
     setEditingState,
     setOverlay,
+    setReplyToState,
     showAvatar,
     showMessageStatus,
     supportedReactions,
@@ -524,7 +526,7 @@ const MessageWithContext = <
     const reply = {
       action: () => {
         setOverlay('none');
-        onOpenThread();
+        setReplyToState(message);
       },
       icon: <CurveLineLeftUp />,
       title: t('Reply'),
@@ -810,6 +812,7 @@ export const Message = <
     removeMessage,
     retrySendMessage,
     setEditingState,
+    setReplyToState,
     supportedReactions,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -837,6 +840,7 @@ export const Message = <
         setData,
         setEditingState,
         setOverlay,
+        setReplyToState,
         supportedReactions,
         t,
         updateMessage,

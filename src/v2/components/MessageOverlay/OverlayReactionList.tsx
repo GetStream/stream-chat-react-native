@@ -259,8 +259,8 @@ const OverlayReactionListWithContext = <
     const borderRadius =
       reactionList.borderRadius || styles.reactionList.borderRadius;
     const insideLeftBound =
-      messageLayout.value.x - reactionListLayout.value.width >
-      screenPadding + borderRadius;
+      messageLayout.value.x - reactionListLayout.value.width + borderRadius >
+      screenPadding;
     const insideRightBound =
       messageLayout.value.x + borderRadius < width - screenPadding;
     const left = !insideLeftBound

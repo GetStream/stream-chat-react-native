@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
 
 import {
   MessageInputContextValue,
@@ -36,21 +36,11 @@ import type { Trigger } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   inputBox: {
-    flex: 1,
-    margin: -5,
-  },
-  inputBoxContainer: {
-    alignContent: 'center',
-    borderColor: '#EBEBEB',
-    borderRadius: 20,
-    borderWidth: 1,
-    flexGrow: 1,
-    flexShrink: 1,
-    justifyContent: 'center',
-    minHeight: 40,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    fontSize: 14,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
   },
 });
 
@@ -71,7 +61,9 @@ type AutoCompleteInputPropsWithContext<
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   | 'additionalTextInputProps'
+  | 'numberOfLines'
   | 'onChange'
+  | 'setFocused'
   | 'setInputBoxRef'
   | 'text'
   | 'triggerSettings'
@@ -106,8 +98,10 @@ const AutoCompleteInputWithContext = <
   const {
     additionalTextInputProps,
     closeSuggestions,
+    numberOfLines,
     onChange,
     openSuggestions,
+    setFocused,
     setInputBoxRef,
     t,
     text,
@@ -115,15 +109,17 @@ const AutoCompleteInputWithContext = <
     updateSuggestions: updateSuggestionsContext,
   } = props;
 
+  const isTrackingStarted = useRef(false);
+  const selectionEnd = useRef(0);
+  const [textHeight, setTextHeight] = useState(0);
+
   const {
     theme: {
-      messageInput: { inputBox, inputBoxContainer },
+      colors: { textGrey },
+      messageInput: { inputBox },
     },
   } = useTheme();
 
-  const isTrackingStarted = useRef(false);
-  const selectionEnd = useRef(0);
-  const [inputHeight, setInputHeight] = useState(40);
   const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
       onChange(newText);
@@ -317,39 +313,37 @@ const AutoCompleteInputWithContext = <
   };
 
   return (
-    <View
-      style={[
-        styles.inputBoxContainer,
-        inputBoxContainer,
-        {
-          // TODO: Investigate why iOS doesn't respect the padding on container while growing height.
-          height: Math.min(inputHeight, 100) + (Platform.OS === 'ios' ? 20 : 0),
+    <TextInput
+      multiline
+      onBlur={() => setFocused(false)}
+      onChangeText={(text) => {
+        handleChange(text);
+      }}
+      onContentSizeChange={({
+        nativeEvent: {
+          contentSize: { height },
         },
+      }) => {
+        if (!textHeight) {
+          setTextHeight(height);
+        }
+      }}
+      onFocus={() => setFocused(true)}
+      onSelectionChange={handleSelectionChange}
+      placeholder={t('Send a message')}
+      placeholderTextColor={textGrey}
+      ref={setInputBoxRef}
+      style={[
+        styles.inputBox,
+        {
+          maxHeight: (textHeight || 17) * numberOfLines,
+        },
+        inputBox,
       ]}
-    >
-      <TextInput
-        multiline
-        onChangeText={(text) => {
-          handleChange(text);
-        }}
-        onContentSizeChange={(e) => {
-          setInputHeight(e.nativeEvent.contentSize.height);
-        }}
-        onSelectionChange={handleSelectionChange}
-        placeholder={t('Write your message')}
-        ref={setInputBoxRef}
-        style={[
-          styles.inputBox,
-          inputBox,
-          {
-            minHeight: Math.min(inputHeight, 100),
-          },
-        ]}
-        testID='auto-complete-text-input'
-        value={text}
-        {...additionalTextInputProps}
-      />
-    </View>
+      testID='auto-complete-text-input'
+      value={text}
+      {...additionalTextInputProps}
+    />
   );
 };
 
@@ -395,7 +389,9 @@ export const AutoCompleteInput = <
 ) => {
   const {
     additionalTextInputProps,
+    numberOfLines,
     onChange,
+    setFocused,
     setInputBoxRef,
     text,
     triggerSettings,
@@ -412,8 +408,10 @@ export const AutoCompleteInput = <
       {...{
         additionalTextInputProps,
         closeSuggestions,
+        numberOfLines,
         onChange,
         openSuggestions,
+        setFocused,
         setInputBoxRef,
         t,
         text,

@@ -159,7 +159,6 @@ const getMembersAndWatchers = <
   );
 };
 
-// TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,

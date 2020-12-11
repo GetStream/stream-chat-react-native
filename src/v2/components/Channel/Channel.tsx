@@ -46,8 +46,10 @@ import { AttachButton as AttachButtonDefault } from '../MessageInput/AttachButto
 import { CommandsButton as CommandsButtonDefault } from '../MessageInput/CommandsButton';
 import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/FileUploadPreview';
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
+import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
+import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
   ChannelContextValue,
@@ -146,6 +148,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageText'
       | 'ReactionList'
+      | 'Reply'
       | 'supportedReactions'
       | 'UrlPreview'
     >
@@ -290,9 +293,12 @@ export const ChannelWithContext = <
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageText,
+    MoreOptionsButton = MoreOptionsButtonDefault,
+    numberOfLines = 5,
     onChangeText,
     openSuggestions,
     ReactionList = ReactionListDefault,
+    Reply = ReplyDefault,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
     setInputBoxContainerRef,
@@ -351,6 +357,9 @@ export const ChannelWithContext = <
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
+  const [replyTo, setReplyTo] = useState<
+    boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
+  >(false);
   const [thread, setThread] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']
   >(threadProps || null);
@@ -796,6 +805,18 @@ export const ChannelWithContext = <
     setEditing(message);
   };
 
+  const setReplyToState: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['setReplyToState'] = (message) => {
+    setReplyTo(message);
+  };
+
   const clearEditingState: InputMessageInputContextValue<
     At,
     Ch,
@@ -805,6 +826,16 @@ export const ChannelWithContext = <
     Re,
     Us
   >['clearEditingState'] = () => setEditing(false);
+
+  const clearReplyToState: InputMessageInputContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['clearReplyToState'] = () => setReplyTo(false);
 
   const removeMessage: MessagesContextValue<
     At,
@@ -945,6 +976,7 @@ export const ChannelWithContext = <
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
+    clearReplyToState,
     CommandsButton,
     compressImageQuality,
     doDocUploadRequest,
@@ -958,7 +990,10 @@ export const ChannelWithContext = <
     initialValue,
     Input,
     maxNumberOfFiles,
+    MoreOptionsButton,
+    numberOfLines,
     onChangeText,
+    replyTo,
     SendButton,
     sendImageAsync,
     sendMessage,
@@ -1000,8 +1035,10 @@ export const ChannelWithContext = <
     MessageText,
     ReactionList,
     removeMessage,
+    Reply,
     retrySendMessage,
     setEditingState,
+    setReplyToState,
     supportedReactions,
     updateMessage,
     UrlPreview,
