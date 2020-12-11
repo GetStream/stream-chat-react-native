@@ -41,6 +41,11 @@ export type ChannelContextValue<
    * Returns true if the current user is a owner
    */
   isOwner: boolean;
+  loadChannelAtMessage: (
+    messageId: string,
+    before?: number,
+    after?: number,
+  ) => void;
   loading: boolean;
   /**
    * Custom loading indicator to override the Stream default
@@ -51,12 +56,14 @@ export type ChannelContextValue<
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void> | undefined;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setTargettedMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   lastRead?: Date;
   StickyHeader?: React.ComponentType<{ dateString: string }>;
+  targettedMessage?: string;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 };
 

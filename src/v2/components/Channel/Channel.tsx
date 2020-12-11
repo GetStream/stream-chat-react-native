@@ -80,6 +80,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { generateRandomId } from '../../utils/generateRandomId';
+import { useTargettedMessage } from './hooks/useTargettedMessage';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -335,6 +336,10 @@ export const ChannelWithContext = <
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
 
+  const { setTargettedMessage, targettedMessage } = useTargettedMessage(
+    messageId,
+  );
+
   useEffect(() => {
     if (channel) {
       if (messageId) {
@@ -505,7 +510,13 @@ export const ChannelWithContext = <
    * @param after Number of message to query after messageId
    */
   const loadChannelAtMessage = (messageId?: string, before = 10, after = 2) =>
-    channelQueryCall(() => queryAtMessage(messageId, before, after));
+    channelQueryCall(() => {
+      queryAtMessage(messageId, before, after);
+
+      if (messageId) {
+        setTargettedMessage(messageId);
+      }
+    });
 
   const loadChannel = () =>
     channelQueryCall(() => {
@@ -1033,6 +1044,7 @@ export const ChannelWithContext = <
     isModerator,
     isOwner,
     lastRead,
+    loadChannelAtMessage,
     loading,
     LoadingIndicator,
     markRead: markReadThrottled,
@@ -1040,7 +1052,9 @@ export const ChannelWithContext = <
     read,
     reloadChannel,
     setLastRead,
+    setTargettedMessage,
     StickyHeader,
+    targettedMessage,
     typing,
     watcherCount,
     watchers,

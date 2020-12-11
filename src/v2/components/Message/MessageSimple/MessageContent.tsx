@@ -143,6 +143,7 @@ export const MessageContentWithContext = <
     MessageStatus,
     onLongPress,
     onlyEmojis,
+    onPress,
     otherAttachments,
     preventPress,
     repliesEnabled,
@@ -259,6 +260,7 @@ export const MessageContentWithContext = <
       activeOpacity={0.7}
       disabled={disabled}
       onLongPress={onLongPress}
+      onPress={onPress}
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -527,6 +529,7 @@ export const MessageContent = <
     messageContentOrder,
     onLongPress,
     onlyEmojis,
+    onPress,
     otherAttachments,
     preventPress,
     showMessageStatus,
@@ -569,6 +572,7 @@ export const MessageContent = <
         MessageStatus,
         onLongPress,
         onlyEmojis,
+        onPress,
         otherAttachments,
         preventPress,
         ReactionList,

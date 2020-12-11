@@ -278,11 +278,14 @@ export const MessageList = <
     disabled,
     EmptyStateIndicator,
     initialScrollToFirstUnreadMessage,
+    loadChannelAtMessage,
     loading,
     LoadingIndicator,
     markRead,
     reloadChannel,
+    setTargettedMessage,
     StickyHeader,
+    targettedMessage,
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -329,7 +332,6 @@ export const MessageList = <
   );
   const lastMessageListLength = useRef(channel?.state.messages.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
-
   const messageScrollPosition = useRef(0);
   /**
    * In order to prevent the LoadingIndicator component from showing up briefly on mount,
@@ -340,8 +342,11 @@ export const MessageList = <
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
+
+  const viewableMessages = useRef<string[]>([]);
   const updateStickyDate = useRef(
     ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      viewableMessages.current = viewableItems.map((v) => v.item.id);
       if (viewableItems?.length) {
         const lastItem = viewableItems.pop();
 
@@ -473,14 +478,20 @@ export const MessageList = <
     }
 
     if (message.type !== 'message.read') {
+      const background =
+        targettedMessage === message.id
+          ? 'yellow'
+          : isUnread && newMessagesNotification
+          ? '#F9F9F9'
+          : 'white';
       return (
         <View
           style={{
-            backgroundColor:
-              isUnread && newMessagesNotification ? '#F9F9F9' : 'white',
+            backgroundColor: background,
           }}
         >
           <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+            goToMessage={goToMessage}
             groupStyles={message.groupStyles as GroupType[]}
             lastReceivedId={
               lastReceivedId === message.id ? lastReceivedId : undefined
@@ -542,6 +553,24 @@ export const MessageList = <
       flatListRef.current.scrollToIndex({ index: 0 });
       setNewMessageNotification(false);
       if (!threadList) markRead();
+    }
+  };
+
+  const goToMessage = (messageId: string) => {
+    const indexOfParentInViewable = viewableMessages.current.indexOf(messageId);
+
+    if (indexOfParentInViewable > -1) {
+      const indexOfParentInMessageList = messageList.findIndex(
+        (m) => m && m.id === messageId,
+      );
+      flatListRef.current &&
+        flatListRef.current.scrollToIndex({
+          index: indexOfParentInMessageList - 1,
+        });
+
+      setTargettedMessage(messageId);
+    } else {
+      loadChannelAtMessage(messageId);
     }
   };
 
