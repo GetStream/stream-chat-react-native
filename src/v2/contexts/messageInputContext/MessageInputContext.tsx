@@ -182,7 +182,9 @@ export type LocalMessageInputContext<
   setInputBoxRef: (ref: TextInput | null) => void;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
+  setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  showMoreOptions: boolean;
   /**
    * Text value of the TextInput
    */
@@ -383,6 +385,7 @@ const areEqual = <
       imageUploads: prevImageUploads,
       mentionedUsers: prevMentionedUsers,
       replyTo: prevReplyTo,
+      showMoreOptions: prevShowMoreOptions,
       text: prevText,
     },
   } = prevProps;
@@ -394,6 +397,7 @@ const areEqual = <
       imageUploads: nextImageUploads,
       mentionedUsers: nextMentionedUsers,
       replyTo: nextReplyTo,
+      showMoreOptions: nextShowMoreOptions,
       text: nextText,
     },
   } = nextProps;
@@ -413,6 +417,9 @@ const areEqual = <
   const mentionedUsersEqual =
     prevMentionedUsers.length === nextMentionedUsers.length;
   if (!mentionedUsersEqual) return false;
+
+  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
+  if (!showMoreOptionsEqual) return false;
 
   const fileUploadsEqual =
     prevFileUploads.length === nextFileUploads.length &&
@@ -488,7 +495,9 @@ const MessageInputProviderWithContext = <
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
+    setShowMoreOptions,
     setText,
+    showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(
     value.editing,
@@ -1011,7 +1020,9 @@ const MessageInputProviderWithContext = <
           setInputBoxRef,
           setMentionedUsers,
           setNumberOfUploads,
+          setShowMoreOptions,
           setText,
+          showMoreOptions,
           text,
           triggerSettings,
           updateMessage,

@@ -107,7 +107,6 @@ type MessageInputPropsWithContext<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
-    | 'focused'
     | 'hasFilePicker'
     | 'hasImagePicker'
     | 'ImageUploadPreview'
@@ -124,6 +123,8 @@ type MessageInputPropsWithContext<
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
+    | 'setShowMoreOptions'
+    | 'showMoreOptions'
     | 'uploadNewImage'
     | 'removeImage'
   > &
@@ -155,7 +156,6 @@ export const MessageInputWithContext = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -176,6 +176,8 @@ export const MessageInputWithContext = <
     sending,
     sendMessageAsync,
     setInputBoxContainerRef,
+    setShowMoreOptions,
+    showMoreOptions,
     t,
     uploadNewImage,
     watchers,
@@ -375,13 +377,9 @@ export const MessageInputWithContext = <
           ) : (
             <>
               <View style={[styles.optionsContainer, optionsContainer]}>
-                {focused ? (
+                {!showMoreOptions ? (
                   <MoreOptionsButton
-                    handleOnPress={() => {
-                      if (inputBoxRef.current) {
-                        inputBoxRef.current.blur();
-                      }
-                    }}
+                    handleOnPress={() => setShowMoreOptions(true)}
                   />
                 ) : (
                   <>
@@ -467,11 +465,11 @@ const areEqual = <
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
-    focused: prevFocused,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
     replyTo: prevReplyTo,
     sending: prevSending,
+    showMoreOptions: prevShowMoreOptions,
     t: prevT,
   } = prevProps;
   const {
@@ -479,11 +477,11 @@ const areEqual = <
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
-    focused: nextFocused,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
     replyTo: nextReplyTo,
     sending: nextSending,
+    showMoreOptions: nextShowMoreOptions,
     t: nextT,
   } = nextProps;
 
@@ -502,11 +500,11 @@ const areEqual = <
   const replyToEqual = !!prevReplyTo === !!nextReplyTo;
   if (!replyToEqual) return false;
 
-  const focusedEqual = prevFocused === nextFocused;
-  if (!focusedEqual) return false;
-
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
+
+  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
+  if (!showMoreOptionsEqual) return false;
 
   const isValidMessageEqual = prevIsValidMessage() === nextIsValidMessage();
   if (!isValidMessageEqual) return false;
@@ -583,7 +581,6 @@ export const MessageInput = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -601,6 +598,8 @@ export const MessageInput = <
     SendButton,
     sending,
     sendMessageAsync,
+    setShowMoreOptions,
+    showMoreOptions,
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -625,7 +624,6 @@ export const MessageInput = <
         editing,
         FileUploadPreview,
         fileUploads,
-        focused,
         hasFilePicker,
         hasImagePicker,
         ImageUploadPreview,
@@ -646,6 +644,8 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setInputBoxContainerRef,
+        setShowMoreOptions,
+        showMoreOptions,
         t,
         uploadNewImage,
         watchers,

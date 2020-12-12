@@ -42,7 +42,12 @@ export const useMessageDetailsForState = <
       [],
   );
   const [numberOfUploads, setNumberOfUploads] = useState(0);
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
   const [text, setText] = useState(initialValue || '');
+
+  useEffect(() => {
+    setShowMoreOptions(false);
+  }, [text]);
 
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
@@ -97,7 +102,9 @@ export const useMessageDetailsForState = <
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
+    setShowMoreOptions,
     setText,
+    showMoreOptions,
     text,
   };
 };
