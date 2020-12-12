@@ -150,14 +150,12 @@ export const AttachmentPicker = React.forwardRef(
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({ after: endCursor, first: 60 });
-          console.log('hi', results);
-
           setEndCursor(results.endCursor);
           setHasNextPage(results.hasNextPage || false);
           setPhotos([...photos, ...results.assets]);
         } catch (error) {
+          console.log(error);
           setPhotoError(true);
-          console.log('hi', error);
         }
         setLoadingPhotos(false);
       }
