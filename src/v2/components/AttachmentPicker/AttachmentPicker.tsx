@@ -150,12 +150,14 @@ export const AttachmentPicker = React.forwardRef(
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({ after: endCursor, first: 60 });
+          console.log('hi', results);
+
           setEndCursor(results.endCursor);
           setHasNextPage(results.hasNextPage || false);
           setPhotos([...photos, ...results.assets]);
         } catch (error) {
           setPhotoError(true);
-          console.log(error);
+          console.log('hi', error);
         }
         setLoadingPhotos(false);
       }
@@ -200,7 +202,7 @@ export const AttachmentPicker = React.forwardRef(
     }, [appState]);
 
     useEffect(() => {
-      if (photos.length === 0) {
+      if (photos.length === 0 && currentIndex > -1) {
         getMorePhotos();
       }
     }, [currentIndex]);
@@ -250,16 +252,14 @@ export const AttachmentPicker = React.forwardRef(
         ref={ref}
         snapPoints={[308, screenHeight - topInset]}
       >
-        {selectedPicker === 'images' && (
-          <BottomSheetFlatList
-            contentContainerStyle={styles.container}
-            data={selectedPhotos}
-            keyExtractor={(item) => item.uri}
-            numColumns={3}
-            onEndReached={getMorePhotos}
-            renderItem={renderImage}
-          />
-        )}
+        <BottomSheetFlatList
+          contentContainerStyle={styles.container}
+          data={selectedPhotos}
+          keyExtractor={(item) => item.uri}
+          numColumns={3}
+          onEndReached={getMorePhotos}
+          renderItem={renderImage}
+        />
       </BottomSheet>
     );
   },
