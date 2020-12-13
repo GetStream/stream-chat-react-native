@@ -203,6 +203,8 @@ export const MessageInputWithContext = <
   } = useTheme();
 
   const {
+    attachmentPickerBottomSheetHeight,
+    attachmentSelectionBarHeight,
     bottomInset,
     closePicker,
     openPicker,
@@ -438,7 +440,11 @@ export const MessageInputWithContext = <
         <View
           style={{
             backgroundColor: '#F5F5F5',
-            height: 360 - (bottomInset || 0),
+            height:
+              (attachmentPickerBottomSheetHeight
+                ? attachmentPickerBottomSheetHeight +
+                  (attachmentSelectionBarHeight ?? 52)
+                : 360) - (bottomInset ?? 0),
           }}
         >
           <AttachmentSelectionBar />

@@ -4,8 +4,16 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { UnknownType } from '../../types/types';
 
+export type AttachmentPickerIconProps = {
+  numberOfImageUploads: number;
+  selectedPicker?: 'images';
+};
+
 export type AttachmentPickerContextValue = {
+  CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
+  FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   maxNumberOfFiles: number;
   openPicker: () => void;
   selectedImages: string[];
@@ -13,6 +21,8 @@ export type AttachmentPickerContextValue = {
   setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number>>;
+  attachmentPickerBottomSheetHeight?: number;
+  attachmentSelectionBarHeight?: number;
   bottomInset?: number;
   selectedPicker?: 'images';
   topInset?: number;
@@ -28,7 +38,14 @@ export const AttachmentPickerProvider = ({
 }: PropsWithChildren<{
   value?: Pick<
     AttachmentPickerContextValue,
-    'closePicker' | 'openPicker' | 'bottomInset'
+    | 'attachmentSelectionBarHeight'
+    | 'attachmentPickerBottomSheetHeight'
+    | 'bottomInset'
+    | 'CameraSelectorIcon'
+    | 'closePicker'
+    | 'FileSelectorIcon'
+    | 'ImageSelectorIcon'
+    | 'openPicker'
   >;
 }>) => {
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);

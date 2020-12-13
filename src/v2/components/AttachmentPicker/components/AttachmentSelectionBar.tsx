@@ -1,16 +1,16 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { takePhoto } from '../../../native';
 
 import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useMessageInputContext } from '../../../contexts/messageInputContext/MessageInputContext';
-import { Camera, Folder, Picture } from '../../../icons';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+
+import { takePhoto } from '../../../native';
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    height: 52,
     paddingHorizontal: 6,
   },
   icon: {
@@ -20,13 +20,23 @@ const styles = StyleSheet.create({
 
 export const AttachmentSelectionBar: React.FC = () => {
   const {
+    attachmentSelectionBarHeight,
+    CameraSelectorIcon,
     closePicker,
+    FileSelectorIcon,
+    ImageSelectorIcon,
     selectedPicker,
     setSelectedImages,
     setSelectedPicker,
   } = useAttachmentPickerContext();
 
   const { hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
+
+  const {
+    theme: {
+      attachmentSelectionBar: { container, icon },
+    },
+  } = useTheme();
 
   const setPicker = (selection: 'images') => {
     if (selectedPicker === selection) {
@@ -53,11 +63,18 @@ export const AttachmentSelectionBar: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        container,
+        { height: attachmentSelectionBarHeight ?? 52 },
+      ]}
+    >
       <TouchableOpacity onPress={() => setPicker('images')}>
-        <View style={styles.icon}>
-          <Picture
-            pathFill={selectedPicker === 'images' ? '#005FFF' : '#7A7A7A'}
+        <View style={[styles.icon, icon]}>
+          <ImageSelectorIcon
+            numberOfImageUploads={imageUploads.length}
+            selectedPicker={selectedPicker}
           />
         </View>
       </TouchableOpacity>
@@ -66,16 +83,20 @@ export const AttachmentSelectionBar: React.FC = () => {
           disabled={imageUploads.length > 0}
           onPress={openFilePicker}
         >
-          <View style={styles.icon}>
-            <Folder
-              pathFill={imageUploads.length === 0 ? '#7A7A7A' : '#DBDBDB'}
+          <View style={[styles.icon, icon]}>
+            <FileSelectorIcon
+              numberOfImageUploads={imageUploads.length}
+              selectedPicker={selectedPicker}
             />
           </View>
         </TouchableOpacity>
       )}
       <TouchableOpacity onPress={takeAndUploadImage}>
-        <View style={styles.icon}>
-          <Camera pathFill={'#7A7A7A'} />
+        <View style={[styles.icon, icon]}>
+          <CameraSelectorIcon
+            numberOfImageUploads={imageUploads.length}
+            selectedPicker={selectedPicker}
+          />
         </View>
       </TouchableOpacity>
     </View>

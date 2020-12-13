@@ -19,7 +19,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerContextValue,
+  AttachmentPickerProvider,
+} from '../attachmentPickerContext/AttachmentPickerContext';
 import { ChannelInfoOverlayProvider } from '../channelInfoOverlayContext/ChannelInfoOverlayContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
@@ -30,7 +33,17 @@ import {
 } from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
-import { AttachmentPicker } from '../../components/AttachmentPicker/AttachmentPicker';
+import {
+  AttachmentPicker,
+  AttachmentPickerProps,
+} from '../../components/AttachmentPicker/AttachmentPicker';
+import { AttachmentPickerError as DefaultAttachmentPickerError } from '../../components/AttachmentPicker/components/AttachmentPickerError';
+import { AttachmentPickerBottomSheetHandle as DefaultAttachmentPickerBottomSheetHandle } from '../../components/AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+import { AttachmentPickerErrorImage as DefaultAttachmentPickerErrorImage } from '../../components/AttachmentPicker/components/AttachmentPickerErrorImage';
+import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../components/AttachmentPicker/components/CameraSelectorIcon';
+import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
+import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
+import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ChannelInfoOverlay } from '../../components/ChannelInfoOverlay/ChannelInfoOverlay';
 import {
   ImageGallery,
@@ -55,6 +68,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
+import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 export type BlurType = 'light' | 'dark' | undefined;
 
@@ -85,11 +99,24 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
 );
 
 type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
-  ImageGalleryCustomComponents<Us> & {
-    bottomInset?: number;
-    i18nInstance?: Streami18n;
-    value?: Partial<OverlayContextValue>;
-  }
+  Partial<AttachmentPickerProps> &
+    Partial<
+      Pick<
+        AttachmentPickerContextValue,
+        | 'attachmentPickerBottomSheetHeight'
+        | 'attachmentSelectionBarHeight'
+        | 'bottomInset'
+        | 'CameraSelectorIcon'
+        | 'FileSelectorIcon'
+        | 'ImageSelectorIcon'
+      >
+    > &
+    ImageGalleryCustomComponents<Us> & {
+      closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+      i18nInstance?: Streami18n;
+      openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+      value?: Partial<OverlayContextValue>;
+    }
 >;
 
 const WildcardDefault: React.FC<{ visible: boolean }> = () => null;
@@ -106,12 +133,42 @@ export const OverlayProvider = <
   props: Props<Us>,
 ) => {
   const {
+    AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
+    attachmentPickerBottomSheetHandleHeight,
+    attachmentPickerBottomSheetHeight,
+    AttachmentPickerError = DefaultAttachmentPickerError,
+    attachmentPickerErrorButtonText,
+    AttachmentPickerErrorImage = DefaultAttachmentPickerErrorImage,
+    attachmentPickerErrorText,
+    attachmentSelectionBarHeight,
     bottomInset,
+    CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
+    closePicker = (ref) => ref.current?.close(),
+    FileSelectorIcon = DefaultFileSelectorIcon,
     i18nInstance,
     imageGalleryCustomComponents,
+    ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
+    ImageSelectorIcon = DefaultImageSelectorIcon,
+    numberOfAttachmentImagesToLoadPerCall,
+    numberOfAttachmentPickerImageColumns,
+    openPicker = (ref) => ref.current?.snapTo(0),
     value,
   } = props;
+
+  const attachmentPickerProps = {
+    AttachmentPickerBottomSheetHandle,
+    attachmentPickerBottomSheetHandleHeight,
+    attachmentPickerBottomSheetHeight,
+    AttachmentPickerError,
+    attachmentPickerErrorButtonText,
+    AttachmentPickerErrorImage,
+    attachmentPickerErrorText,
+    attachmentSelectionBarHeight,
+    ImageOverlaySelectedComponent,
+    numberOfAttachmentImagesToLoadPerCall,
+    numberOfAttachmentPickerImageColumns,
+  };
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -164,9 +221,14 @@ export const OverlayProvider = <
   useStreami18n({ i18nInstance, setTranslators });
 
   const attachmentPickerContext = {
+    attachmentPickerBottomSheetHeight,
+    attachmentSelectionBarHeight,
     bottomInset,
-    closePicker: () => bottomSheetRef.current?.close(),
-    openPicker: () => bottomSheetRef.current?.snapTo(0),
+    CameraSelectorIcon,
+    closePicker: () => closePicker(bottomSheetRef),
+    FileSelectorIcon,
+    ImageSelectorIcon,
+    openPicker: () => openPicker(bottomSheetRef),
   };
 
   const overlayStyle = useAnimatedStyle<ViewStyle>(
@@ -219,7 +281,10 @@ export const OverlayProvider = <
                     overlayOpacity={overlayOpacity}
                     visible={overlay === 'gallery'}
                   />
-                  <AttachmentPicker ref={bottomSheetRef} />
+                  <AttachmentPicker
+                    ref={bottomSheetRef}
+                    {...attachmentPickerProps}
+                  />
                 </ThemeProvider>
               </ImageGalleryProvider>
             </AttachmentPickerProvider>

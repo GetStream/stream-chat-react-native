@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const BottomSheetHandle: React.FC<{
+export const AttachmentPickerBottomSheetHandle: React.FC<{
   animatedPositionIndex: Animated.SharedValue<number>;
 }> = ({ animatedPositionIndex }) => {
   const style = useAnimatedStyle<ViewStyle>(() => ({

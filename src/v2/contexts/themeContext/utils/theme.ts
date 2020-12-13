@@ -70,6 +70,18 @@ export type MarkdownStyle = Partial<{
 }>;
 
 export type Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: ViewStyle;
+    errorButtonText: TextStyle;
+    errorContainer: ViewStyle;
+    errorText: TextStyle;
+    image: ViewStyle;
+    imageOverlay: ViewStyle;
+  };
+  attachmentSelectionBar: {
+    container: ViewStyle;
+    icon: ViewStyle;
+  };
   avatar: {
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
@@ -449,6 +461,18 @@ export type Theme = {
 };
 
 export const defaultTheme: Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: {},
+    errorButtonText: {},
+    errorContainer: {},
+    errorText: {},
+    image: {},
+    imageOverlay: {},
+  },
+  attachmentSelectionBar: {
+    container: {},
+    icon: {},
+  },
   avatar: {
     BASE_AVATAR_SIZE: 32,
     container: {},
