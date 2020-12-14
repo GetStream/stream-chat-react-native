@@ -84,6 +84,7 @@ export type MessageContentPropsWithContext<
     | 'lastGroupMessage'
     | 'message'
     | 'messageContentOrder'
+    | 'onPress'
     | 'onLongPress'
     | 'onlyEmojis'
     | 'otherAttachments'

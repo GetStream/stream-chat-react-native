@@ -77,8 +77,11 @@ const StatusIndicator = <
     error,
     HeaderErrorIndicator,
     HeaderNetworkDownIndicator,
+    loadingChannels,
     refreshList,
   } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  if (loadingChannels) return null;
 
   if (!isOnline) {
     return (
@@ -181,7 +184,7 @@ const ChannelListMessengerWithContext = <
     <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> channel={channel} />
   );
 
-  if (error && !refreshing && !channels?.length) {
+  if (error && !refreshing && !loadingChannels && !channels?.length) {
     return (
       <LoadingErrorIndicator
         error={error}

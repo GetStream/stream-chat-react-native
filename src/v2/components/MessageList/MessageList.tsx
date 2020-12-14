@@ -7,7 +7,6 @@ import {
   ScrollViewProps,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewToken,
 } from 'react-native';
@@ -28,6 +27,7 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import { Message as DefaultMessage } from '../Message/Message';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   GroupType,
   useMessagesContext,
@@ -71,14 +71,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FCFCFC',
     flex: 1,
     width: '100%',
-  },
-  editStateMask: {
-    backgroundColor: 'black',
-    height: '100%',
-    opacity: 0.4,
-    position: 'absolute',
-    width: '100%',
-    zIndex: 100,
   },
   errorNotification: {
     alignItems: 'center',
@@ -163,7 +155,6 @@ export type MessageListProps<
   additionalFlatListProps?: Partial<
     FlatListProps<Message<At, Ch, Co, Ev, Me, Re, Us>>
   >;
-  disableWhileEditing?: boolean;
   /**
    * UI component for footer of message list. By default message list doesn't have any footer.
    * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -257,7 +248,6 @@ export const MessageList = <
 ) => {
   const {
     additionalFlatListProps,
-    disableWhileEditing = true,
     FooterComponent,
     HeaderComponent,
     InlineDateSeparator = () => null,
@@ -290,9 +280,7 @@ export const MessageList = <
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
-    clearEditingState,
     disableTypingIndicator,
-    editing,
     loadingMoreForward,
     loadMore: mainLoadMore,
     loadMoreForward: mainLoadMoreForward,
@@ -312,6 +300,11 @@ export const MessageList = <
     Us
   >();
   const { t, tDateTimeParser } = useTranslationContext();
+  const {
+    closePicker,
+    selectedPicker,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -327,6 +320,8 @@ export const MessageList = <
     MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
+
+  const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
@@ -616,117 +611,111 @@ export const MessageList = <
     : new Date(tStickyHeaderDate).toDateString();
 
   if (!FlatList) return null;
+
+  const dismissImagePicker = () => {
+    if (!hasMoved && selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    }
+  };
+
   return (
-    <>
-      <View collapsable={false} style={styles.container}>
-        {/* @ts-ignore */}
-        <FlatList
-          data={messageList}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={disabled || !channel?.state.isUpToDate}
-          initialScrollIndex={
-            !channel?.state.isUpToDate
-              ? 0
-              : initialScrollToFirstUnreadMessage &&
-                channel?.countUnread() > limitForUnreadScrolledUp
-              ? Math.min(
-                  channel?.countUnread() - 1,
-                  limitForUnreadScrolledUp - 1,
-                )
-              : 0
-          }
-          inverted={inverted}
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={() => {
-            if (HeaderComponent) {
-              // @ts-ignore
-              return <HeaderComponent />;
-            }
-            // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
-            if (Platform.OS === 'android') return null;
-
-            if (loadingMoreForward) {
-              return (
-                <View style={{ padding: 10, width: '100%' }}>
-                  <ActivityIndicator color={'black'} size={'small'} />
-                </View>
-              );
-            }
-            return null;
-          }}
-          maintainVisibleContentPosition={{
-            autoscrollToTopThreshold,
-            minIndexForVisible: 1,
-          }}
-          onEndReached={loadMore}
-          onScroll={handleScroll}
-          onScrollToIndexFailed={() => {
-            // console.log('Scroll failed --- ', info);
-          }}
-          onViewableItemsChanged={updateStickyDate.current}
-          ref={(
-            fl: MutableRefObject<
-              DefaultFlatList<
-                MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
-              >
-            >,
-          ) => {
+    <View collapsable={false} style={styles.container}>
+      {/* @ts-ignore */}
+      <FlatList
+        data={messageList}
+        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+        extraData={disabled || !channel?.state.isUpToDate}
+        initialScrollIndex={
+          !channel?.state.isUpToDate
+            ? 0
+            : initialScrollToFirstUnreadMessage &&
+              channel?.countUnread() > limitForUnreadScrolledUp
+            ? Math.min(channel?.countUnread() - 1, limitForUnreadScrolledUp - 1)
+            : 0
+        }
+        inverted={inverted}
+        keyboardShouldPersistTaps='handled'
+        keyExtractor={keyExtractor}
+        ListFooterComponent={FooterComponent}
+        ListHeaderComponent={() => {
+          if (HeaderComponent) {
             // @ts-ignore
-            flatListRef.current = fl;
+            return <HeaderComponent />;
+          }
+          // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
+          if (Platform.OS === 'android') return null;
 
-            if (setFlatListRef) {
-              setFlatListRef(fl);
-            }
-          }}
+          if (loadingMoreForward) {
+            return (
+              <View style={{ padding: 10, width: '100%' }}>
+                <ActivityIndicator color={'black'} size={'small'} />
+              </View>
+            );
+          }
+          return null;
+        }}
+        maintainVisibleContentPosition={{
+          autoscrollToTopThreshold,
+          minIndexForVisible: 1,
+        }}
+        onEndReached={loadMore}
+        onScroll={handleScroll}
+        onScrollBeginDrag={() => setHasMoved(true)}
+        onScrollEndDrag={() => setHasMoved(false)}
+        onTouchEnd={dismissImagePicker}
+        onViewableItemsChanged={updateStickyDate.current}
+        ref={(
+          fl: MutableRefObject<
+            DefaultFlatList<
+              MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+            >
+          >,
+        ) => {
           // @ts-ignore
-          renderItem={({ index, item }) => renderItem(item, index)}
-          style={[styles.listContainer, listContainer]}
-          testID='message-flat-list'
-          viewabilityConfig={{
-            viewAreaCoveragePercentThreshold: 50,
-          }}
-          {...additionalFlatListProps}
-        />
-        <View style={styles.stickyHeader}>
-          {StickyHeader ? (
-            <StickyHeader dateString={stickyHeaderDateToRender} />
-          ) : (
-            <DateHeader dateString={stickyHeaderDateToRender} />
-          )}
-        </View>
-        {!disableTypingIndicator && TypingIndicator && (
-          <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
-            <TypingIndicator />
-          </TypingIndicatorContainer>
-        )}
-        <MessageNotification
-          onPress={goToNewMessages}
-          showNotification={newMessagesNotification}
-          unreadCount={channel?.countUnread()}
-        />
-        {!isOnline && (
-          <View
-            style={[styles.errorNotification, errorNotification]}
-            testID='error-notification'
-          >
-            <Text style={[styles.errorNotificationText, errorNotificationText]}>
-              {t('Connection failure, reconnecting now...')}
-            </Text>
-          </View>
+          flatListRef.current = fl;
+
+          if (setFlatListRef) {
+            setFlatListRef(fl);
+          }
+        }}
+        // @ts-ignore
+        renderItem={({ index, item }) => renderItem(item, index)}
+        style={[styles.listContainer, listContainer]}
+        testID='message-flat-list'
+        viewabilityConfig={{
+          viewAreaCoveragePercentThreshold: 50,
+        }}
+        {...additionalFlatListProps}
+      />
+      <View style={styles.stickyHeader}>
+        {StickyHeader ? (
+          <StickyHeader dateString={stickyHeaderDateToRender} />
+        ) : (
+          <DateHeader dateString={stickyHeaderDateToRender} />
         )}
       </View>
-      {
-        // Mask for edit state
-        editing && disableWhileEditing && (
-          <TouchableOpacity
-            onPress={clearEditingState}
-            style={styles.editStateMask}
-          />
-        )
-      }
-    </>
+      {!disableTypingIndicator && TypingIndicator && (
+        <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
+          <TypingIndicator />
+        </TypingIndicatorContainer>
+      )}
+      <MessageNotification
+        onPress={goToNewMessages}
+        showNotification={newMessagesNotification}
+        unreadCount={channel?.countUnread()}
+      />
+      {!isOnline && (
+        <View
+          style={[styles.errorNotification, errorNotification]}
+          testID='error-notification'
+        >
+          <Text style={[styles.errorNotificationText, errorNotificationText]}>
+            {t('Connection failure, reconnecting now...')}
+          </Text>
+        </View>
+      )}
+    </View>
   );
 };
 

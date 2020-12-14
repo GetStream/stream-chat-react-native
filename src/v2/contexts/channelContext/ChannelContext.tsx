@@ -56,7 +56,7 @@ export type ChannelContextValue<
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void> | undefined;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
-  setTargettedMessage: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setTargettedMessage: (messageId: string) => void;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;

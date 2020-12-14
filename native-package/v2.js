@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { FlatList } from '@stream-io/flat-list-mvcp';
 
 import { BlurView as RNBlurView } from '@react-native-community/blur';
+import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -26,6 +27,17 @@ registerNativeHandlers({
     }
   },
   FlatList,
+  getPhotos: async ({ after, first }) => {
+    try {
+      const results = await CameraRoll.getPhotos({ after, first });
+      const assets = results.edges.map((edge) => edge.node.image.uri);
+      const hasNextPage = results.page_info.has_next_page;
+      const endCursor = results.page_info.end_cursor;
+      return { assets, endCursor, hasNextPage };
+    } catch {
+      throw new Error('getPhotos Error');
+    }
+  },
   NetInfo: {
     addEventListener(listener) {
       let unsubscribe;
@@ -163,6 +175,18 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed...');
     }
+  },
+  takePhoto: async () => {
+    const photo = await ImagePicker.openCamera({});
+    if (photo.height && photo.width && photo.path) {
+      return {
+        cancelled: false,
+        height: photo.height,
+        uri: photo.path,
+        width: photo.width,
+      };
+    }
+    return { cancelled: true };
   },
   triggerHaptic: (method) => {
     ReactNativeHapticFeedback.trigger(method, {

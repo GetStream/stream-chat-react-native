@@ -3,7 +3,6 @@ import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
-export const BASE_FONT_SIZE = 16;
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
@@ -71,6 +70,18 @@ export type MarkdownStyle = Partial<{
 }>;
 
 export type Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: ViewStyle;
+    errorButtonText: TextStyle;
+    errorContainer: ViewStyle;
+    errorText: TextStyle;
+    image: ViewStyle;
+    imageOverlay: ViewStyle;
+  };
+  attachmentSelectionBar: {
+    container: ViewStyle;
+    icon: ViewStyle;
+  };
   avatar: {
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
@@ -203,41 +214,38 @@ export type Theme = {
     loadingText: TextStyle;
   };
   messageInput: {
-    actionSheet: {
-      buttonContainer: ViewStyle;
-      buttonText: ImageStyle;
-      titleContainer: ViewStyle;
-      titleText: ImageStyle;
-    };
     attachButton: ViewStyle;
-    attachButtonIcon: ImageStyle;
+    attachButtonContainer: ViewStyle;
+    autoCompleteInputContainer: ViewStyle;
     commandsButton: ViewStyle;
+    commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
-    container: ViewStyle & {
-      conditionalPadding: ViewStyle['paddingTop'];
-    };
+    container: ViewStyle;
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: ImageStyle;
     fileUploadPreview: {
-      attachmentContainerView: ViewStyle;
-      attachmentView: ViewStyle;
-      container: ViewStyle;
       dismiss: ViewStyle;
-      dismissImage: ImageStyle;
+      fileContainer: ViewStyle;
+      fileContentContainer: ViewStyle;
       filenameText: TextStyle;
+      fileSizeText: TextStyle;
+      fileTextContainer: ViewStyle;
+      flatList: ViewStyle;
     };
     imageUploadPreview: {
-      container: ViewStyle;
       dismiss: ViewStyle;
-      dismissImage: ImageStyle;
+      flatList: ViewStyle;
       itemContainer: ViewStyle;
       upload: ImageStyle;
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    moreOptionsButton: ViewStyle;
+    optionsContainer: ViewStyle;
+    replyContainer: ViewStyle;
     sendButton: ViewStyle;
-    sendButtonIcon: ImageStyle;
+    sendButtonContainer: ViewStyle;
     suggestions: {
       command: {
         args: TextStyle;
@@ -433,6 +441,14 @@ export type Theme = {
       reactionList: ViewStyle;
     };
   };
+  reply: {
+    container: ViewStyle;
+    fileAttachmentContainer: ViewStyle;
+    imageAttachment: ImageStyle;
+    markdownStyles: MarkdownStyle;
+    messageContainer: ViewStyle;
+    textContainer: ViewStyle;
+  };
   screenPadding: number;
   spinner: ViewStyle;
   thread: {
@@ -450,6 +466,18 @@ export type Theme = {
 };
 
 export const defaultTheme: Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: {},
+    errorButtonText: {},
+    errorContainer: {},
+    errorText: {},
+    image: {},
+    imageOverlay: {},
+  },
+  attachmentSelectionBar: {
+    container: {},
+    icon: {},
+  },
   avatar: {
     BASE_AVATAR_SIZE: 32,
     container: {},
@@ -621,41 +649,42 @@ export const defaultTheme: Theme = {
     loadingText: {},
   },
   messageInput: {
-    actionSheet: {
-      buttonContainer: {},
-      buttonText: {},
-      titleContainer: {},
-      titleText: {},
-    },
     attachButton: {},
-    attachButtonIcon: {},
+    attachButtonContainer: {},
+    autoCompleteInputContainer: {},
     commandsButton: {},
+    commandsButtonContainer: {},
     composerContainer: {},
-    container: {
-      conditionalPadding: 20,
-    },
+    container: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
     fileUploadPreview: {
-      attachmentContainerView: {},
-      attachmentView: {},
-      container: {},
       dismiss: {},
-      dismissImage: {},
+      fileContainer: {},
+      fileContentContainer: {},
       filenameText: {},
+      fileSizeText: {
+        color: Colors.textGrey,
+      },
+      fileTextContainer: {},
+      flatList: {},
     },
     imageUploadPreview: {
-      container: {},
-      dismiss: {},
-      dismissImage: {},
+      dismiss: {
+        backgroundColor: Colors.textGrey,
+      },
+      flatList: {},
       itemContainer: {},
       upload: {},
     },
     inputBox: {},
     inputBoxContainer: {},
+    moreOptionsButton: {},
+    optionsContainer: {},
+    replyContainer: {},
     sendButton: {},
-    sendButtonIcon: {},
+    sendButtonContainer: {},
     suggestions: {
       command: {
         args: {},
@@ -939,6 +968,16 @@ export const defaultTheme: Theme = {
         backgroundColor: Colors.background,
       },
     },
+  },
+  reply: {
+    container: {},
+    fileAttachmentContainer: {},
+    imageAttachment: {},
+    markdownStyles: {},
+    messageContainer: {
+      borderColor: Colors.textLight,
+    },
+    textContainer: {},
   },
   screenPadding: 8,
   spinner: {},

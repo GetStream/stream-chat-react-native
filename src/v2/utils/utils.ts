@@ -159,7 +159,6 @@ const getMembersAndWatchers = <
   );
 };
 
-// TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -403,6 +402,12 @@ export const vh = (percentageHeight: number, rounded = false) => {
   const value = height * (percentageHeight / 100);
   return rounded ? Math.round(value) : value;
 };
+
+export const generateRandomId = (a = ''): string =>
+  a
+    ? /* eslint-disable no-bitwise */
+      ((Number(a) ^ (Math.random() * 16)) >> (Number(a) / 4)).toString(16)
+    : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, generateRandomId);
 
 // source: https://raw.githubusercontent.com/mathiasbynens/emoji-regex/master/RGI_Emoji.js
 // [#\*0-9]\uFE0F\u20E3 was replaced with [#*0-9]\uFE0F\u20E3 due to a lint warning

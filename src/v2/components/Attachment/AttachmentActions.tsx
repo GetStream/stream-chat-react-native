@@ -1,5 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import {
   MessageContextValue,
@@ -43,7 +51,13 @@ export type AttachmentActionsPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Pick<Attachment<At>, 'actions'> &
-  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'>;
+  Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'handleAction'> & {
+    styles?: Partial<{
+      actionButton: StyleProp<ViewStyle>;
+      buttonText: StyleProp<TextStyle>;
+      container: StyleProp<ViewStyle>;
+    }>;
+  };
 
 const AttachmentActionsWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -56,7 +70,7 @@ const AttachmentActionsWithContext = <
 >(
   props: AttachmentActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { actions, handleAction } = props;
+  const { actions, handleAction, styles: stylesProp = {} } = props;
 
   const {
     theme: {
@@ -77,7 +91,10 @@ const AttachmentActionsWithContext = <
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]} testID='attachment-actions'>
+    <View
+      style={[styles.container, container, stylesProp.container]}
+      testID='attachment-actions'
+    >
       {actions?.map((action, index) => {
         const primary = action.style === 'primary';
 
@@ -98,6 +115,7 @@ const AttachmentActionsWithContext = <
                 borderColor: primary ? primaryBorderColor : defaultBorderColor,
               },
               buttonStyle,
+              stylesProp.actionButton,
             ]}
             testID={`attachment-actions-button-${action.name}`}
           >
@@ -107,6 +125,7 @@ const AttachmentActionsWithContext = <
                   color: primary ? primaryColor : defaultColor,
                 },
                 buttonTextStyle,
+                stylesProp.buttonText,
               ]}
             >
               {action.text}
