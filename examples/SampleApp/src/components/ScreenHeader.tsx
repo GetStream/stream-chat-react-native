@@ -1,5 +1,5 @@
 /* eslint-disable sort-keys */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -14,6 +14,7 @@ import {
 } from '../types';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useAttachmentPickerContext } from 'stream-chat-react-native/v2';
 import { GoBack } from '../icons/GoBack';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
@@ -52,6 +53,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   subtitle = false,
 }) => {
   const insets = useSafeAreaInsets();
+  const { setTopInset } = useAttachmentPickerContext();
+  useEffect(() => {
+    setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
+  }, [insets.top]);
   const { colors } = useTheme() as AppTheme;
 
   return (
