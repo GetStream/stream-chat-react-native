@@ -76,8 +76,10 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 10,
     width: '100%',
+  },
+  messagePadding: {
+    paddingHorizontal: 8,
   },
   stickyHeader: {
     position: 'absolute',
@@ -253,7 +255,12 @@ export const MessageList = <
   >();
   const {
     theme: {
-      messageList: { errorNotification, errorNotificationText, listContainer },
+      messageList: {
+        container,
+        errorNotification,
+        errorNotificationText,
+        listContainer,
+      },
     },
   } = useTheme();
   const { loadMoreThread, thread } = useThreadContext<
@@ -361,19 +368,25 @@ export const MessageList = <
 
   const renderItem = (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (message.type === 'system') {
-      return <MessageSystem message={message} />;
+      return (
+        <View style={styles.messagePadding}>
+          <MessageSystem message={message} />
+        </View>
+      );
     }
     if (message.type !== 'message.read') {
       return (
-        <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-          groupStyles={message.groupStyles as GroupType[]}
-          lastReceivedId={
-            lastReceivedId === message.id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          threadList={threadList}
-        />
+        <View style={styles.messagePadding}>
+          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+            groupStyles={message.groupStyles as GroupType[]}
+            lastReceivedId={
+              lastReceivedId === message.id ? lastReceivedId : undefined
+            }
+            message={message}
+            onThreadSelect={onThreadSelect}
+            threadList={threadList}
+          />
+        </View>
       );
     }
     return null;
@@ -457,7 +470,7 @@ export const MessageList = <
   };
 
   return (
-    <View collapsable={false} style={styles.container}>
+    <View collapsable={false} style={[styles.container, container]}>
       <FlatList
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */

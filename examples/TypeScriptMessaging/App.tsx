@@ -350,41 +350,7 @@ const App = () => {
                 name='ChannelList'
                 options={{ headerTitle: 'Channel List' }}
               />
-              <Stack.Screen
-                component={ThreadScreen}
-                name='Thread'
-                options={({ navigation }) => ({
-                  headerLeft: () => <></>,
-                  headerRight: () => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.goBack();
-                      }}
-                      style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 20,
-                      }}
-                    >
-                      <View
-                        style={{
-                          alignItems: 'center',
-                          backgroundColor: 'white',
-                          borderColor: 'rgba(0, 0, 0, 0.1)',
-                          borderRadius: 3,
-                          borderStyle: 'solid',
-                          borderWidth: 1,
-                          height: 30,
-                          justifyContent: 'center',
-                          width: 30,
-                        }}
-                      >
-                        <Text>X</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ),
-                })}
-              />
+              <Stack.Screen component={ThreadScreen} name='Thread' />
             </Stack.Navigator>
           )}
         </OverlayProvider>

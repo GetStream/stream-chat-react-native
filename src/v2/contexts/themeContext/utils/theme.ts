@@ -273,6 +273,7 @@ export type Theme = {
     };
   };
   messageList: {
+    container: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     listContainer: ViewStyle;
@@ -449,6 +450,8 @@ export type Theme = {
   thread: {
     newThread: ViewStyle & {
       text: TextStyle;
+      backgroundGradientStart?: string;
+      backgroundGradientStop?: string;
     };
   };
   typingIndicator: {
@@ -707,6 +710,7 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
+    container: {},
     errorNotification: {},
     errorNotificationText: {},
     listContainer: {},
