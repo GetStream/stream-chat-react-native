@@ -475,7 +475,7 @@ export const MessageList = <
     if (message.type !== 'message.read') {
       const background =
         targettedMessage === message.id
-          ? 'yellow'
+          ? '#FBF4DD'
           : isUnread && newMessagesNotification
           ? '#F9F9F9'
           : 'white';
