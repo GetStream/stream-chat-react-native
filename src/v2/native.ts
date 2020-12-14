@@ -71,7 +71,7 @@ type ShareOptions = {
 type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 export let shareImage: ShareImage = fail;
 
-type TakenPhoto =
+type Photo =
   | {
       cancelled: false;
       height: number;
@@ -79,7 +79,7 @@ type TakenPhoto =
       width: number;
     }
   | { cancelled: true };
-type TakePhoto = () => Promise<TakenPhoto> | never;
+type TakePhoto = () => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 
 type HapticFeedbackMethod =
