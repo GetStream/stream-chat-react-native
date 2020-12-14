@@ -97,38 +97,6 @@ registerNativeHandlers({
       };
     }
   },
-  pickImage: async ({ compressImageQuality, maxNumberOfFiles }) => {
-    try {
-      let res = await ImagePicker.openPicker({
-        compressImageQuality,
-        forceJpg: true,
-        includeBase64: Platform.OS === 'ios',
-        maxFiles: maxNumberOfFiles || undefined,
-        mediaType: 'photo',
-        multiple: true,
-        writeTempFile: false,
-      });
-
-      // maxFiles option on picker is only for iOS so this is a safety check for android
-      if (maxNumberOfFiles && res.length > maxNumberOfFiles) {
-        res = res.slice(0, maxNumberOfFiles);
-      }
-
-      return {
-        cancelled: false,
-        images: res.map((image) => ({
-          uri:
-            Platform.OS === 'ios'
-              ? image.sourceURL || `data:${image.mime};base64,${image.data}`
-              : image.path,
-        })),
-      };
-    } catch (err) {
-      return {
-        cancelled: true,
-      };
-    }
-  },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
       const path = RNFS.DocumentDirectoryPath + '/' + fileName;

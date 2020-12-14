@@ -310,6 +310,8 @@ PODS:
   - React-jsinspector (0.63.4)
   - react-native-blur (0.8.0):
     - React
+  - react-native-cameraroll (4.0.1):
+    - React
   - react-native-document-picker (4.1.0):
     - React-Core
   - react-native-netinfo (5.9.9):
@@ -384,12 +386,12 @@ PODS:
     - React
   - RNGestureHandler (1.9.0):
     - React-Core
-  - RNImageCropPicker (0.35.1):
+  - RNImageCropPicker (0.35.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.35.1)
+    - RNImageCropPicker/QBImagePickerController (= 0.35.2)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.35.1):
+  - RNImageCropPicker/QBImagePickerController (0.35.2):
     - React-Core
     - React-RCTImage
     - TOCropViewController
@@ -424,7 +426,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.15.0):
+  - RNScreens (2.16.1):
     - React-Core
   - RNShare (4.1.0):
     - React-Core
@@ -475,6 +477,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -560,6 +563,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-cameraroll:
+    :path: "../node_modules/@react-native-community/cameraroll"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-netinfo:
@@ -648,6 +653,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 93bd528844ad21dc07aab1c67cb10abae6df6949
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
+  react-native-cameraroll: 60ba0068826eab1c8d43146191bafd4363ea58a7
   react-native-document-picker: d870e0a41510b241d5b764e7a2b5ccf129af7967
   react-native-netinfo: 0212ce8604e88edf686f1481b925b17a42a52449
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
@@ -665,10 +671,10 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
-  RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
+  RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: b9c929bfff7dedc9c89ab1875f1c6151023358d9
-  RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
+  RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
   RNShare: 106a76243ac90f43ddb9028dcb78ade406b8adff
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe

@@ -325,9 +325,9 @@ const App = () => {
           LocalResponseType,
           LocalUserType
         >
+          bottomInset={bottom}
           i18nInstance={streami18n}
           value={{ style: theme }}
-          bottomInset={bottom}
         >
           {clientReady && (
             <Stack.Navigator

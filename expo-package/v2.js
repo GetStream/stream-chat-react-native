@@ -91,36 +91,6 @@ registerNativeHandlers({
       };
     }
   },
-  pickImage: async ({ compressImageQuality = 0.2, maxNumberOfFiles }) => {
-    try {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        return {
-          cancelled: true,
-        };
-      }
-
-      const { cancelled, ...rest } = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: false,
-        aspect: [4, 3],
-        quality: compressImageQuality,
-      });
-
-      if (cancelled) {
-        return {
-          cancelled,
-        };
-      }
-      return {
-        cancelled: false,
-        images: [{ uri: rest.uri }],
-      };
-    } catch (err) {
-      return {
-        cancelled: true,
-      };
-    }
-  },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
       const path = FileSystem.documentDirectory + fileName;
