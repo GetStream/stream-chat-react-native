@@ -112,7 +112,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
                 }}
               >
                 <Image
-                  source={{ uri: a.image_url }}
+                  source={{ uri: a.thumb_url || a.image_url }}
                   style={{
                     height: screen / 3,
                     margin: 1,
