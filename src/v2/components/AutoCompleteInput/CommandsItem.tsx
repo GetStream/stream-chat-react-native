@@ -2,29 +2,117 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  Flag,
+  GiphyIcon,
+  Imgur,
+  Lightning,
+  Mute,
+  Sound,
+  UserAdd,
+  UserDelete,
+} from '../../icons';
 
 import type { SuggestionCommand } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultCommandType } from '../../types/types';
 
 const styles = StyleSheet.create({
+  args: {
+    fontSize: 14,
+  },
   container: {
-    padding: 10,
-  },
-  title: {
-    fontWeight: 'bold',
-  },
-  top: {
     alignItems: 'center',
     flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    marginRight: 8,
+    width: 24,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingRight: 8,
   },
 });
+
+const Icon = <Co extends string = DefaultCommandType>({
+  name,
+}: {
+  name: SuggestionCommand<Co>['name'];
+}) => {
+  const {
+    theme: {
+      colors: { white },
+      messageInput: {
+        suggestions: {
+          command: { iconContainer },
+        },
+      },
+    },
+  } = useTheme();
+  switch (name) {
+    case 'ban':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <UserDelete height={16} pathFill={white} width={16} />
+        </View>
+      );
+    case 'flag':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <Flag pathFill={white} />
+        </View>
+      );
+    case 'giphy':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <GiphyIcon />
+        </View>
+      );
+    case 'imgur':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <Imgur />
+        </View>
+      );
+    case 'mute':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <Mute height={16} pathFill={white} width={16} />
+        </View>
+      );
+    case 'unban':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <UserAdd height={16} pathFill={white} width={16} />
+        </View>
+      );
+    case 'unmute':
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <Sound pathFill={white} />
+        </View>
+      );
+    default:
+      return (
+        <View style={[styles.iconContainer, iconContainer]}>
+          <Lightning height={16} pathFill={white} width={16} />
+        </View>
+      );
+  }
+};
 
 export type CommandsItemProps<Co extends string = DefaultCommandType> = {
   /**
    * A CommandResponse of suggested CommandTypes with these properties
    *
    * - args: Arguments which can be passed to the command
-   * - description: Description of the command
    * - name: Name of the command
    */
   item: SuggestionCommand<Co>;
@@ -34,19 +122,13 @@ export type CommandsItemProps<Co extends string = DefaultCommandType> = {
  * @example ./CommandsItem.md
  */
 export const CommandsItem = <Co extends string = DefaultCommandType>({
-  item: { args, description, name },
+  item: { args, name },
 }: CommandsItemProps<Co>) => {
   const {
     theme: {
       messageInput: {
         suggestions: {
-          command: {
-            args: argsStyle,
-            container,
-            description: descriptionStyle,
-            title,
-            top,
-          },
+          command: { args: argsStyle, container, title },
         },
       },
     },
@@ -54,16 +136,12 @@ export const CommandsItem = <Co extends string = DefaultCommandType>({
 
   return (
     <View style={[styles.container, container]}>
-      <View style={[styles.top, top]}>
-        <Text style={[styles.title, title]} testID='commands-item-title'>
-          /{name}{' '}
-        </Text>
-        <Text style={argsStyle} testID='commands-item-args'>
-          {args}
-        </Text>
-      </View>
-      <Text style={descriptionStyle} testID='commands-item-description'>
-        {description}
+      <Icon name={name} />
+      <Text style={[styles.title, title]} testID='commands-item-title'>
+        {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
+      </Text>
+      <Text style={[styles.args, argsStyle]} testID='commands-item-args'>
+        {`/${name} ${args}`}
       </Text>
     </View>
   );

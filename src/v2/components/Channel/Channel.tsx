@@ -4,7 +4,12 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text } from 'react-native';
+import {
+  KeyboardAvoidingViewProps,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
@@ -301,7 +306,6 @@ export const ChannelWithContext = <
     Reply = ReplyDefault,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
-    setInputBoxContainerRef,
     setInputRef,
     StickyHeader,
     supportedReactions = reactionDataDefault,
@@ -1047,7 +1051,6 @@ export const ChannelWithContext = <
   const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
     closeSuggestions,
     openSuggestions,
-    setInputBoxContainerRef,
     updateSuggestions,
   };
 
@@ -1095,7 +1098,7 @@ export const ChannelWithContext = <
               <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
                 value={messageInputContext}
               >
-                {children}
+                <View style={{ height: '100%' }}>{children}</View>
               </MessageInputProvider>
             </SuggestionsProvider>
           </ThreadProvider>
