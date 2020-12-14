@@ -78,9 +78,21 @@ const areEqual = <
   prevProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MoreOptionsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled: prevDisabled } = prevProps;
-  const { disabled: nextDisabled } = nextProps;
-  return prevDisabled === nextDisabled;
+  const {
+    disabled: prevDisabled,
+    handleOnPress: prevHandleOnPress,
+  } = prevProps;
+  const {
+    disabled: nextDisabled,
+    handleOnPress: nextHandleOnPress,
+  } = nextProps;
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
+
+  const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
+  if (!handleOnPressEqual) return false;
+
+  return true;
 };
 
 const MemoizedMoreOptionsButton = React.memo(

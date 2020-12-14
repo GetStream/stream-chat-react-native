@@ -63,7 +63,6 @@ type AutoCompleteInputPropsWithContext<
   | 'additionalTextInputProps'
   | 'numberOfLines'
   | 'onChange'
-  | 'setFocused'
   | 'setInputBoxRef'
   | 'text'
   | 'triggerSettings'
@@ -101,7 +100,6 @@ const AutoCompleteInputWithContext = <
     numberOfLines,
     onChange,
     openSuggestions,
-    setFocused,
     setInputBoxRef,
     t,
     text,
@@ -315,7 +313,6 @@ const AutoCompleteInputWithContext = <
   return (
     <TextInput
       multiline
-      onBlur={() => setFocused(false)}
       onChangeText={(text) => {
         handleChange(text);
       }}
@@ -328,7 +325,6 @@ const AutoCompleteInputWithContext = <
           setTextHeight(height);
         }
       }}
-      onFocus={() => setFocused(true)}
       onSelectionChange={handleSelectionChange}
       placeholder={t('Send a message')}
       placeholderTextColor={textGrey}
@@ -391,7 +387,6 @@ export const AutoCompleteInput = <
     additionalTextInputProps,
     numberOfLines,
     onChange,
-    setFocused,
     setInputBoxRef,
     text,
     triggerSettings,
@@ -411,7 +406,6 @@ export const AutoCompleteInput = <
         numberOfLines,
         onChange,
         openSuggestions,
-        setFocused,
         setInputBoxRef,
         t,
         text,

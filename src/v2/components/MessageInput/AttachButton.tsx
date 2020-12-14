@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -32,6 +33,7 @@ type AttachButtonPropsWithContext<
 > = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
   /** Function that opens attachment options bottom sheet */
   handleOnPress?: (event: GestureResponderEvent) => void;
+  selectedPicker?: 'images';
 };
 
 const AttachButtonWithContext = <
@@ -45,11 +47,10 @@ const AttachButtonWithContext = <
 >(
   props: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled, handleOnPress } = props;
-
+  const { disabled, handleOnPress, selectedPicker } = props;
   const {
     theme: {
-      colors: { textGrey },
+      colors: { primary, textGrey },
       messageInput: { attachButton },
     },
   } = useTheme();
@@ -61,7 +62,7 @@ const AttachButtonWithContext = <
       style={[attachButton]}
       testID='attach-button'
     >
-      <Attach pathFill={textGrey} />
+      <Attach pathFill={selectedPicker === 'images' ? primary : textGrey} />
     </TouchableOpacity>
   );
 };
@@ -78,9 +79,27 @@ const areEqual = <
   prevProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AttachButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled: prevDisabled } = prevProps;
-  const { disabled: nextDisabled } = nextProps;
-  return prevDisabled === nextDisabled;
+  const {
+    disabled: prevDisabled,
+    handleOnPress: prevHandleOnPress,
+    selectedPicker: prevSelectedPicker,
+  } = prevProps;
+  const {
+    disabled: nextDisabled,
+    handleOnPress: nextHandleOnPress,
+    selectedPicker: nextSelectedPicker,
+  } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
+
+  const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
+  if (!handleOnPressEqual) return false;
+
+  const selectedPickerEqual = prevSelectedPicker === nextSelectedPicker;
+  if (!selectedPickerEqual) return false;
+
+  return true;
 };
 
 const MemoizedAttachButton = React.memo(
@@ -115,8 +134,9 @@ export const AttachButton = <
   props: AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { selectedPicker } = useAttachmentPickerContext();
 
-  return <MemoizedAttachButton {...{ disabled }} {...props} />;
+  return <MemoizedAttachButton {...{ disabled, selectedPicker }} {...props} />;
 };
 
 AttachButton.displayName = 'AttachButton{messageInput}';

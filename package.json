@@ -90,6 +90,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.12.5",
+    "@gorhom/bottom-sheet": "3.0.0-alpha.0",
     "@stream-io/react-native-simple-markdown": "1.2.1",
     "anchorme": "^1.1.2",
     "dayjs": "1.9.7",

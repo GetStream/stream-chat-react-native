@@ -40,7 +40,7 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
-import { pickDocument, pickImage as pickImageNative } from '../../native';
+import { pickDocument } from '../../native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -120,7 +120,6 @@ export type LocalMessageInputContext<
    *
    */
   fileUploads: FileUpload[];
-  focused: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -148,7 +147,6 @@ export type LocalMessageInputContext<
   onChange: (newText: string) => void;
   onSelectItem: (item: UserResponse<Us>) => void;
   pickFile: () => Promise<void>;
-  pickImage: () => Promise<void>;
   /**
    * Function for removing a file from the upload preview
    *
@@ -175,7 +173,6 @@ export type LocalMessageInputContext<
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
-  setFocused: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
   /**
    * Ref callback to set reference on input box
@@ -183,7 +180,9 @@ export type LocalMessageInputContext<
   setInputBoxRef: (ref: TextInput | null) => void;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
+  setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
+  showMoreOptions: boolean;
   /**
    * Text value of the TextInput
    */
@@ -327,7 +326,7 @@ export type InputMessageInputContextValue<
   Input?: React.ComponentType<
     Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> & {
       getUsers: () => UserResponse<Us>[];
-      handleOnPress: () => Promise<void>;
+      handleOnPress: () => void | Promise<void>;
     }
   >;
   /**
@@ -380,10 +379,10 @@ const areEqual = <
     value: {
       editing: prevEditing,
       fileUploads: prevFileUploads,
-      focused: prevFocused,
       imageUploads: prevImageUploads,
       mentionedUsers: prevMentionedUsers,
       replyTo: prevReplyTo,
+      showMoreOptions: prevShowMoreOptions,
       text: prevText,
     },
   } = prevProps;
@@ -391,10 +390,10 @@ const areEqual = <
     value: {
       editing: nextEditing,
       fileUploads: nextFileUploads,
-      focused: nextFocused,
       imageUploads: nextImageUploads,
       mentionedUsers: nextMentionedUsers,
       replyTo: nextReplyTo,
+      showMoreOptions: nextShowMoreOptions,
       text: nextText,
     },
   } = nextProps;
@@ -408,12 +407,12 @@ const areEqual = <
   const textEqual = prevText === nextText;
   if (!textEqual) return false;
 
-  const focusedEqual = prevFocused === nextFocused;
-  if (!focusedEqual) return false;
-
   const mentionedUsersEqual =
     prevMentionedUsers.length === nextMentionedUsers.length;
   if (!mentionedUsersEqual) return false;
+
+  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
+  if (!showMoreOptionsEqual) return false;
 
   const fileUploadsEqual =
     prevFileUploads.length === nextFileUploads.length &&
@@ -480,16 +479,16 @@ const MessageInputProviderWithContext = <
 
   const {
     fileUploads,
-    focused,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
     setFileUploads,
-    setFocused,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
+    setShowMoreOptions,
     setText,
+    showMoreOptions,
     text,
   } = useMessageDetailsForState<At, Ch, Co, Ev, Me, Re, Us>(
     value.editing,
@@ -569,23 +568,6 @@ const MessageInputProviderWithContext = <
         } else {
           uploadNewFile(doc);
         }
-      });
-    }
-  };
-
-  const pickImage = async () => {
-    if (numberOfUploads >= value.maxNumberOfFiles) {
-      return;
-    }
-
-    const result = await pickImageNative({
-      compressImageQuality: value.compressImageQuality,
-      maxNumberOfFiles: value.maxNumberOfFiles - numberOfUploads,
-    });
-
-    if (!result.cancelled && result.images) {
-      result.images.forEach((image) => {
-        uploadNewImage(image);
       });
     }
   };
@@ -1007,7 +989,6 @@ const MessageInputProviderWithContext = <
           asyncIds,
           asyncUploads,
           fileUploads,
-          focused,
           imageUploads,
           inputBoxRef,
           isValidMessage,
@@ -1016,7 +997,6 @@ const MessageInputProviderWithContext = <
           onChange,
           onSelectItem,
           pickFile,
-          pickImage,
           removeFile,
           removeImage,
           resetInput,
@@ -1025,12 +1005,13 @@ const MessageInputProviderWithContext = <
           setAsyncIds,
           setAsyncUploads,
           setFileUploads,
-          setFocused,
           setImageUploads,
           setInputBoxRef,
           setMentionedUsers,
           setNumberOfUploads,
+          setShowMoreOptions,
           setText,
+          showMoreOptions,
           text,
           triggerSettings,
           updateMessage,

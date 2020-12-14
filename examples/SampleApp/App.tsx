@@ -1,6 +1,10 @@
 import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 
 import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
@@ -40,6 +44,7 @@ const Stack = createStackNavigator<StackNavigatorParamList>();
 const Drawer = createDrawerNavigator();
 
 const App = () => {
+  const { bottom } = useSafeAreaInsets();
   const scheme = useColorScheme();
 
   const { chatClient, isConnecting, switchUser } = useChatClient();
@@ -64,6 +69,7 @@ const App = () => {
           LocalResponseType,
           LocalUserType
         >
+          bottomInset={bottom}
           value={{ style: streamTheme }}
         >
           <Drawer.Navigator
@@ -152,4 +158,9 @@ const HomeScreen = () => {
     </Chat>
   );
 };
-export default App;
+
+export default () => (
+  <SafeAreaProvider>
+    <App />
+  </SafeAreaProvider>
+);

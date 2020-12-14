@@ -25,6 +25,7 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import { Message as DefaultMessage } from '../Message/Message';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   GroupType,
   useMessagesContext,
@@ -265,6 +266,11 @@ export const MessageList = <
     Us
   >();
   const { t, tDateTimeParser } = useTranslationContext();
+  const {
+    closePicker,
+    selectedPicker,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -277,6 +283,7 @@ export const MessageList = <
   > | null>(null);
   const yOffset = useRef(0);
 
+  const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
@@ -442,6 +449,13 @@ export const MessageList = <
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
     : new Date(tStickyHeaderDate).toDateString();
 
+  const dismissImagePicker = () => {
+    if (!hasMoved && selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    }
+  };
+
   return (
     <View collapsable={false} style={styles.container}>
       <FlatList
@@ -459,6 +473,9 @@ export const MessageList = <
         }}
         onEndReached={loadMore}
         onScroll={handleScroll}
+        onScrollBeginDrag={() => setHasMoved(true)}
+        onScrollEndDrag={() => setHasMoved(false)}
+        onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={updateStickyDate.current}
         ref={(fl) => {
           flatListRef.current = fl;

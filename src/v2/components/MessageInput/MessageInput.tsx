@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   ChannelContextValue,
   useChannelContext,
@@ -44,6 +46,7 @@ import type {
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
+  attachmentSelectionBar: { backgroundColor: '#F5F5F5' },
   autoCompleteInputContainer: { paddingHorizontal: 16 },
   composerContainer: {
     alignItems: 'flex-end',
@@ -105,7 +108,6 @@ type MessageInputPropsWithContext<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
-    | 'focused'
     | 'hasFilePicker'
     | 'hasImagePicker'
     | 'ImageUploadPreview'
@@ -117,12 +119,15 @@ type MessageInputPropsWithContext<
     | 'MoreOptionsButton'
     | 'numberOfUploads'
     | 'pickFile'
-    | 'pickImage'
     | 'replyTo'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
+    | 'setShowMoreOptions'
+    | 'showMoreOptions'
+    | 'uploadNewImage'
+    | 'removeImage'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<SuggestionsContextValue<Co, Us>, 'setInputBoxContainerRef'> &
@@ -152,7 +157,6 @@ export const MessageInputWithContext = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -165,7 +169,7 @@ export const MessageInputWithContext = <
     MoreOptionsButton,
     numberOfUploads,
     pickFile,
-    pickImage,
+    removeImage,
     Reply,
     replyTo,
     resetInput,
@@ -173,7 +177,10 @@ export const MessageInputWithContext = <
     sending,
     sendMessageAsync,
     setInputBoxContainerRef,
+    setShowMoreOptions,
+    showMoreOptions,
     t,
+    uploadNewImage,
     watchers,
   } = props;
 
@@ -195,6 +202,60 @@ export const MessageInputWithContext = <
       },
     },
   } = useTheme();
+
+  const {
+    attachmentPickerBottomSheetHeight,
+    attachmentSelectionBarHeight,
+    bottomInset,
+    closePicker,
+    openPicker,
+    selectedImages,
+    selectedPicker,
+    setMaxNumberOfFiles,
+    setSelectedImages,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setMaxNumberOfFiles(maxNumberOfFiles ?? 10);
+
+    return () => {
+      closePicker();
+      setSelectedPicker(undefined);
+    };
+  }, [maxNumberOfFiles]);
+
+  useEffect(() => {
+    if (selectedImages.length > imageUploads.length) {
+      const imagesToUpload = selectedImages.filter((selectedImage) => {
+        const uploadedImage = imageUploads.find(
+          (imageUpload) => imageUpload.file.uri === selectedImage,
+        );
+        return !uploadedImage;
+      });
+      imagesToUpload.forEach((image) => uploadNewImage({ uri: image }));
+    } else if (selectedImages.length < imageUploads.length) {
+      const imagesToRemove = imageUploads.filter(
+        (imageUpload) =>
+          !selectedImages.find(
+            (selectedImage) => selectedImage === imageUpload.file.uri,
+          ),
+      );
+      imagesToRemove.forEach((image) => removeImage(image.id));
+    }
+  }, [selectedImages.length]);
+
+  useEffect(() => {
+    if (imageUploads.length < selectedImages.length) {
+      const updatedSelectedImages = selectedImages.filter((selectedImage) => {
+        const uploadedImage = imageUploads.find(
+          (imageUpload) => imageUpload.file.uri === selectedImage,
+        );
+        return uploadedImage;
+      });
+      setSelectedImages(updatedSelectedImages);
+    }
+  }, [imageUploads.length]);
 
   useEffect(() => {
     if (editing && inputBoxRef.current) {
@@ -253,20 +314,18 @@ export const MessageInputWithContext = <
     return result;
   };
 
-  const handleOnPress = async () => {
-    if (numberOfUploads >= maxNumberOfFiles) {
-      return;
-    }
-
-    if (hasImagePicker) {
-      if (hasFilePicker) {
-        await Keyboard.dismiss();
+  const handleOnPress = () => {
+    if (selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    } else {
+      if (hasImagePicker && !fileUploads.length) {
+        Keyboard.dismiss();
+        openPicker();
+        setSelectedPicker('images');
+      } else if (hasFilePicker && numberOfUploads < maxNumberOfFiles) {
         pickFile();
-      } else {
-        pickImage();
       }
-    } else if (hasFilePicker) {
-      pickFile();
     }
   };
 
@@ -276,111 +335,125 @@ export const MessageInputWithContext = <
   };
 
   return (
-    <View style={[styles.container, container]}>
-      {(editing || replyTo) && (
-        <View style={[styles.editingBoxHeader, editingBoxHeader]}>
-          {editing ? (
-            <Edit pathFill={grey} />
+    <>
+      <View style={[styles.container, container]}>
+        {(editing || replyTo) && (
+          <View style={[styles.editingBoxHeader, editingBoxHeader]}>
+            {editing ? (
+              <Edit pathFill={grey} />
+            ) : (
+              <CurveLineLeftUp pathFill={grey} />
+            )}
+            <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
+              {editing ? t('Editing Message') : t('Reply to Message')}
+            </Text>
+            <TouchableOpacity
+              disabled={disabled}
+              onPress={() => {
+                resetInput();
+                if (editing) {
+                  clearEditingState();
+                }
+                if (replyTo) {
+                  clearReplyToState();
+                }
+                if (inputBoxRef.current) {
+                  inputBoxRef.current.blur();
+                }
+              }}
+              testID='close-button'
+            >
+              <CircleClose pathFill='#7A7A7A' />
+            </TouchableOpacity>
+          </View>
+        )}
+        <View
+          ref={setInputBoxContainerRef}
+          style={[styles.composerContainer, composerContainer]}
+        >
+          {Input ? (
+            <Input
+              additionalTextInputProps={additionalTextInputContainerProps}
+              getUsers={getUsers}
+              handleOnPress={handleOnPress}
+            />
           ) : (
-            <CurveLineLeftUp pathFill={grey} />
-          )}
-          <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
-            {editing ? t('Editing Message') : t('Reply to Message')}
-          </Text>
-          <TouchableOpacity
-            disabled={disabled}
-            onPress={() => {
-              resetInput();
-              if (editing) {
-                clearEditingState();
-              }
-              if (replyTo) {
-                clearReplyToState();
-              }
-              if (inputBoxRef.current) {
-                inputBoxRef.current.blur();
-              }
-            }}
-            testID='close-button'
-          >
-            <CircleClose pathFill='#7A7A7A' />
-          </TouchableOpacity>
-        </View>
-      )}
-      <View
-        ref={setInputBoxContainerRef}
-        style={[styles.composerContainer, composerContainer]}
-      >
-        {Input ? (
-          <Input
-            additionalTextInputProps={additionalTextInputContainerProps}
-            getUsers={getUsers}
-            handleOnPress={handleOnPress}
-          />
-        ) : (
-          <>
-            <View style={[styles.optionsContainer, optionsContainer]}>
-              {focused ? (
-                <MoreOptionsButton
-                  handleOnPress={() => {
-                    if (inputBoxRef.current) {
-                      inputBoxRef.current.blur();
-                    }
-                  }}
-                />
-              ) : (
-                <>
-                  {(hasImagePicker || hasFilePicker) && (
-                    <View
-                      style={[
-                        styles.attachButtonContainer,
-                        attachButtonContainer,
-                      ]}
-                    >
-                      <AttachButton handleOnPress={handleOnPress} />
+            <>
+              <View style={[styles.optionsContainer, optionsContainer]}>
+                {!showMoreOptions ? (
+                  <MoreOptionsButton
+                    handleOnPress={() => setShowMoreOptions(true)}
+                  />
+                ) : (
+                  <>
+                    {(hasImagePicker || hasFilePicker) && (
+                      <View
+                        style={[
+                          styles.attachButtonContainer,
+                          attachButtonContainer,
+                        ]}
+                      >
+                        <AttachButton handleOnPress={handleOnPress} />
+                      </View>
+                    )}
+                    <View style={[commandsButtonContainer]}>
+                      <CommandsButton
+                        handleOnPress={() => {
+                          appendText('/');
+                          if (inputBoxRef.current) {
+                            inputBoxRef.current.focus();
+                          }
+                        }}
+                      />
                     </View>
-                  )}
-                  <View style={[commandsButtonContainer]}>
-                    <CommandsButton
-                      handleOnPress={() => {
-                        appendText('/');
-                        if (inputBoxRef.current) {
-                          inputBoxRef.current.focus();
-                        }
-                      }}
-                    />
+                  </>
+                )}
+              </View>
+              <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+                {replyTo && (
+                  <View style={[styles.replyContainer, replyContainer]}>
+                    <Reply />
                   </View>
-                </>
-              )}
-            </View>
-            <View style={[styles.inputBoxContainer, inputBoxContainer]}>
-              {replyTo && (
-                <View style={[styles.replyContainer, replyContainer]}>
-                  <Reply />
+                )}
+                {fileUploads.length ? <FileUploadPreview /> : null}
+                {imageUploads.length ? <ImageUploadPreview /> : null}
+                <View
+                  style={[
+                    styles.autoCompleteInputContainer,
+                    autoCompleteInputContainer,
+                  ]}
+                >
+                  <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
+                    additionalTextInputProps={additionalTextInputProps}
+                  />
                 </View>
-              )}
-              {fileUploads.length ? <FileUploadPreview /> : null}
-              {imageUploads.length ? <ImageUploadPreview /> : null}
-              <View
-                style={[
-                  styles.autoCompleteInputContainer,
-                  autoCompleteInputContainer,
-                ]}
-              >
-                <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
-                  additionalTextInputProps={additionalTextInputProps}
+              </View>
+              <View style={[styles.sendButtonContainer, sendButtonContainer]}>
+                <SendButton
+                  disabled={disabled || sending.current || !isValidMessage()}
                 />
               </View>
-            </View>
-            <View style={[styles.sendButtonContainer, sendButtonContainer]}>
-              <SendButton
-                disabled={disabled || sending.current || !isValidMessage()}
-              />
-            </View>
-          </>
-        )}
+            </>
+          )}
+        </View>
       </View>
-    </View>
+      {selectedPicker && (
+        <View
+          style={[
+            styles.attachmentSelectionBar,
+            {
+              height:
+                (attachmentPickerBottomSheetHeight
+                  ? attachmentPickerBottomSheetHeight +
+                    (attachmentSelectionBarHeight ?? 52)
+                  : 360) - (bottomInset ?? 0),
+            },
+          ]}
+        >
+          <AttachmentSelectionBar />
+        </View>
+      )}
+    </>
   );
 };
 
@@ -401,11 +474,11 @@ const areEqual = <
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
-    focused: prevFocused,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
     replyTo: prevReplyTo,
     sending: prevSending,
+    showMoreOptions: prevShowMoreOptions,
     t: prevT,
   } = prevProps;
   const {
@@ -413,11 +486,11 @@ const areEqual = <
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
-    focused: nextFocused,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
     replyTo: nextReplyTo,
     sending: nextSending,
+    showMoreOptions: nextShowMoreOptions,
     t: nextT,
   } = nextProps;
 
@@ -430,14 +503,17 @@ const areEqual = <
   const editingEqual = !!prevEditing === !!nextEditing;
   if (!editingEqual) return false;
 
+  const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
+  if (!imageUploadsEqual) return false;
+
   const replyToEqual = !!prevReplyTo === !!nextReplyTo;
   if (!replyToEqual) return false;
 
-  const focusedEqual = prevFocused === nextFocused;
-  if (!focusedEqual) return false;
-
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
+
+  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
+  if (!showMoreOptionsEqual) return false;
 
   const isValidMessageEqual = prevIsValidMessage() === nextIsValidMessage();
   if (!isValidMessageEqual) return false;
@@ -451,9 +527,6 @@ const areEqual = <
 
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) return false;
-
-  const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
-  if (!imageUploadsEqual) return false;
 
   return true;
 };
@@ -517,7 +590,6 @@ export const MessageInput = <
     editing,
     FileUploadPreview,
     fileUploads,
-    focused,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -529,12 +601,15 @@ export const MessageInput = <
     MoreOptionsButton,
     numberOfUploads,
     pickFile,
-    pickImage,
+    removeImage,
     replyTo,
     resetInput,
     SendButton,
     sending,
     sendMessageAsync,
+    setShowMoreOptions,
+    showMoreOptions,
+    uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -558,7 +633,6 @@ export const MessageInput = <
         editing,
         FileUploadPreview,
         fileUploads,
-        focused,
         hasFilePicker,
         hasImagePicker,
         ImageUploadPreview,
@@ -571,7 +645,7 @@ export const MessageInput = <
         MoreOptionsButton,
         numberOfUploads,
         pickFile,
-        pickImage,
+        removeImage,
         Reply,
         replyTo,
         resetInput,
@@ -579,7 +653,10 @@ export const MessageInput = <
         sending,
         sendMessageAsync,
         setInputBoxContainerRef,
+        setShowMoreOptions,
+        showMoreOptions,
         t,
+        uploadNewImage,
         watchers,
       }}
       {...props}
