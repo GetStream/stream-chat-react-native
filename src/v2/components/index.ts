@@ -8,8 +8,12 @@ export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
+export * from './AutoCompleteInput/CommandsHeader';
 export * from './AutoCompleteInput/CommandsItem';
+export * from './AutoCompleteInput/EmojisHeader';
+export * from './AutoCompleteInput/EmojisItem';
 export * from './AutoCompleteInput/MentionsItem';
+export * from './AutoCompleteInput/SuggestionsList';
 
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
