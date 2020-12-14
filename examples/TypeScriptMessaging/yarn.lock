@@ -1297,7 +1297,7 @@
   dependencies:
     prop-types "^15.5.10"
 
-"@react-native-community/cameraroll@^4.0.1":
+"@react-native-community/cameraroll@4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-4.0.1.tgz#8466f99a476e6b833ecd5efff045f74a4224459b"
   integrity sha512-KLKh5rAg511KUoGKHrbRhBLvkHhOz6kZ2sx8dPhndZ5ZFVYfVpTadSN1x3cfQbOAlkyGZql07p1hk7lEb3sa8g==
