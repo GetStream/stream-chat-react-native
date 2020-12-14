@@ -13,15 +13,15 @@ const stingified = JSON.stringify({
 fs.writeFile(
   'compiled.ts',
   `export type EmojiArrayItem = {
-    short_name: string;
-    short_names: string[];
+    name: string;
+    names: string[];
   }
   
   export type EmojiArray = EmojiArrayItem[];
   
   export type Emoji = {
-    short_name: string;
-    short_names: string[];
+    name: string;
+    names: string[];
     sort_order: number;
     unicode: string;
     skin_variations?: string[];

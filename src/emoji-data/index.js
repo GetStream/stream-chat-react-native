@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
 const emojis = require('./emojis.ts');
-const emojiShortNames = require('./emojiShortNames.ts');
+const emojiNames = require('./emojiNames.ts');
 
 const emojiLib = emojis.reduce((acc, cur) => {
-  acc[cur.short_name] = {
-    short_name: cur.short_name,
-    short_names: cur.short_names,
+  acc[cur.name] = {
+    name: cur.name,
+    names: cur.names,
     ...(cur.skin_variations
       ? {
           skin_variations: Object.values(cur.skin_variations).map((skin) =>
@@ -25,14 +25,14 @@ const emojiLib = emojis.reduce((acc, cur) => {
   return acc;
 }, {});
 
-const emojiArray = emojiShortNames
-  .map(({ short_name, short_names }) => ({
-    short_name,
-    short_names: emojiLib[short_name]?.short_names
-      ? [...new Set([...emojiLib[short_name].short_names, ...short_names])]
-      : short_names,
+const emojiArray = emojiNames
+  .map(({ name, names }) => ({
+    name,
+    names: emojiLib[name]?.names
+      ? [...new Set([...emojiLib[name].names, ...names])]
+      : names,
   }))
-  .sort((a, b) => (a.short_name < b.short_name ? -1 : 1));
+  .sort((a, b) => (a.name < b.name ? -1 : 1));
 
 module.exports = {
   emojiArray,
