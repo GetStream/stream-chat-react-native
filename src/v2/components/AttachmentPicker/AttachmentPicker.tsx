@@ -109,9 +109,8 @@ const renderImage = ({
       setSelectedImages((images) => {
         if (images.length >= maxNumberOfFiles) {
           return images;
-        } else {
-          return [...images, uri];
         }
+        return [...images, uri];
       });
     }
   };

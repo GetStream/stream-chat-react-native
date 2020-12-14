@@ -5,11 +5,9 @@ import { Check } from '../../../icons';
 
 const styles = StyleSheet.create({
   check: {
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     height: 24,
-    justifyContent: 'center',
     marginRight: 8,
     marginTop: 8,
     width: 24,

@@ -89,11 +89,17 @@ const areEqual = <
     handleOnPress: nextHandleOnPress,
     selectedPicker: nextSelectedPicker,
   } = nextProps;
-  return (
-    prevDisabled === nextDisabled &&
-    prevHandleOnPress === nextHandleOnPress &&
-    prevSelectedPicker === nextSelectedPicker
-  );
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
+
+  const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
+  if (!handleOnPressEqual) return false;
+
+  const selectedPickerEqual = prevSelectedPicker === nextSelectedPicker;
+  if (!selectedPickerEqual) return false;
+
+  return true;
 };
 
 const MemoizedAttachButton = React.memo(

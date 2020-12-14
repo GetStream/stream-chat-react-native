@@ -86,9 +86,13 @@ const areEqual = <
     disabled: nextDisabled,
     handleOnPress: nextHandleOnPress,
   } = nextProps;
-  return (
-    prevDisabled === nextDisabled && prevHandleOnPress === nextHandleOnPress
-  );
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
+
+  const handleOnPressEqual = prevHandleOnPress === nextHandleOnPress;
+  if (!handleOnPressEqual) return false;
+
+  return true;
 };
 
 const MemoizedMoreOptionsButton = React.memo(

@@ -46,6 +46,7 @@ import type {
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
+  attachmentSelectionBar: { backgroundColor: '#F5F5F5' },
   autoCompleteInputContainer: { paddingHorizontal: 16 },
   composerContainer: {
     alignItems: 'flex-end',
@@ -438,14 +439,16 @@ export const MessageInputWithContext = <
       </View>
       {selectedPicker && (
         <View
-          style={{
-            backgroundColor: '#F5F5F5',
-            height:
-              (attachmentPickerBottomSheetHeight
-                ? attachmentPickerBottomSheetHeight +
-                  (attachmentSelectionBarHeight ?? 52)
-                : 360) - (bottomInset ?? 0),
-          }}
+          style={[
+            styles.attachmentSelectionBar,
+            {
+              height:
+                (attachmentPickerBottomSheetHeight
+                  ? attachmentPickerBottomSheetHeight +
+                    (attachmentSelectionBarHeight ?? 52)
+                  : 360) - (bottomInset ?? 0),
+            },
+          ]}
         >
           <AttachmentSelectionBar />
         </View>

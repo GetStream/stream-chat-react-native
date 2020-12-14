@@ -33,7 +33,6 @@ export const useMessageDetailsForState = <
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
-  const [focused, setFocused] = useState(false);
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([]);
   const [mentionedUsers, setMentionedUsers] = useState(
     (!isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message) &&
@@ -93,12 +92,10 @@ export const useMessageDetailsForState = <
 
   return {
     fileUploads,
-    focused,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
     setFileUploads,
-    setFocused,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,

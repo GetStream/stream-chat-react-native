@@ -120,7 +120,6 @@ export type LocalMessageInputContext<
    *
    */
   fileUploads: FileUpload[];
-  focused: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -174,7 +173,6 @@ export type LocalMessageInputContext<
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
-  setFocused: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
   /**
    * Ref callback to set reference on input box
@@ -381,7 +379,6 @@ const areEqual = <
     value: {
       editing: prevEditing,
       fileUploads: prevFileUploads,
-      focused: prevFocused,
       imageUploads: prevImageUploads,
       mentionedUsers: prevMentionedUsers,
       replyTo: prevReplyTo,
@@ -393,7 +390,6 @@ const areEqual = <
     value: {
       editing: nextEditing,
       fileUploads: nextFileUploads,
-      focused: nextFocused,
       imageUploads: nextImageUploads,
       mentionedUsers: nextMentionedUsers,
       replyTo: nextReplyTo,
@@ -410,9 +406,6 @@ const areEqual = <
 
   const textEqual = prevText === nextText;
   if (!textEqual) return false;
-
-  const focusedEqual = prevFocused === nextFocused;
-  if (!focusedEqual) return false;
 
   const mentionedUsersEqual =
     prevMentionedUsers.length === nextMentionedUsers.length;
@@ -486,12 +479,10 @@ const MessageInputProviderWithContext = <
 
   const {
     fileUploads,
-    focused,
     imageUploads,
     mentionedUsers,
     numberOfUploads,
     setFileUploads,
-    setFocused,
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
@@ -998,7 +989,6 @@ const MessageInputProviderWithContext = <
           asyncIds,
           asyncUploads,
           fileUploads,
-          focused,
           imageUploads,
           inputBoxRef,
           isValidMessage,
@@ -1015,7 +1005,6 @@ const MessageInputProviderWithContext = <
           setAsyncIds,
           setAsyncUploads,
           setFileUploads,
-          setFocused,
           setImageUploads,
           setInputBoxRef,
           setMentionedUsers,
