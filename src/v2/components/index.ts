@@ -36,8 +36,6 @@ export * from './ChannelPreview/ChannelPreviewMessenger';
 
 export * from './Chat/Chat';
 
-export * from './CloseButton/CloseButton';
-
 export * from './Indicators/EmptyStateIndicator';
 export * from './Indicators/LoadingErrorIndicator';
 export * from './Indicators/LoadingIndicator';

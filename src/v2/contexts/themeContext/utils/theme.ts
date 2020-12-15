@@ -154,9 +154,6 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  closeButton: {
-    container: ViewStyle;
-  };
   colors: typeof Colors;
   dateHeader: {
     container: ViewStyle;
@@ -611,9 +608,6 @@ export const defaultTheme: Theme = {
     unreadText: {
       color: Colors.white,
     },
-  },
-  closeButton: {
-    container: {},
   },
   colors: {
     ...Colors,

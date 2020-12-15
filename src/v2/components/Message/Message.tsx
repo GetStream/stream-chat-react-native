@@ -726,11 +726,19 @@ const areEqual = <
     prevMessage.user?.banned === nextMessage.user?.banned;
   if (!messageUserBannedEqual) return false;
 
+  const prevMessageAttachments = prevMessage.attachments;
+  const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    (Array.isArray(prevMessage.attachments) &&
-      Array.isArray(nextMessage.attachments) &&
-      prevMessage.attachments.length === nextMessage.attachments.length) ||
-    prevMessage.attachments === nextMessage.attachments;
+    (Array.isArray(prevMessageAttachments) &&
+      Array.isArray(nextMessageAttachments) &&
+      prevMessageAttachments.length === nextMessageAttachments.length &&
+      prevMessageAttachments.every((attachment, index) =>
+        attachment.type === 'image'
+          ? attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url
+          : attachment.type === nextMessageAttachments[index].type,
+      )) ||
+    prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
