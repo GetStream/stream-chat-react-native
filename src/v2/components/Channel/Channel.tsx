@@ -347,14 +347,6 @@ export const ChannelWithContext = <
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >(Immutable([]));
-  const hasMoreRecentMessages = () =>
-    !!channel?.state.last_message_at &&
-    !!channel.state.messages[channel.state.messages.length - 1] &&
-    !!channel.state.messages[channel.state.messages.length - 1].created_at &&
-    channel?.state.last_message_at >
-      channel.state.messages[
-        channel.state.messages.length - 1
-      ].created_at.asMutable();
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
@@ -545,7 +537,7 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(false);
 
     return channelQueryCall(() =>
-      queryBeforeOffset(
+      query(
         Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
         30,
       ),
@@ -581,7 +573,13 @@ export const ChannelWithContext = <
     return loadChannelAtMessage(undefined, 30);
   };
 
-  const queryBeforeOffset = async (offset = 0, limit = 30) => {
+  /**
+   * Makes a query to load messages in channel.
+   *
+   * @param offset
+   * @param limit
+   */
+  const query = async (offset = 0, limit = 30) => {
     if (!channel) return;
     channel.state.clearMessages();
 
@@ -596,6 +594,13 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(offset === 0);
   };
 
+  /**
+   * Makes a query to load messages at particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param before Number of messages to load before messageId
+   * @param after Number of messages to load after messageId
+   */
   const queryAtMessage = async (
     messageId?: string,
     before = 10,
@@ -621,6 +626,12 @@ export const ChannelWithContext = <
     await queryAfterMessage(messageId, after);
   };
 
+  /**
+   * Makes a query to load messages before particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load
+   */
   const queryBeforeMessage = async (messageId: string, limit = 20) => {
     if (!channel) return;
 
@@ -635,6 +646,12 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(false);
   };
 
+  /**
+   * Makes a query to load messages later than particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load.
+   */
   const queryAfterMessage = async (messageId: string, limit = 20) => {
     if (!channel) return;
     const state = await channel.query({
@@ -1187,7 +1204,6 @@ export const ChannelWithContext = <
     Gallery,
     Giphy,
     hasMore,
-    hasMoreRecentMessages,
     loadingMore,
     loadingMoreForward,
     loadMore: loadMoreThrottled,

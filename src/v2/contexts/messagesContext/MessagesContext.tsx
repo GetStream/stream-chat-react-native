@@ -116,7 +116,6 @@ export type MessagesContextValue<
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
-  hasMoreRecentMessages: () => boolean;
   loadingMore: boolean;
   loadingMoreForward: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
