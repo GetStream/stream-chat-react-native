@@ -20,7 +20,7 @@
 - [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
-- [Internationalisation (i18n)](#internationalisation)
+- [Internationalization (i18n)](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n))
 - [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x))  :rocket:
 
 ## Contents
@@ -36,8 +36,8 @@
   - [Expo package](#expo-package)
   - [Native package](#native-package)
   - Native Web package _(currently under development. Please follow progress at [#206](https://github.com/GetStream/stream-chat-react-native/issues/206))_
-  - [TypeScript Support](#typescript-support)
-  - [Upgrade](#upgrade)
+  - [TypeScript Support](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support)
+  - [Upgrade](https://github.com/GetStream/stream-chat-react-native/wiki/Upgrade-helper)
   - [Common issues](#common-issues)
   - [Contributing](#contributing)
 
@@ -119,12 +119,10 @@ This repo includes 3 example apps. One made with Expo, one Native JavaScript cod
 Check out our tutorial on how to build a slack clone using react-native and stream-chat-react-native
 
 <div style="display: inline">
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/4.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/5.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/6.png" alt="IMAGE ALT TEXT HERE" width="250" border="1" />
+  <img src="https://camo.githubusercontent.com/386a2991e444ecff465372637699f1dba6913de1224effbb4b2520ae3a9d7593/68747470733a2f2f73747265616d2d626c6f672d76322e696d6769782e6e65742f626c6f672f77702d636f6e74656e742f75706c6f6164732f38306166346662623734613737613434363536373966363131386166373432372f696d6167652e706e67" alt="IMAGE ALT TEXT HERE"/>
 </div>
 
-- **Tutorial** [https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f](https://medium.com/@vishalnarkhede.iitd/slack-clone-with-react-native-part-1-f71a5e6a339f?source=friends_link&sk=b06d7cc0c49bd08bcf398df9c89d48d7)
+- **Tutorial** [https://dev.to/vishalnarkhede/how-to-build-slack-clone-with-react-native-part-2-g5](https://dev.to/vishalnarkhede/how-to-build-slack-clone-with-react-native-part-2-g5)
 
 - **Source code for app**
 
@@ -162,7 +160,7 @@ cd StreamChatExpoExample
 yarn add stream-chat-expo
 
 # If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency, since previously we used NetInfo from react-native package.
-expo install @react-native-community/netinfo expo-document-picker expo-image-picker expo-permissions
+expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-image-picker expo-media-library expo-permissions expo-sharing
 ```
 
 Please check the [example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/ExpoMessaging/App.js) to see usage of the components.
@@ -225,7 +223,7 @@ react-native run-ios
 react-native init StreamChatReactNativeExample
 cd StreamChatReactNativeExample
 yarn add stream-chat-react-native
-yarn add @react-native-community/netinfo react-native-image-crop-picker react-native-document-picker
+yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo react-native-document-picker react-native-fs react-native-image-crop-picker react-native-share
 cd ios && pod install && cd ..
 ```
 

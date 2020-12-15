@@ -12,6 +12,13 @@ dist/
 lib/
 .env*
 examples/SampleApp/ios/vendor/
+vendor
+pods
+.gradle
+.idea
+examples/SampleApp/build
+local.properties
+xcuserdata
 .tern-port
 
 ########################################### Custom ##############################################

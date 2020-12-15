@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { generateRandomId } from '../utils/generateRandomId';
+import { generateRandomId } from '../../../utils/generateRandomId';
 
 import {
   isEditingBoolean,

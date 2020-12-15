@@ -41,7 +41,7 @@ import {
   ImageUpload,
   useMessageDetailsForState,
 } from './hooks/useMessageDetailsForState';
-import { generateRandomId } from './utils/generateRandomId';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 import {
   AutoCompleteInput,
