@@ -33,9 +33,12 @@ registerNativeHandlers({
           readExternalStoragePermissionAndroid,
         );
         if (!hasPermission) {
-          await PermissionsAndroid.request(
+          const status = await PermissionsAndroid.request(
             readExternalStoragePermissionAndroid,
           );
+          if (status !== 'granted') {
+            throw new Error('getPhotos Error');
+          }
         }
       }
       const results = await CameraRoll.getPhotos({ after, first });

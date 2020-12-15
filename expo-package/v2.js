@@ -28,7 +28,12 @@ registerNativeHandlers({
   getPhotos: async ({ after, first }) => {
     try {
       if (Platform.OS === 'android') {
-        await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+        const { status } = await Permissions.askAsync(
+          Permissions.MEDIA_LIBRARY,
+        );
+        if (status !== 'granted') {
+          throw new Error('getPhotos Error');
+        }
       }
       const results = await MediaLibrary.getAssetsAsync({ after, first });
       const assets = results.assets.map((asset) => asset.uri);
