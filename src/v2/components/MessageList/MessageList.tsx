@@ -59,12 +59,6 @@ import { DateHeader } from './DateHeader';
 import type { Attachment } from 'stream-chat';
 
 import { FlatList } from '../../native';
-import {
-  isInlineDateSeparator,
-  isInlineUnreadIndicator,
-  MessageOrInlineSeparator,
-} from './utils/insertDates';
-import { generateRandomId } from '../../utils/generateRandomId';
 
 const styles = StyleSheet.create({
   container: {
@@ -115,28 +109,13 @@ const keyExtractor = <
   Us extends UnknownType = DefaultUserType
 >(
   item: Message<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  if (isInlineUnreadIndicator(item)) {
-    return 'unreadIndicator';
-  }
-
-  if (!isInlineDateSeparator(item)) {
-    return (
-      item.id ||
-      (item.created_at
-        ? typeof item.created_at === 'string'
-          ? item.created_at
-          : item.created_at.toISOString()
-        : generateRandomId())
-    );
-  }
-
-  if (item.date && typeof item.date !== 'string') {
-    return item.date.toISOString();
-  }
-
-  return generateRandomId();
-};
+) =>
+  item.id ||
+  (item.created_at
+    ? typeof item.created_at === 'string'
+      ? item.created_at
+      : item.created_at.toISOString()
+    : Date.now().toString());
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -178,7 +157,6 @@ export type MessageListProps<
    *
    */
   HeaderComponent?: React.ReactElement;
-  InlineDateSeparator?: React.ReactElement;
   InlineUnreadIndicator?: React.ReactElement;
   /** Whether or not the FlatList is inverted. Defaults to true */
   inverted?: boolean;
@@ -218,7 +196,7 @@ export type MessageListProps<
    */
   setFlatListRef?: (
     ref: React.MutableRefObject<DefaultFlatList<
-      MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+      Message<At, Ch, Co, Ev, Me, Re, Us>
     > | null>,
   ) => void;
   /**
@@ -259,7 +237,6 @@ export const MessageList = <
     additionalFlatListProps,
     FooterComponent,
     HeaderComponent,
-    InlineDateSeparator = () => null,
     InlineUnreadIndicator = DefaultInlineUnreadIndicator,
     inverted = true,
     MessageNotification = DefaultMessageNotification,
@@ -331,7 +308,7 @@ export const MessageList = <
   );
 
   const flatListRef = useRef<DefaultFlatList<
-    MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+    Message<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
 
@@ -438,27 +415,14 @@ export const MessageList = <
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
   const renderItem = (
-    message: MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>,
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
     index: number,
   ) => {
     if (!channel) return null;
 
-    if (isInlineDateSeparator(message)) {
-      // @ts-ignore
-      return <InlineDateSeparator />;
-    }
-
-    if (isInlineUnreadIndicator(message)) {
-      if (newMessagesNotification) {
-        // @ts-ignore
-        return <InlineUnreadIndicator />;
-      }
-      return null;
-    }
-
     const lastRead = channel?.lastRead();
 
-    let shouldShowUnreadLabel = false;
+    let insertInlineUnreadIndicator = false;
     let isUnread = false;
     if (
       lastRead &&
@@ -470,14 +434,14 @@ export const MessageList = <
       // @ts-ignore
       lastRead >= messageList[index + 1].created_at
     ) {
-      shouldShowUnreadLabel = true;
+      insertInlineUnreadIndicator = true;
     }
 
     if (
       lastRead &&
       message.created_at &&
       lastRead < message.created_at &&
-      !(message.id === messageList[0].id && shouldShowUnreadLabel)
+      !(message.id === messageList[0].id && insertInlineUnreadIndicator)
     ) {
       isUnread = true;
     }
@@ -501,18 +465,21 @@ export const MessageList = <
       }
 
       return (
-        <View style={[styles.messagePadding, ...additionalStyles]}>
-          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-            goToMessage={goToMessage}
-            groupStyles={message.groupStyles as GroupType[]}
-            lastReceivedId={
-              lastReceivedId === message.id ? lastReceivedId : undefined
-            }
-            message={message}
-            onThreadSelect={onThreadSelect}
-            threadList={threadList}
-          />
-        </View>
+        <>
+          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+          <View style={[styles.messagePadding, ...additionalStyles]}>
+            <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+              goToMessage={goToMessage}
+              groupStyles={message.groupStyles as GroupType[]}
+              lastReceivedId={
+                lastReceivedId === message.id ? lastReceivedId : undefined
+              }
+              message={message}
+              onThreadSelect={onThreadSelect}
+              threadList={threadList}
+            />
+          </View>
+        </>
       );
     }
     return null;
