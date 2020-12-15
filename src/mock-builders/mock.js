@@ -33,6 +33,7 @@ export const getTestClient = () => mockClient(new StreamChat(apiKey));
 export const getTestClientWithUser = async (user) => {
   const client = mockClient(new StreamChat(apiKey));
   await setUser(client, user);
+  client.wsPromise = Promise.resolve();
   return client;
 };
 

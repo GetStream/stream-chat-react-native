@@ -374,16 +374,39 @@ const areEqual = <
   prevProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessagePropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: prevMessage } = prevProps;
-  const { message: nextMessage } = nextProps;
+  const {
+    lastReceivedId: prevLastReceivedId,
+    message: prevMessage,
+    readBy: prevReadBy,
+  } = prevProps;
+  const {
+    lastReceivedId: nextLastReceivedId,
+    message: nextMessage,
+    readBy: nextReadBy,
+  } = nextProps;
 
   const messageEqual = prevMessage.updated_at === nextMessage.updated_at;
+
+  const lastReceivedIdEqual =
+    prevLastReceivedId === nextLastReceivedId ||
+    (prevLastReceivedId !== nextMessage.id &&
+      nextLastReceivedId !== nextMessage.id &&
+      prevLastReceivedId !== prevMessage.id &&
+      nextLastReceivedId !== prevMessage.id);
+
   const reactionsEqual =
     prevMessage.latest_reactions?.length ===
     nextMessage.latest_reactions?.length;
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
 
-  return messageEqual && reactionsEqual && repliesEqual;
+  const readByEqual = prevReadBy === nextReadBy;
+  return (
+    messageEqual &&
+    reactionsEqual &&
+    repliesEqual &&
+    lastReceivedIdEqual &&
+    readByEqual
+  );
 };
 
 const MemoizedDefaultMessage = React.memo(
