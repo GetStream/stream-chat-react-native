@@ -239,7 +239,9 @@ export const AttachmentPicker = React.forwardRef(
 
     useEffect(() => {
       setPhotoError(false);
-      getMorePhotos();
+      if (currentIndex > -1) {
+        getMorePhotos();
+      }
     }, [appState]);
 
     useEffect(() => {

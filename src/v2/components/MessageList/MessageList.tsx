@@ -56,6 +56,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { DateHeader } from './DateHeader';
+import type { Attachment } from 'stream-chat';
 
 import { FlatList } from '../../native';
 import {
@@ -86,12 +87,20 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 0,
     width: '100%',
+  },
+  messagePadding: {
+    paddingHorizontal: 8,
   },
   stickyHeader: {
     position: 'absolute',
     top: 0,
+  },
+  targettedMessageUnderlay: {
+    backgroundColor: '#FBF4DD',
+  },
+  unreadMessageUnderlay: {
+    backgroundColor: '#F9F9F9',
   },
 });
 
@@ -287,7 +296,12 @@ export const MessageList = <
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
-      messageList: { errorNotification, errorNotificationText, listContainer },
+      messageList: {
+        container,
+        errorNotification,
+        errorNotificationText,
+        listContainer,
+      },
     },
   } = useTheme();
   const { loadMoreThread, thread } = useThreadContext<
@@ -469,22 +483,25 @@ export const MessageList = <
     }
 
     if (message.type === 'system') {
-      return <MessageSystem message={message} />;
+      return (
+        <View style={styles.messagePadding}>
+          <MessageSystem message={message} />
+        </View>
+      );
     }
 
     if (message.type !== 'message.read') {
-      const background =
-        targettedMessage === message.id
-          ? '#FBF4DD'
-          : isUnread && newMessagesNotification
-          ? '#F9F9F9'
-          : 'white';
+      const additionalStyles = [];
+      if (targettedMessage === message.id) {
+        additionalStyles.push(styles.targettedMessageUnderlay);
+      }
+
+      if (isUnread && newMessagesNotification) {
+        additionalStyles.push(styles.unreadMessageUnderlay);
+      }
+
       return (
-        <View
-          style={{
-            backgroundColor: background,
-          }}
-        >
+        <View style={[styles.messagePadding, ...additionalStyles]}>
           <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
             goToMessage={goToMessage}
             groupStyles={message.groupStyles as GroupType[]}
@@ -582,12 +599,24 @@ export const MessageList = <
     return false;
   });
 
+  /**
+   * This is for the useEffect to run again in the case that a message
+   * gets edited with more or the same number of images
+   */
+  const imageString = messagesWithImages
+    .map((message) =>
+      (message.attachments as Attachment<At>[])
+        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+        .join(),
+    )
+    .join();
+
   const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [numberOfMessagesWithImages, thread, threadList]);
+  }, [imageString, numberOfMessagesWithImages, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
@@ -620,7 +649,7 @@ export const MessageList = <
   };
 
   return (
-    <View collapsable={false} style={styles.container}>
+    <View collapsable={false} style={[styles.container, container]}>
       {/* @ts-ignore */}
       <FlatList
         data={messageList}
@@ -718,5 +747,3 @@ export const MessageList = <
     </View>
   );
 };
-
-MessageList.displayName = 'MessageList{messageList}';

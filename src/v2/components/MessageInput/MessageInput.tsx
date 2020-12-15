@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
+import { SuggestionsList } from '../AutoCompleteInput/SuggestionsList';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
@@ -81,6 +82,15 @@ const styles = StyleSheet.create({
   },
   replyContainer: { paddingBottom: 12, paddingHorizontal: 8 },
   sendButtonContainer: { paddingBottom: 10, paddingLeft: 10 },
+  suggestionsListContainer: {
+    borderRadius: 10,
+    elevation: 3,
+    left: 8,
+    position: 'absolute',
+    right: 8,
+    shadowOffset: { height: 1, width: 0 },
+    shadowOpacity: 0.15,
+  },
 });
 
 type MessageInputPropsWithContext<
@@ -126,11 +136,14 @@ type MessageInputPropsWithContext<
     | 'sendMessageAsync'
     | 'setShowMoreOptions'
     | 'showMoreOptions'
-    | 'uploadNewImage'
     | 'removeImage'
+    | 'uploadNewImage'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
-  Pick<SuggestionsContextValue<Co, Us>, 'setInputBoxContainerRef'> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    'componentType' | 'suggestions' | 'suggestionsTitle'
+  > &
   Pick<TranslationContextValue, 't'>;
 
 export const MessageInputWithContext = <
@@ -153,6 +166,7 @@ export const MessageInputWithContext = <
     clearEditingState,
     clearReplyToState,
     CommandsButton,
+    componentType,
     disabled,
     editing,
     FileUploadPreview,
@@ -176,13 +190,16 @@ export const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
-    setInputBoxContainerRef,
     setShowMoreOptions,
     showMoreOptions,
+    suggestions,
+    suggestionsTitle,
     t,
     uploadNewImage,
     watchers,
   } = props;
+
+  const [height, setHeight] = useState(0);
 
   const {
     theme: {
@@ -199,6 +216,7 @@ export const MessageInputWithContext = <
         optionsContainer,
         replyContainer,
         sendButtonContainer,
+        suggestionsListContainer,
       },
     },
   } = useTheme();
@@ -229,7 +247,9 @@ export const MessageInputWithContext = <
     if (selectedImages.length > imageUploads.length) {
       const imagesToUpload = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
-          (imageUpload) => imageUpload.file.uri === selectedImage,
+          (imageUpload) =>
+            imageUpload.file.uri === selectedImage ||
+            imageUpload.url === selectedImage,
         );
         return !uploadedImage;
       });
@@ -238,7 +258,9 @@ export const MessageInputWithContext = <
       const imagesToRemove = imageUploads.filter(
         (imageUpload) =>
           !selectedImages.find(
-            (selectedImage) => selectedImage === imageUpload.file.uri,
+            (selectedImage) =>
+              selectedImage === imageUpload.file.uri ||
+              selectedImage === imageUpload.url,
           ),
       );
       imagesToRemove.forEach((image) => removeImage(image.id));
@@ -249,11 +271,19 @@ export const MessageInputWithContext = <
     if (imageUploads.length < selectedImages.length) {
       const updatedSelectedImages = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
-          (imageUpload) => imageUpload.file.uri === selectedImage,
+          (imageUpload) =>
+            imageUpload.file.uri === selectedImage ||
+            imageUpload.url === selectedImage,
         );
         return uploadedImage;
       });
       setSelectedImages(updatedSelectedImages);
+    } else if (imageUploads.length > selectedImages.length) {
+      setSelectedImages(
+        imageUploads
+          .map((imageUpload) => imageUpload.url)
+          .filter(Boolean) as string[],
+      );
     }
   }, [imageUploads.length]);
 
@@ -336,7 +366,14 @@ export const MessageInputWithContext = <
 
   return (
     <>
-      <View style={[styles.container, container]}>
+      <View
+        onLayout={({
+          nativeEvent: {
+            layout: { height: newHeight },
+          },
+        }) => setHeight(newHeight)}
+        style={[styles.container, container]}
+      >
         {(editing || replyTo) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
             {editing ? (
@@ -367,10 +404,7 @@ export const MessageInputWithContext = <
             </TouchableOpacity>
           </View>
         )}
-        <View
-          ref={setInputBoxContainerRef}
-          style={[styles.composerContainer, composerContainer]}
-        >
+        <View style={[styles.composerContainer, composerContainer]}>
           {Input ? (
             <Input
               additionalTextInputProps={additionalTextInputContainerProps}
@@ -437,6 +471,22 @@ export const MessageInputWithContext = <
           )}
         </View>
       </View>
+      {componentType && suggestions ? (
+        <View
+          style={[
+            styles.suggestionsListContainer,
+            { bottom: height },
+            suggestionsListContainer,
+          ]}
+        >
+          <SuggestionsList<Co, Us>
+            active={!!suggestions}
+            componentType={componentType}
+            suggestions={suggestions}
+            suggestionsTitle={suggestionsTitle}
+          />
+        </View>
+      ) : null}
       {selectedPicker && (
         <View
           style={[
@@ -479,6 +529,8 @@ const areEqual = <
     replyTo: prevReplyTo,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
+    suggestions: prevSuggestions,
+    suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
   } = prevProps;
   const {
@@ -491,6 +543,8 @@ const areEqual = <
     replyTo: nextReplyTo,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
+    suggestions: nextSuggestions,
+    suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
   } = nextProps;
 
@@ -527,6 +581,19 @@ const areEqual = <
 
   const fileUploadsEqual = prevFileUploads.length === nextFileUploads.length;
   if (!fileUploadsEqual) return false;
+
+  const suggestionsEqual =
+    !!prevSuggestions === !!nextSuggestions &&
+    prevSuggestions?.data &&
+    nextSuggestions?.data &&
+    prevSuggestions.data.length === nextSuggestions.data.length &&
+    prevSuggestions.data.every(
+      ({ name }, index) => name === nextSuggestions.data[index].name,
+    );
+  if (!suggestionsEqual) return false;
+
+  const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
+  if (!suggestionsTitleEqual) return false;
 
   return true;
 };
@@ -614,7 +681,11 @@ export const MessageInput = <
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { setInputBoxContainerRef } = useSuggestionsContext<Co, Us>();
+  const {
+    componentType,
+    suggestions,
+    suggestionsTitle,
+  } = useSuggestionsContext<Co, Us>();
 
   const { t } = useTranslationContext();
 
@@ -629,6 +700,7 @@ export const MessageInput = <
         clearEditingState,
         clearReplyToState,
         CommandsButton,
+        componentType,
         disabled,
         editing,
         FileUploadPreview,
@@ -652,9 +724,10 @@ export const MessageInput = <
         SendButton,
         sending,
         sendMessageAsync,
-        setInputBoxContainerRef,
         setShowMoreOptions,
         showMoreOptions,
+        suggestions,
+        suggestionsTitle,
         t,
         uploadNewImage,
         watchers,

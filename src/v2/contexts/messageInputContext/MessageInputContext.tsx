@@ -27,10 +27,6 @@ import {
   ThreadContextValue,
   useThreadContext,
 } from '../threadContext/ThreadContext';
-import {
-  TranslationContextValue,
-  useTranslationContext,
-} from '../translationContext/TranslationContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
 import {
@@ -449,7 +445,6 @@ type MessageInputProviderPropsWithContext<
 > = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'> &
-  Pick<TranslationContextValue, 't'> &
   InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 
 const MessageInputProviderWithContext = <
@@ -696,13 +691,19 @@ const MessageInputProviderWithContext = <
       sending.current = false;
     } else {
       try {
-        value.sendMessage(({
-          attachments,
-          mentioned_users: uniq(mentionedUsers),
-          /** Parent message id - in case of thread */
-          parent_id: value.thread?.id as StreamMessage<At, Me, Us>['parent_id'],
-          text: prevText,
-        } as unknown) as StreamMessage<At, Me, Us>);
+        value
+          .sendMessage(({
+            attachments,
+            mentioned_users: uniq(mentionedUsers),
+            /** Parent message id - in case of thread */
+            parent_id: value.thread?.id as StreamMessage<
+              At,
+              Me,
+              Us
+            >['parent_id'],
+            text: prevText,
+          } as unknown) as StreamMessage<At, Me, Us>)
+          .then(value.clearReplyToState);
 
         sending.current = false;
         resetInput(attachments);
@@ -772,7 +773,6 @@ const MessageInputProviderWithContext = <
     ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
         channel: value.channel,
         onMentionSelectItem: onSelectItem,
-        t: value.t,
       })
     : ({} as TriggerSettings<Co, Us>);
 
@@ -1089,12 +1089,11 @@ export const MessageInputProvider = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { t } = useTranslationContext();
   return (
     <MemoizedMessageInputProviderWithContext
       value={
         ({
-          ...{ channel, client, t, thread },
+          ...{ channel, client, thread },
           ...value,
         } as unknown) as MessageInputProviderPropsWithContext
       }

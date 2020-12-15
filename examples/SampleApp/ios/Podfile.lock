@@ -386,12 +386,12 @@ PODS:
     - React
   - RNGestureHandler (1.9.0):
     - React-Core
-  - RNImageCropPicker (0.35.1):
+  - RNImageCropPicker (0.35.2):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.35.1)
+    - RNImageCropPicker/QBImagePickerController (= 0.35.2)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.35.1):
+  - RNImageCropPicker/QBImagePickerController (0.35.2):
     - React-Core
     - React-RCTImage
     - TOCropViewController
@@ -426,7 +426,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.15.0):
+  - RNScreens (2.16.1):
     - React-Core
   - RNShare (4.1.0):
     - React-Core
@@ -671,10 +671,10 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
-  RNImageCropPicker: 16951bc02411f50c4d197488ed6406a23dc3b5f1
+  RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: b9c929bfff7dedc9c89ab1875f1c6151023358d9
-  RNScreens: 2ad555d4d9fa10b91bb765ca07fe9b29d59573f0
+  RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
   RNShare: 106a76243ac90f43ddb9028dcb78ade406b8adff
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
