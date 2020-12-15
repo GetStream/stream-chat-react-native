@@ -1,11 +1,15 @@
 import React from 'react';
 import {
   Image,
+  ImageStyle,
   Linking,
+  StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 
 import {
@@ -95,7 +99,20 @@ export type CardPropsWithContext<
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
-  >;
+  > & {
+    styles?: Partial<{
+      authorName: StyleProp<TextStyle>;
+      authorNameContainer: StyleProp<ViewStyle>;
+      authorNameFooter: StyleProp<TextStyle>;
+      authorNameFooterContainer: StyleProp<ViewStyle>;
+      authorNameMask: StyleProp<ViewStyle>;
+      cardCover: StyleProp<ImageStyle>;
+      cardFooter: StyleProp<ViewStyle>;
+      container: StyleProp<ViewStyle>;
+      description: StyleProp<TextStyle>;
+      title: StyleProp<TextStyle>;
+    }>;
+  };
 
 const CardWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -117,6 +134,7 @@ const CardWithContext = <
     image_url,
     og_scrape_url,
     onLongPress,
+    styles: stylesProp = {},
     text,
     thumb_url,
     title,
@@ -146,7 +164,7 @@ const CardWithContext = <
     <TouchableOpacity
       onLongPress={onLongPress}
       onPress={() => goToURL(og_scrape_url || uri)}
-      style={[styles.container, container]}
+      style={[styles.container, container, stylesProp.container]}
       testID='card-attachment'
       {...additionalTouchableProps}
     >
@@ -157,12 +175,26 @@ const CardWithContext = <
           <Image
             resizeMode='cover'
             source={{ uri: makeImageCompatibleUrl(uri) }}
-            style={[styles.cardCover, cover]}
+            style={[styles.cardCover, cover, stylesProp.cardCover]}
           />
           {author_name && (
-            <View style={[styles.authorNameMask, authorNameMask]}>
-              <View style={[styles.authorNameContainer, authorNameContainer]}>
-                <Text style={[styles.authorName, authorName]}>
+            <View
+              style={[
+                styles.authorNameMask,
+                authorNameMask,
+                stylesProp.authorNameMask,
+              ]}
+            >
+              <View
+                style={[
+                  styles.authorNameContainer,
+                  authorNameContainer,
+                  stylesProp.authorNameContainer,
+                ]}
+              >
+                <Text
+                  style={[styles.authorName, authorName, stylesProp.authorName]}
+                >
                   {author_name}
                 </Text>
               </View>
@@ -173,20 +205,42 @@ const CardWithContext = <
       {CardFooter ? (
         <CardFooter {...props} />
       ) : (
-        <View style={[styles.cardFooter, footerStyle]}>
-          <View style={[authorNameFooterContainer, !uri ? noURI : {}]}>
+        <View style={[styles.cardFooter, footerStyle, stylesProp.cardFooter]}>
+          <View
+            style={[
+              authorNameFooterContainer,
+              !uri ? noURI : {},
+              stylesProp.authorNameFooterContainer,
+            ]}
+          >
             {!uri && author_name && (
-              <Text style={[styles.authorNameFooter, authorNameFooter]}>
+              <Text
+                style={[
+                  styles.authorNameFooter,
+                  authorNameFooter,
+                  stylesProp.authorNameFooter,
+                ]}
+              >
                 {author_name}
               </Text>
             )}
             {title && (
-              <Text numberOfLines={1} style={[styles.title, titleStyle]}>
+              <Text
+                numberOfLines={1}
+                style={[styles.title, titleStyle, stylesProp.title]}
+              >
                 {title}
               </Text>
             )}
             {text && (
-              <Text numberOfLines={3} style={[styles.description, description]}>
+              <Text
+                numberOfLines={3}
+                style={[
+                  styles.description,
+                  description,
+                  stylesProp.description,
+                ]}
+              >
                 {text}
               </Text>
             )}

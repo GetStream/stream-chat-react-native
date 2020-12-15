@@ -8,8 +8,12 @@ export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 
 export * from './AutoCompleteInput/AutoCompleteInput';
+export * from './AutoCompleteInput/CommandsHeader';
 export * from './AutoCompleteInput/CommandsItem';
+export * from './AutoCompleteInput/EmojisHeader';
+export * from './AutoCompleteInput/EmojisItem';
 export * from './AutoCompleteInput/MentionsItem';
+export * from './AutoCompleteInput/SuggestionsList';
 
 export * from './Avatar/Avatar';
 export * from './Avatar/GroupAvatar';
@@ -32,8 +36,6 @@ export * from './ChannelPreview/ChannelPreviewMessenger';
 
 export * from './Chat/Chat';
 
-export * from './CloseButton/CloseButton';
-
 export * from './Indicators/EmptyStateIndicator';
 export * from './Indicators/LoadingErrorIndicator';
 export * from './Indicators/LoadingIndicator';
@@ -50,11 +52,12 @@ export * from './Message/MessageSimple/MessageTextContainer';
 export * from './Message/MessageSimple/ReactionList';
 export * from './Message/MessageSimple/utils/renderText';
 
-export * from './MessageInput/ActionSheetAttachment';
 export * from './MessageInput/AttachButton';
+export * from './MessageInput/CommandsButton';
 export * from './MessageInput/FileUploadPreview';
 export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/MessageInput';
+export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/UploadProgressIndicator';
 
@@ -69,9 +72,8 @@ export * from './MessageOverlay/MessageOverlay';
 export * from './MessageOverlay/OverlayReactions';
 export * from './MessageOverlay/OverlayReactionList';
 
+export * from './Reply/Reply';
+
 export * from './Spinner/Spinner';
 
 export * from './Thread/Thread';
-
-export * from './IconBadge';
-export * from './IconSquare';

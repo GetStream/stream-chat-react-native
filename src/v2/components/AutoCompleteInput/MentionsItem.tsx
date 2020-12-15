@@ -4,20 +4,31 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Avatar } from '../Avatar/Avatar';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { AtMentions } from '../../icons/AtMentions';
 
 import type { SuggestionUser } from '../../contexts/suggestionsContext/SuggestionsContext';
 import type { DefaultUserType } from '../../types/types';
 
 const styles = StyleSheet.create({
+  column: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    paddingLeft: 8,
+  },
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   name: {
-    color: '#000000',
+    fontSize: 14,
     fontWeight: 'bold',
-    padding: 10,
+    paddingBottom: 2,
+  },
+  tag: {
+    fontSize: 12,
+    fontWeight: '600',
   },
 });
 
@@ -36,14 +47,14 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
  * @example ./MentionsItem.md
  */
 export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
-  item: { id, image, name },
+  item: { id, image, name, online },
 }: MentionsItemProps<Us>) => {
   const {
     theme: {
-      avatar: { BASE_AVATAR_SIZE },
+      colors: { primary },
       messageInput: {
         suggestions: {
-          mention: { container, name: nameStyle },
+          mention: { avatarSize, column, container, name: nameStyle, tag },
         },
       },
     },
@@ -51,10 +62,14 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
 
   return (
     <View style={[styles.container, container]}>
-      <Avatar image={image} name={name} size={BASE_AVATAR_SIZE} />
-      <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
-        {name || id}
-      </Text>
+      <Avatar image={image} name={name} online={online} size={avatarSize} />
+      <View style={[styles.column, column]}>
+        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
+          {name || id}
+        </Text>
+        <Text style={[styles.tag, tag]}>{`@${id}`}</Text>
+      </View>
+      <AtMentions pathFill={primary} />
     </View>
   );
 };

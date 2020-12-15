@@ -127,12 +127,6 @@ export type ChannelsContextValue<
    */
   numberOfSkeletons: number;
   /**
-   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
-   *
-   * @param channel A channel object
-   */
-  onSelect: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  /**
    * Custom UI component to display individual channel list items
    *
    * Default: [ChannelPreviewMessenger](https://getstream.github.io/stream-chat-react-native/#channelpreviewmessenger)
@@ -148,7 +142,7 @@ export type ChannelsContextValue<
    * Function to refresh the channel list that is similar to `reloadList`, but it doesn't wipe out existing channels
    * from UI before loading the new ones
    */
-  refreshList: () => Promise<void>;
+  refreshList: () => void | Promise<void>;
   /**
    * Removes all the existing channels from UI and loads fresh channels
    * */
@@ -175,11 +169,17 @@ export type ChannelsContextValue<
     ref: FlatList<Channel<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
   /**
-   * Custom UI component to display loading channel skeltons
+   * Custom UI component to display loading channel skeletons
    *
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/#skeleton)
    */
   Skeleton: React.ComponentType;
+  /**
+   * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
+   *
+   * @param channel A channel object
+   */
+  onSelect?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);

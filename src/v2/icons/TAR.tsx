@@ -5,8 +5,8 @@ import { IconProps, RootPath, RootSvg } from './utils/base';
 export const TAR: React.FC<IconProps> = (props) => (
   <RootSvg
     height={props.height || 40}
-    viewBox={props.viewBox || '0 0 40 40'}
-    width={props.width || 40}
+    viewBox={props.viewBox || '0 0 34 40'}
+    width={props.width || 34}
     {...props}
   >
     <RootPath

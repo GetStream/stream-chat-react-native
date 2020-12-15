@@ -1,43 +1,58 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput } from 'react-native';
+import throttle from 'lodash/throttle';
+
+import { CommandsHeader } from './CommandsHeader';
+import { EmojisHeader } from './EmojisHeader';
 
 import {
+  MessageInputContextValue,
+  useMessageInputContext,
+} from '../../contexts/messageInputContext/MessageInputContext';
+import {
+  isSuggestionCommand,
+  isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
   SuggestionCommand,
+  SuggestionsContextValue,
   SuggestionUser,
   useSuggestionsContext,
 } from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { isMentionTrigger } from '../../utils/utils';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
+import {
+  isCommandTrigger,
+  isEmojiTrigger,
+  isMentionTrigger,
+} from '../../utils/utils';
 
-import type { TextInputProps, TextInput as TextInputType } from 'react-native';
+import type { TextInputProps } from 'react-native';
 
 import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
   DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { Trigger, TriggerSettings } from '../../utils/utils';
+import type { Trigger } from '../../utils/utils';
+
+import type { Emoji } from '../../../emoji-data/compiled';
 
 const styles = StyleSheet.create({
   inputBox: {
-    flex: 1,
-    margin: -5,
-  },
-  inputBoxContainer: {
-    alignContent: 'center',
-    borderColor: '#EBEBEB',
-    borderRadius: 20,
-    borderWidth: 1,
-    flexGrow: 1,
-    flexShrink: 1,
-    justifyContent: 'center',
-    minHeight: 40,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
+    fontSize: 14,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
   },
 });
 
@@ -47,84 +62,96 @@ const computeCaretPosition = (token: string, startOfTokenPosition: number) =>
 const isCommand = (text: string) =>
   text[0] === '/' && text.split(' ').length <= 1;
 
-export type AutoCompleteInputProps<
+type AutoCompleteInputPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Additional props for underlying TextInput component. These props will be forwarded as is to the TextInput component.
-   *
-   * @see See https://reactnative.dev/docs/textinput#reference
-   */
-  additionalTextInputProps: TextInputProps;
-  /**
-   * Handling text change events in the parent
-   *
-   * @param {string} text
-   */
-  onChange: (text: string) => void;
-  /**
-   * Ref callback to set reference on input box
-   */
-  setInputBoxRef: (ref: TextInputType | null) => void;
-  /**
-   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
-   */
-  triggerSettings: TriggerSettings<Co, Us>;
-  /**
-   * Text value of the TextInput
-   */
-  value: string;
-};
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  | 'additionalTextInputProps'
+  | 'numberOfLines'
+  | 'onChange'
+  | 'setInputBoxRef'
+  | 'text'
+  | 'triggerSettings'
+> &
+  Pick<
+    SuggestionsContextValue<Co, Us>,
+    'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
+  > &
+  Pick<TranslationContextValue, 't'>;
 
-export const AutoCompleteInput = <
+export type AutoCompleteInputProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+const AutoCompleteInputWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: AutoCompleteInputProps<Co, Us>,
+  props: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     additionalTextInputProps,
-    onChange,
-    setInputBoxRef,
-    triggerSettings,
-    value,
-  } = props;
-
-  const {
-    theme: {
-      messageInput: { inputBox, inputBoxContainer },
-    },
-  } = useTheme();
-
-  const {
     closeSuggestions,
+    numberOfLines,
+    onChange,
     openSuggestions,
+    setInputBoxRef,
+    t,
+    text,
+    triggerSettings,
     updateSuggestions: updateSuggestionsContext,
-  } = useSuggestionsContext<Co, Us>();
-  const { t } = useTranslationContext();
+  } = props;
 
   const isTrackingStarted = useRef(false);
   const selectionEnd = useRef(0);
-  const [inputHeight, setInputHeight] = useState(40);
-  const handleChange = (text: string, fromUpdate = false) => {
+  const [textHeight, setTextHeight] = useState(0);
+
+  const {
+    theme: {
+      colors: { textGrey },
+      messageInput: { inputBox },
+    },
+  } = useTheme();
+
+  const handleChange = (newText: string, fromUpdate = false) => {
     if (!fromUpdate) {
-      onChange(text);
+      onChange(newText);
     } else {
-      handleSuggestions(text);
+      handleSuggestionsThrottled(newText);
     }
   };
 
   useEffect(() => {
-    handleChange(value, true);
-  }, [value]);
+    handleChange(text, true);
+  }, [text]);
 
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
-    const { component: Component, title } = triggerSettings[trigger];
+    const { component: Component } = triggerSettings[trigger];
     openSuggestions(
-      title,
       typeof Component === 'string' ? Component : <Component />,
+      trigger === ':' ? (
+        <EmojisHeader title='' />
+      ) : trigger === '/' ? (
+        <CommandsHeader />
+      ) : undefined,
     );
   };
 
@@ -143,7 +170,7 @@ export const AutoCompleteInput = <
     if (isMentionTrigger(trigger)) {
       await triggerSettings[trigger].dataProvider(
         query as SuggestionUser<Us>['name'],
-        value,
+        text,
         (data, queryCallback) => {
           if (query === queryCallback) {
             updateSuggestionsContext({
@@ -153,10 +180,10 @@ export const AutoCompleteInput = <
           }
         },
       );
-    } else {
+    } else if (isCommandTrigger(trigger)) {
       await triggerSettings[trigger].dataProvider(
         query as SuggestionCommand<Co>['name'],
-        value,
+        text,
         (data, queryCallback) => {
           if (query !== queryCallback) {
             return;
@@ -166,6 +193,24 @@ export const AutoCompleteInput = <
             data,
             onSelect: (item) => onSelectSuggestion({ item, trigger }),
           });
+        },
+      );
+    } else {
+      await triggerSettings[trigger].dataProvider(
+        query as Emoji['name'],
+        text,
+        (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
+
+          updateSuggestionsContext(
+            {
+              data,
+              onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            },
+            <EmojisHeader title={query} />,
+          );
         },
       );
     }
@@ -191,17 +236,17 @@ export const AutoCompleteInput = <
     }
 
     let newTokenString = '';
-    if (isMentionTrigger(trigger)) {
-      if (isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
-      }
-    } else {
-      if (!isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
-      }
+    if (isCommandTrigger(trigger) && isSuggestionCommand(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    }
+    if (isEmojiTrigger(trigger) && isSuggestionEmoji(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    }
+    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
     }
 
-    const textToModify = value.slice(0, selectionEnd.current);
+    const textToModify = text.slice(0, selectionEnd.current);
 
     const startOfTokenPosition = textToModify.search(
       /**
@@ -221,7 +266,7 @@ export const AutoCompleteInput = <
     )}${newTokenString}`;
 
     stopTracking();
-    onChange(value.replace(textToModify, modifiedText));
+    onChange(text.replace(textToModify, modifiedText));
 
     selectionEnd.current = newCaretPosition || 0;
 
@@ -245,16 +290,10 @@ export const AutoCompleteInput = <
   };
 
   const handleMentions = ({
-    selectionEnd: selectionEndProp,
-    text,
+    tokenMatch,
   }: {
-    selectionEnd: number;
-    text: string;
+    tokenMatch: RegExpMatchArray | null;
   }) => {
-    const tokenMatch = text
-      .slice(0, selectionEndProp)
-      .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
-
     const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
     const handleMentionsTrigger =
       (lastToken &&
@@ -286,54 +325,171 @@ export const AutoCompleteInput = <
     updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleSuggestions = (text: string) => {
-    setTimeout(async () => {
-      if (
-        text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
-        !isTrackingStarted.current
-      ) {
-        stopTracking();
-      } else if (!(await handleCommand(text))) {
-        handleMentions({ selectionEnd: selectionEnd.current, text });
-      }
-    }, 100);
+  const handleEmojis = ({
+    tokenMatch,
+  }: {
+    tokenMatch: RegExpMatchArray | null;
+  }) => {
+    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const handleEmojisTrigger =
+      (lastToken &&
+        Object.keys(triggerSettings).find(
+          (trigger) => trigger === lastToken[0],
+        )) ||
+      null;
+
+    /*
+      if we lost the trigger token or there is no following character we want to close
+      the autocomplete
+    */
+    if (!lastToken || lastToken.length <= 0) {
+      stopTracking();
+      return;
+    }
+
+    const actualToken = lastToken.slice(1);
+
+    // if trigger is not configured step out from the function, otherwise proceed
+    if (!handleEmojisTrigger) {
+      return;
+    }
+
+    if (!isTrackingStarted.current) {
+      startTracking(':');
+    }
+
+    updateSuggestions({ query: actualToken, trigger: ':' });
   };
 
+  const handleSuggestions = async (text: string) => {
+    if (
+      text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
+      isTrackingStarted.current
+    ) {
+      stopTracking();
+    } else if (!(await handleCommand(text))) {
+      const mentionTokenMatch = text
+        .slice(0, selectionEnd.current)
+        .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
+      if (mentionTokenMatch) {
+        handleMentions({ tokenMatch: mentionTokenMatch });
+      } else {
+        const emojiTokenMatch = text
+          .slice(0, selectionEnd.current)
+          .match(/(?!^|\W)?:\w{2,}[^\s]*\s?[^\s]*$/g);
+        handleEmojis({ tokenMatch: emojiTokenMatch });
+      }
+    }
+  };
+
+  const handleSuggestionsThrottled = throttle(handleSuggestions, 100, {
+    leading: false,
+  });
+
   return (
-    <View
-      style={[
-        styles.inputBoxContainer,
-        inputBoxContainer,
-        {
-          // TODO: Investigate why iOS doesn't respoect the padding on container while growing height.
-          height: Math.min(inputHeight, 100) + (Platform.OS === 'ios' ? 20 : 0),
+    <TextInput
+      multiline
+      onChangeText={(text) => {
+        handleChange(text);
+      }}
+      onContentSizeChange={({
+        nativeEvent: {
+          contentSize: { height },
         },
+      }) => {
+        if (!textHeight) {
+          setTextHeight(height);
+        }
+      }}
+      onSelectionChange={handleSelectionChange}
+      placeholder={t('Send a message')}
+      placeholderTextColor={textGrey}
+      ref={setInputBoxRef}
+      style={[
+        styles.inputBox,
+        {
+          maxHeight: (textHeight || 17) * numberOfLines,
+        },
+        inputBox,
       ]}
-    >
-      <TextInput
-        multiline
-        onChangeText={(text) => {
-          handleChange(text);
-        }}
-        onContentSizeChange={(e) => {
-          setInputHeight(e.nativeEvent.contentSize.height);
-          console.warn('changed ', e.nativeEvent.contentSize.height);
-        }}
-        onSelectionChange={handleSelectionChange}
-        placeholder={t('Write your message')}
-        ref={setInputBoxRef}
-        style={[
-          styles.inputBox,
-          inputBox,
-          {
-            minHeight: Math.min(inputHeight, 100),
-          },
-        ]}
-        testID='auto-complete-text-input'
-        value={value}
-        {...additionalTextInputProps}
-      />
-    </View>
+      testID='auto-complete-text-input'
+      value={text}
+      {...additionalTextInputProps}
+    />
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { t: prevT, text: prevText } = prevProps;
+  const { t: nextT, text: nextText } = nextProps;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  const textEqual = prevText === nextText;
+  if (!textEqual) return false;
+
+  return true;
+};
+
+const MemoizedAutoCompleteInput = React.memo(
+  AutoCompleteInputWithContext,
+  areEqual,
+) as typeof AutoCompleteInputWithContext;
+
+export const AutoCompleteInput = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    additionalTextInputProps,
+    numberOfLines,
+    onChange,
+    setInputBoxRef,
+    text,
+    triggerSettings,
+  } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    closeSuggestions,
+    openSuggestions,
+    updateSuggestions,
+  } = useSuggestionsContext<Co, Us>();
+  const { t } = useTranslationContext();
+
+  return (
+    <MemoizedAutoCompleteInput
+      {...{
+        additionalTextInputProps,
+        closeSuggestions,
+        numberOfLines,
+        onChange,
+        openSuggestions,
+        setInputBoxRef,
+        t,
+        text,
+        triggerSettings,
+        updateSuggestions,
+      }}
+      {...props}
+    />
   );
 };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { renderText, RenderTextParams } from './utils/renderText';
 
@@ -62,7 +62,13 @@ export type MessageTextContainerPropsWithContext<
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'markdownRules' | 'MessageText'
-  > & { theme: { theme: Theme }; markdownStyles?: MarkdownStyle };
+  > & {
+    theme: { theme: Theme };
+    markdownStyles?: MarkdownStyle;
+    styles?: Partial<{
+      textContainer: StyleProp<ViewStyle>;
+    }>;
+  };
 
 const MessageTextContainerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -77,11 +83,12 @@ const MessageTextContainerWithContext = <
 ) => {
   const {
     markdownRules,
-    markdownStyles: propMarkdownStyles = {},
+    markdownStyles: markdownStylesProp = {},
     message,
     MessageText,
     onLongPress,
     onlyEmojis,
+    styles: stylesProp = {},
     theme,
   } = props;
 
@@ -98,11 +105,11 @@ const MessageTextContainerWithContext = <
 
   if (!message.text) return null;
 
-  const markdownStyles = { ...markdown, ...propMarkdownStyles };
+  const markdownStyles = { ...markdown, ...markdownStylesProp };
 
   return (
     <View
-      style={[styles.textContainer, textContainer]}
+      style={[styles.textContainer, textContainer, stylesProp.textContainer]}
       testID='message-text-container'
     >
       {MessageText ? (

@@ -200,7 +200,13 @@ const areEqual = <
   const filesEqual = prevFiles.length === nextFiles.length;
   if (!filesEqual) return false;
 
-  const imagesEqual = prevImages.length === nextImages.length;
+  const imagesEqual =
+    prevImages.length === nextImages.length &&
+    prevImages.every(
+      (image, index) =>
+        image.image_url === nextImages[index].image_url &&
+        image.thumb_url === nextImages[index].thumb_url,
+    );
   if (!imagesEqual) return false;
 
   const reactionsEqual =

@@ -278,14 +278,16 @@ const ChannelPreviewMessengerWithContext = <
           </View>
           <View style={[styles.row, row]}>
             <Text numberOfLines={1} style={[styles.message, message]}>
-              {latestMessagePreview.previews.map((preview, index) => (
-                <Text
-                  key={`${preview.text}_${index}`}
-                  style={preview.bold ? styles.bold : {}}
-                >
-                  {preview.text}
-                </Text>
-              ))}
+              {latestMessagePreview.previews.map((preview, index) =>
+                preview.text ? (
+                  <Text
+                    key={`${preview.text}_${index}`}
+                    style={preview.bold ? styles.bold : {}}
+                  >
+                    {preview.text}
+                  </Text>
+                ) : null,
+              )}
             </Text>
             <View style={styles.flexRow}>
               {status === 2 ? (

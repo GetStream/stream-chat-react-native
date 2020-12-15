@@ -99,12 +99,16 @@ const getLatestMessageDisplayText = <
           return acc;
         }, '')
       : '';
-    const regEx = new RegExp(`^(${mentionedUsers})`, 'g');
+    const regEx = new RegExp(`^(${mentionedUsers})`);
     return [
       { bold: boldOwner, text: ownerText },
       ...shortenedText.split('').reduce(
-        (acc, cur) => {
-          if (cur === '@') {
+        (acc, cur, index) => {
+          if (
+            cur === '@' &&
+            mentionedUsers &&
+            regEx.test(shortenedText.substring(index))
+          ) {
             acc.push({ bold: true, text: cur });
           } else if (mentionedUsers && regEx.test(acc[acc.length - 1].text)) {
             acc.push({ bold: false, text: cur });

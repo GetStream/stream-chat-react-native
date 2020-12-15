@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
 import 'react-native-gesture-handler';
-import 'react-native-get-random-values';
 import React, { useContext, useEffect, useState } from 'react';
 import {
   LogBox,
@@ -11,6 +10,10 @@ import {
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, useHeaderHeight } from '@react-navigation/stack';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -22,6 +25,7 @@ import {
   OverlayProvider,
   Streami18n,
   Thread,
+  useAttachmentPickerContext,
 } from 'stream-chat-expo/v2';
 
 LogBox.ignoreAllLogs(true);
@@ -69,28 +73,31 @@ const streami18n = new Streami18n({
 const ChannelListScreen = React.memo(({ navigation }) => {
   const { setChannel } = useContext(AppContext);
   return (
-    <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <View style={{ height: '100%', padding: 10 }}>
-          <ChannelList
-            filters={filters}
-            onSelect={(channel) => {
-              setChannel(channel);
-              navigation.navigate('Channel');
-            }}
-            options={options}
-            Preview={ChannelPreviewMessenger}
-            sort={sort}
-          />
-        </View>
-      </Chat>
-    </SafeAreaView>
+    <Chat client={chatClient} i18nInstance={streami18n}>
+      <View style={{ height: '100%', padding: 10 }}>
+        <ChannelList
+          filters={filters}
+          onSelect={(channel) => {
+            setChannel(channel);
+            navigation.navigate('Channel');
+          }}
+          options={options}
+          Preview={ChannelPreviewMessenger}
+          sort={sort}
+        />
+      </View>
+    </Chat>
   );
 });
 
 const ChannelScreen = React.memo(({ navigation }) => {
   const { channel, setThread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { setTopInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setTopInset(headerHeight);
+  }, [headerHeight]);
 
   return (
     <SafeAreaView>
@@ -144,7 +151,8 @@ const Stack = createStackNavigator();
 
 const AppContext = React.createContext();
 
-export default () => {
+const App = () => {
+  const { bottom } = useSafeAreaInsets();
   const [channel, setChannel] = useState();
   const [clientReady, setClientReady] = useState(false);
   const [thread, setThread] = useState();
@@ -162,7 +170,7 @@ export default () => {
   return (
     <NavigationContainer>
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
-        <OverlayProvider value={{ style: theme }}>
+        <OverlayProvider bottomInset={bottom} value={{ style: theme }}>
           {clientReady && (
             <Stack.Navigator
               initialRouteName='ChannelList'
@@ -227,3 +235,9 @@ export default () => {
     </NavigationContainer>
   );
 };
+
+export default () => (
+  <SafeAreaProvider>
+    <App />
+  </SafeAreaProvider>
+);

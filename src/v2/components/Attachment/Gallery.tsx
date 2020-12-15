@@ -174,7 +174,7 @@ const GalleryWithContext = <
           {column.map(({ height, url }, rowIndex) => (
             <TouchableOpacity
               activeOpacity={0.8}
-              key={`gallery-item-${url}`}
+              key={`gallery-item-${url}/${images.length}`}
               onLongPress={onLongPress}
               onPress={() => {
                 if (!preventPress) {
@@ -272,9 +272,6 @@ const areEqual = <
     messageText: nextMessageText,
   } = nextProps;
 
-  const imagesEqual = prevImages.length === nextImages.length;
-  if (!imagesEqual) return false;
-
   const messageTextEqual = prevMessageText === nextMessageText;
   if (!messageTextEqual) return false;
 
@@ -282,6 +279,15 @@ const areEqual = <
     prevGroupStyles.length === nextGroupStyles.length &&
     prevGroupStyles[0] === nextGroupStyles[0];
   if (!groupStylesEqual) return false;
+
+  const imagesEqual =
+    prevImages.length === nextImages.length &&
+    prevImages.every(
+      (image, index) =>
+        image.image_url === nextImages[index].image_url &&
+        image.thumb_url === nextImages[index].thumb_url,
+    );
+  if (!imagesEqual) return false;
 
   return true;
 };

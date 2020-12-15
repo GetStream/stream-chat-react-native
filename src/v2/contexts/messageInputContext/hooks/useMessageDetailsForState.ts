@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import { generateRandomId } from '../utils/generateRandomId';
-
 import {
+  FileUpload,
+  ImageUpload,
   isEditingBoolean,
-  MessagesContextValue,
-} from '../../../contexts/messagesContext/MessagesContext';
+  MessageInputContextValue,
+} from '../MessageInputContext';
+
+import { generateRandomId } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -18,28 +20,6 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-export type FileUpload = {
-  file: {
-    name: string;
-    size?: number | string;
-    type?: string;
-    uri?: string;
-  };
-  id: string;
-  state: string;
-  url?: string;
-};
-
-export type ImageUpload = {
-  file: {
-    name?: string;
-    uri?: string;
-  };
-  id: string;
-  state: string;
-  url?: string;
-};
-
 export const useMessageDetailsForState = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -49,7 +29,7 @@ export const useMessageDetailsForState = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  message: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
+  message: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
   initialValue?: string,
 ) => {
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([]);
@@ -61,7 +41,12 @@ export const useMessageDetailsForState = <
       [],
   );
   const [numberOfUploads, setNumberOfUploads] = useState(0);
+  const [showMoreOptions, setShowMoreOptions] = useState(true);
   const [text, setText] = useState(initialValue || '');
+
+  useEffect(() => {
+    setShowMoreOptions(false);
+  }, [text]);
 
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
@@ -114,7 +99,9 @@ export const useMessageDetailsForState = <
     setImageUploads,
     setMentionedUsers,
     setNumberOfUploads,
+    setShowMoreOptions,
     setText,
+    showMoreOptions,
     text,
   };
 };
