@@ -247,7 +247,9 @@ export const MessageInputWithContext = <
     if (selectedImages.length > imageUploads.length) {
       const imagesToUpload = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
-          (imageUpload) => imageUpload.file.uri === selectedImage,
+          (imageUpload) =>
+            imageUpload.file.uri === selectedImage ||
+            imageUpload.url === selectedImage,
         );
         return !uploadedImage;
       });
@@ -256,7 +258,9 @@ export const MessageInputWithContext = <
       const imagesToRemove = imageUploads.filter(
         (imageUpload) =>
           !selectedImages.find(
-            (selectedImage) => selectedImage === imageUpload.file.uri,
+            (selectedImage) =>
+              selectedImage === imageUpload.file.uri ||
+              selectedImage === imageUpload.url,
           ),
       );
       imagesToRemove.forEach((image) => removeImage(image.id));
@@ -267,11 +271,19 @@ export const MessageInputWithContext = <
     if (imageUploads.length < selectedImages.length) {
       const updatedSelectedImages = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
-          (imageUpload) => imageUpload.file.uri === selectedImage,
+          (imageUpload) =>
+            imageUpload.file.uri === selectedImage ||
+            imageUpload.url === selectedImage,
         );
         return uploadedImage;
       });
       setSelectedImages(updatedSelectedImages);
+    } else if (imageUploads.length > selectedImages.length) {
+      setSelectedImages(
+        imageUploads
+          .map((imageUpload) => imageUpload.url)
+          .filter(Boolean) as string[],
+      );
     }
   }, [imageUploads.length]);
 

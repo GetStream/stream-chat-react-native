@@ -53,9 +53,11 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   subtitle = false,
 }) => {
   const insets = useSafeAreaInsets();
-  const { setTopInset } = useAttachmentPickerContext();
+  const { setTopInset, topInset } = useAttachmentPickerContext();
   useEffect(() => {
-    setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
+    if (!topInset) {
+      setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
+    }
   }, [insets.top]);
   const { colors } = useTheme() as AppTheme;
 
