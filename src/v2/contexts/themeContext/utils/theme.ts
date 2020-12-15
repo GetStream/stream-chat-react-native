@@ -1,9 +1,10 @@
+import { vh } from '../../../utils/utils';
+
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, StopProps } from 'react-native-svg';
 
 import type { IconProps } from '../../../icons/utils/base';
 
-export const BASE_FONT_SIZE = 16;
 export const DEFAULT_STATUS_ICON_SIZE = 16;
 
 export const Colors = {
@@ -71,6 +72,18 @@ export type MarkdownStyle = Partial<{
 }>;
 
 export type Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: ViewStyle;
+    errorButtonText: TextStyle;
+    errorContainer: ViewStyle;
+    errorText: TextStyle;
+    image: ViewStyle;
+    imageOverlay: ViewStyle;
+  };
+  attachmentSelectionBar: {
+    container: ViewStyle;
+    icon: ViewStyle;
+  };
   avatar: {
     BASE_AVATAR_SIZE: number;
     container: ViewStyle;
@@ -141,9 +154,6 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  closeButton: {
-    container: ViewStyle;
-  };
   colors: typeof Colors;
   dateHeader: {
     container: ViewStyle;
@@ -203,68 +213,78 @@ export type Theme = {
     loadingText: TextStyle;
   };
   messageInput: {
-    actionSheet: {
-      buttonContainer: ViewStyle;
-      buttonText: ImageStyle;
-      titleContainer: ViewStyle;
-      titleText: ImageStyle;
-    };
     attachButton: ViewStyle;
-    attachButtonIcon: ImageStyle;
+    attachButtonContainer: ViewStyle;
+    autoCompleteInputContainer: ViewStyle;
     commandsButton: ViewStyle;
+    commandsButtonContainer: ViewStyle;
     composerContainer: ViewStyle;
-    container: ViewStyle & {
-      conditionalPadding: ViewStyle['paddingTop'];
-    };
+    container: ViewStyle;
     editingBoxContainer: ViewStyle;
     editingBoxHeader: ViewStyle;
     editingBoxHeaderTitle: ImageStyle;
     fileUploadPreview: {
-      attachmentContainerView: ViewStyle;
-      attachmentView: ViewStyle;
-      container: ViewStyle;
       dismiss: ViewStyle;
-      dismissImage: ImageStyle;
+      fileContainer: ViewStyle;
+      fileContentContainer: ViewStyle;
       filenameText: TextStyle;
+      fileSizeText: TextStyle;
+      fileTextContainer: ViewStyle;
+      flatList: ViewStyle;
     };
     imageUploadPreview: {
-      container: ViewStyle;
       dismiss: ViewStyle;
-      dismissImage: ImageStyle;
+      flatList: ViewStyle;
       itemContainer: ViewStyle;
       upload: ImageStyle;
     };
     inputBox: TextStyle;
     inputBoxContainer: ViewStyle;
+    moreOptionsButton: ViewStyle;
+    optionsContainer: ViewStyle;
+    replyContainer: ViewStyle;
     sendButton: ViewStyle;
-    sendButtonIcon: ImageStyle;
+    sendButtonContainer: ViewStyle;
     suggestions: {
       command: {
         args: TextStyle;
         container: ViewStyle;
-        description: TextStyle;
+        iconContainer: ViewStyle;
         title: TextStyle;
-        top: ViewStyle;
+      };
+      commandsHeader: {
+        container: ViewStyle;
+        title: TextStyle;
       };
       container: ViewStyle & {
-        itemHeight: number;
         maxHeight: number;
+      };
+      emoji: {
+        container: ViewStyle;
+        text: TextStyle;
+      };
+      emojisHeader: {
+        container: ViewStyle;
+        title: TextStyle;
       };
       item: ViewStyle;
       mention: {
+        avatarSize: number;
+        column: ViewStyle;
         container: ViewStyle;
         name: TextStyle;
+        tag: TextStyle;
       };
-      separator: ViewStyle;
       title: TextStyle;
-      wrapper: ViewStyle;
     };
+    suggestionsListContainer: ViewStyle;
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
     };
   };
   messageList: {
+    container: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     listContainer: ViewStyle;
@@ -428,11 +448,21 @@ export type Theme = {
       reactionList: ViewStyle;
     };
   };
+  reply: {
+    container: ViewStyle;
+    fileAttachmentContainer: ViewStyle;
+    imageAttachment: ImageStyle;
+    markdownStyles: MarkdownStyle;
+    messageContainer: ViewStyle;
+    textContainer: ViewStyle;
+  };
   screenPadding: number;
   spinner: ViewStyle;
   thread: {
     newThread: ViewStyle & {
       text: TextStyle;
+      backgroundGradientStart?: string;
+      backgroundGradientStop?: string;
     };
   };
   typingIndicator: {
@@ -445,6 +475,18 @@ export type Theme = {
 };
 
 export const defaultTheme: Theme = {
+  attachmentPicker: {
+    bottomSheetContentContainer: {},
+    errorButtonText: {},
+    errorContainer: {},
+    errorText: {},
+    image: {},
+    imageOverlay: {},
+  },
+  attachmentSelectionBar: {
+    container: {},
+    icon: {},
+  },
   avatar: {
     BASE_AVATAR_SIZE: 32,
     container: {},
@@ -567,9 +609,6 @@ export const defaultTheme: Theme = {
       color: Colors.white,
     },
   },
-  closeButton: {
-    container: {},
-  },
   colors: {
     ...Colors,
   },
@@ -616,61 +655,86 @@ export const defaultTheme: Theme = {
     loadingText: {},
   },
   messageInput: {
-    actionSheet: {
-      buttonContainer: {},
-      buttonText: {},
-      titleContainer: {},
-      titleText: {},
-    },
     attachButton: {},
-    attachButtonIcon: {},
+    attachButtonContainer: {},
+    autoCompleteInputContainer: {},
     commandsButton: {},
+    commandsButtonContainer: {},
     composerContainer: {},
-    container: {
-      conditionalPadding: 20,
-    },
+    container: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
     editingBoxHeaderTitle: {},
     fileUploadPreview: {
-      attachmentContainerView: {},
-      attachmentView: {},
-      container: {},
       dismiss: {},
-      dismissImage: {},
+      fileContainer: {},
+      fileContentContainer: {},
       filenameText: {},
+      fileSizeText: {
+        color: Colors.textGrey,
+      },
+      fileTextContainer: {},
+      flatList: {},
     },
     imageUploadPreview: {
-      container: {},
-      dismiss: {},
-      dismissImage: {},
+      dismiss: {
+        backgroundColor: Colors.textGrey,
+      },
+      flatList: {},
       itemContainer: {},
       upload: {},
     },
     inputBox: {},
     inputBoxContainer: {},
+    moreOptionsButton: {},
+    optionsContainer: {},
+    replyContainer: {},
     sendButton: {},
-    sendButtonIcon: {},
+    sendButtonContainer: {},
     suggestions: {
       command: {
-        args: {},
+        args: {
+          color: Colors.textGrey,
+        },
         container: {},
-        description: {},
+        iconContainer: {
+          backgroundColor: Colors.primary,
+        },
         title: {},
-        top: {},
+      },
+      commandsHeader: {
+        container: {},
+        title: {
+          color: Colors.textGrey,
+        },
       },
       container: {
-        itemHeight: 50,
-        maxHeight: 250,
+        maxHeight: vh(25),
+      },
+      emoji: {
+        container: {},
+        text: {},
+      },
+      emojisHeader: {
+        container: {},
+        title: {
+          color: Colors.textGrey,
+        },
       },
       item: {},
       mention: {
+        avatarSize: 40,
+        column: {},
         container: {},
         name: {},
+        tag: {
+          color: Colors.textGrey,
+        },
       },
-      separator: {},
       title: {},
-      wrapper: {},
+    },
+    suggestionsListContainer: {
+      backgroundColor: Colors.white,
     },
     uploadProgressIndicator: {
       container: {},
@@ -678,6 +742,7 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
+    container: {},
     errorNotification: {},
     errorNotificationText: {},
     listContainer: {},
@@ -929,6 +994,16 @@ export const defaultTheme: Theme = {
         backgroundColor: Colors.background,
       },
     },
+  },
+  reply: {
+    container: {},
+    fileAttachmentContainer: {},
+    imageAttachment: {},
+    markdownStyles: {},
+    messageContainer: {
+      borderColor: Colors.textLight,
+    },
+    textContainer: {},
   },
   screenPadding: 8,
   spinner: {},

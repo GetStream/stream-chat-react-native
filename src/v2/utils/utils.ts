@@ -7,6 +7,8 @@ import { ThumbsDownReaction } from '../icons/ThumbsDownReaction';
 import { ThumbsUpReaction } from '../icons/ThumbsUpReaction';
 import { WutReaction } from '../icons/WutReaction';
 
+import { compiledEmojis, Emoji } from '../../emoji-data/compiled';
+
 import type React from 'react';
 import type {
   Channel,
@@ -16,12 +18,12 @@ import type {
 } from 'stream-chat';
 
 import type { CommandsItemProps } from '../components/AutoCompleteInput/CommandsItem';
+import type { EmojisItemProps } from '../components/AutoCompleteInput/EmojisItem';
 import type { MentionsItemProps } from '../components/AutoCompleteInput/MentionsItem';
 import type {
   SuggestionCommand,
   SuggestionUser,
 } from '../contexts/suggestionsContext/SuggestionsContext';
-import type { TranslationContextValue } from '../contexts/translationContext/TranslationContext';
 import type { IconProps } from '../icons/utils/base';
 import type {
   DefaultAttachmentType,
@@ -159,7 +161,6 @@ const getMembersAndWatchers = <
   );
 };
 
-// TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -194,10 +195,16 @@ const queryMembers = async <
   );
 };
 
+export const isCommandTrigger = (trigger: Trigger): trigger is '/' =>
+  trigger === '/';
+
+export const isEmojiTrigger = (trigger: Trigger): trigger is ':' =>
+  trigger === ':';
+
 export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
   trigger === '@';
 
-export type Trigger = '/' | '@';
+export type Trigger = '/' | '@' | ':';
 
 export type TriggerSettings<
   Co extends string = DefaultCommandType,
@@ -220,7 +227,21 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
-    title: string;
+  };
+  ':': {
+    component: string | React.ComponentType<Partial<EmojisItemProps>>;
+    dataProvider: (
+      query: Emoji['name'],
+      _: string,
+      onReady?: (data: Emoji[], q: Emoji['name']) => void,
+    ) => Emoji[];
+    output: (
+      entity: Emoji,
+    ) => {
+      caretPosition: string;
+      key: string;
+      text: string;
+    };
   };
   '@': {
     callback: (item: SuggestionUser<Us>) => void;
@@ -240,7 +261,6 @@ export type TriggerSettings<
       key: string;
       text: string;
     };
-    title: string;
   };
 };
 
@@ -255,7 +275,7 @@ export type ACITriggerSettingsParams<
 > = {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   onMentionSelectItem: (item: SuggestionUser<Us>) => void;
-} & Pick<TranslationContextValue, 't'>;
+};
 
 /**
  * ACI = AutoCompleteInput
@@ -279,7 +299,6 @@ export const ACITriggerSettings = <
 >({
   channel,
   onMentionSelectItem,
-  t = (msg: string) => msg,
 }: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<
   Co,
   Us
@@ -328,7 +347,50 @@ export const ACITriggerSettings = <
       key: `${entity.name}`,
       text: `/${entity.name}`,
     }),
-    title: t('Commands'),
+  },
+  ':': {
+    component: 'EmojisItem',
+    dataProvider: (query, _, onReady) => {
+      if (!query) return [];
+
+      const result = compiledEmojis.emojiArray.reduce((acc, cur) => {
+        if (acc.length >= 10) return acc;
+
+        if (cur.names.some((name) => name.includes(query))) {
+          const emoji = compiledEmojis.emojiLib[cur.name];
+          if (emoji.skin_variations) {
+            acc.push({
+              ...emoji,
+              name: `${emoji.name}-tone-1`,
+              skin_variations: undefined,
+            });
+            emoji.skin_variations.forEach((tone, index) =>
+              acc.push({
+                ...emoji,
+                name: `${emoji.name}-tone-${index + 2}`,
+                skin_variations: undefined,
+                unicode: tone,
+              }),
+            );
+          } else {
+            acc.push(emoji);
+          }
+        }
+
+        return acc;
+      }, [] as Emoji[]);
+
+      if (onReady) {
+        onReady(result, query);
+      }
+
+      return result;
+    },
+    output: (entity) => ({
+      caretPosition: 'next',
+      key: entity.name,
+      text: entity.unicode,
+    }),
   },
   '@': {
     callback: (item) => {
@@ -336,15 +398,13 @@ export const ACITriggerSettings = <
     },
     component: 'MentionsItem',
     dataProvider: (query, _, onReady) => {
-      const members = channel.state.members;
-
       /**
        * By default, we return maximum 100 members via queryChannels api call.
        * Thus it is safe to assume, that if number of members in channel.state is < 100,
        * then all the members are already available on client side and we don't need to
        * make any api call to queryMembers endpoint.
        */
-      if (!query || Object.values(members).length < 100) {
+      if (!query || Object.values(channel.state.members).length < 100) {
         const users = getMembersAndWatchers(channel);
 
         const matchingUsers = users.filter((user) => {
@@ -378,7 +438,6 @@ export const ACITriggerSettings = <
       key: entity.id,
       text: `@${entity.name || entity.id}`,
     }),
-    title: t('Searching for people'),
   },
 });
 
@@ -403,6 +462,12 @@ export const vh = (percentageHeight: number, rounded = false) => {
   const value = height * (percentageHeight / 100);
   return rounded ? Math.round(value) : value;
 };
+
+export const generateRandomId = (a = ''): string =>
+  a
+    ? /* eslint-disable no-bitwise */
+      ((Number(a) ^ (Math.random() * 16)) >> (Number(a) / 4)).toString(16)
+    : `${1e7}-${1e3}-${4e3}-${8e3}-${1e11}`.replace(/[018]/g, generateRandomId);
 
 // source: https://raw.githubusercontent.com/mathiasbynens/emoji-regex/master/RGI_Emoji.js
 // [#\*0-9]\uFE0F\u20E3 was replaced with [#*0-9]\uFE0F\u20E3 due to a lint warning

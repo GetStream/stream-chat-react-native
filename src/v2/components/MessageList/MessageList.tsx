@@ -5,7 +5,6 @@ import {
   ScrollViewProps,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   ViewToken,
 } from 'react-native';
@@ -26,6 +25,7 @@ import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import { Message as DefaultMessage } from '../Message/Message';
 
+import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
   GroupType,
   useMessagesContext,
@@ -54,6 +54,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { DateHeader } from './DateHeader';
+import type { Attachment } from 'stream-chat';
 
 const styles = StyleSheet.create({
   container: {
@@ -61,14 +62,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FCFCFC',
     flex: 1,
     width: '100%',
-  },
-  editStateMask: {
-    backgroundColor: 'black',
-    height: '100%',
-    opacity: 0.4,
-    position: 'absolute',
-    width: '100%',
-    zIndex: 100,
   },
   errorNotification: {
     alignItems: 'center',
@@ -84,8 +77,10 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 10,
     width: '100%',
+  },
+  messagePadding: {
+    paddingHorizontal: 8,
   },
   stickyHeader: {
     position: 'absolute',
@@ -137,7 +132,6 @@ export type MessageListProps<
   additionalFlatListProps?: Partial<
     FlatListProps<Message<At, Ch, Co, Ev, Me, Re, Us>>
   >;
-  disableWhileEditing?: boolean;
   /**
    * UI component for footer of message list. By default message list doesn't have any footer.
    * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
@@ -227,7 +221,6 @@ export const MessageList = <
 ) => {
   const {
     additionalFlatListProps,
-    disableWhileEditing = true,
     FooterComponent,
     HeaderComponent,
     inverted = true,
@@ -252,15 +245,23 @@ export const MessageList = <
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    clearEditingState,
-    disableTypingIndicator,
-    editing,
-    loadMore: mainLoadMore,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { disableTypingIndicator, loadMore: mainLoadMore } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const {
     theme: {
-      messageList: { errorNotification, errorNotificationText, listContainer },
+      messageList: {
+        container,
+        errorNotification,
+        errorNotificationText,
+        listContainer,
+      },
     },
   } = useTheme();
   const { loadMoreThread, thread } = useThreadContext<
@@ -273,6 +274,11 @@ export const MessageList = <
     Us
   >();
   const { t, tDateTimeParser } = useTranslationContext();
+  const {
+    closePicker,
+    selectedPicker,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -285,6 +291,7 @@ export const MessageList = <
   > | null>(null);
   const yOffset = useRef(0);
 
+  const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
@@ -362,19 +369,25 @@ export const MessageList = <
 
   const renderItem = (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (message.type === 'system') {
-      return <MessageSystem message={message} />;
+      return (
+        <View style={styles.messagePadding}>
+          <MessageSystem message={message} />
+        </View>
+      );
     }
     if (message.type !== 'message.read') {
       return (
-        <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-          groupStyles={message.groupStyles as GroupType[]}
-          lastReceivedId={
-            lastReceivedId === message.id ? lastReceivedId : undefined
-          }
-          message={message}
-          onThreadSelect={onThreadSelect}
-          threadList={threadList}
-        />
+        <View style={styles.messagePadding}>
+          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+            groupStyles={message.groupStyles as GroupType[]}
+            lastReceivedId={
+              lastReceivedId === message.id ? lastReceivedId : undefined
+            }
+            message={message}
+            onThreadSelect={onThreadSelect}
+            threadList={threadList}
+          />
+        </View>
       );
     }
     return null;
@@ -422,12 +435,24 @@ export const MessageList = <
     return false;
   });
 
+  /**
+   * This is for the useEffect to run again in the case that a message
+   * gets edited with more or the same number of images
+   */
+  const imageString = messagesWithImages
+    .map((message) =>
+      (message.attachments as Attachment<At>[])
+        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+        .join(),
+    )
+    .join();
+
   const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [numberOfMessagesWithImages, thread, threadList]);
+  }, [imageString, numberOfMessagesWithImages, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
@@ -450,79 +475,76 @@ export const MessageList = <
     ? tStickyHeaderDate.format(stickyHeaderFormatDate)
     : new Date(tStickyHeaderDate).toDateString();
 
+  const dismissImagePicker = () => {
+    if (!hasMoved && selectedPicker) {
+      setSelectedPicker(undefined);
+      closePicker();
+    }
+  };
+
   return (
-    <>
-      <View collapsable={false} style={styles.container}>
-        <FlatList
-          data={messageList}
-          /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
-          extraData={disabled}
-          inverted={inverted}
-          keyboardShouldPersistTaps='handled'
-          keyExtractor={keyExtractor}
-          ListFooterComponent={FooterComponent}
-          ListHeaderComponent={HeaderComponent}
-          maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: 10,
-            minIndexForVisible: 1,
-          }}
-          onEndReached={loadMore}
-          onScroll={handleScroll}
-          onViewableItemsChanged={updateStickyDate.current}
-          ref={(fl) => {
-            flatListRef.current = fl;
-            if (setFlatListRef) {
-              setFlatListRef(fl);
-            }
-          }}
-          renderItem={({ item }) => renderItem(item)}
-          style={[styles.listContainer, listContainer]}
-          testID='message-flat-list'
-          viewabilityConfig={{
-            viewAreaCoveragePercentThreshold: 50,
-          }}
-          {...additionalFlatListProps}
-        />
-        <View style={styles.stickyHeader}>
-          {StickyHeader ? (
-            <StickyHeader dateString={stickyHeaderDateToRender} />
-          ) : (
-            <DateHeader dateString={stickyHeaderDateToRender} />
-          )}
-        </View>
-        {!disableTypingIndicator && TypingIndicator && (
-          <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
-            <TypingIndicator />
-          </TypingIndicatorContainer>
-        )}
-        {newMessagesNotification && (
-          <MessageNotification
-            onPress={goToNewMessages}
-            showNotification={newMessagesNotification}
-          />
-        )}
-        {!isOnline && (
-          <View
-            style={[styles.errorNotification, errorNotification]}
-            testID='error-notification'
-          >
-            <Text style={[styles.errorNotificationText, errorNotificationText]}>
-              {t('Connection failure, reconnecting now...')}
-            </Text>
-          </View>
+    <View collapsable={false} style={[styles.container, container]}>
+      <FlatList
+        data={messageList}
+        /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
+        extraData={disabled}
+        inverted={inverted}
+        keyboardShouldPersistTaps='handled'
+        keyExtractor={keyExtractor}
+        ListFooterComponent={FooterComponent}
+        ListHeaderComponent={HeaderComponent}
+        maintainVisibleContentPosition={{
+          autoscrollToTopThreshold: 10,
+          minIndexForVisible: 1,
+        }}
+        onEndReached={loadMore}
+        onScroll={handleScroll}
+        onScrollBeginDrag={() => setHasMoved(true)}
+        onScrollEndDrag={() => setHasMoved(false)}
+        onTouchEnd={dismissImagePicker}
+        onViewableItemsChanged={updateStickyDate.current}
+        ref={(fl) => {
+          flatListRef.current = fl;
+          if (setFlatListRef) {
+            setFlatListRef(fl);
+          }
+        }}
+        renderItem={({ item }) => renderItem(item)}
+        style={[styles.listContainer, listContainer]}
+        testID='message-flat-list'
+        viewabilityConfig={{
+          viewAreaCoveragePercentThreshold: 50,
+        }}
+        {...additionalFlatListProps}
+      />
+      <View style={styles.stickyHeader}>
+        {StickyHeader ? (
+          <StickyHeader dateString={stickyHeaderDateToRender} />
+        ) : (
+          <DateHeader dateString={stickyHeaderDateToRender} />
         )}
       </View>
-      {
-        // Mask for edit state
-        editing && disableWhileEditing && (
-          <TouchableOpacity
-            onPress={clearEditingState}
-            style={styles.editStateMask}
-          />
-        )
-      }
-    </>
+      {!disableTypingIndicator && TypingIndicator && (
+        <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
+          <TypingIndicator />
+        </TypingIndicatorContainer>
+      )}
+      {newMessagesNotification && (
+        <MessageNotification
+          onPress={goToNewMessages}
+          showNotification={newMessagesNotification}
+        />
+      )}
+      {!isOnline && (
+        <View
+          style={[styles.errorNotification, errorNotification]}
+          testID='error-notification'
+        >
+          <Text style={[styles.errorNotificationText, errorNotificationText]}>
+            {t('Connection failure, reconnecting now...')}
+          </Text>
+        </View>
+      )}
+    </View>
   );
 };
-
-MessageList.displayName = 'MessageList{messageList}';

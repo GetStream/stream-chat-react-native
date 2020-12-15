@@ -1,6 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { BlurView as RNBlurView } from '@react-native-community/blur';
+import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -21,6 +22,17 @@ registerNativeHandlers({
     } catch (error) {
       console.log('File deletion failed...');
       return false;
+    }
+  },
+  getPhotos: async ({ after, first }) => {
+    try {
+      const results = await CameraRoll.getPhotos({ after, first });
+      const assets = results.edges.map((edge) => edge.node.image.uri);
+      const hasNextPage = results.page_info.has_next_page;
+      const endCursor = results.page_info.end_cursor;
+      return { assets, endCursor, hasNextPage };
+    } catch {
+      throw new Error('getPhotos Error');
     }
   },
   NetInfo: {
@@ -85,38 +97,6 @@ registerNativeHandlers({
       };
     }
   },
-  pickImage: async ({ compressImageQuality, maxNumberOfFiles }) => {
-    try {
-      let res = await ImagePicker.openPicker({
-        compressImageQuality,
-        forceJpg: true,
-        includeBase64: Platform.OS === 'ios',
-        maxFiles: maxNumberOfFiles || undefined,
-        mediaType: 'photo',
-        multiple: true,
-        writeTempFile: false,
-      });
-
-      // maxFiles option on picker is only for iOS so this is a safety check for android
-      if (maxNumberOfFiles && res.length > maxNumberOfFiles) {
-        res = res.slice(0, maxNumberOfFiles);
-      }
-
-      return {
-        cancelled: false,
-        images: res.map((image) => ({
-          uri:
-            Platform.OS === 'ios'
-              ? image.sourceURL || `data:${image.mime};base64,${image.data}`
-              : image.path,
-        })),
-      };
-    } catch (err) {
-      return {
-        cancelled: true,
-      };
-    }
-  },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
       const path = RNFS.DocumentDirectoryPath + '/' + fileName;
@@ -160,6 +140,18 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed...');
     }
+  },
+  takePhoto: async () => {
+    const photo = await ImagePicker.openCamera({});
+    if (photo.height && photo.width && photo.path) {
+      return {
+        cancelled: false,
+        height: photo.height,
+        uri: photo.path,
+        width: photo.width,
+      };
+    }
+    return { cancelled: true };
   },
   triggerHaptic: (method) => {
     ReactNativeHapticFeedback.trigger(method, {

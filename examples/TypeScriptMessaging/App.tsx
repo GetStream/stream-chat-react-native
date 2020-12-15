@@ -12,6 +12,10 @@ import {
   StackNavigationProp,
   useHeaderHeight,
 } from '@react-navigation/stack';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { ChannelSort, Channel as ChannelType, StreamChat } from 'stream-chat';
 import {
   Channel,
@@ -25,6 +29,7 @@ import {
   Theme,
   Thread,
   ThreadContextValue,
+  useAttachmentPickerContext,
 } from 'stream-chat-react-native/v2';
 
 LogBox.ignoreAllLogs(true);
@@ -96,29 +101,27 @@ const ChannelListScreen: React.FC<ChannelListScreenProps> = ({
   const { setChannel } = useContext(AppContext);
 
   return (
-    <SafeAreaView>
-      <Chat client={chatClient} i18nInstance={streami18n}>
-        <View style={{ height: '100%' }}>
-          <ChannelList<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalResponseType,
-            LocalUserType
-          >
-            filters={filters}
-            onSelect={(channel) => {
-              setChannel(channel);
-              navigation.navigate('Channel');
-            }}
-            options={options}
-            sort={sort}
-          />
-        </View>
-      </Chat>
-    </SafeAreaView>
+    <Chat client={chatClient} i18nInstance={streami18n}>
+      <View style={{ height: '100%' }}>
+        <ChannelList<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        >
+          filters={filters}
+          onSelect={(channel) => {
+            setChannel(channel);
+            navigation.navigate('Channel');
+          }}
+          options={options}
+          sort={sort}
+        />
+      </View>
+    </Chat>
   );
 };
 
@@ -129,6 +132,11 @@ type ChannelScreenProps = {
 const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
   const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
+  const { setTopInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setTopInset(headerHeight);
+  }, [headerHeight]);
 
   return (
     <SafeAreaView>
@@ -268,7 +276,9 @@ type AppContextType = {
 
 const AppContext = React.createContext({} as AppContextType);
 
-export default () => {
+const App = () => {
+  const { bottom } = useSafeAreaInsets();
+
   const [channel, setChannel] = useState<
     ChannelType<
       LocalAttachmentType,
@@ -315,6 +325,7 @@ export default () => {
           LocalResponseType,
           LocalUserType
         >
+          bottomInset={bottom}
           i18nInstance={streami18n}
           value={{ style: theme }}
         >
@@ -339,41 +350,7 @@ export default () => {
                 name='ChannelList'
                 options={{ headerTitle: 'Channel List' }}
               />
-              <Stack.Screen
-                component={ThreadScreen}
-                name='Thread'
-                options={({ navigation }) => ({
-                  headerLeft: () => <></>,
-                  headerRight: () => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.goBack();
-                      }}
-                      style={{
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 20,
-                      }}
-                    >
-                      <View
-                        style={{
-                          alignItems: 'center',
-                          backgroundColor: 'white',
-                          borderColor: 'rgba(0, 0, 0, 0.1)',
-                          borderRadius: 3,
-                          borderStyle: 'solid',
-                          borderWidth: 1,
-                          height: 30,
-                          justifyContent: 'center',
-                          width: 30,
-                        }}
-                      >
-                        <Text>X</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ),
-                })}
-              />
+              <Stack.Screen component={ThreadScreen} name='Thread' />
             </Stack.Navigator>
           )}
         </OverlayProvider>
@@ -381,3 +358,9 @@ export default () => {
     </NavigationContainer>
   );
 };
+
+export default () => (
+  <SafeAreaProvider>
+    <App />
+  </SafeAreaProvider>
+);

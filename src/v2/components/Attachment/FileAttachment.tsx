@@ -1,10 +1,13 @@
 import React from 'react';
 import {
   Linking,
+  StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 
 import { AttachmentActions as AttachmentActionsDefault } from '../../components/Attachment/AttachmentActions';
@@ -59,10 +62,10 @@ export const getFileSizeDisplayText = (size?: number | string) => {
   }
 
   if (size < 1000 * 1000) {
-    return `${Math.floor(size / 10) / 100} KB`;
+    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
   }
 
-  return `${Math.floor(size / 10000) / 100} MB`;
+  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
 };
 
 export const goToURL = (url?: string) => {
@@ -91,6 +94,13 @@ export type FileAttachmentPropsWithContext<
   > & {
     /** The attachment to render */
     attachment: Attachment<At>;
+    attachmentSize?: number;
+    styles?: Partial<{
+      container: StyleProp<ViewStyle>;
+      details: StyleProp<ViewStyle>;
+      size: StyleProp<TextStyle>;
+      title: StyleProp<TextStyle>;
+    }>;
   };
 
 const FileAttachmentWithContext = <
@@ -107,9 +117,11 @@ const FileAttachmentWithContext = <
   const {
     additionalTouchableProps,
     attachment,
+    attachmentSize,
     AttachmentActions,
     AttachmentFileIcon,
     onLongPress,
+    styles: stylesProp = {},
   } = props;
 
   const {
@@ -127,13 +139,19 @@ const FileAttachmentWithContext = <
       testID='file-attachment'
       {...additionalTouchableProps}
     >
-      <View style={[styles.container, container]}>
-        <AttachmentFileIcon mimeType={attachment.mime_type} />
-        <View style={[styles.details, details]}>
-          <Text numberOfLines={2} style={[styles.title, title]}>
+      <View style={[styles.container, container, stylesProp.container]}>
+        <AttachmentFileIcon
+          mimeType={attachment.mime_type}
+          size={attachmentSize}
+        />
+        <View style={[styles.details, details, stylesProp.details]}>
+          <Text
+            numberOfLines={2}
+            style={[styles.title, title, stylesProp.title]}
+          >
             {attachment.title}
           </Text>
-          <Text style={[styles.size, fileSize]}>
+          <Text style={[styles.size, fileSize, stylesProp.size]}>
             {getFileSizeDisplayText(attachment.file_size)}
           </Text>
         </View>
@@ -181,10 +199,6 @@ export const FileAttachment = <
 
   return (
     <FileAttachmentWithContext
-      {...{
-        AttachmentActions,
-        AttachmentFileIcon,
-      }}
       {...{
         additionalTouchableProps,
         AttachmentActions,

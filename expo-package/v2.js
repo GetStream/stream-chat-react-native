@@ -5,6 +5,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
 import * as Sharing from 'expo-sharing';
 import { registerNativeHandlers } from 'stream-chat-react-native-core/src/v2';
@@ -21,6 +22,17 @@ registerNativeHandlers({
     } catch (error) {
       console.log('File deletion failed...');
       return false;
+    }
+  },
+  getPhotos: async ({ after, first }) => {
+    try {
+      const results = await MediaLibrary.getAssetsAsync({ after, first });
+      const assets = results.assets.map((asset) => asset.uri);
+      const hasNextPage = results.hasNextPage;
+      const endCursor = results.endCursor;
+      return { assets, endCursor, hasNextPage };
+    } catch {
+      throw new Error('getPhotos Error');
     }
   },
   NetInfo: {
@@ -79,36 +91,6 @@ registerNativeHandlers({
       };
     }
   },
-  pickImage: async ({ compressImageQuality = 0.2, maxNumberOfFiles }) => {
-    try {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
-      if (status !== 'granted') {
-        return {
-          cancelled: true,
-        };
-      }
-
-      const { cancelled, ...rest } = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: false,
-        aspect: [4, 3],
-        quality: compressImageQuality,
-      });
-
-      if (cancelled) {
-        return {
-          cancelled,
-        };
-      }
-      return {
-        cancelled: false,
-        images: [{ uri: rest.uri }],
-      };
-    } catch (err) {
-      return {
-        cancelled: true,
-      };
-    }
-  },
   saveFile: async ({ fileName, fromUrl }) => {
     try {
       const path = FileSystem.documentDirectory + fileName;
@@ -125,6 +107,18 @@ registerNativeHandlers({
     } catch (error) {
       throw new Error('Sharing failed or cancelled...');
     }
+  },
+  takePhoto: async () => {
+    const photo = await ImagePicker.launchImageLibraryAsync();
+    if (photo.height && photo.width && photo.uri) {
+      return {
+        cancelled: false,
+        height: photo.height,
+        uri: photo.uri,
+        width: photo.width,
+      };
+    }
+    return { cancelled: true };
   },
   triggerHaptic: (method) => {
     switch (method) {

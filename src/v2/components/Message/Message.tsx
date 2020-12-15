@@ -127,6 +127,7 @@ export type MessagePropsWithContext<
     | 'reactionsEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
+    | 'setReplyToState'
     | 'supportedReactions'
     | 'updateMessage'
   > &
@@ -246,6 +247,7 @@ const MessageWithContext = <
     setData,
     setEditingState,
     setOverlay,
+    setReplyToState,
     showAvatar,
     showMessageStatus,
     supportedReactions,
@@ -524,7 +526,7 @@ const MessageWithContext = <
     const reply = {
       action: () => {
         setOverlay('none');
-        onOpenThread();
+        setReplyToState(message);
       },
       icon: <CurveLineLeftUp />,
       title: t('Reply'),
@@ -724,11 +726,19 @@ const areEqual = <
     prevMessage.user?.banned === nextMessage.user?.banned;
   if (!messageUserBannedEqual) return false;
 
+  const prevMessageAttachments = prevMessage.attachments;
+  const nextMessageAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    (Array.isArray(prevMessage.attachments) &&
-      Array.isArray(nextMessage.attachments) &&
-      prevMessage.attachments.length === nextMessage.attachments.length) ||
-    prevMessage.attachments === nextMessage.attachments;
+    (Array.isArray(prevMessageAttachments) &&
+      Array.isArray(nextMessageAttachments) &&
+      prevMessageAttachments.length === nextMessageAttachments.length &&
+      prevMessageAttachments.every((attachment, index) =>
+        attachment.type === 'image'
+          ? attachment.image_url === nextMessageAttachments[index].image_url &&
+            attachment.thumb_url === nextMessageAttachments[index].thumb_url
+          : attachment.type === nextMessageAttachments[index].type,
+      )) ||
+    prevMessageAttachments === nextMessageAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
@@ -810,6 +820,7 @@ export const Message = <
     removeMessage,
     retrySendMessage,
     setEditingState,
+    setReplyToState,
     supportedReactions,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -837,6 +848,7 @@ export const Message = <
         setData,
         setEditingState,
         setOverlay,
+        setReplyToState,
         supportedReactions,
         t,
         updateMessage,

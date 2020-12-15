@@ -5,9 +5,9 @@ import {
   useNavigation,
   useTheme,
 } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { ChannelSort } from 'stream-chat';
-import { ChannelList, Chat } from 'stream-chat-react-native/v2';
+import { ChannelList } from 'stream-chat-react-native/v2';
 import { AppContext } from '../context/AppContext';
 import {
   AppTheme,
@@ -73,6 +73,13 @@ export const ChannelListScreen: React.FC = () => {
               LocalResponseType,
               LocalUserType
             >
+              additionalFlatListProps={{
+                getItemLayout: (data, index) => ({
+                  length: 65,
+                  offset: 65 * index,
+                  index,
+                }),
+              }}
               filters={{
                 ...filters,
                 members: {
