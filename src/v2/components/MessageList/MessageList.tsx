@@ -54,6 +54,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { DateHeader } from './DateHeader';
+import type { Attachment } from 'stream-chat';
 
 const styles = StyleSheet.create({
   container: {
@@ -434,12 +435,24 @@ export const MessageList = <
     return false;
   });
 
+  /**
+   * This is for the useEffect to run again in the case that a message
+   * gets edited with more or the same number of images
+   */
+  const imageString = messagesWithImages
+    .map((message) =>
+      (message.attachments as Attachment<At>[])
+        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+        .join(),
+    )
+    .join();
+
   const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [numberOfMessagesWithImages, thread, threadList]);
+  }, [imageString, numberOfMessagesWithImages, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
@@ -535,5 +548,3 @@ export const MessageList = <
     </View>
   );
 };
-
-MessageList.displayName = 'MessageList{messageList}';
