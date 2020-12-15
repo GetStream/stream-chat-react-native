@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import { BlurView as RNBlurView } from '@react-native-community/blur';
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
@@ -26,6 +26,18 @@ registerNativeHandlers({
   },
   getPhotos: async ({ after, first }) => {
     try {
+      if (Platform.OS === 'android') {
+        const readExternalStoragePermissionAndroid =
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+        const hasPermission = await PermissionsAndroid.check(
+          readExternalStoragePermissionAndroid,
+        );
+        if (!hasPermission) {
+          await PermissionsAndroid.request(
+            readExternalStoragePermissionAndroid,
+          );
+        }
+      }
       const results = await CameraRoll.getPhotos({ after, first });
       const assets = results.edges.map((edge) => edge.node.image.uri);
       const hasNextPage = results.page_info.has_next_page;

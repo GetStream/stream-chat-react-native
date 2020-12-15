@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
@@ -26,6 +27,9 @@ registerNativeHandlers({
   },
   getPhotos: async ({ after, first }) => {
     try {
+      if (Platform.OS === 'android') {
+        await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      }
       const results = await MediaLibrary.getAssetsAsync({ after, first });
       const assets = results.assets.map((asset) => asset.uri);
       const hasNextPage = results.hasNextPage;
@@ -109,14 +113,21 @@ registerNativeHandlers({
     }
   },
   takePhoto: async () => {
-    const photo = await ImagePicker.launchImageLibraryAsync();
-    if (photo.height && photo.width && photo.uri) {
-      return {
-        cancelled: false,
-        height: photo.height,
-        uri: photo.uri,
-        width: photo.width,
-      };
+    try {
+      const { status } = ImagePicker.getCameraPermissionsAsync();
+      if (status === 'granted') {
+        const photo = await ImagePicker.launchCameraAsync();
+        if (photo.height && photo.width && photo.uri) {
+          return {
+            cancelled: false,
+            height: photo.height,
+            uri: photo.uri,
+            width: photo.width,
+          };
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
     return { cancelled: true };
   },
