@@ -11,7 +11,7 @@ The messages context exposes the following properties:
 - **emojiData** {array} List of available emojis for message reactions
 - **hasMore** {boolean} Whether or not the channel has more messages to paginate through
 - **loadingMore** {boolean} Whether or not the channel is loading more messages
-- **loadMore** {function} Loads the next page of messages in the Channel state and updates the `messages` array
+- **loadMoreEarlier** {function} Loads the next page of messages in the Channel state and updates the `messages` array
 - **Message** {component} UI component for a message, same as `Message` prop of [Channel](#channel) component
 - **messages** {ImmutableArray} List of immutable [message objects](https://getstream.io/chat/docs/#message_format) supplied to the MessageList component
 - **removeMessage** {function} Removes a message from the Channel state and updates the `messages` array

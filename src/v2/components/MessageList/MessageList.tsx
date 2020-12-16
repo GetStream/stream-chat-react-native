@@ -268,8 +268,8 @@ export const MessageList = <
   const {
     disableTypingIndicator,
     loadingMoreForward,
-    loadMore: mainLoadMore,
-    loadMoreForward: mainLoadMoreForward,
+    loadMoreEarlier,
+    loadMoreRecent,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
@@ -412,8 +412,6 @@ export const MessageList = <
     });
   }, [messageList]);
 
-  const loadMore = threadList ? loadMoreThread : mainLoadMore;
-
   const renderItem = (
     message: Message<At, Ch, Co, Ev, Me, Re, Us>,
     index: number,
@@ -491,7 +489,7 @@ export const MessageList = <
 
   const loadMoreRecentMessages = () => {
     if (!channel?.state.isUpToDate) {
-      mainLoadMoreForward();
+      loadMoreRecent();
     }
   };
 
@@ -659,7 +657,7 @@ export const MessageList = <
           autoscrollToTopThreshold,
           minIndexForVisible: 1,
         }}
-        onEndReached={loadMore}
+        onEndReached={threadList ? loadMoreThread : loadMoreEarlier}
         onScroll={handleScroll}
         onScrollBeginDrag={() => setHasMoved(true)}
         onScrollEndDrag={() => setHasMoved(false)}

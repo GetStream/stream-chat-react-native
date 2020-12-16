@@ -400,7 +400,7 @@ export const ChannelWithContext = <
       client.off('connection.recovered', handleEvent);
       channel?.off?.(handleEvent);
       handleEventStateThrottled.cancel();
-      loadMoreFinishedDebounced.cancel();
+      loadMoreEarlierFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
   }, [channel]);
@@ -844,7 +844,7 @@ export const ChannelWithContext = <
     await sendMessageRequest(message);
   };
 
-  const loadMoreFinished = (
+  const loadMoreEarlierFinished = (
     updatedHasMore: boolean,
     newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
   ) => {
@@ -854,21 +854,8 @@ export const ChannelWithContext = <
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreFinishedDebounced = debounce(loadMoreFinished, 2000, {
-    leading: true,
-    trailing: true,
-  });
-
-  const loadMoreForwardFinished = (
-    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-  ) => {
-    setLoadingMoreForward(false);
-    setMessages(newMessages);
-  };
-
-  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreForwardFinishedDebounced = debounce(
-    loadMoreForwardFinished,
+  const loadMoreEarlierFinishedDebounced = debounce(
+    loadMoreEarlierFinished,
     2000,
     {
       leading: true,
@@ -876,7 +863,24 @@ export const ChannelWithContext = <
     },
   );
 
-  const loadMore = async () => {
+  const loadMoreRecentFinished = (
+    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+  ) => {
+    setLoadingMoreForward(false);
+    setMessages(newMessages);
+  };
+
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreRecentFinishedDebounced = debounce(
+    loadMoreRecentFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
+
+  const loadMoreEarlier = async () => {
     if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
@@ -900,7 +904,10 @@ export const ChannelWithContext = <
         });
 
         const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+        loadMoreEarlierFinishedDebounced(
+          updatedHasMore,
+          channel.state.messages,
+        );
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -908,7 +915,7 @@ export const ChannelWithContext = <
     }
   };
 
-  const loadMoreForward = async () => {
+  const loadMoreRecent = async () => {
     if (loadingMoreForward || channel?.state.isUpToDate) {
       return;
     }
@@ -929,7 +936,7 @@ export const ChannelWithContext = <
       if (channel) {
         await queryAfterMessage(recentId, 20);
 
-        loadMoreForwardFinishedDebounced(channel.state.messages);
+        loadMoreRecentFinishedDebounced(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -945,11 +952,11 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = throttle(loadMore, 2000, {
+  >['loadMoreEarlier'] = throttle(loadMoreEarlier, 2000, {
     leading: true,
     trailing: true,
   });
-  const loadMoreForwardThrottled: MessagesContextValue<
+  const loadMoreRecentThrottled: MessagesContextValue<
     At,
     Ch,
     Co,
@@ -957,7 +964,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = throttle(loadMoreForward, 2000, {
+  >['loadMoreEarlier'] = throttle(loadMoreRecent, 2000, {
     leading: true,
     trailing: true,
   });
@@ -1206,8 +1213,8 @@ export const ChannelWithContext = <
     hasMore,
     loadingMore,
     loadingMoreForward,
-    loadMore: loadMoreThrottled,
-    loadMoreForward: loadMoreForwardThrottled,
+    loadMoreEarlier: loadMoreThrottled,
+    loadMoreRecent: loadMoreRecentThrottled,
     markdownRules,
     Message,
     MessageAvatar,

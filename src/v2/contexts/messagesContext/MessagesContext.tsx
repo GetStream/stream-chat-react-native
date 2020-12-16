@@ -118,8 +118,8 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadingMoreForward: boolean;
-  loadMore: DebouncedFunc<() => Promise<void>>;
-  loadMoreForward: DebouncedFunc<() => Promise<void>>;
+  loadMoreEarlier: DebouncedFunc<() => Promise<void>>;
+  loadMoreRecent: DebouncedFunc<() => Promise<void>>;
 
   Message: React.ComponentType<MessageProps>;
   /**
