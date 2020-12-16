@@ -1,6 +1,7 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 
+import { useAttachmentPickerContext } from '../../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 
@@ -54,6 +55,18 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (
   } = useTheme();
   const { t } = useTranslationContext();
 
+  const { closePicker, setSelectedPicker } = useAttachmentPickerContext();
+
+  const openSettings = async () => {
+    try {
+      setSelectedPicker(undefined);
+      closePicker();
+      await Linking.openSettings();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <View
       style={[
@@ -70,7 +83,7 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (
           )}
       </Text>
       <Text
-        onPress={Linking.openSettings}
+        onPress={openSettings}
         style={[styles.errorButtonText, errorButtonText]}
         suppressHighlighting
       >

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  AppState,
-  AppStateStatus,
+  BackHandler,
   ImageBackground,
   Keyboard,
   Platform,
@@ -162,6 +161,7 @@ export const AttachmentPicker = React.forwardRef(
       },
     } = useTheme();
     const {
+      closePicker,
       maxNumberOfFiles,
       selectedImages,
       selectedPicker,
@@ -170,7 +170,6 @@ export const AttachmentPicker = React.forwardRef(
       topInset,
     } = useAttachmentPickerContext();
 
-    const [appState, setAppState] = useState<AppStateStatus>();
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [endCursor, setEndCursor] = useState<string>();
     const [photoError, setPhotoError] = useState(false);
@@ -205,15 +204,23 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     useEffect(() => {
-      const handleAppStateChange = (nextAppState: AppStateStatus) => {
-        setAppState(nextAppState);
-      };
-      AppState.addEventListener('change', handleAppStateChange);
+      const backAction = () => {
+        if (selectedPicker) {
+          setSelectedPicker(undefined);
+          closePicker();
+          return true;
+        }
 
-      return () => {
-        AppState.removeEventListener('change', handleAppStateChange);
+        return false;
       };
-    }, []);
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction,
+      );
+
+      return () => backHandler.remove();
+    }, [selectedPicker]);
 
     useEffect(() => {
       if (Platform.OS === 'ios') {
@@ -238,14 +245,8 @@ export const AttachmentPicker = React.forwardRef(
     }, [currentIndex]);
 
     useEffect(() => {
-      setPhotoError(false);
-      if (currentIndex > -1) {
-        getMorePhotos();
-      }
-    }, [appState]);
-
-    useEffect(() => {
       if (photos.length === 0 && currentIndex > -1) {
+        setPhotoError(false);
         getMorePhotos();
       }
     }, [currentIndex]);
@@ -267,42 +268,47 @@ export const AttachmentPicker = React.forwardRef(
       return null;
     }
 
-    if (selectedPicker === 'images' && photoError) {
-      return (
-        <AttachmentPickerError
-          attachmentPickerBottomSheetHeight={attachmentPickerBottomSheetHeight}
-          attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
-          AttachmentPickerErrorImage={AttachmentPickerErrorImage}
-          attachmentPickerErrorText={attachmentPickerErrorText}
-        />
-      );
-    }
-
     return (
-      <BottomSheet
-        handleComponent={AttachmentPickerBottomSheetHandle}
-        // @ts-expect-error
-        handleHeight={attachmentPickerBottomSheetHandleHeight || 20}
-        initialSnapIndex={-1}
-        onChange={(index: number) => setCurrentIndex(index)}
-        ref={ref}
-        snapPoints={[
-          attachmentPickerBottomSheetHeight ?? 308,
-          screenHeight - topInset,
-        ]}
-      >
-        <BottomSheetFlatList
-          contentContainerStyle={[
-            styles.container,
-            bottomSheetContentContainer,
+      <>
+        <BottomSheet
+          handleComponent={
+            photoError ? () => null : AttachmentPickerBottomSheetHandle
+          }
+          // @ts-expect-error
+          handleHeight={attachmentPickerBottomSheetHandleHeight || 20}
+          initialSnapIndex={-1}
+          onChange={(index: number) => setCurrentIndex(index)}
+          ref={ref}
+          snapPoints={[
+            attachmentPickerBottomSheetHeight ?? 308,
+            screenHeight - topInset,
           ]}
-          data={selectedPhotos}
-          keyExtractor={(item) => item.uri}
-          numColumns={numberOfAttachmentPickerImageColumns ?? 3}
-          onEndReached={getMorePhotos}
-          renderItem={renderImage}
-        />
-      </BottomSheet>
+          style={{ opacity: photoError ? 0 : 1 }}
+        >
+          <BottomSheetFlatList
+            contentContainerStyle={[
+              styles.container,
+              bottomSheetContentContainer,
+              { opacity: photoError ? 0 : 1 },
+            ]}
+            data={selectedPhotos}
+            keyExtractor={(item) => item.uri}
+            numColumns={numberOfAttachmentPickerImageColumns ?? 3}
+            onEndReached={getMorePhotos}
+            renderItem={renderImage}
+          />
+        </BottomSheet>
+        {selectedPicker === 'images' && photoError && (
+          <AttachmentPickerError
+            attachmentPickerBottomSheetHeight={
+              attachmentPickerBottomSheetHeight
+            }
+            attachmentPickerErrorButtonText={attachmentPickerErrorButtonText}
+            AttachmentPickerErrorImage={AttachmentPickerErrorImage}
+            attachmentPickerErrorText={attachmentPickerErrorText}
+          />
+        )}
+      </>
     );
   },
 );

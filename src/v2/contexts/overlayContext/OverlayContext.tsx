@@ -144,7 +144,11 @@ export const OverlayProvider = <
     bottomInset,
     CameraSelectorIcon = DefaultCameraSelectorIcon,
     children,
-    closePicker = (ref) => ref.current?.close(),
+    closePicker = (ref) => {
+      if (ref.current) {
+        ref.current.close();
+      }
+    },
     FileSelectorIcon = DefaultFileSelectorIcon,
     i18nInstance,
     imageGalleryCustomComponents,
@@ -152,7 +156,11 @@ export const OverlayProvider = <
     ImageSelectorIcon = DefaultImageSelectorIcon,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
-    openPicker = (ref) => ref.current?.snapTo(0),
+    openPicker = (ref) => {
+      if (ref.current) {
+        ref.current.snapTo(0);
+      }
+    },
     value,
   } = props;
 
@@ -208,7 +216,9 @@ export const OverlayProvider = <
   }, [overlay]);
 
   useEffect(() => {
-    bottomSheetRef.current?.close();
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.close();
+    }
     cancelAnimation(overlayOpacity);
     if (overlay !== 'none') {
       overlayOpacity.value = withTiming(1);
