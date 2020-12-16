@@ -16,7 +16,6 @@ import Immutable from 'seamless-immutable';
 import {
   ChannelState,
   Channel as ChannelType,
-  Event,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
@@ -100,10 +99,14 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
+import { useTargettedMessage } from './hooks/useTargettedMessage';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
+
+export const limitForUnreadScrolledUp = 4;
 
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -203,6 +206,10 @@ export type ChannelPropsWithContext<
         StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
       >[0],
     ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+    /**
+     * When true, messagelist will be scrolled at first unread message, when opened.
+     */
+    initialScrollToFirstUnreadMessage?: boolean;
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
@@ -229,6 +236,7 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    messageId?: string;
   };
 
 export const ChannelWithContext = <
@@ -276,6 +284,7 @@ export const ChannelWithContext = <
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
+    initialScrollToFirstUnreadMessage = false,
     hasFilePicker = true,
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
@@ -287,6 +296,7 @@ export const ChannelWithContext = <
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     markdownRules,
+    messageId,
     maxNumberOfFiles = 10,
     Message = MessageDefault,
     MessageAvatar = MessageAvatarDefault,
@@ -326,38 +336,21 @@ export const ChannelWithContext = <
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [error, setError] = useState(false);
-  /**
-   * We save the events in state so that we can display event message
-   * next to the message after which it was received, in MessageList.
-   *
-   * e.g., eventHistory = {
-   *   message_id_1: [
-   *     { ...event_obj_received_after_message_id_1__1 },
-   *     { ...event_obj_received_after_message_id_1__2 },
-   *     { ...event_obj_received_after_message_id_1__3 },
-   *   ],
-   *   message_id_2: [
-   *     { ...event_obj_received_after_message_id_2__1 },
-   *     { ...event_obj_received_after_message_id_2__2 },
-   *     { ...event_obj_received_after_message_id_2__3 },
-   *   ]
-   * }
-   */
-  const [eventHistory, setEventHistory] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['eventHistory']
-  >({});
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
   >();
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [members, setMembers] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+
+  const [loadingMoreForward, setLoadingMoreForward] = useState(false);
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >(Immutable([]));
+
+  const [members, setMembers] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
+  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
@@ -385,14 +378,29 @@ export const ChannelWithContext = <
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
 
+  const { setTargettedMessage, targettedMessage } = useTargettedMessage(
+    messageId,
+  );
+
   useEffect(() => {
-    if (channel) initChannel();
+    if (channel) {
+      if (messageId) {
+        loadChannelAtMessage(messageId);
+      } else if (
+        initialScrollToFirstUnreadMessage &&
+        channel.countUnread() > 0
+      ) {
+        loadChannelAtFirstUnreadMessage();
+      } else {
+        loadChannel();
+      }
+    }
 
     return () => {
       client.off('connection.recovered', handleEvent);
       channel?.off?.(handleEvent);
       handleEventStateThrottled.cancel();
-      loadMoreFinishedDebounced.cancel();
+      loadMoreEarlierFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
   }, [channel]);
@@ -462,43 +470,10 @@ export const ChannelWithContext = <
       setTyping(channel.state.typing);
       setWatcherCount(channel.state.watcher_count);
       setWatchers(channel.state.watchers);
-
-      if (channel.countUnread() > 0) {
-        markReadThrottled();
-      }
     }
   };
 
-  const addToEventHistory = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
-    const lastMessageId = messages.length
-      ? messages[messages.length - 1].id
-      : 'none';
-
-    if (lastMessageId) {
-      setEventHistory((prevState) => {
-        if (!prevState[lastMessageId]) {
-          return { ...prevState, [lastMessageId]: [event] };
-        } else {
-          return {
-            ...prevState,
-            [lastMessageId]: [...prevState[lastMessageId], event],
-          };
-        }
-      });
-    }
-  };
-
-  const handleEventStateChange = (
-    channelState: ChannelState<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
-    setMessages(channelState.messages);
-    setRead(channelState.read);
-    setTyping(channelState.typing);
-    setWatcherCount(channelState.watcher_count);
-    setWatchers(channelState.watchers);
-  };
-
-  const handleEventStateThrottled = throttle(handleEventStateChange, 500, {
+  const handleEventStateThrottled = throttle(copyChannelState, 500, {
     leading: true,
     trailing: true,
   });
@@ -516,11 +491,8 @@ export const ChannelWithContext = <
       setThread(updatedThread);
     }
 
-    if (event.type === 'member.added') addToEventHistory(event);
-    if (event.type === 'member.removed') addToEventHistory(event);
-
     if (channel) {
-      handleEventStateThrottled(channel.state);
+      handleEventStateThrottled();
     }
   };
 
@@ -531,25 +503,169 @@ export const ChannelWithContext = <
     channel?.on(handleEvent);
   };
 
-  const initChannel = async () => {
+  const channelQueryCall = async (queryCall: () => void = () => null) => {
     let initError = false;
     setError(false);
     setLoading(true);
 
-    if (channel && !channel.initialized && channel.cid) {
-      try {
-        await channel.watch();
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-        initError = true;
-      }
+    try {
+      await queryCall();
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+      initError = true;
     }
 
     setLastRead(new Date());
+
     if (!initError) {
       copyChannelState();
       listenToChanges();
+    }
+  };
+
+  const loadChannelAtFirstUnreadMessage = () => {
+    if (!channel) return;
+
+    if (
+      channel.countUnread() <= limitForUnreadScrolledUp ||
+      !channel.state.isUpToDate
+    ) {
+      return loadChannel();
+    }
+
+    channel.state.setIsUptoDate(false);
+
+    return channelQueryCall(() =>
+      query(
+        Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
+        30,
+      ),
+    );
+  };
+
+  /**
+   * Loads channel at specific message
+   *
+   * @param messageId If undefined, channel will be loaded at moest recent message.
+   * @param before Number of message to query before messageId
+   * @param after Number of message to query after messageId
+   */
+  const loadChannelAtMessage = (messageId?: string, before = 10, after = 2) =>
+    channelQueryCall(() => {
+      queryAtMessage(messageId, before, after);
+
+      if (messageId) {
+        setTargettedMessage(messageId);
+      }
+    });
+
+  const loadChannel = () =>
+    channelQueryCall(() => {
+      if (!channel?.initialized) {
+        channel?.watch();
+      }
+    });
+
+  const reloadChannel = () => {
+    if (!channel) return;
+
+    return loadChannelAtMessage(undefined, 30);
+  };
+
+  /**
+   * Makes a query to load messages in channel.
+   *
+   * @param offset
+   * @param limit
+   */
+  const query = async (offset = 0, limit = 30) => {
+    if (!channel) return;
+    channel.state.clearMessages();
+
+    await channel.query({
+      messages: {
+        limit,
+        offset,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(offset === 0);
+  };
+
+  /**
+   * Makes a query to load messages at particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param before Number of messages to load before messageId
+   * @param after Number of messages to load after messageId
+   */
+  const queryAtMessage = async (
+    messageId?: string,
+    before = 10,
+    after = 10,
+  ) => {
+    if (!channel) return;
+    channel.state.setIsUptoDate(false);
+    channel.state.clearMessages();
+
+    if (!messageId) {
+      channel.query({
+        messages: {
+          limit: before,
+        },
+        watch: true,
+      });
+
+      channel.state.setIsUptoDate(true);
+      return;
+    }
+
+    await queryBeforeMessage(messageId, before);
+    await queryAfterMessage(messageId, after);
+  };
+
+  /**
+   * Makes a query to load messages before particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load
+   */
+  const queryBeforeMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+
+    await channel.query({
+      messages: {
+        id_lt: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(false);
+  };
+
+  /**
+   * Makes a query to load messages later than particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load.
+   */
+  const queryAfterMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+    const state = await channel.query({
+      messages: {
+        id_gte: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    if (state.messages.length < limit) {
+      channel.state.setIsUptoDate(true);
+    } else {
+      channel.state.setIsUptoDate(false);
     }
   };
 
@@ -601,7 +717,7 @@ export const ChannelWithContext = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${Date.now()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
@@ -702,6 +818,10 @@ export const ChannelWithContext = <
       attachments: message.attachments || [],
     });
 
+    if (!channel?.state.isUpToDate) {
+      await reloadChannel();
+    }
+
     updateMessage(messagePreview, {
       commands: [],
       messageInput: '',
@@ -724,7 +844,7 @@ export const ChannelWithContext = <
     await sendMessageRequest(message);
   };
 
-  const loadMoreFinished = (
+  const loadMoreEarlierFinished = (
     updatedHasMore: boolean,
     newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
   ) => {
@@ -734,12 +854,33 @@ export const ChannelWithContext = <
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreFinishedDebounced = debounce(loadMoreFinished, 2000, {
-    leading: true,
-    trailing: true,
-  });
+  const loadMoreEarlierFinishedDebounced = debounce(
+    loadMoreEarlierFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
 
-  const loadMore = async () => {
+  const loadMoreRecentFinished = (
+    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+  ) => {
+    setLoadingMoreForward(false);
+    setMessages(newMessages);
+  };
+
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreRecentFinishedDebounced = debounce(
+    loadMoreRecentFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
+
+  const loadMoreEarlier = async () => {
     if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
@@ -763,11 +904,43 @@ export const ChannelWithContext = <
         });
 
         const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+        loadMoreEarlierFinishedDebounced(
+          updatedHasMore,
+          channel.state.messages,
+        );
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
       return setLoadingMore(false);
+    }
+  };
+
+  const loadMoreRecent = async () => {
+    if (loadingMoreForward || channel?.state.isUpToDate) {
+      return;
+    }
+    setLoadingMoreForward(true);
+
+    if (!messages.length) {
+      return setLoadingMoreForward(false);
+    }
+
+    const recentMessage = messages && messages[messages.length - 1];
+
+    if (recentMessage && recentMessage.status !== 'received') {
+      return setLoadingMoreForward(false);
+    }
+
+    const recentId = recentMessage && recentMessage.id;
+    try {
+      if (channel) {
+        await queryAfterMessage(recentId, 20);
+
+        loadMoreRecentFinishedDebounced(channel.state.messages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      return setLoadingMoreForward(false);
     }
   };
 
@@ -779,7 +952,19 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = throttle(loadMore, 2000, {
+  >['loadMoreEarlier'] = throttle(loadMoreEarlier, 2000, {
+    leading: true,
+    trailing: true,
+  });
+  const loadMoreRecentThrottled: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMoreEarlier'] = throttle(loadMoreRecent, 2000, {
     leading: true,
     trailing: true,
   });
@@ -859,7 +1044,6 @@ export const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-
   const openThread: ThreadContextValue<
     At,
     Ch,
@@ -951,18 +1135,22 @@ export const ChannelWithContext = <
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
     error,
-    eventHistory,
+    initialScrollToFirstUnreadMessage,
     isAdmin,
     isModerator,
     isOwner,
     lastRead,
+    loadChannelAtMessage,
     loading,
     LoadingIndicator,
     markRead: markReadThrottled,
     members,
     read,
+    reloadChannel,
     setLastRead,
+    setTargettedMessage,
     StickyHeader,
+    targettedMessage,
     typing,
     watcherCount,
     watchers,
@@ -1024,7 +1212,9 @@ export const ChannelWithContext = <
     Giphy,
     hasMore,
     loadingMore,
-    loadMore: loadMoreThrottled,
+    loadingMoreForward,
+    loadMoreEarlier: loadMoreThrottled,
+    loadMoreRecent: loadMoreRecentThrottled,
     markdownRules,
     Message,
     MessageAvatar,
@@ -1108,38 +1298,38 @@ export const ChannelWithContext = <
   );
 };
 
-// const areEqual = <
-//   At extends UnknownType = DefaultAttachmentType,
-//   Ch extends UnknownType = DefaultChannelType,
-//   Co extends string = DefaultCommandType,
-//   Ev extends UnknownType = DefaultEventType,
-//   Me extends UnknownType = DefaultMessageType,
-//   Re extends UnknownType = DefaultReactionType,
-//   Us extends UnknownType = DefaultUserType
-// >(
-//   prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-//   nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-// ) => {
-//   const { channel: prevChannel, t: prevT } = prevProps;
-//   const { channel: nextChannel, t: nextT } = nextProps;
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel: prevChannel, t: prevT } = prevProps;
+  const { channel: nextChannel, t: nextT } = nextProps;
 
-//   const tEqual = prevT === nextT;
-//   if (!tEqual) return false;
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
 
-//   const channelEqual =
-//     (!!prevChannel &&
-//       !!nextChannel &&
-//       prevChannel.data?.name === nextChannel.data?.name) ||
-//     prevChannel === nextChannel;
-//   if (!channelEqual) return false;
+  const channelEqual =
+    (!!prevChannel &&
+      !!nextChannel &&
+      prevChannel.data?.name === nextChannel.data?.name) ||
+    prevChannel === nextChannel;
+  if (!channelEqual) return false;
 
-//   return true;
-// };
+  return true;
+};
 
-// const MemoizedChannel = React.memo(
-//   ChannelWithContext,
-//   areEqual,
-// ) as typeof ChannelWithContext;
+const MemoizedChannel = React.memo(
+  ChannelWithContext,
+  areEqual,
+) as typeof ChannelWithContext;
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -1173,9 +1363,8 @@ export const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  // TODO: Revisit memoization during circle back.
   return (
-    <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
+    <MemoizedChannel<At, Ch, Co, Ev, Me, Re, Us>
       {...{
         client,
         t,

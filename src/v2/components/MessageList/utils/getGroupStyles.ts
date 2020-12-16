@@ -1,8 +1,8 @@
 import type {
-  GroupType,
   MessagesContextValue,
-} from '../../../contexts/messagesContext/MessagesContext';
-import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
+  ThreadContextValue,
+} from '../../../contexts';
+import type { GroupType } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

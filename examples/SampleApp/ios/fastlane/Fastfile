@@ -47,7 +47,8 @@ platform :ios do
             silent: true,
             clean: true,
             include_symbols: true,
-            output_directory: "./dist"
+            output_directory: "./dist",
+            xcargs: "ENABLE_BITCODE=1"
         )
 
         firebase_app_distribution(

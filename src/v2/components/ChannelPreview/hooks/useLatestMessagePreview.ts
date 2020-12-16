@@ -7,7 +7,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type { Immutable } from 'seamless-immutable';
 import type {
   Channel,
   ChannelState,
@@ -46,10 +45,8 @@ export type LatestMessagePreview<
     }
   | {
       created_at: string | number | Date;
-      messageObject: Immutable<
-        ReturnType<
-          ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
-        >
+      messageObject: ReturnType<
+        ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
       >;
       previews: {
         bold: boolean;
@@ -69,8 +66,8 @@ const getLatestMessageDisplayText = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  message: ReturnType<
+    ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
   >,
   t: (key: string) => string,
 ) => {
@@ -148,8 +145,8 @@ const getLatestMessageDisplayDate = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  message: ReturnType<
+    ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
   >,
   tDateTimeParser: TDateTimeParser,
 ) => {
@@ -180,8 +177,8 @@ const getLatestMessageReadStatus = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  message: ReturnType<
+    ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
   >,
 ) => {
   const currentUserId = client.userID;
@@ -212,10 +209,13 @@ const getLatestMessagePreview = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   t: (key: string) => string,
   tDateTimeParser: TDateTimeParser,
+  lastMessage?: ReturnType<
+    ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
+  >,
 ) => {
   const messages = channel.state.messages;
 
-  if (!messages.length) {
+  if (!messages.length && !lastMessage) {
     return {
       created_at: '',
       messageObject: undefined,
@@ -228,8 +228,14 @@ const getLatestMessagePreview = <
       status: 0,
     };
   }
+  const message = lastMessage
+    ? channel.state.messageToImmutable(
+        lastMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
+      )
+    : (messages[messages.length - 1] as ReturnType<
+        ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
+      >);
 
-  const message = messages[messages.length - 1];
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
@@ -256,9 +262,9 @@ export const useLatestMessagePreview = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   forceUpdate: number,
-  lastMessage?:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>,
+  lastMessage?: ReturnType<
+    ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
+  >,
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
@@ -282,11 +288,21 @@ export const useLatestMessagePreview = <
     status: 0,
   });
 
-  useEffect(() => {
-    setLatestMessagePreview(
-      getLatestMessagePreview(channel, client, t, tDateTimeParser),
-    );
-  }, [forceUpdate, lastMessageId]);
+  useEffect(
+    () =>
+      setLatestMessagePreview(
+        getLatestMessagePreview(
+          channel as Channel<At, Ch, Co, Ev, Me, Re, Us>,
+          client as StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
+          t as (key: string) => string,
+          tDateTimeParser as TDateTimeParser,
+          lastMessage as ReturnType<
+            ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
+          >,
+        ),
+      ),
+    [forceUpdate, lastMessageId],
+  );
 
   return latestMessagePreview;
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
+import { FlatList } from '@stream-io/flat-list-mvcp';
+
 import { BlurView as RNBlurView } from '@react-native-community/blur';
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
@@ -24,6 +26,7 @@ registerNativeHandlers({
       return false;
     }
   },
+  FlatList,
   getPhotos: async ({ after, first }) => {
     try {
       const results = await CameraRoll.getPhotos({ after, first });

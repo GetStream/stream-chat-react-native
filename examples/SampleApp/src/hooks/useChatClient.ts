@@ -45,6 +45,11 @@ export const useChatClient = () => {
           LocalUserType
         >('q95x9hkbyd6p', {
           timeout: 6000,
+          logger: (type, msg, extra) => {
+            if (extra.tags.indexOf('api_response') > -1) {
+              // console.log(msg, extra);
+            }
+          },
         });
 
         await client.setUser(user, userToken);

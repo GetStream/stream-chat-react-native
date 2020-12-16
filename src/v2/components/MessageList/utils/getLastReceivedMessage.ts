@@ -25,7 +25,7 @@ export const getLastReceivedMessage = <
    * There are no status on dates so they will be skipped
    */
   for (const message of messages) {
-    if (message?.status === 'received') {
+    if (message?.status === 'received' || message?.status === 'sending') {
       return message;
     }
   }

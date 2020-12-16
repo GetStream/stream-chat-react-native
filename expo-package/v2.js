@@ -1,4 +1,5 @@
 import React from 'react';
+import { FlatList } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
@@ -24,6 +25,7 @@ registerNativeHandlers({
       return false;
     }
   },
+  FlatList,
   getPhotos: async ({ after, first }) => {
     try {
       const results = await MediaLibrary.getAssetsAsync({ after, first });

@@ -30,6 +30,5 @@ export const getLastReceivedMessage = <
       return message;
     }
   }
-
   return;
 };

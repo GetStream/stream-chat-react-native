@@ -5,6 +5,7 @@ export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
 export type LocalEventType = Record<string, unknown>;
 export type LocalMessageType = Record<string, unknown>;
+export type LocalReactionType = Record<string, unknown>;
 export type LocalResponseType = Record<string, unknown>;
 export type LocalUserType = {
   image: string;
@@ -24,6 +25,7 @@ export type StackNavigatorParamList = {
   };
   ChannelScreen: {
     channelId?: string;
+    messageId?: string;
   };
   ChatScreen: undefined;
   GroupChannelDetailsScreen: {

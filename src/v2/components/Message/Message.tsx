@@ -144,6 +144,7 @@ export type MessagePropsWithContext<
      * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
      * */
     forceAlign?: Alignment | boolean;
+    goToMessage?: (messageId: string) => void;
     /** Handler to delete a current message */
     handleDelete?: () => Promise<void>;
     /**
