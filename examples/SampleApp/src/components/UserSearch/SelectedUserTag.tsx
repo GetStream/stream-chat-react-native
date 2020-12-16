@@ -9,9 +9,11 @@ type SelectedUserTagProps = {
   index: number;
   onPress: () => void;
   tag: UserResponse<LocalUserType>;
+  disabled?: boolean;
 };
 
 export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
+  disabled = false,
   index,
   onPress,
   tag,
@@ -20,6 +22,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
 
   return (
     <TouchableOpacity
+      disabled={disabled}
       key={`${tag}-${index}`}
       onPress={onPress}
       style={[

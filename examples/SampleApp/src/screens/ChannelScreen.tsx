@@ -10,7 +10,7 @@ import {
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../context/AppContext';
-import { AppTheme, StackNavigatorParamList } from '../types';
+import { AppTheme, LocalReactionType, StackNavigatorParamList } from '../types';
 import { streamTheme } from '../utils/streamTheme';
 import { GoBack } from '../icons/GoBack';
 import {
@@ -63,11 +63,19 @@ export type ChannelHeaderProps = unknown;
 const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
-  const { channel } = useChannelContext();
-  const { colors } = useTheme() as AppTheme;
+  const { channel } = useChannelContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >();
   const typing = useTypingString();
   const displayName = useChannelPreviewDisplayName(channel, 30);
-  if (!channel) return null;
+
+  if (!chatClient || !channel) return null;
 
   const isOneOnOneConversation =
     Object.values(channel.state.members).length === 2;
@@ -125,10 +133,20 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const [channel, setChannel] = useState(null);
+  const [channel, setChannel] = useState<StreamChatChannel<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  > | null>(null);
   const insets = useSafeAreaInsets();
   useEffect(() => {
     const initChannel = async () => {
+      if (!chatClient) return;
+
       const channel = chatClient?.channel('messaging', channelId);
       if (!channel?.initialized) {
         await channel?.watch();
@@ -168,18 +186,3 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    alignItems: 'center',
-    borderBottomColor: 'rgba(0, 0, 0, 0.0677)',
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-  },
-});
