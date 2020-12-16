@@ -450,6 +450,7 @@ export const MessageList = <
           <View style={styles.messagePadding}>
             <MessageSystem message={message} />
           </View>
+          {/* @ts-ignore */}
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
@@ -480,6 +481,7 @@ export const MessageList = <
             />
           </View>
           {/* Adding indicator below the messages, since the list is inverted */}
+          {/* @ts-ignore */}
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
