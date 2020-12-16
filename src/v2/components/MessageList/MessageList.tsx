@@ -430,9 +430,9 @@ export const MessageList = <
       messageList &&
       messageList[index + 1] &&
       messageList[index + 1].created_at &&
-      lastRead < message.created_at &&
+      lastRead <= message.created_at &&
       // @ts-ignore
-      lastRead >= messageList[index + 1].created_at
+      lastRead > messageList[index + 1].created_at
     ) {
       insertInlineUnreadIndicator = true;
     }
@@ -448,9 +448,12 @@ export const MessageList = <
 
     if (message.type === 'system') {
       return (
-        <View style={styles.messagePadding}>
-          <MessageSystem message={message} />
-        </View>
+        <>
+          <View style={styles.messagePadding}>
+            <MessageSystem message={message} />
+          </View>
+          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+        </>
       );
     }
 
@@ -466,7 +469,6 @@ export const MessageList = <
 
       return (
         <>
-          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
           <View style={[styles.messagePadding, ...additionalStyles]}>
             <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
               goToMessage={goToMessage}
@@ -479,6 +481,8 @@ export const MessageList = <
               threadList={threadList}
             />
           </View>
+          {/* Adding indicator below the messages, since the list is inverted */}
+          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
     }
@@ -663,9 +667,7 @@ export const MessageList = <
         onViewableItemsChanged={updateStickyDate.current}
         ref={(
           fl: MutableRefObject<
-            DefaultFlatList<
-              MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
-            >
+            DefaultFlatList<Message<At, Ch, Co, Ev, Me, Re, Us>>
           >,
         ) => {
           // @ts-ignore
