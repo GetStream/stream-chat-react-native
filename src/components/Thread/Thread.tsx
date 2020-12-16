@@ -168,7 +168,7 @@ export const Thread = <
 
   const Message = MessageFromProps || MessageFromContext;
 
-  const headerComponent = (
+  const footerComponent = (
     <>
       <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
         groupStyles={['single']}
@@ -186,7 +186,7 @@ export const Thread = <
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
       <MessageList<At, Ch, Co, Ev, Me, Re, Us>
-        HeaderComponent={headerComponent}
+        FooterComponent={footerComponent}
         Message={Message}
         threadList
         {...additionalMessageListProps}

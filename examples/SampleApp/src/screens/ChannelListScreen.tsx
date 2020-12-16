@@ -1,17 +1,13 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   CompositeNavigationProp,
   useNavigation,
   useTheme,
 } from '@react-navigation/native';
-import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { ChannelSort } from 'stream-chat';
-import {
-  ChannelList,
-  Chat,
-  useAttachmentPickerContext,
-} from 'stream-chat-react-native/v2';
+import { ChannelList } from 'stream-chat-react-native/v2';
 import { AppContext } from '../context/AppContext';
 import {
   AppTheme,
@@ -51,12 +47,6 @@ export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
   const { colors } = useTheme() as AppTheme;
   const navigation = useNavigation<ChannelListScreenNavigationProp>();
-  const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
-
-  useEffect(() => {
-    setTopInset(headerHeight);
-  }, [headerHeight]);
 
   if (!chatClient) return null;
 

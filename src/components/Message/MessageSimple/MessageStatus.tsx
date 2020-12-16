@@ -99,12 +99,7 @@ export const MessageStatus = <
     );
   }
 
-  if (
-    readBy.length !== 0 &&
-    !threadList &&
-    message.id === lastReceivedId &&
-    !justReadByMe
-  ) {
+  if (readBy.length !== 0 && !threadList && !justReadByMe) {
     const lastReadUser = readBy.filter(
       (item) => item.id !== client.user?.id,
     )[0];

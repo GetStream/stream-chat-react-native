@@ -4,7 +4,12 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { KeyboardAvoidingViewProps, StyleSheet, Text } from 'react-native';
+import {
+  KeyboardAvoidingViewProps,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import debounce from 'lodash/debounce';
 import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
@@ -311,7 +316,6 @@ export const ChannelWithContext = <
     Reply = ReplyDefault,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
-    setInputBoxContainerRef,
     setInputRef,
     StickyHeader,
     supportedReactions = reactionDataDefault,
@@ -343,14 +347,6 @@ export const ChannelWithContext = <
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >(Immutable([]));
-  const hasMoreRecentMessages = () =>
-    !!channel?.state.last_message_at &&
-    !!channel.state.messages[channel.state.messages.length - 1] &&
-    !!channel.state.messages[channel.state.messages.length - 1].created_at &&
-    channel?.state.last_message_at >
-      channel.state.messages[
-        channel.state.messages.length - 1
-      ].created_at.asMutable();
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
@@ -404,7 +400,7 @@ export const ChannelWithContext = <
       client.off('connection.recovered', handleEvent);
       channel?.off?.(handleEvent);
       handleEventStateThrottled.cancel();
-      loadMoreFinishedDebounced.cancel();
+      loadMoreEarlierFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
   }, [channel]);
@@ -541,7 +537,7 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(false);
 
     return channelQueryCall(() =>
-      queryBeforeOffset(
+      query(
         Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
         30,
       ),
@@ -577,7 +573,13 @@ export const ChannelWithContext = <
     return loadChannelAtMessage(undefined, 30);
   };
 
-  const queryBeforeOffset = async (offset = 0, limit = 30) => {
+  /**
+   * Makes a query to load messages in channel.
+   *
+   * @param offset
+   * @param limit
+   */
+  const query = async (offset = 0, limit = 30) => {
     if (!channel) return;
     channel.state.clearMessages();
 
@@ -592,6 +594,13 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(offset === 0);
   };
 
+  /**
+   * Makes a query to load messages at particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param before Number of messages to load before messageId
+   * @param after Number of messages to load after messageId
+   */
   const queryAtMessage = async (
     messageId?: string,
     before = 10,
@@ -617,6 +626,12 @@ export const ChannelWithContext = <
     await queryAfterMessage(messageId, after);
   };
 
+  /**
+   * Makes a query to load messages before particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load
+   */
   const queryBeforeMessage = async (messageId: string, limit = 20) => {
     if (!channel) return;
 
@@ -631,6 +646,12 @@ export const ChannelWithContext = <
     channel.state.setIsUptoDate(false);
   };
 
+  /**
+   * Makes a query to load messages later than particular message id.
+   *
+   * @param messageId Targetted message id
+   * @param limit Number of messages to load.
+   */
   const queryAfterMessage = async (messageId: string, limit = 20) => {
     if (!channel) return;
     const state = await channel.query({
@@ -823,7 +844,7 @@ export const ChannelWithContext = <
     await sendMessageRequest(message);
   };
 
-  const loadMoreFinished = (
+  const loadMoreEarlierFinished = (
     updatedHasMore: boolean,
     newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
   ) => {
@@ -833,21 +854,8 @@ export const ChannelWithContext = <
   };
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreFinishedDebounced = debounce(loadMoreFinished, 2000, {
-    leading: true,
-    trailing: true,
-  });
-
-  const loadMoreForwardFinished = (
-    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-  ) => {
-    setLoadingMoreForward(false);
-    setMessages(newMessages);
-  };
-
-  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreForwardFinishedDebounced = debounce(
-    loadMoreForwardFinished,
+  const loadMoreEarlierFinishedDebounced = debounce(
+    loadMoreEarlierFinished,
     2000,
     {
       leading: true,
@@ -855,7 +863,24 @@ export const ChannelWithContext = <
     },
   );
 
-  const loadMore = async () => {
+  const loadMoreRecentFinished = (
+    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+  ) => {
+    setLoadingMoreForward(false);
+    setMessages(newMessages);
+  };
+
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreRecentFinishedDebounced = debounce(
+    loadMoreRecentFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
+
+  const loadMoreEarlier = async () => {
     if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
@@ -879,7 +904,10 @@ export const ChannelWithContext = <
         });
 
         const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+        loadMoreEarlierFinishedDebounced(
+          updatedHasMore,
+          channel.state.messages,
+        );
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -887,7 +915,7 @@ export const ChannelWithContext = <
     }
   };
 
-  const loadMoreForward = async () => {
+  const loadMoreRecent = async () => {
     if (loadingMoreForward || channel?.state.isUpToDate) {
       return;
     }
@@ -908,7 +936,7 @@ export const ChannelWithContext = <
       if (channel) {
         await queryAfterMessage(recentId, 20);
 
-        loadMoreForwardFinishedDebounced(channel.state.messages);
+        loadMoreRecentFinishedDebounced(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -924,11 +952,11 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = throttle(loadMore, 2000, {
+  >['loadMoreEarlier'] = throttle(loadMoreEarlier, 2000, {
     leading: true,
     trailing: true,
   });
-  const loadMoreForwardThrottled: MessagesContextValue<
+  const loadMoreRecentThrottled: MessagesContextValue<
     At,
     Ch,
     Co,
@@ -936,7 +964,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadMore'] = throttle(loadMoreForward, 2000, {
+  >['loadMoreEarlier'] = throttle(loadMoreRecent, 2000, {
     leading: true,
     trailing: true,
   });
@@ -1183,11 +1211,10 @@ export const ChannelWithContext = <
     Gallery,
     Giphy,
     hasMore,
-    hasMoreRecentMessages,
     loadingMore,
     loadingMoreForward,
-    loadMore: loadMoreThrottled,
-    loadMoreForward: loadMoreForwardThrottled,
+    loadMoreEarlier: loadMoreThrottled,
+    loadMoreRecent: loadMoreRecentThrottled,
     markdownRules,
     Message,
     MessageAvatar,
@@ -1214,7 +1241,6 @@ export const ChannelWithContext = <
   const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
     closeSuggestions,
     openSuggestions,
-    setInputBoxContainerRef,
     updateSuggestions,
   };
 
@@ -1262,7 +1288,7 @@ export const ChannelWithContext = <
               <MessageInputProvider<At, Ch, Co, Ev, Me, Re, Us>
                 value={messageInputContext}
               >
-                {children}
+                <View style={{ height: '100%' }}>{children}</View>
               </MessageInputProvider>
             </SuggestionsProvider>
           </ThreadProvider>
@@ -1272,38 +1298,38 @@ export const ChannelWithContext = <
   );
 };
 
-// const areEqual = <
-//   At extends UnknownType = DefaultAttachmentType,
-//   Ch extends UnknownType = DefaultChannelType,
-//   Co extends string = DefaultCommandType,
-//   Ev extends UnknownType = DefaultEventType,
-//   Me extends UnknownType = DefaultMessageType,
-//   Re extends UnknownType = DefaultReactionType,
-//   Us extends UnknownType = DefaultUserType
-// >(
-//   prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-//   nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-// ) => {
-//   const { channel: prevChannel, t: prevT } = prevProps;
-//   const { channel: nextChannel, t: nextT } = nextProps;
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: ChannelPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel: prevChannel, t: prevT } = prevProps;
+  const { channel: nextChannel, t: nextT } = nextProps;
 
-//   const tEqual = prevT === nextT;
-//   if (!tEqual) return false;
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
 
-//   const channelEqual =
-//     (!!prevChannel &&
-//       !!nextChannel &&
-//       prevChannel.data?.name === nextChannel.data?.name) ||
-//     prevChannel === nextChannel;
-//   if (!channelEqual) return false;
+  const channelEqual =
+    (!!prevChannel &&
+      !!nextChannel &&
+      prevChannel.data?.name === nextChannel.data?.name) ||
+    prevChannel === nextChannel;
+  if (!channelEqual) return false;
 
-//   return true;
-// };
+  return true;
+};
 
-// const MemoizedChannel = React.memo(
-//   ChannelWithContext,
-//   areEqual,
-// ) as typeof ChannelWithContext;
+const MemoizedChannel = React.memo(
+  ChannelWithContext,
+  areEqual,
+) as typeof ChannelWithContext;
 
 export type ChannelProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -1337,9 +1363,8 @@ export const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  // TODO: Revisit memoization during circle back.
   return (
-    <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
+    <MemoizedChannel<At, Ch, Co, Ev, Me, Re, Us>
       {...{
         client,
         t,

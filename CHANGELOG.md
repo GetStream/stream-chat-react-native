@@ -6,6 +6,15 @@
   - BlurView using one of these
     - Expo: [expo-blur](https://docs.expo.io/versions/latest/sdk/blur-view/#installation)
     - React Native: [@react-native-community/blur](https://github.com/Kureev/react-native-blur#installation)
+  - FileSystem using one of these
+    - Expo: [expo-file-system](https://docs.expo.io/versions/latest/sdk/filesystem/#installation)
+    - React Native: [react-native-fs](https://github.com/itinance/react-native-fs/)
+  - Share using one of these
+    - Expo [expo-sharing](https://docs.expo.io/versions/latest/sdk/sharing/#installation)
+    - React Native: [react-native-share](https://github.com/react-native-share/react-native-share#getting-started)
+  - Image Picking using one of these
+    - Expo [expo-media-library](https://docs.expo.io/versions/latest/sdk/media-library/#installation)
+    - React Native: [react-native-cameraroll](https://github.com/react-native-cameraroll/react-native-cameraroll#getting-started)
   - [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation)
   - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values#installation)
   - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation)
@@ -18,6 +27,23 @@
   - Removed dot notation for theming applications
   - Removed css string notation for styles on theme
   - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
+
+## [2.1.0] 2020-12-07
+
+### Dependency changes
+- Bumping dependency to stream-chat@2.9.0
+
+### Fixes
+- Fixed plenty of issues around reload/refresh of channellist upon failures.
+- Fixing retry message functionality [7a423f7](https://github.com/GetStream/stream-chat-react-native/commit/7a423f7c059336f770fd107ff8cc6f2bd6e4a939)
+
+### New Props:
+- MessageList component
+  - MessageNotification [5b5c2ac](https://github.com/GetStream/stream-chat-react-native/commit/5b5c2ac1a021018834696b57c4dfb030635c9cb8)
+  - onListScroll [5b5c2ac](https://github.com/GetStream/stream-chat-react-native/commit/5b5c2ac1a021018834696b57c4dfb030635c9cb8)
+  - FooterComponent [d803bab](https://github.com/GetStream/stream-chat-react-native/commit/d803bab3d25a4e34bb8192e06fd41db5bfd07ea7)
+  - inverted [d803bab](https://github.com/GetStream/stream-chat-react-native/commit/d803bab3d25a4e34bb8192e06fd41db5bfd07ea7)
+  - NetworkDownIndicator [e09b9fc](https://github.com/GetStream/stream-chat-react-native/commit/e09b9fc93fb5064efe16b1c6c7572116d8f2ee69)
 
 ## [2.0.2] 2020-11-16
 

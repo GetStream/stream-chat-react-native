@@ -56,14 +56,9 @@ import type {
   UnknownType,
 } from '../../types/types';
 import { DateHeader } from './DateHeader';
+import type { Attachment } from 'stream-chat';
 
 import { FlatList } from '../../native';
-import {
-  isInlineDateSeparator,
-  isInlineUnreadIndicator,
-  MessageOrInlineSeparator,
-} from './utils/insertDates';
-import { generateRandomId } from '../../utils/generateRandomId';
 
 const styles = StyleSheet.create({
   container: {
@@ -86,12 +81,20 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
-    paddingHorizontal: 0,
     width: '100%',
+  },
+  messagePadding: {
+    paddingHorizontal: 8,
   },
   stickyHeader: {
     position: 'absolute',
     top: 0,
+  },
+  targettedMessageUnderlay: {
+    backgroundColor: '#FBF4DD',
+  },
+  unreadMessageUnderlay: {
+    backgroundColor: '#F9F9F9',
   },
 });
 
@@ -106,28 +109,13 @@ const keyExtractor = <
   Us extends UnknownType = DefaultUserType
 >(
   item: Message<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  if (isInlineUnreadIndicator(item)) {
-    return 'unreadIndicator';
-  }
-
-  if (!isInlineDateSeparator(item)) {
-    return (
-      item.id ||
-      (item.created_at
-        ? typeof item.created_at === 'string'
-          ? item.created_at
-          : item.created_at.toISOString()
-        : generateRandomId())
-    );
-  }
-
-  if (item.date && typeof item.date !== 'string') {
-    return item.date.toISOString();
-  }
-
-  return generateRandomId();
-};
+) =>
+  item.id ||
+  (item.created_at
+    ? typeof item.created_at === 'string'
+      ? item.created_at
+      : item.created_at.toISOString()
+    : Date.now().toString());
 
 export type MessageListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -169,7 +157,6 @@ export type MessageListProps<
    *
    */
   HeaderComponent?: React.ReactElement;
-  InlineDateSeparator?: React.ReactElement;
   InlineUnreadIndicator?: React.ReactElement;
   /** Whether or not the FlatList is inverted. Defaults to true */
   inverted?: boolean;
@@ -209,7 +196,7 @@ export type MessageListProps<
    */
   setFlatListRef?: (
     ref: React.MutableRefObject<DefaultFlatList<
-      MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+      Message<At, Ch, Co, Ev, Me, Re, Us>
     > | null>,
   ) => void;
   /**
@@ -250,7 +237,6 @@ export const MessageList = <
     additionalFlatListProps,
     FooterComponent,
     HeaderComponent,
-    InlineDateSeparator = () => null,
     InlineUnreadIndicator = DefaultInlineUnreadIndicator,
     inverted = true,
     MessageNotification = DefaultMessageNotification,
@@ -282,12 +268,17 @@ export const MessageList = <
   const {
     disableTypingIndicator,
     loadingMoreForward,
-    loadMore: mainLoadMore,
-    loadMoreForward: mainLoadMoreForward,
+    loadMoreEarlier,
+    loadMoreRecent,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
-      messageList: { errorNotification, errorNotificationText, listContainer },
+      messageList: {
+        container,
+        errorNotification,
+        errorNotificationText,
+        listContainer,
+      },
     },
   } = useTheme();
   const { loadMoreThread, thread } = useThreadContext<
@@ -317,7 +308,7 @@ export const MessageList = <
   );
 
   const flatListRef = useRef<DefaultFlatList<
-    MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
+    Message<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
 
@@ -421,30 +412,15 @@ export const MessageList = <
     });
   }, [messageList]);
 
-  const loadMore = threadList ? loadMoreThread : mainLoadMore;
-
   const renderItem = (
-    message: MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>,
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
     index: number,
   ) => {
     if (!channel) return null;
 
-    if (isInlineDateSeparator(message)) {
-      // @ts-ignore
-      return <InlineDateSeparator />;
-    }
-
-    if (isInlineUnreadIndicator(message)) {
-      if (newMessagesNotification) {
-        // @ts-ignore
-        return <InlineUnreadIndicator />;
-      }
-      return null;
-    }
-
     const lastRead = channel?.lastRead();
 
-    let shouldShowUnreadLabel = false;
+    let insertInlineUnreadIndicator = false;
     let isUnread = false;
     if (
       lastRead &&
@@ -452,50 +428,60 @@ export const MessageList = <
       messageList &&
       messageList[index + 1] &&
       messageList[index + 1].created_at &&
-      lastRead < message.created_at &&
+      lastRead <= message.created_at &&
       // @ts-ignore
-      lastRead >= messageList[index + 1].created_at
+      lastRead > messageList[index + 1].created_at
     ) {
-      shouldShowUnreadLabel = true;
+      insertInlineUnreadIndicator = true;
     }
 
     if (
       lastRead &&
       message.created_at &&
       lastRead < message.created_at &&
-      !(message.id === messageList[0].id && shouldShowUnreadLabel)
+      !(message.id === messageList[0].id && insertInlineUnreadIndicator)
     ) {
       isUnread = true;
     }
 
     if (message.type === 'system') {
-      return <MessageSystem message={message} />;
+      return (
+        <>
+          <View style={styles.messagePadding}>
+            <MessageSystem message={message} />
+          </View>
+          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+        </>
+      );
     }
 
     if (message.type !== 'message.read') {
-      const background =
-        targettedMessage === message.id
-          ? 'yellow'
-          : isUnread && newMessagesNotification
-          ? '#F9F9F9'
-          : 'white';
+      const additionalStyles = [];
+      if (targettedMessage === message.id) {
+        additionalStyles.push(styles.targettedMessageUnderlay);
+      }
+
+      if (isUnread && newMessagesNotification) {
+        additionalStyles.push(styles.unreadMessageUnderlay);
+      }
+
       return (
-        <View
-          style={{
-            backgroundColor: background,
-          }}
-        >
-          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-            goToMessage={goToMessage}
-            groupStyles={message.groupStyles as GroupType[]}
-            lastReceivedId={
-              lastReceivedId === message.id ? lastReceivedId : undefined
-            }
-            message={message}
-            onThreadSelect={onThreadSelect}
-            threadList={threadList}
-          />
-        </View>
+        <>
+          <View style={[styles.messagePadding, ...additionalStyles]}>
+            <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+              goToMessage={goToMessage}
+              groupStyles={message.groupStyles as GroupType[]}
+              lastReceivedId={
+                lastReceivedId === message.id ? lastReceivedId : undefined
+              }
+              message={message}
+              onThreadSelect={onThreadSelect}
+              threadList={threadList}
+            />
+          </View>
+          {/* Adding indicator below the messages, since the list is inverted */}
+          {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+        </>
       );
     }
     return null;
@@ -503,7 +489,7 @@ export const MessageList = <
 
   const loadMoreRecentMessages = () => {
     if (!channel?.state.isUpToDate) {
-      mainLoadMoreForward();
+      loadMoreRecent();
     }
   };
 
@@ -582,12 +568,24 @@ export const MessageList = <
     return false;
   });
 
+  /**
+   * This is for the useEffect to run again in the case that a message
+   * gets edited with more or the same number of images
+   */
+  const imageString = messagesWithImages
+    .map((message) =>
+      (message.attachments as Attachment<At>[])
+        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+        .join(),
+    )
+    .join();
+
   const numberOfMessagesWithImages = messagesWithImages.length;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [numberOfMessagesWithImages, thread, threadList]);
+  }, [imageString, numberOfMessagesWithImages, thread, threadList]);
 
   // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
   // https://github.com/facebook/react-native/issues/21196
@@ -620,7 +618,7 @@ export const MessageList = <
   };
 
   return (
-    <View collapsable={false} style={styles.container}>
+    <View collapsable={false} style={[styles.container, container]}>
       {/* @ts-ignore */}
       <FlatList
         data={messageList}
@@ -659,7 +657,7 @@ export const MessageList = <
           autoscrollToTopThreshold,
           minIndexForVisible: 1,
         }}
-        onEndReached={loadMore}
+        onEndReached={threadList ? loadMoreThread : loadMoreEarlier}
         onScroll={handleScroll}
         onScrollBeginDrag={() => setHasMoved(true)}
         onScrollEndDrag={() => setHasMoved(false)}
@@ -667,9 +665,7 @@ export const MessageList = <
         onViewableItemsChanged={updateStickyDate.current}
         ref={(
           fl: MutableRefObject<
-            DefaultFlatList<
-              MessageOrInlineSeparator<At, Ch, Co, Ev, Me, Re, Us>
-            >
+            DefaultFlatList<Message<At, Ch, Co, Ev, Me, Re, Us>>
           >,
         ) => {
           // @ts-ignore
@@ -718,5 +714,3 @@ export const MessageList = <
     </View>
   );
 };
-
-MessageList.displayName = 'MessageList{messageList}';

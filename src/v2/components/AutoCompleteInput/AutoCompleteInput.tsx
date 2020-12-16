@@ -1,11 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput } from 'react-native';
+import throttle from 'lodash/throttle';
+
+import { CommandsHeader } from './CommandsHeader';
+import { EmojisHeader } from './EmojisHeader';
 
 import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
+  isSuggestionCommand,
+  isSuggestionEmoji,
   isSuggestionUser,
   Suggestion,
   SuggestionCommand,
@@ -18,7 +24,11 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { isMentionTrigger } from '../../utils/utils';
+import {
+  isCommandTrigger,
+  isEmojiTrigger,
+  isMentionTrigger,
+} from '../../utils/utils';
 
 import type { TextInputProps } from 'react-native';
 
@@ -33,6 +43,8 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Trigger } from '../../utils/utils';
+
+import type { Emoji } from '../../../emoji-data/compiled';
 
 const styles = StyleSheet.create({
   inputBox: {
@@ -122,7 +134,7 @@ const AutoCompleteInputWithContext = <
     if (!fromUpdate) {
       onChange(newText);
     } else {
-      handleSuggestions(newText);
+      handleSuggestionsThrottled(newText);
     }
   };
 
@@ -132,10 +144,14 @@ const AutoCompleteInputWithContext = <
 
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
-    const { component: Component, title } = triggerSettings[trigger];
+    const { component: Component } = triggerSettings[trigger];
     openSuggestions(
-      title,
       typeof Component === 'string' ? Component : <Component />,
+      trigger === ':' ? (
+        <EmojisHeader title='' />
+      ) : trigger === '/' ? (
+        <CommandsHeader />
+      ) : undefined,
     );
   };
 
@@ -164,7 +180,7 @@ const AutoCompleteInputWithContext = <
           }
         },
       );
-    } else {
+    } else if (isCommandTrigger(trigger)) {
       await triggerSettings[trigger].dataProvider(
         query as SuggestionCommand<Co>['name'],
         text,
@@ -177,6 +193,24 @@ const AutoCompleteInputWithContext = <
             data,
             onSelect: (item) => onSelectSuggestion({ item, trigger }),
           });
+        },
+      );
+    } else {
+      await triggerSettings[trigger].dataProvider(
+        query as Emoji['name'],
+        text,
+        (data, queryCallback) => {
+          if (query !== queryCallback) {
+            return;
+          }
+
+          updateSuggestionsContext(
+            {
+              data,
+              onSelect: (item) => onSelectSuggestion({ item, trigger }),
+            },
+            <EmojisHeader title={query} />,
+          );
         },
       );
     }
@@ -202,14 +236,14 @@ const AutoCompleteInputWithContext = <
     }
 
     let newTokenString = '';
-    if (isMentionTrigger(trigger)) {
-      if (isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
-      }
-    } else {
-      if (!isSuggestionUser(item)) {
-        newTokenString = `${triggerSettings[trigger].output(item).text} `;
-      }
+    if (isCommandTrigger(trigger) && isSuggestionCommand(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    }
+    if (isEmojiTrigger(trigger) && isSuggestionEmoji(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+    }
+    if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
+      newTokenString = `${triggerSettings[trigger].output(item).text} `;
     }
 
     const textToModify = text.slice(0, selectionEnd.current);
@@ -256,16 +290,10 @@ const AutoCompleteInputWithContext = <
   };
 
   const handleMentions = ({
-    selectionEnd: selectionEndProp,
-    text,
+    tokenMatch,
   }: {
-    selectionEnd: number;
-    text: string;
+    tokenMatch: RegExpMatchArray | null;
   }) => {
-    const tokenMatch = text
-      .slice(0, selectionEndProp)
-      .match(/(?!^|\W)?[:@][^\s]*\s?[^\s]*$/g);
-
     const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
     const handleMentionsTrigger =
       (lastToken &&
@@ -297,18 +325,66 @@ const AutoCompleteInputWithContext = <
     updateSuggestions({ query: actualToken, trigger: '@' });
   };
 
-  const handleSuggestions = (text: string) => {
-    setTimeout(async () => {
-      if (
-        text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
-        !isTrackingStarted.current
-      ) {
-        stopTracking();
-      } else if (!(await handleCommand(text))) {
-        handleMentions({ selectionEnd: selectionEnd.current, text });
-      }
-    }, 100);
+  const handleEmojis = ({
+    tokenMatch,
+  }: {
+    tokenMatch: RegExpMatchArray | null;
+  }) => {
+    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const handleEmojisTrigger =
+      (lastToken &&
+        Object.keys(triggerSettings).find(
+          (trigger) => trigger === lastToken[0],
+        )) ||
+      null;
+
+    /*
+      if we lost the trigger token or there is no following character we want to close
+      the autocomplete
+    */
+    if (!lastToken || lastToken.length <= 0) {
+      stopTracking();
+      return;
+    }
+
+    const actualToken = lastToken.slice(1);
+
+    // if trigger is not configured step out from the function, otherwise proceed
+    if (!handleEmojisTrigger) {
+      return;
+    }
+
+    if (!isTrackingStarted.current) {
+      startTracking(':');
+    }
+
+    updateSuggestions({ query: actualToken, trigger: ':' });
   };
+
+  const handleSuggestions = async (text: string) => {
+    if (
+      text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
+      isTrackingStarted.current
+    ) {
+      stopTracking();
+    } else if (!(await handleCommand(text))) {
+      const mentionTokenMatch = text
+        .slice(0, selectionEnd.current)
+        .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
+      if (mentionTokenMatch) {
+        handleMentions({ tokenMatch: mentionTokenMatch });
+      } else {
+        const emojiTokenMatch = text
+          .slice(0, selectionEnd.current)
+          .match(/(?!^|\W)?:\w{2,}[^\s]*\s?[^\s]*$/g);
+        handleEmojis({ tokenMatch: emojiTokenMatch });
+      }
+    }
+  };
+
+  const handleSuggestionsThrottled = throttle(handleSuggestions, 100, {
+    leading: false,
+  });
 
   return (
     <TextInput

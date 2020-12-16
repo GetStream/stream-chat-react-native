@@ -1,3 +1,5 @@
+import { vh } from '../../../utils/utils';
+
 import type { ImageStyle, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import type { CircleProps, StopProps } from 'react-native-svg';
 
@@ -152,9 +154,6 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  closeButton: {
-    container: ViewStyle;
-  };
   colors: typeof Colors;
   dateHeader: {
     container: ViewStyle;
@@ -250,29 +249,42 @@ export type Theme = {
       command: {
         args: TextStyle;
         container: ViewStyle;
-        description: TextStyle;
+        iconContainer: ViewStyle;
         title: TextStyle;
-        top: ViewStyle;
+      };
+      commandsHeader: {
+        container: ViewStyle;
+        title: TextStyle;
       };
       container: ViewStyle & {
-        itemHeight: number;
         maxHeight: number;
+      };
+      emoji: {
+        container: ViewStyle;
+        text: TextStyle;
+      };
+      emojisHeader: {
+        container: ViewStyle;
+        title: TextStyle;
       };
       item: ViewStyle;
       mention: {
+        avatarSize: number;
+        column: ViewStyle;
         container: ViewStyle;
         name: TextStyle;
+        tag: TextStyle;
       };
-      separator: ViewStyle;
       title: TextStyle;
-      wrapper: ViewStyle;
     };
+    suggestionsListContainer: ViewStyle;
     uploadProgressIndicator: {
       container: ViewStyle;
       overlay: ViewStyle;
     };
   };
   messageList: {
+    container: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
     inlineUnreadIndicator: {
@@ -454,6 +466,8 @@ export type Theme = {
   thread: {
     newThread: ViewStyle & {
       text: TextStyle;
+      backgroundGradientStart?: string;
+      backgroundGradientStop?: string;
     };
   };
   typingIndicator: {
@@ -600,9 +614,6 @@ export const defaultTheme: Theme = {
       color: Colors.white,
     },
   },
-  closeButton: {
-    container: {},
-  },
   colors: {
     ...Colors,
   },
@@ -687,24 +698,48 @@ export const defaultTheme: Theme = {
     sendButtonContainer: {},
     suggestions: {
       command: {
-        args: {},
+        args: {
+          color: Colors.textGrey,
+        },
         container: {},
-        description: {},
+        iconContainer: {
+          backgroundColor: Colors.primary,
+        },
         title: {},
-        top: {},
+      },
+      commandsHeader: {
+        container: {},
+        title: {
+          color: Colors.textGrey,
+        },
       },
       container: {
-        itemHeight: 50,
-        maxHeight: 250,
+        maxHeight: vh(25),
+      },
+      emoji: {
+        container: {},
+        text: {},
+      },
+      emojisHeader: {
+        container: {},
+        title: {
+          color: Colors.textGrey,
+        },
       },
       item: {},
       mention: {
+        avatarSize: 40,
+        column: {},
         container: {},
         name: {},
+        tag: {
+          color: Colors.textGrey,
+        },
       },
-      separator: {},
       title: {},
-      wrapper: {},
+    },
+    suggestionsListContainer: {
+      backgroundColor: Colors.white,
     },
     uploadProgressIndicator: {
       container: {},
@@ -712,6 +747,7 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
+    container: {},
     errorNotification: {},
     errorNotificationText: {},
     inlineUnreadIndicator: {

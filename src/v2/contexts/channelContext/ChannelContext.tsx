@@ -125,7 +125,7 @@ export const ChannelContext = React.createContext({} as ChannelContextValue);
 //   if (!errorEqual) return false;
 
 //   const watcherCountEqual = prevWatcherCount === nextWatcherCount;
-//   if (watcherCountEqual) return false;
+//   if (!watcherCountEqual) return false;
 
 //   const channelEqual =
 //     !!prevChannel && !!nextChannel && prevChannel.id === nextChannel.id;
