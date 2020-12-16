@@ -355,84 +355,84 @@ export const MessageInputContext = React.createContext(
   {} as MessageInputContextValue,
 );
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      editing: prevEditing,
-      fileUploads: prevFileUploads,
-      imageUploads: prevImageUploads,
-      mentionedUsers: prevMentionedUsers,
-      replyTo: prevReplyTo,
-      showMoreOptions: prevShowMoreOptions,
-      text: prevText,
-    },
-  } = prevProps;
-  const {
-    value: {
-      editing: nextEditing,
-      fileUploads: nextFileUploads,
-      imageUploads: nextImageUploads,
-      mentionedUsers: nextMentionedUsers,
-      replyTo: nextReplyTo,
-      showMoreOptions: nextShowMoreOptions,
-      text: nextText,
-    },
-  } = nextProps;
+// const areEqual = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends UnknownType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: PropsWithChildren<{
+//     value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+//   nextProps: PropsWithChildren<{
+//     value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+// ) => {
+//   const {
+//     value: {
+//       editing: prevEditing,
+//       fileUploads: prevFileUploads,
+//       imageUploads: prevImageUploads,
+//       mentionedUsers: prevMentionedUsers,
+//       replyTo: prevReplyTo,
+//       showMoreOptions: prevShowMoreOptions,
+//       text: prevText,
+//     },
+//   } = prevProps;
+//   const {
+//     value: {
+//       editing: nextEditing,
+//       fileUploads: nextFileUploads,
+//       imageUploads: nextImageUploads,
+//       mentionedUsers: nextMentionedUsers,
+//       replyTo: nextReplyTo,
+//       showMoreOptions: nextShowMoreOptions,
+//       text: nextText,
+//     },
+//   } = nextProps;
 
-  const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
+//   const editingEqual = !!prevEditing === !!nextEditing;
+//   if (!editingEqual) return false;
 
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
+//   const replyToEqual = !!prevReplyTo === !!nextReplyTo;
+//   if (!replyToEqual) return false;
 
-  const textEqual = prevText === nextText;
-  if (!textEqual) return false;
+//   const textEqual = prevText === nextText;
+//   if (!textEqual) return false;
 
-  const mentionedUsersEqual =
-    prevMentionedUsers.length === nextMentionedUsers.length;
-  if (!mentionedUsersEqual) return false;
+//   const mentionedUsersEqual =
+//     prevMentionedUsers.length === nextMentionedUsers.length;
+//   if (!mentionedUsersEqual) return false;
 
-  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
-  if (!showMoreOptionsEqual) return false;
+//   const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
+//   if (!showMoreOptionsEqual) return false;
 
-  const fileUploadsEqual =
-    prevFileUploads.length === nextFileUploads.length &&
-    prevFileUploads.every(
-      (prevFileUpload, index) =>
-        prevFileUpload.state === nextFileUploads[index].state,
-    );
-  if (!fileUploadsEqual) return false;
+//   const fileUploadsEqual =
+//     prevFileUploads.length === nextFileUploads.length &&
+//     prevFileUploads.every(
+//       (prevFileUpload, index) =>
+//         prevFileUpload.state === nextFileUploads[index].state,
+//     );
+//   if (!fileUploadsEqual) return false;
 
-  const imageUploadsEqual =
-    prevImageUploads.length === nextImageUploads.length &&
-    prevImageUploads.every(
-      (prevImageUpload, index) =>
-        prevImageUpload.state === nextImageUploads[index].state,
-    );
-  if (!imageUploadsEqual) return false;
+//   const imageUploadsEqual =
+//     prevImageUploads.length === nextImageUploads.length &&
+//     prevImageUploads.every(
+//       (prevImageUpload, index) =>
+//         prevImageUpload.state === nextImageUploads[index].state,
+//     );
+//   if (!imageUploadsEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MemoizedMessageInputProvider = React.memo(
-  MessageInputContext.Provider,
-  areEqual,
-) as typeof MessageInputContext.Provider;
+// const MemoizedMessageInputProvider = React.memo(
+//   MessageInputContext.Provider,
+//   areEqual,
+// ) as typeof MessageInputContext.Provider;
 
 type MessageInputProviderPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -982,7 +982,7 @@ const MessageInputProviderWithContext = <
   };
 
   return (
-    <MemoizedMessageInputProvider
+    <MessageInputContext.Provider
       value={
         ({
           appendText,
@@ -1028,49 +1028,49 @@ const MessageInputProviderWithContext = <
       }
     >
       {children}
-    </MemoizedMessageInputProvider>
+    </MessageInputContext.Provider>
   );
 };
 
-const areEqualContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: { editing: prevEditing, replyTo: prevReplyTo, thread: prevThread },
-  } = prevProps;
-  const {
-    value: { editing: nextEditing, replyTo: nextReplyTo, thread: nextThread },
-  } = nextProps;
+// const areEqualContext = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends UnknownType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: PropsWithChildren<{
+//     value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+//   nextProps: PropsWithChildren<{
+//     value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+// ) => {
+//   const {
+//     value: { editing: prevEditing, replyTo: prevReplyTo, thread: prevThread },
+//   } = prevProps;
+//   const {
+//     value: { editing: nextEditing, replyTo: nextReplyTo, thread: nextThread },
+//   } = nextProps;
 
-  const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
+//   const editingEqual = !!prevEditing === !!nextEditing;
+//   if (!editingEqual) return false;
 
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
+//   const replyToEqual = !!prevReplyTo === !!nextReplyTo;
+//   if (!replyToEqual) return false;
 
-  const threadEqual = prevThread?.id === nextThread?.id;
-  if (!threadEqual) return false;
+//   const threadEqual = prevThread?.id === nextThread?.id;
+//   if (!threadEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MemoizedMessageInputProviderWithContext = React.memo(
-  MessageInputProviderWithContext,
-  areEqualContext,
-) as typeof MessageInputProviderWithContext;
+// const MemoizedMessageInputProviderWithContext = React.memo(
+//   MessageInputProviderWithContext,
+//   areEqualContext,
+// ) as typeof MessageInputProviderWithContext;
 
 export const MessageInputProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -1090,7 +1090,7 @@ export const MessageInputProvider = <
   const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   return (
-    <MemoizedMessageInputProviderWithContext
+    <MessageInputProviderWithContext
       value={
         ({
           ...{ channel, client, thread },
@@ -1099,7 +1099,7 @@ export const MessageInputProvider = <
       }
     >
       {children}
-    </MemoizedMessageInputProviderWithContext>
+    </MessageInputProviderWithContext>
   );
 };
 

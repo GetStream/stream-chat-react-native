@@ -243,99 +243,99 @@ export type MessagesContextValue<
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      additionalTouchableProps: prevAdditionalTouchableProps,
-      disableTypingIndicator: prevDisableTypingIndicator,
-      dismissKeyboardOnMessageTouch: prevDismissKeyboardOnMessageTouch,
-      hasMore: prevHasMore,
-      loadingMore: prevLoadingMore,
-      markdownRules: prevMarkdownRules,
-      messageContentOrder: prevMessageContentOrder,
-      messages: prevMessages,
-      supportedReactions: prevSupportedReactions,
-    },
-  } = prevProps;
-  const {
-    value: {
-      additionalTouchableProps: nextAdditionalTouchableProps,
-      disableTypingIndicator: nextDisableTypingIndicator,
-      dismissKeyboardOnMessageTouch: nextDismissKeyboardOnMessageTouch,
-      hasMore: nextHasMore,
-      loadingMore: nextLoadingMore,
-      markdownRules: nextMarkdownRules,
-      messageContentOrder: nextMessageContentOrder,
-      messages: nextMessages,
-      supportedReactions: nextSupportedReactions,
-    },
-  } = nextProps;
+// const areEqual = <
+//   At extends UnknownType = DefaultAttachmentType,
+//   Ch extends UnknownType = DefaultChannelType,
+//   Co extends string = DefaultCommandType,
+//   Ev extends UnknownType = DefaultEventType,
+//   Me extends UnknownType = DefaultMessageType,
+//   Re extends UnknownType = DefaultReactionType,
+//   Us extends UnknownType = DefaultUserType
+// >(
+//   prevProps: PropsWithChildren<{
+//     value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+//   nextProps: PropsWithChildren<{
+//     value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
+//   }>,
+// ) => {
+//   const {
+//     value: {
+//       additionalTouchableProps: prevAdditionalTouchableProps,
+//       disableTypingIndicator: prevDisableTypingIndicator,
+//       dismissKeyboardOnMessageTouch: prevDismissKeyboardOnMessageTouch,
+//       hasMore: prevHasMore,
+//       loadingMore: prevLoadingMore,
+//       markdownRules: prevMarkdownRules,
+//       messageContentOrder: prevMessageContentOrder,
+//       messages: prevMessages,
+//       supportedReactions: prevSupportedReactions,
+//     },
+//   } = prevProps;
+//   const {
+//     value: {
+//       additionalTouchableProps: nextAdditionalTouchableProps,
+//       disableTypingIndicator: nextDisableTypingIndicator,
+//       dismissKeyboardOnMessageTouch: nextDismissKeyboardOnMessageTouch,
+//       hasMore: nextHasMore,
+//       loadingMore: nextLoadingMore,
+//       markdownRules: nextMarkdownRules,
+//       messageContentOrder: nextMessageContentOrder,
+//       messages: nextMessages,
+//       supportedReactions: nextSupportedReactions,
+//     },
+//   } = nextProps;
 
-  const disableTypingIndicatorEqual =
-    prevDisableTypingIndicator === nextDisableTypingIndicator;
-  if (!disableTypingIndicatorEqual) return false;
+//   const disableTypingIndicatorEqual =
+//     prevDisableTypingIndicator === nextDisableTypingIndicator;
+//   if (!disableTypingIndicatorEqual) return false;
 
-  const dismissKeyboardOnMessageTouchEqual =
-    prevDismissKeyboardOnMessageTouch === nextDismissKeyboardOnMessageTouch;
-  if (!dismissKeyboardOnMessageTouchEqual) return false;
+//   const dismissKeyboardOnMessageTouchEqual =
+//     prevDismissKeyboardOnMessageTouch === nextDismissKeyboardOnMessageTouch;
+//   if (!dismissKeyboardOnMessageTouchEqual) return false;
 
-  const hasMoreEqual = prevHasMore === nextHasMore;
-  if (!hasMoreEqual) return false;
+//   const hasMoreEqual = prevHasMore === nextHasMore;
+//   if (!hasMoreEqual) return false;
 
-  const loadingMoreEqual = prevLoadingMore === nextLoadingMore;
-  if (!loadingMoreEqual) return false;
+//   const loadingMoreEqual = prevLoadingMore === nextLoadingMore;
+//   if (!loadingMoreEqual) return false;
 
-  const messageContentOrderEqual =
-    prevMessageContentOrder.length === nextMessageContentOrder.length &&
-    prevMessageContentOrder.every(
-      (messageContentType, index) =>
-        messageContentType === nextMessageContentOrder[index],
-    );
-  if (!messageContentOrderEqual) return false;
+//   const messageContentOrderEqual =
+//     prevMessageContentOrder.length === nextMessageContentOrder.length &&
+//     prevMessageContentOrder.every(
+//       (messageContentType, index) =>
+//         messageContentType === nextMessageContentOrder[index],
+//     );
+//   if (!messageContentOrderEqual) return false;
 
-  const supportedReactionsEqual =
-    prevSupportedReactions.length === nextSupportedReactions.length;
-  if (!supportedReactionsEqual) return false;
+//   const supportedReactionsEqual =
+//     prevSupportedReactions.length === nextSupportedReactions.length;
+//   if (!supportedReactionsEqual) return false;
 
-  const messagesEqual = prevMessages.length === nextMessages.length;
-  if (!messagesEqual) return false;
+//   const messagesEqual = prevMessages.length === nextMessages.length;
+//   if (!messagesEqual) return false;
 
-  const additionalTouchablePropsEqual =
-    !!prevAdditionalTouchableProps &&
-    !!nextAdditionalTouchableProps &&
-    Object.keys(prevAdditionalTouchableProps).length ===
-      Object.keys(nextAdditionalTouchableProps).length;
-  if (!additionalTouchablePropsEqual) return false;
+//   const additionalTouchablePropsEqual =
+//     !!prevAdditionalTouchableProps &&
+//     !!nextAdditionalTouchableProps &&
+//     Object.keys(prevAdditionalTouchableProps).length ===
+//       Object.keys(nextAdditionalTouchableProps).length;
+//   if (!additionalTouchablePropsEqual) return false;
 
-  const markdownRulesEqual =
-    !!prevMarkdownRules &&
-    !!nextMarkdownRules &&
-    Object.keys(prevMarkdownRules).length ===
-      Object.keys(nextMarkdownRules).length;
-  if (!markdownRulesEqual) return false;
+//   const markdownRulesEqual =
+//     !!prevMarkdownRules &&
+//     !!nextMarkdownRules &&
+//     Object.keys(prevMarkdownRules).length ===
+//       Object.keys(nextMarkdownRules).length;
+//   if (!markdownRulesEqual) return false;
 
-  return true;
-};
+//   return true;
+// };
 
-const MessagesProviderMemoized = React.memo(
-  MessagesContext.Provider,
-  areEqual,
-) as typeof MessagesContext.Provider;
+// const MessagesProviderMemoized = React.memo(
+//   MessagesContext.Provider,
+//   areEqual,
+// ) as typeof MessagesContext.Provider;
 
 export const MessagesProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -351,9 +351,9 @@ export const MessagesProvider = <
 }: PropsWithChildren<{
   value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessagesProviderMemoized value={(value as unknown) as MessagesContextValue}>
+  <MessagesContext.Provider value={(value as unknown) as MessagesContextValue}>
     {children}
-  </MessagesProviderMemoized>
+  </MessagesContext.Provider>
 );
 
 export const useMessagesContext = <
