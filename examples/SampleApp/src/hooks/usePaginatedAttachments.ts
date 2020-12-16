@@ -2,6 +2,7 @@ import { useContext, useRef, useState } from 'react';
 import { Channel, MessageResponse } from 'stream-chat';
 import { useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
+import { Message } from '../../../../src/v2/components/MessageList/hooks/useMessageList';
 
 export const usePaginatedAttachments = (
   channel: Channel,
@@ -9,7 +10,7 @@ export const usePaginatedAttachments = (
 ) => {
   const { chatClient } = useContext(AppContext);
   const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);

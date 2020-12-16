@@ -11,17 +11,17 @@ import {
 } from 'react-native';
 import { SafeAreaView, View } from 'react-native';
 import { Notification } from '../icons/Notification';
-import { BlockUser } from '../icons/BlockUser';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { Mute } from '../icons/Mute';
 import { File } from '../icons/File';
 import { GoForward } from '../icons/GoForward';
 import { Delete } from '../icons/Delete';
 import { GoBack } from '../icons/GoBack';
-import Dayjs from 'dayjs';
 import { AppContext } from '../context/AppContext';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+import { useOverlayContext } from 'stream-chat-react-native/v2';
+import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -59,16 +59,64 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
 
   const user = member?.user;
   const [muted, setMuted] = useState(
-    chatClient?.mutes &&
-      chatClient?.mutes?.findIndex((m) => m.target.id === user?.id) > -1,
+    chatClient?.mutedUsers &&
+      chatClient?.mutedUsers?.findIndex((m) => m.target.id === user?.id) > -1,
   );
-  const [blocked, setBlocked] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     chatClient?.mutedChannels &&
       chatClient.mutedChannels.findIndex((m) => m.channel?.id === channel.id) >
         -1,
   );
+  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
+
   const navigation = useNavigation();
+
+  /**
+   * Opens confirmation sheet for deleting the conversation
+   */
+  const openDeleteConversationConfirmationSheet = () => {
+    if (!chatClient?.user?.id) return;
+    setWildcard(() => (
+      <ConfirmationBottomSheet
+        confirmText={'DELETE'}
+        onCancel={cancelDeleteAction}
+        onConfirm={deleteConversation}
+        subtext={'Are you sure you want to delete this conversation?'}
+        title={'Delete Conversation'}
+      />
+    ));
+    setBlurType('dark');
+    setOverlay('wildcard');
+  };
+
+  /**
+   * Cancels the confirmation sheet.
+   */
+  const cancelDeleteAction = () => {
+    setBlurType(undefined);
+    setWildcard(() => null);
+    setOverlay('none');
+  };
+
+  /**
+   * Leave the group/channel
+   */
+  const deleteConversation = async () => {
+    setWildcard(() => null);
+    setBlurType(undefined);
+    setOverlay('none');
+
+    await channel.delete();
+
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'ChatScreen',
+        },
+      ],
+    });
+  };
 
   if (!user) return null;
 
@@ -154,6 +202,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
                 }}
                 trackColor={{
                   true: colors.success,
+                  false: colors.greyContentBackground,
                 }}
                 value={notificationsEnabled}
               />
@@ -193,39 +242,9 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
                 }}
                 trackColor={{
                   true: colors.success,
+                  false: colors.greyContentBackground,
                 }}
                 value={muted}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.border,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <BlockUser height={24} width={24} />
-              <Text
-                style={{
-                  color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Block User
-              </Text>
-            </View>
-            <View>
-              <Switch
-                onValueChange={() =>
-                  setBlocked((previousState) => !previousState)
-                }
-                trackColor={{
-                  true: colors.success,
-                }}
-                value={blocked}
               />
             </View>
           </TouchableOpacity>
@@ -315,17 +334,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           </TouchableOpacity>
           <Spacer />
           <TouchableOpacity
-            onPress={async () => {
-              await channel.delete();
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'ChatScreen',
-                  },
-                ],
-              });
-            }}
+            onPress={openDeleteConversationConfirmationSheet}
             style={[
               styles.actionContainer,
               {

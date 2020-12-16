@@ -10,7 +10,10 @@ import {
 import { Attachment } from 'stream-chat';
 import { useEffect } from 'react';
 import { Dimensions } from 'react-native';
-import { useImageGalleryContext, useOverlayContext } from '../../../../src/v2';
+import {
+  useImageGalleryContext,
+  useOverlayContext,
+} from 'stream-chat-react-native/v2';
 import Dayjs from 'dayjs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { AppTheme, StackNavigatorParamList } from '../types';
@@ -44,7 +47,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
 
   const [sections, setSections] = useState<
     Array<{
-      data: Attachment[][];
+      data: Array<Array<Attachment & { messageId: string }>>;
       title: string;
     }>
   >([]);
@@ -54,7 +57,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     const sections: Record<
       string,
       {
-        data: Attachment[][];
+        data: Array<Array<Attachment & { messageId: string }>>;
         title: string;
       }
     > = {};
@@ -96,19 +99,19 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       <ScreenHeader title={'Photos and Videos'} />
       <SectionList
         onEndReached={loadMore}
-        renderItem={({ item, index }) => (
+        renderItem={({ index, item }) => (
           <View style={{ flexDirection: 'row' }}>
             {item.map((a) => (
               <TouchableOpacity
-                key={a.id}
+                key={a.image_url + a.messageId}
+                onPress={() => {
+                  setImages(messages);
+                  setImage({ messageId: a.messageId, url: a.image_url });
+                  setBlurType('none');
+                  setOverlay('gallery');
+                }}
                 style={{
                   marginTop: index === 0 ? -37 : 0,
-                }}
-                onPress={() => {
-                  // setImages(messages);
-                  // setImage({ messageId: a.messageId, url: a.image_url });
-                  // setBlurType('light');
-                  // setOverlay('gallery');
                 }}
               >
                 <Image
