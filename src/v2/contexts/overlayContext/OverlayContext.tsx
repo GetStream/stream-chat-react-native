@@ -267,7 +267,7 @@ export const OverlayProvider = <
                       style={[StyleSheet.absoluteFill, { height, width }]}
                     />
                   </Animated.View>
-                  {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
+                  {Wildcard}
                   <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
                     overlayOpacity={overlayOpacity}
                     visible={overlay === 'channelInfo'}

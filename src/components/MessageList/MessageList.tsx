@@ -61,7 +61,6 @@ import type {
 import { generateRandomId } from '../../utils/generateRandomId';
 
 import { NetworkDownIndicator as DefaultNetworkDownIndicator } from './NetworkDownIndicator';
-import { generateRandomId } from '../../utils/generateRandomId';
 
 const ListContainer = (styled(FlatList)`
   flex: 1;

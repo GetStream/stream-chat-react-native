@@ -29,7 +29,15 @@ export type StackNavigatorParamList = {
   };
   ChatScreen: undefined;
   GroupChannelDetailsScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
@@ -37,10 +45,26 @@ export type StackNavigatorParamList = {
     selectedUsers: UserResponse<LocalUserType>[];
   };
   OneOnOneChannelDetailScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   SharedGroupsScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
 };
 
