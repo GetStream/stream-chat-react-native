@@ -16,17 +16,18 @@ import {
   UserResponse,
 } from 'stream-chat';
 
-import { useMessageDetailsForState } from './hooks/useMessageDetailsForState';
+import { useCreateMessageInputContext } from './hooks/useCreateMessageInputContext';
+import {
+  isEditingBoolean,
+  useMessageDetailsForState,
+} from './hooks/useMessageDetailsForState';
 
-import { ChatContextValue, useChatContext } from '../chatContext/ChatContext';
+import { useChatContext } from '../chatContext/ChatContext';
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../channelContext/ChannelContext';
-import {
-  ThreadContextValue,
-  useThreadContext,
-} from '../threadContext/ThreadContext';
+import { useThreadContext } from '../threadContext/ThreadContext';
 import { getDisplayName } from '../utils/getDisplayName';
 
 import {
@@ -83,6 +84,7 @@ export type ImageUpload = {
 };
 
 export type LocalMessageInputContext<
+  At extends UnknownType = DefaultAttachmentType,
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
@@ -116,6 +118,7 @@ export type LocalMessageInputContext<
    *
    */
   fileUploads: FileUpload[];
+  giphyActive: boolean;
   /**
    * An array of image objects which are set for upload. It has the following structure:
    *
@@ -155,7 +158,7 @@ export type LocalMessageInputContext<
    * @param id string ID of image in `imageUploads` object in state of MessageInput
    */
   removeImage: (id: string) => void;
-  resetInput: (pendingAttachments?: Attachment[]) => void;
+  resetInput: (pendingAttachments?: Attachment<At>[]) => void;
   sending: React.MutableRefObject<boolean>;
   sendMessage: () => Promise<void>;
   sendMessageAsync: (id: string) => void;
@@ -169,6 +172,7 @@ export type LocalMessageInputContext<
     }>
   >;
   setFileUploads: React.Dispatch<React.SetStateAction<FileUpload[]>>;
+  setGiphyActive: React.Dispatch<React.SetStateAction<boolean>>;
   setImageUploads: React.Dispatch<React.SetStateAction<ImageUpload[]>>;
   /**
    * Ref callback to set reference on input box
@@ -201,18 +205,6 @@ export type LocalMessageInputContext<
   uploadNewImage: (image: { uri?: string }) => Promise<void>;
 };
 
-export const isEditingBoolean = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  editing: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
-): editing is boolean => typeof editing === 'boolean';
-
 export type InputMessageInputContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -227,7 +219,9 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [AttachButton](https://getstream.github.io/stream-chat-react-native/#attachbutton)
    */
-  AttachButton: React.ComponentType<AttachButtonProps>;
+  AttachButton: React.ComponentType<
+    AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   clearEditingState: () => void;
   clearReplyToState: () => void;
   /**
@@ -235,14 +229,18 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [CommandsButton](https://getstream.github.io/stream-chat-react-native/#commandsbutton)
    */
-  CommandsButton: React.ComponentType<CommandsButtonProps>;
+  CommandsButton: React.ComponentType<
+    CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
    * Custom UI component for FileUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/FileUploadPreview.tsx
    */
-  FileUploadPreview: React.ComponentType<FileUploadPreviewProps>;
+  FileUploadPreview: React.ComponentType<
+    FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /** If component should have file picker functionality */
   hasFilePicker: boolean;
   /** If component should have image picker functionality */
@@ -251,7 +249,9 @@ export type InputMessageInputContextValue<
    * Custom UI component for ImageUploadPreview.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/ImageUploadPreview.tsx
    */
-  ImageUploadPreview: React.ComponentType<ImageUploadPreviewProps>;
+  ImageUploadPreview: React.ComponentType<
+    ImageUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /** Limit on allowed number of files to attach at a time. */
   maxNumberOfFiles: number;
   /**
@@ -259,7 +259,9 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [MoreOptionsButton](https://getstream.github.io/stream-chat-react-native/#moreoptionsbutton)
    */
-  MoreOptionsButton: React.ComponentType<MoreOptionsButtonProps>;
+  MoreOptionsButton: React.ComponentType<
+    MoreOptionsButtonProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
   replyTo: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
@@ -268,7 +270,7 @@ export type InputMessageInputContextValue<
    *
    * Defaults to and accepts same props as: [SendButton](https://getstream.github.io/stream-chat-react-native/#sendbutton)
    */
-  SendButton: React.ComponentType<SendButtonProps>;
+  SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
@@ -345,7 +347,7 @@ export type MessageInputContextValue<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = LocalMessageInputContext<Co, Us> &
+> = LocalMessageInputContext<At, Co, Us> &
   Omit<
     InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'sendMessage'
@@ -355,99 +357,7 @@ export const MessageInputContext = React.createContext(
   {} as MessageInputContextValue,
 );
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      editing: prevEditing,
-      fileUploads: prevFileUploads,
-      imageUploads: prevImageUploads,
-      mentionedUsers: prevMentionedUsers,
-      replyTo: prevReplyTo,
-      showMoreOptions: prevShowMoreOptions,
-      text: prevText,
-    },
-  } = prevProps;
-  const {
-    value: {
-      editing: nextEditing,
-      fileUploads: nextFileUploads,
-      imageUploads: nextImageUploads,
-      mentionedUsers: nextMentionedUsers,
-      replyTo: nextReplyTo,
-      showMoreOptions: nextShowMoreOptions,
-      text: nextText,
-    },
-  } = nextProps;
-
-  const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
-
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
-
-  const textEqual = prevText === nextText;
-  if (!textEqual) return false;
-
-  const mentionedUsersEqual =
-    prevMentionedUsers.length === nextMentionedUsers.length;
-  if (!mentionedUsersEqual) return false;
-
-  const showMoreOptionsEqual = prevShowMoreOptions === nextShowMoreOptions;
-  if (!showMoreOptionsEqual) return false;
-
-  const fileUploadsEqual =
-    prevFileUploads.length === nextFileUploads.length &&
-    prevFileUploads.every(
-      (prevFileUpload, index) =>
-        prevFileUpload.state === nextFileUploads[index].state,
-    );
-  if (!fileUploadsEqual) return false;
-
-  const imageUploadsEqual =
-    prevImageUploads.length === nextImageUploads.length &&
-    prevImageUploads.every(
-      (prevImageUpload, index) =>
-        prevImageUpload.state === nextImageUploads[index].state,
-    );
-  if (!imageUploadsEqual) return false;
-
-  return true;
-};
-
-const MemoizedMessageInputProvider = React.memo(
-  MessageInputContext.Provider,
-  areEqual,
-) as typeof MessageInputContext.Provider;
-
-type MessageInputProviderPropsWithContext<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
-  Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'> &
-  InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-
-const MessageInputProviderWithContext = <
+export const MessageInputProvider = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -459,8 +369,20 @@ const MessageInputProviderWithContext = <
   children,
   value,
 }: PropsWithChildren<{
-  value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
+  value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => {
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { channel, giphyEnabled } = useChannelContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
+
   const inputBoxRef = useRef<TextInput | null>(null);
   const sending = useRef(false);
 
@@ -471,6 +393,7 @@ const MessageInputProviderWithContext = <
       url: string;
     };
   }>({});
+  const [giphyActive, setGiphyActive] = useState(false);
 
   const {
     fileUploads,
@@ -533,8 +456,8 @@ const MessageInputProviderWithContext = <
     }
     setText(newText);
 
-    if (newText && value.channel) {
-      logChatPromiseExecution(value.channel.keystroke(), 'start typing event');
+    if (newText && channel) {
+      logChatPromiseExecution(channel.keystroke(), 'start typing event');
     }
 
     if (value.onChangeText) {
@@ -587,6 +510,7 @@ const MessageInputProviderWithContext = <
 
   const resetInput = (pendingAttachments: Attachment<At>[] = []) => {
     setFileUploads([]);
+    setGiphyActive(false);
     setImageUploads([]);
     setMentionedUsers([]);
     setNumberOfUploads(
@@ -602,7 +526,7 @@ const MessageInputProviderWithContext = <
     }
     sending.current = true;
 
-    const prevText = text;
+    const prevText = giphyEnabled && giphyActive ? `/giphy ${text}` : text;
     await setText('');
     if (inputBoxRef.current) {
       inputBoxRef.current.clear();
@@ -696,11 +620,7 @@ const MessageInputProviderWithContext = <
             attachments,
             mentioned_users: uniq(mentionedUsers),
             /** Parent message id - in case of thread */
-            parent_id: value.thread?.id as StreamMessage<
-              At,
-              Me,
-              Us
-            >['parent_id'],
+            parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
             text: prevText,
           } as unknown) as StreamMessage<At, Me, Us>)
           .then(value.clearReplyToState);
@@ -709,7 +629,7 @@ const MessageInputProviderWithContext = <
         resetInput(attachments);
       } catch (_error) {
         sending.current = false;
-        setText(prevText);
+        setText(prevText.slice(giphyEnabled && giphyActive ? 7 : 0)); // 7 because of '/giphy ' length
         console.log('Failed to send message');
       }
     }
@@ -743,7 +663,7 @@ const MessageInputProviderWithContext = <
         value.sendMessage(({
           attachments,
           mentioned_users: [],
-          parent_id: value.thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+          parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
           text: '',
         } as unknown) as Partial<StreamMessage<At, Me, Us>>);
 
@@ -769,9 +689,9 @@ const MessageInputProviderWithContext = <
     }
   };
 
-  const triggerSettings = value.channel
+  const triggerSettings = channel
     ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
-        channel: value.channel,
+        channel,
         onMentionSelectItem: onSelectItem,
       })
     : ({} as TriggerSettings<Co, Us>);
@@ -779,9 +699,9 @@ const MessageInputProviderWithContext = <
   const updateMessage = async () => {
     try {
       if (!isEditingBoolean(value.editing)) {
-        await value.client.updateMessage({
+        await client.updateMessage({
           ...value.editing,
-          text,
+          text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
         } as Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0]);
       }
 
@@ -813,9 +733,9 @@ const MessageInputProviderWithContext = <
     let response = {} as SendFileAPIResponse;
     try {
       if (value.doDocUploadRequest) {
-        response = await value.doDocUploadRequest(file, value.channel);
-      } else if (value.channel && file.uri) {
-        response = await value.channel.sendFile(file.uri, file.name, file.type);
+        response = await value.doDocUploadRequest(file, channel);
+      } else if (channel && file.uri) {
+        response = await channel.sendFile(file.uri, file.name, file.type);
       }
     } catch (error) {
       console.warn(error);
@@ -868,43 +788,37 @@ const MessageInputProviderWithContext = <
 
     try {
       if (value.doImageUploadRequest) {
-        response = await value.doImageUploadRequest(file, value.channel);
-      } else if (file.uri && value.channel) {
+        response = await value.doImageUploadRequest(file, channel);
+      } else if (file.uri && channel) {
         if (value.sendImageAsync) {
-          value.channel
-            .sendImage(file.uri, undefined, contentType)
-            .then((res) => {
-              if (asyncIds.includes(id)) {
-                // Evaluates to true if user hit send before image successfully uploaded
-                setAsyncUploads((prevAsyncUploads) => {
-                  prevAsyncUploads[id] = {
-                    ...prevAsyncUploads[id],
-                    state: FileState.UPLOADED,
-                    url: res.file,
-                  };
-                  return prevAsyncUploads;
-                });
-              } else {
-                setImageUploads((prevImageUploads) =>
-                  prevImageUploads.map((imageUpload) => {
-                    if (imageUpload.id === id) {
-                      return {
-                        ...imageUpload,
-                        state: FileState.UPLOADED,
-                        url: res.file,
-                      };
-                    }
-                    return imageUpload;
-                  }),
-                );
-              }
-            });
+          channel.sendImage(file.uri, undefined, contentType).then((res) => {
+            if (asyncIds.includes(id)) {
+              // Evaluates to true if user hit send before image successfully uploaded
+              setAsyncUploads((prevAsyncUploads) => {
+                prevAsyncUploads[id] = {
+                  ...prevAsyncUploads[id],
+                  state: FileState.UPLOADED,
+                  url: res.file,
+                };
+                return prevAsyncUploads;
+              });
+            } else {
+              setImageUploads((prevImageUploads) =>
+                prevImageUploads.map((imageUpload) => {
+                  if (imageUpload.id === id) {
+                    return {
+                      ...imageUpload,
+                      state: FileState.UPLOADED,
+                      url: res.file,
+                    };
+                  }
+                  return imageUpload;
+                }),
+              );
+            }
+          });
         } else {
-          response = await value.channel.sendImage(
-            file.uri,
-            undefined,
-            contentType,
-          );
+          response = await channel.sendImage(file.uri, undefined, contentType);
         }
       }
 
@@ -981,125 +895,54 @@ const MessageInputProviderWithContext = <
     uploadImage({ newImage });
   };
 
+  const messageInputContext = useCreateMessageInputContext({
+    appendText,
+    asyncIds,
+    asyncUploads,
+    fileUploads,
+    giphyActive,
+    imageUploads,
+    inputBoxRef,
+    isValidMessage,
+    mentionedUsers,
+    numberOfUploads,
+    onChange,
+    onSelectItem,
+    pickFile,
+    removeFile,
+    removeImage,
+    resetInput,
+    sending,
+    sendMessageAsync,
+    setAsyncIds,
+    setAsyncUploads,
+    setFileUploads,
+    setGiphyActive,
+    setImageUploads,
+    setInputBoxRef,
+    setMentionedUsers,
+    setNumberOfUploads,
+    setShowMoreOptions,
+    setText,
+    showMoreOptions,
+    text,
+    thread,
+    triggerSettings,
+    updateMessage,
+    uploadFile,
+    uploadImage,
+    uploadNewFile,
+    uploadNewImage,
+    ...value,
+    sendMessage, // overriding the originally passed in sendMessage
+  });
+
   return (
-    <MemoizedMessageInputProvider
-      value={
-        ({
-          appendText,
-          asyncIds,
-          asyncUploads,
-          fileUploads,
-          imageUploads,
-          inputBoxRef,
-          isValidMessage,
-          mentionedUsers,
-          numberOfUploads,
-          onChange,
-          onSelectItem,
-          pickFile,
-          removeFile,
-          removeImage,
-          resetInput,
-          sending,
-          sendMessageAsync,
-          setAsyncIds,
-          setAsyncUploads,
-          setFileUploads,
-          setImageUploads,
-          setInputBoxRef,
-          setMentionedUsers,
-          setNumberOfUploads,
-          setShowMoreOptions,
-          setText,
-          showMoreOptions,
-          text,
-          triggerSettings,
-          updateMessage,
-          uploadFile,
-          uploadImage,
-          uploadNewFile,
-          uploadNewImage,
-          ...value,
-          channel: undefined,
-          client: undefined,
-          sendMessage, // overriding the originally passed in sendMessage
-          t: undefined,
-        } as unknown) as MessageInputContextValue
-      }
+    <MessageInputContext.Provider
+      value={(messageInputContext as unknown) as MessageInputContextValue}
     >
       {children}
-    </MemoizedMessageInputProvider>
-  );
-};
-
-const areEqualContext = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessageInputProviderPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: { editing: prevEditing, replyTo: prevReplyTo, thread: prevThread },
-  } = prevProps;
-  const {
-    value: { editing: nextEditing, replyTo: nextReplyTo, thread: nextThread },
-  } = nextProps;
-
-  const editingEqual = !!prevEditing === !!nextEditing;
-  if (!editingEqual) return false;
-
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
-
-  const threadEqual = prevThread?.id === nextThread?.id;
-  if (!threadEqual) return false;
-
-  return true;
-};
-
-const MemoizedMessageInputProviderWithContext = React.memo(
-  MessageInputProviderWithContext,
-  areEqualContext,
-) as typeof MessageInputProviderWithContext;
-
-export const MessageInputProvider = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->({
-  children,
-  value,
-}: PropsWithChildren<{
-  value: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-}>) => {
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { thread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
-  return (
-    <MemoizedMessageInputProviderWithContext
-      value={
-        ({
-          ...{ channel, client, thread },
-          ...value,
-        } as unknown) as MessageInputProviderPropsWithContext
-      }
-    >
-      {children}
-    </MemoizedMessageInputProviderWithContext>
+    </MessageInputContext.Provider>
   );
 };
 

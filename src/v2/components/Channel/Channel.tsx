@@ -25,6 +25,11 @@ import {
   Message as StreamMessage,
 } from 'stream-chat';
 
+import { useCreateChannelContext } from './hooks/useCreateChannelContext';
+import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
+import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
+import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
 import { Card as CardDefault } from '../Attachment/Card';
@@ -116,7 +121,11 @@ export type ChannelPropsWithContext<
 > = Partial<
   Pick<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'channel' | 'EmptyStateIndicator' | 'LoadingIndicator' | 'StickyHeader'
+    | 'channel'
+    | 'EmptyStateIndicator'
+    | 'giphyEnabled'
+    | 'LoadingIndicator'
+    | 'StickyHeader'
   >
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
@@ -276,6 +285,7 @@ export const ChannelWithContext = <
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
+    giphyEnabled,
     hasFilePicker = true,
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
@@ -946,12 +956,17 @@ export const ChannelWithContext = <
     }
   };
 
-  const channelContext: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
+  const channelContext = useCreateChannelContext({
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
     error,
     eventHistory,
+    giphyEnabled:
+      giphyEnabled ??
+      !!(channel?.getConfig?.()?.commands || [])?.some(
+        (command) => command.name === 'giphy',
+      ),
     isAdmin,
     isModerator,
     isOwner,
@@ -966,17 +981,9 @@ export const ChannelWithContext = <
     typing,
     watcherCount,
     watchers,
-  };
+  });
 
-  const messageInputContext: InputMessageInputContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  > = {
+  const messageInputContext = useCreateInputMessageInputContext({
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
@@ -1003,9 +1010,9 @@ export const ChannelWithContext = <
     sendMessage,
     setInputRef,
     UploadProgressIndicator,
-  };
+  });
 
-  const messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
+  const messagesContext = useCreateMessagesContext({
     ...actionProps,
     additionalTouchableProps,
     Attachment,
@@ -1046,7 +1053,7 @@ export const ChannelWithContext = <
     supportedReactions,
     updateMessage,
     UrlPreview,
-  };
+  });
 
   const suggestionsContext: Partial<SuggestionsContextValue<Co, Us>> = {
     closeSuggestions,
@@ -1054,7 +1061,7 @@ export const ChannelWithContext = <
     updateSuggestions,
   };
 
-  const threadContext: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us> = {
+  const threadContext = useCreateThreadContext({
     closeThread,
     loadMoreThread,
     openThread,
@@ -1062,7 +1069,7 @@ export const ChannelWithContext = <
     threadHasMore,
     threadLoadingMore,
     threadMessages,
-  };
+  });
 
   if (!channel || error) {
     return (

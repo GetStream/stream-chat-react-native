@@ -174,6 +174,7 @@ export type ChannelsContextValue<
    * Default: [Skeleton](https://getstream.github.io/stream-chat-react-native/#skeleton)
    */
   Skeleton: React.ComponentType;
+  ListHeaderComponent?: React.ComponentType;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
    *
@@ -183,84 +184,6 @@ export type ChannelsContextValue<
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
-
-// const areEqual = <
-//   At extends UnknownType = DefaultAttachmentType,
-//   Ch extends UnknownType = DefaultChannelType,
-//   Co extends string = DefaultCommandType,
-//   Ev extends UnknownType = DefaultEventType,
-//   Me extends UnknownType = DefaultMessageType,
-//   Re extends UnknownType = DefaultReactionType,
-//   Us extends UnknownType = DefaultUserType
-// >(
-//   prevProps: {
-//     value: ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-//   },
-//   nextProps: {
-//     value: ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-//   },
-// ) => {
-//   const {
-//     value: {
-//       channels: prevChannels,
-//       error: prevError,
-//       forceUpdate: prevForceUpdate,
-//       hasNextPage: prevHasNextPage,
-//       loadingChannels: prevLoadingChannels,
-//       loadingNextPage: prevLoadingNextPage,
-//       refreshing: prevRefreshing,
-//     },
-//   } = prevProps;
-//   const {
-//     value: {
-//       channels: nextChannels,
-//       error: nextError,
-//       forceUpdate: nextForceUpdate,
-//       hasNextPage: nextHasNextPage,
-//       loadingChannels: nextLoadingChannels,
-//       loadingNextPage: nextLoadingNextPage,
-//       refreshing: nextRefreshing,
-//     },
-//   } = nextProps;
-
-//   const refreshingEqual = prevRefreshing === nextRefreshing;
-//   if (!refreshingEqual) return false;
-
-//   const loadingChannelsEqual = prevLoadingChannels === nextLoadingChannels;
-//   if (!loadingChannelsEqual) return false;
-
-//   const loadingNextPageEqual = prevLoadingNextPage === nextLoadingNextPage;
-//   if (!loadingNextPageEqual) return false;
-
-//   const forceUpdateEqual = prevForceUpdate === nextForceUpdate;
-//   if (!forceUpdateEqual) return false;
-
-//   const hasNextPageEqual = prevHasNextPage === nextHasNextPage;
-//   if (!hasNextPageEqual) return false;
-
-//   const errorEqual = prevError === nextError;
-//   if (!errorEqual) return false;
-
-//   const channelsEqual =
-//     prevChannels.length === nextChannels.length &&
-//     prevChannels.every(
-//       (channel, index) =>
-//         channel.data?.name === nextChannels[index].data?.name &&
-//         Object.keys(channel.state.members).every(
-//           (memberId) =>
-//             nextChannels[index].state.members[memberId].user?.online ===
-//             channel.state.members[memberId].user?.online,
-//         ),
-//     );
-//   if (!channelsEqual) return false;
-
-//   return true;
-// };
-
-// const ChannelsProviderMemoized = React.memo(
-//   ChannelsContext.Provider,
-//   areEqual,
-// ) as typeof ChannelsContext.Provider;
 
 export const ChannelsProvider = <
   At extends UnknownType = DefaultAttachmentType,

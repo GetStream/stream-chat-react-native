@@ -29,6 +29,7 @@ export type ChannelContextValue<
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
+  giphyEnabled: boolean;
   /**
    * Returns true if the current user has admin privileges
    */
@@ -61,97 +62,6 @@ export type ChannelContextValue<
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      channel: prevChannel,
-      disabled: prevDisabled,
-      error: prevError,
-      lastRead: prevLastRead,
-      loading: prevLoading,
-      members: prevMembers,
-      read: prevRead,
-      typing: prevTyping,
-      watcherCount: prevWatcherCount,
-    },
-  } = prevProps;
-  const {
-    value: {
-      channel: nextChannel,
-      disabled: nextDisabled,
-      error: nextError,
-      lastRead: nextLastRead,
-      loading: nextLoading,
-      members: nextMembers,
-      read: nextRead,
-      typing: nextTyping,
-      watcherCount: nextWatcherCount,
-    },
-  } = nextProps;
-
-  const typingEqual = prevTyping === nextTyping;
-  if (!typingEqual) return false;
-
-  const loadingEqual = prevLoading === nextLoading;
-  if (!loadingEqual) return false;
-
-  const disabledEqual = prevDisabled === nextDisabled;
-  if (!disabledEqual) return false;
-
-  const errorEqual = prevError === nextError;
-  if (!errorEqual) return false;
-
-  const watcherCountEqual = prevWatcherCount === nextWatcherCount;
-  if (watcherCountEqual) return false;
-
-  const channelEqual =
-    !!prevChannel && !!nextChannel && prevChannel.id === nextChannel.id;
-  if (!channelEqual) return false;
-
-  const lastReadEqual =
-    !!prevLastRead &&
-    !!nextLastRead &&
-    prevLastRead.getTime() === nextLastRead.getTime();
-  if (!lastReadEqual) return false;
-
-  const membersEqual =
-    Object.keys(prevMembers).length === Object.keys(nextMembers).length;
-  if (!membersEqual) return false;
-
-  const prevReadUsers = Object.values(prevRead);
-  const nextReadUsers = Object.values(nextRead);
-  const readEqual =
-    prevReadUsers.length === nextReadUsers.length &&
-    prevReadUsers.every(
-      (prevUserReadState, index) =>
-        prevUserReadState.last_read.toISOString() ===
-        nextReadUsers[index].last_read.toISOString(),
-    );
-  if (!readEqual) return false;
-
-  return true;
-};
-
-const ChannelProviderMemoized = React.memo(
-  ChannelContext.Provider,
-  areEqual,
-) as typeof ChannelContext.Provider;
-
 export const ChannelProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -166,9 +76,9 @@ export const ChannelProvider = <
 }: PropsWithChildren<{
   value: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ChannelProviderMemoized value={(value as unknown) as ChannelContextValue}>
+  <ChannelContext.Provider value={(value as unknown) as ChannelContextValue}>
     {children}
-  </ChannelProviderMemoized>
+  </ChannelContext.Provider>
 );
 
 export const useChannelContext = <

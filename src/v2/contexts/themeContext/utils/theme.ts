@@ -232,6 +232,8 @@ export type Theme = {
       fileTextContainer: ViewStyle;
       flatList: ViewStyle;
     };
+    giphyContainer: ViewStyle;
+    giphyText: TextStyle;
     imageUploadPreview: {
       dismiss: ViewStyle;
       flatList: ViewStyle;
@@ -675,6 +677,12 @@ export const defaultTheme: Theme = {
       },
       fileTextContainer: {},
       flatList: {},
+    },
+    giphyContainer: {
+      backgroundColor: Colors.primary,
+    },
+    giphyText: {
+      color: Colors.white,
     },
     imageUploadPreview: {
       dismiss: {

@@ -20,10 +20,8 @@ import {
 import { TypingIndicator as DefaultTypingIndicator } from './TypingIndicator';
 import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 
-import { Message, useMessageList } from './hooks/useMessageList';
+import { Message as MessageType, useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
-
-import { Message as DefaultMessage } from '../Message/Message';
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import {
@@ -97,7 +95,7 @@ const keyExtractor = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  item: Message<At, Ch, Co, Ev, Me, Re, Us>,
+  item: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
 ) =>
   item.id ||
   (item.created_at
@@ -130,7 +128,7 @@ export type MessageListProps<
    * ```
    */
   additionalFlatListProps?: Partial<
-    FlatListProps<Message<At, Ch, Co, Ev, Me, Re, Us>>
+    FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
   >;
   /**
    * UI component for footer of message list. By default message list doesn't have any footer.
@@ -183,7 +181,7 @@ export type MessageListProps<
    * ```
    */
   setFlatListRef?: (
-    ref: FlatList<Message<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ref: FlatList<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null,
   ) => void;
   /**
    * Boolean whether or not the Messages in the MessageList are part of a Thread
@@ -245,15 +243,11 @@ export const MessageList = <
   } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { disableTypingIndicator, loadMore: mainLoadMore } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    disableTypingIndicator,
+    loadMore: mainLoadMore,
+    Message,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     theme: {
       messageList: {
@@ -287,7 +281,7 @@ export const MessageList = <
   });
 
   const flatListRef = useRef<FlatList<
-    Message<At, Ch, Co, Ev, Me, Re, Us>
+    MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
 
@@ -367,7 +361,7 @@ export const MessageList = <
 
   const loadMore = threadList ? loadMoreThread : mainLoadMore;
 
-  const renderItem = (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => {
+  const renderItem = (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => {
     if (message.type === 'system') {
       return (
         <View style={styles.messagePadding}>
@@ -378,7 +372,7 @@ export const MessageList = <
     if (message.type !== 'message.read') {
       return (
         <View style={styles.messagePadding}>
-          <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
+          <Message
             groupStyles={message.groupStyles as GroupType[]}
             lastReceivedId={
               lastReceivedId === message.id ? lastReceivedId : undefined
@@ -526,7 +520,7 @@ export const MessageList = <
       </View>
       {!disableTypingIndicator && TypingIndicator && (
         <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
-          <TypingIndicator />
+          <TypingIndicator<At, Ch, Co, Ev, Me, Re, Us> />
         </TypingIndicatorContainer>
       )}
       {newMessagesNotification && (

@@ -356,8 +356,12 @@ const ChannelPreviewMessengerWithContext = <
 //   if (!channelEqual) return false;
 
 //   const latestMessagePreviewEqual =
-//     prevLatestMessagePreview.preview.text ===
-//     nextLatestMessagePreview.preview.text;
+//     prevLatestMessagePreview.previews
+//       .map(({ bold, text }) => `${bold}${text}`)
+//       .join() ===
+//     nextLatestMessagePreview.previews
+//       .map(({ bold, text }) => `${bold}${text}`)
+//       .join();
 //   if (!latestMessagePreviewEqual) return false;
 
 //   return true;

@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 import isEqual from 'lodash/isEqual';
 
+import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
@@ -143,16 +144,16 @@ const ChatWithContext = <
   const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
     setChannel(newChannel);
 
-  if (loadingTranslators) return null;
-
-  const chatContext = {
+  const chatContext = useCreateChatContext({
     channel,
     client,
     connectionRecovering,
     isOnline,
     logger,
     setActiveChannel,
-  };
+  });
+
+  if (loadingTranslators) return null;
 
   return (
     <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>

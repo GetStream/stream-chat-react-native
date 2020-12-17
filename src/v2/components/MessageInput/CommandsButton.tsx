@@ -5,6 +5,11 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../contexts/channelContext/ChannelContext';
+import {
+  isSuggestionCommand,
+  SuggestionsContextValue,
+  useSuggestionsContext,
+} from '../../contexts/suggestionsContext/SuggestionsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { Lightning } from '../../icons/Lightning';
 
@@ -29,10 +34,11 @@ type CommandsButtonPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> & {
-  /** Function that opens commands selector */
-  handleOnPress?: (event: GestureResponderEvent) => void;
-};
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'disabled'> &
+  Pick<SuggestionsContextValue<Co, Us>, 'suggestions'> & {
+    /** Function that opens commands selector */
+    handleOnPress?: (event: GestureResponderEvent) => void;
+  };
 
 export const CommandsButtonWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -45,11 +51,11 @@ export const CommandsButtonWithContext = <
 >(
   props: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled, handleOnPress } = props;
+  const { disabled, handleOnPress, suggestions } = props;
 
   const {
     theme: {
-      colors: { textGrey },
+      colors: { primary, textGrey },
       messageInput: { commandsButton },
     },
   } = useTheme();
@@ -61,7 +67,14 @@ export const CommandsButtonWithContext = <
       style={[commandsButton]}
       testID='commands-button'
     >
-      <Lightning pathFill={textGrey} />
+      <Lightning
+        pathFill={
+          suggestions &&
+          suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
+            ? primary
+            : textGrey
+        }
+      />
     </TouchableOpacity>
   );
 };
@@ -78,9 +91,16 @@ const areEqual = <
   prevProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: CommandsButtonPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { disabled: prevDisabled } = prevProps;
-  const { disabled: nextDisabled } = nextProps;
-  return prevDisabled === nextDisabled;
+  const { disabled: prevDisabled, suggestions: prevSuggestions } = prevProps;
+  const { disabled: nextDisabled, suggestions: nextSuggestions } = nextProps;
+
+  const disabledEqual = prevDisabled === nextDisabled;
+  if (!disabledEqual) return false;
+
+  const suggestionsEqual = !!prevSuggestions === !!nextSuggestions;
+  if (!suggestionsEqual) return false;
+
+  return true;
 };
 
 const MemoizedCommandsButton = React.memo(
@@ -115,8 +135,9 @@ export const CommandsButton = <
   props: CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const { disabled = false } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { suggestions } = useSuggestionsContext<Co, Us>();
 
-  return <MemoizedCommandsButton {...{ disabled }} {...props} />;
+  return <MemoizedCommandsButton {...{ disabled, suggestions }} {...props} />;
 };
 
 CommandsButton.displayName = 'CommandsButton{messageInput}';

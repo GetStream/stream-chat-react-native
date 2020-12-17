@@ -21,6 +21,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { vw } from '../../utils/utils';
 
 import type { Attachment } from 'stream-chat';
 
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   details: {
+    maxWidth: vw(60),
     paddingLeft: 16,
   },
   size: {

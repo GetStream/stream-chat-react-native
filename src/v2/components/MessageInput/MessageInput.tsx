@@ -31,6 +31,7 @@ import {
 import { CircleClose } from '../../icons/CircleClose';
 import { CurveLineLeftUp } from '../../icons/CurveLineLeftUp';
 import { Edit } from '../../icons/Edit';
+import { Lightning } from '../../icons/Lightning';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -48,7 +49,10 @@ import type {
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
   attachmentSelectionBar: { backgroundColor: '#F5F5F5' },
-  autoCompleteInputContainer: { paddingHorizontal: 16 },
+  autoCompleteInputContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
   composerContainer: {
     alignItems: 'flex-end',
     flexDirection: 'row',
@@ -68,12 +72,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
+  giphyContainer: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    height: 24,
+    marginRight: 8,
+    paddingHorizontal: 8,
+  },
+  giphyText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   inputBoxContainer: {
     borderColor: '#00000029', // 29 = 16% opacity
     borderRadius: 20,
     borderWidth: 1,
     flex: 1,
-    paddingVertical: 12,
   },
   optionsContainer: {
     flexDirection: 'row',
@@ -118,6 +133,7 @@ type MessageInputPropsWithContext<
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
+    | 'giphyActive'
     | 'hasFilePicker'
     | 'hasImagePicker'
     | 'ImageUploadPreview'
@@ -134,6 +150,7 @@ type MessageInputPropsWithContext<
     | 'SendButton'
     | 'sending'
     | 'sendMessageAsync'
+    | 'setGiphyActive'
     | 'setShowMoreOptions'
     | 'showMoreOptions'
     | 'removeImage'
@@ -171,6 +188,7 @@ export const MessageInputWithContext = <
     editing,
     FileUploadPreview,
     fileUploads,
+    giphyActive,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -190,6 +208,7 @@ export const MessageInputWithContext = <
     SendButton,
     sending,
     sendMessageAsync,
+    setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
     suggestions,
@@ -203,7 +222,7 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: { grey },
+      colors: { grey, white },
       messageInput: {
         attachButtonContainer,
         autoCompleteInputContainer,
@@ -212,6 +231,8 @@ export const MessageInputWithContext = <
         container: { ...container },
         editingBoxHeader,
         editingBoxHeaderTitle,
+        giphyContainer,
+        giphyText,
         inputBoxContainer,
         optionsContainer,
         replyContainer,
@@ -413,37 +434,45 @@ export const MessageInputWithContext = <
             />
           ) : (
             <>
-              <View style={[styles.optionsContainer, optionsContainer]}>
-                {!showMoreOptions ? (
-                  <MoreOptionsButton
-                    handleOnPress={() => setShowMoreOptions(true)}
-                  />
-                ) : (
-                  <>
-                    {(hasImagePicker || hasFilePicker) && (
-                      <View
-                        style={[
-                          styles.attachButtonContainer,
-                          attachButtonContainer,
-                        ]}
-                      >
-                        <AttachButton handleOnPress={handleOnPress} />
+              {!giphyActive && (
+                <View style={[styles.optionsContainer, optionsContainer]}>
+                  {!showMoreOptions ? (
+                    <MoreOptionsButton
+                      handleOnPress={() => setShowMoreOptions(true)}
+                    />
+                  ) : (
+                    <>
+                      {(hasImagePicker || hasFilePicker) && (
+                        <View
+                          style={[
+                            styles.attachButtonContainer,
+                            attachButtonContainer,
+                          ]}
+                        >
+                          <AttachButton handleOnPress={handleOnPress} />
+                        </View>
+                      )}
+                      <View style={[commandsButtonContainer]}>
+                        <CommandsButton
+                          handleOnPress={() => {
+                            appendText('/');
+                            if (inputBoxRef.current) {
+                              inputBoxRef.current.focus();
+                            }
+                          }}
+                        />
                       </View>
-                    )}
-                    <View style={[commandsButtonContainer]}>
-                      <CommandsButton
-                        handleOnPress={() => {
-                          appendText('/');
-                          if (inputBoxRef.current) {
-                            inputBoxRef.current.focus();
-                          }
-                        }}
-                      />
-                    </View>
-                  </>
-                )}
-              </View>
-              <View style={[styles.inputBoxContainer, inputBoxContainer]}>
+                    </>
+                  )}
+                </View>
+              )}
+              <View
+                style={[
+                  styles.inputBoxContainer,
+                  { paddingVertical: giphyActive ? 8 : 12 },
+                  inputBoxContainer,
+                ]}
+              >
                 {replyTo && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
@@ -454,12 +483,33 @@ export const MessageInputWithContext = <
                 <View
                   style={[
                     styles.autoCompleteInputContainer,
+                    {
+                      paddingLeft: giphyActive ? 8 : 16,
+                      paddingRight: giphyActive ? 10 : 16,
+                    },
                     autoCompleteInputContainer,
                   ]}
                 >
+                  {giphyActive && (
+                    <View style={[styles.giphyContainer, giphyContainer]}>
+                      <Lightning height={16} pathFill={white} width={16} />
+                      <Text style={[styles.giphyText, giphyText]}>GIPHY</Text>
+                    </View>
+                  )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
                     additionalTextInputProps={additionalTextInputProps}
                   />
+                  {giphyActive && (
+                    <TouchableOpacity
+                      disabled={disabled}
+                      onPress={() => {
+                        setGiphyActive(false);
+                      }}
+                      testID='close-button'
+                    >
+                      <CircleClose height={20} pathFill='#7A7A7A' width={20} />
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
               <View style={[styles.sendButtonContainer, sendButtonContainer]}>
@@ -524,6 +574,7 @@ const areEqual = <
     disabled: prevDisabled,
     editing: prevEditing,
     fileUploads: prevFileUploads,
+    giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
     replyTo: prevReplyTo,
@@ -538,6 +589,7 @@ const areEqual = <
     disabled: nextDisabled,
     editing: nextEditing,
     fileUploads: nextFileUploads,
+    giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
     replyTo: nextReplyTo,
@@ -559,6 +611,9 @@ const areEqual = <
 
   const imageUploadsEqual = prevImageUploads.length === nextImageUploads.length;
   if (!imageUploadsEqual) return false;
+
+  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
+  if (!giphyActiveEqual) return false;
 
   const replyToEqual = !!prevReplyTo === !!nextReplyTo;
   if (!replyToEqual) return false;
@@ -657,6 +712,7 @@ export const MessageInput = <
     editing,
     FileUploadPreview,
     fileUploads,
+    giphyActive,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -674,6 +730,7 @@ export const MessageInput = <
     SendButton,
     sending,
     sendMessageAsync,
+    setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
     uploadNewImage,
@@ -705,6 +762,7 @@ export const MessageInput = <
         editing,
         FileUploadPreview,
         fileUploads,
+        giphyActive,
         hasFilePicker,
         hasImagePicker,
         ImageUploadPreview,
@@ -724,6 +782,7 @@ export const MessageInput = <
         SendButton,
         sending,
         sendMessageAsync,
+        setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
         suggestions,

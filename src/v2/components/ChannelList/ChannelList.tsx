@@ -13,6 +13,7 @@ import { useChannelUpdated } from './hooks/listeners/useChannelUpdated';
 import { useConnectionRecovered } from './hooks/listeners/useConnectionRecovered';
 import { useNewMessage } from './hooks/listeners/useNewMessage';
 import { useNewMessageNotification } from './hooks/listeners/useNewMessageNotification';
+import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
@@ -197,6 +198,7 @@ export const ChannelList = <
     HeaderErrorIndicator = ChannelListHeaderErrorIndicator,
     HeaderNetworkDownIndicator = ChannelListHeaderNetworkDownIndicator,
     List = ChannelListMessenger,
+    ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
@@ -287,7 +289,7 @@ export const ChannelList = <
     setChannels,
   });
 
-  const channelsContext = {
+  const channelsContext = useCreateChannelsContext({
     additionalFlatListProps,
     channels,
     EmptyStateIndicator,
@@ -297,6 +299,7 @@ export const ChannelList = <
     hasNextPage,
     HeaderErrorIndicator,
     HeaderNetworkDownIndicator,
+    ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
     LoadingIndicator,
@@ -317,7 +320,7 @@ export const ChannelList = <
       }
     },
     Skeleton,
-  };
+  });
 
   return (
     <ChannelsProvider value={channelsContext}>
