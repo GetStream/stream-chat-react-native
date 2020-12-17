@@ -150,6 +150,20 @@ const getMembersAndWatchers = <
   );
 };
 
+type QueryMembersFunction = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  query: SuggestionUser<Us>['name'],
+  onReady?: (users: SuggestionUser<Us>[]) => void,
+) => Promise<void>;
+
 // TODO: test to see if this function works as it integrated a debounce function
 const queryMembers = async <
   At extends UnknownType = DefaultAttachmentType,
@@ -164,26 +178,29 @@ const queryMembers = async <
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
 ): Promise<void> => {
-  await debounce(
-    async () => {
-      if (typeof query === 'string') {
-        const response = (await ((channel as unknown) as Channel).queryMembers({
-          name: { $autocomplete: query },
-        })) as ChannelMemberAPIResponse<Us>;
+  if (typeof query === 'string') {
+    const response = (await ((channel as unknown) as Channel).queryMembers({
+      name: { $autocomplete: query },
+    })) as ChannelMemberAPIResponse<Us>;
 
-        const users: SuggestionUser<Us>[] = [];
-        response.members.forEach(
-          (member) => isUserResponse(member.user) && users.push(member.user),
-        );
-        if (onReady && users) {
-          onReady(users);
-        }
-      }
-    },
-    200,
-    { leading: false, trailing: true },
-  );
+    const users: SuggestionUser<Us>[] = [];
+    response.members.forEach(
+      (member) => isUserResponse(member.user) && users.push(member.user),
+    );
+    if (onReady && users) {
+      onReady(users);
+    }
+  }
 };
+
+export const queryMembersDebounced = debounce<QueryMembersFunction>(
+  queryMembers,
+  200,
+  {
+    leading: false,
+    trailing: true,
+  },
+);
 
 export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
   trigger === '@';
@@ -223,7 +240,7 @@ export type TriggerSettings<
         data: SuggestionUser<Us>[],
         q: SuggestionUser<Us>['name'],
       ) => void,
-    ) => SuggestionUser<Us>[] | Promise<void>;
+    ) => SuggestionUser<Us>[] | Promise<void> | void;
     output: (
       entity: SuggestionUser<Us>,
     ) => {
@@ -246,6 +263,7 @@ export type ACITriggerSettingsParams<
 > = {
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   onMentionSelectItem: (item: SuggestionUser<Us>) => void;
+  autocompleteSuggestionsLimit?: number;
 } & Pick<TranslationContextValue, 't'>;
 
 /**
@@ -271,6 +289,7 @@ export const ACITriggerSettings = <
   channel,
   onMentionSelectItem,
   t = (msg: string) => msg,
+  autocompleteSuggestionsLimit = 10,
 }: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>): TriggerSettings<
   Co,
   Us
@@ -300,7 +319,7 @@ export const ACITriggerSettings = <
         return 0;
       });
 
-      const result = selectedCommands.slice(0, 10);
+      const result = selectedCommands.slice(0, autocompleteSuggestionsLimit);
 
       if (onReady) {
         onReady(result, query);
@@ -343,7 +362,7 @@ export const ACITriggerSettings = <
           return false;
         });
 
-        const data = matchingUsers.slice(0, 10);
+        const data = matchingUsers.slice(0, autocompleteSuggestionsLimit);
 
         if (onReady) {
           onReady(data, query);
@@ -352,7 +371,7 @@ export const ACITriggerSettings = <
         return data;
       }
 
-      return queryMembers(channel, query, (data) => {
+      return queryMembersDebounced(channel, query, (data) => {
         if (onReady) {
           onReady(data, query);
         }
