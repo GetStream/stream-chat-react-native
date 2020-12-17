@@ -22,6 +22,7 @@ import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import { useOverlayContext } from 'stream-chat-react-native/v2';
 import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
+import { Contacts } from '../icons/Contacts';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -262,7 +263,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Picture height={24} width={24} />
+            <Picture fill={'#7A7A7A'} />
               <Text
                 style={{
                   color: colors.text,
@@ -290,7 +291,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <File height={24} width={24} />
+              <File />
               <Text
                 style={{
                   color: colors.text,
@@ -318,7 +319,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Notification height={24} width={24} />
+              <Contacts fill={'#7A7A7A'} />
               <Text
                 style={{
                   color: colors.text,

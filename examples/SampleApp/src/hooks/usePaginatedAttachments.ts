@@ -27,7 +27,6 @@ export const usePaginatedAttachments = (
       offset.current = offset.current + messages.length;
 
       if (!hasMoreResults.current) {
-        console.log('returnung >>>');
         queryInProgress.current = false;
         return;
       }

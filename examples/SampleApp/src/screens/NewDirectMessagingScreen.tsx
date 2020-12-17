@@ -286,7 +286,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                   style={styles.createGroupButtonContainer}
                 >
                   <RoundButton>
-                    <Contacts height={25} width={25} />
+                    <Contacts fill={'#006CFF'} height={25} width={25} />
                   </RoundButton>
                   <Text
                     style={[

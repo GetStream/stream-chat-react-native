@@ -56,15 +56,7 @@ export type StackNavigatorParamList = {
     >;
   };
   SharedGroupsScreen: {
-    channel: Channel<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalEventType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >;
+    user: UserResponse<LocalUserType>;
   };
 };
 

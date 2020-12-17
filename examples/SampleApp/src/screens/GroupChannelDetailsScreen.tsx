@@ -2,6 +2,7 @@
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -314,7 +315,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <Picture height={24} width={24} />
+                <Picture fill={'#7A7A7A'} />
                 <Text
                   style={{
                     color: colors.text,
@@ -342,7 +343,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <File height={24} width={24} />
+                <File />
                 <Text
                   style={{
                     color: colors.text,
@@ -404,11 +405,13 @@ const styles = StyleSheet.create({
     marginLeft: 13,
     flexGrow: 1,
     flexShrink: 1,
+    padding: 0,
   },
   changeNameInputContainer: {
     flexDirection: 'row',
     flexGrow: 1,
     flexShrink: 1,
+    alignItems: 'center',
   },
   loadMoreButton: {
     alignItems: 'center',

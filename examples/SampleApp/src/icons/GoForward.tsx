@@ -2,7 +2,7 @@ import React from 'react';
 import { IconProps } from '../utils/base';
 import Svg, { G, Path } from 'react-native-svg';
 
-export const GoForward: React.FC<IconProps> = ({ active, height, width }) => (
+export const GoForward: React.FC<IconProps> = ({ height = 24, width = 24 }) => (
   <Svg
     fill='none'
     height={height}
