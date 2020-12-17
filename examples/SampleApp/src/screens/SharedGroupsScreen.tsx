@@ -69,6 +69,7 @@ const CustomPreview: React.FC<
       }}
       style={{
         alignItems: 'center',
+        backgroundColor: colors.background,
         borderBottomColor: colors.borderLight,
         borderBottomWidth: 1,
         flexDirection: 'row',
@@ -90,7 +91,9 @@ const CustomPreview: React.FC<
           {...getChannelPreviewDisplayAvatar(channel, chatClient)}
           size={40}
         />
-        <Text style={{ fontWeight: '700', marginLeft: 8 }}>{name}</Text>
+        <Text style={{ color: colors.text, fontWeight: '700', marginLeft: 8 }}>
+          {name}
+        </Text>
       </View>
       <View
         style={{

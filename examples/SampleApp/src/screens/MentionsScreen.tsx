@@ -86,7 +86,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
                       marginRight: 20,
                     }}
                   >
-                    <Text>
+                    <Text style={{ color: colors.text }}>
                       <Text style={{ fontWeight: '700' }}>
                         {item.user?.name}{' '}
                       </Text>
@@ -102,6 +102,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
                         color: colors.textLight,
                         flexWrap: 'nowrap',
                         fontSize: 12,
+                        fontWeight: '400'
                       }}
                     >
                       {item.text}

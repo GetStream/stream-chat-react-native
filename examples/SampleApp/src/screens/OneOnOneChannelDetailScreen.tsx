@@ -151,7 +151,14 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           </Text>
           <View style={styles.onlineStatusContainer}>
             {user.online && <View style={styles.onlineIndicator} />}
-            <Text style={styles.onlineStatus}>
+            <Text
+              style={[
+                styles.onlineStatus,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
               {getUserActivityStatus(user)}
             </Text>
           </View>
@@ -159,12 +166,30 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.userNameContainer,
               {
-                borderTopColor: colors.border,
+                borderTopColor: colors.borderLight,
               },
             ]}
           >
-            <Text style={styles.userNameLabel}>@user</Text>
-            <Text style={styles.userName}>{user.name}</Text>
+            <Text
+              style={[
+                styles.userNameLabel,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              @user
+            </Text>
+            <Text
+              style={[
+                styles.userName,
+                {
+                  color: colors.text,
+                },
+              ]}
+            >
+              {user.name}
+            </Text>
           </View>
         </View>
         <Spacer />
@@ -173,12 +198,12 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <Notification height={24} width={24} />
+              <Notification fill={'#7A7A7A'} height={24} width={24} />
               <Text
                 style={{
                   color: colors.text,
@@ -193,10 +218,8 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
                 onValueChange={async () => {
                   if (notificationsEnabled) {
                     const r = await channel.unmute();
-                    console.warn(r);
                   } else {
                     const r = await channel.mute();
-                    console.warn(r);
                   }
 
                   setNotificationsEnabled((previousState) => !previousState);
@@ -213,7 +236,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
@@ -258,12 +281,12 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
             <View style={styles.actionLabelContainer}>
-            <Picture fill={'#7A7A7A'} />
+              <Picture fill={'#7A7A7A'} />
               <Text
                 style={{
                   color: colors.text,
@@ -274,7 +297,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
               </Text>
             </View>
             <View>
-              <GoForward height={24} width={24} />
+              <GoForward fill={'#7A7A7A'} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -286,12 +309,12 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
             <View style={styles.actionLabelContainer}>
-              <File />
+              <File fill={'#7A7A7A'} />
               <Text
                 style={{
                   color: colors.text,
@@ -302,7 +325,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
               </Text>
             </View>
             <View>
-              <GoForward height={24} width={24} />
+              <GoForward fill={'#7A7A7A'} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -314,7 +337,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
@@ -330,7 +353,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
               </Text>
             </View>
             <View>
-              <GoForward height={24} width={24} />
+              <GoForward fill={'#7A7A7A'} />
             </View>
           </TouchableOpacity>
           <Spacer />
@@ -339,7 +362,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
             style={[
               styles.actionContainer,
               {
-                borderBottomColor: colors.border,
+                borderBottomColor: colors.borderLight,
               },
             ]}
           >
