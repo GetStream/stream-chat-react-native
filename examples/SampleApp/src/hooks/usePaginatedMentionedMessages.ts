@@ -1,19 +1,18 @@
 import { useContext, useRef, useState } from 'react';
-import { Channel, Message, MessageResponse } from 'stream-chat';
+import { MessageResponse } from 'stream-chat';
 import { useEffect } from 'react';
-import { MockDataService } from '../utils/MockDataService';
 import { AppContext } from '../context/AppContext';
 import {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
-  LocalEventType,
   LocalMessageType,
   LocalReactionType,
   LocalUserType,
 } from '../types';
 export const usePaginatedMentionedMessages = () => {
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(true);
   const [messages, setMessages] = useState<
     MessageResponse<
       LocalAttachmentType,
@@ -28,48 +27,70 @@ export const usePaginatedMentionedMessages = () => {
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
   const { chatClient } = useContext(AppContext);
-  const fetchMessages = async () => {
-    if (queryInProgress.current) return;
+
+  const done = () => {
+    queryInProgress.current = false;
+    setLoading(false);
+    setRefreshing(false);
+  };
+  const fetchMessages = async (refresh = false) => {
+    if (refresh) {
+      offset.current = 0;
+      hasMoreResults.current = true;
+      setRefreshing(true);
+    }
+
+    if (queryInProgress.current) {
+      done();
+      return;
+    }
+
     setLoading(true);
 
     try {
       queryInProgress.current = true;
 
-      offset.current = offset.current + messages.length;
-
       if (!hasMoreResults.current) {
         queryInProgress.current = false;
+        done();
         return;
       }
 
-      // TODO: Use this when support for attachment_type is ready.
+      // TODO: Use this when support for filtering by mentioned user id is ready on backend.
       const res = await chatClient?.search(
         {
-          id: 'channel-ex-slack-demo-15',
+          id: { $in: ['channel-ex-slack-demo-8', 'channel-ex-slack-demo-15'] },
         },
         'Unsatiable',
+        {
+          limit: 10,
+          offset: offset.current,
+        },
       );
 
-      //   const res = await MockDataService.messageSearchByAttachmentType(
-      //     attachmentType,
-      //   );
       const newMessages = res?.results.map((r) => r.message);
-
       if (!newMessages) {
         queryInProgress.current = false;
+        done();
         return;
       }
 
-      setMessages((existingMessages) => existingMessages.concat(newMessages));
+      if (refresh) {
+        setMessages(newMessages);
+      } else {
+        setMessages((existingMessages) => existingMessages.concat(newMessages));
+      }
 
-      if (messages.length < 10) {
+      if (newMessages.length < 10) {
         hasMoreResults.current = false;
       }
+
+      offset.current = offset.current + messages.length;
     } catch (e) {
       // do nothing;
     }
-    queryInProgress.current = false;
-    setLoading(false);
+
+    done();
   };
 
   const loadMore = () => {
@@ -80,10 +101,11 @@ export const usePaginatedMentionedMessages = () => {
     fetchMessages();
   }, []);
 
-  /* eslint-disable sort-keys */
   return {
     loading,
     loadMore,
     messages,
+    refreshing,
+    refreshList: fetchMessages.bind(null, true),
   };
 };

@@ -16,7 +16,7 @@ export const DarkTheme = {
     success: '#20E070',
     text: '#d8d8d9',
     textInverted: 'black',
-    textLight: '#858689',
+    textLight: '#7A7A7A',
     textSecondary: 'rgba(255, 255, 255, 0.5)',
     borderLight: '#181F28',
     iconButtonBackground: '#FFFFFF',

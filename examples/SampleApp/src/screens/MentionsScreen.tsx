@@ -23,7 +23,13 @@ export type MentionsScreenProps = {
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
   const { colors } = useTheme() as AppTheme;
-  const { loading, loadMore, messages } = usePaginatedMentionedMessages();
+  const {
+    loading,
+    loadMore,
+    messages,
+    refreshing,
+    refreshList,
+  } = usePaginatedMentionedMessages();
   const navigation = useNavigation();
   return (
     <>
@@ -46,6 +52,9 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
         >
           <FlatList
             data={messages}
+            onEndReached={loadMore}
+            onRefresh={refreshList}
+            refreshing={refreshing}
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => {
@@ -54,7 +63,12 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
                     messageId: item.id,
                   });
                 }}
-                style={{ flexDirection: 'row', padding: 12, flex: 1 }}
+                style={{
+                  borderBottomColor: colors.borderLight,
+                  borderBottomWidth: 1,
+                  flexDirection: 'row',
+                  padding: 12,
+                }}
               >
                 <View
                   style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}
@@ -69,22 +83,26 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
                       flexGrow: 1,
                       flexShrink: 1,
                       marginLeft: 10,
-                      marginRight: 10,
+                      marginRight: 20,
                     }}
                   >
                     <Text>
-                      <Text style={{ fontWeight: 'bold' }}>
+                      <Text style={{ fontWeight: '700' }}>
                         {item.user?.name}{' '}
                       </Text>
                       in
-                      <Text style={{ fontWeight: 'bold' }}>
+                      <Text style={{ fontWeight: '700' }}>
                         {' '}
                         {item.channel?.name}
                       </Text>
                     </Text>
                     <Text
-                      numberOfLines={2}
-                      style={{ flexWrap: 'nowrap', fontSize: 12 }}
+                      numberOfLines={1}
+                      style={{
+                        color: colors.textLight,
+                        flexWrap: 'nowrap',
+                        fontSize: 12,
+                      }}
                     >
                       {item.text}
                     </Text>
@@ -93,6 +111,7 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
                 <View>
                   <Text
                     style={{
+                      color: colors.textLight,
                       fontSize: 12,
                     }}
                   >
