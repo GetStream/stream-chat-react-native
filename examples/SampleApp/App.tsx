@@ -36,6 +36,7 @@ import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { streamTheme } from './src/utils/streamTheme';
+import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -99,8 +100,10 @@ const App = () => {
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
   const { chatClient } = useContext(AppContext);
+  const streamChatTheme = useStreamChatTheme();
+
   return (
-    <Chat client={chatClient}>
+    <Chat client={chatClient} style={streamChatTheme}>
       <Stack.Navigator initialRouteName='ChatScreen'>
         <Stack.Screen
           component={ChatScreen}
