@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Image,
+  ImageStyle,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 import Svg, { Circle, CircleProps } from 'react-native-svg';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -36,6 +43,7 @@ export type AvatarProps = {
   /** image url */
   image?: string;
   /** name of the picture, used for fallback */
+  imageStyle?: StyleProp<ImageStyle>;
   name?: string;
   online?: boolean;
   presenceIndicator?: CircleProps;
@@ -52,6 +60,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
   const {
     containerStyle,
     image: imageProp,
+    imageStyle,
     name,
     online,
     presenceIndicator: presenceIndicatorProp,
@@ -77,13 +86,13 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
       <View
         style={[
           styles.container,
-          container,
-          containerStyle,
           {
             borderRadius: size / 2,
             height: size,
             width: size,
           },
+          container,
+          containerStyle,
         ]}
       >
         <Image
@@ -110,6 +119,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
                   width: size,
                 }
               : {},
+            imageStyle,
           ]}
           testID={testID || 'avatar-image'}
         />

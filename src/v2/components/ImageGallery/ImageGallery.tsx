@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ViewStyle,
 } from 'react-native';
+import BottomSheet from '@gorhom/bottom-sheet';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -37,6 +38,15 @@ import {
   ImageGalleryHeader,
   ImageGalleryHeaderCustomComponentProps,
 } from './components/ImageGalleryHeader';
+import { ImageGalleryOverlay } from './components/ImageGalleryOverlay';
+import {
+  ImageGalleryGridImageComponents,
+  ImageGrid,
+} from './components/ImageGrid';
+import {
+  ImageGalleryGridHandleCustomComponentProps,
+  ImageGridHandle,
+} from './components/ImageGridHandle';
 
 import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
@@ -113,6 +123,8 @@ export type ImageGalleryCustomComponents<
 > = {
   imageGalleryCustomComponents?: {
     footer?: ImageGalleryFooterCustomComponentProps<Us>;
+    grid?: ImageGalleryGridImageComponents<Us>;
+    gridHandle?: ImageGalleryGridHandleCustomComponentProps;
     header?: ImageGalleryHeaderCustomComponentProps<Us>;
   };
 };
@@ -121,6 +133,12 @@ type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
   ImageGalleryCustomComponents<Us> & {
     overlayOpacity: Animated.SharedValue<number>;
     visible: boolean;
+    imageGalleryGridHandleHeight?: number;
+    /**
+     * This should be
+     */
+    imageGalleryGridSnapPoints?: [string | number, string | number];
+    numberOfImageGalleryGridColumns?: number;
   }
 >;
 
@@ -135,14 +153,21 @@ export const ImageGallery = <
 >(
   props: Props<Us>,
 ) => {
-  const { imageGalleryCustomComponents, overlayOpacity, visible } = props;
+  const {
+    imageGalleryCustomComponents,
+    imageGalleryGridHandleHeight,
+    imageGalleryGridSnapPoints,
+    numberOfImageGalleryGridColumns,
+    overlayOpacity,
+    visible,
+  } = props;
   const {
     theme: {
       imageGallery: { backgroundColor },
     },
   } = useTheme();
   const { overlay, setBlurType, setOverlay } = useOverlayContext();
-  const { image, images } = useImageGalleryContext<
+  const { image, images, setImage } = useImageGalleryContext<
     At,
     Ch,
     Co,
@@ -151,6 +176,17 @@ export const ImageGallery = <
     Re,
     Us
   >();
+
+  /**
+   * BottomSheet ref
+   */
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  /**
+   * BottomSheet state
+   */
+  const [currentBottomSheetIndex, setCurrentBottomSheetIndex] = useState(0);
+  const animatedBottomSheetIndex = useSharedValue(0);
 
   /**
    * Fade animation for screen, it is always rendered with pointerEvents
@@ -1045,6 +1081,20 @@ export const ImageGallery = <
     [],
   );
 
+  /**
+   * Functions to open and close BottomSheet with image grid
+   */
+  const closeGridView = () => {
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.close();
+    }
+  };
+  const openGridView = () => {
+    if (bottomSheetRef.current) {
+      bottomSheetRef.current.snapTo(1);
+    }
+  };
+
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
@@ -1135,12 +1185,41 @@ export const ImageGallery = <
       />
       <ImageGalleryFooter<Us>
         opacity={headerFooterOpacity}
+        openGridView={openGridView}
         photo={photos[selectedIndex]}
         photoLength={photoLength}
         selectedIndex={selectedIndex}
         visible={headerFooterVisible}
         {...imageGalleryCustomComponents?.footer}
       />
+      <ImageGalleryOverlay
+        animatedBottomSheetIndex={animatedBottomSheetIndex}
+        closeGridView={closeGridView}
+        currentBottomSheetIndex={currentBottomSheetIndex}
+      />
+      <BottomSheet
+        animatedPositionIndex={animatedBottomSheetIndex}
+        handleComponent={() => (
+          <ImageGridHandle
+            closeGridView={closeGridView}
+            {...imageGalleryCustomComponents?.gridHandle}
+          />
+        )}
+        // @ts-expect-error
+        handleHeight={imageGalleryGridHandleHeight ?? 40}
+        initialSnapIndex={0}
+        onChange={(index: number) => setCurrentBottomSheetIndex(index)}
+        ref={bottomSheetRef}
+        snapPoints={imageGalleryGridSnapPoints || [0, vh(90)]}
+      >
+        <ImageGrid
+          closeGridView={closeGridView}
+          numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
+          photos={photos}
+          setImage={setImage}
+          {...imageGalleryCustomComponents?.grid}
+        />
+      </BottomSheet>
     </Animated.View>
   );
 };

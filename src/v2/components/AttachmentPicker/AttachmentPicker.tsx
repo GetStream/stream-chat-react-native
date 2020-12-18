@@ -56,7 +56,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
     },
   } = useTheme();
 
-  const size = vw(100) / (numberOfAttachmentPickerImageColumns ?? 3) - 2;
+  const size = vw(100) / (numberOfAttachmentPickerImageColumns || 3) - 2;
 
   return (
     <TouchableOpacity onPress={onPress}>

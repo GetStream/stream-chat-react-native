@@ -15,7 +15,10 @@ import Animated, {
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { Share as ShareIconDefault } from '../../../icons';
+import {
+  Grid as GridIconDefault,
+  Share as ShareIconDefault,
+} from '../../../icons';
 import { deleteFile, saveFile, shareImage } from '../../../native';
 
 import type { Photo } from '../ImageGallery';
@@ -44,8 +47,9 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   rightContainer: {
+    flex: 1,
+    justifyContent: 'center',
     marginRight: 8,
-    width: 24, // Width of icon currently on left
   },
   safeArea: {
     backgroundColor: '#FFFFFF',
@@ -61,10 +65,12 @@ const styles = StyleSheet.create({
 export type ImageGalleryFooterCustomComponent<
   Us extends UnknownType = DefaultUserType
 > = ({
+  openGridView,
   photo,
   share,
   shareMenuOpen,
 }: {
+  openGridView: () => void;
   share: () => Promise<void>;
   shareMenuOpen: boolean;
   photo?: Photo<Us>;
@@ -74,6 +80,7 @@ export type ImageGalleryFooterCustomComponentProps<
   Us extends UnknownType = DefaultUserType
 > = {
   centerElement?: ImageGalleryFooterCustomComponent<Us>;
+  GridIcon?: React.ReactElement;
   leftElement?: ImageGalleryFooterCustomComponent<Us>;
   rightElement?: ImageGalleryFooterCustomComponent<Us>;
   ShareIcon?: React.ReactElement;
@@ -83,6 +90,7 @@ type Props<
   Us extends UnknownType = DefaultUserType
 > = ImageGalleryFooterCustomComponentProps<Us> & {
   opacity: Animated.SharedValue<number>;
+  openGridView: () => void;
   photo: Photo<Us>;
   photoLength: number;
   selectedIndex: number;
@@ -94,8 +102,10 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
 ) => {
   const {
     centerElement,
+    GridIcon,
     leftElement,
     opacity,
+    openGridView,
     photo,
     photoLength,
     rightElement,
@@ -164,7 +174,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       <ReanimatedSafeAreaView style={[styles.safeArea, container, footerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
-            leftElement({ photo, share, shareMenuOpen })
+            leftElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
             <TouchableOpacity disabled={shareMenuOpen} onPress={share}>
               <View style={[styles.leftContainer, leftContainer]}>
@@ -173,7 +183,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
             </TouchableOpacity>
           )}
           {centerElement ? (
-            centerElement({ photo, share, shareMenuOpen })
+            centerElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
               <Text style={[styles.imageCountText, imageCountText]}>
@@ -185,9 +195,13 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
             </View>
           )}
           {rightElement ? (
-            rightElement({ photo, share, shareMenuOpen })
+            rightElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
-            <View style={[styles.rightContainer, rightContainer]} />
+            <TouchableOpacity onPress={openGridView}>
+              <View style={[styles.rightContainer, rightContainer]}>
+                {GridIcon ? GridIcon : <GridIconDefault />}
+              </View>
+            </TouchableOpacity>
           )}
         </View>
       </ReanimatedSafeAreaView>

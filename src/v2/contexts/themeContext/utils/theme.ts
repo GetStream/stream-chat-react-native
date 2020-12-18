@@ -186,6 +186,14 @@ export type Theme = {
       leftContainer?: ViewStyle;
       rightContainer?: ViewStyle;
     };
+    grid: {
+      gridAvatar?: ImageStyle;
+      gridAvatarWrapper?: ViewStyle;
+      gridImage?: ViewStyle;
+      handle?: ViewStyle;
+      handleText?: TextStyle;
+      overlay?: ViewStyle;
+    };
     header: {
       centerContainer?: ViewStyle;
       container?: ViewStyle;
@@ -638,6 +646,7 @@ export const defaultTheme: Theme = {
   },
   imageGallery: {
     footer: {},
+    grid: {},
     header: {},
   },
   loadingDots: {

@@ -114,6 +114,9 @@ type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
     ImageGalleryCustomComponents<Us> & {
       closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
       i18nInstance?: Streami18n;
+      imageGalleryGridHandleHeight?: number;
+      imageGalleryGridSnapPoints?: [string | number, string | number];
+      numberOfImageGalleryGridColumns?: number;
       openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
       value?: Partial<OverlayContextValue>;
     }
@@ -152,10 +155,13 @@ export const OverlayProvider = <
     FileSelectorIcon = DefaultFileSelectorIcon,
     i18nInstance,
     imageGalleryCustomComponents,
+    imageGalleryGridHandleHeight,
+    imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
+    numberOfImageGalleryGridColumns,
     openPicker = (ref) => {
       if (ref.current) {
         ref.current.snapTo(0);
@@ -288,6 +294,11 @@ export const OverlayProvider = <
                   />
                   <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
                     imageGalleryCustomComponents={imageGalleryCustomComponents}
+                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                    numberOfImageGalleryGridColumns={
+                      numberOfImageGalleryGridColumns
+                    }
                     overlayOpacity={overlayOpacity}
                     visible={overlay === 'gallery'}
                   />
