@@ -2,6 +2,7 @@
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
@@ -32,6 +33,11 @@ import { useRef } from 'react';
 import { RemoveUser } from '../icons/RemoveUser';
 import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import { RoundButton } from '../components/RoundButton';
+import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
+import { AddUser } from '../icons/AddUser';
+import { AddMemberBottomSheet } from '../components/AddMemberBottomSheet';
+import { useEffect } from 'react';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -88,7 +94,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     setWildcard(() => () => (
       <ConfirmationBottomSheet
         confirmText={'DELETE'}
-        onCancel={cancelLeaveGroup}
+        onCancel={dismissBottomSheet}
         onConfirm={leaveGroup}
         subtext={'Are you sure you want to leave this group?'}
         title={'Leave Group'}
@@ -101,10 +107,23 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   /**
    * Cancels the confirmation sheet.
    */
-  const cancelLeaveGroup = () => {
+  const dismissBottomSheet = () => {
     setBlurType(undefined);
     setOverlay('none');
     setWildcard(undefined);
+  };
+
+  const openAddMembersSheet = () => {
+    if (!chatClient?.user?.id) return;
+
+    setWildcard(() => (
+      <AddMemberBottomSheet
+        channel={channel}
+        dismissHandler={dismissBottomSheet}
+      />
+    ));
+    setBlurType('dark');
+    setOverlay('wildcard');
   };
 
   /**
@@ -129,10 +148,25 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     });
   };
 
+  // useEffect(() => {
+  //   setWildcard(() => <AddMemberBottomSheet />);
+  // }, []);
   if (!channel) return null;
   return (
     <>
-      <ScreenHeader subtitle={`${membersStatus}`} title={displayName} />
+      <ScreenHeader
+        RightContent={() => (
+          <RoundButton
+            onPress={() => {
+              openAddMembersSheet();
+            }}
+          >
+            <AddUser fill={'#006CFF'} height={25} width={25} />
+          </RoundButton>
+        )}
+        subtitle={`${membersStatus}`}
+        title={displayName}
+      />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>
           {members.map((m) => {
