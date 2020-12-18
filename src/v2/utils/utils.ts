@@ -10,6 +10,7 @@ import { WutReaction } from '../icons/WutReaction';
 import { compiledEmojis, Emoji } from '../../emoji-data/compiled';
 
 import type React from 'react';
+import type { DebouncedFunc } from 'lodash';
 import type {
   Channel,
   ChannelMemberAPIResponse,
@@ -174,7 +175,23 @@ const queryMembers = async <
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
 ): Promise<void> => {
-  await debounce(
+  await queryMembersDebounced(channel, query, onReady);
+};
+
+const queryMembersDebounced = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
+  query: SuggestionUser<Us>['name'],
+  onReady?: (users: SuggestionUser<Us>[]) => void,
+): DebouncedFunc<() => Promise<void>> =>
+  debounce(
     async () => {
       if (typeof query === 'string') {
         const response = (await ((channel as unknown) as Channel).queryMembers({
@@ -193,7 +210,6 @@ const queryMembers = async <
     200,
     { leading: false, trailing: true },
   );
-};
 
 export const isCommandTrigger = (trigger: Trigger): trigger is '/' =>
   trigger === '/';

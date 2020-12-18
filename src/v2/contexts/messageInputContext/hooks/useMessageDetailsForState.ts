@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 
-import {
+import { generateRandomId } from '../../../utils/utils';
+
+import type {
   FileUpload,
   ImageUpload,
-  isEditingBoolean,
   MessageInputContextValue,
 } from '../MessageInputContext';
-
-import { generateRandomId } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -19,6 +18,18 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+
+export const isEditingBoolean = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  editing: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>['editing'],
+): editing is boolean => typeof editing === 'boolean';
 
 export const useMessageDetailsForState = <
   At extends DefaultAttachmentType = DefaultAttachmentType,

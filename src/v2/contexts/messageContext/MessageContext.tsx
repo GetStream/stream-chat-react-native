@@ -116,141 +116,6 @@ export type MessageContextValue<
 
 export const MessageContext = React.createContext({} as MessageContextValue);
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      actionsEnabled: prevActionsEnabled,
-      alignment: prevAlignment,
-      animatedLongPress: prevAnimateLongPress,
-      files: prevFiles,
-      groupStyles: prevGroupStyles,
-      hasReactions: prevHasReactions,
-      images: prevImages,
-      lastGroupMessage: prevLastGroupMessage,
-      lastReceivedId: prevLastReceivedId,
-      message: prevMessage,
-      reactions: prevReactions,
-      showAvatar: prevShowAvatar,
-      showMessageStatus: prevShowMessageStatus,
-      threadList: prevThreadList,
-    },
-  } = prevProps;
-  const {
-    value: {
-      actionsEnabled: nextActionsEnabled,
-      alignment: nextAlignment,
-      animatedLongPress: nextAnimateLongPress,
-      files: nextFiles,
-      groupStyles: nextGroupStyles,
-      hasReactions: nextHasReactions,
-      images: nextImages,
-      lastGroupMessage: nextLastGroupMessage,
-      lastReceivedId: nextLastReceivedId,
-      message: nextMessage,
-      reactions: nextReactions,
-      showAvatar: nextShowAvatar,
-      showMessageStatus: nextShowMessageStatus,
-      threadList: nextThreadList,
-    },
-  } = nextProps;
-
-  const hasReactionsEqual = prevHasReactions === nextHasReactions;
-  if (!hasReactionsEqual) return false;
-
-  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
-  if (!lastGroupMessageEqual) return false;
-
-  const lastReceivedIdEqual = prevLastReceivedId === nextLastReceivedId;
-  if (!lastReceivedIdEqual) return false;
-
-  const groupStylesEqual = prevGroupStyles.length === nextGroupStyles.length;
-  if (!groupStylesEqual) return false;
-
-  const actionsEnabledEqual = prevActionsEnabled === nextActionsEnabled;
-  if (!actionsEnabledEqual) return false;
-
-  const alignmentEqual = prevAlignment === nextAlignment;
-  if (!alignmentEqual) return false;
-
-  const showAvatarEqual = prevShowAvatar === nextShowAvatar;
-  if (!showAvatarEqual) return false;
-
-  const showMessageStatusEqual =
-    prevShowMessageStatus === nextShowMessageStatus;
-  if (!showMessageStatusEqual) return false;
-
-  const threadListEqual = prevThreadList === nextThreadList;
-  if (!threadListEqual) return false;
-
-  const filesEqual = prevFiles.length === nextFiles.length;
-  if (!filesEqual) return false;
-
-  const imagesEqual =
-    prevImages.length === nextImages.length &&
-    prevImages.every(
-      (image, index) =>
-        image.image_url === nextImages[index].image_url &&
-        image.thumb_url === nextImages[index].thumb_url,
-    );
-  if (!imagesEqual) return false;
-
-  const reactionsEqual =
-    prevReactions.length === nextReactions.length &&
-    prevReactions.every(
-      (latestReaction, index) =>
-        nextReactions[index].own === latestReaction.own &&
-        nextReactions[index].type === latestReaction.type,
-    );
-  if (!reactionsEqual) return false;
-
-  const animateLongPressQual = prevAnimateLongPress === nextAnimateLongPress;
-  if (!animateLongPressQual) return false;
-
-  const attachmentsEqual =
-    (Array.isArray(prevMessage.attachments) &&
-      Array.isArray(nextMessage.attachments) &&
-      prevMessage.attachments.length === nextMessage.attachments.length) ||
-    prevMessage.attachments === nextMessage.attachments;
-  if (!attachmentsEqual) return false;
-
-  const latestReactionsEqual =
-    (Array.isArray(prevMessage.latest_reactions) &&
-      Array.isArray(nextMessage.latest_reactions) &&
-      prevMessage.latest_reactions.length ===
-        nextMessage.latest_reactions.length) ||
-    prevMessage.latest_reactions === nextMessage.latest_reactions;
-  if (!latestReactionsEqual) return false;
-
-  const messageEqual =
-    prevMessage.deleted_at === nextMessage.deleted_at &&
-    prevMessage.status === nextMessage.status &&
-    prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
-  if (!messageEqual) return false;
-
-  return true;
-};
-
-const MessageProviderMemoized = React.memo(
-  MessageContext.Provider,
-  areEqual,
-) as typeof MessageContext.Provider;
-
 export const MessageProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -265,9 +130,9 @@ export const MessageProvider = <
 }: PropsWithChildren<{
   value: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessageProviderMemoized value={(value as unknown) as MessageContextValue}>
+  <MessageContext.Provider value={(value as unknown) as MessageContextValue}>
     {children}
-  </MessageProviderMemoized>
+  </MessageContext.Provider>
 );
 
 export const useMessageContext = <

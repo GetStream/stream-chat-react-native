@@ -6,6 +6,10 @@ import { CommandsHeader } from './CommandsHeader';
 import { EmojisHeader } from './EmojisHeader';
 
 import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
   MessageInputContextValue,
   useMessageInputContext,
 } from '../../contexts/messageInputContext/MessageInputContext';
@@ -48,6 +52,7 @@ import type { Emoji } from '../../../emoji-data/compiled';
 
 const styles = StyleSheet.create({
   inputBox: {
+    flex: 1,
     fontSize: 14,
     includeFontPadding: false, // for android vertical text centering
     padding: 0, // removal of default text input padding on android
@@ -70,15 +75,18 @@ type AutoCompleteInputPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  | 'additionalTextInputProps'
-  | 'numberOfLines'
-  | 'onChange'
-  | 'setInputBoxRef'
-  | 'text'
-  | 'triggerSettings'
-> &
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'giphyEnabled'> &
+  Pick<
+    MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'additionalTextInputProps'
+    | 'giphyActive'
+    | 'numberOfLines'
+    | 'onChange'
+    | 'setGiphyActive'
+    | 'setInputBoxRef'
+    | 'text'
+    | 'triggerSettings'
+  > &
   Pick<
     SuggestionsContextValue<Co, Us>,
     'closeSuggestions' | 'openSuggestions' | 'updateSuggestions'
@@ -109,9 +117,12 @@ const AutoCompleteInputWithContext = <
   const {
     additionalTextInputProps,
     closeSuggestions,
+    giphyActive,
+    giphyEnabled,
     numberOfLines,
     onChange,
     openSuggestions,
+    setGiphyActive,
     setInputBoxRef,
     t,
     text,
@@ -266,7 +277,15 @@ const AutoCompleteInputWithContext = <
     )}${newTokenString}`;
 
     stopTracking();
-    onChange(text.replace(textToModify, modifiedText));
+
+    const newText = text.replace(textToModify, modifiedText);
+
+    if (giphyEnabled && newText.startsWith('/giphy ')) {
+      onChange(newText.slice(7)); // 7 because of '/giphy ' length
+      setGiphyActive(true);
+    } else {
+      onChange(newText);
+    }
 
     selectionEnd.current = newCaretPosition || 0;
 
@@ -363,11 +382,11 @@ const AutoCompleteInputWithContext = <
 
   const handleSuggestions = async (text: string) => {
     if (
-      text.slice(selectionEnd.current - 1, selectionEnd.current) === ' ' &&
+      /\s/.test(text.slice(selectionEnd.current - 1, selectionEnd.current)) &&
       isTrackingStarted.current
     ) {
       stopTracking();
-    } else if (!(await handleCommand(text))) {
+    } else if (giphyEnabled && !(await handleCommand(text))) {
       const mentionTokenMatch = text
         .slice(0, selectionEnd.current)
         .match(/(?!^|\W)?@[^\s]*\s?[^\s]*$/g);
@@ -389,8 +408,13 @@ const AutoCompleteInputWithContext = <
   return (
     <TextInput
       multiline
-      onChangeText={(text) => {
-        handleChange(text);
+      onChangeText={(newText) => {
+        if (giphyEnabled && newText.startsWith('/giphy ')) {
+          handleChange(newText.slice(7)); // 7 because of '/giphy' length
+          setGiphyActive(true);
+        } else {
+          handleChange(newText);
+        }
       }}
       onContentSizeChange={({
         nativeEvent: {
@@ -402,7 +426,7 @@ const AutoCompleteInputWithContext = <
         }
       }}
       onSelectionChange={handleSelectionChange}
-      placeholder={t('Send a message')}
+      placeholder={giphyActive ? t('Search GIFs') : t('Send a message')}
       placeholderTextColor={textGrey}
       ref={setInputBoxRef}
       style={[
@@ -431,8 +455,11 @@ const areEqual = <
   prevProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: AutoCompleteInputPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { t: prevT, text: prevText } = prevProps;
-  const { t: nextT, text: nextText } = nextProps;
+  const { giphyActive: prevGiphyActive, t: prevT, text: prevText } = prevProps;
+  const { giphyActive: nextGiphyActive, t: nextT, text: nextText } = nextProps;
+
+  const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
+  if (!giphyActiveEqual) return false;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
@@ -459,10 +486,13 @@ export const AutoCompleteInput = <
 >(
   props: AutoCompleteInputProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { giphyEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTextInputProps,
+    giphyActive,
     numberOfLines,
     onChange,
+    setGiphyActive,
     setInputBoxRef,
     text,
     triggerSettings,
@@ -479,9 +509,12 @@ export const AutoCompleteInput = <
       {...{
         additionalTextInputProps,
         closeSuggestions,
+        giphyActive,
+        giphyEnabled,
         numberOfLines,
         onChange,
         openSuggestions,
+        setGiphyActive,
         setInputBoxRef,
         t,
         text,

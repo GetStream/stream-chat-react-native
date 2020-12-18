@@ -149,6 +149,7 @@ const ChannelListMessengerWithContext = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
     loadingNextPage,
@@ -219,9 +220,11 @@ const ChannelListMessengerWithContext = <
         ListFooterComponent={
           loadingNextPage ? <FooterLoadingIndicator /> : undefined
         }
-        // ListHeaderComponent={() =>
-        //   channels.length ? <MemoizedHeaderComponent t={t} /> : null
-        // }
+        ListHeaderComponent={() =>
+          channels.length && ListHeaderComponent ? (
+            <ListHeaderComponent />
+          ) : null
+        }
         onEndReached={() => {
           if (loadNextPage) {
             loadNextPage();
@@ -341,6 +344,7 @@ export const ChannelListMessenger = <
     error,
     FooterLoadingIndicator,
     forceUpdate,
+    ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
     LoadingIndicator,
@@ -364,6 +368,7 @@ export const ChannelListMessenger = <
         error,
         FooterLoadingIndicator,
         forceUpdate,
+        ListHeaderComponent,
         loadingChannels,
         LoadingErrorIndicator,
         LoadingIndicator,

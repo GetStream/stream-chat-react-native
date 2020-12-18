@@ -20,6 +20,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { useCreateMessageContext } from './hooks/useCreateMessageContext';
+
 import {
   ChannelContextValue,
   useChannelContext,
@@ -600,7 +602,7 @@ const MessageWithContext = <
       ? () => showMessageOverlay(false)
       : () => null;
 
-  const messageContext = {
+  const messageContext = useCreateMessageContext({
     actionsEnabled,
     alignment,
     animatedLongPress,
@@ -631,7 +633,7 @@ const MessageWithContext = <
     showMessageStatus:
       typeof showMessageStatus === 'boolean' ? showMessageStatus : isMyMessage,
     threadList,
-  };
+  });
 
   const onLongPressTouchable = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
     {
@@ -717,9 +719,11 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.readBy === nextMessage.readBy &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.text === nextMessage.text;
+    prevMessage.text === nextMessage.text &&
+    prevMessage.updated_at === nextMessage.updated_at;
   if (!messageEqual) return false;
 
   const messageUserBannedEqual =

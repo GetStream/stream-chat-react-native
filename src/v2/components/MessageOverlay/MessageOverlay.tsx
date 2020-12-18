@@ -343,7 +343,7 @@ const MessageOverlayWithContext = <
                           : styles.alignEnd,
                       ]}
                     >
-                      <OverlayReactionList
+                      <OverlayReactionList<At, Ch, Co, Ev, Me, Re, Us>
                         messageLayout={messageLayout}
                         ownReactionTypes={
                           (message?.own_reactions as ReactionResponse<
@@ -415,7 +415,7 @@ const MessageOverlayWithContext = <
                                 case 'attachments':
                                   return otherAttachments?.map(
                                     (attachment, attachmentIndex) => (
-                                      <Attachment
+                                      <Attachment<At, Ch, Co, Ev, Me, Re, Us>
                                         attachment={attachment}
                                         key={`${message.id}-${attachmentIndex}`}
                                       />
@@ -423,7 +423,15 @@ const MessageOverlayWithContext = <
                                   );
                                 case 'files':
                                   return (
-                                    <FileAttachmentGroup
+                                    <FileAttachmentGroup<
+                                      At,
+                                      Ch,
+                                      Co,
+                                      Ev,
+                                      Me,
+                                      Re,
+                                      Us
+                                    >
                                       files={files}
                                       key={`file_attachment_group_${messageContentOrderIndex}`}
                                       messageId={message.id}
@@ -431,7 +439,7 @@ const MessageOverlayWithContext = <
                                   );
                                 case 'gallery':
                                   return (
-                                    <Gallery
+                                    <Gallery<At, Ch, Co, Ev, Me, Re, Us>
                                       alignment={alignment}
                                       groupStyles={groupStyles}
                                       images={images}
@@ -465,7 +473,9 @@ const MessageOverlayWithContext = <
                         </View>
                       </Animated.View>
                       {messageActions && (
-                        <MessageActions showScreen={showScreen} />
+                        <MessageActions<At, Ch, Co, Ev, Me, Re, Us>
+                          showScreen={showScreen}
+                        />
                       )}
                       {!!messageReactionTitle &&
                       message.latest_reactions &&

@@ -4,13 +4,11 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { TouchableOpacityProps } from 'react-native';
 import type { DebouncedFunc } from 'lodash';
-import type {
-  ChannelState,
-  MessageResponse,
-  Message as StreamMessage,
-} from 'stream-chat';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
+import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
+
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
 import type { AttachmentActionsProps } from '../../components/Attachment/AttachmentActions';
 import type { CardProps } from '../../components/Attachment/Card';
@@ -30,7 +28,6 @@ import type { MarkdownRules } from '../../components/Message/MessageSimple/utils
 import type { Message } from '../../components/MessageList/hooks/useMessageList';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
-import type { TDateTimeParserInput } from '../../contexts/translationContext/TranslationContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -77,12 +74,14 @@ export type MessagesContextValue<
    * Custom UI component for attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx
    */
-  Attachment: React.ComponentType<AttachmentProps<At>>;
+  Attachment: React.ComponentType<AttachmentProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component to display attachment actions. e.g., send, shuffle, cancel in case of giphy
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/AttachmentActions.tsx
    */
-  AttachmentActions: React.ComponentType<AttachmentActionsProps<At>>;
+  AttachmentActions: React.ComponentType<
+    AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component for attachment icon for type 'file' attachment.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
@@ -92,19 +91,23 @@ export type MessagesContextValue<
    * Custom UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx
    */
-  Card: React.ComponentType<CardProps<At>>;
+  Card: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /** Should keyboard be dismissed when messaged is touched */
   dismissKeyboardOnMessageTouch: boolean;
   /**
    * Custom UI component to display File type attachment.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachment.tsx
    */
-  FileAttachment: React.ComponentType<FileAttachmentProps<At>>;
+  FileAttachment: React.ComponentType<
+    FileAttachmentProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component to display group of File type attachments or multiple file attachments (in single message).
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileAttachmentGroup.tsx
    */
-  FileAttachmentGroup: React.ComponentType<FileAttachmentGroupProps<At>>;
+  FileAttachmentGroup: React.ComponentType<
+    FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component to display image attachments.
    * Defaults to https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Gallery.tsx
@@ -118,12 +121,14 @@ export type MessagesContextValue<
   hasMore: boolean;
   loadingMore: boolean;
   loadMore: DebouncedFunc<() => Promise<void>>;
-  Message: React.ComponentType<MessageProps>;
+  Message: React.ComponentType<MessageProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * Custom UI component for the avatar next to a message
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageAvatar.tsx
    **/
-  MessageAvatar: React.ComponentType<MessageAvatarProps>;
+  MessageAvatar: React.ComponentType<
+    MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component for message content
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/MessageContent.tsx
@@ -159,11 +164,10 @@ export type MessagesContextValue<
    * Custom UI component to display reaction list.
    * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx
    */
-  ReactionList: React.ComponentType<ReactionListProps>;
-  removeMessage: (message: {
-    id: string;
-    parent_id?: StreamMessage<At, Me, Us>['parent_id'];
-  }) => void;
+  ReactionList: React.ComponentType<
+    ReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  removeMessage: (message: { id: string; parent_id?: string }) => void;
   /**
    * Custom UI component for reply component.
    *
@@ -240,100 +244,6 @@ export type MessagesContextValue<
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      additionalTouchableProps: prevAdditionalTouchableProps,
-      disableTypingIndicator: prevDisableTypingIndicator,
-      dismissKeyboardOnMessageTouch: prevDismissKeyboardOnMessageTouch,
-      hasMore: prevHasMore,
-      loadingMore: prevLoadingMore,
-      markdownRules: prevMarkdownRules,
-      messageContentOrder: prevMessageContentOrder,
-      messages: prevMessages,
-      supportedReactions: prevSupportedReactions,
-    },
-  } = prevProps;
-  const {
-    value: {
-      additionalTouchableProps: nextAdditionalTouchableProps,
-      disableTypingIndicator: nextDisableTypingIndicator,
-      dismissKeyboardOnMessageTouch: nextDismissKeyboardOnMessageTouch,
-      hasMore: nextHasMore,
-      loadingMore: nextLoadingMore,
-      markdownRules: nextMarkdownRules,
-      messageContentOrder: nextMessageContentOrder,
-      messages: nextMessages,
-      supportedReactions: nextSupportedReactions,
-    },
-  } = nextProps;
-
-  const disableTypingIndicatorEqual =
-    prevDisableTypingIndicator === nextDisableTypingIndicator;
-  if (!disableTypingIndicatorEqual) return false;
-
-  const dismissKeyboardOnMessageTouchEqual =
-    prevDismissKeyboardOnMessageTouch === nextDismissKeyboardOnMessageTouch;
-  if (!dismissKeyboardOnMessageTouchEqual) return false;
-
-  const hasMoreEqual = prevHasMore === nextHasMore;
-  if (!hasMoreEqual) return false;
-
-  const loadingMoreEqual = prevLoadingMore === nextLoadingMore;
-  if (!loadingMoreEqual) return false;
-
-  const messageContentOrderEqual =
-    prevMessageContentOrder.length === nextMessageContentOrder.length &&
-    prevMessageContentOrder.every(
-      (messageContentType, index) =>
-        messageContentType === nextMessageContentOrder[index],
-    );
-  if (!messageContentOrderEqual) return false;
-
-  const supportedReactionsEqual =
-    prevSupportedReactions.length === nextSupportedReactions.length;
-  if (!supportedReactionsEqual) return false;
-
-  const messagesEqual = prevMessages.length === nextMessages.length;
-  if (!messagesEqual) return false;
-
-  const additionalTouchablePropsEqual =
-    !!prevAdditionalTouchableProps &&
-    !!nextAdditionalTouchableProps &&
-    Object.keys(prevAdditionalTouchableProps).length ===
-      Object.keys(nextAdditionalTouchableProps).length;
-  if (!additionalTouchablePropsEqual) return false;
-
-  const markdownRulesEqual =
-    !!prevMarkdownRules &&
-    !!nextMarkdownRules &&
-    Object.keys(prevMarkdownRules).length ===
-      Object.keys(nextMarkdownRules).length;
-  if (!markdownRulesEqual) return false;
-
-  return true;
-};
-
-const MessagesProviderMemoized = React.memo(
-  MessagesContext.Provider,
-  areEqual,
-) as typeof MessagesContext.Provider;
-
 export const MessagesProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -348,9 +258,9 @@ export const MessagesProvider = <
 }: PropsWithChildren<{
   value: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <MessagesProviderMemoized value={(value as unknown) as MessagesContextValue}>
+  <MessagesContext.Provider value={(value as unknown) as MessagesContextValue}>
     {children}
-  </MessagesProviderMemoized>
+  </MessagesContext.Provider>
 );
 
 export const useMessagesContext = <

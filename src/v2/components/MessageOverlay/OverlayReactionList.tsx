@@ -61,8 +61,16 @@ const styles = StyleSheet.create({
   },
 });
 
-type ReactionButtonProps = Pick<
-  OverlayReactionListPropsWithContext,
+type ReactionButtonProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = Pick<
+  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'ownReactionTypes' | 'handleReaction' | 'setOverlay'
 > & {
   Icon: React.FC<IconProps>;
@@ -72,7 +80,17 @@ type ReactionButtonProps = Pick<
   type: string;
 };
 
-export const ReactionButton: React.FC<ReactionButtonProps> = (props) => {
+export const ReactionButton = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: ReactionButtonProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
   const {
     handleReaction,
     Icon,
@@ -347,7 +365,7 @@ const OverlayReactionListWithContext = <
           style={[styles.reactionList, animatedStyle, reactionList]}
         >
           {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
-            <ReactionButton
+            <ReactionButton<At, Ch, Co, Ev, Me, Re, Us>
               handleReaction={handleReaction}
               Icon={Icon}
               index={index}

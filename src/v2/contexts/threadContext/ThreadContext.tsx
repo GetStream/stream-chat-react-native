@@ -40,62 +40,6 @@ export type ThreadContextValue<
 
 export const ThreadContext = React.createContext({} as ThreadContextValue);
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<{
-    value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-  nextProps: PropsWithChildren<{
-    value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
-  }>,
-) => {
-  const {
-    value: {
-      thread: prevThread,
-      threadHasMore: prevThreadHasMore,
-      threadLoadingMore: prevThreadLoadingMore,
-      threadMessages: prevThreadMessage,
-    },
-  } = prevProps;
-  const {
-    value: {
-      thread: nextThread,
-      threadHasMore: nextThreadHasMore,
-      threadLoadingMore: nextThreadLoadingMore,
-      threadMessages: nextThreadMessages,
-    },
-  } = nextProps;
-
-  const threadHasMoreEqual = prevThreadHasMore === nextThreadHasMore;
-  if (!threadHasMoreEqual) return false;
-
-  const threadLoadingMoreEqual =
-    prevThreadLoadingMore === nextThreadLoadingMore;
-  if (!threadLoadingMoreEqual) return false;
-
-  const threadEqual =
-    !!prevThread && !!nextThread && prevThread.id === nextThread.id;
-  if (!threadEqual) return false;
-
-  const threadMessagesEqual =
-    prevThreadMessage.length === nextThreadMessages.length;
-  if (!threadMessagesEqual) return false;
-
-  return true;
-};
-
-const ThreadProviderMemoized = React.memo(
-  ThreadContext.Provider,
-  areEqual,
-) as typeof ThreadContext.Provider;
-
 export const ThreadProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -110,9 +54,9 @@ export const ThreadProvider = <
 }: PropsWithChildren<{
   value: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>;
 }>) => (
-  <ThreadProviderMemoized value={(value as unknown) as ThreadContextValue}>
+  <ThreadContext.Provider value={(value as unknown) as ThreadContextValue}>
     {children}
-  </ThreadProviderMemoized>
+  </ThreadContext.Provider>
 );
 
 export const useThreadContext = <
