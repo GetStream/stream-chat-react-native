@@ -31,6 +31,7 @@ import { Check } from '../icons/Check';
 import { useRef } from 'react';
 import { RemoveUser } from '../icons/RemoveUser';
 import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
+import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -60,7 +61,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const memberCount = Object.keys(channel.state.members).length;
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(
     chatClient?.mutedChannels &&
@@ -77,6 +77,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const [textInputFocused, setTextInputFocused] = useState(false);
   const navigation = useNavigation();
   const displayName = useChannelPreviewDisplayName(channel, 30);
+  const membersStatus = useChannelMembersStatus(channel);
   const { colors } = useTheme() as AppTheme;
 
   /**
@@ -131,7 +132,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   if (!channel) return null;
   return (
     <>
-      <ScreenHeader subtitle={`${memberCount} members`} title={displayName} />
+      <ScreenHeader subtitle={`${membersStatus}`} title={displayName} />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>
           {members.map((m) => {

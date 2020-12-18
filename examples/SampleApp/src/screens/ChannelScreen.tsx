@@ -44,6 +44,7 @@ import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import truncate from 'lodash/truncate';
 import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -74,7 +75,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   >();
   const typing = useTypingString();
   const displayName = useChannelPreviewDisplayName(channel, 30);
-
+  const membersStatus = useChannelMembersStatus(channel);
   if (!chatClient || !channel) return null;
 
   const isOneOnOneConversation =
@@ -117,11 +118,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           />
         </TouchableOpacity>
       )}
-      subtitle={
-        typing
-          ? typing
-          : `${Object.keys(channel?.state.members).length} members`
-      }
+      subtitle={typing ? typing : `${membersStatus}`}
       title={displayName}
     />
   );
@@ -185,4 +182,3 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     </View>
   );
 };
-
