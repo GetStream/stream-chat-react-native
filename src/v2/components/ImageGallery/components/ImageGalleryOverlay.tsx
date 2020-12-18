@@ -29,8 +29,8 @@ type Props = {
 
 export const ImageGalleryOverlay: React.FC<Props> = (props) => {
   const {
-    closeGridView,
     animatedBottomSheetIndex,
+    closeGridView,
     currentBottomSheetIndex,
   } = props;
 

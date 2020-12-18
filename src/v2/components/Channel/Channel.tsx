@@ -123,6 +123,7 @@ export type ChannelPropsWithContext<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'channel'
     | 'EmptyStateIndicator'
+    | 'enforceUniqueReaction'
     | 'giphyEnabled'
     | 'LoadingIndicator'
     | 'StickyHeader'
@@ -279,6 +280,7 @@ export const ChannelWithContext = <
     doSendMessageRequest,
     doUpdateMessageRequest,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
+    enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
@@ -960,6 +962,7 @@ export const ChannelWithContext = <
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
+    enforceUniqueReaction,
     error,
     eventHistory,
     giphyEnabled:

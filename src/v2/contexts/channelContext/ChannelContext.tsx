@@ -27,6 +27,7 @@ export type ChannelContextValue<
   Us extends UnknownType = DefaultUserType
 > = {
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
+  enforceUniqueReaction: boolean;
   error: boolean;
   eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
   giphyEnabled: boolean;

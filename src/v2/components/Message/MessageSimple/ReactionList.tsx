@@ -158,7 +158,7 @@ const ReactionListWithContext = <
       (Number(leftAlign.marginRight) || 0) +
       (Number(spacer.width) || 0) -
       radius * 0.5
-    : width - screenPadding * 2 - messageContentWidth - radius * 1.5;
+    : width - screenPadding * 2 - messageContentWidth;
   const x2 = x1 + radius * 2 * (alignmentLeft ? 1 : -1);
   const y1 = reactionSize + radius * 2;
   const y2 = reactionSize - radius;
