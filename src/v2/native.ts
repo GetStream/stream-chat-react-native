@@ -100,9 +100,9 @@ type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
 type Handlers = {
-  FlatList: typeof DefaultFlatList;
   BlurView?: BlurView;
   deleteFile?: DeleteFile;
+  FlatList?: typeof DefaultFlatList;
   getPhotos?: GetPhotos;
   NetInfo?: NetInfo;
   pickDocument?: PickDocument;
