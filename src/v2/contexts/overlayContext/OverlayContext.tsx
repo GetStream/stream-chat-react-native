@@ -54,6 +54,7 @@ import { BlurView } from '../../native';
 import { useStreami18n } from '../../utils/useStreami18n';
 
 import type BottomSheet from '@gorhom/bottom-sheet';
+import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 import type { Theme } from '../themeContext/utils/theme';
 
@@ -68,7 +69,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
-import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 export type BlurType = 'light' | 'dark' | undefined;
 
@@ -98,29 +98,29 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
   {} as OverlayContextValue,
 );
 
-type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
-  Partial<AttachmentPickerProps> &
-    Partial<
-      Pick<
-        AttachmentPickerContextValue,
-        | 'attachmentPickerBottomSheetHeight'
-        | 'attachmentSelectionBarHeight'
-        | 'bottomInset'
-        | 'CameraSelectorIcon'
-        | 'FileSelectorIcon'
-        | 'ImageSelectorIcon'
-      >
-    > &
-    ImageGalleryCustomComponents<Us> & {
-      closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
-      i18nInstance?: Streami18n;
-      imageGalleryGridHandleHeight?: number;
-      imageGalleryGridSnapPoints?: [string | number, string | number];
-      numberOfImageGalleryGridColumns?: number;
-      openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
-      value?: Partial<OverlayContextValue>;
-    }
->;
+type Props<
+  Us extends UnknownType = DefaultUserType
+> = Partial<AttachmentPickerProps> &
+  Partial<
+    Pick<
+      AttachmentPickerContextValue,
+      | 'attachmentPickerBottomSheetHeight'
+      | 'attachmentSelectionBarHeight'
+      | 'bottomInset'
+      | 'CameraSelectorIcon'
+      | 'FileSelectorIcon'
+      | 'ImageSelectorIcon'
+    >
+  > &
+  ImageGalleryCustomComponents<Us> & {
+    closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    i18nInstance?: Streami18n;
+    imageGalleryGridHandleHeight?: number;
+    imageGalleryGridSnapPoints?: [string | number, string | number];
+    numberOfImageGalleryGridColumns?: number;
+    openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    value?: Partial<OverlayContextValue>;
+  };
 
 const WildcardDefault: React.FC<{ visible: boolean }> = () => null;
 
@@ -133,7 +133,7 @@ export const OverlayProvider = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: Props<Us>,
+  props: PropsWithChildren<Props<Us>>,
 ) => {
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
@@ -283,7 +283,7 @@ export const OverlayProvider = <
                       style={[StyleSheet.absoluteFill, { height, width }]}
                     />
                   </Animated.View>
-                  {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
+                  {Wildcard}
                   <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
                     overlayOpacity={overlayOpacity}
                     visible={overlay === 'channelInfo'}

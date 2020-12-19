@@ -180,7 +180,7 @@ export const Thread = <
 
   if (!thread) return null;
 
-  const numberOfReplies = thread.reply_count;
+  const replyCount = thread.reply_count;
 
   const footerComponent = (
     <View style={styles.threadHeaderContainer}>
@@ -229,12 +229,10 @@ export const Thread = <
           </Defs>
         </Svg>
         <Text style={[styles.text, { color: textGrey }, text]}>
-          {numberOfReplies === 1
-            ? t('{{ numberOfReplies }} Reply', {
-                numberOfReplies,
-              })
-            : t('{{ numberOfReplies }} Replies', {
-                numberOfReplies,
+          {replyCount === 1
+            ? t('1 Reply')
+            : t('{{ replyCount }} Replies', {
+                replyCount,
               })}
         </Text>
       </View>

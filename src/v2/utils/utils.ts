@@ -6,8 +6,7 @@ import { LoveReaction } from '../icons/LoveReaction';
 import { ThumbsDownReaction } from '../icons/ThumbsDownReaction';
 import { ThumbsUpReaction } from '../icons/ThumbsUpReaction';
 import { WutReaction } from '../icons/WutReaction';
-
-import { compiledEmojis, Emoji } from '../../emoji-data/compiled';
+import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 
 import type React from 'react';
 import type { DebouncedFunc } from 'lodash';
@@ -324,15 +323,11 @@ export const ACITriggerSettings = <
     dataProvider: (query, text, onReady) => {
       if (text.indexOf('/') !== 0) return [];
 
-      let selectedCommands = [];
-
-      if (!query) {
-        selectedCommands = getCommands(channel);
-      } else {
-        selectedCommands = getCommands(channel).filter(
-          (command) => query && command.name?.indexOf(query) !== -1,
-        );
-      }
+      const selectedCommands = !query
+        ? getCommands(channel)
+        : getCommands(channel).filter(
+            (command) => query && command.name?.indexOf(query) !== -1,
+          );
 
       // sort alphabetically unless the you're matching the first char
       selectedCommands.sort((a, b) => {
@@ -466,14 +461,14 @@ export const vw = (percentageWidth: number, rounded = false) => {
 };
 
 export const vh = (percentageHeight: number, rounded = false) => {
-  let height = Dimensions.get('window').height;
-
   /**
    * Android includes `statusbar` height to the Dimensions.get('window').height
    */
-  if (Platform.OS === 'android' && StatusBar.currentHeight) {
-    height -= StatusBar.currentHeight;
-  }
+  const height =
+    Dimensions.get('window').height -
+    (Platform.OS === 'android' && StatusBar.currentHeight
+      ? StatusBar.currentHeight
+      : 0);
 
   const value = height * (percentageHeight / 100);
   return rounded ? Math.round(value) : value;

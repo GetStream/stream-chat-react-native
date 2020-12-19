@@ -96,6 +96,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                 {
                   color: colors.text,
                   fontSize: 16,
+                  fontWeight: '700',
                 },
               ]}
             >

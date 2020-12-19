@@ -58,9 +58,9 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/generateRandomId';
 
 import { NetworkDownIndicator as DefaultNetworkDownIndicator } from './NetworkDownIndicator';
-import { generateRandomId } from '../../utils/generateRandomId';
 
 const ListContainer = (styled(FlatList)`
   flex: 1;

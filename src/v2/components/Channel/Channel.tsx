@@ -16,7 +16,6 @@ import Immutable from 'seamless-immutable';
 import {
   ChannelState,
   Channel as ChannelType,
-  Event,
   EventHandler,
   logChatPromiseExecution,
   MessageResponse,
@@ -105,10 +104,14 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { generateRandomId } from '../../utils/utils';
+import { useTargetedMessage } from './hooks/useTargetedMessage';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
+
+const limitForUnreadScrolledUp = 4;
 
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -125,6 +128,7 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
+    | 'initialScrollToFirstUnreadMessage'
     | 'LoadingIndicator'
     | 'StickyHeader'
   >
@@ -239,6 +243,7 @@ export type ChannelPropsWithContext<
      * Custom loading error indicator to override the Stream default
      */
     LoadingErrorIndicator?: React.ComponentType<LoadingErrorProps>;
+    messageId?: string;
   };
 
 export const ChannelWithContext = <
@@ -291,6 +296,7 @@ export const ChannelWithContext = <
     hasFilePicker = true,
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
+    initialScrollToFirstUnreadMessage = false,
     initialValue,
     Input,
     keyboardBehavior,
@@ -299,6 +305,7 @@ export const ChannelWithContext = <
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
     LoadingIndicator = LoadingIndicatorDefault,
     markdownRules,
+    messageId,
     maxNumberOfFiles = 10,
     Message = MessageDefault,
     MessageAvatar = MessageAvatarDefault,
@@ -338,38 +345,21 @@ export const ChannelWithContext = <
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [error, setError] = useState(false);
-  /**
-   * We save the events in state so that we can display event message
-   * next to the message after which it was received, in MessageList.
-   *
-   * e.g., eventHistory = {
-   *   message_id_1: [
-   *     { ...event_obj_received_after_message_id_1__1 },
-   *     { ...event_obj_received_after_message_id_1__2 },
-   *     { ...event_obj_received_after_message_id_1__3 },
-   *   ],
-   *   message_id_2: [
-   *     { ...event_obj_received_after_message_id_2__1 },
-   *     { ...event_obj_received_after_message_id_2__2 },
-   *     { ...event_obj_received_after_message_id_2__3 },
-   *   ]
-   * }
-   */
-  const [eventHistory, setEventHistory] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['eventHistory']
-  >({});
   const [hasMore, setHasMore] = useState(true);
   const [lastRead, setLastRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
   >();
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [members, setMembers] = useState<
-    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+
+  const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
   >(Immutable([]));
+
+  const [members, setMembers] = useState<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
+  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
@@ -397,8 +387,21 @@ export const ChannelWithContext = <
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
 
+  const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
+
   useEffect(() => {
-    if (channel) initChannel();
+    if (channel) {
+      if (messageId) {
+        loadChannelAtMessage({ messageId });
+      } else if (
+        initialScrollToFirstUnreadMessage &&
+        channel.countUnread() > 0
+      ) {
+        loadChannelAtFirstUnreadMessage();
+      } else {
+        loadChannel();
+      }
+    }
 
     return () => {
       client.off('connection.recovered', handleEvent);
@@ -474,43 +477,10 @@ export const ChannelWithContext = <
       setTyping(channel.state.typing);
       setWatcherCount(channel.state.watcher_count);
       setWatchers(channel.state.watchers);
-
-      if (channel.countUnread() > 0) {
-        markReadThrottled();
-      }
     }
   };
 
-  const addToEventHistory = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
-    const lastMessageId = messages.length
-      ? messages[messages.length - 1].id
-      : 'none';
-
-    if (lastMessageId) {
-      setEventHistory((prevState) => {
-        if (!prevState[lastMessageId]) {
-          return { ...prevState, [lastMessageId]: [event] };
-        } else {
-          return {
-            ...prevState,
-            [lastMessageId]: [...prevState[lastMessageId], event],
-          };
-        }
-      });
-    }
-  };
-
-  const handleEventStateChange = (
-    channelState: ChannelState<At, Ch, Co, Ev, Me, Re, Us>,
-  ) => {
-    setMessages(channelState.messages);
-    setRead(channelState.read);
-    setTyping(channelState.typing);
-    setWatcherCount(channelState.watcher_count);
-    setWatchers(channelState.watchers);
-  };
-
-  const handleEventStateThrottled = throttle(handleEventStateChange, 500, {
+  const handleEventStateThrottled = throttle(copyChannelState, 500, {
     leading: true,
     trailing: true,
   });
@@ -528,11 +498,8 @@ export const ChannelWithContext = <
       setThread(updatedThread);
     }
 
-    if (event.type === 'member.added') addToEventHistory(event);
-    if (event.type === 'member.removed') addToEventHistory(event);
-
     if (channel) {
-      handleEventStateThrottled(channel.state);
+      handleEventStateThrottled();
     }
   };
 
@@ -543,25 +510,168 @@ export const ChannelWithContext = <
     channel?.on(handleEvent);
   };
 
-  const initChannel = async () => {
-    let initError = false;
+  const channelQueryCall = async (queryCall: () => void = () => null) => {
     setError(false);
     setLoading(true);
 
-    if (channel && !channel.initialized && channel.cid) {
-      try {
-        await channel.watch();
-      } catch (err) {
-        setError(err);
-        setLoading(false);
-        initError = true;
-      }
-    }
-
-    setLastRead(new Date());
-    if (!initError) {
+    try {
+      await queryCall();
+      setLastRead(new Date());
       copyChannelState();
       listenToChanges();
+    } catch (err) {
+      setError(err);
+      setLoading(false);
+      setLastRead(new Date());
+    }
+  };
+
+  const loadChannelAtFirstUnreadMessage = () => {
+    if (!channel) return;
+
+    if (
+      channel.countUnread() <= limitForUnreadScrolledUp ||
+      !channel.state.isUpToDate
+    ) {
+      return loadChannel();
+    }
+
+    channel.state.setIsUptoDate(false);
+
+    return channelQueryCall(() =>
+      query(
+        Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
+        30,
+      ),
+    );
+  };
+
+  /**
+   * Loads channel at specific message
+   *
+   * @param messageId If undefined, channel will be loaded at most recent message.
+   * @param before Number of message to query before messageId
+   * @param after Number of message to query after messageId
+   */
+  const loadChannelAtMessage: ChannelContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadChannelAtMessage'] = ({ after = 2, before = 10, messageId }) =>
+    channelQueryCall(() => {
+      queryAtMessage({ after, before, messageId });
+
+      if (messageId) {
+        setTargetedMessage(messageId);
+      }
+    });
+
+  const loadChannel = () =>
+    channelQueryCall(() => {
+      if (!channel?.initialized) {
+        channel?.watch();
+      }
+    });
+
+  const reloadChannel = async () =>
+    channel ? await loadChannelAtMessage({ before: 30 }) : undefined;
+
+  /**
+   * Makes a query to load messages in channel.
+   */
+  const query = async (offset = 0, limit = 30) => {
+    if (!channel) return;
+    channel.state.clearMessages();
+
+    await channel.query({
+      messages: {
+        limit,
+        offset,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(offset === 0);
+  };
+
+  /**
+   * Makes a query to load messages at particular message id.
+   *
+   * @param messageId Targeted message id
+   * @param before Number of messages to load before messageId
+   * @param after Number of messages to load after messageId
+   */
+  const queryAtMessage = async ({
+    after = 10,
+    before = 10,
+    messageId,
+  }: Parameters<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadChannelAtMessage']
+  >[0]) => {
+    if (!channel) return;
+    channel.state.setIsUptoDate(false);
+    channel.state.clearMessages();
+
+    if (!messageId) {
+      channel.query({
+        messages: {
+          limit: before,
+        },
+        watch: true,
+      });
+
+      channel.state.setIsUptoDate(true);
+      return;
+    }
+
+    await queryBeforeMessage(messageId, before);
+    await queryAfterMessage(messageId, after);
+  };
+
+  /**
+   * Makes a query to load messages before particular message id.
+   *
+   * @param messageId Targeted message id
+   * @param limit Number of messages to load
+   */
+  const queryBeforeMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+
+    await channel.query({
+      messages: {
+        id_lt: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    channel.state.setIsUptoDate(false);
+  };
+
+  /**
+   * Makes a query to load messages later than particular message id.
+   *
+   * @param messageId Targeted message id
+   * @param limit Number of messages to load.
+   */
+  const queryAfterMessage = async (messageId: string, limit = 20) => {
+    if (!channel) return;
+    const state = await channel.query({
+      messages: {
+        id_gte: messageId,
+        limit,
+      },
+      watch: true,
+    });
+
+    if (state.messages.length < limit) {
+      channel.state.setIsUptoDate(true);
+    } else {
+      channel.state.setIsUptoDate(false);
     }
   };
 
@@ -613,7 +723,7 @@ export const ChannelWithContext = <
       attachments,
       created_at: new Date(),
       html: text,
-      id: `${client.userID}-${Date.now()}`,
+      id: `${client.userID}-${generateRandomId()}`,
       mentioned_users:
         mentioned_users?.map((userId) => ({
           id: userId,
@@ -714,6 +824,10 @@ export const ChannelWithContext = <
       attachments: message.attachments || [],
     });
 
+    if (!channel?.state.isUpToDate) {
+      await reloadChannel();
+    }
+
     updateMessage(messagePreview, {
       commands: [],
       messageInput: '',
@@ -751,6 +865,23 @@ export const ChannelWithContext = <
     trailing: true,
   });
 
+  const loadMoreRecentFinished = (
+    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+  ) => {
+    setLoadingMoreRecent(false);
+    setMessages(newMessages);
+  };
+
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreRecentFinishedDebounced = debounce(
+    loadMoreRecentFinished,
+    2000,
+    {
+      leading: true,
+      trailing: true,
+    },
+  );
+
   const loadMore = async () => {
     if (loadingMore || hasMore === false) return;
     setLoadingMore(true);
@@ -783,6 +914,35 @@ export const ChannelWithContext = <
     }
   };
 
+  const loadMoreRecent = async () => {
+    if (loadingMoreRecent || channel?.state.isUpToDate) {
+      return;
+    }
+    setLoadingMoreRecent(true);
+
+    if (!messages.length) {
+      return setLoadingMoreRecent(false);
+    }
+
+    const recentMessage = messages && messages[messages.length - 1];
+
+    if (recentMessage && recentMessage.status !== 'received') {
+      return setLoadingMoreRecent(false);
+    }
+
+    const recentId = recentMessage && recentMessage.id;
+    try {
+      if (channel) {
+        await queryAfterMessage(recentId, 20);
+
+        loadMoreRecentFinishedDebounced(channel.state.messages);
+      }
+    } catch (err) {
+      console.warn('Message pagination request failed with error', err);
+      return setLoadingMoreRecent(false);
+    }
+  };
+
   const loadMoreThrottled: MessagesContextValue<
     At,
     Ch,
@@ -792,6 +952,18 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMore'] = throttle(loadMore, 2000, {
+    leading: true,
+    trailing: true,
+  });
+  const loadMoreRecentThrottled: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMoreRecent'] = throttle(loadMoreRecent, 2000, {
     leading: true,
     trailing: true,
   });
@@ -871,7 +1043,6 @@ export const ChannelWithContext = <
   /**
    * THREAD METHODS
    */
-
   const openThread: ThreadContextValue<
     At,
     Ch,
@@ -964,23 +1135,27 @@ export const ChannelWithContext = <
     EmptyStateIndicator,
     enforceUniqueReaction,
     error,
-    eventHistory,
     giphyEnabled:
       giphyEnabled ??
       !!(channel?.getConfig?.()?.commands || [])?.some(
         (command) => command.name === 'giphy',
       ),
+    initialScrollToFirstUnreadMessage,
     isAdmin,
     isModerator,
     isOwner,
     lastRead,
+    loadChannelAtMessage,
     loading,
     LoadingIndicator,
     markRead: markReadThrottled,
     members,
     read,
+    reloadChannel,
     setLastRead,
+    setTargetedMessage,
     StickyHeader,
+    targetedMessage,
     typing,
     watcherCount,
     watchers,
@@ -1034,7 +1209,9 @@ export const ChannelWithContext = <
     Giphy,
     hasMore,
     loadingMore,
+    loadingMoreRecent,
     loadMore: loadMoreThrottled,
+    loadMoreRecent: loadMoreRecentThrottled,
     markdownRules,
     Message,
     MessageAvatar,
@@ -1183,7 +1360,6 @@ export const Channel = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
-  // TODO: Revisit memoization during circle back.
   return (
     <ChannelWithContext<At, Ch, Co, Ev, Me, Re, Us>
       {...{

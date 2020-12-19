@@ -26,19 +26,23 @@ export const useCreateChannelContext = <
   EmptyStateIndicator,
   enforceUniqueReaction,
   error,
-  eventHistory,
   giphyEnabled,
+  initialScrollToFirstUnreadMessage,
   isAdmin,
   isModerator,
   isOwner,
   lastRead,
+  loadChannelAtMessage,
   loading,
   LoadingIndicator,
   markRead,
   members,
   read,
+  reloadChannel,
   setLastRead,
+  setTargetedMessage,
   StickyHeader,
+  targetedMessage,
   typing,
   watcherCount,
   watchers,
@@ -50,7 +54,13 @@ export const useCreateChannelContext = <
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers
-    .map(({ last_read }) => last_read.toISOString())
+    .map(({ last_read }) =>
+      last_read
+        ? typeof last_read === 'string'
+          ? last_read
+          : last_read.toISOString()
+        : '',
+    )
     .join();
 
   const channelContext: ChannelContextValue<
@@ -68,19 +78,23 @@ export const useCreateChannelContext = <
       EmptyStateIndicator,
       enforceUniqueReaction,
       error,
-      eventHistory,
       giphyEnabled,
+      initialScrollToFirstUnreadMessage,
       isAdmin,
       isModerator,
       isOwner,
       lastRead,
+      loadChannelAtMessage,
       loading,
       LoadingIndicator,
       markRead,
       members,
       read,
+      reloadChannel,
       setLastRead,
+      setTargetedMessage,
       StickyHeader,
+      targetedMessage,
       typing,
       watcherCount,
       watchers,
@@ -89,11 +103,13 @@ export const useCreateChannelContext = <
       channelId,
       disabled,
       error,
+      initialScrollToFirstUnreadMessage,
       lastReadTime,
       loading,
       membersLength,
       readUsersLength,
       readUsersLastReads,
+      targetedMessage,
       typing,
       watcherCount,
     ],

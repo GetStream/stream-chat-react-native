@@ -90,12 +90,10 @@ export const usePaginatedChannels = <
         newOptions,
       );
 
-      let newChannels;
-      if (queryType === 'reload' || queryType === 'refresh') {
-        newChannels = channelQueryResponse;
-      } else {
-        newChannels = [...channels, ...channelQueryResponse];
-      }
+      const newChannels =
+        queryType === 'reload' || queryType === 'refresh'
+          ? channelQueryResponse
+          : [...channels, ...channelQueryResponse];
 
       setChannels(newChannels);
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);

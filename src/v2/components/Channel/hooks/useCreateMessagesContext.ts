@@ -38,7 +38,9 @@ export const useCreateMessagesContext = <
   Giphy,
   hasMore,
   loadingMore,
-  loadMore: loadMoreThrottled,
+  loadingMoreRecent,
+  loadMore,
+  loadMoreRecent,
   markdownRules,
   Message,
   MessageAvatar,
@@ -71,7 +73,13 @@ export const useCreateMessagesContext = <
   const messagesUpdated = messages
     .map(
       ({ latest_reactions, status, updated_at }) =>
-        `${latest_reactions?.length}${status}${updated_at.toISOString()}`,
+        `${latest_reactions?.length}${status}${
+          updated_at
+            ? typeof updated_at === 'string'
+              ? updated_at
+              : updated_at.toISOString()
+            : ''
+        }`,
     )
     .join();
   const supportedReactionsLength = supportedReactions.length;
@@ -103,7 +111,9 @@ export const useCreateMessagesContext = <
       Giphy,
       hasMore,
       loadingMore,
-      loadMore: loadMoreThrottled,
+      loadingMoreRecent,
+      loadMore,
+      loadMoreRecent,
       markdownRules,
       Message,
       MessageAvatar,

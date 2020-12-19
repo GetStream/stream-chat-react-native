@@ -1,6 +1,6 @@
 {
   "name": "SampleApp",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
@@ -19,6 +19,7 @@
     "@react-navigation/drawer": "5.11.4",
     "@react-navigation/native": "5.8.10",
     "@react-navigation/stack": "5.12.8",
+    "@stream-io/flat-list-mvcp": "0.0.2",
     "react": "16.13.1",
     "react-native": "0.63.4",
     "react-native-document-picker": "4.1.0",
@@ -32,7 +33,6 @@
     "react-native-screens": "2.16.1",
     "react-native-share": "4.1.0",
     "react-native-svg": "12.1.0",
-    "stream-chat": "2.9.0",
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {

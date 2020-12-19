@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import {
-  Animated,
   GestureResponderEvent,
   StyleSheet,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
+import { Down } from '../../icons';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
   animatedView: {
@@ -17,17 +17,36 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    borderRadius: 13,
-    height: 27,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    bottom: 20,
+    elevation: 5,
+    height: 40,
     justifyContent: 'center',
-    transform: [{ translateY: 9 }],
-    width: 112,
-    zIndex: 10,
+    position: 'absolute',
+    right: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: 40,
   },
-  messageNotificationText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
+  unreadCountNotificationContainer: {
+    alignItems: 'center',
+    backgroundColor: '#026CFF',
+    borderRadius: 25,
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    position: 'absolute',
+    top: -10,
+  },
+  unreadCountNotificationText: {
+    color: 'white',
+    fontSize: 11,
   },
 });
 
@@ -36,6 +55,7 @@ export type MessageNotificationProps = {
   onPress: (event: GestureResponderEvent) => void;
   /** If we should show the notification or not */
   showNotification?: boolean;
+  unreadCount?: number;
 };
 
 /**
@@ -44,48 +64,43 @@ export type MessageNotificationProps = {
 export const MessageNotification: React.FC<MessageNotificationProps> = (
   props,
 ) => {
-  const { onPress, showNotification = true } = props;
+  const { onPress, showNotification = true, unreadCount } = props;
 
   const {
     theme: {
-      colors: { primary },
       messageList: {
-        messageNotification: { container, text },
+        messageNotification: {
+          container,
+          unreadCountNotificationContainer,
+          unreadCountNotificationText,
+        },
       },
     },
   } = useTheme();
-  const { t } = useTranslationContext();
 
-  const opacity = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(opacity, {
-      duration: 500,
-      toValue: showNotification ? 1 : 0,
-      useNativeDriver: true,
-    }).start();
-  }, [showNotification]);
-
-  return showNotification ? (
-    <Animated.View
-      style={[
-        styles.animatedView,
-        {
-          opacity,
-        },
-      ]}
-      testID='message-notification'
-    >
-      <TouchableOpacity
-        onPress={onPress}
-        style={[styles.container, { backgroundColor: primary }, container]}
-      >
-        <Text style={[styles.messageNotificationText, text]}>
-          {t('New Messages')}
-        </Text>
-      </TouchableOpacity>
-    </Animated.View>
-  ) : null;
+  if (!showNotification) return null;
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
+      <Down height={25} width={25} />
+      {!!unreadCount && unreadCount > 0 && (
+        <View
+          style={[
+            styles.unreadCountNotificationContainer,
+            unreadCountNotificationContainer,
+          ]}
+        >
+          <Text
+            style={[
+              styles.unreadCountNotificationText,
+              unreadCountNotificationText,
+            ]}
+          >
+            {unreadCount}
+          </Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
 };
 
 MessageNotification.displayName =

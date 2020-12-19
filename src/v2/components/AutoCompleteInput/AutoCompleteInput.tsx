@@ -36,6 +36,7 @@ import {
 
 import type { TextInputProps } from 'react-native';
 
+import type { Emoji } from '../../emoji-data/compiled';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -47,8 +48,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { Trigger } from '../../utils/utils';
-
-import type { Emoji } from '../../../emoji-data/compiled';
 
 const styles = StyleSheet.create({
   inputBox: {
@@ -313,7 +312,7 @@ const AutoCompleteInputWithContext = <
   }: {
     tokenMatch: RegExpMatchArray | null;
   }) => {
-    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleMentionsTrigger =
       (lastToken &&
         Object.keys(triggerSettings).find(
@@ -349,7 +348,7 @@ const AutoCompleteInputWithContext = <
   }: {
     tokenMatch: RegExpMatchArray | null;
   }) => {
-    const lastToken = tokenMatch && tokenMatch[tokenMatch.length - 1].trim();
+    const lastToken = tokenMatch?.[tokenMatch.length - 1].trim();
     const handleEmojisTrigger =
       (lastToken &&
         Object.keys(triggerSettings).find(

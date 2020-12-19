@@ -2,6 +2,7 @@
 import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -10,19 +11,17 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { View } from 'react-native';
-import { Notification } from '../icons/Notification';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { Mute } from '../icons/Mute';
 import { File } from '../icons/File';
 import { GoForward } from '../icons/GoForward';
-import { Delete } from '../icons/Delete';
 import { AppContext } from '../context/AppContext';
 import {
   Avatar,
-  getChannelPreviewDisplayName,
   ThemeProvider,
   useChannelPreviewDisplayName,
-} from '../../../../src/v2';
+  useOverlayContext,
+} from 'stream-chat-react-native/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
@@ -30,6 +29,9 @@ import { DownArrow } from '../icons/DownArrow';
 import { CircleClose } from '../icons/CircleClose';
 import { Check } from '../icons/Check';
 import { useRef } from 'react';
+import { RemoveUser } from '../icons/RemoveUser';
+import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
+import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -59,70 +61,130 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const memberCount = Object.keys(channel.state.members).length;
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(
     chatClient?.mutedChannels &&
       chatClient?.mutedChannels?.findIndex(
-        (mute) => mute.channel.id === channel?.id,
+        (mute) => mute.channel?.id === channel?.id,
       ) > -1,
   );
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [groupName, setGroupName] = useState(channel.data?.name);
   const allMembers = Object.values(channel.state.members);
   const [members, setMembers] = useState(
     Object.values(channel.state.members).slice(0, 3),
   );
+  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
   const [textInputFocused, setTextInputFocused] = useState(false);
   const navigation = useNavigation();
   const displayName = useChannelPreviewDisplayName(channel, 30);
+  const membersStatus = useChannelMembersStatus(channel);
   const { colors } = useTheme() as AppTheme;
 
+  /**
+   * Opens confirmation sheet for leaving the group
+   */
+  const openLeaveGroupConfirmationSheet = () => {
+    if (!chatClient?.user?.id) return;
+    setWildcard(() => (
+      <ConfirmationBottomSheet
+        confirmText={'DELETE'}
+        onCancel={cancelLeaveGroup}
+        onConfirm={leaveGroup}
+        subtext={'Are you sure you want to leave this group?'}
+        title={'Leave Group'}
+      />
+    ));
+    setBlurType('dark');
+    setOverlay('wildcard');
+  };
+
+  /**
+   * Cancels the confirmation sheet.
+   */
+  const cancelLeaveGroup = () => {
+    setBlurType(undefined);
+    setWildcard(() => null);
+    setOverlay('none');
+  };
+
+  /**
+   * Leave the group/channel
+   */
+  const leaveGroup = async () => {
+    if (chatClient?.user?.id) {
+      await channel.removeMembers([chatClient?.user?.id]);
+    }
+
+    setWildcard(() => null);
+    setBlurType(undefined);
+    setOverlay('none');
+
+    navigation.reset({
+      index: 0,
+      routes: [
+        {
+          name: 'ChatScreen',
+        },
+      ],
+    });
+  };
+
+  if (!channel) return null;
   return (
     <>
-      <ScreenHeader subtitle={`${memberCount} members`} title={displayName} />
+      <ScreenHeader subtitle={`${membersStatus}`} title={displayName} />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>
-          {members.map((m) => (
-            <View
-              key={m.user.id}
-              style={{
-                alignItems: 'center',
-                borderBottomColor: colors.borderLight,
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                padding: 12,
-                width: '100%',
-              }}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
-                <View style={{ marginLeft: 8 }}>
-                  <Text style={{ fontWeight: '500' }}>{m.user?.name}</Text>
-                  <Text style={{ color: colors.textLight, fontSize: 12.5 }}>
-                    {getUserActivityStatus(m.user)}
-                  </Text>
+          {members.map((m) => {
+            if (!m.user?.id) return null;
+
+            return (
+              <View
+                key={m.user.id}
+                style={[
+                  styles.memberContainer,
+                  {
+                    borderBottomColor: colors.borderLight,
+                  },
+                ]}
+              >
+                <View style={styles.memberDetails}>
+                  <Avatar
+                    image={m?.user?.image}
+                    name={m.user?.name}
+                    size={40}
+                  />
+                  <View style={{ marginLeft: 8 }}>
+                    <Text style={styles.memberName}>{m.user?.name}</Text>
+                    <Text
+                      style={[
+                        styles.memberActiveStatus,
+                        {
+                          color: colors.textLight,
+                        },
+                      ]}
+                    >
+                      {getUserActivityStatus(m.user)}
+                    </Text>
+                  </View>
                 </View>
+                <Text style={{ color: colors.textLight }}>
+                  {channel.data?.created_by?.id === m.user?.id ? 'owner' : ''}
+                </Text>
               </View>
-              <Text style={{ color: colors.textLight }}>
-                {chatClient?.user?.id === m.user?.id ? 'owner' : ''}
-              </Text>
-            </View>
-          ))}
+            );
+          })}
           {allMembers.length !== members.length && (
             <TouchableOpacity
               onPress={() => {
                 setMembers(Object.values(channel.state.members));
               }}
-              style={{
-                alignItems: 'center',
-                borderBottomColor: colors.borderLight,
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                padding: 21,
-                width: '100%',
-              }}
+              style={[
+                styles.loadMoreButton,
+                {
+                  borderBottomColor: colors.borderLight,
+                },
+              ]}
             >
               <DownArrow height={24} width={24} />
               <View style={{ marginLeft: 21 }}>
@@ -143,14 +205,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               style={[
                 styles.actionContainer,
                 {
-                  borderBottomColor: colors.border,
+                  borderBottomColor: colors.borderLight,
                   paddingLeft: 7,
                 },
               ]}
             >
-              <View
-                style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}
-              >
+              <View style={styles.changeNameInputContainer}>
                 <Text style={{ color: colors.textLight }}>NAME</Text>
                 <TextInput
                   onBlur={() => {
@@ -164,13 +224,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   }}
                   placeholder={'Add a group name'}
                   ref={(ref) => {
+                    // @ts-ignore
                     textInputRef.current = ref;
                   }}
-                  style={{
-                    marginLeft: 13,
-                    flexGrow: 1,
-                    flexShrink: 1,
-                  }}
+                  style={styles.changeNameInputBox}
                   value={groupName}
                 />
               </View>
@@ -189,12 +246,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={async () => {
+                      // @ts-ignore
                       await channel.update({
                         ...channel.data,
                         name: groupName,
                       });
                       textInputRef.current && textInputRef.current.blur();
-                      // Alert.alert('Succesfully updated the name');
                     }}
                     style={{
                       marginHorizontal: 4,
@@ -207,45 +264,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 </View>
               )}
             </View>
-            <TouchableOpacity
-              style={[
-                styles.actionContainer,
-                {
-                  borderBottomColor: colors.border,
-                },
-              ]}
-            >
-              <View style={styles.actionLabelContainer}>
-                <Notification height={24} width={24} />
-                <Text
-                  style={{
-                    color: colors.text,
-                    marginLeft: 16,
-                  }}
-                >
-                  Notifications
-                </Text>
-              </View>
-              <View>
-                <Switch
-                  onValueChange={async () => {
-                    // if (notificationsEnabled) {
-                    //   const r = await channel.unmute();
-                    //   console.warn(r);
-                    // } else {
-                    //   const r = await channel.mute();
-                    //   console.warn(r);
-                    // }
-
-                    setNotificationsEnabled((previousState) => !previousState);
-                  }}
-                  trackColor={{
-                    true: colors.success,
-                  }}
-                  value={notificationsEnabled}
-                />
-              </View>
-            </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.actionContainer,
@@ -268,18 +286,17 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               <View>
                 <Switch
                   onValueChange={async () => {
-                    if (notificationsEnabled) {
-                      const r = await channel.unmute();
-                      console.warn(r);
+                    if (muted) {
+                      await channel.unmute();
                     } else {
-                      const r = await channel.mute();
-                      console.warn(r);
+                      await channel.mute();
                     }
 
                     setMuted((previousState) => !previousState);
                   }}
                   trackColor={{
                     true: colors.success,
+                    false: colors.greyContentBackground,
                   }}
                   value={muted}
                 />
@@ -299,7 +316,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <Picture height={24} width={24} />
+                <Picture fill={'#7A7A7A'} />
                 <Text
                   style={{
                     color: colors.text,
@@ -327,7 +344,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <File height={24} width={24} />
+                <File />
                 <Text
                   style={{
                     color: colors.text,
@@ -341,21 +358,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 <GoForward height={24} width={24} />
               </View>
             </TouchableOpacity>
-            <Spacer />
             <TouchableOpacity
-              onPress={async () => {
-                if (!chatClient?.user?.id) return;
-
-                await channel.removeMembers([chatClient?.user?.id]);
-                navigation.reset({
-                  index: 0,
-                  routes: [
-                    {
-                      name: 'ChatScreen',
-                    },
-                  ],
-                });
-              }}
+              onPress={openLeaveGroupConfirmationSheet}
               style={[
                 styles.actionContainer,
                 {
@@ -364,10 +368,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <Delete fill={colors.danger} height={24} width={24} />
+                <RemoveUser height={24} width={24} />
                 <Text
                   style={{
-                    color: colors.danger,
+                    color: colors.text,
                     marginLeft: 16,
                   }}
                 >
@@ -386,51 +390,6 @@ const styles = StyleSheet.create({
   spacer: {
     height: 8,
   },
-  userInfoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  avatar: {
-    height: 72,
-    width: 72,
-    borderRadius: 40,
-  },
-  displayName: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  onlineStatusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  onlineIndicator: {
-    height: 8,
-    width: 8,
-    backgroundColor: '#20E070',
-    borderRadius: 4,
-  },
-  onlineStatus: {
-    marginLeft: 8,
-    fontSize: 12,
-  },
-  userNameContainer: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderTopWidth: 1,
-    marginTop: 16,
-  },
-  userNameLabel: {
-    fontSize: 14,
-  },
-  userName: {
-    fontSize: 14,
-  },
-
   actionListContainer: {},
   actionContainer: {
     alignItems: 'center',
@@ -443,4 +402,36 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  changeNameInputBox: {
+    marginLeft: 13,
+    flexGrow: 1,
+    flexShrink: 1,
+    padding: 0,
+  },
+  changeNameInputContainer: {
+    flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
+    alignItems: 'center',
+  },
+  loadMoreButton: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    padding: 21,
+    width: '100%',
+  },
+  memberContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 12,
+    width: '100%',
+  },
+  memberDetails: { flexDirection: 'row', alignItems: 'center' },
+  memberName: {
+    fontWeight: '500',
+  },
+  memberActiveStatus: { fontSize: 12.5 },
 });

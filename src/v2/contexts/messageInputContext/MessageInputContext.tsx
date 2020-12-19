@@ -329,8 +329,6 @@ export type InputMessageInputContextValue<
   >;
   /**
    * Callback that is called when the text input's text changes. Changed text is passed as a single string argument to the callback handler.
-   *
-   * @param newText
    */
   onChangeText?: (newText: string) => void;
   /**

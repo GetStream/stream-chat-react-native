@@ -7,6 +7,16 @@ export * from './Attachment/FileIcon';
 export * from './Attachment/Gallery';
 export * from './Attachment/Giphy';
 
+export * from './AttachmentPicker/AttachmentPicker';
+export * from './AttachmentPicker/components/AttachmentPickerBottomSheetHandle';
+export * from './AttachmentPicker/components/AttachmentPickerError';
+export * from './AttachmentPicker/components/AttachmentPickerErrorImage';
+export * from './AttachmentPicker/components/AttachmentSelectionBar';
+export * from './AttachmentPicker/components/CameraSelectorIcon';
+export * from './AttachmentPicker/components/FileSelectorIcon';
+export * from './AttachmentPicker/components/ImageOverlaySelectedComponent';
+export * from './AttachmentPicker/components/ImageSelectorIcon';
+
 export * from './AutoCompleteInput/AutoCompleteInput';
 export * from './AutoCompleteInput/CommandsHeader';
 export * from './AutoCompleteInput/CommandsItem';
@@ -36,7 +46,17 @@ export * from './ChannelPreview/ChannelPreviewMessenger';
 
 export * from './Chat/Chat';
 
+export * from './ImageGallery/ImageGallery';
+export * from './ImageGallery/components/AnimatedImage';
+export * from './ImageGallery/components/ImageGalleryFooter';
+export * from './ImageGallery/components/ImageGalleryHeader';
+export * from './ImageGallery/components/ImageGalleryOverlay';
+export * from './ImageGallery/components/ImageGrid';
+export * from './ImageGallery/components/ImageGridHandle';
+
 export * from './Indicators/EmptyStateIndicator';
+export * from './Indicators/LoadingDot';
+export * from './Indicators/LoadingDots';
 export * from './Indicators/LoadingErrorIndicator';
 export * from './Indicators/LoadingIndicator';
 
@@ -61,6 +81,8 @@ export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
 export * from './MessageInput/UploadProgressIndicator';
 
+export * from './MessageList/DateHeader';
+export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageNotification';
 export * from './MessageList/MessageSystem';

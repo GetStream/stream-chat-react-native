@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-
-import type { Emoji } from '../../../emoji-data/compiled';
+import type { Emoji } from '../../emoji-data/compiled';
 
 const styles = StyleSheet.create({
   container: {

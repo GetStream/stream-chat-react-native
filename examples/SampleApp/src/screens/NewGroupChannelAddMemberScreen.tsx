@@ -5,6 +5,7 @@ import React, { useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
   View,
@@ -26,9 +27,7 @@ export type NewGroupChannelAddMemberScreenNavigationProp = StackNavigationProp<
 
 export const NewGroupChannelAddMemberScreen: React.FC = () => {
   const { colors } = useTheme() as AppTheme;
-  const navigation = useNavigation<
-    NewGroupChannelAddMemberScreenNavigationProp
-  >();
+  const navigation = useNavigation<NewGroupChannelAddMemberScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
   const {
     loading: loadingResults,
@@ -111,25 +110,30 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                   data={selectedUsers}
                   horizontal
                   renderItem={({ item: user }) => (
-                    <TouchableOpacity
-                      key={user.id}
-                      onPress={() => {
-                        toggleUser?.(user);
-                      }}
-                      style={styles.selectedUserItem}
-                    >
-                      <Avatar image={user.image} size={64} />
-                      <View
-                        style={[
-                          styles.selectedUserRemoveIcon,
-                          {
-                            backgroundColor: colors.background,
-                          },
-                        ]}
+                    <View style={styles.selectedUserItemContainer}>
+                      <TouchableOpacity
+                        key={user.id}
+                        onPress={() => {
+                          toggleUser?.(user);
+                        }}
+                        style={styles.selectedUserItem}
                       >
-                        <Close height={24} width={24} />
-                      </View>
-                    </TouchableOpacity>
+                        <Avatar image={user.image} size={64} />
+                        <View
+                          style={[
+                            styles.selectedUserRemoveIcon,
+                            {
+                              backgroundColor: colors.background,
+                            },
+                          ]}
+                        >
+                          <Close height={24} width={24} />
+                        </View>
+                      </TouchableOpacity>
+                      <Text style={styles.selectedUserItemName}>
+                        {user.name}
+                      </Text>
+                    </View>
                   )}
                 />
               </View>
@@ -193,8 +197,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  selectedUserItemContainer: {
+    flexDirection: 'column',
+    width: 80,
+    alignItems: 'center',
+    padding: 8,
+  },
   selectedUserItem: {
     margin: 8,
+  },
+  selectedUserItemName: {
+    fontWeight: '600',
+    fontSize: 12,
+    flexWrap: 'wrap',
+    textAlign: 'center',
   },
   selectedUserRemoveIcon: {
     borderRadius: 15,

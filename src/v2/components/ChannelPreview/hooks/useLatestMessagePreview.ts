@@ -26,6 +26,21 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
+type LatestMessage<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> =
+  | Immutable<
+      ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    >
+  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  | MessageResponse<At, Ch, Co, Me, Re, Us>;
+
 export type LatestMessagePreview<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -46,11 +61,7 @@ export type LatestMessagePreview<
     }
   | {
       created_at: string | number | Date;
-      messageObject: Immutable<
-        ReturnType<
-          ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
-        >
-      >;
+      messageObject: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>;
       previews: {
         bold: boolean;
         text: string;
@@ -69,9 +80,7 @@ const getLatestMessageDisplayText = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-  >,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
   t: (key: string) => string,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
@@ -148,12 +157,16 @@ const getLatestMessageDisplayDate = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-  >,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
   tDateTimeParser: TDateTimeParser,
 ) => {
-  const parserOutput = tDateTimeParser(message.created_at.asMutable());
+  const parserOutput = tDateTimeParser(
+    message.created_at
+      ? typeof message.created_at === 'string'
+        ? message.created_at
+        : message.created_at.asMutable()
+      : undefined,
+  );
   if (isDayOrMoment(parserOutput)) {
     if (parserOutput.isSame(new Date(), 'day')) {
       return parserOutput.format('LT');
@@ -180,9 +193,7 @@ const getLatestMessageReadStatus = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: Immutable<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-  >,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const currentUserId = client.userID;
   if (currentUserId !== message.user?.id) return 0;
@@ -193,7 +204,7 @@ const getLatestMessageReadStatus = <
   }
 
   return Object.values(readList).some(
-    ({ last_read }) => message.updated_at < last_read,
+    ({ last_read }) => message.updated_at && message.updated_at < last_read,
   )
     ? 2
     : 1;
@@ -212,10 +223,13 @@ const getLatestMessagePreview = <
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   t: (key: string) => string,
   tDateTimeParser: TDateTimeParser,
+  lastMessage?:
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | MessageResponse<At, Ch, Co, Me, Re, Us>,
 ) => {
   const messages = channel.state.messages;
 
-  if (!messages.length) {
+  if (!messages.length && !lastMessage) {
     return {
       created_at: '',
       messageObject: undefined,
@@ -228,8 +242,8 @@ const getLatestMessagePreview = <
       status: 0,
     };
   }
+  const message = lastMessage || messages[messages.length - 1];
 
-  const message = messages[messages.length - 1];
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
@@ -282,11 +296,19 @@ export const useLatestMessagePreview = <
     status: 0,
   });
 
-  useEffect(() => {
-    setLatestMessagePreview(
-      getLatestMessagePreview(channel, client, t, tDateTimeParser),
-    );
-  }, [forceUpdate, lastMessageId]);
+  useEffect(
+    () =>
+      setLatestMessagePreview(
+        getLatestMessagePreview(
+          channel,
+          client,
+          t,
+          tDateTimeParser,
+          lastMessage,
+        ),
+      ),
+    [forceUpdate, lastMessageId],
+  );
 
   return latestMessagePreview;
 };

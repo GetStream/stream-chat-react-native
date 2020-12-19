@@ -94,7 +94,6 @@ export const useMessageList = <
   const readList:
     | ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
     | undefined = threadList ? undefined : read;
-
   const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({
     messages: messageList,
     noGroupByUser,
@@ -105,7 +104,6 @@ export const useMessageList = <
     messageList,
     readList,
   );
-
   const messagesWithStylesAndRead = messageList
     .asMutable()
     .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)

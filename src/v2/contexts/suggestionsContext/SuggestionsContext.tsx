@@ -4,13 +4,12 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { CommandResponse, UserResponse } from 'stream-chat';
 
+import type { Emoji } from '../../emoji-data/compiled';
 import type {
   DefaultCommandType,
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-
-import type { Emoji } from '../../../emoji-data/compiled';
 
 export type SuggestionComponentType<
   Co extends string = DefaultCommandType,

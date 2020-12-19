@@ -22,6 +22,7 @@
     "react-native-fs": ">=2.16.6",
     "react-native-haptic-feedback": ">=1.11.0",
     "react-native-image-crop-picker": ">=0.33.2",
+    "@stream-io/flat-list-mvcp": "0.0.2",
     "react-native-share": ">=4.1.0"
   },
   "scripts": {

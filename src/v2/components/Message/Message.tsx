@@ -106,7 +106,12 @@ export type MessagePropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'channel' | 'disabled' | 'isAdmin' | 'isModerator' | 'isOwner'
+  | 'channel'
+  | 'disabled'
+  | 'enforceUniqueReaction'
+  | 'isAdmin'
+  | 'isModerator'
+  | 'isOwner'
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<KeyboardContextValue, 'dismissKeyboard'> &
@@ -146,6 +151,7 @@ export type MessagePropsWithContext<
      * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
      * */
     forceAlign?: Alignment | boolean;
+    goToMessage?: (messageId: string) => void;
     /** Handler to delete a current message */
     handleDelete?: () => Promise<void>;
     /**
@@ -228,6 +234,7 @@ const MessageWithContext = <
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
     enableLongPress = true,
+    enforceUniqueReaction,
     forceAlign = false,
     groupStyles = ['bottom'],
     isAdmin,
@@ -496,9 +503,14 @@ const MessageWithContext = <
               if (ownReaction) {
                 await channel.deleteReaction(messageId, reactionType);
               } else {
-                await channel.sendReaction(messageId, {
-                  type: reactionType,
-                } as Reaction<Re, Us>);
+                await channel.sendReaction(
+                  messageId,
+                  {
+                    type: reactionType,
+                  } as Reaction<Re, Us>,
+                  undefined,
+                  enforceUniqueReaction,
+                );
               }
             }
           } catch (err) {
@@ -809,6 +821,7 @@ export const Message = <
   const {
     channel,
     disabled,
+    enforceUniqueReaction,
     isAdmin,
     isModerator,
     isOwner,
@@ -840,6 +853,7 @@ export const Message = <
         disabled,
         dismissKeyboard,
         dismissKeyboardOnMessageTouch,
+        enforceUniqueReaction,
         isAdmin,
         isModerator,
         isOwner,

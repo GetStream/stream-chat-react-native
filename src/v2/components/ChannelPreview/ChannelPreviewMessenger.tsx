@@ -210,7 +210,12 @@ const ChannelPreviewMessengerWithContext = <
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
   const displayPresence = useChannelPreviewDisplayPresence(channel);
-  const latestMessageDate = latestMessagePreview.messageObject?.created_at?.asMutable();
+  const created_at = latestMessagePreview.messageObject?.created_at;
+  const latestMessageDate = created_at
+    ? typeof created_at === 'string'
+      ? new Date(created_at)
+      : created_at.asMutable()
+    : new Date();
   const status = latestMessagePreview.status;
 
   return (
@@ -243,7 +248,6 @@ const ChannelPreviewMessengerWithContext = <
         onPress={() => {
           if (onSelect) {
             onSelect(channel);
-            channel.markRead();
           }
         }}
         style={[styles.container, container]}

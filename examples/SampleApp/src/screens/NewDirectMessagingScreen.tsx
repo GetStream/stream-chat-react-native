@@ -5,7 +5,6 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { useState } from 'react';
 import {
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -18,7 +17,8 @@ import {
   MessageInput,
   MessageList,
   SendButton,
-} from '../../../../src/v2';
+  SendButtonProps,
+} from 'stream-chat-react-native/v2';
 
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
@@ -31,7 +31,7 @@ import {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
 } from '../types';
 import { SelectedUserTag } from '../components/UserSearch/SelectedUserTag';
@@ -39,6 +39,14 @@ import { RoundButton } from '../components/RoundButton';
 import { Contacts } from '../icons/Contacts';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { User } from '../icons/User';
+
+export type SendMessageButtonProps = SendButtonProps;
+
+export const SendMessageButton: React.FC<SendMessageButtonProps> = ({
+  disabled,
+  sendMessage,
+}) => <SendButton disabled={disabled} sendMessage={sendMessage} />;
 
 export type NewDirectMessagingScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -56,10 +64,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const messageInputRef = useRef<TextInput>(null);
   const searchInputRef = useRef<TextInput>(null);
+
+  const [messageText, setMessageText] = useState('');
+
   const insets = useSafeAreaInsets();
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
-
   // @ts-ignore
   const dummyChannel = chatClient.channel('messaging', 'boo');
   dummyChannel.initialized = true;
@@ -83,10 +93,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       LocalCommandType,
       LocalEventType,
       LocalMessageType,
-      LocalResponseType,
+      LocalReactionType,
       LocalUserType
     >
   >(dummyChannel);
+
+  const [isDraft, setIsDraft] = useState(false);
 
   // When selectedUsers are changed, initiate a channel with those users as members,
   // and set it as a channel on current screen.
@@ -103,19 +115,52 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       let members = [chatClient.user.id];
 
       members = members.concat(selectedUsers.map((t) => t.id));
-
-      const channel = chatClient.channel('messaging', {
+      // Check if the channel already exists.
+      const channels = await chatClient.queryChannels({
         members,
-        name: '',
+        distinct: true,
       });
 
-      await channel.watch();
+      if (channels.length === 1) {
+        setChannel(channels[0]);
+        setIsDraft(false);
+        messageInputRef.current?.focus();
+      } else {
+        const channel = chatClient.channel('messaging', {
+          members,
+        });
+        setIsDraft(true);
 
-      setChannel(channel);
-      messageInputRef.current?.focus();
+        // Hack to trick channel component into accepting channel without watching it.
+        channel.initialized = true;
+
+        setChannel(channel);
+        messageInputRef.current?.focus();
+      }
     };
     initChannel();
   }, [selectedUsers]);
+
+  /**
+   * 1. If the current channel is draft, then we create the channel and then send message
+   * Otherwise we simply send the message.
+   *
+   * 2. And then navigate to ChannelScreen
+   */
+  const customSendMessage = async () => {
+    if (isDraft) {
+      channel.initialized = false;
+      await channel.query({});
+    }
+
+    const result = await channel.sendMessage({
+      text: messageText,
+    });
+
+    navigation.replace('ChannelScreen', {
+      channelId: channel.id,
+    });
+  };
 
   const grow = {
     flexGrow: 1,
@@ -123,13 +168,27 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   };
 
   if (!chatClient) return null;
-
   return (
     <View style={{ flex: 1, paddingBottom: insets.bottom }}>
       <Channel
+        additionalTextInputProps={{
+          onFocus: () => {
+            setFocusOnMessageInput(true);
+          },
+        }}
         channel={channel}
         EmptyStateIndicator={EmptyMessagesIndicator}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        onChangeText={(text) => {
+          setMessageText(text);
+        }}
+        SendButton={(props) => (
+          <SendMessageButton {...props} sendMessage={customSendMessage} />
+        )}
+        setInputRef={(ref) => {
+          // @ts-ignore
+          messageInputRef.current = ref;
+        }}
       >
         <ScreenHeader title={'New Chat'} />
         <View
@@ -139,7 +198,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             ...grow,
           }}
         >
-          <View
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => {
+              searchInputRef.current?.focus?.();
+              setFocusOnSearchInput(true);
+            }}
             style={[
               styles.searchContainer,
               {
@@ -166,6 +230,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                     onPress: () => {
                       toggleUser && toggleUser(tag);
                     },
+                    disabled: !focusOnSearchInput,
                     tag,
                   };
 
@@ -202,15 +267,15 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
               </View>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                searchInputRef.current?.focus?.();
-                setFocusOnSearchInput(true);
-              }}
               style={styles.searchContainerRight}
             >
-              <AddUser height={32} width={32} />
+              {selectedUsers.length === 0 ? (
+                <User height={32} width={32} />
+              ) : (
+                <AddUser height={32} width={32} />
+              )}
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
           {focusOnSearchInput && !searchText && (
             <>
               {selectedUsers.length === 0 && (
@@ -221,7 +286,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                   style={styles.createGroupButtonContainer}
                 >
                   <RoundButton>
-                    <Contacts height={25} width={25} />
+                    <Contacts fill={'#006CFF'} height={25} width={25} />
                   </RoundButton>
                   <Text
                     style={[
@@ -261,28 +326,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
               <View style={styles.grow}>
                 {focusOnMessageInput && <MessageList />}
               </View>
-              {selectedUsers.length > 0 && (
-                <MessageInput
-                  additionalTextInputProps={{
-                    onFocus: () => {
-                      setFocusOnMessageInput(true);
-                    },
-                  }}
-                  SendButton={(props) => {
-                    const sendMessage = async () => {
-                      await props.sendMessage?.();
-                      navigation.replace('ChannelScreen', {
-                        channelId: channel.id,
-                      });
-                    };
-                    return <SendButton {...props} sendMessage={sendMessage} />;
-                  }}
-                  setInputRef={(ref) => {
-                    // @ts-ignore
-                    messageInputRef.current = ref;
-                  }}
-                />
-              )}
+              {selectedUsers.length > 0 && <MessageInput />}
             </View>
           )}
         </View>

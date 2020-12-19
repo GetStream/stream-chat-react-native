@@ -5,6 +5,7 @@ export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
 export type LocalEventType = Record<string, unknown>;
 export type LocalMessageType = Record<string, unknown>;
+export type LocalReactionType = Record<string, unknown>;
 export type LocalResponseType = Record<string, unknown>;
 export type LocalUserType = {
   image: string;
@@ -24,10 +25,19 @@ export type StackNavigatorParamList = {
   };
   ChannelScreen: {
     channelId?: string;
+    messageId?: string;
   };
   ChatScreen: undefined;
   GroupChannelDetailsScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
@@ -35,10 +45,18 @@ export type StackNavigatorParamList = {
     selectedUsers: UserResponse<LocalUserType>[];
   };
   OneOnOneChannelDetailScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   SharedGroupsScreen: {
-    channel: Channel;
+    user: UserResponse<LocalUserType>;
   };
 };
 

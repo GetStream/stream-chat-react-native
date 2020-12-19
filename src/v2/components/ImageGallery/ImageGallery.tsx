@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Image,
   ImageStyle,
@@ -129,18 +129,18 @@ export type ImageGalleryCustomComponents<
   };
 };
 
-type Props<Us extends UnknownType = DefaultUserType> = PropsWithChildren<
-  ImageGalleryCustomComponents<Us> & {
-    overlayOpacity: Animated.SharedValue<number>;
-    visible: boolean;
-    imageGalleryGridHandleHeight?: number;
-    /**
-     * This should be
-     */
-    imageGalleryGridSnapPoints?: [string | number, string | number];
-    numberOfImageGalleryGridColumns?: number;
-  }
->;
+type Props<
+  Us extends UnknownType = DefaultUserType
+> = ImageGalleryCustomComponents<Us> & {
+  overlayOpacity: Animated.SharedValue<number>;
+  visible: boolean;
+  imageGalleryGridHandleHeight?: number;
+  /**
+   * This should be
+   */
+  imageGalleryGridSnapPoints?: [string | number, string | number];
+  numberOfImageGalleryGridColumns?: number;
+};
 
 export const ImageGallery = <
   At extends UnknownType = DefaultAttachmentType,

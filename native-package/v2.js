@@ -3,6 +3,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import { BlurView as RNBlurView } from '@react-native-community/blur';
 import CameraRoll from '@react-native-community/cameraroll';
 import NetInfo from '@react-native-community/netinfo';
+import { FlatList } from '@stream-io/flat-list-mvcp';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -24,6 +25,7 @@ registerNativeHandlers({
       return false;
     }
   },
+  FlatList,
   getPhotos: async ({ after, first }) => {
     try {
       if (Platform.OS === 'android') {

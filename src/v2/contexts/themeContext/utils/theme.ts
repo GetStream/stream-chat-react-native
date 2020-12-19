@@ -297,10 +297,15 @@ export type Theme = {
     container: ViewStyle;
     errorNotification: ViewStyle;
     errorNotificationText: TextStyle;
+    inlineUnreadIndicator: {
+      container: ViewStyle;
+      text: TextStyle;
+    };
     listContainer: ViewStyle;
     messageNotification: {
       container: ViewStyle;
-      text: TextStyle;
+      unreadCountNotificationContainer: ViewStyle;
+      unreadCountNotificationText: TextStyle;
     };
     messageSystem: {
       container: ViewStyle;
@@ -762,10 +767,15 @@ export const defaultTheme: Theme = {
     container: {},
     errorNotification: {},
     errorNotificationText: {},
+    inlineUnreadIndicator: {
+      container: {},
+      text: {},
+    },
     listContainer: {},
     messageNotification: {
       container: {},
-      text: {},
+      unreadCountNotificationContainer: {},
+      unreadCountNotificationText: {},
     },
     messageSystem: {
       container: {},

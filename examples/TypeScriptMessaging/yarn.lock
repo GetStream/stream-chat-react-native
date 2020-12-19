@@ -1504,6 +1504,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@stream-io/flat-list-mvcp@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.2.tgz#a408f799a3c0a031db1ebae162f70bdfb44e8cb9"
+  integrity sha512-BC4XAlX3+vMNlT7JMGDIdsNLQoshbPHleqFc6kn1mUrsk8YccKaqtKja7l/2WNuWo2FoukNq9PPiz5Ax+kAWgA==
+
 "@stream-io/react-native-simple-markdown@1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@stream-io/react-native-simple-markdown/-/react-native-simple-markdown-1.2.1.tgz#ce3c909fda4e087f77a68ab051c3a8f034bc9adb"
@@ -7509,10 +7514,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.0.tgz#3f0a593ae7dea9f1e2ecf406c72c8d0c60705be4"
-  integrity sha512-Se2lpquvfh1oK6c+M73esYvN3eTtTqKdrMMUCzKz7deMWXOlqYdNtweW/a9raU90QUcOSp756JEXYQ5zSsND5A==
+stream-chat@2.9.1-dev.0:
+  version "2.9.1-dev.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.1-dev.0.tgz#ce403094d0edc763cc8a8948ae031bf94ff4dd25"
+  integrity sha512-llq2vasCvJQY1gaRdLV1Q7VUMk/zAyPHhN2jMLTiYoQj+Pq5CkUjOD+JhJp2WBWDUUlrmFYfBT88fVmPGPvobA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"
