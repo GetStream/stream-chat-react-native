@@ -64,7 +64,7 @@
   "{{ firstUser }} and {{ secondUser }} are typing...": "{{ firstUser }} ve {{ secondUser }} yazıyor...",
   "{{ imageCount }} more": "{{ imageCount }} adet daha",
   "{{ index }} of {{ photoLength }}": "{{ index }} / {{ photoLength }}",
-  "{{ replyCount }} Ceplies": "{{ replyCount }} Cevaplar",
+  "{{ replyCount }} Replies": "{{ replyCount }} Cevaplar",
   "{{ replyCount }} Thread Replies": "{{responseCount}} Konu Cevapları",
   "{{ replyCount }} replies": "{{ replyCount }} cevaplar",
   "{{ user }} is typing": "{{ user }} yazıyor",
