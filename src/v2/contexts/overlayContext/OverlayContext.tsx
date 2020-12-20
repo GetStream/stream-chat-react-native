@@ -85,9 +85,10 @@ export type OverlayContextValue = {
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
   setWildcard: React.Dispatch<
     React.SetStateAction<
-      React.ComponentType<{
-        visible: boolean;
-      }>
+      | React.ComponentType<{
+          visible: boolean;
+        }>
+      | undefined
     >
   >;
   style?: DeepPartial<Theme>;
@@ -121,8 +122,6 @@ type Props<
     openPicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     value?: Partial<OverlayContextValue>;
   };
-
-const WildcardDefault: React.FC<{ visible: boolean }> = () => null;
 
 export const OverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
@@ -193,8 +192,8 @@ export const OverlayProvider = <
   const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
   const [Wildcard, setWildcard] = useState<
-    React.ComponentType<{ visible: boolean }>
-  >(value?.Wildcard || WildcardDefault);
+    React.ComponentType<{ visible: boolean }> | undefined
+  >(value?.Wildcard);
 
   const overlayOpacity = useSharedValue(0);
   const { height, width } = useWindowDimensions();
@@ -283,7 +282,7 @@ export const OverlayProvider = <
                       style={[StyleSheet.absoluteFill, { height, width }]}
                     />
                   </Animated.View>
-                  {Wildcard}
+                  {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
                   <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
                     overlayOpacity={overlayOpacity}
                     visible={overlay === 'channelInfo'}

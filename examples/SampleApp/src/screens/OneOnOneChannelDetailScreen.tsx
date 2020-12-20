@@ -77,7 +77,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
    */
   const openDeleteConversationConfirmationSheet = () => {
     if (!chatClient?.user?.id) return;
-    setWildcard(() => (
+    setWildcard(() => () => (
       <ConfirmationBottomSheet
         confirmText={'DELETE'}
         onCancel={cancelDeleteAction}
@@ -95,7 +95,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
    */
   const cancelDeleteAction = () => {
     setBlurType(undefined);
-    setWildcard(() => null);
+    setWildcard(undefined);
     setOverlay('none');
   };
 
@@ -103,7 +103,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
    * Leave the group/channel
    */
   const deleteConversation = async () => {
-    setWildcard(() => null);
+    setWildcard(undefined);
     setBlurType(undefined);
     setOverlay('none');
 

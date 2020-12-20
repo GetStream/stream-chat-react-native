@@ -6,47 +6,49 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Down } from '../../icons';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Down } from '../../icons';
 
 const styles = StyleSheet.create({
-  animatedView: {
-    bottom: 0,
-    position: 'absolute',
-  },
   container: {
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 20,
-    bottom: 20,
     elevation: 5,
     height: 40,
     justifyContent: 'center',
-    position: 'absolute',
-    right: 20,
-    shadowColor: '#000',
     shadowOffset: {
       height: 2,
       width: 0,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 4,
     width: 40,
+  },
+  touchable: {
+    bottom: 20,
+    position: 'absolute',
+    right: 20,
   },
   unreadCountNotificationContainer: {
     alignItems: 'center',
-    backgroundColor: '#026CFF',
-    borderRadius: 25,
+    borderRadius: 10,
+    height: 20,
     justifyContent: 'center',
-    paddingHorizontal: 5,
-    paddingVertical: 1.5,
+    minWidth: 20,
+    paddingHorizontal: 4,
     position: 'absolute',
-    top: -10,
+    top: 0,
   },
   unreadCountNotificationText: {
-    color: 'white',
     fontSize: 11,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  wrapper: {
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'flex-end',
   },
 });
 
@@ -68,37 +70,53 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
 
   const {
     theme: {
+      colors: { black, primary, white },
       messageList: {
         messageNotification: {
           container,
+          touchable,
           unreadCountNotificationContainer,
           unreadCountNotificationText,
+          wrapper,
         },
       },
     },
   } = useTheme();
 
   if (!showNotification) return null;
+
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.container, container]}>
-      <Down height={25} width={25} />
-      {!!unreadCount && unreadCount > 0 && (
+    <TouchableOpacity onPress={onPress} style={[styles.touchable, touchable]}>
+      <View style={[styles.wrapper, wrapper]}>
         <View
           style={[
-            styles.unreadCountNotificationContainer,
-            unreadCountNotificationContainer,
+            styles.container,
+            { backgroundColor: white, shadowColor: black },
+            container,
           ]}
         >
-          <Text
+          <Down />
+        </View>
+        {!!unreadCount && (
+          <View
             style={[
-              styles.unreadCountNotificationText,
-              unreadCountNotificationText,
+              styles.unreadCountNotificationContainer,
+              { backgroundColor: primary },
+              unreadCountNotificationContainer,
             ]}
           >
-            {unreadCount}
-          </Text>
-        </View>
-      )}
+            <Text
+              style={[
+                styles.unreadCountNotificationText,
+                { color: white },
+                unreadCountNotificationText,
+              ]}
+            >
+              {unreadCount}
+            </Text>
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };

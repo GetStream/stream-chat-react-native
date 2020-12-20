@@ -304,8 +304,10 @@ export type Theme = {
     listContainer: ViewStyle;
     messageNotification: {
       container: ViewStyle;
+      touchable: ViewStyle;
       unreadCountNotificationContainer: ViewStyle;
       unreadCountNotificationText: TextStyle;
+      wrapper: ViewStyle;
     };
     messageSystem: {
       container: ViewStyle;
@@ -774,8 +776,10 @@ export const defaultTheme: Theme = {
     listContainer: {},
     messageNotification: {
       container: {},
+      touchable: {},
       unreadCountNotificationContainer: {},
       unreadCountNotificationText: {},
+      wrapper: {},
     },
     messageSystem: {
       container: {},

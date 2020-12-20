@@ -85,7 +85,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const openLeaveGroupConfirmationSheet = () => {
     if (!chatClient?.user?.id) return;
-    setWildcard(() => (
+    setWildcard(() => () => (
       <ConfirmationBottomSheet
         confirmText={'DELETE'}
         onCancel={cancelLeaveGroup}
@@ -103,8 +103,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const cancelLeaveGroup = () => {
     setBlurType(undefined);
-    setWildcard(() => null);
     setOverlay('none');
+    setWildcard(undefined);
   };
 
   /**
@@ -115,9 +115,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
       await channel.removeMembers([chatClient?.user?.id]);
     }
 
-    setWildcard(() => null);
     setBlurType(undefined);
     setOverlay('none');
+    setWildcard(undefined);
 
     navigation.reset({
       index: 0,
