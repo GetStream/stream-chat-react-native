@@ -52,7 +52,7 @@ export const useCreateMessageContext = <
   const reactionsValue = reactions
     .map(({ own, type }) => `${own}${type}`)
     .join();
-  const messageValue = `${message.updated_at}${message.deleted_at}${message.readBy}${message.status}${message.type}${message.text}`;
+  const messageValue = `${message.updated_at}${message.deleted_at}${message.readBy}${message.status}${message.type}${message.text}${message.reply_count}`;
 
   const messageContext: MessageContextValue<
     At,

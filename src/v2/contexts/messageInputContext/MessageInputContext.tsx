@@ -1,10 +1,4 @@
-import React, {
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from 'react';
+import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
@@ -518,7 +512,7 @@ export const MessageInputProvider = <
     setText('');
   };
 
-  const sendMessage = useCallback(async () => {
+  const sendMessage = async () => {
     if (sending.current) {
       return;
     }
@@ -631,14 +625,7 @@ export const MessageInputProvider = <
         console.log('Failed to send message');
       }
     }
-  }, [
-    fileUploads,
-    imageUploads,
-    mentionedUsers,
-    sending.current,
-    text,
-    value.editing,
-  ]);
+  };
 
   const sendMessageAsync = (id: string) => {
     const image = asyncUploads[id];

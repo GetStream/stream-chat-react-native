@@ -164,29 +164,6 @@ const ChatWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
-  nextProps: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
-) => {
-  const { style: prevStyle } = prevProps;
-  const { style: nextStyle } = nextProps;
-
-  return isEqual(prevStyle, nextStyle);
-};
-
-const MemoizedChat = React.memo(
-  ChatWithContext,
-  areEqual,
-) as typeof ChatWithContext;
-
 /**
  * Chat - Wrapper component for Chat. The needs to be placed around any other chat components.
  * This Chat component provides the ChatContext to all other components.
@@ -224,5 +201,5 @@ export const Chat = <
 ) => {
   const { style } = useOverlayContext();
 
-  return <MemoizedChat {...{ style }} {...props} />;
+  return <ChatWithContext {...{ style }} {...props} />;
 };

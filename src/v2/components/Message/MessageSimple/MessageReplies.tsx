@@ -72,6 +72,7 @@ const MessageRepliesWithContext = <
 
   return (
     <TouchableOpacity
+      onLongPress={() => null}
       onPress={onOpenThread}
       style={[styles.container, container]}
       testID='message-replies'

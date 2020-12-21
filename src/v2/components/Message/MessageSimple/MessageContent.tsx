@@ -442,6 +442,7 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
+    prevMessage.reply_count === nextMessage.reply_count &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text;

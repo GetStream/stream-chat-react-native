@@ -80,8 +80,8 @@ export const useCreateMessagesContext = <
   const messageContentOrderValue = messageContentOrder.join();
   const messagesUpdated = messages
     .map(
-      ({ latest_reactions, status, updated_at }) =>
-        `${latest_reactions?.length}${status}${
+      ({ latest_reactions, reply_count, status, updated_at }) =>
+        `${latest_reactions?.length}${reply_count}${status}${
           updated_at
             ? typeof updated_at === 'string'
               ? updated_at
