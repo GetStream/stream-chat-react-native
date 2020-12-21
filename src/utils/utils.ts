@@ -6,7 +6,7 @@ import type {
   ChannelMemberResponse,
   UserResponse,
 } from 'stream-chat';
-
+import type { DebouncedFunc } from 'lodash';
 import type { CommandsItemProps } from '../components/AutoCompleteInput/CommandsItem';
 import type { MentionsItemProps } from '../components/AutoCompleteInput/MentionsItem';
 import type {
@@ -101,7 +101,6 @@ const getMembers = <
   const members = (channel.state.members as unknown) as ChannelMemberResponse<
     Us
   >[];
-
   return members && Object.values(members).length
     ? (Object.values(members).filter((member) => member.user) as Array<
         ChannelMemberResponse<Us> & { user: UserResponse<Us> }
@@ -149,8 +148,7 @@ const getMembersAndWatchers = <
     }, {} as { [key: string]: SuggestionUser<Us> }),
   );
 };
-
-type QueryMembersFunction = <
+type QueryMembersFunction<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -158,7 +156,7 @@ type QueryMembersFunction = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->(
+> = (
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   query: SuggestionUser<Us>['name'],
   onReady?: (users: SuggestionUser<Us>[]) => void,
@@ -192,16 +190,10 @@ const queryMembers = async <
     }
   }
 };
-
-export const queryMembersDebounced = debounce<QueryMembersFunction>(
-  queryMembers,
-  200,
-  {
-    leading: false,
-    trailing: true,
-  },
-);
-
+export const queryMembersDebounced = debounce(queryMembers, 200, {
+  leading: false,
+  trailing: true,
+});
 export const isMentionTrigger = (trigger: Trigger): trigger is '@' =>
   trigger === '@';
 
@@ -370,8 +362,9 @@ export const ACITriggerSettings = <
 
         return data;
       }
-
-      return queryMembersDebounced(channel, query, (data) => {
+      return (queryMembersDebounced as DebouncedFunc<
+        QueryMembersFunction<At, Ch, Co, Ev, Me, Re, Us>
+      >)(channel, query, (data) => {
         if (onReady) {
           onReady(data, query);
         }
