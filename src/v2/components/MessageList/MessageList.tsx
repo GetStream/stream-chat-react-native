@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList as DefaultFlatList,
   FlatListProps,
+  FlatList as FlatListType,
   Platform,
   ScrollViewProps,
   StyleSheet,
@@ -11,37 +11,42 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { InlineUnreadIndicator as DefaultInlineUnreadIndicator } from './InlineUnreadIndicator';
 import { Message as MessageType, useMessageList } from './hooks/useMessageList';
-import {
-  MessageNotification as DefaultMessageNotification,
-  MessageNotificationProps,
-} from './MessageNotification';
-import {
-  MessageSystem as DefaultMessageSystem,
-  MessageSystemProps,
-} from './MessageSystem';
-import { TypingIndicator as DefaultTypingIndicator } from './TypingIndicator';
-import { TypingIndicatorContainer } from './TypingIndicatorContainer';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
-import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import {
+  AttachmentPickerContextValue,
+  useAttachmentPickerContext,
+} from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
+  ChatContextValue,
+  useChatContext,
+} from '../../contexts/chatContext/ChatContext';
+import {
+  ImageGalleryContextValue,
+  useImageGalleryContext,
+} from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
   GroupType,
+  MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { useImageGalleryContext } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
+  TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+
+import type { Attachment } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -53,10 +58,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { DateHeader } from './DateHeader';
-import type { Attachment } from 'stream-chat';
-
-import { FlatList } from '../../native';
 
 const styles = StyleSheet.create({
   container: {
@@ -116,7 +117,7 @@ const keyExtractor = <
       : item.created_at.toISOString()
     : Date.now().toString());
 
-export type MessageListProps<
+type MessageListPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -124,89 +125,110 @@ export type MessageListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
-   * to attach some additional props to underlying FlatList, you can add it to following prop.
-   *
-   * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
-   *
-   * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
-   *
-   * e.g.
-   * ```js
-   * <MessageList
-   *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
-   * ```
-   */
-  additionalFlatListProps?: Partial<
-    FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
-  >;
-  /**
-   * UI component for footer of message list. By default message list doesn't have any footer.
-   * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-   * used in MessageList. Should be used for header by default if inverted is true or defaulted
-   *
-   */
-  FooterComponent?: React.ReactElement;
-  /**
-   * UI component for header of message list. By default message list doesn't have any header.
-   * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
-   * used in MessageList. Should be used for header if inverted is false
-   *
-   */
-  HeaderComponent?: React.ReactElement;
-  InlineUnreadIndicator?: React.ComponentType;
-  /** Whether or not the FlatList is inverted. Defaults to true */
-  inverted?: boolean;
-  /**
-   * Custom UI component to display a notification message
-   * Default component (accepts the same props): [MessageNotification](https://getstream.github.io/stream-chat-react-native/#messagenotification)
-   */
-  MessageNotification?: React.ComponentType<MessageNotificationProps>;
-  /**
-   * Custom UI component to display a system message
-   * Default component (accepts the same props): [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
-   */
-  MessageSystem?: React.ComponentType<
-    MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /** Turn off grouping of messages by user */
-  noGroupByUser?: boolean;
-  onListScroll?: ScrollViewProps['onScroll'];
-  /**
-   * Handler to open the thread on message. This is callback for touch event for replies button.
-   *
-   * @param message A message object to open the thread upon.
-   */
-  onThreadSelect?: (
-    message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
-  ) => void;
-  /**
-   * Use `setFlatListRef` to get access to ref to inner FlatList.
-   *
-   * e.g.
-   * ```js
-   * <MessageList
-   *  setFlatListRef={(ref) => {
-   *    // Use ref for your own good
-   *  }}
-   * ```
-   */
-  setFlatListRef?: (
-    ref: DefaultFlatList<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null,
-  ) => void;
-  /**
-   * Boolean whether or not the Messages in the MessageList are part of a Thread
-   **/
-  threadList?: boolean;
-  /**
-   * Typing indicator UI component to render
-   *
-   * Defaults to and accepts same props as: [TypingIndicator](https://getstream.github.io/stream-chat-react-native/#typingindicator)
-   */
-  TypingIndicator?: React.ComponentType;
-};
+> = Pick<
+  AttachmentPickerContextValue,
+  'closePicker' | 'selectedPicker' | 'setSelectedPicker'
+> &
+  Pick<
+    ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'channel'
+    | 'disabled'
+    | 'EmptyStateIndicator'
+    | 'initialScrollToFirstUnreadMessage'
+    | 'loadChannelAtMessage'
+    | 'loading'
+    | 'LoadingIndicator'
+    | 'markRead'
+    | 'reloadChannel'
+    | 'setTargetedMessage'
+    | 'StickyHeader'
+    | 'targetedMessage'
+  > &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client' | 'isOnline'> &
+  Pick<ImageGalleryContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setImages'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'DateHeader'
+    | 'disableTypingIndicator'
+    | 'FlatList'
+    | 'InlineUnreadIndicator'
+    | 'loadingMoreRecent'
+    | 'loadMore'
+    | 'loadMoreRecent'
+    | 'Message'
+    | 'MessageNotification'
+    | 'MessageSystem'
+    | 'TypingIndicator'
+    | 'TypingIndicatorContainer'
+  > &
+  Pick<
+    ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'loadMoreThread' | 'thread'
+  > &
+  Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
+    /**
+     * Besides existing (default) UX behavior of underlying FlatList of MessageList component, if you want
+     * to attach some additional props to underlying FlatList, you can add it to following prop.
+     *
+     * You can find list of all the available FlatList props here - https://facebook.github.io/react-native/docs/flatlist#props
+     *
+     * **NOTE** Don't use `additionalFlatListProps` to get access to ref of flatlist. Use `setFlatListRef` instead.
+     *
+     * e.g.
+     * ```js
+     * <MessageList
+     *  additionalFlatListProps={{ bounces: true, keyboardDismissMode: true }} />
+     * ```
+     */
+    additionalFlatListProps?: Partial<
+      FlatListProps<MessageType<At, Ch, Co, Ev, Me, Re, Us>>
+    >;
+    /**
+     * UI component for footer of message list. By default message list doesn't have any footer.
+     * This is a [ListHeaderComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+     * used in MessageList. Should be used for header by default if inverted is true or defaulted
+     *
+     */
+    FooterComponent?: React.ReactElement;
+    /**
+     * UI component for header of message list. By default message list doesn't have any header.
+     * This is a [ListFooterComponent](https://facebook.github.io/react-native/docs/flatlist#listheadercomponent) of FlatList
+     * used in MessageList. Should be used for header if inverted is false
+     *
+     */
+    HeaderComponent?: React.ReactElement;
+    /** Whether or not the FlatList is inverted. Defaults to true */
+    inverted?: boolean;
+    /** Turn off grouping of messages by user */
+    noGroupByUser?: boolean;
+    onListScroll?: ScrollViewProps['onScroll'];
+    /**
+     * Handler to open the thread on message. This is callback for touch event for replies button.
+     *
+     * @param message A message object to open the thread upon.
+     */
+    onThreadSelect?: (
+      message: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread'],
+    ) => void;
+    /**
+     * Use `setFlatListRef` to get access to ref to inner FlatList.
+     *
+     * e.g.
+     * ```js
+     * <MessageList
+     *  setFlatListRef={(ref) => {
+     *    // Use ref for your own good
+     *  }}
+     * ```
+     */
+    setFlatListRef?: (
+      ref: FlatListType<MessageType<At, Ch, Co, Ev, Me, Re, Us>> | null,
+    ) => void;
+    /**
+     * Boolean whether or not the Messages in the MessageList are part of a Thread
+     **/
+    threadList?: boolean;
+  };
 
 /**
  * The message list component renders a list of messages. It consumes the following contexts:
@@ -219,7 +241,7 @@ export type MessageListProps<
  *
  * @example ./MessageList.md
  */
-export const MessageList = <
+const MessageListWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -228,47 +250,54 @@ export const MessageList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     additionalFlatListProps,
+    channel,
+    client,
+    closePicker,
+    DateHeader,
+    disabled,
+    disableTypingIndicator,
+    EmptyStateIndicator,
+    FlatList,
     FooterComponent,
     HeaderComponent,
-    InlineUnreadIndicator = DefaultInlineUnreadIndicator,
-    inverted = true,
-    MessageNotification = DefaultMessageNotification,
-    MessageSystem = DefaultMessageSystem,
-    noGroupByUser,
-    onListScroll,
-    onThreadSelect,
-    setFlatListRef,
-    threadList = false,
-    TypingIndicator = DefaultTypingIndicator,
-  } = props;
-
-  const {
-    channel,
-    disabled,
-    EmptyStateIndicator,
     initialScrollToFirstUnreadMessage,
+    InlineUnreadIndicator,
+    inverted = true,
+    isOnline,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
-    markRead,
-    reloadChannel,
-    setTargetedMessage,
-    StickyHeader,
-    targetedMessage,
-  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    disableTypingIndicator,
     loadingMoreRecent,
     loadMore,
     loadMoreRecent,
+    loadMoreThread,
+    markRead,
     Message,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+    MessageNotification,
+    MessageSystem,
+    noGroupByUser,
+    onListScroll,
+    onThreadSelect,
+    reloadChannel,
+    selectedPicker,
+    setFlatListRef,
+    setImages,
+    setSelectedPicker,
+    setTargetedMessage,
+    StickyHeader,
+    t,
+    targetedMessage,
+    tDateTimeParser,
+    thread,
+    threadList = false,
+    TypingIndicator,
+    TypingIndicatorContainer,
+  } = props;
+
   const {
     theme: {
       colors: { primary },
@@ -280,21 +309,6 @@ export const MessageList = <
       },
     },
   } = useTheme();
-  const { loadMoreThread, thread } = useThreadContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { t, tDateTimeParser } = useTranslationContext();
-  const {
-    closePicker,
-    selectedPicker,
-    setSelectedPicker,
-  } = useAttachmentPickerContext();
 
   const messageList = useMessageList<At, Ch, Co, Ev, Me, Re, Us>({
     inverted,
@@ -306,7 +320,7 @@ export const MessageList = <
     !channel?.state.isUpToDate ? -1000 : 10,
   );
 
-  const flatListRef = useRef<DefaultFlatList<
+  const flatListRef = useRef<FlatListType<
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const yOffset = useRef(0);
@@ -664,8 +678,8 @@ export const MessageList = <
         )}
       </View>
       {!disableTypingIndicator && TypingIndicator && (
-        <TypingIndicatorContainer<At, Ch, Co, Ev, Me, Re, Us>>
-          <TypingIndicator<At, Ch, Co, Ev, Me, Re, Us> />
+        <TypingIndicatorContainer>
+          <TypingIndicator />
         </TypingIndicatorContainer>
       )}
       <MessageNotification
@@ -684,5 +698,115 @@ export const MessageList = <
         </View>
       )}
     </View>
+  );
+};
+
+export type MessageListProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<MessageListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+export const MessageList = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageListProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    closePicker,
+    selectedPicker,
+    setSelectedPicker,
+  } = useAttachmentPickerContext();
+  const {
+    channel,
+    disabled,
+    EmptyStateIndicator,
+    initialScrollToFirstUnreadMessage,
+    loadChannelAtMessage,
+    loading,
+    LoadingIndicator,
+    markRead,
+    reloadChannel,
+    setTargetedMessage,
+    StickyHeader,
+    targetedMessage,
+  } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client, isOnline } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { setImages } = useImageGalleryContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const {
+    DateHeader,
+    disableTypingIndicator,
+    FlatList,
+    InlineUnreadIndicator,
+    loadingMoreRecent,
+    loadMore,
+    loadMoreRecent,
+    Message,
+    MessageNotification,
+    MessageSystem,
+    TypingIndicator,
+    TypingIndicatorContainer,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { loadMoreThread, thread } = useThreadContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { t, tDateTimeParser } = useTranslationContext();
+
+  return (
+    <MessageListWithContext
+      {...{
+        channel,
+        client,
+        closePicker,
+        DateHeader,
+        disabled,
+        disableTypingIndicator,
+        EmptyStateIndicator,
+        FlatList,
+        initialScrollToFirstUnreadMessage,
+        InlineUnreadIndicator,
+        isOnline,
+        loadChannelAtMessage,
+        loading,
+        LoadingIndicator,
+        loadingMoreRecent,
+        loadMore,
+        loadMoreRecent,
+        loadMoreThread,
+        markRead,
+        Message,
+        MessageNotification,
+        MessageSystem,
+        reloadChannel,
+        selectedPicker,
+        setImages,
+        setSelectedPicker,
+        setTargetedMessage,
+        StickyHeader,
+        t,
+        targetedMessage,
+        tDateTimeParser,
+        thread,
+        TypingIndicator,
+        TypingIndicatorContainer,
+      }}
+      {...props}
+    />
   );
 };

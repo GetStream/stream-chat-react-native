@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
+  ChatContextValue,
+  useChatContext,
+} from '../../contexts/chatContext/ChatContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
@@ -24,11 +30,7 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
-  children?: React.ReactNode;
-};
-
-export const TypingIndicatorContainer = <
+type TypingIndicatorContainerPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -36,11 +38,24 @@ export const TypingIndicatorContainer = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
->({
-  children,
-}: Props) => {
-  const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'typing'> &
+  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'>;
+
+const TypingIndicatorContainerWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: PropsWithChildren<
+    TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
+  >,
+) => {
+  const { children, client, typing } = props;
+
   const {
     theme: {
       messageList: { typingIndicatorContainer },
@@ -62,6 +77,39 @@ export const TypingIndicatorContainer = <
     >
       {children}
     </View>
+  );
+};
+
+export type TypingIndicatorContainerProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = Partial<
+  TypingIndicatorContainerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>
+>;
+
+export const TypingIndicatorContainer = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: PropsWithChildren<
+    TypingIndicatorContainerProps<At, Ch, Co, Ev, Me, Re, Us>
+  >,
+) => {
+  const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+
+  return (
+    <TypingIndicatorContainerWithContext {...{ client, typing }} {...props} />
   );
 };
 

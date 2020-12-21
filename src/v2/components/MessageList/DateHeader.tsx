@@ -22,11 +22,11 @@ const styles = StyleSheet.create({
   },
 });
 
-type Props = {
+export type DateHeaderProps = {
   dateString: string;
 };
 
-export const DateHeader: React.FC<Props> = ({ dateString }) => {
+export const DateHeader: React.FC<DateHeaderProps> = ({ dateString }) => {
   const {
     theme: {
       dateHeader: { container, text },

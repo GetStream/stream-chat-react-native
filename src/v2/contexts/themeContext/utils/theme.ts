@@ -775,16 +775,25 @@ export const defaultTheme: Theme = {
     },
     listContainer: {},
     messageNotification: {
-      container: {},
+      container: {
+        backgroundColor: Colors.white,
+        shadowColor: Colors.black,
+      },
       touchable: {},
-      unreadCountNotificationContainer: {},
-      unreadCountNotificationText: {},
+      unreadCountNotificationContainer: {
+        backgroundColor: Colors.primary,
+      },
+      unreadCountNotificationText: {
+        color: Colors.white,
+      },
       wrapper: {},
     },
     messageSystem: {
       container: {},
       dateText: {},
-      line: {},
+      line: {
+        backgroundColor: Colors.light,
+      },
       text: {},
       textContainer: {},
     },

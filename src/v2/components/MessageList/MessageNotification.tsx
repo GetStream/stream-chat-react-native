@@ -70,7 +70,6 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
 
   const {
     theme: {
-      colors: { black, primary, white },
       messageList: {
         messageNotification: {
           container,
@@ -88,27 +87,19 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
   return (
     <TouchableOpacity onPress={onPress} style={[styles.touchable, touchable]}>
       <View style={[styles.wrapper, wrapper]}>
-        <View
-          style={[
-            styles.container,
-            { backgroundColor: white, shadowColor: black },
-            container,
-          ]}
-        >
+        <View style={[styles.container, container]}>
           <Down />
         </View>
         {!!unreadCount && (
           <View
             style={[
               styles.unreadCountNotificationContainer,
-              { backgroundColor: primary },
               unreadCountNotificationContainer,
             ]}
           >
             <Text
               style={[
                 styles.unreadCountNotificationText,
-                { color: white },
                 unreadCountNotificationText,
               ]}
             >

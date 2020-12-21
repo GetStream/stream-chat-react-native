@@ -30,7 +30,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   typingText: {
-    color: '#7A7A7A',
     marginLeft: 8,
   },
 });
@@ -46,10 +45,7 @@ export const TypingIndicator = <
 >() => {
   const {
     theme: {
-      typingIndicator: {
-        container,
-        text: { color, fontSize, ...text },
-      },
+      typingIndicator: { container, text },
     },
   } = useTheme();
   const typingString = useTypingString<At, Ch, Co, Ev, Me, Re, Us>();
@@ -57,9 +53,7 @@ export const TypingIndicator = <
   return (
     <View style={[styles.container, container]} testID='typing-indicator'>
       <LoadingDots style={styles.loadingDots} />
-      <Text style={[styles.typingText, { color, fontSize }, text]}>
-        {typingString}
-      </Text>
+      <Text style={[styles.typingText, text]}>{typingString}</Text>
     </View>
   );
 };

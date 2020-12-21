@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -24,10 +25,11 @@ export const InlineUnreadIndicator: React.FC = () => {
       },
     },
   } = useTheme();
+  const { t } = useTranslationContext();
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, text]}>Unread Messages</Text>
+      <Text style={[styles.text, text]}>{t('Unread Messages')}</Text>
     </View>
   );
 };

@@ -58,6 +58,13 @@ import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
+import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
+import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
+import { MessageList as MessageListDefault } from '../MessageList/MessageList';
+import { MessageNotification as MessageNotificationDefault } from '../MessageList/MessageNotification';
+import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
+import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
+import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
@@ -90,6 +97,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import { FlatList as FlatListDefault } from '../../native';
 import { reactionData as reactionDataDefault } from '../../utils/utils';
 
 import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
@@ -148,13 +156,16 @@ export type ChannelPropsWithContext<
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
+      | 'DateHeader'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
       | 'FileAttachment'
       | 'FileAttachmentGroup'
+      | 'FlatList'
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
+      | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
       | 'MessageAvatar'
@@ -162,13 +173,18 @@ export type ChannelPropsWithContext<
       | 'messageContentOrder'
       | 'MessageFooter'
       | 'MessageHeader'
+      | 'MessageList'
+      | 'MessageNotification'
       | 'MessageReplies'
       | 'MessageSimple'
       | 'MessageStatus'
+      | 'MessageSystem'
       | 'MessageText'
       | 'ReactionList'
       | 'Reply'
       | 'supportedReactions'
+      | 'TypingIndicator'
+      | 'TypingIndicatorContainer'
       | 'UrlPreview'
     >
   > &
@@ -275,6 +291,7 @@ export const ChannelWithContext = <
     closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
+    DateHeader = DateHeaderDefault,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
@@ -289,6 +306,7 @@ export const ChannelWithContext = <
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
+    FlatList = FlatListDefault,
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
@@ -298,6 +316,7 @@ export const ChannelWithContext = <
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialScrollToFirstUnreadMessage = false,
     initialValue,
+    InlineUnreadIndicator = InlineUnreadIndicatorDefault,
     Input,
     keyboardBehavior,
     KeyboardCompatibleView = KeyboardCompatibleViewDefault,
@@ -313,9 +332,12 @@ export const ChannelWithContext = <
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
     MessageFooter,
     MessageHeader,
+    MessageList = MessageListDefault,
+    MessageNotification = MessageNotificationDefault,
     MessageReplies = MessageRepliesDefault,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
+    MessageSystem = MessageSystemDefault,
     MessageText,
     MoreOptionsButton = MoreOptionsButtonDefault,
     numberOfLines = 5,
@@ -330,6 +352,8 @@ export const ChannelWithContext = <
     supportedReactions = reactionDataDefault,
     t,
     thread: threadProps,
+    TypingIndicator = TypingIndicatorDefault,
+    TypingIndicatorContainer = TypingIndicatorContainerDefault,
     updateSuggestions,
     UploadProgressIndicator = UploadProgressIndicatorDefault,
     UrlPreview = CardDefault,
@@ -1200,14 +1224,17 @@ export const ChannelWithContext = <
     CardCover,
     CardFooter,
     CardHeader,
+    DateHeader,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
     FileAttachment,
     FileAttachmentGroup,
+    FlatList,
     formatDate,
     Gallery,
     Giphy,
     hasMore,
+    InlineUnreadIndicator,
     loadingMore,
     loadingMoreRecent,
     loadMore: loadMoreThrottled,
@@ -1219,10 +1246,13 @@ export const ChannelWithContext = <
     messageContentOrder,
     MessageFooter,
     MessageHeader,
+    MessageList,
+    MessageNotification,
     MessageReplies,
     messages,
     MessageSimple,
     MessageStatus,
+    MessageSystem,
     MessageText,
     ReactionList,
     removeMessage,
@@ -1231,6 +1261,8 @@ export const ChannelWithContext = <
     setEditingState,
     setReplyToState,
     supportedReactions,
+    TypingIndicator,
+    TypingIndicatorContainer,
     updateMessage,
     UrlPreview,
   });

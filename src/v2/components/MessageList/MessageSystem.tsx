@@ -84,7 +84,6 @@ export const MessageSystem = <
 
   const {
     theme: {
-      colors: { light },
       messageList: {
         messageSystem: { container, dateText, line, text, textContainer },
       },
@@ -103,14 +102,14 @@ export const MessageSystem = <
 
   return (
     <View style={[styles.container, container]} testID='message-system'>
-      <View style={[styles.line, { backgroundColor: light }, line]} />
+      <View style={[styles.line, line]} />
       <View style={[styles.textContainer, textContainer]}>
         <Text style={[styles.text, text]}>
           {message.text?.toUpperCase() || ''}
         </Text>
         <Text style={[styles.text, dateText]}>{date}</Text>
       </View>
-      <View style={[styles.line, { backgroundColor: light }, line]} />
+      <View style={[styles.line, line]} />
     </View>
   );
 };

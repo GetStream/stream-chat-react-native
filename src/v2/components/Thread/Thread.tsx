@@ -2,21 +2,31 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
-import { Message as DefaultMessage } from '../Message/Message';
 import {
   MessageInput as DefaultMessageInput,
   MessageInputProps,
 } from '../MessageInput/MessageInput';
-import {
-  MessageList as DefaultMessageList,
-  MessageListProps,
-} from '../MessageList/MessageList';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
+import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../contexts/channelContext/ChannelContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { useThreadContext } from '../../contexts/threadContext/ThreadContext';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+import {
+  ThreadContextValue,
+  useThreadContext,
+} from '../../contexts/threadContext/ThreadContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../contexts/translationContext/TranslationContext';
 import { vw } from '../../utils/utils';
+
+import type { MessageListProps } from '../MessageList/MessageList';
 
 import type {
   DefaultAttachmentType,
@@ -48,7 +58,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ThreadProps<
+type ThreadPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -56,59 +66,50 @@ export type ThreadProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Additional props for underlying MessageInput component.
-   * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
-   * */
-  additionalMessageInputProps?: Partial<
-    MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /**
-   * Additional props for underlying MessageList component.
-   * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
-   * */
-  additionalMessageListProps?: Partial<
-    MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /** Make input focus on mounting thread */
-  autoFocus?: boolean;
-  /** Closes thread on dismount, defaults to true */
-  closeThreadOnDismount?: boolean;
-  /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
-  disabled?: boolean;
-  /**
-   * **Customized MessageInput component to used within Thread instead of default MessageInput
-   * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
-   */
-  MessageInput?: React.ComponentType<
-    MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /**
-   * **Customized MessageList component to used within Thread instead of default MessageList
-   * **Available from [MessageList](https://getstream.github.io/stream-chat-react-native/#messagelist)**
-   * */
-  MessageList?: React.ComponentType<
-    MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
-  >;
-  /**
-   * Call custom function on closing thread if handling thread state elsewhere
-   */
-  onThreadDismount?: () => void;
-};
+> = Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'Message' | 'MessageList'
+  > &
+  Pick<
+    ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'closeThread' | 'loadMoreThread' | 'thread'
+  > &
+  Pick<TranslationContextValue, 't'> & {
+    /**
+     * Additional props for underlying MessageInput component.
+     * Available props - https://getstream.github.io/stream-chat-react-native/#messageinput
+     * */
+    additionalMessageInputProps?: Partial<
+      MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
+    >;
+    /**
+     * Additional props for underlying MessageList component.
+     * Available props - https://getstream.github.io/stream-chat-react-native/#messagelist
+     * */
+    additionalMessageListProps?: Partial<
+      MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
+    >;
+    /** Make input focus on mounting thread */
+    autoFocus?: boolean;
+    /** Closes thread on dismount, defaults to true */
+    closeThreadOnDismount?: boolean;
+    /** Disables the thread UI. So MessageInput and MessageList will be disabled. */
+    disabled?: boolean;
+    /**
+     * **Customized MessageInput component to used within Thread instead of default MessageInput
+     * **Available from [MessageInput](https://getstream.github.io/stream-chat-react-native/#messageinput)**
+     */
+    MessageInput?: React.ComponentType<
+      MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>
+    >;
+    /**
+     * Call custom function on closing thread if handling thread state elsewhere
+     */
+    onThreadDismount?: () => void;
+  };
 
-/**
- * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
- * The thread is only used for the list of replies to a message.
- *
- * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
- * Underlying MessageList, MessageInput and Message components can be customized using props:
- * - additionalMessageListProps
- * - additionalMessageInputProps
- *
- * @example ./Thread.md
- */
-export const Thread = <
+const ThreadWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -117,20 +118,24 @@ export const Thread = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
+  props: ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     additionalMessageInputProps,
     additionalMessageListProps,
     autoFocus = true,
+    channel,
+    closeThread,
     closeThreadOnDismount = true,
     disabled,
+    loadMoreThread,
+    Message,
     MessageInput = DefaultMessageInput,
-    MessageList = DefaultMessageList,
+    MessageList,
     onThreadDismount,
+    t,
+    thread,
   } = props;
-
-  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
     theme: {
@@ -145,16 +150,6 @@ export const Thread = <
       },
     },
   } = useTheme();
-  const { closeThread, loadMoreThread, thread } = useThreadContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-  const { t } = useTranslationContext();
 
   useEffect(() => {
     const loadMoreThreadAsync = async () => {
@@ -185,8 +180,8 @@ export const Thread = <
   const footerComponent = (
     <View style={styles.threadHeaderContainer}>
       <View style={styles.messagePadding}>
-        <DefaultMessage<At, Ch, Co, Ev, Me, Re, Us>
-          alignment={'left'}
+        <Message
+          alignment='left'
           groupStyles={['single']}
           message={thread}
           preventPress
@@ -241,7 +236,7 @@ export const Thread = <
 
   return (
     <React.Fragment key={`thread-${thread.id}-${channel?.cid || ''}`}>
-      <MessageList<At, Ch, Co, Ev, Me, Re, Us>
+      <MessageList
         FooterComponent={footerComponent}
         threadList
         {...additionalMessageListProps}
@@ -251,5 +246,74 @@ export const Thread = <
         {...additionalMessageInputProps}
       />
     </React.Fragment>
+  );
+};
+
+export type ThreadProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Partial<ThreadPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
+/**
+ * Thread - The Thread renders a parent message with a list of replies. Use the standard message list of the main channel's messages.
+ * The thread is only used for the list of replies to a message.
+ *
+ * Thread is a consumer of [channel context](https://getstream.github.io/stream-chat-react-native/#channelcontext)
+ * Underlying MessageList, MessageInput and Message components can be customized using props:
+ * - additionalMessageListProps
+ * - additionalMessageInputProps
+ *
+ * @example ./Thread.md
+ */
+export const Thread = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ThreadProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { channel } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { Message, MessageList } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { closeThread, loadMoreThread, thread } = useThreadContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { t } = useTranslationContext();
+
+  return (
+    <ThreadWithContext
+      {...{
+        channel,
+        closeThread,
+        loadMoreThread,
+        Message,
+        MessageList,
+        t,
+        thread,
+      }}
+      {...props}
+    />
   );
 };

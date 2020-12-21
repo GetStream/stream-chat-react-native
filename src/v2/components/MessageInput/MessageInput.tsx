@@ -638,13 +638,12 @@ const areEqual = <
   if (!fileUploadsEqual) return false;
 
   const suggestionsEqual =
-    !!prevSuggestions === !!nextSuggestions &&
-    prevSuggestions?.data &&
-    nextSuggestions?.data &&
-    prevSuggestions.data.length === nextSuggestions.data.length &&
-    prevSuggestions.data.every(
-      ({ name }, index) => name === nextSuggestions.data[index].name,
-    );
+    !!prevSuggestions?.data && !!nextSuggestions?.data
+      ? prevSuggestions.data.length === nextSuggestions.data.length &&
+        prevSuggestions.data.every(
+          ({ name }, index) => name === nextSuggestions.data[index].name,
+        )
+      : !!prevSuggestions === !!nextSuggestions;
   if (!suggestionsEqual) return false;
 
   const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
