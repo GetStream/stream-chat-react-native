@@ -31,6 +31,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
     <SafeAreaView>
       <Channel
         channel={channel}
+        enforceUniqueReaction
         keyboardVerticalOffset={headerHeight}
         thread={thread}
       >

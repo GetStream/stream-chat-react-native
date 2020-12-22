@@ -6440,10 +6440,10 @@ react-native-actionsheet@2.4.2:
   resolved "https://registry.yarnpkg.com/react-native-actionsheet/-/react-native-actionsheet-2.4.2.tgz#6a00dd51a75ef2c8974312130e405af73191500f"
   integrity sha512-DBoWIvVwuWXuptF4t46pBqkFxaUxS+rsIdHiA05t0n4BdTIDV2R4s9bLEUVOGzb94D7VxIamsXZPA/3mmw+SXg==
 
-react-native-document-picker@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.1.0.tgz#8092c09727018587da34358bf731fe948d4171a5"
-  integrity sha512-tHYNng9GrnVrOoLk9K2j+T1xa8gAfC2Mk2dbJq32QBYD3zkHGMkFYGd2FZt0nuYxCBnd768tOQWuEZXwXM1tsg==
+react-native-document-picker@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.1.1.tgz#d4a7f18d397f7653610cc88921767d322cfd957b"
+  integrity sha512-bJeLOmwYTFkeTkqjjJ5VKtZyMvRfECb0w/xB/Tt83TAa00msMQfnxPI9oRrwWRyVPD3dKomp6zRbCnerCMIdgw==
 
 react-native-fs@2.16.6:
   version "2.16.6"
@@ -6536,10 +6536,10 @@ react-native-screens@2.16.1:
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.16.1.tgz#b105a127378d90018a46daf0c2f6518fca60c06f"
   integrity sha512-WZ7m0sBDVaHbBnlHxwQnUlI6KNfQKHq+Unfw+VBuAlnSXvT+aw6Bb/K2bUlHzBgvrPjwY3Spc7ZERFuTwRLLwg==
 
-react-native-share@4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-4.1.0.tgz#78083d03c236849342decd0ecbc0bb9b77f1eb72"
-  integrity sha512-ytkgi9UsjQviKgWKuniApomB3opjydxPKnrApBF+SPMnQFVVDlH5EyHR6rK+qxMtIAcspb7ylNPj3KzgO+YCrg==
+react-native-share@4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-4.1.1.tgz#f36d03d293379a5e3b9782e921beab5aa6093cd1"
+  integrity sha512-3wXzZ2bcRH3fyMmq0ZtWE0wy2SeM9khpJo++JPJK22H5oKwe5IRX1yk8aPXtJG/S5UC2/2QQoh/MHtcGDZ4yLA==
 
 react-native-svg@12.1.0:
   version "12.1.0"
@@ -7313,10 +7313,10 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.9.1-dev.0:
-  version "2.9.1-dev.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.1-dev.0.tgz#ce403094d0edc763cc8a8948ae031bf94ff4dd25"
-  integrity sha512-llq2vasCvJQY1gaRdLV1Q7VUMk/zAyPHhN2jMLTiYoQj+Pq5CkUjOD+JhJp2WBWDUUlrmFYfBT88fVmPGPvobA==
+stream-chat@2.10.1-dev.0:
+  version "2.10.1-dev.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.10.1-dev.0.tgz#7773c121e9ecd1d655e5f6d17f163262a7d8e950"
+  integrity sha512-QVqbflL98XFAcss9tN8haf1IT7v7LzX1wDgqxeBV1OmG2KnbKl12P3CSb503xUrLS1yBZMCi6V0c1gTuynkdnA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

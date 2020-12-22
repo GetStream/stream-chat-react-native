@@ -178,6 +178,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         }}
         channel={channel}
         EmptyStateIndicator={EmptyMessagesIndicator}
+        enforceUniqueReaction
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         onChangeText={(text) => {
           setMessageText(text);
@@ -266,9 +267,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                 />
               </View>
             </View>
-            <TouchableOpacity
-              style={styles.searchContainerRight}
-            >
+            <TouchableOpacity style={styles.searchContainerRight}>
               {selectedUsers.length === 0 ? (
                 <User height={32} width={32} />
               ) : (

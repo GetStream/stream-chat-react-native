@@ -151,7 +151,7 @@ const App = () => {
 
   useEffect(() => {
     const setupClient = async () => {
-      await chatClient.setUser(user, userToken);
+      await chatClient.connectUser(user, userToken);
 
       setClientReady(true);
     };
