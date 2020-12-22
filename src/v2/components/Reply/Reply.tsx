@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Image,
-  ImageStyle,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
 import { FileIcon as FileIconDefault } from '../Attachment/FileIcon';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -59,8 +52,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 12,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
-    flex: 1,
     flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
   },
   text: { fontSize: 12 },
   textContainer: { maxWidth: undefined, paddingHorizontal: 8 },
@@ -74,7 +68,10 @@ type ReplyPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'replyTo'> &
+> = Pick<
+  MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'replyToMessage'
+> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'AttachmentFileIcon' | 'MessageAvatar'
@@ -82,11 +79,11 @@ type ReplyPropsWithContext<
   Pick<TranslationContextValue, 't'> & {
     attachmentSize?: number;
     styles?: Partial<{
-      container: StyleProp<ViewStyle>;
-      fileAttachmentContainer: StyleProp<ViewStyle>;
-      imageAttachment: StyleProp<ImageStyle>;
-      messageContainer: StyleProp<ViewStyle>;
-      textContainer: StyleProp<ViewStyle>;
+      container: ViewStyle;
+      fileAttachmentContainer: ViewStyle;
+      imageAttachment: ImageStyle;
+      messageContainer: ViewStyle;
+      textContainer: ViewStyle;
     }>;
   };
 
@@ -105,7 +102,7 @@ export const ReplyWithContext = <
     AttachmentFileIcon,
     attachmentSize = 40,
     MessageAvatar,
-    replyTo,
+    replyToMessage,
     styles: stylesProp = {},
     t,
   } = props;
@@ -126,11 +123,11 @@ export const ReplyWithContext = <
     },
   } = useTheme();
 
-  if (typeof replyTo === 'boolean') return null;
+  if (typeof replyToMessage === 'boolean') return null;
 
   const lastAttachment =
-    replyTo.attachments &&
-    (replyTo.attachments.slice(-1)[0] as AttachmentType<At>);
+    replyToMessage.attachments &&
+    (replyToMessage.attachments.slice(-1)[0] as AttachmentType<At>);
 
   const messageType = lastAttachment
     ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'
@@ -146,12 +143,20 @@ export const ReplyWithContext = <
       : 'other'
     : undefined;
 
+  const hasImage =
+    !error &&
+    lastAttachment &&
+    messageType !== 'file' &&
+    (lastAttachment.image_url ||
+      lastAttachment.thumb_url ||
+      lastAttachment.og_scrape_url);
+
   return (
     <View style={[styles.container, container, stylesProp.container]}>
       <MessageAvatar
         alignment={'left'}
         lastGroupMessage
-        message={replyTo}
+        message={replyToMessage}
         size={24}
       />
       <View
@@ -184,9 +189,7 @@ export const ReplyWithContext = <
                 size={attachmentSize}
               />
             </View>
-          ) : lastAttachment.image_url ||
-            lastAttachment.thumb_url ||
-            lastAttachment.og_scrape_url ? (
+          ) : hasImage ? (
             <Image
               onError={() => setError(true)}
               source={{
@@ -206,11 +209,11 @@ export const ReplyWithContext = <
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
           markdownStyles={{ text: styles.text, ...markdownStyles }}
           message={{
-            ...replyTo,
-            text: replyTo.text
-              ? replyTo.text.length > 170
-                ? `${replyTo.text.slice(0, 170)}...`
-                : replyTo.text
+            ...replyToMessage,
+            text: replyToMessage.text
+              ? replyToMessage.text.length > 170
+                ? `${replyToMessage.text.slice(0, 170)}...`
+                : replyToMessage.text
               : messageType === 'image'
               ? t('Photo')
               : messageType === 'file'
@@ -219,6 +222,27 @@ export const ReplyWithContext = <
           }}
           styles={{
             textContainer: [
+              {
+                marginRight: hasImage
+                  ? Number(
+                      stylesProp.imageAttachment?.height ||
+                        imageAttachment.height ||
+                        styles.imageAttachment.height,
+                    ) +
+                    Number(
+                      stylesProp.imageAttachment?.marginLeft ||
+                        imageAttachment.marginLeft ||
+                        styles.imageAttachment.marginLeft,
+                    )
+                  : messageType === 'file'
+                  ? attachmentSize +
+                    Number(
+                      stylesProp.fileAttachmentContainer?.paddingLeft ||
+                        fileAttachmentContainer.paddingLeft ||
+                        styles.fileAttachmentContainer.paddingLeft,
+                    )
+                  : undefined,
+              },
               styles.textContainer,
               textContainer,
               stylesProp.textContainer,
@@ -242,11 +266,17 @@ const areEqual = <
   prevProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { replyTo: prevReplyTo } = prevProps;
-  const { replyTo: nextReplyTo } = nextProps;
+  const { replyToMessage: prevReplyToMessage } = prevProps;
+  const { replyToMessage: nextReplyToMessage } = nextProps;
 
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
+  const replyToMessageEqual =
+    !!prevReplyToMessage &&
+    !!nextReplyToMessage &&
+    typeof prevReplyToMessage !== 'boolean' &&
+    typeof nextReplyToMessage !== 'boolean'
+      ? prevReplyToMessage.id === nextReplyToMessage.id
+      : !!prevReplyToMessage === !!nextReplyToMessage;
+  if (!replyToMessageEqual) return false;
 
   return true;
 };
@@ -289,7 +319,15 @@ export const Reply = <
     MessageAvatar = MessageAvatarDefault,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { replyTo } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { replyToMessage } = useMessageInputContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
 
   const { t } = useTranslationContext();
 
@@ -298,8 +336,8 @@ export const Reply = <
       {...{
         AttachmentFileIcon,
         MessageAvatar,
-        replyTo: message
-          ? (message.replyTo as MessageInputContextValue<
+        replyToMessage: message
+          ? (message.reply_to_message as MessageInputContextValue<
               At,
               Ch,
               Co,
@@ -307,8 +345,8 @@ export const Reply = <
               Me,
               Re,
               Us
-            >['replyTo'])
-          : replyTo,
+            >['replyToMessage'])
+          : replyToMessage,
         t,
       }}
       {...props}

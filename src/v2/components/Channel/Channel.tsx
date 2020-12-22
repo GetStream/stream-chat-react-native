@@ -387,7 +387,7 @@ export const ChannelWithContext = <
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
-  const [replyTo, setReplyTo] = useState<
+  const [replyToMessage, setReplyToMessage] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [thread, setThread] = useState<
@@ -1017,7 +1017,7 @@ export const ChannelWithContext = <
     setEditing(message);
   };
 
-  const setReplyToState: MessagesContextValue<
+  const setReplyToMessageState: MessagesContextValue<
     At,
     Ch,
     Co,
@@ -1025,8 +1025,8 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['setReplyToState'] = (message) => {
-    setReplyTo(message);
+  >['setReplyToMessageState'] = (message) => {
+    setReplyToMessage(message);
   };
 
   const clearEditingState: InputMessageInputContextValue<
@@ -1039,7 +1039,7 @@ export const ChannelWithContext = <
     Us
   >['clearEditingState'] = () => setEditing(false);
 
-  const clearReplyToState: InputMessageInputContextValue<
+  const clearReplyToMessageState: InputMessageInputContextValue<
     At,
     Ch,
     Co,
@@ -1047,7 +1047,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['clearReplyToState'] = () => setReplyTo(false);
+  >['clearReplyToMessageState'] = () => setReplyToMessage(false);
 
   const removeMessage: MessagesContextValue<
     At,
@@ -1189,7 +1189,7 @@ export const ChannelWithContext = <
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
-    clearReplyToState,
+    clearReplyToMessageState,
     CommandsButton,
     compressImageQuality,
     doDocUploadRequest,
@@ -1206,7 +1206,7 @@ export const ChannelWithContext = <
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
-    replyTo,
+    replyToMessage,
     SendButton,
     sendImageAsync,
     sendMessage,
@@ -1259,7 +1259,7 @@ export const ChannelWithContext = <
     Reply,
     retrySendMessage,
     setEditingState,
-    setReplyToState,
+    setReplyToMessageState,
     supportedReactions,
     TypingIndicator,
     TypingIndicatorContainer,

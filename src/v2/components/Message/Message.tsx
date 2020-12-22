@@ -134,7 +134,7 @@ export type MessagePropsWithContext<
     | 'reactionsEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
-    | 'setReplyToState'
+    | 'setReplyToMessageState'
     | 'supportedReactions'
     | 'updateMessage'
   > &
@@ -236,6 +236,7 @@ const MessageWithContext = <
     enableLongPress = true,
     enforceUniqueReaction,
     forceAlign = false,
+    goToMessage,
     groupStyles = ['bottom'],
     isAdmin,
     isModerator,
@@ -256,7 +257,7 @@ const MessageWithContext = <
     setData,
     setEditingState,
     setOverlay,
-    setReplyToState,
+    setReplyToMessageState,
     showAvatar,
     showMessageStatus,
     supportedReactions,
@@ -317,6 +318,9 @@ const MessageWithContext = <
     }
     if (error) {
       showMessageOverlay(false, true);
+    } else if (goToMessage && message.reply_to_message) {
+      // @ts-expect-error until types get added to stream-chat-js
+      goToMessage(message.reply_to_message.id);
     }
   };
 
@@ -540,7 +544,7 @@ const MessageWithContext = <
     const reply = {
       action: () => {
         setOverlay('none');
-        setReplyToState(message);
+        setReplyToMessageState(message);
       },
       icon: <CurveLineLeftUp />,
       title: t('Reply'),
@@ -837,7 +841,7 @@ export const Message = <
     removeMessage,
     retrySendMessage,
     setEditingState,
-    setReplyToState,
+    setReplyToMessageState,
     supportedReactions,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -866,7 +870,7 @@ export const Message = <
         setData,
         setEditingState,
         setOverlay,
-        setReplyToState,
+        setReplyToMessageState,
         supportedReactions,
         t,
         updateMessage,

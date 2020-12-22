@@ -29,8 +29,8 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { Error } from '../../../icons/Error';
-import { Eye } from '../../../icons/Eye';
+import { Error, Eye } from '../../../icons';
+import { vw } from '../../../utils/utils';
 
 import type {
   DefaultAttachmentType,
@@ -55,6 +55,11 @@ const styles = StyleSheet.create({
   },
   leftAlignItems: {
     alignItems: 'flex-start',
+  },
+  replyContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
   rightAlignContent: {
     justifyContent: 'flex-end',
@@ -86,6 +91,7 @@ export type MessageContentPropsWithContext<
     | 'messageContentOrder'
     | 'onLongPress'
     | 'onlyEmojis'
+    | 'onPress'
     | 'otherAttachments'
     | 'preventPress'
     | 'showMessageStatus'
@@ -101,9 +107,8 @@ export type MessageContentPropsWithContext<
     | 'MessageHeader'
     | 'MessageReplies'
     | 'MessageStatus'
-    | 'ReactionList'
-    | 'reactionsEnabled'
     | 'repliesEnabled'
+    | 'Reply'
   > &
   Pick<TranslationContextValue, 't' | 'tDateTimeParser'> & {
     setMessageContentWidth: React.Dispatch<React.SetStateAction<number>>;
@@ -143,9 +148,11 @@ export const MessageContentWithContext = <
     MessageStatus,
     onLongPress,
     onlyEmojis,
+    onPress,
     otherAttachments,
     preventPress,
     repliesEnabled,
+    Reply,
     setMessageContentWidth,
     showMessageStatus,
     t,
@@ -259,6 +266,7 @@ export const MessageContentWithContext = <
       activeOpacity={0.7}
       disabled={disabled}
       onLongPress={onLongPress}
+      onPress={onPress}
       {...additionalTouchableProps}
       /**
        * Border radii are useful for the case of error message types only.
@@ -300,6 +308,11 @@ export const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
+          {message.reply_to_message && (
+            <View style={[styles.replyContainer]}>
+              <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
+            </View>
+          )}
           {messageContentOrder.map(
             (messageContentType, messageContentOrderIndex) => {
               switch (messageContentType) {
@@ -528,6 +541,7 @@ export const MessageContent = <
     messageContentOrder,
     onLongPress,
     onlyEmojis,
+    onPress,
     otherAttachments,
     preventPress,
     showMessageStatus,
@@ -542,9 +556,8 @@ export const MessageContent = <
     MessageHeader,
     MessageReplies,
     MessageStatus,
-    ReactionList,
-    reactionsEnabled,
     repliesEnabled,
+    Reply,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
@@ -570,11 +583,11 @@ export const MessageContent = <
         MessageStatus,
         onLongPress,
         onlyEmojis,
+        onPress,
         otherAttachments,
         preventPress,
-        ReactionList,
-        reactionsEnabled,
         repliesEnabled,
+        Reply,
         showMessageStatus,
         t,
         tDateTimeParser,
