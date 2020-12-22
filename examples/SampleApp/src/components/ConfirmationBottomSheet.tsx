@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTheme } from '@react-navigation/native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Delete } from '../icons/Delete';
 import { AppTheme } from '../types';
-import BottomSheet, {
-  TouchableOpacity,
-  useBottomSheet,
-} from '@gorhom/bottom-sheet';
-import { useKeyboardHeight } from '../hooks/useKeyboardHeight';
 
-const ADD_MEMBER_BOTTOM_SHEET_HEIGHT = 224;
 
 export type ConfirmationBottomSheetProps = {
   dismissHandler: () => void;

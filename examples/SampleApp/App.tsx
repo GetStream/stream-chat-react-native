@@ -71,6 +71,7 @@ const DrawerNavigator = ({ chatClient }) => {
   const streamChatTheme = useStreamChatTheme();
   const { bottom } = useSafeAreaInsets();
 
+  if (!chatClient) return null;
   return (
     <OverlayProvider<
       LocalAttachmentType,
@@ -109,6 +110,7 @@ const DrawerNavigator = ({ chatClient }) => {
     </OverlayProvider>
   );
 };
+
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => (
   <Stack.Navigator initialRouteName='ChatScreen'>
