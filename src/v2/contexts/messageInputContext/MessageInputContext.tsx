@@ -225,7 +225,7 @@ export type InputMessageInputContextValue<
     AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   clearEditingState: () => void;
-  clearReplyToState: () => void;
+  clearReplyToMessageState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -266,7 +266,7 @@ export type InputMessageInputContextValue<
   >;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  replyTo: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
+  replyToMessage: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component for send button.
    *
@@ -633,10 +633,14 @@ export const MessageInputProvider = <
             mentioned_users: uniq(mentionedUsers),
             /** Parent message id - in case of thread */
             parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+            reply_to_message_id:
+              typeof value.replyToMessage === 'boolean'
+                ? undefined
+                : value.replyToMessage.id,
             show_in_channel: sendThreadMessageInChannel || undefined,
             text: prevText,
           } as unknown) as StreamMessage<At, Me, Us>)
-          .then(value.clearReplyToState);
+          .then(value.clearReplyToMessageState);
 
         sending.current = false;
         resetInput(attachments);

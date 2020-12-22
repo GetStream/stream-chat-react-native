@@ -131,7 +131,7 @@ type MessageInputPropsWithContext<
     | 'AttachButton'
     | 'CommandsButton'
     | 'clearEditingState'
-    | 'clearReplyToState'
+    | 'clearReplyToMessageState'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
@@ -147,7 +147,7 @@ type MessageInputPropsWithContext<
     | 'MoreOptionsButton'
     | 'numberOfUploads'
     | 'pickFile'
-    | 'replyTo'
+    | 'replyToMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
@@ -186,7 +186,7 @@ export const MessageInputWithContext = <
     asyncUploads,
     AttachButton,
     clearEditingState,
-    clearReplyToState,
+    clearReplyToMessageState,
     CommandsButton,
     componentType,
     disabled,
@@ -208,7 +208,7 @@ export const MessageInputWithContext = <
     pickFile,
     removeImage,
     Reply,
-    replyTo,
+    replyToMessage,
     resetInput,
     SendButton,
     sending,
@@ -402,7 +402,7 @@ export const MessageInputWithContext = <
         }) => setHeight(newHeight)}
         style={[styles.container, container]}
       >
-        {(editing || replyTo) && (
+        {(editing || replyToMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
             {editing ? (
               <Edit pathFill={grey} />
@@ -419,8 +419,8 @@ export const MessageInputWithContext = <
                 if (editing) {
                   clearEditingState();
                 }
-                if (replyTo) {
-                  clearReplyToState();
+                if (replyToMessage) {
+                  clearReplyToMessageState();
                 }
                 if (inputBoxRef.current) {
                   inputBoxRef.current.blur();
@@ -480,7 +480,7 @@ export const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {replyTo && (
+                {replyToMessage && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
                   </View>
@@ -585,7 +585,7 @@ const areEqual = <
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
-    replyTo: prevReplyTo,
+    replyToMessage: prevReplyToMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
@@ -601,7 +601,7 @@ const areEqual = <
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
-    replyTo: nextReplyTo,
+    replyToMessage: nextReplyToMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
@@ -625,8 +625,14 @@ const areEqual = <
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
   if (!giphyActiveEqual) return false;
 
-  const replyToEqual = !!prevReplyTo === !!nextReplyTo;
-  if (!replyToEqual) return false;
+  const replyToMessageEqual =
+    !!prevReplyToMessage &&
+    !!nextReplyToMessage &&
+    typeof prevReplyToMessage !== 'boolean' &&
+    typeof nextReplyToMessage !== 'boolean'
+      ? prevReplyToMessage.id === nextReplyToMessage.id
+      : !!prevReplyToMessage === !!nextReplyToMessage;
+  if (!replyToMessageEqual) return false;
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
@@ -719,7 +725,7 @@ export const MessageInput = <
     asyncUploads,
     AttachButton,
     clearEditingState,
-    clearReplyToState,
+    clearReplyToMessageState,
     CommandsButton,
     editing,
     FileUploadPreview,
@@ -737,7 +743,7 @@ export const MessageInput = <
     numberOfUploads,
     pickFile,
     removeImage,
-    replyTo,
+    replyToMessage,
     resetInput,
     SendButton,
     sending,
@@ -768,7 +774,7 @@ export const MessageInput = <
         asyncUploads,
         AttachButton,
         clearEditingState,
-        clearReplyToState,
+        clearReplyToMessageState,
         CommandsButton,
         componentType,
         disabled,
@@ -790,7 +796,7 @@ export const MessageInput = <
         pickFile,
         removeImage,
         Reply,
-        replyTo,
+        replyToMessage,
         resetInput,
         SendButton,
         sending,
