@@ -1,5 +1,5 @@
-import { useTheme } from '@react-navigation/native';
 import React from 'react';
+import { useTheme } from '@react-navigation/native';
 import { useState } from 'react';
 import {
   ActivityIndicator,
@@ -9,8 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Channel } from 'stream-chat';
-import { KeyboardCompatibleView } from '../../../../src/v2';
+import { Channel, UserResponse } from 'stream-chat';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { CircleClose } from '../icons/CircleClose';
 import { Search } from '../icons/Search';
@@ -26,6 +25,7 @@ import {
   LocalUserType,
 } from '../types';
 import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type AddMemberBottomSheetProps = {
   channel: Channel<
@@ -40,10 +40,10 @@ export type AddMemberBottomSheetProps = {
   dismissHandler: () => void;
 };
 
-export const AddMemberBottomSheet: React.FC<AddMemberBottomSheetProps> = ({
-  channel,
-  dismissHandler,
-}) => {
+export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
+  const { channel, dismissHandler } = props;
+  const insets = useSafeAreaInsets();
+
   const { colors } = useTheme() as AppTheme;
   const {
     clearText,
@@ -59,7 +59,7 @@ export const AddMemberBottomSheet: React.FC<AddMemberBottomSheetProps> = ({
     false,
   );
   const [error, setError] = useState(false);
-  const addMember = async (user) => {
+  const addMember = async (user: UserResponse<LocalUserType>) => {
     setAddMemberQueryInProgress(true);
 
     try {
@@ -70,120 +70,119 @@ export const AddMemberBottomSheet: React.FC<AddMemberBottomSheetProps> = ({
     }
     setAddMemberQueryInProgress(false);
   };
+
   return (
-    <KeyboardCompatibleView keyboardVerticalOffset={0}>
+    <View
+      style={{
+        flexGrow: 1,
+        flexShrink: 1,
+        height: 300,
+        marginBottom: insets.bottom,
+      }}
+    >
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          width: '100%',
+        }}
+      >
+        <View
+          style={[
+            styles.inputBoxContainer,
+            {
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Search height={24} width={24} />
+          <TextInput
+            onChangeText={onChangeSearchText}
+            onFocus={onFocusInput}
+            placeholder={'Search'}
+            placeholderTextColor={colors.textLight}
+            style={[
+              styles.inputBox,
+              {
+                color: colors.text,
+              },
+            ]}
+            value={searchText}
+          />
+        </View>
+        {!!searchText && (
+          <TouchableOpacity
+            onPress={() => {
+              clearText();
+            }}
+            style={{
+              marginHorizontal: 4,
+            }}
+          >
+            <CircleClose height={24} width={24} />
+          </TouchableOpacity>
+        )}
+      </View>
       <View
         style={{
           flexGrow: 1,
           flexShrink: 1,
-          padding: 10,
         }}
       >
-        <View style={[styles.container, {}]}>
+        {addMemberQueryInProgress && (
           <View
             style={{
               alignItems: 'center',
+              backgroundColor: colors.greyContentBackground,
               flexDirection: 'row',
+              padding: 5,
               width: '100%',
             }}
           >
-            <View
-              style={[
-                styles.inputBoxContainer,
-                {
-                  borderColor: colors.border,
-                },
-              ]}
+            <ActivityIndicator size={'small'} />
+            <Text
+              style={{
+                marginLeft: 10,
+              }}
             >
-              <Search height={24} width={24} />
-              <TextInput
-                autoFocus
-                onChangeText={onChangeSearchText}
-                onFocus={onFocusInput}
-                placeholder={'Search'}
-                placeholderTextColor={colors.textLight}
-                style={[
-                  styles.inputBox,
-                  {
-                    color: colors.text,
-                  },
-                ]}
-                value={searchText}
-              />
-            </View>
-            {!!searchText && (
-              <TouchableOpacity
-                onPress={() => {
-                  clearText();
-                }}
-                style={{
-                  marginHorizontal: 4,
-                }}
-              >
-                <CircleClose height={24} width={24} />
-              </TouchableOpacity>
-            )}
+              Adding user to channel
+            </Text>
           </View>
+        )}
+        {error && (
           <View
             style={{
-              flexGrow: 1,
-              flexShrink: 1,
+              alignItems: 'center',
+              backgroundColor: colors.danger,
+              flexDirection: 'row',
+              padding: 5,
+              width: '100%',
             }}
           >
-            {addMemberQueryInProgress && (
-              <View
-                style={{
-                  alignItems: 'center',
-                  width: '100%',
-                  flexDirection: 'row',
-                  backgroundColor: colors.greyContentBackground,
-                  padding: 5,
-                }}
-              >
-                <ActivityIndicator size={'small'} />
-                <Text
-                  style={{
-                    marginLeft: 10,
-                  }}
-                >
-                  Adding user to channel
-                </Text>
-              </View>
-            )}
-            {error && (
-              <View
-                style={{
-                  alignItems: 'center',
-                  width: '100%',
-                  flexDirection: 'row',
-                  backgroundColor: colors.danger,
-                  padding: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    marginLeft: 10,
-                    color: colors.textInverted
-                  }}
-                >
-                  Error adding user to channel
-                </Text>
-              </View>
-            )}
-
-            <UserSearchResultsGrid
-              loading={loadingResults}
-              loadMore={loadMore}
-              onPress={addMember}
-              results={results}
-              searchText={searchText}
-            />
+            <Text
+              style={{
+                color: colors.textInverted,
+                marginLeft: 10,
+              }}
+            >
+              Error adding user to channel
+            </Text>
           </View>
-        </View>
+        )}
+
+        <UserSearchResultsGrid
+          loading={loadingResults}
+          loadMore={loadMore}
+          onPress={addMember}
+          results={results}
+          searchText={searchText}
+        />
       </View>
-    </KeyboardCompatibleView>
+    </View>
   );
 };
+
+AddMemberBottomSheet.displayName = 'AddMemberBottomSheet';
 
 const styles = StyleSheet.create({
   container: {
@@ -192,8 +191,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     height: 300,
-    width: '100%',
     paddingHorizontal: 16,
+    width: '100%',
   },
   inputBox: {
     flex: 1,
@@ -201,13 +200,13 @@ const styles = StyleSheet.create({
     padding: 0,
   },
   inputBoxContainer: {
-    flexGrow: 1,
-    flexShrink: 1,
     alignItems: 'center',
     backgroundColor: 'white',
     borderRadius: 18,
     borderWidth: 1,
     flexDirection: 'row',
+    flexGrow: 1,
+    flexShrink: 1,
     margin: 8,
     padding: 10,
     paddingBottom: 8,
