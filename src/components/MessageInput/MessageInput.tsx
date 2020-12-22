@@ -165,6 +165,10 @@ export type MessageInputProps<
    */
   AttachmentFileIcon?: React.ComponentType<FileIconProps>;
   /**
+   * Max number of suggestions to display in list. Defaults to 10.
+   */
+  autocompleteSuggestionsLimit?: number;
+  /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
    * while a value of 0.8 will reduce the file size by about half or less compared to a value of 1.
@@ -215,6 +219,7 @@ export type MessageInputProps<
   ImageUploadPreview?: React.ComponentType<ImageUploadPreviewProps>;
   /** Initial value to set on input */
   initialValue?: string;
+
   /**
    * Custom UI component for AutoCompleteInput.
    * Defaults to and accepts same props as: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AutoCompleteInput/AutoCompleteInput.tsx
@@ -309,6 +314,7 @@ export const MessageInput = <
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
     initialValue,
+    autocompleteSuggestionsLimit = 10,
     Input,
     maxNumberOfFiles = 10,
     onChangeText: onChangeTextProp,
@@ -610,6 +616,7 @@ export const MessageInput = <
 
     const triggerSettings = channel
       ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+          autocompleteSuggestionsLimit,
           channel,
           onMentionSelectItem: onSelectItem,
           t,
