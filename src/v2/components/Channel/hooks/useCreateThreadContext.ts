@@ -34,7 +34,11 @@ export const useCreateThreadContext = <
   const threadMessagesUpdated = threadMessages
     .map(
       ({ latest_reactions, reply_count, status, updated_at }) =>
-        `${latest_reactions?.length}${reply_count}${status}${
+        `${
+          latest_reactions
+            ? latest_reactions.map(({ type }) => type).join()
+            : ''
+        }${reply_count}${status}${
           updated_at
             ? typeof updated_at === 'string'
               ? updated_at

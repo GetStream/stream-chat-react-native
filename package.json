@@ -1,7 +1,7 @@
 {
   "name": "stream-chat-react-native-core",
   "description": "The official React Native and Expo components for Stream Chat, a service for building chat applications",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "author": {
     "company": "Stream.io Inc",
     "name": "Stream.io Inc"
@@ -106,7 +106,7 @@
     "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "2.9.1-dev.0",
+    "stream-chat": "2.10.1-dev.0",
     "styled-components": "5.2.1"
   },
   "peerDependencies": {

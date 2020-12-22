@@ -27,8 +27,9 @@
 
 - [React Native Compatibility](#react-native-compatibility)
 - [React Native Chat Tutorial](#react-native-chat-tutorial)
-- [Example Apps](#example-apps)
+- [Example Apps](#-example-apps)
   - [Expo example](#expo-example)
+  - [Native example](#native-example)
   - [Slack clone](#slack-clone)
 - [Docs](#docs)
 - [Keep in mind](#keep-in-mind)

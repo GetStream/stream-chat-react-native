@@ -469,11 +469,15 @@ const areEqual = <
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
-    (Array.isArray(prevMessage.latest_reactions) &&
-      Array.isArray(nextMessage.latest_reactions) &&
-      prevMessage.latest_reactions.length ===
-        nextMessage.latest_reactions.length) ||
-    prevMessage.latest_reactions === nextMessage.latest_reactions;
+    Array.isArray(prevMessage.latest_reactions) &&
+    Array.isArray(nextMessage.latest_reactions)
+      ? prevMessage.latest_reactions.length ===
+          nextMessage.latest_reactions.length &&
+        prevMessage.latest_reactions.every(
+          ({ type }, index) =>
+            type === nextMessage.latest_reactions?.[index].type,
+        )
+      : prevMessage.latest_reactions === nextMessage.latest_reactions;
   if (!latestReactionsEqual) return false;
 
   const messageContentOrderEqual =

@@ -48,11 +48,19 @@ export const useCreateMessageContext = <
   threadList,
 }: MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const groupStylesLength = groupStyles.length;
-  const latestReactionsLength = message.latest_reactions?.length;
   const reactionsValue = reactions
     .map(({ own, type }) => `${own}${type}`)
     .join();
-  const messageValue = `${message.updated_at}${message.deleted_at}${message.readBy}${message.status}${message.type}${message.text}${message.reply_count}`;
+  const latestReactions = message.latest_reactions
+    ? Array.isArray(message.latest_reactions)
+      ? message.latest_reactions
+      : Array.from(message.latest_reactions.values())
+    : undefined;
+  const messageValue = `${
+    latestReactions ? latestReactions.map(({ type }) => type).join() : ''
+  }${message.updated_at}${message.deleted_at}${message.readBy}${
+    message.status
+  }${message.type}${message.text}${message.reply_count}`;
 
   const messageContext: MessageContextValue<
     At,
@@ -98,7 +106,6 @@ export const useCreateMessageContext = <
       hasReactions,
       lastGroupMessage,
       lastReceivedId,
-      latestReactionsLength,
       messageValue,
       reactionsValue,
       showAvatar,

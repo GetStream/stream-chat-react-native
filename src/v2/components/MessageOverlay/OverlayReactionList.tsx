@@ -59,6 +59,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     position: 'absolute',
   },
+  selectedIcon: {
+    position: 'absolute',
+  },
 });
 
 type ReactionButtonProps<
@@ -109,18 +112,26 @@ export const ReactionButton = <
       },
     },
   } = useTheme();
+  const selected = ownReactionTypes.includes(type);
   const animationScale = useSharedValue(0);
   const hasShown = useSharedValue(0);
   const scale = useSharedValue(1);
+  const selectedOpacity = useSharedValue(selected ? 1 : 0);
 
   const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
     {
       onEnd: () => {
         runOnJS(triggerHaptic)('impactLight');
-        if (handleReaction) {
-          runOnJS(handleReaction)(type);
-        }
-        runOnJS(setOverlay)('none');
+        selectedOpacity.value = withTiming(
+          selected ? 0 : 1,
+          { duration: 250 },
+          () => {
+            if (handleReaction) {
+              runOnJS(handleReaction)(type);
+            }
+            runOnJS(setOverlay)('none');
+          },
+        );
       },
       onFinish: () => {
         cancelAnimation(scale);
@@ -131,7 +142,7 @@ export const ReactionButton = <
         scale.value = withTiming(1.5, { duration: 100 });
       },
     },
-    [handleReaction, setOverlay, type],
+    [handleReaction, selected, setOverlay, type],
   );
 
   useAnimatedReaction(
@@ -170,6 +181,10 @@ export const ReactionButton = <
     [],
   );
 
+  const selectedStyle = useAnimatedStyle<ViewStyle>(() => ({
+    opacity: selectedOpacity.value,
+  }));
+
   return (
     <TapGestureHandler
       hitSlop={{
@@ -200,7 +215,10 @@ export const ReactionButton = <
           iconStyle,
         ]}
       >
-        <Icon pathFill={ownReactionTypes.includes(type) ? primary : textGrey} />
+        <Icon pathFill={textGrey} />
+        <Animated.View style={[styles.selectedIcon, selectedStyle]}>
+          <Icon pathFill={primary} />
+        </Animated.View>
       </Animated.View>
     </TapGestureHandler>
   );

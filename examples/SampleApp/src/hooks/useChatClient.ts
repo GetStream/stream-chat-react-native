@@ -52,7 +52,7 @@ export const useChatClient = () => {
           },
         });
 
-        await client.setUser(user, userToken);
+        await client.connectUser(user, userToken);
         await AsyncStore.setItem('@stream-rn-sampleapp-user-id', id);
 
         setChatClient(client);
