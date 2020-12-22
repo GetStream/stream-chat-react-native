@@ -30,7 +30,7 @@ export const useCreateMessageInputContext = <
   asyncUploads,
   AttachButton,
   clearEditingState,
-  clearReplyToState,
+  clearReplyToMessageState,
   CommandsButton,
   compressImageQuality,
   doDocUploadRequest,
@@ -59,7 +59,7 @@ export const useCreateMessageInputContext = <
   pickFile,
   removeFile,
   removeImage,
-  replyTo,
+  replyToMessage,
   resetInput,
   SendButton,
   sendImageAsync,
@@ -93,7 +93,11 @@ export const useCreateMessageInputContext = <
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const mentionedUsersLength = mentionedUsers.length;
-  const replyToExists = !!replyTo;
+  const replyToMessageId = replyToMessage
+    ? typeof replyToMessage === 'boolean'
+      ? ''
+      : replyToMessage.id
+    : '';
   const threadId = thread?.id;
 
   const messageInputContext: MessageInputContextValue<
@@ -112,7 +116,7 @@ export const useCreateMessageInputContext = <
       asyncUploads,
       AttachButton,
       clearEditingState,
-      clearReplyToState,
+      clearReplyToMessageState,
       CommandsButton,
       compressImageQuality,
       doDocUploadRequest,
@@ -141,7 +145,7 @@ export const useCreateMessageInputContext = <
       pickFile,
       removeFile,
       removeImage,
-      replyTo,
+      replyToMessage,
       resetInput,
       SendButton,
       sendImageAsync,
@@ -175,7 +179,7 @@ export const useCreateMessageInputContext = <
       giphyActive,
       imageUploadsValue,
       mentionedUsersLength,
-      replyToExists,
+      replyToMessageId,
       showMoreOptions,
       text,
       threadId,

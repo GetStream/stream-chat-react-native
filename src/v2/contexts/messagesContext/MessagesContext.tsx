@@ -208,7 +208,9 @@ export type MessagesContextValue<
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
   setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  setReplyToState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  setReplyToMessageState: (
+    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
   supportedReactions: ReactionData[];
   /**
    * UI component for TypingIndicator
