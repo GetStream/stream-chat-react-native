@@ -139,7 +139,7 @@ const ThreadWithContext = <
 
   const {
     theme: {
-      colors: { background, textGrey },
+      colors: { textGrey },
       thread: {
         newThread: {
           backgroundGradientStart,
