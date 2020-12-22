@@ -85,3 +85,5 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
     </View>
   );
 };
+
+ImageGridHandle.displayName = 'ImageGridHandle{imageGallery{grid{handle}}}';

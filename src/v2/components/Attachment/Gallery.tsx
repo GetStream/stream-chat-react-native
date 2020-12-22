@@ -179,7 +179,7 @@ const GalleryWithContext = <
               onPress={() => {
                 if (!preventPress) {
                   setImage({ messageId, url });
-                  setBlurType(blurType || 'light');
+                  setBlurType(blurType);
                   setOverlay('gallery');
                 }
               }}

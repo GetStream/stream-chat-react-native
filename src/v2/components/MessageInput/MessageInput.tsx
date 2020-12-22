@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Keyboard, StyleSheet, Text, View } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  Keyboard,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { AttachmentSelectionBar } from '../AttachmentPicker/components/AttachmentSelectionBar';
 import { AutoCompleteInput } from '../AutoCompleteInput/AutoCompleteInput';
@@ -28,10 +33,7 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
-import { CircleClose } from '../../icons/CircleClose';
-import { CurveLineLeftUp } from '../../icons/CurveLineLeftUp';
-import { Edit } from '../../icons/Edit';
-import { Lightning } from '../../icons/Lightning';
+import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -153,6 +155,7 @@ type MessageInputPropsWithContext<
     | 'setGiphyActive'
     | 'setShowMoreOptions'
     | 'showMoreOptions'
+    | 'ShowThreadMessageInChannelButton'
     | 'removeImage'
     | 'uploadNewImage'
   > &
@@ -161,7 +164,9 @@ type MessageInputPropsWithContext<
     SuggestionsContextValue<Co, Us>,
     'componentType' | 'suggestions' | 'suggestionsTitle'
   > &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> & {
+    threadList?: boolean;
+  };
 
 export const MessageInputWithContext = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -211,9 +216,11 @@ export const MessageInputWithContext = <
     setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
+    ShowThreadMessageInChannelButton,
     suggestions,
     suggestionsTitle,
     t,
+    threadList,
     uploadNewImage,
     watchers,
   } = props;
@@ -520,6 +527,7 @@ export const MessageInputWithContext = <
             </>
           )}
         </View>
+        <ShowThreadMessageInChannelButton threadList={threadList} />
       </View>
       {componentType && suggestions ? (
         <View
@@ -583,6 +591,7 @@ const areEqual = <
     suggestions: prevSuggestions,
     suggestionsTitle: prevSuggestionsTitle,
     t: prevT,
+    threadList: prevThreadList,
   } = prevProps;
   const {
     asyncUploads: nextAsyncUploads,
@@ -598,6 +607,7 @@ const areEqual = <
     suggestions: nextSuggestions,
     suggestionsTitle: nextSuggestionsTitle,
     t: nextT,
+    threadList: nextThreadList,
   } = nextProps;
 
   const tEqual = prevT === nextT;
@@ -648,6 +658,9 @@ const areEqual = <
 
   const suggestionsTitleEqual = prevSuggestionsTitle === nextSuggestionsTitle;
   if (!suggestionsTitleEqual) return false;
+
+  const threadListEqual = prevThreadList === nextThreadList;
+  if (!threadListEqual) return false;
 
   return true;
 };
@@ -732,6 +745,7 @@ export const MessageInput = <
     setGiphyActive,
     setShowMoreOptions,
     showMoreOptions,
+    ShowThreadMessageInChannelButton,
     uploadNewImage,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -784,6 +798,7 @@ export const MessageInput = <
         setGiphyActive,
         setShowMoreOptions,
         showMoreOptions,
+        ShowThreadMessageInChannelButton,
         suggestions,
         suggestionsTitle,
         t,

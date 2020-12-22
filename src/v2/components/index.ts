@@ -47,7 +47,7 @@ export * from './ChannelPreview/ChannelPreviewMessenger';
 export * from './Chat/Chat';
 
 export * from './ImageGallery/ImageGallery';
-export * from './ImageGallery/components/AnimatedImage';
+export * from './ImageGallery/components/AnimatedGalleryImage';
 export * from './ImageGallery/components/ImageGalleryFooter';
 export * from './ImageGallery/components/ImageGalleryHeader';
 export * from './ImageGallery/components/ImageGalleryOverlay';
@@ -79,6 +79,7 @@ export * from './MessageInput/ImageUploadPreview';
 export * from './MessageInput/MessageInput';
 export * from './MessageInput/MoreOptionsButton';
 export * from './MessageInput/SendButton';
+export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
 
 export * from './MessageList/DateHeader';

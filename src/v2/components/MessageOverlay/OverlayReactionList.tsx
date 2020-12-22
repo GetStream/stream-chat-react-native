@@ -48,14 +48,14 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const styles = StyleSheet.create({
   notLastReaction: {
-    marginRight: 8,
+    marginRight: 16,
   },
   reactionList: {
     alignItems: 'center',
     borderRadius: 24,
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: 18,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     position: 'absolute',
   },

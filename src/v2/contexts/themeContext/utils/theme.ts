@@ -11,6 +11,7 @@ export const Colors = {
   attachmentBackground: '#E9F2FF',
   background: '#FCFCFC',
   background2: '#F5F5F5',
+  background3: '#F7F7F7',
   black: '#000000',
   danger: '#FF3742',
   green: '#20E070',
@@ -178,33 +179,33 @@ export type Theme = {
     image: ImageStyle;
   };
   imageGallery: {
+    backgroundColor: string;
+    blurType: 'light' | 'dark';
     footer: {
-      centerContainer?: ViewStyle;
-      container?: ViewStyle;
-      imageCountText?: TextStyle;
-      innerContainer?: ViewStyle;
-      leftContainer?: ViewStyle;
-      rightContainer?: ViewStyle;
+      centerContainer: ViewStyle;
+      container: ViewStyle;
+      imageCountText: TextStyle;
+      innerContainer: ViewStyle;
+      leftContainer: ViewStyle;
+      rightContainer: ViewStyle;
     };
     grid: {
-      gridAvatar?: ImageStyle;
-      gridAvatarWrapper?: ViewStyle;
-      gridImage?: ViewStyle;
-      handle?: ViewStyle;
-      handleText?: TextStyle;
-      overlay?: ViewStyle;
+      gridAvatar: ImageStyle;
+      gridAvatarWrapper: ViewStyle;
+      gridImage: ViewStyle;
+      handle: ViewStyle;
+      handleText: TextStyle;
+      overlay: ViewStyle;
     };
     header: {
-      centerContainer?: ViewStyle;
-      container?: ViewStyle;
-      dateText?: TextStyle;
-      innerContainer?: ViewStyle;
-      leftContainer?: ViewStyle;
-      rightContainer?: ViewStyle;
-      usernameText?: TextStyle;
+      centerContainer: ViewStyle;
+      container: ViewStyle;
+      dateText: TextStyle;
+      innerContainer: ViewStyle;
+      leftContainer: ViewStyle;
+      rightContainer: ViewStyle;
+      usernameText: TextStyle;
     };
-    backgroundColor?: string;
-    blurType?: 'light' | 'dark';
   };
   loadingDots: {
     container: ViewStyle;
@@ -255,6 +256,14 @@ export type Theme = {
     replyContainer: ViewStyle;
     sendButton: ViewStyle;
     sendButtonContainer: ViewStyle;
+    showThreadMessageInChannelButton: {
+      check: IconProps;
+      checkBoxActive: ViewStyle;
+      checkBoxInactive: ViewStyle;
+      container: ViewStyle;
+      innerContainer: ViewStyle;
+      text: TextStyle;
+    };
     suggestions: {
       command: {
         args: TextStyle;
@@ -477,9 +486,9 @@ export type Theme = {
   spinner: ViewStyle;
   thread: {
     newThread: ViewStyle & {
+      backgroundGradientStart: string;
+      backgroundGradientStop: string;
       text: TextStyle;
-      backgroundGradientStart?: string;
-      backgroundGradientStop?: string;
     };
   };
   typingIndicator: {
@@ -654,9 +663,33 @@ export const defaultTheme: Theme = {
     image: {},
   },
   imageGallery: {
-    footer: {},
-    grid: {},
-    header: {},
+    backgroundColor: Colors.background,
+    blurType: 'light',
+    footer: {
+      centerContainer: {},
+      container: {},
+      imageCountText: {},
+      innerContainer: {},
+      leftContainer: {},
+      rightContainer: {},
+    },
+    grid: {
+      gridAvatar: {},
+      gridAvatarWrapper: {},
+      gridImage: {},
+      handle: {},
+      handleText: {},
+      overlay: {},
+    },
+    header: {
+      centerContainer: {},
+      container: {},
+      dateText: {},
+      innerContainer: {},
+      leftContainer: {},
+      rightContainer: {},
+      usernameText: {},
+    },
   },
   loadingDots: {
     container: {},
@@ -715,6 +748,14 @@ export const defaultTheme: Theme = {
     replyContainer: {},
     sendButton: {},
     sendButtonContainer: {},
+    showThreadMessageInChannelButton: {
+      check: {},
+      checkBoxActive: {},
+      checkBoxInactive: {},
+      container: {},
+      innerContainer: {},
+      text: {},
+    },
     suggestions: {
       command: {
         args: {
@@ -1049,6 +1090,8 @@ export const defaultTheme: Theme = {
   spinner: {},
   thread: {
     newThread: {
+      backgroundGradientStart: Colors.background3,
+      backgroundGradientStop: Colors.background,
       text: {},
     },
   },

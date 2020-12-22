@@ -46,6 +46,7 @@ export const useCreateInputMessageInputContext = <
   sendImageAsync,
   sendMessage,
   setInputRef,
+  ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
 }: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const editingExists = !!editing;
@@ -86,6 +87,7 @@ export const useCreateInputMessageInputContext = <
       sendImageAsync,
       sendMessage,
       setInputRef,
+      ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
     }),
     [compressImageQuality, editingExists, initialValue, replyToExists],

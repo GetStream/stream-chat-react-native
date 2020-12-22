@@ -212,12 +212,12 @@ const ThreadWithContext = <
             >
               <Stop
                 offset={1}
-                stopColor={backgroundGradientStart || '#F7F7F7'}
+                stopColor={backgroundGradientStart}
                 stopOpacity={1}
               />
               <Stop
                 offset={0}
-                stopColor={backgroundGradientStop || background}
+                stopColor={backgroundGradientStop}
                 stopOpacity={1}
               />
             </LinearGradient>
@@ -243,6 +243,7 @@ const ThreadWithContext = <
       />
       <MessageInput<At, Ch, Co, Ev, Me, Re, Us>
         additionalTextInputProps={{ autoFocus, editable: !disabled }}
+        threadList
         {...additionalMessageInputProps}
       />
     </React.Fragment>

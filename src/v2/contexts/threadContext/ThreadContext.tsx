@@ -26,6 +26,7 @@ export type ThreadContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  allowThreadMessagesInChannel: boolean;
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
   openThread: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;

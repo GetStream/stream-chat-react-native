@@ -29,7 +29,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { AnimatedGalleryImage } from './components/AnimatedImage';
+import { AnimatedGalleryImage } from './components/AnimatedGalleryImage';
 import {
   ImageGalleryFooter,
   ImageGalleryFooterCustomComponentProps,
@@ -1059,7 +1059,7 @@ export const ImageGallery = <
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor: backgroundColor || '#FCFCFC',
+      backgroundColor,
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],

@@ -99,3 +99,5 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
     </TapGestureHandler>
   );
 };
+
+ImageGalleryOverlay.displayName = 'ImageGrid{imageGallery{grid{overlay}}}';

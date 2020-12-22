@@ -163,3 +163,5 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
     />
   );
 };
+
+ImageGrid.displayName = 'ImageGrid{imageGallery{grid}}';

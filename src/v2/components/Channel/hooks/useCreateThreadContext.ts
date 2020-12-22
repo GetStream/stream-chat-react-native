@@ -21,6 +21,7 @@ export const useCreateThreadContext = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >({
+  allowThreadMessagesInChannel,
   closeThread,
   loadMoreThread,
   openThread,
@@ -30,10 +31,22 @@ export const useCreateThreadContext = <
   threadMessages,
 }: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const threadId = thread?.id;
-  const threadMessageLength = threadMessages.length;
+  const threadMessagesUpdated = threadMessages
+    .map(
+      ({ latest_reactions, reply_count, status, updated_at }) =>
+        `${latest_reactions?.length}${reply_count}${status}${
+          updated_at
+            ? typeof updated_at === 'string'
+              ? updated_at
+              : updated_at.toISOString()
+            : ''
+        }`,
+    )
+    .join();
 
   const threadContext: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us> = useMemo(
     () => ({
+      allowThreadMessagesInChannel,
       closeThread,
       loadMoreThread,
       openThread,
@@ -42,7 +55,13 @@ export const useCreateThreadContext = <
       threadLoadingMore,
       threadMessages,
     }),
-    [threadHasMore, threadId, threadLoadingMore, threadMessageLength],
+    [
+      allowThreadMessagesInChannel,
+      threadHasMore,
+      threadId,
+      threadLoadingMore,
+      threadMessagesUpdated,
+    ],
   );
 
   return threadContext;

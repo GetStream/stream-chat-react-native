@@ -1,4 +1,10 @@
-import React, { PropsWithChildren, useContext, useRef, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import uniq from 'lodash/uniq';
 import { lookup } from 'mime-types';
 import {
@@ -156,6 +162,7 @@ export type LocalMessageInputContext<
   sending: React.MutableRefObject<boolean>;
   sendMessage: () => Promise<void>;
   sendMessageAsync: (id: string) => void;
+  sendThreadMessageInChannel: boolean;
   setAsyncIds: React.Dispatch<React.SetStateAction<string[]>>;
   setAsyncUploads: React.Dispatch<
     React.SetStateAction<{
@@ -174,6 +181,7 @@ export type LocalMessageInputContext<
   setInputBoxRef: (ref: TextInput | null) => void;
   setMentionedUsers: React.Dispatch<React.SetStateAction<string[]>>;
   setNumberOfUploads: React.Dispatch<React.SetStateAction<number>>;
+  setSendThreadMessageInChannel: React.Dispatch<React.SetStateAction<boolean>>;
   setShowMoreOptions: React.Dispatch<React.SetStateAction<boolean>>;
   setText: React.Dispatch<React.SetStateAction<string>>;
   showMoreOptions: boolean;
@@ -267,6 +275,9 @@ export type InputMessageInputContextValue<
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
+  ShowThreadMessageInChannelButton: React.ComponentType<{
+    threadList?: boolean;
+  }>;
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
@@ -386,6 +397,10 @@ export const MessageInputProvider = <
     };
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
+  const [
+    sendThreadMessageInChannel,
+    setSendThreadMessageInChannel,
+  ] = useState<boolean>(false);
 
   const {
     fileUploads,
@@ -404,6 +419,11 @@ export const MessageInputProvider = <
     value.editing,
     value.initialValue,
   );
+
+  const threadId = thread?.id;
+  useEffect(() => {
+    setSendThreadMessageInChannel(false);
+  }, [threadId]);
 
   const appendText = (newText: string) => {
     setText((prevText) => `${prevText}${newText}`);
@@ -613,6 +633,7 @@ export const MessageInputProvider = <
             mentioned_users: uniq(mentionedUsers),
             /** Parent message id - in case of thread */
             parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+            show_in_channel: sendThreadMessageInChannel || undefined,
             text: prevText,
           } as unknown) as StreamMessage<At, Me, Us>)
           .then(value.clearReplyToState);
@@ -649,6 +670,7 @@ export const MessageInputProvider = <
           attachments,
           mentioned_users: [],
           parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+          show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown) as Partial<StreamMessage<At, Me, Us>>);
 
@@ -899,6 +921,7 @@ export const MessageInputProvider = <
     resetInput,
     sending,
     sendMessageAsync,
+    sendThreadMessageInChannel,
     setAsyncIds,
     setAsyncUploads,
     setFileUploads,
@@ -907,6 +930,7 @@ export const MessageInputProvider = <
     setInputBoxRef,
     setMentionedUsers,
     setNumberOfUploads,
+    setSendThreadMessageInChannel,
     setShowMoreOptions,
     setText,
     showMoreOptions,

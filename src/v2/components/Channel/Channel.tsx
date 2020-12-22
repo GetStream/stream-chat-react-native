@@ -57,6 +57,7 @@ import { FileUploadPreview as FileUploadPreviewDefault } from '../MessageInput/F
 import { ImageUploadPreview as ImageUploadPreviewDefault } from '../MessageInput/ImageUploadPreview';
 import { MoreOptionsButton as MoreOptionsButtonDefault } from '../MessageInput/MoreOptionsButton';
 import { SendButton as SendButtonDefault } from '../MessageInput/SendButton';
+import { ShowThreadMessageInChannelButton as ShowThreadMessageInChannelButtonDefault } from '../MessageInput/ShowThreadMessageInChannelButton';
 import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../MessageInput/UploadProgressIndicator';
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
@@ -188,7 +189,12 @@ export type ChannelPropsWithContext<
       | 'UrlPreview'
     >
   > &
-  Partial<Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>> & {
+  Partial<
+    Pick<
+      ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'allowThreadMessagesInChannel' | 'thread'
+    >
+  > & {
     /**
      * Additional props passed to keyboard avoiding view
      */
@@ -277,6 +283,7 @@ export const ChannelWithContext = <
     additionalKeyboardAvoidingViewProps,
     additionalTextInputProps,
     additionalTouchableProps,
+    allowThreadMessagesInChannel = true,
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
@@ -348,6 +355,7 @@ export const ChannelWithContext = <
     SendButton = SendButtonDefault,
     sendImageAsync = false,
     setInputRef,
+    ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StickyHeader,
     supportedReactions = reactionDataDefault,
     t,
@@ -1211,6 +1219,7 @@ export const ChannelWithContext = <
     sendImageAsync,
     sendMessage,
     setInputRef,
+    ShowThreadMessageInChannelButton,
     UploadProgressIndicator,
   });
 
@@ -1274,6 +1283,7 @@ export const ChannelWithContext = <
   };
 
   const threadContext = useCreateThreadContext({
+    allowThreadMessagesInChannel,
     closeThread,
     loadMoreThread,
     openThread,

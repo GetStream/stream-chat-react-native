@@ -555,6 +555,8 @@ const MessageWithContext = <
       title: t('Thread Reply'),
     };
 
+    const isThreadMessage = threadList || !!message.parent_id;
+
     setData({
       alignment,
       clientId: client.userID,
@@ -582,14 +584,14 @@ const MessageWithContext = <
         : messageReactions
         ? undefined
         : messageActionsProp || canModifyMessage
-        ? threadList
+        ? isThreadMessage
           ? message.text
             ? [editMessage, copyMessage, deleteMessage]
             : [editMessage, deleteMessage]
           : message.text
           ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
           : [reply, threadReply, editMessage, deleteMessage]
-        : threadList
+        : isThreadMessage
         ? message.text
           ? [copyMessage, muteUser, blockUser, deleteMessage]
           : [muteUser, blockUser, deleteMessage]
