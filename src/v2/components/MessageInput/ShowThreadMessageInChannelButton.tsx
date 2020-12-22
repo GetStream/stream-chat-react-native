@@ -115,7 +115,7 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
             )}
           </View>
           <Text style={[styles.text, { color: textGrey }, text]}>
-            {t('Also send as direct message')}
+            {t('Also send to channel')}
           </Text>
         </View>
       </TouchableOpacity>
