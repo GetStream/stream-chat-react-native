@@ -674,6 +674,10 @@ export const MessageInputProvider = <
           attachments,
           mentioned_users: [],
           parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+          reply_to_message_id:
+            typeof value.replyToMessage === 'boolean'
+              ? undefined
+              : value.replyToMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown) as Partial<StreamMessage<At, Me, Us>>);
