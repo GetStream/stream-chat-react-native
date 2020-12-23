@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { StreamChat } from 'stream-chat';
 
-import { Channel as ChannelType, StreamChat } from 'stream-chat';
+import { USER_TOKENS, USERS } from '../ChatUsers';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -11,7 +12,7 @@ import {
   LocalUserType,
 } from '../types';
 import AsyncStore from '../utils/AsyncStore';
-import { USER_TOKENS, USERS } from '../ChatUsers';
+
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<
     LocalAttachmentType,
@@ -22,15 +23,17 @@ export const useChatClient = () => {
     LocalResponseType,
     LocalUserType
   > | null>(null);
-
   const [isConnecting, setIsConnecting] = useState(true);
+
   const switchUser = async (userId?: string) => {
     setIsConnecting(true);
     try {
-      let id = userId;
-      if (!id) {
-        id = await AsyncStore.getItem('@stream-rn-sampleapp-user-id', false);
-      }
+      const id =
+        userId ||
+        (await AsyncStore.getItem<string>(
+          '@stream-rn-sampleapp-user-id',
+          null,
+        ));
 
       if (id) {
         const user = USERS[id];
@@ -44,12 +47,12 @@ export const useChatClient = () => {
           LocalResponseType,
           LocalUserType
         >('q95x9hkbyd6p', {
-          timeout: 6000,
-          logger: (type, msg, extra) => {
-            if (extra.tags.indexOf('api_response') > -1) {
+          logger: (_type, _msg, extra) => {
+            if ((extra?.tags as string[])?.indexOf('api_response') > -1) {
               // console.log(msg, extra);
             }
           },
+          timeout: 6000,
         });
 
         await client.connectUser(user, userToken);

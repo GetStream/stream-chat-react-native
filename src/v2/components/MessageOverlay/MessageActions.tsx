@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    minWidth: vw(60),
+    minWidth: vw(65),
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
