@@ -12,7 +12,7 @@ import { AppTheme, BottomTabNavigatorParamList } from '../types';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { usePaginatedMentionedMessages } from '../hooks/usePaginatedMentionedMessages';
 import dayjs from 'dayjs';
-import { Avatar } from '../../../../src/v2';
+import { Avatar } from 'stream-chat-react-native/v2';
 
 export type MentionsScreenProps = {
   navigation: StackNavigationProp<

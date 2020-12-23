@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
   SectionList,
   StyleSheet,
   Text,
@@ -14,13 +13,12 @@ import {
   getFileSizeDisplayText,
   goToURL,
   ThemeProvider,
-} from '../../../../src/v2';
+} from 'stream-chat-react-native/v2';
 import Dayjs from 'dayjs';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { AppTheme, StackNavigatorParamList } from '../types';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { ScreenHeader } from '../components/ScreenHeader';
-import { Picture } from '../icons/Picture';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { File } from '../icons/File';
 

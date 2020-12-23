@@ -5,7 +5,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ThemeProvider } from '../../../../src/v2';
+import { ThemeProvider } from 'stream-chat-react-native/v2';
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';

@@ -5,18 +5,16 @@ import React, { useContext } from 'react';
 import {
   FlatList,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Avatar, ThemeProvider } from '../../../../src/v2';
+import { ThemeProvider } from 'stream-chat-react-native/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
-import { Close } from '../icons/Close';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
 import { AppTheme, StackNavigatorParamList } from '../types';

@@ -87,8 +87,10 @@ export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
 export * from './MessageList/MessageNotification';
 export * from './MessageList/MessageSystem';
+
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
+export * from './MessageList/hooks/useTypingString';
 
 export * from './MessageOverlay/MessageActions';
 export * from './MessageOverlay/MessageOverlay';

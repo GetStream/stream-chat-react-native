@@ -1,18 +1,9 @@
 import React, { useContext } from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
+import { Platform, TouchableOpacity, View } from 'react-native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../context/AppContext';
-import { AppTheme, LocalReactionType, StackNavigatorParamList } from '../types';
-import { streamTheme } from '../utils/streamTheme';
-import { GoBack } from '../icons/GoBack';
+import { LocalReactionType, StackNavigatorParamList } from '../types';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -25,24 +16,18 @@ import {
 import {
   Avatar,
   Channel,
-  Chat,
   getChannelPreviewDisplayAvatar,
-  getChannelPreviewDisplayName,
   MessageInput,
   MessageList,
   useChannelContext,
   useChannelPreviewDisplayName,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
-import {
-  ScreenHeader,
-  useScreenHeaderHeight,
-} from '../components/ScreenHeader';
+import { ScreenHeader } from '../components/ScreenHeader';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-import truncate from 'lodash/truncate';
-import { useTypingString } from '../../../../src/v2/components/MessageList/hooks/useTypingString';
+import { useTypingString } from 'stream-chat-react-native/v2';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
@@ -158,7 +143,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View style={{ height: '100%'}}>
+    <View style={{ height: '100%' }}>
       <View style={{ flexGrow: 1, flexShrink: 1 }}>
         <Channel
           channel={channel}

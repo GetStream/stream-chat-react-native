@@ -10,7 +10,7 @@ import {
   getChannelPreviewDisplayAvatar,
   useChannelPreviewDisplayName,
   useChannelsContext,
-} from '../../../../src/v2';
+} from 'stream-chat-react-native/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 

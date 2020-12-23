@@ -7,7 +7,6 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
-import { BlurType } from '../../../../src/v2';
 import { BottomSheet } from '../components/BottomSheet';
 import {
   LocalAttachmentType,
@@ -20,6 +19,7 @@ import {
 } from '../types';
 import { Channel } from 'stream-chat';
 
+export type BlurType = 'light' | 'dark' | undefined;
 type BottomSheetType = 'confirmation' | 'addMembers';
 type BottomSheetConfig =
   | undefined

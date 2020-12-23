@@ -11,7 +11,7 @@ import { AppTheme, LocalUserType } from '../../types';
 import { UserResponse } from 'stream-chat';
 import { Text } from 'react-native';
 import { EmptySearchState } from '../../icons/EmptySearchState';
-import { Avatar } from '../../../../../src/v2';
+import { Avatar } from 'stream-chat-react-native/v2';
 import { CheckSend } from '../../icons/CheckSend';
 import Dayjs from 'dayjs';
 
