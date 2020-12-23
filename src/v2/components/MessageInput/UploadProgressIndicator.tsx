@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF00',
     height: '100%',
     justifyContent: 'center',
     position: 'absolute',
@@ -34,7 +33,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     alignItems: 'center',
-    backgroundColor: '#0000004D', // 4D = 30% opacity
     height: '100%',
     justifyContent: 'center',
     opacity: 0,
@@ -69,6 +67,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
 
   const {
     theme: {
+      colors: { white_smoke },
       messageInput: {
         uploadProgressIndicator: { container, overlay },
       },
@@ -85,7 +84,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
           <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator
-              color='grey'
+              color={white_smoke}
               testID='upload-progress-indicator'
             />
           </View>

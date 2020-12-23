@@ -20,7 +20,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vw } from '../../utils/utils';
 
-import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -34,7 +33,6 @@ import type {
 
 const styles = StyleSheet.create({
   bottomBorder: {
-    borderBottomColor: '#0000001A', // 1A = 10% opacity
     borderBottomWidth: 1,
   },
   container: {
@@ -63,6 +61,12 @@ type MessageActionProps = MessageActionType & {
 const MessageAction: React.FC<MessageActionProps> = (props) => {
   const { action, icon, index, length, title, titleStyle } = props;
 
+  const {
+    theme: {
+      colors: { border },
+    },
+  } = useTheme();
+
   const opacity = useSharedValue(1);
 
   const onTap = useAnimatedGestureHandler<TapGestureHandlerStateChangeEvent>(
@@ -89,7 +93,9 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
       <Animated.View
         style={[
           styles.row,
-          index !== length - 1 ? styles.bottomBorder : {},
+          index !== length - 1
+            ? { ...styles.bottomBorder, borderBottomColor: border }
+            : {},
           animatedStyle,
         ]}
       >
@@ -122,7 +128,6 @@ export type MessageActionsPropsWithContext<
   MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
   'alignment' | 'messageActions'
 > & {
-  background: Theme['colors']['background'];
   showScreen: Animated.SharedValue<number>;
 };
 const MessageActionsWithContext = <
@@ -136,7 +141,14 @@ const MessageActionsWithContext = <
 >(
   props: MessageActionsPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, background, messageActions, showScreen } = props;
+  const { alignment, messageActions, showScreen } = props;
+
+  const {
+    theme: {
+      colors: { white_snow },
+    },
+  } = useTheme();
+
   const height = useSharedValue(0);
   const width = useSharedValue(0);
 
@@ -173,7 +185,7 @@ const MessageActionsWithContext = <
       }}
       style={[
         styles.container,
-        { backgroundColor: background },
+        { backgroundColor: white_snow },
         showScreenStyle,
       ]}
     >
@@ -243,30 +255,15 @@ export const MessageActions = <
 >(
   props: MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    background: propBackground,
-    messageActions: propMessageActions,
-    showScreen,
-  } = props;
-
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    theme: {
-      colors: { background: contextBackground },
-    },
-  } = useTheme();
 
   const { alignment, messageActions: contextMessageActions } = data || {};
 
-  const messageActions = propMessageActions || contextMessageActions;
+  const messageActions = props.messageActions || contextMessageActions;
 
   if (!messageActions?.length) return null;
 
-  const background = propBackground || contextBackground;
-
   return (
-    <MemoizedMessageActions
-      {...{ alignment, background, messageActions, showScreen }}
-    />
+    <MemoizedMessageActions {...{ alignment, messageActions }} {...props} />
   );
 };

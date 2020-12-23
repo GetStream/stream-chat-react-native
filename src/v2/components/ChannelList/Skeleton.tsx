@@ -43,7 +43,7 @@ export const Skeleton: React.FC = () => {
         gradientStop,
         height = 64,
       },
-      colors: { background: backgroundColor, black, grey },
+      colors: { black, white_smoke },
     },
   } = useTheme();
 
@@ -124,9 +124,7 @@ export const Skeleton: React.FC = () => {
       style={[styles.container, container]}
       testID='channel-preview-skeleton'
     >
-      <View
-        style={[styles.background, background, { backgroundColor: grey }]}
-      />
+      <View style={[styles.background, background]} />
       <Animated.View style={[animatedStyle, styles.background]}>
         <Svg height={height} width={width}>
           <Rect
@@ -162,7 +160,7 @@ export const Skeleton: React.FC = () => {
         </Svg>
       </Animated.View>
       <Svg height={height} width={width}>
-        <Path d={d.value} fill={backgroundColor} />
+        <Path d={d.value} fill={white_smoke} />
       </Svg>
     </View>
   );

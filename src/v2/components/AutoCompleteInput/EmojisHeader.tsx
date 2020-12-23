@@ -25,7 +25,7 @@ export type EmojisHeaderProps = { title: string };
 export const EmojisHeader: React.FC<EmojisHeaderProps> = ({ title = '' }) => {
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue },
       messageInput: {
         suggestions: {
           emojisHeader: { container, title: titleStyle },
@@ -37,7 +37,7 @@ export const EmojisHeader: React.FC<EmojisHeaderProps> = ({ title = '' }) => {
 
   return (
     <View style={[styles.container, container]}>
-      <Smile pathFill={primary} />
+      <Smile pathFill={accent_blue} />
       <Text style={[styles.title, titleStyle]} testID='emojis-header-title'>
         {t('Emoji matching') + ` "${title}"`}
       </Text>

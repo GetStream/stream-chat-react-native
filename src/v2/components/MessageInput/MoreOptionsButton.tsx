@@ -49,7 +49,7 @@ const MoreOptionsButtonWithContext = <
 
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue },
       messageInput: { moreOptionsButton },
     },
   } = useTheme();
@@ -61,7 +61,7 @@ const MoreOptionsButtonWithContext = <
       style={[moreOptionsButton]}
       testID='more-options-button'
     >
-      <CircleRight pathFill={primary} />
+      <CircleRight pathFill={accent_blue} />
     </TouchableOpacity>
   );
 };

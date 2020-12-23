@@ -127,7 +127,7 @@ const ReactionListWithContext = <
 
   const {
     theme: {
-      colors: { grey, primary, textGrey, white },
+      colors: { accent_blue, grey, grey_gainsboro, grey_whisper, white },
       messageSimple: {
         avatarWrapper: { leftAlign, spacer },
         reactionList: {
@@ -146,13 +146,13 @@ const ReactionListWithContext = <
 
   const width = useWindowDimensions().width;
 
-  const fill = propFill || grey;
+  const alignmentLeft = alignment === 'left';
+  const fill = propFill || alignmentLeft ? grey_gainsboro : grey_whisper;
   const radius = propRadius || themeRadius;
   const reactionSize = propReactionSize || themeReactionSize;
   const stroke = propStroke || white;
   const strokeSize = propStrokeSize || themeStrokeSize;
 
-  const alignmentLeft = alignment === 'left';
   const x1 = alignmentLeft
     ? messageContentWidth +
       (Number(leftAlign.marginRight) || 0) +
@@ -257,7 +257,7 @@ const ReactionListWithContext = <
             {reactions.map((reaction, index) => (
               <Icon
                 key={`${reaction.type}_${index}_${Date.now()}`}
-                pathFill={reaction.own ? primary : textGrey}
+                pathFill={reaction.own ? accent_blue : grey}
                 size={reactionSize / 2}
                 style={middleIcon}
                 supportedReactions={supportedReactions}

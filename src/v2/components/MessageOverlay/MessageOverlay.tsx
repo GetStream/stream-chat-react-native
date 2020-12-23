@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   containerInner: {
-    borderColor: '#E6E6E6',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     borderWidth: 1,
@@ -141,7 +140,7 @@ const MessageOverlayWithContext = <
 
   const {
     theme: {
-      colors: { attachmentBackground, background, grey, transparent },
+      colors: { blue_alice, grey_gainsboro, transparent, white_smoke },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS },
@@ -388,10 +387,10 @@ const MessageOverlayWithContext = <
                                 : otherAttachments?.length
                                 ? otherAttachments[0].type === 'giphy'
                                   ? transparent
-                                  : attachmentBackground
+                                  : blue_alice
                                 : alignment === 'left'
-                                ? background
-                                : grey,
+                                ? white_smoke
+                                : grey_gainsboro,
                               borderBottomLeftRadius:
                                 groupStyle === 'left_bottom' ||
                                 groupStyle === 'left_single'

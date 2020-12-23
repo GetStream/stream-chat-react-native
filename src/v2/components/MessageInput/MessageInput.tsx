@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   container: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderTopWidth: 1,
     padding: 10,
   },
@@ -86,7 +85,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputBoxContainer: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderRadius: 20,
     borderWidth: 1,
     flex: 1,
@@ -228,14 +226,14 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: { grey, textGrey, white },
+      colors: { grey, grey_gainsboro, white },
       messageInput: {
         attachButtonContainer,
         attachmentSelectionBar,
         autoCompleteInputContainer,
         commandsButtonContainer,
         composerContainer,
-        container: { ...container },
+        container,
         editingBoxHeader,
         editingBoxHeaderTitle,
         giphyContainer,
@@ -405,9 +403,9 @@ export const MessageInputWithContext = <
         {(editing || replyToMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
             {editing ? (
-              <Edit pathFill={grey} />
+              <Edit pathFill={grey_gainsboro} />
             ) : (
-              <CurveLineLeftUp pathFill={grey} />
+              <CurveLineLeftUp pathFill={grey_gainsboro} />
             )}
             <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
               {editing ? t('Editing Message') : t('Reply to Message')}
@@ -428,7 +426,7 @@ export const MessageInputWithContext = <
               }}
               testID='close-button'
             >
-              <CircleClose pathFill={textGrey} />
+              <CircleClose pathFill={grey} />
             </TouchableOpacity>
           </View>
         )}
@@ -514,7 +512,7 @@ export const MessageInputWithContext = <
                       }}
                       testID='close-button'
                     >
-                      <CircleClose height={20} pathFill={textGrey} width={20} />
+                      <CircleClose height={20} pathFill={grey} width={20} />
                     </TouchableOpacity>
                   )}
                 </View>

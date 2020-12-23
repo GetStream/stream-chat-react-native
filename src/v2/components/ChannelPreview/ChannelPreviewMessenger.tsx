@@ -201,7 +201,7 @@ const ChannelPreviewMessengerWithContext = <
         unreadContainer,
         unreadText,
       },
-      colors: { danger },
+      colors: { accent_red },
     },
   } = useTheme();
 
@@ -239,7 +239,7 @@ const ChannelPreviewMessengerWithContext = <
               onPress={() => channel.delete()}
               style={[styles.rightSwipeableButton, rightSwipeableButton]}
             >
-              <Delete pathFill={danger} />
+              <Delete pathFill={accent_red} />
             </RectButton>
           </View>
         )

@@ -12,13 +12,11 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FAE6E8',
     justifyContent: 'center',
     padding: 3,
     width: '100%',
   },
   errorText: {
-    color: '#FF0000',
     fontSize: 12,
     fontWeight: 'bold',
     padding: 3,

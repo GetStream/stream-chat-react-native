@@ -15,12 +15,6 @@ import Animated, {
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-const styles = StyleSheet.create({
-  overlay: {
-    backgroundColor: '#00000033',
-  },
-});
-
 type Props = {
   animatedBottomSheetIndex: Animated.SharedValue<number>;
   closeGridView: () => void;
@@ -89,12 +83,7 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
       onHandlerStateChange={tapEvent}
     >
       <Animated.View
-        style={[
-          StyleSheet.absoluteFillObject,
-          styles.overlay,
-          overlay,
-          showOverlayStyle,
-        ]}
+        style={[StyleSheet.absoluteFillObject, overlay, showOverlayStyle]}
       />
     </TapGestureHandler>
   );

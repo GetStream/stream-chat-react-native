@@ -161,7 +161,7 @@ export const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { attachmentBackground, grey, transparent },
+      colors: { blue_alice, grey_gainsboro, transparent },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -290,10 +290,10 @@ export const MessageContentWithContext = <
                 : otherAttachments.length
                 ? otherAttachments[0].type === 'giphy'
                   ? transparent
-                  : attachmentBackground
+                  : blue_alice
                 : alignment === 'left' || error
                 ? transparent
-                : grey,
+                : grey_gainsboro,
               borderBottomLeftRadius:
                 groupStyle === 'left_bottom' || groupStyle === 'left_single'
                   ? borderRadiusS

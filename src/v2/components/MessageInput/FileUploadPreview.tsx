@@ -38,12 +38,10 @@ const FILE_PREVIEW_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   dismiss: {
-    backgroundColor: '#00000033', // 20 = 33% opacity
     borderRadius: 24,
     height: 24,
   },
   fileContainer: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',

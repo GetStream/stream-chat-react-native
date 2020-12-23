@@ -21,7 +21,6 @@ import type {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FCFCFCE6',
     flexDirection: 'row',
     height: 24,
     justifyContent: 'flex-start',

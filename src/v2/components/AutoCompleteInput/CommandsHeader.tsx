@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 export const CommandsHeader: React.FC = () => {
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue },
       messageInput: {
         suggestions: {
           commandsHeader: { container, title },
@@ -35,7 +35,7 @@ export const CommandsHeader: React.FC = () => {
 
   return (
     <View style={[styles.container, container]}>
-      <Lightning pathFill={primary} />
+      <Lightning pathFill={accent_blue} />
       <Text style={[styles.title, title]} testID='commands-header-title'>
         {t('Instant Commands')}
       </Text>

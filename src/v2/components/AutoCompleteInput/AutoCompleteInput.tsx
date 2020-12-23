@@ -137,7 +137,7 @@ const AutoCompleteInputWithContext = <
 
   const {
     theme: {
-      colors: { textGrey },
+      colors: { grey },
       messageInput: { inputBox },
     },
   } = useTheme();
@@ -428,7 +428,7 @@ const AutoCompleteInputWithContext = <
       }}
       onSelectionChange={handleSelectionChange}
       placeholder={giphyActive ? t('Search GIFs') : t('Send a message')}
-      placeholderTextColor={textGrey}
+      placeholderTextColor={grey}
       ref={setInputBoxRef}
       style={[
         styles.inputBox,

@@ -106,7 +106,7 @@ export const ReactionButton = <
   } = props;
   const {
     theme: {
-      colors: { primary, textGrey },
+      colors: { accent_blue, grey },
       overlay: {
         reactionsList: { reaction },
       },
@@ -215,9 +215,9 @@ export const ReactionButton = <
           iconStyle,
         ]}
       >
-        <Icon pathFill={textGrey} />
+        <Icon pathFill={grey} />
         <Animated.View style={[styles.selectedIcon, selectedStyle]}>
-          <Icon pathFill={primary} />
+          <Icon pathFill={accent_blue} />
         </Animated.View>
       </Animated.View>
     </TapGestureHandler>
@@ -272,7 +272,7 @@ const OverlayReactionListWithContext = <
 
   const {
     theme: {
-      colors: { grey },
+      colors: { white_snow },
       overlay: {
         padding: screenPadding,
         reactionsList: { radius, reactionList },
@@ -316,14 +316,14 @@ const OverlayReactionListWithContext = <
   const animatedBigCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius * 3,
     cy: messageLayout.value.y - radius * 3,
-    fill: fill || grey,
+    fill: fill || white_snow,
     r: radius * 2,
   }));
 
   const animateSmallCircleProps = useAnimatedProps<CircleProps>(() => ({
     cx: messageLayout.value.x - radius,
     cy: messageLayout.value.y,
-    fill: fill || grey,
+    fill: fill || white_snow,
     r: radius,
   }));
 

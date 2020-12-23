@@ -28,7 +28,7 @@ export const Spinner: React.FC = () => {
 
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue },
       spinner,
     },
   } = useTheme();
@@ -53,7 +53,7 @@ export const Spinner: React.FC = () => {
 
   return (
     <Animated.View style={[styles.spinner, animatedStyle, spinner]}>
-      <Loading stopColor={primary} />
+      <Loading stopColor={accent_blue} />
     </Animated.View>
   );
 };

@@ -72,7 +72,7 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
 
   const {
     theme: {
-      colors: { primary, textGrey, white },
+      colors: { white },
       messageInput: {
         showThreadMessageInChannelButton: {
           check,
@@ -103,10 +103,6 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
           <View
             style={[
               styles.checkBox,
-              { borderColor: textGrey },
-              sendThreadMessageInChannel
-                ? { backgroundColor: primary, borderColor: primary }
-                : undefined,
               sendThreadMessageInChannel ? checkBoxActive : checkBoxInactive,
             ]}
           >
@@ -114,9 +110,7 @@ export const ShowThreadMessageInChannelButtonWithContext: React.FC<ShowThreadMes
               <Check height={16} pathFill={white} width={16} {...check} />
             )}
           </View>
-          <Text style={[styles.text, { color: textGrey }, text]}>
-            {t('Also send to channel')}
-          </Text>
+          <Text style={[styles.text, text]}>{t('Also send to channel')}</Text>
         </View>
       </TouchableOpacity>
     </View>

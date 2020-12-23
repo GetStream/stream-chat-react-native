@@ -7,7 +7,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 const styles = StyleSheet.create({
   errorButtonText: {
-    color: '#005FFF',
     fontSize: 14,
     fontWeight: '600',
     marginHorizontal: 24,
@@ -16,7 +15,6 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
     bottom: 0,
     left: 0,
     paddingTop: 16,

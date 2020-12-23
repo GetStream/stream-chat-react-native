@@ -51,7 +51,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
 }: MentionsItemProps<Us>) => {
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue },
       messageInput: {
         suggestions: {
           mention: { avatarSize, column, container, name: nameStyle, tag },
@@ -69,7 +69,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
         </Text>
         <Text style={[styles.tag, tag]}>{`@${id}`}</Text>
       </View>
-      <AtMentions pathFill={primary} />
+      <AtMentions pathFill={accent_blue} />
     </View>
   );
 };

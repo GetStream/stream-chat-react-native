@@ -34,6 +34,7 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
 }) => {
   const {
     theme: {
+      colors: { grey_gainsboro },
       emptyStateIndicator: { channelContainer, channelDetails, channelTitle },
     },
   } = useTheme();
@@ -42,7 +43,7 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
     case 'channel':
       return (
         <View style={[styles.channelContainer, channelContainer]}>
-          <MessageIcon height={width} pathFill='#DBDBDB' width={width} />
+          <MessageIcon height={width} pathFill={grey_gainsboro} width={width} />
           <Text
             style={[styles.channelTitle, channelTitle]}
             testID='empty-channel-state-title'

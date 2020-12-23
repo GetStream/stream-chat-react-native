@@ -139,7 +139,6 @@ const ThreadWithContext = <
 
   const {
     theme: {
-      colors: { textGrey },
       thread: {
         newThread: {
           backgroundGradientStart,
@@ -223,7 +222,7 @@ const ThreadWithContext = <
             </LinearGradient>
           </Defs>
         </Svg>
-        <Text style={[styles.text, { color: textGrey }, text]}>
+        <Text style={[styles.text, text]}>
           {replyCount === 1
             ? t('1 Reply')
             : t('{{ replyCount }} Replies', {

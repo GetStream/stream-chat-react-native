@@ -7,7 +7,6 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#7A7A7AE6',
     justifyContent: 'center',
     padding: 8,
     width: '100%',

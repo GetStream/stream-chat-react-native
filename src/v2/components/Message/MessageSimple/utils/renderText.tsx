@@ -30,8 +30,8 @@ import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/them
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
-    backgroundColor: '#F3F3F3',
-    borderColor: '#DDDDDD',
+    backgroundColor: '#F2F2F2', // TODO: figure out a way use theme color 'white_smoke'
+    borderColor: '#DBDBDB', // TODO: figure out a way use theme color 'grey_gainsboro'
     color: 'red',
     fontSize: 13,
     padding: 3,
