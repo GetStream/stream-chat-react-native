@@ -3,7 +3,6 @@ import { SafeAreaView, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/stack';
 import { Channel, Chat, Thread } from 'stream-chat-react-native/v2';
-import { AppContext } from '../context/AppContext';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -12,46 +11,49 @@ import {
   LocalMessageType,
   LocalResponseType,
   LocalUserType,
-  ThreadRoute,
+  StackNavigatorParamList,
 } from '../types';
-import { streamTheme } from '../utils/streamTheme';
+import { ScreenHeader } from '../components/ScreenHeader';
 
-export type ThreadScreenProps = {
-  route: RouteProp<ThreadRoute, 'Thread'>;
+type ThreadScreenRouteProp = RouteProp<StackNavigatorParamList, 'ThreadScreen'>;
+
+type ThreadScreenProps = {
+  route: ThreadScreenRouteProp;
 };
-
-export const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
-  const { chatClient, thread } = useContext(AppContext);
-  const [channel] = useState(
-    chatClient.channel('messaging', route.params.channelId),
-  );
+export const ThreadScreen: React.FC<ThreadScreenProps> = ({
+  route: {
+    params: { channel, thread },
+  },
+}) => {
   const headerHeight = useHeaderHeight();
 
   return (
-    <SafeAreaView>
-      <Channel
-        channel={channel}
-        enforceUniqueReaction
-        keyboardVerticalOffset={headerHeight}
-        thread={thread}
+    <Channel
+      channel={channel}
+      enforceUniqueReaction
+      keyboardVerticalOffset={headerHeight}
+      thread={thread}
+    >
+      <ScreenHeader
+        subtitle={`with ${thread.user?.name}`}
+        title={'Thread Reply'}
+      />
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'flex-start',
+        }}
       >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'flex-start',
-          }}
-        >
-          <Thread<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalResponseType,
-            LocalUserType
-          > />
-        </View>
-      </Channel>
-    </SafeAreaView>
+        <Thread<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
+        > />
+      </View>
+    </Channel>
   );
 };

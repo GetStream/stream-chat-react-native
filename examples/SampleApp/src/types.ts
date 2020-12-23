@@ -1,5 +1,5 @@
 import type { Theme } from '@react-navigation/native';
-import { Channel, UserResponse } from 'stream-chat';
+import { Channel, MessageResponse, UserResponse } from 'stream-chat';
 export type LocalAttachmentType = Record<string, unknown>;
 export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
@@ -57,6 +57,25 @@ export type StackNavigatorParamList = {
   };
   SharedGroupsScreen: {
     user: UserResponse<LocalUserType>;
+  };
+  ThreadScreen: {
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
+    thread: MessageResponse<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
 };
 

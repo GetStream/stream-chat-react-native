@@ -130,6 +130,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
+  const navigation = useNavigation();
   const [channel, setChannel] = useState<StreamChatChannel<
     LocalAttachmentType,
     LocalChannelType,
@@ -157,7 +158,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View style={{ height: '100%', paddingBottom: insets.bottom }}>
+    <View style={{ height: '100%'}}>
       <View style={{ flexGrow: 1, flexShrink: 1 }}>
         <Channel
           channel={channel}
@@ -176,7 +177,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
             LocalMessageType,
             LocalResponseType,
             LocalUserType
-          > />
+          >
+            onThreadSelect={(thread) => {
+              navigation.navigate('ThreadScreen', {
+                channel,
+                thread,
+              });
+            }}
+          />
           <MessageInput />
         </Channel>
       </View>
