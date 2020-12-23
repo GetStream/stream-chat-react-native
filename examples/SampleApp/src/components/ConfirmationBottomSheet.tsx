@@ -1,34 +1,39 @@
-import { useTheme } from '@react-navigation/native';
 import React from 'react';
+import { useTheme } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Delete } from '../icons/Delete';
 import { AppTheme } from '../types';
 
+
 export type ConfirmationBottomSheetProps = {
-  onCancel: () => void;
+  dismissHandler: () => void;
   onConfirm: () => void;
   subtext: string;
   title: string;
   cancelText?: string;
   confirmText?: string;
 };
-export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = ({
-  cancelText = 'CANCEL',
-  confirmText = 'CONFIRM',
-  onCancel,
-  onConfirm,
-  subtext,
-  title,
-}) => {
+export const ConfirmationBottomSheet = (
+  props: ConfirmationBottomSheetProps,
+) => {
+  const {
+    cancelText = 'CANCEL',
+    confirmText = 'CONFIRM',
+    dismissHandler,
+    onConfirm,
+    subtext,
+    title,
+  } = props;
   const { colors } = useTheme() as AppTheme;
   const inset = useSafeAreaInsets();
+
   return (
     <View
       style={[
         styles.container,
         {
-          paddingBottom: inset.bottom,
+          marginBottom: inset.bottom,
         },
       ]}
     >
@@ -45,7 +50,7 @@ export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
           },
         ]}
       >
-        <TouchableOpacity onPress={onCancel} style={styles.actionButton}>
+        <TouchableOpacity onPress={dismissHandler} style={styles.actionButton}>
           <Text>{cancelText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -58,6 +63,8 @@ export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
     </View>
   );
 };
+
+ConfirmationBottomSheet.displayName = 'ConfirmationBottomSheet';
 
 const styles = StyleSheet.create({
   actionButton: {

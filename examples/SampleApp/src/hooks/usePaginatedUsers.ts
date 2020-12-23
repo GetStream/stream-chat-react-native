@@ -105,7 +105,6 @@ export const usePaginatedUsers = () => {
           presence: true,
         },
       );
-
       if (!res?.users) {
         queryInProgress.current = false;
         return;
@@ -154,6 +153,10 @@ export const usePaginatedUsers = () => {
 
   /* eslint-disable sort-keys */
   return {
+    clearText: () => {
+      setSearchText('');
+      fetchUsers('');
+    },
     loading,
     loadMore,
     searchText,
