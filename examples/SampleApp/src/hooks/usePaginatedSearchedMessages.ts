@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { MessageResponse } from 'stream-chat';
+import { ChannelFilters, MessageFilters, MessageResponse } from 'stream-chat';
 import { useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import {
@@ -10,19 +10,32 @@ import {
   LocalReactionType,
   LocalUserType,
 } from '../types';
-export const usePaginatedMentionedMessages = () => {
+
+export const usePaginatedSearchedMessages = (
+  messageFilters:
+    | string
+    | MessageFilters<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      > = {},
+) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(true);
   const [messages, setMessages] = useState<
-    MessageResponse<
-      LocalAttachmentType,
-      LocalChannelType,
-      LocalCommandType,
-      LocalMessageType,
-      LocalReactionType,
-      LocalUserType
-    >[]
-  >([]);
+    | MessageResponse<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >[]
+    | null
+  >(null);
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
@@ -33,11 +46,18 @@ export const usePaginatedMentionedMessages = () => {
     setLoading(false);
     setRefreshing(false);
   };
-  const fetchMessages = async (refresh = false) => {
-    if (refresh) {
-      offset.current = 0;
-      hasMoreResults.current = true;
-      setRefreshing(true);
+
+  const reset = () => {
+    setMessages(null);
+    offset.current = 0;
+    hasMoreResults.current = true;
+  };
+
+  const fetchMessages = async () => {
+    if (!messageFilters) {
+      reset();
+      done();
+      return;
     }
 
     if (queryInProgress.current) {
@@ -55,13 +75,13 @@ export const usePaginatedMentionedMessages = () => {
         done();
         return;
       }
-
-      // TODO: Use this when support for filtering by mentioned user id is ready on backend.
       const res = await chatClient?.search(
         {
-          id: { $in: ['channel-ex-slack-demo-8', 'channel-ex-slack-demo-15'] },
+          members: {
+            $in: [chatClient?.user?.id],
+          },
         },
-        'Unsatiable',
+        messageFilters,
         {
           limit: 10,
           offset: offset.current,
@@ -75,17 +95,23 @@ export const usePaginatedMentionedMessages = () => {
         return;
       }
 
-      if (refresh) {
+      if (offset.current === 0) {
         setMessages(newMessages);
       } else {
-        setMessages((existingMessages) => existingMessages.concat(newMessages));
+        setMessages((existingMessages) => {
+          if (!existingMessages) {
+            return newMessages;
+          }
+
+          return existingMessages.concat(newMessages);
+        });
       }
 
       if (newMessages.length < 10) {
         hasMoreResults.current = false;
       }
 
-      offset.current = offset.current + messages.length;
+      offset.current = offset.current + (messages ? messages.length : 0);
     } catch (e) {
       // do nothing;
     }
@@ -98,14 +124,31 @@ export const usePaginatedMentionedMessages = () => {
   };
 
   useEffect(() => {
+    reloadList();
+  }, [messageFilters]);
+
+  const refreshList = () => {
+    if (!chatClient?.user?.id) return;
+
+    offset.current = 0;
+    hasMoreResults.current = true;
+
+    setRefreshing(true);
     fetchMessages();
-  }, []);
+  };
+
+  const reloadList = () => {
+    setMessages([]);
+    fetchMessages();
+  };
 
   return {
     loading,
     loadMore,
     messages,
     refreshing,
-    refreshList: fetchMessages.bind(null, true),
+    refreshList,
+    reloadList,
+    reset,
   };
 };

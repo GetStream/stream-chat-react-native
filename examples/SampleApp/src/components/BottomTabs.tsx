@@ -14,7 +14,6 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
   state,
 }) => {
   const { colors } = useTheme() as AppTheme;
-  const insets = useSafeAreaInsets();
 
   const getTitle = (key: string) => {
     switch (key) {
