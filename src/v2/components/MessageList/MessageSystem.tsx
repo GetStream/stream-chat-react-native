@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
     height: 0.5,
   },
   text: {
-    color: '#00000080', // 80 = 50% opacity
     fontSize: 10,
     fontWeight: 'bold',
     textAlign: 'center',

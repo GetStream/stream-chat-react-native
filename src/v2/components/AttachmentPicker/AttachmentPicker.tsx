@@ -22,12 +22,10 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     flexGrow: 1,
   },
   overlay: {
     alignItems: 'flex-end',
-    backgroundColor: '#00000080',
     flex: 1,
   },
 });

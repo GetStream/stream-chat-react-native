@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { Avatar, ThemeProvider } from '../../../../src/v2';
 import { ScreenHeader } from '../components/ScreenHeader';
+import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
@@ -40,6 +41,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
     selectedUsers,
     toggleUser,
   } = usePaginatedUsers();
+
   if (!chatClient) return null;
 
   return (
@@ -110,30 +112,12 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                   data={selectedUsers}
                   horizontal
                   renderItem={({ item: user }) => (
-                    <View style={styles.selectedUserItemContainer}>
-                      <TouchableOpacity
-                        key={user.id}
-                        onPress={() => {
-                          toggleUser?.(user);
-                        }}
-                        style={styles.selectedUserItem}
-                      >
-                        <Avatar image={user.image} size={64} />
-                        <View
-                          style={[
-                            styles.selectedUserRemoveIcon,
-                            {
-                              backgroundColor: colors.background,
-                            },
-                          ]}
-                        >
-                          <Close height={24} width={24} />
-                        </View>
-                      </TouchableOpacity>
-                      <Text style={styles.selectedUserItemName}>
-                        {user.name}
-                      </Text>
-                    </View>
+                    <UserGridItem
+                      onPress={() => {
+                        toggleUser?.(user);
+                      }}
+                      user={user}
+                    />
                   )}
                 />
               </View>

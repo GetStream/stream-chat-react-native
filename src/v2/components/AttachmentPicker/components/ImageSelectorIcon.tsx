@@ -10,11 +10,11 @@ type Props = {
 export const ImageSelectorIcon: React.FC<Props> = ({ selectedPicker }) => {
   const {
     theme: {
-      colors: { primary },
+      colors: { primary, textGrey },
     },
   } = useTheme();
 
   return (
-    <Picture pathFill={selectedPicker === 'images' ? primary : '#7A7A7A'} />
+    <Picture pathFill={selectedPicker === 'images' ? primary : textGrey} />
   );
 };

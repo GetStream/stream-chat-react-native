@@ -94,7 +94,6 @@ const styles = StyleSheet.create({
     width: 32,
   },
   title: {
-    color: '#000000',
     fontSize: 14,
     fontStyle: 'italic',
     fontWeight: '500',

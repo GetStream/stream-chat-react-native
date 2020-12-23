@@ -21,8 +21,8 @@ import { AppContext } from '../context/AppContext';
 import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import { useOverlayContext } from 'stream-chat-react-native/v2';
-import { ConfirmationBottomSheet } from '../components/ConfirmationBottomSheet';
 import { Contacts } from '../icons/Contacts';
+import { AppOverlayContext } from '../context/AppOverlayContext';
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -54,6 +54,8 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
 }) => {
   const { colors } = useTheme() as AppTheme;
   const { chatClient } = useContext(AppContext);
+  const { openBottomSheet } = useContext(AppOverlayContext);
+
   const member = Object.values(channel.state.members).find(
     (m) => m.user?.id !== chatClient?.user?.id,
   );
@@ -77,36 +79,21 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
    */
   const openDeleteConversationConfirmationSheet = () => {
     if (!chatClient?.user?.id) return;
-    setWildcard(() => () => (
-      <ConfirmationBottomSheet
-        confirmText={'DELETE'}
-        onCancel={cancelDeleteAction}
-        onConfirm={deleteConversation}
-        subtext={'Are you sure you want to delete this conversation?'}
-        title={'Delete Conversation'}
-      />
-    ));
-    setBlurType('dark');
-    setOverlay('wildcard');
-  };
-
-  /**
-   * Cancels the confirmation sheet.
-   */
-  const cancelDeleteAction = () => {
-    setBlurType(undefined);
-    setWildcard(undefined);
-    setOverlay('none');
+    openBottomSheet({
+      type: 'confirmation',
+      params: {
+        confirmText: 'DELETE',
+        onConfirm: deleteConversation,
+        subtext: 'Are you sure you want to delete this conversation?',
+        title: 'Delete Conversation',
+      },
+    });
   };
 
   /**
    * Leave the group/channel
    */
   const deleteConversation = async () => {
-    setWildcard(undefined);
-    setBlurType(undefined);
-    setOverlay('none');
-
     await channel.delete();
 
     navigation.reset({

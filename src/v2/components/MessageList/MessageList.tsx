@@ -62,20 +62,17 @@ import type {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FCFCFC',
     flex: 1,
     width: '100%',
   },
   errorNotification: {
     alignItems: 'center',
     backgroundColor: '#FAE6E8',
-    color: '#FF0000',
     padding: 5,
     zIndex: 10,
   },
   errorNotificationText: {
     backgroundColor: '#FAE6E8',
-    color: '#FF0000',
   },
   flex: { flex: 1 },
   listContainer: {

@@ -18,12 +18,14 @@ const styles = StyleSheet.create({
     width: 22,
   },
   avatarImageWrapper: {
-    borderColor: '#FFFFFF',
     borderRadius: 24,
     borderWidth: 1,
     height: 24,
     margin: 8,
     width: 24,
+  },
+  contentContainer: {
+    flexGrow: 1,
   },
   image: {
     margin: 1,
@@ -139,6 +141,14 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
     setImage,
   } = props;
 
+  const {
+    theme: {
+      imageGallery: {
+        grid: { contentContainer },
+      },
+    },
+  } = useTheme();
+
   const imageGridItems = photos.map((photo) => ({
     ...photo,
     avatarComponent,
@@ -152,10 +162,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
 
   return (
     <BottomSheetFlatList
-      contentContainerStyle={{
-        backgroundColor: '#FFFFFF',
-        flexGrow: 1,
-      }}
+      contentContainerStyle={[styles.contentContainer, contentContainer]}
       data={imageGridItems}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}

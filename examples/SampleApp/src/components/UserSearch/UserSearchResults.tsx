@@ -40,7 +40,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   const { colors } = useTheme() as AppTheme;
 
   useEffect(() => {
-    const sections: Record<
+    const newSections: Record<
       string,
       {
         data: UserResponse[];
@@ -53,17 +53,17 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
 
       if (!initial) return;
 
-      if (!sections[initial]) {
-        sections[initial] = {
+      if (!newSections[initial]) {
+        newSections[initial] = {
           data: [user],
           title: initial,
         };
       } else {
-        sections[initial].data.push(user);
+        newSections[initial].data.push(user);
       }
     });
     // @ts-ignore
-    setSections(Object.values(sections));
+    setSections(Object.values(newSections));
   }, [results]);
 
   return (

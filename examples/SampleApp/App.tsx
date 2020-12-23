@@ -37,6 +37,7 @@ import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScreen';
 import { streamTheme } from './src/utils/streamTheme';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
+import { AppOverlayProvider } from './src/context/AppOverlayContext';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -45,7 +46,6 @@ const Stack = createStackNavigator<StackNavigatorParamList>();
 const Drawer = createDrawerNavigator();
 
 const App = () => {
-  const { bottom } = useSafeAreaInsets();
   const scheme = useColorScheme();
 
   const { chatClient, isConnecting, switchUser } = useChatClient();
@@ -61,18 +61,32 @@ const App = () => {
   return (
     <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
       <AppContext.Provider value={{ chatClient, switchUser }}>
-        <OverlayProvider<
-          LocalAttachmentType,
-          LocalChannelType,
-          LocalCommandType,
-          LocalEventType,
-          LocalMessageType,
-          LocalResponseType,
-          LocalUserType
-        >
-          bottomInset={bottom}
-          value={{ style: streamTheme }}
-        >
+        <DrawerNavigator chatClient={chatClient} />
+      </AppContext.Provider>
+    </NavigationContainer>
+  );
+};
+
+const DrawerNavigator = ({ chatClient }) => {
+  const streamChatTheme = useStreamChatTheme();
+  const { bottom } = useSafeAreaInsets();
+
+  if (!chatClient) return null;
+  return (
+    <OverlayProvider<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >
+      bottomInset={bottom}
+      value={{ style: streamTheme }}
+    >
+      <Chat client={chatClient} style={streamChatTheme}>
+        <AppOverlayProvider>
           <Drawer.Navigator
             drawerContent={(props) => <MenuDrawer {...props} />}
             drawerStyle={{
@@ -91,76 +105,69 @@ const App = () => {
               options={{ gestureEnabled: false, headerShown: false }}
             />
           </Drawer.Navigator>
-        </OverlayProvider>
-      </AppContext.Provider>
-    </NavigationContainer>
+        </AppOverlayProvider>
+      </Chat>
+    </OverlayProvider>
   );
 };
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
-const HomeScreen = () => {
-  const { chatClient } = useContext(AppContext);
-  const streamChatTheme = useStreamChatTheme();
-
-  return (
-    <Chat client={chatClient} style={streamChatTheme}>
-      <Stack.Navigator initialRouteName='ChatScreen'>
-        <Stack.Screen
-          component={ChatScreen}
-          name='ChatScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={ChannelScreen}
-          name='ChannelScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={NewDirectMessagingScreen}
-          name='NewDirectMessagingScreen'
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          component={NewGroupChannelAddMemberScreen}
-          name='NewGroupChannelAddMemberScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={NewGroupChannelAssignNameScreen}
-          name='NewGroupChannelAssignNameScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={OneOnOneChannelDetailScreen}
-          name='OneOnOneChannelDetailScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={GroupChannelDetailsScreen}
-          name='GroupChannelDetailsScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={ChannelImagesScreen}
-          name='ChannelImagesScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={ChannelFilesScreen}
-          name='ChannelFilesScreen'
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          component={SharedGroupsScreen}
-          name='SharedGroupsScreen'
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-    </Chat>
-  );
-};
+const HomeScreen = () => (
+  <Stack.Navigator initialRouteName='ChatScreen'>
+    <Stack.Screen
+      component={ChatScreen}
+      name='ChatScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelScreen}
+      name='ChannelScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={NewDirectMessagingScreen}
+      name='NewDirectMessagingScreen'
+      options={{
+        headerShown: false,
+      }}
+    />
+    <Stack.Screen
+      component={NewGroupChannelAddMemberScreen}
+      name='NewGroupChannelAddMemberScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={NewGroupChannelAssignNameScreen}
+      name='NewGroupChannelAssignNameScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={OneOnOneChannelDetailScreen}
+      name='OneOnOneChannelDetailScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={GroupChannelDetailsScreen}
+      name='GroupChannelDetailsScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelImagesScreen}
+      name='ChannelImagesScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={ChannelFilesScreen}
+      name='ChannelFilesScreen'
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      component={SharedGroupsScreen}
+      name='SharedGroupsScreen'
+      options={{ headerShown: false }}
+    />
+  </Stack.Navigator>
+);
 
 export default () => (
   <SafeAreaProvider>

@@ -14,7 +14,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   channelDetails: {
-    color: '#7A7A7A',
     fontSize: 14,
     textAlign: 'center',
     width: vw(66),

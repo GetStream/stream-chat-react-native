@@ -50,7 +50,6 @@ import type {
 
 const styles = StyleSheet.create({
   attachButtonContainer: { paddingRight: 10 },
-  attachmentSelectionBar: { backgroundColor: '#F5F5F5' },
   autoCompleteInputContainer: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -229,9 +228,10 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: { grey, white },
+      colors: { grey, textGrey, white },
       messageInput: {
         attachButtonContainer,
+        attachmentSelectionBar,
         autoCompleteInputContainer,
         commandsButtonContainer,
         composerContainer,
@@ -428,7 +428,7 @@ export const MessageInputWithContext = <
               }}
               testID='close-button'
             >
-              <CircleClose pathFill='#7A7A7A' />
+              <CircleClose pathFill={textGrey} />
             </TouchableOpacity>
           </View>
         )}
@@ -514,7 +514,7 @@ export const MessageInputWithContext = <
                       }}
                       testID='close-button'
                     >
-                      <CircleClose height={20} pathFill='#7A7A7A' width={20} />
+                      <CircleClose height={20} pathFill={textGrey} width={20} />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -548,7 +548,6 @@ export const MessageInputWithContext = <
       {selectedPicker && (
         <View
           style={[
-            styles.attachmentSelectionBar,
             {
               height:
                 (attachmentPickerBottomSheetHeight
@@ -556,6 +555,7 @@ export const MessageInputWithContext = <
                     (attachmentSelectionBarHeight ?? 52)
                   : 360) - (bottomInset ?? 0),
             },
+            attachmentSelectionBar,
           ]}
         >
           <AttachmentSelectionBar />
