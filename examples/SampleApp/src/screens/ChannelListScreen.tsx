@@ -64,6 +64,7 @@ export const ChannelListScreen: React.FC = () => {
   const [searchInputText, setSearchInputText] = useState<string>('');
   const searchInputFocused = useRef<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const navigation = useNavigation();
   const {
     loading,
     loadMore,
