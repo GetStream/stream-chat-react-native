@@ -13,7 +13,7 @@ export const Colors = {
   background2: '#F5F5F5',
   background3: '#F7F7F7',
   black: '#000000',
-  danger: '#FF3742',
+  danger: '#FF3842',
   green: '#20E070',
   grey: '#E5E5E5',
   light: '#EBEBEB',
@@ -190,6 +190,7 @@ export type Theme = {
       rightContainer: ViewStyle;
     };
     grid: {
+      contentContainer: ViewStyle;
       gridAvatar: ImageStyle;
       gridAvatarWrapper: ViewStyle;
       gridImage: ViewStyle;
@@ -224,6 +225,7 @@ export type Theme = {
   messageInput: {
     attachButton: ViewStyle;
     attachButtonContainer: ViewStyle;
+    attachmentSelectionBar: ViewStyle;
     autoCompleteInputContainer: ViewStyle;
     commandsButton: ViewStyle;
     commandsButtonContainer: ViewStyle;
@@ -502,12 +504,16 @@ export type Theme = {
 
 export const defaultTheme: Theme = {
   attachmentPicker: {
-    bottomSheetContentContainer: {},
+    bottomSheetContentContainer: {
+      backgroundColor: Colors.white,
+    },
     errorButtonText: {},
     errorContainer: {},
     errorText: {},
     image: {},
-    imageOverlay: {},
+    imageOverlay: {
+      backgroundColor: Colors.textGrey,
+    },
   },
   attachmentSelectionBar: {
     container: {},
@@ -640,11 +646,15 @@ export const defaultTheme: Theme = {
   },
   dateHeader: {
     container: {},
-    text: {},
+    text: {
+      color: Colors.white,
+    },
   },
   emptyStateIndicator: {
     channelContainer: {},
-    channelDetails: {},
+    channelDetails: {
+      color: Colors.textGrey,
+    },
     channelTitle: {},
   },
   groupAvatar: {
@@ -667,23 +677,34 @@ export const defaultTheme: Theme = {
     blurType: 'light',
     footer: {
       centerContainer: {},
-      container: {},
+      container: {
+        backgroundColor: Colors.white,
+      },
       imageCountText: {},
       innerContainer: {},
       leftContainer: {},
       rightContainer: {},
     },
     grid: {
+      contentContainer: {
+        backgroundColor: Colors.white,
+      },
       gridAvatar: {},
-      gridAvatarWrapper: {},
+      gridAvatarWrapper: {
+        backgroundColor: Colors.white,
+      },
       gridImage: {},
-      handle: {},
+      handle: {
+        backgroundColor: Colors.white,
+      },
       handleText: {},
       overlay: {},
     },
     header: {
       centerContainer: {},
-      container: {},
+      container: {
+        backgroundColor: Colors.white,
+      },
       dateText: {},
       innerContainer: {},
       leftContainer: {},
@@ -693,7 +714,9 @@ export const defaultTheme: Theme = {
   },
   loadingDots: {
     container: {},
-    loadingDot: {},
+    loadingDot: {
+      backgroundColor: Colors.black,
+    },
     spacing: 4,
   },
   loadingErrorIndicator: {
@@ -708,6 +731,9 @@ export const defaultTheme: Theme = {
   messageInput: {
     attachButton: {},
     attachButtonContainer: {},
+    attachmentSelectionBar: {
+      backgroundColor: Colors.background2,
+    },
     autoCompleteInputContainer: {},
     commandsButton: {},
     commandsButtonContainer: {},
@@ -807,12 +833,18 @@ export const defaultTheme: Theme = {
     },
   },
   messageList: {
-    container: {},
+    container: {
+      backgroundColor: Colors.background,
+    },
     errorNotification: {},
-    errorNotificationText: {},
+    errorNotificationText: {
+      color: Colors.danger,
+    },
     inlineUnreadIndicator: {
       container: {},
-      text: {},
+      text: {
+        color: Colors.textGrey,
+      },
     },
     listContainer: {},
     messageNotification: {
@@ -831,11 +863,15 @@ export const defaultTheme: Theme = {
     },
     messageSystem: {
       container: {},
-      dateText: {},
+      dateText: {
+        color: Colors.textGrey,
+      },
       line: {
         backgroundColor: Colors.light,
       },
-      text: {},
+      text: {
+        color: Colors.textGrey,
+      },
       textContainer: {},
     },
     typingIndicatorContainer: {},
@@ -894,7 +930,7 @@ export const defaultTheme: Theme = {
     content: {
       container: {
         borderRadiusL: 16,
-        borderRadiusS: 2,
+        borderRadiusS: 0,
       },
       containerInner: {
         borderColor: Colors.grey,
@@ -953,7 +989,9 @@ export const defaultTheme: Theme = {
       },
     },
     file: {
-      container: {},
+      container: {
+        backgroundColor: Colors.white,
+      },
       details: {},
       fileSize: {
         color: Colors.textGrey,
@@ -1061,7 +1099,9 @@ export const defaultTheme: Theme = {
       avatarContainer: {},
       avatarName: {},
       avatarSize: 64,
-      container: {},
+      container: {
+        backgroundColor: Colors.white,
+      },
       flatListContainer: {},
       radius: 2,
       reactionBubble: {},

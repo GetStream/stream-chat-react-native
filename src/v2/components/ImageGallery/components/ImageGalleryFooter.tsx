@@ -51,9 +51,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 8,
   },
-  safeArea: {
-    backgroundColor: '#FFFFFF',
-  },
   wrapper: {
     bottom: 0,
     left: 0,
@@ -171,7 +168,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[styles.safeArea, container, footerStyle]}>
+      <ReanimatedSafeAreaView style={[container, footerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })

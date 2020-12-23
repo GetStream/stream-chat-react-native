@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   text: {
-    color: '#7A7A7A',
     fontSize: 12,
   },
 });

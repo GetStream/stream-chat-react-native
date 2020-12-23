@@ -52,9 +52,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
     width: 24, // Width of icon currently on left
   },
-  safeArea: {
-    backgroundColor: '#FFFFFF',
-  },
   userName: {
     fontSize: 16,
     fontWeight: '700',
@@ -155,7 +152,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView style={[styles.safeArea, container, headerStyle]}>
+      <ReanimatedSafeAreaView style={[container, headerStyle]}>
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })

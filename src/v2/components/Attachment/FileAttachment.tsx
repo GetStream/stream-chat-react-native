@@ -39,7 +39,6 @@ import type {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     flexDirection: 'row',
     padding: 8,
