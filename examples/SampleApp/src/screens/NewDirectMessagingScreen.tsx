@@ -169,7 +169,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   if (!chatClient) return null;
   return (
-    <View style={{ flex: 1, paddingBottom: insets.bottom }}>
+    <View style={{ flex: 1 }}>
       <Channel
         additionalTextInputProps={{
           onFocus: () => {

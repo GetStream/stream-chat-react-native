@@ -9,7 +9,7 @@ import {
 import { AppContext } from './src/context/AppContext';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { MenuDrawer } from './src/screens/MenuDrawer';
-import { LogBox, useColorScheme } from 'react-native';
+import { LogBox, useColorScheme, View } from 'react-native';
 import { DarkTheme, LightTheme } from './src/appTheme';
 import { NewDirectMessagingScreen } from './src/screens/NewDirectMessagingScreen';
 import { NewGroupChannelAddMemberScreen } from './src/screens/NewGroupChannelAddMemberScreen';
@@ -38,6 +38,7 @@ import { GroupChannelDetailsScreen } from './src/screens/GroupChannelDetailsScre
 import { streamTheme } from './src/utils/streamTheme';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AppOverlayProvider } from './src/context/AppOverlayContext';
+import { ThreadScreen } from './src/screens/ThreadScreen';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -112,62 +113,79 @@ const DrawerNavigator = ({ chatClient }) => {
 };
 
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
-const HomeScreen = () => (
-  <Stack.Navigator initialRouteName='ChatScreen'>
-    <Stack.Screen
-      component={ChatScreen}
-      name='ChatScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelScreen}
-      name='ChannelScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={NewDirectMessagingScreen}
-      name='NewDirectMessagingScreen'
-      options={{
-        headerShown: false,
+const HomeScreen = () => {
+  const { bottom } = useSafeAreaInsets();
+
+  return (
+    <View
+      style={{
+        flexGrow: 1,
+        flexShrink: 1,
+        marginBottom: bottom,
       }}
-    />
-    <Stack.Screen
-      component={NewGroupChannelAddMemberScreen}
-      name='NewGroupChannelAddMemberScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={NewGroupChannelAssignNameScreen}
-      name='NewGroupChannelAssignNameScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={OneOnOneChannelDetailScreen}
-      name='OneOnOneChannelDetailScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={GroupChannelDetailsScreen}
-      name='GroupChannelDetailsScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelImagesScreen}
-      name='ChannelImagesScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={ChannelFilesScreen}
-      name='ChannelFilesScreen'
-      options={{ headerShown: false }}
-    />
-    <Stack.Screen
-      component={SharedGroupsScreen}
-      name='SharedGroupsScreen'
-      options={{ headerShown: false }}
-    />
-  </Stack.Navigator>
-);
+    >
+      <Stack.Navigator initialRouteName='ChatScreen'>
+        <Stack.Screen
+          component={ChatScreen}
+          name='ChatScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={ChannelScreen}
+          name='ChannelScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={NewDirectMessagingScreen}
+          name='NewDirectMessagingScreen'
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          component={NewGroupChannelAddMemberScreen}
+          name='NewGroupChannelAddMemberScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={NewGroupChannelAssignNameScreen}
+          name='NewGroupChannelAssignNameScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={OneOnOneChannelDetailScreen}
+          name='OneOnOneChannelDetailScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={GroupChannelDetailsScreen}
+          name='GroupChannelDetailsScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={ChannelImagesScreen}
+          name='ChannelImagesScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={ChannelFilesScreen}
+          name='ChannelFilesScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={SharedGroupsScreen}
+          name='SharedGroupsScreen'
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          component={ThreadScreen}
+          name='ThreadScreen'
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </View>
+  );
+};
 
 export default () => (
   <SafeAreaProvider>

@@ -42,7 +42,6 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
     <View
       style={[
         {
-          paddingBottom: insets.bottom,
           backgroundColor: colors.backgroundNavigation,
         },
         styles.tabListContainer,
