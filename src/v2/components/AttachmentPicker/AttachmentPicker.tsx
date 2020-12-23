@@ -185,7 +185,7 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     const getMorePhotos = async () => {
-      if (hasNextPage && !loadingPhotos) {
+      if (hasNextPage && !loadingPhotos && currentIndex > -1) {
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({

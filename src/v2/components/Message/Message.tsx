@@ -268,7 +268,7 @@ const MessageWithContext = <
 
   const {
     theme: {
-      colors: { danger, primary },
+      colors: { danger, primary, textGrey },
     },
   } = useTheme();
 
@@ -458,7 +458,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <UserDelete />,
+      icon: <UserDelete pathFill={textGrey} />,
       title: message.user?.banned ? t('Unblock User') : t('Block User'),
     };
 
@@ -468,7 +468,7 @@ const MessageWithContext = <
         setOverlay('none');
         Clipboard.setString(message.text || '');
       },
-      icon: <Copy />,
+      icon: <Copy pathFill={textGrey} />,
       title: t('Copy Message'),
     };
 
@@ -490,7 +490,7 @@ const MessageWithContext = <
         setOverlay('none');
         setEditingState(message);
       },
-      icon: <Edit />,
+      icon: <Edit pathFill={textGrey} />,
       title: t('Edit Message'),
     };
 
@@ -537,7 +537,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <Mute />,
+      icon: <Mute pathFill={textGrey} />,
       title: isMuted ? t('Unmute User') : t('Mute User'),
     };
 
@@ -546,7 +546,7 @@ const MessageWithContext = <
         setOverlay('none');
         setReplyToMessageState(message);
       },
-      icon: <CurveLineLeftUp />,
+      icon: <CurveLineLeftUp pathFill={textGrey} />,
       title: t('Reply'),
     };
 
@@ -555,7 +555,7 @@ const MessageWithContext = <
         setOverlay('none');
         onOpenThread();
       },
-      icon: <ThreadReply />,
+      icon: <ThreadReply pathFill={textGrey} />,
       title: t('Thread Reply'),
     };
 

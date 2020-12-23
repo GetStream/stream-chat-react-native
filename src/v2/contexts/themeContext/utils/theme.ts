@@ -894,7 +894,7 @@ export const defaultTheme: Theme = {
     content: {
       container: {
         borderRadiusL: 16,
-        borderRadiusS: 2,
+        borderRadiusS: 0,
       },
       containerInner: {
         borderColor: Colors.grey,
@@ -939,7 +939,12 @@ export const defaultTheme: Theme = {
           color: Colors.primary,
         },
       },
-      messageUser: { fontSize: 12, fontWeight: '700', paddingRight: 6 },
+      messageUser: {
+        color: Colors.textGrey,
+        fontSize: 12,
+        fontWeight: '700',
+        paddingRight: 6,
+      },
       metaContainer: {
         flexDirection: 'row',
         marginTop: 4,
