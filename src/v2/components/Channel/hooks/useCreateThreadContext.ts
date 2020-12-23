@@ -33,8 +33,8 @@ export const useCreateThreadContext = <
   const threadId = thread?.id;
   const threadMessagesUpdated = threadMessages
     .map(
-      ({ latest_reactions, reply_count, status, updated_at }) =>
-        `${
+      ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
+        `${deleted_at}${
           latest_reactions
             ? latest_reactions.map(({ type }) => type).join()
             : ''
