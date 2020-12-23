@@ -27,27 +27,7 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 10,
-    bottom: 10, // matches the container padding of MessageInput
-    elevation: 3,
-    position: 'absolute',
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 0.15,
-  },
   emojiItem: { paddingVertical: 10 },
-  suggestionsItem: {
-    justifyContent: 'center',
-  },
-  title: {
-    fontWeight: 'bold',
-    padding: 10,
-  },
-  wrapper: {
-    position: 'absolute',
-    width: '100%',
-  },
 });
 
 const SuggestionsItem: React.FC<TouchableOpacityProps> = (props) => {

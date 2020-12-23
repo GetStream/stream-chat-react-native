@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   contentContainer: { flexGrow: 1, flexShrink: 1 },
   date: {
     fontSize: 12,
+    marginLeft: 2,
     textAlign: 'right',
   },
   flexRow: {

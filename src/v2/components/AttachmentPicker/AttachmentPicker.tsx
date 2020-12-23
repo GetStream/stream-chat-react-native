@@ -22,12 +22,10 @@ import type { AttachmentPickerErrorProps } from './components/AttachmentPickerEr
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
     flexGrow: 1,
   },
   overlay: {
     alignItems: 'flex-end',
-    backgroundColor: '#00000080',
     flex: 1,
   },
 });
@@ -185,7 +183,7 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     const getMorePhotos = async () => {
-      if (hasNextPage && !loadingPhotos) {
+      if (hasNextPage && !loadingPhotos && currentIndex > -1) {
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({

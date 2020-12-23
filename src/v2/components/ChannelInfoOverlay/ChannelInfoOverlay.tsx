@@ -173,7 +173,7 @@ const ChannelInfoOverlayWithContext = <
         userItemContainer,
         userName,
       },
-      colors: { danger },
+      colors: { danger, textGrey },
     },
   } = useTheme();
 
@@ -458,7 +458,7 @@ const ChannelInfoOverlayWithContext = <
                         >
                           <View style={[styles.row, row, leaveGroupRow]}>
                             <View style={[styles.rowInner, rowInner]}>
-                              <UserMinus pathFill='#7A7A7A' />
+                              <UserMinus pathFill={textGrey} />
                             </View>
                             <Text style={[styles.rowText, leaveGroupText]}>
                               {t('Leave Group')}

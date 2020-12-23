@@ -54,7 +54,6 @@ export const LoadingDot: React.FC<Props> = (props) => {
     <Animated.View
       style={[
         {
-          backgroundColor: '#000000',
           borderRadius: diameter / 2,
           height: diameter,
           width: diameter,

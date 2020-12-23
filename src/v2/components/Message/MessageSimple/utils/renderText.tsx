@@ -31,7 +31,7 @@ import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/them
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
     backgroundColor: '#F3F3F3',
-    borderColor: '#dddddd',
+    borderColor: '#DDDDDD',
     color: 'red',
     fontSize: 13,
     padding: 3,

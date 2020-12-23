@@ -18,6 +18,7 @@ import {
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { vw } from '../../utils/utils';
 
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type {
@@ -45,6 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    minWidth: vw(60),
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
