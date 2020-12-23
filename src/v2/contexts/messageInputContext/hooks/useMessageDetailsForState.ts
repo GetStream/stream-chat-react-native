@@ -53,10 +53,13 @@ export const useMessageDetailsForState = <
   );
   const [numberOfUploads, setNumberOfUploads] = useState(0);
   const [showMoreOptions, setShowMoreOptions] = useState(true);
-  const [text, setText] = useState(initialValue || '');
+  const initialTextValue = initialValue || '';
+  const [text, setText] = useState(initialTextValue);
 
   useEffect(() => {
-    setShowMoreOptions(false);
+    if (text !== initialTextValue) {
+      setShowMoreOptions(false);
+    }
   }, [text]);
 
   useEffect(() => {

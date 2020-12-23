@@ -83,6 +83,7 @@ type AutoCompleteInputPropsWithContext<
     | 'onChange'
     | 'setGiphyActive'
     | 'setInputBoxRef'
+    | 'setShowMoreOptions'
     | 'text'
     | 'triggerSettings'
   > &
@@ -123,6 +124,7 @@ const AutoCompleteInputWithContext = <
     openSuggestions,
     setGiphyActive,
     setInputBoxRef,
+    setShowMoreOptions,
     t,
     text,
     triggerSettings,
@@ -438,6 +440,12 @@ const AutoCompleteInputWithContext = <
       testID='auto-complete-text-input'
       value={text}
       {...additionalTextInputProps}
+      onBlur={(event) => {
+        if (additionalTextInputProps?.onBlur) {
+          additionalTextInputProps?.onBlur(event);
+        }
+        setShowMoreOptions(true);
+      }}
     />
   );
 };
@@ -493,6 +501,7 @@ export const AutoCompleteInput = <
     onChange,
     setGiphyActive,
     setInputBoxRef,
+    setShowMoreOptions,
     text,
     triggerSettings,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -515,6 +524,7 @@ export const AutoCompleteInput = <
         openSuggestions,
         setGiphyActive,
         setInputBoxRef,
+        setShowMoreOptions,
         t,
         text,
         triggerSettings,
