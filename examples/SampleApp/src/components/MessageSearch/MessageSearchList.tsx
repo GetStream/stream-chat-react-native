@@ -21,6 +21,7 @@ import {
   LocalUserType,
 } from '../../types';
 import { MessageResponse } from 'stream-chat';
+import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
 export type MessageSearchListProps = {
   EmptySearchIndicator: React.Component;
@@ -74,7 +75,12 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
             paddingVertical: 2,
           }}
         >
-          <Text>{messages.length} results</Text>
+          <Text>
+            {messages.length >= MESSAGE_SEARCH_LIMIT
+              ? MESSAGE_SEARCH_LIMIT
+              : messages.length}{messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '}
+            results
+          </Text>
         </View>
       )}
       <FlatList
@@ -114,11 +120,15 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
               >
                 <Text style={{ color: colors.text }}>
                   <Text style={{ fontWeight: '700' }}>{item.user?.name} </Text>
-                  in
-                  <Text style={{ fontWeight: '700' }}>
-                    {' '}
-                    {item.channel?.name}
-                  </Text>
+                  {!!item.channel?.name && (
+                    <Text>
+                      in
+                      <Text style={{ fontWeight: '700' }}>
+                        {' '}
+                        {item.channel?.name}
+                      </Text>
+                    </Text>
+                  )}
                 </Text>
                 <Text
                   numberOfLines={1}

@@ -11,6 +11,7 @@ import {
   LocalUserType,
 } from '../types';
 
+export const MESSAGE_SEARCH_LIMIT = 10;
 export const usePaginatedSearchedMessages = (
   messageFilters:
     | string
@@ -83,7 +84,7 @@ export const usePaginatedSearchedMessages = (
         },
         messageFilters,
         {
-          limit: 10,
+          limit: MESSAGE_SEARCH_LIMIT,
           offset: offset.current,
         },
       );
@@ -95,23 +96,28 @@ export const usePaginatedSearchedMessages = (
         return;
       }
 
+      let messagesLength = 0;
       if (offset.current === 0) {
+        messagesLength = newMessages.length;
         setMessages(newMessages);
       } else {
         setMessages((existingMessages) => {
           if (!existingMessages) {
+            messagesLength = newMessages.length;
             return newMessages;
           }
 
-          return existingMessages.concat(newMessages);
+          const messages = existingMessages.concat(newMessages);
+          messagesLength = messages.length;
+          return messages;
         });
       }
 
-      if (newMessages.length < 10) {
+      if (newMessages.length < MESSAGE_SEARCH_LIMIT) {
         hasMoreResults.current = false;
       }
 
-      offset.current = offset.current + (messages ? messages.length : 0);
+      offset.current = offset.current + messagesLength;
     } catch (e) {
       // do nothing;
     }
