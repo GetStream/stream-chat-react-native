@@ -69,6 +69,12 @@ export const useIsOnline = <
       );
     };
 
+    const setInitialOnlineState = async () => {
+      const status = await NetInfo.fetch();
+      setIsOnline(status);
+    };
+
+    setInitialOnlineState();
     if (client) {
       client.on('connection.changed', handleChangedEvent);
       client.on('connection.recovered', handleRecoveredEvent);

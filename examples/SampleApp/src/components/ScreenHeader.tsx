@@ -38,10 +38,12 @@ export const BackButton = () => {
 };
 
 type ScreenHeaderProps = {
-  title: string;
+  titleText: string;
   LeftContent?: React.ElementType;
   RightContent?: React.ElementType;
-  subtitle?: string | boolean;
+  Subtitle?: React.ElementType | null;
+  subtitleText?: string | boolean;
+  Title?: React.ElementType | null;
 };
 
 const HEADER_CONTENT_HEIGHT = 55;
@@ -49,8 +51,10 @@ const HEADER_CONTENT_HEIGHT = 55;
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   LeftContent = BackButton,
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
-  title = 'Stream Chat',
-  subtitle = false,
+  Subtitle = null,
+  Title = null,
+  titleText = 'Stream Chat',
+  subtitleText = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { setTopInset, topInset } = useAttachmentPickerContext();
@@ -85,32 +89,44 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           ]}
         >
           <LeftContent />
+
           <View
             style={{
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <Text
-              style={[
-                styles.title,
-                {
-                  color: colors.text,
-                  fontSize: 16,
-                  fontWeight: '700',
-                },
-              ]}
-            >
-              {title}
-            </Text>
-            {subtitle && (
-              <Text
-                style={{
-                  color: colors.textLight,
-                  fontSize: 12,
-                }}
-              >
-                {subtitle}
-              </Text>
+            {Title ? (
+              <Title />
+            ) : (
+              !!titleText && (
+                <Text
+                  style={[
+                    styles.title,
+                    {
+                      color: colors.text,
+                      fontSize: 16,
+                      fontWeight: '700',
+                    },
+                  ]}
+                >
+                  {titleText}
+                </Text>
+              )
+            )}
+            {Subtitle ? (
+              <Subtitle />
+            ) : (
+              !!subtitleText && (
+                <Text
+                  style={{
+                    color: colors.textLight,
+                    fontSize: 12,
+                  }}
+                >
+                  {subtitleText}
+                </Text>
+              )
             )}
           </View>
           <RightContent />

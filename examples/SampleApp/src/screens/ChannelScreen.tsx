@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AppContext } from '../context/AppContext';
-import { LocalReactionType, StackNavigatorParamList } from '../types';
+import { AppTheme, LocalReactionType, StackNavigatorParamList } from '../types';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -19,16 +19,16 @@ import {
   getChannelPreviewDisplayAvatar,
   MessageInput,
   MessageList,
+  Spinner,
   useChannelContext,
   useChannelPreviewDisplayName,
+  useChatContext,
 } from 'stream-chat-react-native/v2';
 import { Channel as StreamChatChannel } from 'stream-chat';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 import { useTypingString } from 'stream-chat-react-native/v2';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
@@ -46,6 +46,25 @@ export type ChannelScreenProps = {
 
 export type ChannelHeaderProps = unknown;
 
+export const NetworkDownIndicator = () => {
+  const { colors } = useTheme() as AppTheme;
+  return (
+    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+      <Spinner />
+      <Text
+        style={{
+          color: colors.textLight,
+          fontSize: 12,
+          fontWeight: '400',
+          marginLeft: 5,
+        }}
+      >
+        Searching for network
+      </Text>
+    </View>
+  );
+};
+
 const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
@@ -58,43 +77,31 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
     LocalReactionType,
     LocalUserType
   >();
-  const typing = useTypingString();
   const displayName = useChannelPreviewDisplayName(channel, 30);
   const membersStatus = useChannelMembersStatus(channel);
+  const { isOnline } = useChatContext();
+  const typing = useTypingString();
+
   if (!chatClient || !channel) return null;
 
   const isOneOnOneConversation =
-    Object.values(channel.state.members).length === 2;
-
-  if (isOneOnOneConversation) {
-    const { user } = Object.values(channel.state.members).find(
-      (m) => m.user?.id !== chatClient?.user?.id,
-    );
-    return (
-      <ScreenHeader
-        RightContent={() => (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('OneOnOneChannelDetailScreen', {
-                channel,
-              });
-            }}
-          >
-            <Avatar image={user.image} size={40} />
-          </TouchableOpacity>
-        )}
-        subtitle={typing ? typing : getUserActivityStatus(user)}
-        title={displayName}
-      />
-    );
-  }
+    Object.values(channel.state.members).length === 2 &&
+    channel.id?.indexOf('!members-') === 0;
 
   return (
     <ScreenHeader
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('GroupChannelDetailsScreen', { channel });
+            if (isOneOnOneConversation) {
+              navigation.navigate('OneOnOneChannelDetailScreen', {
+                channel,
+              });
+            } else {
+              navigation.navigate('OneOnOneChannelDetailScreen', {
+                channel,
+              });
+            }
           }}
         >
           <Avatar
@@ -103,8 +110,9 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
           />
         </TouchableOpacity>
       )}
-      subtitle={typing ? typing : `${membersStatus}`}
-      title={displayName}
+      Subtitle={isOnline ? null : NetworkDownIndicator}
+      subtitleText={typing ? typing : membersStatus}
+      titleText={displayName}
     />
   );
 };
@@ -125,7 +133,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     LocalReactionType,
     LocalUserType
   > | null>(null);
-  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     const initChannel = async () => {
       if (!chatClient) return;

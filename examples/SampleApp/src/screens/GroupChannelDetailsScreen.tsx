@@ -147,8 +147,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <AddUser fill={'#006CFF'} height={25} width={25} />
           </RoundButton>
         )}
-        subtitle={`${membersStatus}`}
-        title={displayName}
+        subtitleText={`${membersStatus}`}
+        titleText={displayName}
       />
       <ScrollView keyboardShouldPersistTaps={'always'}>
         <ThemeProvider>

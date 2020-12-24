@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: '100%',
     justifyContent: 'center',
+    width: '100%',
   },
   errorText: {
     fontSize: 14,

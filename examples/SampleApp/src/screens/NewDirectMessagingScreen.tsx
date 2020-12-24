@@ -177,7 +177,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const renderContent = () => (
     <>
-      <ScreenHeader title={'New Chat'} />
+      <ScreenHeader titleText={'New Chat'} />
       <View
         style={{
           paddingTop: 15,
