@@ -98,7 +98,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
                 channel,
               });
             } else {
-              navigation.navigate('OneOnOneChannelDetailScreen', {
+              navigation.navigate('GroupChannelDetailsScreen', {
                 channel,
               });
             }
