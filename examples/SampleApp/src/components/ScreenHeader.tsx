@@ -39,6 +39,7 @@ export const BackButton = () => {
 
 type ScreenHeaderProps = {
   title: string;
+  inSafeArea?: boolean;
   LeftContent?: React.ElementType;
   RightContent?: React.ElementType;
   subtitle?: string | boolean;
@@ -51,6 +52,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
   title = 'Stream Chat',
   subtitle = false,
+  inSafeArea = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { setTopInset, topInset } = useAttachmentPickerContext();
@@ -68,7 +70,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           styles.safeAreaContainer,
           {
             backgroundColor: colors.backgroundNavigation,
-            height: HEADER_CONTENT_HEIGHT + insets.top,
+            height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
           },
         ]}
       >
@@ -76,7 +78,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           style={[
             styles.contentContainer,
             {
-              marginTop: insets.top,
+              marginTop: inSafeArea ? 0 : insets.top,
               height: HEADER_CONTENT_HEIGHT,
               paddingBottom: 10,
               paddingLeft: 10,

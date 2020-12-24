@@ -1,28 +1,100 @@
-/* eslint-disable sort-keys */
-import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import {
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView, View } from 'react-native';
+import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
+
+import { AppContext } from '../context/AppContext';
+import { AppOverlayContext } from '../context/AppOverlayContext';
+import { Contacts } from '../icons/Contacts';
+import { Delete } from '../icons/Delete';
+import { File } from '../icons/File';
+import { GoBack } from '../icons/GoBack';
+import { GoForward } from '../icons/GoForward';
+import { Mute } from '../icons/Mute';
+import { Picture } from '../icons/Picture';
 import { Notification } from '../icons/Notification';
 import { AppTheme, StackNavigatorParamList } from '../types';
-import { Mute } from '../icons/Mute';
-import { File } from '../icons/File';
-import { GoForward } from '../icons/GoForward';
-import { Delete } from '../icons/Delete';
-import { GoBack } from '../icons/GoBack';
-import { AppContext } from '../context/AppContext';
-import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
-import { useOverlayContext } from 'stream-chat-react-native/v2';
-import { Contacts } from '../icons/Contacts';
-import { AppOverlayContext } from '../context/AppOverlayContext';
+
+const styles = StyleSheet.create({
+  actionContainer: {
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
+  actionLabelContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  avatar: {
+    borderRadius: 36,
+    height: 72,
+    width: 72,
+  },
+  backButton: {
+    left: 0,
+    paddingLeft: 16,
+    position: 'absolute',
+    top: 0,
+  },
+  container: {
+    flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+  },
+  displayName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 16,
+  },
+  itemText: {
+    marginLeft: 16,
+  },
+  onlineIndicator: {
+    backgroundColor: '#20E070',
+    borderRadius: 4,
+    height: 8,
+    width: 8,
+  },
+  onlineStatus: {
+    fontSize: 12,
+    marginLeft: 8,
+  },
+  onlineStatusContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  spacer: {
+    height: 8,
+  },
+  userInfoContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  userName: {
+    fontSize: 14,
+  },
+  userNameContainer: {
+    alignSelf: 'stretch',
+    borderTopWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    padding: 20,
+  },
+});
 
 type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -52,6 +124,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
     params: { channel },
   },
 }) => {
+  const navigation = useNavigation();
   const { colors } = useTheme() as AppTheme;
   const { chatClient } = useContext(AppContext);
   const { openBottomSheet } = useContext(AppOverlayContext);
@@ -70,9 +143,6 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
       chatClient.mutedChannels.findIndex((m) => m.channel?.id === channel.id) >
         -1,
   );
-  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
-
-  const navigation = useNavigation();
 
   /**
    * Opens confirmation sheet for deleting the conversation
@@ -80,13 +150,13 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
   const openDeleteConversationConfirmationSheet = () => {
     if (!chatClient?.user?.id) return;
     openBottomSheet({
-      type: 'confirmation',
       params: {
         confirmText: 'DELETE',
         onConfirm: deleteConversation,
         subtext: 'Are you sure you want to delete this conversation?',
         title: 'Delete Conversation',
       },
+      type: 'confirmation',
     });
   };
 
@@ -95,7 +165,6 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
    */
   const deleteConversation = async () => {
     await channel.delete();
-
     navigation.reset({
       index: 0,
       routes: [
@@ -109,22 +178,12 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
   if (!user) return null;
 
   return (
-    <SafeAreaView style={{ height: '100%' }}>
-      <ScrollView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        style={styles.container}
+      >
         <View style={styles.userInfoContainer}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.goBack();
-            }}
-            style={{
-              left: 0,
-              paddingLeft: 16,
-              position: 'absolute',
-              top: 0,
-            }}
-          >
-            <GoBack height={24} width={24} />
-          </TouchableOpacity>
           <Image source={{ uri: user.image }} style={styles.avatar} />
           <Text
             style={[
@@ -159,7 +218,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
           >
             <Text
               style={[
-                styles.userNameLabel,
+                styles.userName,
                 {
                   color: colors.text,
                 },
@@ -178,258 +237,211 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
               {user.name}
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.goBack();
+            }}
+            style={styles.backButton}
+          >
+            <GoBack height={24} width={24} />
+          </TouchableOpacity>
         </View>
         <Spacer />
-        <View style={styles.actionListContainer}>
-          <TouchableOpacity
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <Notification fill={'#7A7A7A'} height={24} width={24} />
-              <Text
-                style={{
+        <TouchableOpacity
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Notification fill={'#7A7A7A'} height={24} width={24} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Notifications
-              </Text>
-            </View>
-            <View>
-              <Switch
-                onValueChange={async () => {
-                  if (notificationsEnabled) {
-                    const r = await channel.unmute();
-                  } else {
-                    const r = await channel.mute();
-                  }
-
-                  setNotificationsEnabled((previousState) => !previousState);
-                }}
-                trackColor={{
-                  true: colors.success,
-                  false: colors.greyContentBackground,
-                }}
-                value={notificationsEnabled}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <Mute height={24} width={24} />
-              <Text
-                style={{
+                },
+              ]}
+            >
+              Notifications
+            </Text>
+          </View>
+          <View>
+            <Switch
+              onValueChange={async () => {
+                if (notificationsEnabled) {
+                  await channel.unmute();
+                } else {
+                  await channel.mute();
+                }
+                setNotificationsEnabled((previousState) => !previousState);
+              }}
+              trackColor={{
+                false: colors.greyContentBackground,
+                true: colors.success,
+              }}
+              value={notificationsEnabled}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Mute height={24} width={24} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Mute user
-              </Text>
-            </View>
-            <View>
-              <Switch
-                onValueChange={async () => {
-                  if (muted) {
-                    const r = await chatClient?.unmuteUser(user.id);
-                    console.warn(r);
-                  } else {
-                    const r = await chatClient?.muteUser(user.id);
-
-                    console.warn(r);
-                  }
-                  setMuted((previousState) => !previousState);
-                }}
-                trackColor={{
-                  true: colors.success,
-                  false: colors.greyContentBackground,
-                }}
-                value={muted}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChannelImagesScreen', {
-                channel,
-              });
-            }}
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <Picture fill={'#7A7A7A'} />
-              <Text
-                style={{
+                },
+              ]}
+            >
+              Mute user
+            </Text>
+          </View>
+          <View>
+            <Switch
+              onValueChange={async () => {
+                if (muted) {
+                  const r = await chatClient?.unmuteUser(user.id);
+                  console.warn(r);
+                } else {
+                  const r = await chatClient?.muteUser(user.id);
+                  console.warn(r);
+                }
+                setMuted((previousState) => !previousState);
+              }}
+              trackColor={{
+                false: colors.greyContentBackground,
+                true: colors.success,
+              }}
+              value={muted}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ChannelImagesScreen', {
+              channel,
+            });
+          }}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Picture fill={'#7A7A7A'} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Photos and Videos
-              </Text>
-            </View>
-            <View>
-              <GoForward fill={'#7A7A7A'} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChannelFilesScreen', {
-                channel,
-              });
-            }}
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <File fill={'#7A7A7A'} />
-              <Text
-                style={{
+                },
+              ]}
+            >
+              Photos and Videos
+            </Text>
+          </View>
+          <View>
+            <GoForward fill={'#7A7A7A'} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('ChannelFilesScreen', {
+              channel,
+            });
+          }}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <File pathFill={'#7A7A7A'} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Files
-              </Text>
-            </View>
-            <View>
-              <GoForward fill={'#7A7A7A'} />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('SharedGroupsScreen', {
-                user,
-              });
-            }}
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <Contacts fill={'#7A7A7A'} />
-              <Text
-                style={{
+                },
+              ]}
+            >
+              Files
+            </Text>
+          </View>
+          <View>
+            <GoForward fill={'#7A7A7A'} />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('SharedGroupsScreen', {
+              user,
+            });
+          }}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Contacts fill={'#7A7A7A'} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.text,
-                  marginLeft: 16,
-                }}
-              >
-                Shared Groups
-              </Text>
-            </View>
-            <View>
-              <GoForward fill={'#7A7A7A'} />
-            </View>
-          </TouchableOpacity>
-          <Spacer />
-          <TouchableOpacity
-            onPress={openDeleteConversationConfirmationSheet}
-            style={[
-              styles.actionContainer,
-              {
-                borderBottomColor: colors.borderLight,
-              },
-            ]}
-          >
-            <View style={styles.actionLabelContainer}>
-              <Delete fill={colors.danger} height={24} width={24} />
-              <Text
-                style={{
+                },
+              ]}
+            >
+              Shared Groups
+            </Text>
+          </View>
+          <View>
+            <GoForward fill={'#7A7A7A'} />
+          </View>
+        </TouchableOpacity>
+        <Spacer />
+        <TouchableOpacity
+          onPress={openDeleteConversationConfirmationSheet}
+          style={[
+            styles.actionContainer,
+            {
+              borderBottomColor: colors.borderLight,
+            },
+          ]}
+        >
+          <View style={styles.actionLabelContainer}>
+            <Delete fill={colors.danger} height={24} width={24} />
+            <Text
+              style={[
+                styles.itemText,
+                {
                   color: colors.danger,
-                  marginLeft: 16,
-                }}
-              >
-                Delete contact
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        <View />
+                },
+              ]}
+            >
+              Delete contact
+            </Text>
+          </View>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  spacer: {
-    height: 8,
-  },
-  userInfoContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  avatar: {
-    height: 72,
-    width: 72,
-    borderRadius: 40,
-  },
-  displayName: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  onlineStatusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  onlineIndicator: {
-    height: 8,
-    width: 8,
-    backgroundColor: '#20E070',
-    borderRadius: 4,
-  },
-  onlineStatus: {
-    marginLeft: 8,
-    fontSize: 12,
-  },
-  userNameContainer: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderTopWidth: 1,
-    marginTop: 16,
-  },
-  userNameLabel: {
-    fontSize: 14,
-  },
-  userName: {
-    fontSize: 14,
-  },
-
-  actionListContainer: {},
-  actionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderBottomWidth: 1,
-  },
-  actionLabelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});

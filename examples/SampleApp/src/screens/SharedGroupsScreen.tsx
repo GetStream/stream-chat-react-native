@@ -1,6 +1,6 @@
-import React from 'react';
-import { useContext } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
 import {
   Avatar,
   ChannelList,
@@ -11,9 +11,10 @@ import {
   useChannelPreviewDisplayName,
   useChannelsContext,
 } from 'stream-chat-react-native/v2';
+
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
-
+import { Contacts } from '../icons/Contacts';
 import {
   AppTheme,
   LocalAttachmentType,
@@ -25,21 +26,53 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
-import { Contacts } from '../icons/Contacts';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const CustomPreview: React.FC<
-  ChannelPreviewMessengerProps<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalResponseType,
-    LocalUserType
-  >
-> = ({ channel }) => {
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  emptyListContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  emptyListSubtitle: {
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  emptyListTitle: {
+    fontSize: 16,
+    marginTop: 10,
+  },
+  groupContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  nameText: {
+    fontWeight: '700',
+    marginLeft: 8,
+  },
+  previewContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 80,
+  },
+});
+
+type CustomPreviewProps = ChannelPreviewMessengerProps<
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType
+>;
+
+const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useContext(AppContext);
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation();
@@ -49,113 +82,86 @@ const CustomPreview: React.FC<
 
   if (Object.keys(channel.state.members).length === 2) return null;
 
+  const switchToChannel = () => {
+    navigation.reset({
+      index: 1,
+      routes: [
+        {
+          name: 'ChatScreen',
+        },
+        {
+          name: 'ChannelScreen',
+          params: {
+            channelId: channel.id,
+          },
+        },
+      ],
+    });
+  };
+
   return (
     <TouchableOpacity
-      onPress={() => {
-        navigation.reset({
-          index: 1,
-          routes: [
-            {
-              name: 'ChatScreen',
-            },
-            {
-              name: 'ChannelScreen',
-              params: {
-                channelId: channel.id,
-              },
-            },
-          ],
-        });
-      }}
-      style={{
-        alignItems: 'center',
-        backgroundColor: colors.background,
-        borderBottomColor: colors.borderLight,
-        borderBottomWidth: 1,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingBottom: 12,
-        paddingLeft: 8,
-        paddingRight: 8,
-        paddingTop: 12,
-        width: '100%',
-      }}
+      onPress={switchToChannel}
+      style={[
+        styles.previewContainer,
+        {
+          backgroundColor: colors.background,
+          borderBottomColor: colors.borderLight,
+        },
+      ]}
     >
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-        }}
-      >
+      <View style={styles.groupContainer}>
         <Avatar
           {...getChannelPreviewDisplayAvatar(channel, chatClient)}
           size={40}
         />
-        <Text style={{ color: colors.text, fontWeight: '700', marginLeft: 8 }}>
-          {name}
-        </Text>
+        <Text style={[styles.nameText, { color: colors.text }]}>{name}</Text>
       </View>
-      <View
+      <Text
         style={{
-          alignItems: 'flex-end',
+          color: colors.textLight,
         }}
       >
-        <Text
-          style={{
-            color: colors.textLight,
-          }}
-        >
-          {Object.keys(channel.state.members).length} Members
-        </Text>
-      </View>
+        {Object.keys(channel.state.members).length} Members
+      </Text>
     </TouchableOpacity>
   );
 };
 
+const EmptyListComponent = () => {
+  const { colors } = useTheme() as AppTheme;
+
+  return (
+    <View style={styles.emptyListContainer}>
+      <Contacts fill={'#DBDBDB'} scale={6} />
+      <Text style={styles.emptyListTitle}>No shared groups</Text>
+      <Text style={[styles.emptyListSubtitle, { color: colors.textLight }]}>
+        Groups shared with user will appear here
+      </Text>
+    </View>
+  );
+};
+
+type ListComponentProps = ChannelListMessengerProps<
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType
+>;
+
 // If the length of channels is 1, which means we only got 1:1-distinct channel,
 // And we don't want to show 1:1-distinct channel in this list.
-const ListComponent: React.FC<
-  ChannelListMessengerProps<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalResponseType,
-    LocalUserType
-  >
-> = (props) => {
+const ListComponent: React.FC<ListComponentProps> = (props) => {
   const { channels } = useChannelsContext();
+
   if (channels.length <= 1) {
     return <EmptyListComponent />;
   }
 
   return <ChannelListMessenger {...props} />;
-};
-
-const EmptyListComponent = () => {
-  const { colors } = useTheme() as AppTheme;
-  return (
-    <View
-      style={{
-        alignItems: 'center',
-        height: '100%',
-        justifyContent: 'center',
-        padding: 40,
-        width: '100%',
-      }}
-    >
-      <View style={{ alignItems: 'center' }}>
-        <Contacts fill={'#DBDBDB'} scale={6} />
-        <Text style={{ fontSize: 16, marginTop: 10 }}>No shared groups</Text>
-        <Text
-          style={{ color: colors.textLight, marginTop: 8, textAlign: 'center' }}
-        >
-          Groups shared with user will appear here
-        </Text>
-      </View>
-    </View>
-  );
 };
 
 type SharedGroupsScreenRouteProp = RouteProp<
@@ -173,17 +179,11 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const insets = useSafeAreaInsets();
 
   if (!chatClient?.user) return null;
 
   return (
-    <View
-      style={{
-        height: '100%',
-        paddingBottom: insets.bottom,
-      }}
-    >
+    <View style={styles.container}>
       <ScreenHeader title={'Shared Groups'} />
       <ChannelList
         filters={{
@@ -193,7 +193,6 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
           ],
         }}
         List={ListComponent}
-        onSelect={() => null}
         options={{
           watch: false,
         }}
