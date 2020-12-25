@@ -11,7 +11,6 @@ export const Picture: React.FC<IconProps> = ({
   <Svg
     fill='none'
     height={height * scale}
-    viewBox={`0 0 ${height * scale} ${width * scale}`}
     width={width * scale}
   >
     <G

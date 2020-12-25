@@ -1,26 +1,54 @@
 /* eslint-disable sort-keys */
 import React from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
   CompositeNavigationProp,
   useNavigation,
+  useTheme,
 } from '@react-navigation/native';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
 import { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
-import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
+import {
+  AppTheme,
+  DrawerNavigatorParamList,
+  StackNavigatorParamList,
+} from '../types';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
+import { Spinner, useChatContext } from 'stream-chat-react-native/v2';
 
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
+
+export const NetworkDownIndicator = () => {
+  const { colors } = useTheme() as AppTheme;
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <Spinner />
+      <Text
+        style={{
+          color: colors.text,
+          fontSize: 16,
+          fontWeight: '700',
+          marginLeft: 13,
+        }}
+      >
+        Search for network
+      </Text>
+    </View>
+  );
+};
+
 export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
   const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
   const { chatClient } = useContext(AppContext);
+
+  const { isOnline } = useChatContext();
 
   return (
     <>
@@ -53,7 +81,8 @@ export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
             />
           </RoundButton>
         )}
-        title={title}
+        Title={isOnline ? null : NetworkDownIndicator}
+        titleText={title}
       />
     </>
   );

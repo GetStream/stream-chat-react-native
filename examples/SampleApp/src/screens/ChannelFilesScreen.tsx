@@ -88,7 +88,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
         paddingBottom: insets.bottom,
       }}
     >
-      <ScreenHeader title={'Files'} />
+      <ScreenHeader titleText={'Files'} />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
           <SectionList<Attachment>

@@ -107,7 +107,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
         paddingBottom: insets.bottom,
       }}
     >
-      <ScreenHeader title={'Photos and Videos'} />
+      <ScreenHeader titleText={'Photos and Videos'} />
       {(sections.length > 0 || !loading) && (
         <SectionList
           contentContainerStyle={{ height: '100%' }}

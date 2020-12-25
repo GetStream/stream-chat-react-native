@@ -184,7 +184,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <ScreenHeader title={'Shared Groups'} />
+      <ScreenHeader titleText={'Shared Groups'} />
       <ChannelList
         filters={{
           $and: [

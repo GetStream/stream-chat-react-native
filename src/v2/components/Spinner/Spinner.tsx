@@ -13,10 +13,10 @@ import { Loading } from '../../icons/Loading';
 
 const styles = StyleSheet.create({
   spinner: {
-    height: 30,
+    height: 16,
     justifyContent: 'center',
     margin: 5,
-    width: 30,
+    width: 16,
   },
 });
 

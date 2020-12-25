@@ -1,5 +1,12 @@
 import React, { useCallback, useContext, useMemo, useRef } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -7,7 +14,7 @@ import {
 } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ChannelSort } from 'stream-chat';
-import { ChannelList } from 'stream-chat-react-native/v2';
+import { ChannelList, useChatContext } from 'stream-chat-react-native/v2';
 import { AppContext } from '../context/AppContext';
 import {
   AppTheme,
@@ -47,17 +54,6 @@ type ChannelListScreenNavigationProp = CompositeNavigationProp<
 // type Props = {
 //   navigation: ChannelListScreenNavigationProp;
 // };
-export const EmptySearchIndicator = () => (
-  <View
-    style={{
-      alignItems: 'center',
-      height: '100%',
-      justifyContent: 'center',
-    }}
-  >
-    <Search scale={3} />
-  </View>
-);
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
   const { colors } = useTheme() as AppTheme;
@@ -84,6 +80,23 @@ export const ChannelListScreen: React.FC = () => {
     [chatClient],
   );
 
+  const EmptySearchIndicator = () => {
+    const { colors } = useTheme() as AppTheme;
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          marginTop: 100,
+        }}
+      >
+        <Search fill={'#DBDBDB'} scale={5} />
+        <Text style={{ color: colors.textLight, marginTop: 20 }}>
+          {`No results found for "${searchQuery}"`}
+        </Text>
+      </View>
+    );
+  };
   if (!chatClient) return null;
 
   return (
@@ -148,7 +161,7 @@ export const ChannelListScreen: React.FC = () => {
               style={{
                 flexGrow: 1,
                 flexShrink: 1,
-                }}
+              }}
             >
               <MessageSearchList
                 EmptySearchIndicator={EmptySearchIndicator}
@@ -170,8 +183,9 @@ export const ChannelListScreen: React.FC = () => {
             <View
               style={{
                 height: '100%',
-                position: 'absolute',
                 opacity: searchQuery ? 0 : 1,
+                position: 'absolute',
+                width: '100%',
               }}
             >
               <ChannelList<
@@ -191,6 +205,7 @@ export const ChannelListScreen: React.FC = () => {
                   }),
                 }}
                 filters={filters}
+                HeaderNetworkDownIndicator={() => null}
                 onSelect={(channel) => {
                   navigation.navigate('ChannelScreen', {
                     channelId: channel.id,
@@ -221,9 +236,9 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     flexDirection: 'row',
-    height: 36,
     margin: 8,
     paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   searchInput: {
     flexGrow: 1,
