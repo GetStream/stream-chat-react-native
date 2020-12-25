@@ -135,13 +135,13 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
 const EmptyListComponent = () => {
   const {
     theme: {
-      colors: { grey },
+      colors: { grey, grey_gainsboro },
     },
   } = useTheme();
 
   return (
     <View style={styles.emptyListContainer}>
-      <Contacts fill='#DBDBDB' scale={6} />
+      <Contacts fill={grey_gainsboro} scale={6} />
       <Text style={styles.emptyListTitle}>No shared groups</Text>
       <Text style={[styles.emptyListSubtitle, { color: grey }]}>
         Groups shared with user will appear here

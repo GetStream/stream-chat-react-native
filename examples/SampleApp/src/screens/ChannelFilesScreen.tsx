@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SectionList,
   StyleSheet,
@@ -6,21 +6,22 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import Dayjs from 'dayjs';
 import { Attachment } from 'stream-chat';
-import { useEffect } from 'react';
 import {
   FileIcon,
   getFileSizeDisplayText,
   goToURL,
   ThemeProvider,
+  useTheme,
 } from 'stream-chat-react-native/v2';
-import Dayjs from 'dayjs';
-import { RouteProp, useTheme } from '@react-navigation/native';
-import { AppTheme, StackNavigatorParamList } from '../types';
-import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
-import { ScreenHeader } from '../components/ScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ScreenHeader } from '../components/ScreenHeader';
+import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
+import { StackNavigatorParamList } from '../types';
 
 type ChannelFilesScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -40,7 +41,11 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     channel,
     'file',
   );
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, white, white_snow },
+    },
+  } = useTheme();
   const insets = useSafeAreaInsets();
   const [sections, setSections] = useState<
     Array<{
@@ -59,7 +64,6 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       }
     > = {};
 
-    // eslint-disable-next-line no-constant-condition
     messages.forEach((message) => {
       const month = Dayjs(message.created_at as string).format('MMM YYYY');
 
@@ -100,7 +104,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                 key={attachment.id}
                 onPress={() => goToURL(attachment.asset_url)}
               >
-                <View style={[styles.container]}>
+                <View style={[{ backgroundColor: white }, styles.container]}>
                   <FileIcon mimeType={attachment.mime_type} />
                   <View style={[styles.details]}>
                     <Text numberOfLines={2} style={[styles.title]}>
@@ -116,7 +120,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
             renderSectionHeader={({ section: { title } }) => (
               <View
                 style={{
-                  backgroundColor: colors.background,
+                  backgroundColor: white_snow,
                   borderRadius: 10,
                   padding: 16,
                   paddingTop: 16,
@@ -124,7 +128,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
               >
                 <Text
                   style={{
-                    color: colors.text,
+                    color: black,
                     fontSize: 12,
                   }}
                 >
@@ -142,7 +146,11 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
 };
 
 const EmptyListComponent = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, grey, grey_gainsboro },
+    },
+  } = useTheme();
   return (
     <View
       style={{
@@ -154,11 +162,9 @@ const EmptyListComponent = () => {
       }}
     >
       <View style={{ alignItems: 'center' }}>
-        <File fill='#DBDBDB' scale={6} />
-        <Text style={{ fontSize: 16 }}>No files</Text>
-        <Text
-          style={{ color: colors.textLight, marginTop: 8, textAlign: 'center' }}
-        >
+        <File fill={grey_gainsboro} scale={6} />
+        <Text style={{ color: black, fontSize: 16 }}>No files</Text>
+        <Text style={{ color: grey, marginTop: 8, textAlign: 'center' }}>
           Files sent on this chat will appear here
         </Text>
       </View>
@@ -169,7 +175,6 @@ const EmptyListComponent = () => {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     flexDirection: 'row',
     padding: 8,

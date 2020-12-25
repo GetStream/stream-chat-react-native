@@ -1,26 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   Image,
-  SafeAreaView,
   SectionList,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import Dayjs from 'dayjs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Attachment } from 'stream-chat';
-import { useEffect } from 'react';
-import { Dimensions } from 'react-native';
 import {
   useImageGalleryContext,
   useOverlayContext,
+  useTheme,
 } from 'stream-chat-react-native/v2';
-import Dayjs from 'dayjs';
-import { RouteProp, useTheme } from '@react-navigation/native';
-import { AppTheme, StackNavigatorParamList } from '../types';
-import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
+
 import { ScreenHeader } from '../components/ScreenHeader';
+import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StackNavigatorParamList } from '../types';
 
 // type ChannelImagesScreenNavigationProp = StackNavigationProp<
 //   StackNavigatorParamList,
@@ -46,7 +46,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     'image',
   );
   const screen = Dimensions.get('screen').width;
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { overlay_dark, white },
+    },
+  } = useTheme();
   const { setImage, setImages } = useImageGalleryContext();
   const { setBlurType, setOverlay } = useOverlayContext();
   const insets = useSafeAreaInsets();
@@ -67,7 +71,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       }
     > = {};
 
-    // eslint-disable-next-line no-constant-condition
     messages.forEach((message) => {
       const month = Dayjs(message.created_at as string).format('MMM YYYY');
 
@@ -147,7 +150,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
             <View
               style={{
                 alignSelf: 'center',
-                backgroundColor: colors.dateStampBackground,
+                backgroundColor: overlay_dark,
                 borderRadius: 10,
                 marginTop: 15,
                 padding: 8,
@@ -157,7 +160,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
             >
               <Text
                 style={{
-                  color: colors.textInverted,
+                  color: white,
                   fontSize: 12,
                 }}
               >
@@ -174,7 +177,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
 };
 
 const EmptyListComponent = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, grey, grey_gainsboro },
+    },
+  } = useTheme();
   return (
     <View
       style={{
@@ -186,11 +193,9 @@ const EmptyListComponent = () => {
       }}
     >
       <View style={{ alignItems: 'center' }}>
-        <Picture fill='#DBDBDB' scale={6} />
-        <Text style={{ fontSize: 16 }}>No media</Text>
-        <Text
-          style={{ color: colors.textLight, marginTop: 8, textAlign: 'center' }}
-        >
+        <Picture fill={grey_gainsboro} scale={6} />
+        <Text style={{ color: black, fontSize: 16 }}>No media</Text>
+        <Text style={{ color: grey, marginTop: 8, textAlign: 'center' }}>
           Photos or video sent in this chat will appear here
         </Text>
       </View>

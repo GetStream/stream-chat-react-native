@@ -1,6 +1,4 @@
-import React from 'react';
-import { useTheme } from '@react-navigation/native';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -9,13 +7,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Channel, UserResponse } from 'stream-chat';
+import { useTheme } from 'stream-chat-react-native/v2';
+
+import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
+
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { CircleClose } from '../icons/CircleClose';
 import { Search } from '../icons/Search';
-
 import {
-  AppTheme,
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -24,8 +25,6 @@ import {
   LocalReactionType,
   LocalUserType,
 } from '../types';
-import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type AddMemberBottomSheetProps = {
   channel: Channel<
@@ -44,7 +43,11 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
   const { channel, dismissHandler } = props;
   const insets = useSafeAreaInsets();
 
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { accent_red, black, border, grey, white, white_smoke },
+    },
+  } = useTheme();
   const {
     clearText,
     loading: loadingResults,
@@ -91,7 +94,8 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
           style={[
             styles.inputBoxContainer,
             {
-              borderColor: colors.border,
+              backgroundColor: white,
+              borderColor: border,
             },
           ]}
         >
@@ -100,11 +104,11 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
             placeholder='Search'
-            placeholderTextColor={colors.textLight}
+            placeholderTextColor={grey}
             style={[
               styles.inputBox,
               {
-                color: colors.text,
+                color: black,
               },
             ]}
             value={searchText}
@@ -133,7 +137,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
           <View
             style={{
               alignItems: 'center',
-              backgroundColor: colors.greyContentBackground,
+              backgroundColor: white_smoke,
               flexDirection: 'row',
               padding: 5,
               width: '100%',
@@ -153,7 +157,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
           <View
             style={{
               alignItems: 'center',
-              backgroundColor: colors.danger,
+              backgroundColor: accent_red,
               flexDirection: 'row',
               padding: 5,
               width: '100%',
@@ -161,7 +165,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
           >
             <Text
               style={{
-                color: colors.textInverted,
+                color: white,
                 marginLeft: 10,
               }}
             >
@@ -185,15 +189,6 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
 AddMemberBottomSheet.displayName = 'AddMemberBottomSheet';
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    borderRadius: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    height: 300,
-    paddingHorizontal: 16,
-    width: '100%',
-  },
   inputBox: {
     flex: 1,
     marginLeft: 10,
@@ -201,7 +196,6 @@ const styles = StyleSheet.create({
   },
   inputBoxContainer: {
     alignItems: 'center',
-    backgroundColor: 'white',
     borderRadius: 18,
     borderWidth: 1,
     flexDirection: 'row',
@@ -211,11 +205,5 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingBottom: 8,
     paddingTop: 8,
-  },
-  searchContainer: {
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-    display: 'flex',
-    flexDirection: 'row',
   },
 });

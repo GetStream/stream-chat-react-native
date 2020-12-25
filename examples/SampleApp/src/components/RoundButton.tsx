@@ -13,7 +13,7 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
 }) => {
   const {
     theme: {
-      colors: { icon_background },
+      colors: { black, icon_background },
     },
   } = useTheme();
   return (
@@ -27,7 +27,7 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
         elevation: 5,
         height: 40,
         justifyContent: 'center',
-        shadowColor: '#000',
+        shadowColor: black,
         shadowOffset: {
           height: 2,
           width: 0,

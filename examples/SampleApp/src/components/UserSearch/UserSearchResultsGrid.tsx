@@ -81,13 +81,28 @@ export const UserSearchResultsGrid: React.FC<UserSearchResultsGridProps> = ({
   );
 };
 
-/* eslint-disable sort-keys */
 const styles = StyleSheet.create({
-  searchContainer: {
-    display: 'flex',
+  emptyResultIndicator: {
+    alignItems: 'center',
+    height: 300,
+    justifyContent: 'center',
+  },
+  emptyResultIndicatorEmoji: {
+    fontSize: 60,
+  },
+  inputBox: {
+    flex: 1,
+    marginRight: 2,
+  },
+  inputBoxContainer: {
     flexDirection: 'row',
+    margin: 4,
+    width: '100%',
+  },
+  searchContainer: {
     alignItems: 'flex-start',
     borderBottomWidth: 1,
+    flexDirection: 'row',
   },
   searchContainerLabel: {
     fontSize: 15,
@@ -95,52 +110,18 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 4,
   },
-  inputBoxContainer: {
-    flexDirection: 'row',
-    margin: 4,
-    width: '100%',
-  },
-  inputBox: {
-    flex: 1,
-    marginRight: 2,
-  },
   searchResultContainer: {
     alignItems: 'center',
     flexDirection: 'row',
     padding: 8,
-    paddingTop: 13,
     paddingBottom: 13,
+    paddingTop: 13,
   },
   searchResultUserDetails: {
-    paddingLeft: 8,
     flexGrow: 1,
     flexShrink: 1,
+    paddingLeft: 8,
   },
-  searchResultUserName: { fontSize: 14 },
   searchResultUserLastOnline: { fontSize: 12.5 },
-  emptyResultIndicator: {
-    height: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyResultIndicatorEmoji: {
-    fontSize: 60,
-  },
-  textInputContainer: {
-    minWidth: 100,
-    height: 32,
-    margin: 4,
-    borderRadius: 16,
-    backgroundColor: '#ccc',
-  },
-
-  textInput: {
-    margin: 0,
-    padding: 0,
-    paddingLeft: 12,
-    paddingRight: 12,
-    height: 32,
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.87)',
-  },
+  searchResultUserName: { fontSize: 14 },
 });

@@ -1,17 +1,19 @@
-/* eslint-disable sort-keys */
-import { RouteProp, useTheme } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext, useState } from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  generateRandomId,
+  ThemeProvider,
+  useTheme,
+} from 'stream-chat-react-native/v2';
 
-import { ThemeProvider } from 'stream-chat-react-native/v2';
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { Check } from '../icons/Check';
-import { AppTheme, StackNavigatorParamList } from '../types';
+import { StackNavigatorParamList } from '../types';
 
 type NewGroupChannelAssignNameScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -33,7 +35,11 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
     params: { selectedUsers },
   },
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { accent_blue, black, border, grey, white, white_snow },
+    },
+  } = useTheme();
   const { chatClient } = useContext(AppContext);
   const [groupName, setGroupName] = useState('');
   if (!chatClient) return null;
@@ -48,13 +54,17 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
               onPress={() => {
                 if (!chatClient.user || !selectedUsers || !groupName) return;
 
-                const channel = chatClient.channel('messaging', uuidv4(), {
-                  name: groupName,
-                  members: [
-                    ...selectedUsers.map((u) => u.id),
-                    chatClient.user?.id,
-                  ],
-                });
+                const channel = chatClient.channel(
+                  'messaging',
+                  generateRandomId(),
+                  {
+                    name: groupName,
+                    members: [
+                      ...selectedUsers.map((u) => u.id),
+                      chatClient.user?.id,
+                    ],
+                  },
+                );
 
                 // TODO: Maybe there is a better way to do this.
                 navigation.pop();
@@ -64,7 +74,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
               }}
             >
               <Check
-                fill={groupName ? '#366CFF' : undefined}
+                fill={groupName ? accent_blue : undefined}
                 height={24}
                 width={24}
               />
@@ -79,7 +89,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             style={[
               styles.searchContainer,
               {
-                borderBottomColor: colors.borderLight,
+                borderBottomColor: border,
               },
             ]}
           >
@@ -93,7 +103,8 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
                 style={[
                   styles.inputBoxContainer,
                   {
-                    borderColor: colors.border,
+                    backgroundColor: white,
+                    borderColor: border,
                   },
                 ]}
               >
@@ -104,11 +115,11 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
                     setGroupName(text);
                   }}
                   placeholder='Choose a group chat name'
-                  placeholderTextColor={colors.textLight}
+                  placeholderTextColor={grey}
                   style={[
                     styles.inputBox,
                     {
-                      color: colors.text,
+                      color: black,
                     },
                   ]}
                   value={groupName}
@@ -118,14 +129,14 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
           </View>
           <View
             style={{
-              backgroundColor: colors.backgroundFadeGradient,
+              backgroundColor: white_snow,
               padding: 5,
               paddingLeft: 8,
             }}
           >
             <Text
               style={{
-                color: colors.text,
+                color: black,
               }}
             >
               {selectedUsers.length} Members
@@ -149,20 +160,42 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 56,
-  },
   backButton: {
     padding: 15,
   },
-  searchContainer: {
-    display: 'flex',
+  emptyResultIndicator: {
+    alignItems: 'center',
+    height: 300,
+    justifyContent: 'center',
+  },
+  emptyResultIndicatorEmoji: {
+    fontSize: 60,
+  },
+  headerContainer: {
+    alignItems: 'center',
     flexDirection: 'row',
+    height: 56,
+    justifyContent: 'space-between',
+  },
+  inputBox: {
+    flex: 1,
+    marginLeft: 10,
+    padding: 0,
+  },
+  inputBoxContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    margin: 4,
+    padding: 10,
+    paddingBottom: 20,
+    paddingTop: 20,
+    width: '100%',
+  },
+  searchContainer: {
     alignItems: 'flex-start',
     borderBottomWidth: 1,
+    display: 'flex',
+    flexDirection: 'row',
   },
   searchContainerLabel: {
     fontSize: 15,
@@ -170,61 +203,21 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingTop: 4,
   },
-  inputBoxContainer: {
-    flexDirection: 'row',
-    margin: 4,
-    padding: 10,
-    paddingTop: 20,
-    paddingBottom: 20,
-    width: '100%',
-    backgroundColor: 'white',
-    alignItems: 'center',
-  },
-  inputBox: {
-    flex: 1,
-    marginLeft: 10,
-    padding: 0,
-  },
   searchResultContainer: {
     alignItems: 'center',
     flexDirection: 'row',
     padding: 8,
   },
-  searchResultUserImage: {
-    height: 30,
-    width: 30,
-    borderRadius: 20,
-  },
   searchResultUserDetails: {
-    paddingLeft: 8,
     flexGrow: 1,
     flexShrink: 1,
+    paddingLeft: 8,
   },
-  searchResultUserName: { fontSize: 14 },
+  searchResultUserImage: {
+    borderRadius: 20,
+    height: 30,
+    width: 30,
+  },
   searchResultUserLastOnline: { fontSize: 12.5 },
-  emptyResultIndicator: {
-    height: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyResultIndicatorEmoji: {
-    fontSize: 60,
-  },
-  textInputContainer: {
-    minWidth: 100,
-    height: 32,
-    margin: 4,
-    borderRadius: 16,
-    backgroundColor: '#ccc',
-  },
-
-  textInput: {
-    margin: 0,
-    padding: 0,
-    paddingLeft: 12,
-    paddingRight: 12,
-    height: 32,
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.87)',
-  },
+  searchResultUserName: { fontSize: 14 },
 });

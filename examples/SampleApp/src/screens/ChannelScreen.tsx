@@ -1,18 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
-import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AppContext } from '../context/AppContext';
-import { AppTheme, LocalReactionType, StackNavigatorParamList } from '../types';
-import {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalResponseType,
-  LocalUserType,
-} from '../types';
+import { Channel as StreamChatChannel } from 'stream-chat';
 import {
   Avatar,
   Channel,
@@ -23,13 +13,24 @@ import {
   useChannelContext,
   useChannelPreviewDisplayName,
   useChatContext,
+  useTheme,
+  useTypingString,
 } from 'stream-chat-react-native/v2';
-import { Channel as StreamChatChannel } from 'stream-chat';
+
 import { ScreenHeader } from '../components/ScreenHeader';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useTypingString } from 'stream-chat-react-native/v2';
+import { AppContext } from '../context/AppContext';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
+import {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalReactionType,
+  LocalResponseType,
+  LocalUserType,
+  StackNavigatorParamList,
+} from '../types';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -47,13 +48,17 @@ export type ChannelScreenProps = {
 export type ChannelHeaderProps = unknown;
 
 export const NetworkDownIndicator = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { grey },
+    },
+  } = useTheme();
   return (
     <View style={{ alignItems: 'center', flexDirection: 'row' }}>
       <Spinner />
       <Text
         style={{
-          color: colors.textLight,
+          color: grey,
           fontSize: 12,
           fontWeight: '400',
           marginLeft: 5,

@@ -46,15 +46,15 @@ export const USERS: Record<string, UserResponse<LocalUserType>> = {
     image: 'https://ca.slack-edge.com/T02RM6X6B-UD6TCA6P6-2b60e1b19771-512',
     name: 'Marcelo Pires',
   },
-  vishal: {
-    id: 'vishal',
-    image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
-    name: 'Vishal Narkhede',
-  },
   thierry: {
     id: 'thierry',
     image: 'https://ca.slack-edge.com/T02RM6X6B-U02RM6X6D-g28a1278a98e-512',
     name: 'Thierry',
+  },
+  vishal: {
+    id: 'vishal',
+    image: 'https://ca.slack-edge.com/T02RM6X6B-UHGDQJ8A0-31658896398c-512',
+    name: 'Vishal Narkhede',
   },
   // merel: {
   //   id: 'merel',
