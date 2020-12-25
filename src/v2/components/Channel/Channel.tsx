@@ -370,6 +370,7 @@ export const ChannelWithContext = <
   const {
     theme: {
       channel: { selectChannel },
+      colors: { black },
     },
   } = useTheme();
 
@@ -1307,7 +1308,10 @@ export const ChannelWithContext = <
 
   if (!channel?.cid || !channel.watch) {
     return (
-      <Text style={[styles.selectChannel, selectChannel]} testID='no-channel'>
+      <Text
+        style={[styles.selectChannel, { color: black }, selectChannel]}
+        testID='no-channel'
+      >
         {t('Please select a channel first')}
       </Text>
     );

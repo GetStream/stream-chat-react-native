@@ -137,7 +137,7 @@ const AutoCompleteInputWithContext = <
 
   const {
     theme: {
-      colors: { grey },
+      colors: { black, grey },
       messageInput: { inputBox },
     },
   } = useTheme();
@@ -433,6 +433,7 @@ const AutoCompleteInputWithContext = <
       style={[
         styles.inputBox,
         {
+          color: black,
           maxHeight: (textHeight || 17) * numberOfLines,
         },
         inputBox,

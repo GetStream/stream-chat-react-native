@@ -71,7 +71,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             </RoundButton>
           </View>
         )}
-        title={'Name of Group Chat'}
+        titleText='Name of Group Chat'
       />
       <View>
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
@@ -103,7 +103,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
                   onChangeText={(text) => {
                     setGroupName(text);
                   }}
-                  placeholder={'Choose a group chat name'}
+                  placeholder='Choose a group chat name'
                   placeholderTextColor={colors.textLight}
                   style={[
                     styles.inputBox,

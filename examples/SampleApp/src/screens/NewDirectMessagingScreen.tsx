@@ -105,7 +105,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
       // If there are no selected usres, then set dummy channel.
       if (selectedUsers.length === 0) {
-        setUpdate(u => u + 1);
+        setUpdate((u) => u + 1);
         return;
       }
 
@@ -177,7 +177,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const renderContent = () => (
     <>
-      <ScreenHeader titleText={'New Chat'} />
+      <ScreenHeader titleText='New Chat' />
       <View
         style={{
           paddingTop: 15,
@@ -235,7 +235,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
               <TextInput
                 onChangeText={onChangeSearchText}
                 onFocus={onFocusInput}
-                placeholder={'Type a name'}
+                placeholder='Type a name'
                 placeholderTextColor={colors.textLight}
                 ref={(ref) => {
                   if (!ref) return;
@@ -271,7 +271,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                 style={styles.createGroupButtonContainer}
               >
                 <RoundButton>
-                  <Contacts fill={'#006CFF'} height={25} width={25} />
+                  <Contacts fill='#006CFF' height={25} width={25} />
                 </RoundButton>
                 <Text
                   style={[

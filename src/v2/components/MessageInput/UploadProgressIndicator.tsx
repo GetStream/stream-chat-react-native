@@ -67,7 +67,7 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
 
   const {
     theme: {
-      colors: { white_smoke },
+      colors: { overlay: overlayColor, white_smoke },
       messageInput: {
         uploadProgressIndicator: { container, overlay },
       },
@@ -79,8 +79,12 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
   ) : (
     <View testID='active-upload-progress-indicator'>
       {children}
-      <View style={[styles.overlay, overlay]} />
-      <View style={[styles.container, container]}>
+      <View
+        style={[styles.overlay, { backgroundColor: overlayColor }, overlay]}
+      />
+      <View
+        style={[styles.container, { backgroundColor: overlayColor }, container]}
+      >
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
           <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator

@@ -50,8 +50,8 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       <View style={styles.container}>
         <ScreenHeader
           inSafeArea
-          subtitle={`with ${thread?.user?.name}`}
-          title={'Thread Reply'}
+          subtitleText={`with ${thread?.user?.name}`}
+          title='Thread Reply'
         />
         <Thread<
           LocalAttachmentType,

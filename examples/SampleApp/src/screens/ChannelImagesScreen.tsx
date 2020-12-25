@@ -107,7 +107,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
         paddingBottom: insets.bottom,
       }}
     >
-      <ScreenHeader titleText={'Photos and Videos'} />
+      <ScreenHeader titleText='Photos and Videos' />
       {(sections.length > 0 || !loading) && (
         <SectionList
           contentContainerStyle={{ height: '100%' }}
@@ -186,7 +186,7 @@ const EmptyListComponent = () => {
       }}
     >
       <View style={{ alignItems: 'center' }}>
-        <Picture fill={'#DBDBDB'} scale={6} />
+        <Picture fill='#DBDBDB' scale={6} />
         <Text style={{ fontSize: 16 }}>No media</Text>
         <Text
           style={{ color: colors.textLight, marginTop: 8, textAlign: 'center' }}

@@ -163,6 +163,7 @@ export const ImageGallery = <
   } = props;
   const {
     theme: {
+      colors: { white_snow },
       imageGallery: { backgroundColor },
     },
   } = useTheme();
@@ -1059,7 +1060,7 @@ export const ImageGallery = <
    */
   const containerBackground = useAnimatedStyle<ViewStyle>(
     () => ({
-      backgroundColor,
+      backgroundColor: backgroundColor || white_snow,
       opacity: headerFooterOpacity.value,
     }),
     [headerFooterOpacity],

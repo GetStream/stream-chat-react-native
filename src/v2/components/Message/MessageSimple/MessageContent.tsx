@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import merge from 'lodash/merge';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -161,7 +162,14 @@ export const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, transparent },
+      colors: {
+        accent_red,
+        blue_alice,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        transparent,
+      },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -222,17 +230,18 @@ export const MessageContentWithContext = <
         ]}
       >
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-          markdownStyles={deletedText}
+          markdownStyles={merge({ em: { color: grey } }, deletedText)}
           message={{ ...message, text: '_Message deleted_' }}
         />
         {MessageFooter ? (
           <MessageFooter testID='message-footer' />
         ) : (
           <View style={metaContainer} testID='message-status-time'>
-            <Eye {...eyeIcon} />
+            <Eye pathFill={grey} {...eyeIcon} />
             <Text
               style={[
                 {
+                  color: grey,
                   textAlign: alignment,
                 },
                 metaText,
@@ -244,6 +253,7 @@ export const MessageContentWithContext = <
             <Text
               style={[
                 {
+                  color: grey,
                   textAlign: alignment,
                 },
                 metaText,
@@ -302,6 +312,7 @@ export const MessageContentWithContext = <
                 groupStyle === 'right_bottom' || groupStyle === 'right_single'
                   ? borderRadiusS
                   : borderRadiusL,
+              borderColor: grey_whisper,
             },
             onlyEmojis || otherAttachments.length ? { borderWidth: 0 } : {},
             containerInner,
@@ -352,7 +363,7 @@ export const MessageContentWithContext = <
         {error && (
           <View style={StyleSheet.absoluteFill}>
             <View style={errorIconContainer}>
-              <Error {...errorIcon} />
+              <Error pathFill={accent_red} {...errorIcon} />
             </View>
           </View>
         )}
@@ -367,6 +378,7 @@ export const MessageContentWithContext = <
               <Text
                 style={[
                   {
+                    color: grey,
                     textAlign: alignment,
                   },
                   metaText,
@@ -380,10 +392,12 @@ export const MessageContentWithContext = <
           {Object.keys(members).length > 2 &&
           alignment === 'left' &&
           message.user?.name ? (
-            <Text style={messageUser}>{message.user.name}</Text>
+            <Text style={[{ color: grey }, messageUser]}>
+              {message.user.name}
+            </Text>
           ) : null}
           {showMessageStatus && <MessageStatus />}
-          <Text style={[{ textAlign: alignment }, metaText]}>
+          <Text style={[{ color: grey, textAlign: alignment }, metaText]}>
             {getDateText(formatDate)}
           </Text>
         </View>

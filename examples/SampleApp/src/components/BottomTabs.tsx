@@ -1,19 +1,20 @@
-/* eslint-disable sort-keys */
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useTheme } from 'stream-chat-react-native/v2';
 
-import { useTheme } from '@react-navigation/native';
 import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { AppTheme } from '../types';
 
 export const BottomTabs: React.FC<BottomTabBarProps> = ({
   navigation,
   state,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, grey, white },
+    },
+  } = useTheme();
 
   const getTitle = (key: string) => {
     switch (key) {
@@ -41,7 +42,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
     <View
       style={[
         {
-          backgroundColor: colors.backgroundNavigation,
+          backgroundColor: white,
         },
         styles.tabListContainer,
       ]}
@@ -68,8 +69,8 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
               style={[
                 styles.tabTitle,
                 {
+                  color: isFocused ? black : grey,
                   opacity: isFocused ? 1 : 0.5,
-                  color: colors.text,
                 },
               ]}
             >
@@ -83,16 +84,16 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
 };
 
 const styles = StyleSheet.create({
-  tabListContainer: {
-    flexDirection: 'row',
-    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
-    borderTopWidth: 1,
-  },
   tabContainer: {
     alignItems: 'center',
     flex: 1,
     justifyContent: 'center',
     padding: 10,
+  },
+  tabListContainer: {
+    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
+    borderTopWidth: 1,
+    flexDirection: 'row',
   },
   tabTitle: {
     fontSize: 12,

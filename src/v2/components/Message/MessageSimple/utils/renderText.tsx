@@ -1,6 +1,7 @@
 import React from 'react';
 import { Linking, Text } from 'react-native';
 import anchorme from 'anchorme';
+import merge from 'lodash/merge';
 import truncate from 'lodash/truncate';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
@@ -26,13 +27,16 @@ import type {
 } from '../../../../types/types';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import type {
+  Colors,
+  MarkdownStyle,
+} from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
     backgroundColor: '#F2F2F2', // TODO: figure out a way use theme color 'white_smoke'
     borderColor: '#DBDBDB', // TODO: figure out a way use theme color 'grey_gainsboro'
-    color: 'red',
+    color: '#FF3742',
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
@@ -68,6 +72,7 @@ export type RenderTextParams<
 > = Partial<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
 > & {
+  colors: typeof Colors;
   message: Message<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
@@ -86,6 +91,7 @@ export const renderText = <
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    colors,
     markdownRules,
     markdownStyles,
     message,
@@ -114,10 +120,26 @@ export const renderText = <
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
-  const styles = {
-    ...defaultMarkdownStyles,
-    ...markdownStyles,
-  };
+  const styles = merge(
+    defaultMarkdownStyles,
+    {
+      autolink: {
+        color: colors.accent_blue,
+      },
+      inlineCode: {
+        backgroundColor: colors.white_smoke,
+        borderColor: colors.grey_gainsboro,
+        color: colors.accent_red,
+      },
+      mentions: {
+        color: colors.accent_blue,
+      },
+      text: {
+        color: colors.black,
+      },
+    },
+    markdownStyles,
+  );
 
   const onLink = (url: string) =>
     onLinkParams

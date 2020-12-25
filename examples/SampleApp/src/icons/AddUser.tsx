@@ -1,7 +1,8 @@
 import React from 'react';
-import { IconProps, RootPath, RootSvg } from '../utils/base';
-import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from '@react-navigation/native';
+import Svg, { Path } from 'react-native-svg';
+
+import { IconProps } from '../utils/base';
+
 export const AddUser: React.FC<IconProps> = ({
   fill = 'grey',
   height,

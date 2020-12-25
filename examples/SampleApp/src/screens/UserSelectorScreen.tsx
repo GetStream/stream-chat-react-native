@@ -9,13 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import { useTheme } from 'stream-chat-react-native/v2';
 
 import { USERS } from '../ChatUsers';
 import { AppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
-import { AppTheme } from '../types';
 import AsyncStore from '../utils/AsyncStore';
 
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
@@ -77,7 +76,11 @@ const styles = StyleSheet.create({
 });
 
 export const UserSelectorScreen: React.FC = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, border, grey, grey_gainsboro, white_snow },
+    },
+  } = useTheme();
   const { switchUser } = useContext(AppContext);
 
   useEffect(() => {
@@ -85,19 +88,17 @@ export const UserSelectorScreen: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}
-    >
+    <SafeAreaView style={[styles.container, { backgroundColor: white_snow }]}>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         style={styles.scrollContainer}
       >
         <View style={styles.titleContainer}>
           <StreamLogo />
-          <Text style={[styles.title, { color: colors.text }]}>
+          <Text style={[styles.title, { color: black }]}>
             Welcome to Stream Chat
           </Text>
-          <Text style={[styles.subTitle, { color: colors.text }]}>
+          <Text style={[styles.subTitle, { color: black }]}>
             Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
             sdk:
           </Text>
@@ -109,10 +110,7 @@ export const UserSelectorScreen: React.FC = () => {
             onPress={() => {
               switchUser(u.id);
             }}
-            style={[
-              styles.userContainer,
-              { borderBottomColor: colors.borderLight },
-            ]}
+            style={[styles.userContainer, { borderBottomColor: border }]}
           >
             <Image
               source={{
@@ -125,15 +123,13 @@ export const UserSelectorScreen: React.FC = () => {
                 style={[
                   styles.userName,
                   {
-                    color: colors.text,
+                    color: black,
                   },
                 ]}
               >
                 {u.name}
               </Text>
-              <Text style={{ color: colors.textSecondary }}>
-                Stream test account
-              </Text>
+              <Text style={{ color: grey }}>Stream test account</Text>
             </View>
             <View style={styles.rightArrow}>
               <RightArrow height={24} width={24} />
@@ -141,7 +137,9 @@ export const UserSelectorScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <Text style={styles.footerText}>Stream SDK v{version}</Text>
+      <Text style={[styles.footerText, { color: grey_gainsboro }]}>
+        Stream SDK v{version}
+      </Text>
     </SafeAreaView>
   );
 };

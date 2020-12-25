@@ -63,6 +63,7 @@ const MessageRepliesWithContext = <
 
   const {
     theme: {
+      colors: { accent_blue },
       messageSimple: {
         replies: { container, messageRepliesText },
       },
@@ -77,7 +78,13 @@ const MessageRepliesWithContext = <
       style={[styles.container, container]}
       testID='message-replies'
     >
-      <Text style={[styles.messageRepliesText, messageRepliesText]}>
+      <Text
+        style={[
+          styles.messageRepliesText,
+          { color: accent_blue },
+          messageRepliesText,
+        ]}
+      >
         {message.reply_count === 1
           ? t('1 Thread Reply')
           : t('{{ replyCount }} Thread Replies', {

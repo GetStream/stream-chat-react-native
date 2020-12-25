@@ -1,6 +1,5 @@
-import React, { useCallback, useContext, useMemo, useRef } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import {
-  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
@@ -10,14 +9,22 @@ import {
 import {
   CompositeNavigationProp,
   useNavigation,
-  useTheme,
 } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ChannelSort } from 'stream-chat';
-import { ChannelList, useChatContext } from 'stream-chat-react-native/v2';
-import { AppContext } from '../context/AppContext';
 import {
-  AppTheme,
+  ChannelList,
+  CircleClose,
+  Search,
+  useTheme,
+} from 'stream-chat-react-native/v2';
+
+import { ChatScreenHeader } from '../components/ChatScreenHeader';
+import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
+import { AppContext } from '../context/AppContext';
+import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
+import {
   BottomTabNavigatorParamList,
   LocalAttachmentType,
   LocalChannelType,
@@ -28,13 +35,6 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { ChatScreenHeader } from '../components/ChatScreenHeader';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { Search } from '../icons/Search';
-import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
-import { useState } from 'react';
-import { CircleClose } from '../icons/CircleClose';
 
 const baseFilters = {
   type: 'messaging',
@@ -56,10 +56,14 @@ type ChannelListScreenNavigationProp = CompositeNavigationProp<
 // };
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
-  const { colors } = useTheme() as AppTheme;
-  const [searchInputText, setSearchInputText] = useState<string>('');
-  const searchInputFocused = useRef<boolean>(false);
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const {
+    theme: {
+      colors: { black, border, grey, grey_gainsboro, white_snow },
+    },
+  } = useTheme();
+  const [searchInputText, setSearchInputText] = useState('');
+  const searchInputFocused = useRef(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const navigation = useNavigation();
   const {
     loading,
@@ -80,23 +84,21 @@ export const ChannelListScreen: React.FC = () => {
     [chatClient],
   );
 
-  const EmptySearchIndicator = () => {
-    const { colors } = useTheme() as AppTheme;
-    return (
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: 100,
-        }}
-      >
-        <Search fill={'#DBDBDB'} scale={5} />
-        <Text style={{ color: colors.textLight, marginTop: 20 }}>
-          {`No results found for "${searchQuery}"`}
-        </Text>
-      </View>
-    );
-  };
+  const EmptySearchIndicator = () => (
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 100,
+      }}
+    >
+      <Search fill={grey_gainsboro} scale={5} />
+      <Text style={{ color: grey, marginTop: 20 }}>
+        {`No results found for "${searchQuery}"`}
+      </Text>
+    </View>
+  );
+
   if (!chatClient) return null;
 
   return (
@@ -105,7 +107,7 @@ export const ChannelListScreen: React.FC = () => {
         style={[
           styles.container,
           {
-            backgroundColor: colors.background,
+            backgroundColor: white_snow,
           },
         ]}
       >
@@ -116,11 +118,11 @@ export const ChannelListScreen: React.FC = () => {
             style={[
               styles.searchContainer,
               {
-                borderColor: colors.borderLight,
+                borderColor: border,
               },
             ]}
           >
-            <Search />
+            <Search pathFill={black} />
             <TextInput
               onChangeText={(text) => {
                 setSearchInputText(text);
@@ -132,15 +134,14 @@ export const ChannelListScreen: React.FC = () => {
               onFocus={() => {
                 searchInputFocused.current = true;
               }}
-              onSubmitEditing={({
-                nativeEvent: { eventCount, target, text },
-              }) => {
+              onSubmitEditing={({ nativeEvent: { text } }) => {
                 setSearchQuery(text);
               }}
-              placeholder={'Search'}
+              placeholder='Search'
+              placeholderTextColor={grey}
               ref={(ref) => (searchInputRef.current = ref)}
               returnKeyType='search'
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: black }]}
               value={searchInputText}
             />
             {!!searchInputText && (
@@ -152,7 +153,7 @@ export const ChannelListScreen: React.FC = () => {
                   reset();
                 }}
               >
-                <CircleClose />
+                <CircleClose pathFill={grey} />
               </TouchableOpacity>
             )}
           </View>
@@ -198,7 +199,7 @@ export const ChannelListScreen: React.FC = () => {
                 LocalUserType
               >
                 additionalFlatListProps={{
-                  getItemLayout: (data, index) => ({
+                  getItemLayout: (_, index) => ({
                     index,
                     length: 65,
                     offset: 65 * index,
@@ -224,12 +225,10 @@ export const ChannelListScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    flexShrink: 1,
+    flex: 1,
   },
   listContainer: {
-    flexGrow: 1,
-    flexShrink: 1,
+    flex: 1,
   },
   searchContainer: {
     alignItems: 'center',
@@ -241,8 +240,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   searchInput: {
-    flexGrow: 1,
-    flexShrink: 1,
+    flex: 1,
     marginHorizontal: 10,
   },
 });

@@ -140,7 +140,13 @@ const MessageOverlayWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, grey_gainsboro, transparent, white_smoke },
+      colors: {
+        blue_alice,
+        grey_gainsboro,
+        grey_whisper,
+        transparent,
+        white_smoke,
+      },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS },
@@ -401,6 +407,7 @@ const MessageOverlayWithContext = <
                                 groupStyle === 'right_single'
                                   ? borderRadiusS
                                   : borderRadiusL,
+                              borderColor: grey_whisper,
                             },
                             onlyEmojis || otherAttachments?.length
                               ? { borderWidth: 0 }

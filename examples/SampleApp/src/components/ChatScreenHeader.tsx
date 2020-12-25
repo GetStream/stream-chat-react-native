@@ -75,7 +75,7 @@ export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
           >
             <NewDirectMessageIcon
               active
-              color={'#006CFF'}
+              color='#006CFF'
               height={25}
               width={25}
             />

@@ -1,8 +1,9 @@
 import React from 'react';
-import { IconProps, RootPath, RootSvg } from '../utils/base';
-import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from '@react-navigation/native';
-export const RemoveUser: React.FC<IconProps> = ({ active, height, width }) => (
+import Svg, { Path } from 'react-native-svg';
+
+import { IconProps } from '../utils/base';
+
+export const RemoveUser: React.FC<IconProps> = ({ height, width }) => (
   <Svg
     fill='none'
     height={height}

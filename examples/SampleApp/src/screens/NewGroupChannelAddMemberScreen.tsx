@@ -65,7 +65,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
               )}
             </TouchableOpacity>
           )}
-          title={'Add Group Members'}
+          titleText='Add Group Members'
         />
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <View
@@ -94,7 +94,7 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                 <TextInput
                   onChangeText={onChangeSearchText}
                   onFocus={onFocusInput}
-                  placeholder={'Search'}
+                  placeholder='Search'
                   placeholderTextColor={colors.textLight}
                   style={[
                     styles.inputBox,

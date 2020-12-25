@@ -99,7 +99,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
-            placeholder={'Search'}
+            placeholder='Search'
             placeholderTextColor={colors.textLight}
             style={[
               styles.inputBox,
@@ -139,7 +139,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
               width: '100%',
             }}
           >
-            <ActivityIndicator size={'small'} />
+            <ActivityIndicator size='small' />
             <Text
               style={{
                 marginLeft: 10,

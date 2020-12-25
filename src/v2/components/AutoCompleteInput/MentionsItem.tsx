@@ -51,7 +51,7 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
 }: MentionsItemProps<Us>) => {
   const {
     theme: {
-      colors: { accent_blue },
+      colors: { accent_blue, black, grey },
       messageInput: {
         suggestions: {
           mention: { avatarSize, column, container, name: nameStyle, tag },
@@ -64,10 +64,13 @@ export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
     <View style={[styles.container, container]}>
       <Avatar image={image} name={name} online={online} size={avatarSize} />
       <View style={[styles.column, column]}>
-        <Text style={[styles.name, nameStyle]} testID='mentions-item-name'>
+        <Text
+          style={[styles.name, { color: black }, nameStyle]}
+          testID='mentions-item-name'
+        >
           {name || id}
         </Text>
-        <Text style={[styles.tag, tag]}>{`@${id}`}</Text>
+        <Text style={[styles.tag, { color: grey }, tag]}>{`@${id}`}</Text>
       </View>
       <AtMentions pathFill={accent_blue} />
     </View>

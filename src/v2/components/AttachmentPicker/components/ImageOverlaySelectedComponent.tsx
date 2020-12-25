@@ -20,10 +20,11 @@ export const ImageOverlaySelectedComponent: React.FC = () => {
       attachmentPicker: {
         imageOverlaySelectedComponent: { check },
       },
+      colors: { white },
     },
   } = useTheme();
   return (
-    <View style={[styles.check, check]}>
+    <View style={[styles.check, { backgroundColor: white }, check]}>
       <Check />
     </View>
   );

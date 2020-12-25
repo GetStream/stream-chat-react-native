@@ -144,13 +144,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               openAddMembersSheet();
             }}
           >
-            <AddUser fill={'#006CFF'} height={25} width={25} />
+            <AddUser fill='#006CFF' height={25} width={25} />
           </RoundButton>
         )}
         subtitleText={`${membersStatus}`}
         titleText={displayName}
       />
-      <ScrollView keyboardShouldPersistTaps={'always'}>
+      <ScrollView keyboardShouldPersistTaps='always'>
         <ThemeProvider>
           {members.map((m) => {
             if (!m.user?.id) return null;
@@ -239,7 +239,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   onFocus={() => {
                     setTextInputFocused(true);
                   }}
-                  placeholder={'Add a group name'}
+                  placeholder='Add a group name'
                   ref={(ref) => {
                     // @ts-ignore
                     textInputRef.current = ref;
@@ -275,7 +275,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                     }}
                   >
                     {!!groupName && (
-                      <Check fill={'#006CFF'} height={24} width={24} />
+                      <Check fill='#006CFF' height={24} width={24} />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -333,7 +333,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.actionLabelContainer}>
-                <Picture fill={'#7A7A7A'} />
+                <Picture fill='#7A7A7A' />
                 <Text
                   style={{
                     color: colors.text,

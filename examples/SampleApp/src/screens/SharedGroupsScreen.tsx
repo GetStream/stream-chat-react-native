@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { RouteProp, useNavigation, useTheme } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import {
   Avatar,
   ChannelList,
@@ -10,13 +10,13 @@ import {
   getChannelPreviewDisplayAvatar,
   useChannelPreviewDisplayName,
   useChannelsContext,
+  useTheme,
 } from 'stream-chat-react-native/v2';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
 import {
-  AppTheme,
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -76,7 +76,11 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
   const { chatClient } = useContext(AppContext);
   const name = useChannelPreviewDisplayName(channel, 30);
   const navigation = useNavigation();
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, grey, grey_whisper, white_snow },
+    },
+  } = useTheme();
 
   if (!chatClient) return null;
 
@@ -105,8 +109,8 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
       style={[
         styles.previewContainer,
         {
-          backgroundColor: colors.background,
-          borderBottomColor: colors.borderLight,
+          backgroundColor: white_snow,
+          borderBottomColor: grey_whisper,
         },
       ]}
     >
@@ -115,11 +119,11 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
           {...getChannelPreviewDisplayAvatar(channel, chatClient)}
           size={40}
         />
-        <Text style={[styles.nameText, { color: colors.text }]}>{name}</Text>
+        <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>
       <Text
         style={{
-          color: colors.textLight,
+          color: grey,
         }}
       >
         {Object.keys(channel.state.members).length} Members
@@ -129,13 +133,17 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
 };
 
 const EmptyListComponent = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { grey },
+    },
+  } = useTheme();
 
   return (
     <View style={styles.emptyListContainer}>
-      <Contacts fill={'#DBDBDB'} scale={6} />
+      <Contacts fill='#DBDBDB' scale={6} />
       <Text style={styles.emptyListTitle}>No shared groups</Text>
-      <Text style={[styles.emptyListSubtitle, { color: colors.textLight }]}>
+      <Text style={[styles.emptyListSubtitle, { color: grey }]}>
         Groups shared with user will appear here
       </Text>
     </View>
@@ -184,7 +192,7 @@ export const SharedGroupsScreen: React.FC<SharedGroupsScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <ScreenHeader titleText={'Shared Groups'} />
+      <ScreenHeader titleText='Shared Groups' />
       <ChannelList
         filters={{
           $and: [

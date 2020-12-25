@@ -226,7 +226,16 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: { grey, grey_gainsboro, white },
+      colors: {
+        accent_blue,
+        black,
+        border,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        white,
+        white_smoke,
+      },
       messageInput: {
         attachButtonContainer,
         attachmentSelectionBar,
@@ -398,7 +407,11 @@ export const MessageInputWithContext = <
             layout: { height: newHeight },
           },
         }) => setHeight(newHeight)}
-        style={[styles.container, container]}
+        style={[
+          styles.container,
+          { backgroundColor: white, borderColor: border },
+          container,
+        ]}
       >
         {(editing || replyToMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
@@ -407,7 +420,13 @@ export const MessageInputWithContext = <
             ) : (
               <CurveLineLeftUp pathFill={grey_gainsboro} />
             )}
-            <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
+            <Text
+              style={[
+                styles.editingBoxHeaderTitle,
+                { color: black },
+                editingBoxHeaderTitle,
+              ]}
+            >
               {editing ? t('Editing Message') : t('Reply to Message')}
             </Text>
             <TouchableOpacity
@@ -474,7 +493,10 @@ export const MessageInputWithContext = <
               <View
                 style={[
                   styles.inputBoxContainer,
-                  { paddingVertical: giphyActive ? 8 : 12 },
+                  {
+                    borderColor: grey_whisper,
+                    paddingVertical: giphyActive ? 8 : 12,
+                  },
                   inputBoxContainer,
                 ]}
               >
@@ -496,9 +518,19 @@ export const MessageInputWithContext = <
                   ]}
                 >
                   {giphyActive && (
-                    <View style={[styles.giphyContainer, giphyContainer]}>
+                    <View
+                      style={[
+                        styles.giphyContainer,
+                        { backgroundColor: accent_blue },
+                        giphyContainer,
+                      ]}
+                    >
                       <Lightning height={16} pathFill={white} width={16} />
-                      <Text style={[styles.giphyText, giphyText]}>GIPHY</Text>
+                      <Text
+                        style={[styles.giphyText, { color: white }, giphyText]}
+                      >
+                        GIPHY
+                      </Text>
                     </View>
                   )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
@@ -531,7 +563,7 @@ export const MessageInputWithContext = <
         <View
           style={[
             styles.suggestionsListContainer,
-            { bottom: height },
+            { backgroundColor: white, bottom: height },
             suggestionsListContainer,
           ]}
         >
@@ -547,6 +579,7 @@ export const MessageInputWithContext = <
         <View
           style={[
             {
+              backgroundColor: white_smoke,
               height:
                 (attachmentPickerBottomSheetHeight
                   ? attachmentPickerBottomSheetHeight +

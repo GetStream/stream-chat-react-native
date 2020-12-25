@@ -88,7 +88,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
         paddingBottom: insets.bottom,
       }}
     >
-      <ScreenHeader titleText={'Files'} />
+      <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
           <SectionList<Attachment>
@@ -154,7 +154,7 @@ const EmptyListComponent = () => {
       }}
     >
       <View style={{ alignItems: 'center' }}>
-        <File fill={'#DBDBDB'} scale={6} />
+        <File fill='#DBDBDB' scale={6} />
         <Text style={{ fontSize: 16 }}>No files</Text>
         <Text
           style={{ color: colors.textLight, marginTop: 8, textAlign: 'center' }}

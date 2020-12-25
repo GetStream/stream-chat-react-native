@@ -291,7 +291,14 @@ const MessageListWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, bg_gradient_end },
+      colors: {
+        accent_blue,
+        accent_red,
+        bg_gradient_end,
+        grey_gainsboro,
+        targetedMessageBackground,
+        white_snow,
+      },
       messageList: {
         container,
         errorNotification,
@@ -455,6 +462,7 @@ const MessageListWithContext = <
     if (message.type !== 'message.read') {
       const additionalStyles = [];
       if (targetedMessage === message.id) {
+        additionalStyles.push({ backgroundColor: targetedMessageBackground });
         additionalStyles.push(targetedMessageUnderlay);
       }
 
@@ -610,7 +618,10 @@ const MessageListWithContext = <
   };
 
   return (
-    <View collapsable={false} style={[styles.container, container]}>
+    <View
+      collapsable={false}
+      style={[styles.container, { backgroundColor: white_snow }, container]}
+    >
       <FlatList
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
@@ -681,10 +692,14 @@ const MessageListWithContext = <
       />
       {!isOnline && (
         <View
-          style={[styles.errorNotification, errorNotification]}
+          style={[
+            styles.errorNotification,
+            { backgroundColor: `${grey_gainsboro}E6` },
+            errorNotification,
+          ]}
           testID='error-notification'
         >
-          <Text style={[errorNotificationText]}>
+          <Text style={[{ color: accent_red }, errorNotificationText]}>
             {t('Connection failure, reconnecting now...')}
           </Text>
         </View>

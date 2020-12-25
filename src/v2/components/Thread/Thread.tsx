@@ -139,6 +139,7 @@ const ThreadWithContext = <
 
   const {
     theme: {
+      colors: { bg_gradient_end, bg_gradient_start, grey },
       thread: {
         newThread: {
           backgroundGradientStart,
@@ -211,18 +212,18 @@ const ThreadWithContext = <
             >
               <Stop
                 offset={1}
-                stopColor={backgroundGradientStart}
+                stopColor={backgroundGradientStart || bg_gradient_end}
                 stopOpacity={1}
               />
               <Stop
                 offset={0}
-                stopColor={backgroundGradientStop}
+                stopColor={backgroundGradientStop || bg_gradient_start}
                 stopOpacity={1}
               />
             </LinearGradient>
           </Defs>
         </Svg>
-        <Text style={[styles.text, text]}>
+        <Text style={[styles.text, { color: grey }, text]}>
           {replyCount === 1
             ? t('1 Reply')
             : t('{{ replyCount }} Replies', {

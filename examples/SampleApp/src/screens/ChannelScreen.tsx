@@ -158,7 +158,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           disableTypingIndicator
           enforceUniqueReaction
           initialScrollToFirstUnreadMessage
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 5 : -300}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
           messageId={messageId}
         >
           <ChannelHeader />

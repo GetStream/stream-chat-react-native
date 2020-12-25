@@ -106,7 +106,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
 
   const {
     theme: {
-      colors: { accent_blue, grey_gainsboro, white },
+      colors: { accent_blue, black, grey_gainsboro, white },
       overlay: {
         padding: overlayPadding,
         reactions: {
@@ -248,7 +248,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
             </View>
           </View>
         </View>
-        <Text style={[styles.avatarName, avatarName]}>{name}</Text>
+        <Text style={[styles.avatarName, { color: black }, avatarName]}>
+          {name}
+        </Text>
       </View>
     );
   };
@@ -289,9 +291,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         layoutWidth.value = layout.width;
         layoutHeight.value = layout.height;
       }}
-      style={[styles.container, container, showScreenStyle]}
+      style={[
+        styles.container,
+        { backgroundColor: white },
+        container,
+        showScreenStyle,
+      ]}
     >
-      <Text style={[styles.title, titleStyle]}>{title}</Text>
+      <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
       <FlatList
         data={reactions}
         keyExtractor={({ name }, index) => `${name}_${index}`}

@@ -98,6 +98,7 @@ const GalleryWithContext = <
 
   const {
     theme: {
+      colors: { overlay, white },
       imageGallery: { blurType },
       messageSimple: {
         content: {
@@ -233,10 +234,17 @@ const GalleryWithContext = <
                   style={[
                     StyleSheet.absoluteFillObject,
                     styles.moreImagesContainer,
+                    { backgroundColor: overlay },
                     moreImagesContainer,
                   ]}
                 >
-                  <Text style={[styles.moreImagesText, moreImagesText]}>
+                  <Text
+                    style={[
+                      styles.moreImagesText,
+                      { color: white },
+                      moreImagesText,
+                    ]}
+                  >
                     {`+${images.length - 3}`}
                   </Text>
                 </View>

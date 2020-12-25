@@ -19,6 +19,7 @@ export const Colors = {
   grey: '#7A7A7A',
   grey_gainsboro: '#DBDBDB',
   grey_whisper: '#ECEBEB',
+  icon_background: '#FFFFFF',
   modal_shadow: '#00000099', // 99 = 60% opacity; x=0, y= 1, radius=4
   overlay: '#00000033', // 33 = 20% opacity
   overlay_dark: '#00000099', // 99 = 60% opacity
@@ -132,9 +133,6 @@ export type Theme = {
   channelListMessenger: {
     flatList: ViewStyle;
     flatListContent: ViewStyle;
-    header: ViewStyle;
-    searchContainer: ViewStyle;
-    searchInput: TextStyle;
   };
   channelListSkeleton: {
     animationTime: number;
@@ -152,7 +150,6 @@ export type Theme = {
     date: TextStyle;
     leftSwipeableButton: ViewStyle;
     message: TextStyle & {
-      color: TextStyle['color'];
       fontWeight: TextStyle['fontWeight'];
     };
     rightSwipeableButton: ViewStyle;
@@ -186,7 +183,6 @@ export type Theme = {
     image: ImageStyle;
   };
   imageGallery: {
-    backgroundColor: string;
     blurType: 'light' | 'dark';
     footer: {
       centerContainer: ViewStyle;
@@ -214,6 +210,7 @@ export type Theme = {
       rightContainer: ViewStyle;
       usernameText: TextStyle;
     };
+    backgroundColor?: string;
   };
   loadingDots: {
     container: ViewStyle;
@@ -303,7 +300,6 @@ export type Theme = {
         name: TextStyle;
         tag: TextStyle;
       };
-      title: TextStyle;
     };
     suggestionsListContainer: ViewStyle;
     uploadProgressIndicator: {
@@ -340,14 +336,14 @@ export type Theme = {
   messageSimple: {
     actions: {
       button: ViewStyle & {
-        defaultBackgroundColor: ViewStyle['backgroundColor'];
-        defaultBorderColor: ViewStyle['borderColor'];
-        primaryBackgroundColor: ViewStyle['backgroundColor'];
-        primaryBorderColor: ViewStyle['borderColor'];
+        defaultBackgroundColor?: ViewStyle['backgroundColor'];
+        defaultBorderColor?: ViewStyle['borderColor'];
+        primaryBackgroundColor?: ViewStyle['backgroundColor'];
+        primaryBorderColor?: ViewStyle['borderColor'];
       };
       buttonText: TextStyle & {
-        defaultColor: TextStyle['color'];
-        primaryColor: TextStyle['color'];
+        defaultColor?: TextStyle['color'];
+        primaryColor?: TextStyle['color'];
       };
       container: ViewStyle;
     };
@@ -489,15 +485,14 @@ export type Theme = {
   spinner: ViewStyle;
   thread: {
     newThread: ViewStyle & {
-      backgroundGradientStart: string;
-      backgroundGradientStop: string;
       text: TextStyle;
+      backgroundGradientStart?: string;
+      backgroundGradientStop?: string;
     };
   };
   typingIndicator: {
     container: ViewStyle;
     text: TextStyle & {
-      color: TextStyle['color'];
       fontSize: TextStyle['fontSize'];
     };
   };
@@ -505,26 +500,14 @@ export type Theme = {
 
 export const defaultTheme: Theme = {
   attachmentPicker: {
-    bottomSheetContentContainer: {
-      backgroundColor: Colors.white,
-    },
-    errorButtonText: {
-      color: Colors.accent_blue,
-    },
-    errorContainer: {
-      backgroundColor: Colors.white_smoke,
-    },
-    errorText: {
-      color: Colors.grey,
-    },
+    bottomSheetContentContainer: {},
+    errorButtonText: {},
+    errorContainer: {},
+    errorText: {},
     image: {},
-    imageOverlay: {
-      backgroundColor: Colors.overlay,
-    },
+    imageOverlay: {},
     imageOverlaySelectedComponent: {
-      check: {
-        backgroundColor: Colors.white,
-      },
+      check: {},
     },
   },
   attachmentSelectionBar: {
@@ -542,9 +525,7 @@ export const defaultTheme: Theme = {
     presenceIndicator: {
       cx: 8,
       cy: 4,
-      fill: Colors.accent_green,
       r: 4,
-      stroke: Colors.white,
       strokeWidth: 2,
     },
     presenceIndicatorContainer: {},
@@ -559,129 +540,81 @@ export const defaultTheme: Theme = {
       top: 1,
     },
     avatarSize: 64,
-    channelName: {
-      color: Colors.black,
-    },
-    channelStatus: {
-      color: Colors.grey,
-    },
+    channelName: {},
+    channelStatus: {},
     container: {},
-    containerInner: {
-      backgroundColor: Colors.white,
-    },
+    containerInner: {},
     deleteRow: {
-      borderBottomColor: Colors.border,
       borderBottomWidth: 1,
     },
-    deleteText: { color: Colors.accent_red },
+    deleteText: {},
     detailsContainer: {},
     flatList: {},
     flatListContent: {},
     leaveGroupRow: {},
-    leaveGroupText: {
-      color: Colors.black,
-    },
-    row: {
-      borderTopColor: Colors.border,
-    },
+    leaveGroupText: {},
+    row: {},
     rowInner: {},
     userItemContainer: {},
-    userName: {
-      color: Colors.black,
-    },
+    userName: {},
   },
   channelListFooterLoadingIndicator: {
     container: {},
   },
   channelListHeaderErrorIndicator: {
-    container: {
-      backgroundColor: `${Colors.grey}E6`,
-    },
-    errorText: {
-      color: Colors.accent_red,
-    },
+    container: {},
+    errorText: {},
   },
   channelListMessenger: {
-    flatList: {
-      backgroundColor: Colors.white_snow,
-    },
+    flatList: {},
     flatListContent: {},
-    header: {},
-    searchContainer: {
-      backgroundColor: Colors.white,
-      borderColor: Colors.border,
-    },
-    searchInput: {},
   },
   channelListSkeleton: {
     animationTime: 1000, // in milliseconds
-    background: {
-      backgroundColor: Colors.grey_whisper,
+    background: {},
+    container: {},
+    gradientStart: {
+      stopOpacity: 0.1,
     },
-    container: {
-      borderBottomColor: Colors.border,
+    gradientStop: {
+      stopOpacity: 0.5,
     },
-    gradientStart: {},
-    gradientStop: {},
     height: 64,
   },
   channelPreview: {
     checkAllIcon: {
       height: DEFAULT_STATUS_ICON_SIZE,
-      pathFill: Colors.accent_blue,
       width: DEFAULT_STATUS_ICON_SIZE,
     },
     checkIcon: {
       height: DEFAULT_STATUS_ICON_SIZE,
       width: DEFAULT_STATUS_ICON_SIZE,
     },
-    container: {
-      backgroundColor: Colors.white_snow,
-      borderBottomColor: Colors.border,
-    },
+    container: {},
     contentContainer: {},
-    date: {
-      color: Colors.grey,
-    },
+    date: {},
     leftSwipeableButton: {},
     message: {
-      color: Colors.grey,
       fontWeight: '400',
     },
     rightSwipeableButton: {},
     row: {},
-    swipeableContainer: {
-      backgroundColor: Colors.white_smoke,
-    },
-    title: {
-      color: Colors.black,
-    },
-    unreadContainer: {
-      backgroundColor: Colors.accent_red,
-    },
-    unreadText: {
-      color: Colors.white,
-    },
+    swipeableContainer: {},
+    title: {},
+    unreadContainer: {},
+    unreadText: {},
   },
   colors: {
     ...Colors,
   },
   dateHeader: {
-    container: {
-      backgroundColor: Colors.overlay_dark,
-    },
-    text: {
-      color: Colors.white,
-    },
+    container: {},
+    text: {},
   },
   emptyStateIndicator: {
     channelContainer: {},
-    channelDetails: {
-      color: Colors.grey,
-    },
-    channelTitle: {
-      color: Colors.black,
-    },
+    channelDetails: {},
+    channelTitle: {},
   },
   groupAvatar: {
     container: {},
@@ -699,130 +632,79 @@ export const defaultTheme: Theme = {
     image: {},
   },
   imageGallery: {
-    backgroundColor: Colors.white_snow,
     blurType: 'light',
     footer: {
       centerContainer: {},
-      container: {
-        backgroundColor: Colors.white,
-      },
-      imageCountText: {
-        color: Colors.black,
-      },
+      container: {},
+      imageCountText: {},
       innerContainer: {},
       leftContainer: {},
       rightContainer: {},
     },
     grid: {
-      contentContainer: {
-        backgroundColor: Colors.white,
-      },
+      contentContainer: {},
       gridAvatar: {},
-      gridAvatarWrapper: {
-        backgroundColor: Colors.white,
-      },
+      gridAvatarWrapper: {},
       gridImage: {},
-      handle: {
-        backgroundColor: Colors.white,
-      },
-      handleText: {
-        color: Colors.black,
-      },
-      overlay: {
-        backgroundColor: Colors.overlay,
-      },
+      handle: {},
+      handleText: {},
+      overlay: {},
     },
     header: {
       centerContainer: {},
-      container: {
-        backgroundColor: Colors.white,
-      },
-      dateText: {
-        color: Colors.black,
-      },
+      container: {},
+      dateText: {},
       innerContainer: {},
       leftContainer: {},
       rightContainer: {},
-      usernameText: {
-        color: Colors.black,
-      },
+      usernameText: {},
     },
   },
   loadingDots: {
     container: {},
-    loadingDot: {
-      backgroundColor: Colors.black,
-    },
+    loadingDot: {},
     spacing: 4,
   },
   loadingErrorIndicator: {
     container: {},
-    errorText: {
-      color: Colors.accent_red,
-    },
-    retryText: {
-      color: Colors.black,
-    },
+    errorText: {},
+    retryText: {},
   },
   loadingIndicator: {
     container: {},
-    loadingText: {
-      color: Colors.black,
-    },
+    loadingText: {},
   },
   messageInput: {
     attachButton: {},
     attachButtonContainer: {},
-    attachmentSelectionBar: {
-      backgroundColor: Colors.white_smoke,
-    },
+    attachmentSelectionBar: {},
     autoCompleteInputContainer: {},
     commandsButton: {},
     commandsButtonContainer: {},
     composerContainer: {},
-    container: {
-      borderColor: Colors.border,
-    },
+    container: {},
     editingBoxContainer: {},
     editingBoxHeader: {},
-    editingBoxHeaderTitle: {
-      color: Colors.black,
-    },
+    editingBoxHeaderTitle: {},
     fileUploadPreview: {
-      dismiss: {
-        backgroundColor: Colors.overlay_dark,
-      },
-      fileContainer: {
-        borderColor: Colors.grey_whisper,
-      },
+      dismiss: {},
+      fileContainer: {},
       fileContentContainer: {},
-      filenameText: {
-        color: Colors.black,
-      },
-      fileSizeText: {
-        color: Colors.grey,
-      },
+      filenameText: {},
+      fileSizeText: {},
       fileTextContainer: {},
       flatList: {},
     },
-    giphyContainer: {
-      backgroundColor: Colors.accent_blue,
-    },
-    giphyText: {
-      color: Colors.white,
-    },
+    giphyContainer: {},
+    giphyText: {},
     imageUploadPreview: {
-      dismiss: {
-        backgroundColor: Colors.overlay_dark,
-      },
+      dismiss: {},
       flatList: {},
       itemContainer: {},
       upload: {},
     },
     inputBox: {},
-    inputBoxContainer: {
-      borderColor: Colors.grey_whisper,
-    },
+    inputBoxContainer: {},
     moreOptionsButton: {},
     optionsContainer: {},
     replyContainer: {},
@@ -830,142 +712,79 @@ export const defaultTheme: Theme = {
     sendButtonContainer: {},
     showThreadMessageInChannelButton: {
       check: {},
-      checkBoxActive: {
-        backgroundColor: Colors.accent_blue,
-        borderColor: Colors.accent_blue,
-      },
-      checkBoxInactive: {
-        borderColor: Colors.grey,
-      },
+      checkBoxActive: {},
+      checkBoxInactive: {},
       container: {},
       innerContainer: {},
-      text: {
-        color: Colors.grey,
-      },
+      text: {},
     },
     suggestions: {
       command: {
-        args: {
-          color: Colors.grey,
-        },
+        args: {},
         container: {},
-        iconContainer: {
-          backgroundColor: Colors.accent_blue,
-        },
-        title: {
-          color: Colors.black,
-        },
+        iconContainer: {},
+        title: {},
       },
       commandsHeader: {
         container: {},
-        title: {
-          color: Colors.grey,
-        },
+        title: {},
       },
       container: {
         maxHeight: vh(25),
       },
       emoji: {
         container: {},
-        text: {
-          color: Colors.black,
-        },
+        text: {},
       },
       emojisHeader: {
         container: {},
-        title: {
-          color: Colors.grey,
-        },
+        title: {},
       },
       item: {},
       mention: {
         avatarSize: 40,
         column: {},
         container: {},
-        name: {
-          color: Colors.black,
-        },
-        tag: {
-          color: Colors.grey,
-        },
-      },
-      title: {
-        color: Colors.black,
+        name: {},
+        tag: {},
       },
     },
-    suggestionsListContainer: {
-      backgroundColor: Colors.white,
-    },
+    suggestionsListContainer: {},
     uploadProgressIndicator: {
-      container: {
-        backgroundColor: Colors.overlay,
-      },
-      overlay: {
-        backgroundColor: Colors.overlay,
-      },
+      container: {},
+      overlay: {},
     },
   },
   messageList: {
-    container: {
-      backgroundColor: Colors.white_snow,
-    },
-    errorNotification: {
-      backgroundColor: `${Colors.grey_gainsboro}E6`,
-    },
-    errorNotificationText: {
-      color: Colors.accent_red,
-    },
+    container: {},
+    errorNotification: {},
+    errorNotificationText: {},
     inlineUnreadIndicator: {
       container: {},
-      text: {
-        color: Colors.grey,
-      },
+      text: {},
     },
     listContainer: {},
     messageNotification: {
-      container: {
-        backgroundColor: Colors.white,
-        shadowColor: Colors.black,
-      },
+      container: {},
       touchable: {},
-      unreadCountNotificationContainer: {
-        backgroundColor: Colors.accent_blue,
-      },
-      unreadCountNotificationText: {
-        color: Colors.white,
-      },
+      unreadCountNotificationContainer: {},
+      unreadCountNotificationText: {},
       wrapper: {},
     },
     messageSystem: {
       container: {},
-      dateText: {
-        color: Colors.grey,
-      },
-      line: {
-        backgroundColor: Colors.grey_whisper,
-      },
-      text: {
-        color: Colors.grey,
-      },
+      dateText: {},
+      line: {},
+      text: {},
       textContainer: {},
     },
-    targetedMessageUnderlay: {
-      backgroundColor: Colors.targetedMessageBackground,
-    },
+    targetedMessageUnderlay: {},
     typingIndicatorContainer: {},
   },
   messageSimple: {
     actions: {
-      button: {
-        defaultBackgroundColor: Colors.white,
-        defaultBorderColor: Colors.transparent,
-        primaryBackgroundColor: Colors.accent_blue,
-        primaryBorderColor: Colors.border,
-      },
-      buttonText: {
-        defaultColor: Colors.black,
-        primaryColor: Colors.white,
-      },
+      button: {},
+      buttonText: {},
       container: {},
     },
     avatarWrapper: {
@@ -982,24 +801,20 @@ export const defaultTheme: Theme = {
       },
     },
     card: {
-      authorName: { color: Colors.accent_blue },
-      authorNameContainer: { backgroundColor: Colors.blue_alice },
-      authorNameFooter: { color: Colors.accent_blue },
-      authorNameFooterContainer: { backgroundColor: Colors.transparent },
+      authorName: {},
+      authorNameContainer: {},
+      authorNameFooter: {},
+      authorNameFooterContainer: {},
       authorNameMask: {},
       container: {},
       cover: {},
       footer: {
-        description: {
-          color: Colors.black,
-        },
+        description: {},
         title: {
-          color: Colors.black,
           fontWeight: '700',
         },
       },
       noURI: {
-        borderLeftColor: Colors.accent_blue,
         borderLeftWidth: 2,
         paddingLeft: 8,
       },
@@ -1010,17 +825,13 @@ export const defaultTheme: Theme = {
         borderRadiusL: 16,
         borderRadiusS: 0,
       },
-      containerInner: {
-        borderColor: Colors.grey_whisper,
-      },
+      containerInner: {},
       deletedContainer: {},
       deletedMetaText: {
-        color: Colors.grey,
         paddingHorizontal: 10,
       },
       deletedText: {
         em: {
-          color: Colors.grey,
           fontSize: 15,
           fontStyle: 'italic',
           fontWeight: '400',
@@ -1032,7 +843,6 @@ export const defaultTheme: Theme = {
       },
       errorIcon: {
         height: 20,
-        pathFill: Colors.accent_red,
         width: 20,
       },
       errorIconContainer: {
@@ -1042,20 +852,14 @@ export const defaultTheme: Theme = {
       },
       eyeIcon: {
         height: 16,
-        pathFill: Colors.grey,
         width: 16,
       },
       markdown: {
         autolink: {
-          color: Colors.accent_blue,
           textDecorationLine: 'underline',
-        },
-        mentions: {
-          color: Colors.accent_blue,
         },
       },
       messageUser: {
-        color: Colors.grey,
         fontSize: 12,
         fontWeight: '700',
         paddingRight: 6,
@@ -1065,7 +869,6 @@ export const defaultTheme: Theme = {
         marginTop: 4,
       },
       metaText: {
-        color: Colors.grey,
         fontSize: 12,
       },
       textContainer: {
@@ -1073,17 +876,11 @@ export const defaultTheme: Theme = {
       },
     },
     file: {
-      container: {
-        backgroundColor: Colors.white,
-      },
+      container: {},
       details: {},
-      fileSize: {
-        color: Colors.grey,
-      },
+      fileSize: {},
       icon: {},
-      title: {
-        color: Colors.black,
-      },
+      title: {},
     },
     fileAttachmentGroup: {
       container: {},
@@ -1094,48 +891,25 @@ export const defaultTheme: Theme = {
       halfSize: 100,
       image: {},
       imageContainer: {},
-      moreImagesContainer: {
-        backgroundColor: Colors.overlay,
-      },
-      moreImagesText: {
-        color: Colors.white,
-      },
+      moreImagesContainer: {},
+      moreImagesText: {},
       size: 200,
       width: 250,
     },
     giphy: {
-      cancel: {
-        color: Colors.grey,
-      },
-      cancelContainer: {
-        borderRightColor: Colors.border,
-      },
+      cancel: {},
+      cancelContainer: {},
       container: {},
       giphy: {},
-      giphyContainer: {
-        backgroundColor: Colors.grey,
-      },
+      giphyContainer: {},
       giphyMask: {},
-      giphyText: {
-        color: Colors.white,
-      },
-      selectionContainer: {
-        backgroundColor: Colors.white,
-        borderColor: `${Colors.black}0D`, // 0D = 5% opacity
-      },
-      selector: {
-        borderBottomColor: Colors.border,
-      },
-      send: {
-        color: Colors.accent_blue,
-      },
+      giphyText: {},
+      selectionContainer: {},
+      selector: {},
+      send: {},
       sendContainer: {},
-      shuffleButton: {
-        borderColor: Colors.border,
-      },
-      title: {
-        color: Colors.black,
-      },
+      shuffleButton: {},
+      title: {},
     },
     reactionList: {
       container: {},
@@ -1148,23 +922,18 @@ export const defaultTheme: Theme = {
     },
     replies: {
       container: {},
-      messageRepliesText: {
-        color: Colors.accent_blue,
-      },
+      messageRepliesText: {},
     },
     status: {
       checkAllIcon: {
         height: DEFAULT_STATUS_ICON_SIZE,
-        pathFill: Colors.accent_blue,
         width: DEFAULT_STATUS_ICON_SIZE,
       },
       checkIcon: {
         height: DEFAULT_STATUS_ICON_SIZE,
         width: DEFAULT_STATUS_ICON_SIZE,
       },
-      readByCount: {
-        color: Colors.accent_blue,
-      },
+      readByCount: {},
       statusContainer: {},
       timeIcon: {
         height: DEFAULT_STATUS_ICON_SIZE,
@@ -1178,23 +947,17 @@ export const defaultTheme: Theme = {
       avatarContainer: {},
       avatarName: {},
       avatarSize: 64,
-      container: {
-        backgroundColor: Colors.white,
-      },
+      container: {},
       flatListContainer: {},
       radius: 2,
       reactionBubble: {},
       reactionBubbleBackground: {},
-      title: {
-        color: Colors.black,
-      },
+      title: {},
     },
     reactionsList: {
       radius: 2.5,
       reaction: {},
-      reactionList: {
-        backgroundColor: Colors.white_snow,
-      },
+      reactionList: {},
     },
   },
   reply: {
@@ -1202,28 +965,19 @@ export const defaultTheme: Theme = {
     fileAttachmentContainer: {},
     imageAttachment: {},
     markdownStyles: {},
-    messageContainer: {
-      borderColor: Colors.border,
-    },
+    messageContainer: {},
     textContainer: {},
   },
   screenPadding: 8,
   spinner: {},
   thread: {
     newThread: {
-      backgroundGradientStart: Colors.bg_gradient_end,
-      backgroundGradientStop: Colors.bg_gradient_start,
-      text: {
-        color: Colors.grey,
-      },
+      text: {},
     },
   },
   typingIndicator: {
-    container: {
-      backgroundColor: `${Colors.white_snow}E6`,
-    },
+    container: {},
     text: {
-      color: Colors.grey,
       fontSize: 14,
     },
   },

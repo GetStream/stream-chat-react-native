@@ -111,7 +111,7 @@ export const ReplyWithContext = <
 
   const {
     theme: {
-      colors: { blue_alice, transparent, white },
+      colors: { blue_alice, border, transparent, white },
       reply: {
         container,
         fileAttachmentContainer,
@@ -169,6 +169,7 @@ export const ReplyWithContext = <
                 : messageType === 'giphy'
                 ? transparent
                 : white,
+            borderColor: border,
             borderWidth: messageType === 'other' ? 0 : 1,
           },
           messageContainer,

@@ -1,7 +1,7 @@
 import React from 'react';
-import { LogBox, useColorScheme } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { LogBox } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   SafeAreaProvider,
@@ -9,7 +9,6 @@ import {
 } from 'react-native-safe-area-context';
 import { Chat, OverlayProvider } from 'stream-chat-react-native/v2';
 
-import { DarkTheme, LightTheme } from './src/appTheme';
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayContext';
 import { useChatClient } from './src/hooks/useChatClient';
@@ -38,24 +37,21 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from './src/types';
-import { streamTheme } from './src/utils/streamTheme';
 
 import type { StreamChat } from 'stream-chat';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
 
-const Stack = createStackNavigator<StackNavigatorParamList>();
 const Drawer = createDrawerNavigator();
+const Stack = createStackNavigator<StackNavigatorParamList>();
 
 const App = () => {
-  const scheme = useColorScheme();
-
   const { chatClient, isConnecting, switchUser } = useChatClient();
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
+      <NavigationContainer>
         <AppContext.Provider value={{ chatClient, switchUser }}>
           {isConnecting ? (
             <LoadingScreen />
@@ -95,7 +91,7 @@ const DrawerNavigator: React.FC<{
       LocalUserType
     >
       bottomInset={bottom}
-      value={{ style: streamTheme }}
+      value={{ style: streamChatTheme }}
     >
       <Chat<
         LocalAttachmentType,
@@ -107,7 +103,6 @@ const DrawerNavigator: React.FC<{
         LocalUserType
       >
         client={chatClient}
-        style={streamChatTheme}
       >
         <AppOverlayProvider>
           <Drawer.Navigator

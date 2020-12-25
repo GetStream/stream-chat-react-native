@@ -380,7 +380,12 @@ const OverlayReactionListWithContext = <
             reactionListLayout.value = { height, width: layoutWidth };
             reactionListHeight.value = height;
           }}
-          style={[styles.reactionList, animatedStyle, reactionList]}
+          style={[
+            styles.reactionList,
+            { backgroundColor: white_snow },
+            animatedStyle,
+            reactionList,
+          ]}
         >
           {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
             <ReactionButton<At, Ch, Co, Ev, Me, Re, Us>

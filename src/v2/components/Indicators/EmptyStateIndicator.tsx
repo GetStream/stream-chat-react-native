@@ -34,7 +34,7 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
 }) => {
   const {
     theme: {
-      colors: { grey_gainsboro },
+      colors: { black, grey, grey_gainsboro },
       emptyStateIndicator: { channelContainer, channelDetails, channelTitle },
     },
   } = useTheme();
@@ -45,13 +45,13 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
         <View style={[styles.channelContainer, channelContainer]}>
           <MessageIcon height={width} pathFill={grey_gainsboro} width={width} />
           <Text
-            style={[styles.channelTitle, channelTitle]}
+            style={[styles.channelTitle, { color: black }, channelTitle]}
             testID='empty-channel-state-title'
           >
             {"Let's start chatting!"}
           </Text>
           <Text
-            style={[styles.channelDetails, channelDetails]}
+            style={[styles.channelDetails, { color: grey }, channelDetails]}
             testID='empty-channel-state-details'
           >
             {'How about sending your first message to a friend?'}
@@ -61,6 +61,6 @@ export const EmptyStateIndicator: React.FC<EmptyStateProps> = ({
     case 'message':
       return null;
     default:
-      return <Text>No items exist</Text>;
+      return <Text style={{ color: black }}>No items exist</Text>;
   }
 };

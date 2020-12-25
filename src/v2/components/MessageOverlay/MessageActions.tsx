@@ -63,7 +63,7 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
 
   const {
     theme: {
-      colors: { border },
+      colors: { black, border },
     },
   } = useTheme();
 
@@ -100,7 +100,9 @@ const MessageAction: React.FC<MessageActionProps> = (props) => {
         ]}
       >
         {icon}
-        <Text style={[styles.titleStyle, titleStyle]}>{title}</Text>
+        <Text style={[styles.titleStyle, { color: black }, titleStyle]}>
+          {title}
+        </Text>
       </Animated.View>
     </TapGestureHandler>
   );

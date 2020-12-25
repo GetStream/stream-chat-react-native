@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 export const InlineUnreadIndicator: React.FC = () => {
   const {
     theme: {
+      colors: { grey },
       messageList: {
         inlineUnreadIndicator: { container, text },
       },
@@ -28,7 +29,9 @@ export const InlineUnreadIndicator: React.FC = () => {
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, text]}>{t('Unread Messages')}</Text>
+      <Text style={[styles.text, { color: grey }, text]}>
+        {t('Unread Messages')}
+      </Text>
     </View>
   );
 };

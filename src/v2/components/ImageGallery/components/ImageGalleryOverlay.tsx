@@ -30,6 +30,7 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
 
   const {
     theme: {
+      colors: { overlay: overlayColor },
       imageGallery: {
         grid: { overlay },
       },
@@ -83,7 +84,12 @@ export const ImageGalleryOverlay: React.FC<Props> = (props) => {
       onHandlerStateChange={tapEvent}
     >
       <Animated.View
-        style={[StyleSheet.absoluteFillObject, overlay, showOverlayStyle]}
+        style={[
+          StyleSheet.absoluteFillObject,
+          { backgroundColor: overlayColor },
+          overlay,
+          showOverlayStyle,
+        ]}
       />
     </TapGestureHandler>
   );
