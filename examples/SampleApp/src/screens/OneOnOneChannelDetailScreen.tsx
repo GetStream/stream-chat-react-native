@@ -108,7 +108,7 @@ type OneOnOneChannelDetailScreenProps = {
 const Spacer = () => {
   const {
     theme: {
-      colors: { white_smoke },
+      colors: { grey_gainsboro },
     },
   } = useTheme();
   return (
@@ -116,7 +116,7 @@ const Spacer = () => {
       style={[
         styles.spacer,
         {
-          backgroundColor: white_smoke,
+          backgroundColor: grey_gainsboro,
         },
       ]}
     />
@@ -131,7 +131,15 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
   const navigation = useNavigation();
   const {
     theme: {
-      colors: { accent_green, accent_red, black, border, grey, white_smoke },
+      colors: {
+        accent_green,
+        accent_red,
+        black,
+        border,
+        grey,
+        white,
+        white_smoke,
+      },
     },
   } = useTheme();
   const { chatClient } = useContext(AppContext);
@@ -186,7 +194,7 @@ export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenPr
   if (!user) return null;
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[{ backgroundColor: white }, styles.container]}>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         style={styles.container}

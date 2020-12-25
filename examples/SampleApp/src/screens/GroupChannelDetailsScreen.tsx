@@ -86,7 +86,15 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const membersStatus = useChannelMembersStatus(channel);
   const {
     theme: {
-      colors: { accent_blue, accent_green, black, border, grey, white_smoke },
+      colors: {
+        accent_blue,
+        accent_green,
+        black,
+        border,
+        grey,
+        white,
+        white_smoke,
+      },
     },
   } = useTheme();
 
@@ -158,254 +166,253 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         subtitleText={`${membersStatus}`}
         titleText={displayName}
       />
-      <ScrollView keyboardShouldPersistTaps='always'>
-        <ThemeProvider>
-          {members.map((m) => {
-            if (!m.user?.id) return null;
+      <ScrollView
+        keyboardShouldPersistTaps='always'
+        style={{ backgroundColor: white }}
+      >
+        {members.map((m) => {
+          if (!m.user?.id) return null;
 
-            return (
-              <View
-                key={m.user.id}
-                style={[
-                  styles.memberContainer,
-                  {
-                    borderBottomColor: border,
-                  },
-                ]}
-              >
-                <View style={styles.memberDetails}>
-                  <Avatar
-                    image={m?.user?.image}
-                    name={m.user?.name}
-                    size={40}
-                  />
-                  <View style={{ marginLeft: 8 }}>
-                    <Text style={styles.memberName}>{m.user?.name}</Text>
-                    <Text
-                      style={[
-                        styles.memberActiveStatus,
-                        {
-                          color: grey,
-                        },
-                      ]}
-                    >
-                      {getUserActivityStatus(m.user)}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={{ color: grey }}>
-                  {channel.data?.created_by?.id === m.user?.id ? 'owner' : ''}
-                </Text>
-              </View>
-            );
-          })}
-          {allMembers.length !== members.length && (
-            <TouchableOpacity
-              onPress={() => {
-                setMembers(Object.values(channel.state.members));
-              }}
-              style={[
-                styles.loadMoreButton,
-                {
-                  borderBottomColor: border,
-                },
-              ]}
-            >
-              <DownArrow height={24} width={24} />
-              <View style={{ marginLeft: 21 }}>
-                <Text
-                  style={{
-                    color: grey,
-                  }}
-                >
-                  {`${allMembers.length - members.length} more`}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-
-          <Spacer />
-          <View style={styles.actionListContainer}>
+          return (
             <View
+              key={m.user.id}
               style={[
-                styles.actionContainer,
+                styles.memberContainer,
                 {
                   borderBottomColor: border,
-                  paddingLeft: 7,
                 },
               ]}
             >
-              <View style={styles.changeNameInputContainer}>
-                <Text style={{ color: grey }}>NAME</Text>
-                <TextInput
-                  onBlur={() => {
-                    setTextInputFocused(false);
-                  }}
-                  onChangeText={(name) => {
-                    setGroupName(name);
-                  }}
-                  onFocus={() => {
-                    setTextInputFocused(true);
-                  }}
-                  placeholder='Add a group name'
-                  ref={(ref) => {
-                    // @ts-ignore
-                    textInputRef.current = ref;
-                  }}
-                  style={styles.changeNameInputBox}
-                  value={groupName}
-                />
-              </View>
-              {textInputFocused && (
-                <View style={{ flexDirection: 'row' }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setGroupName(channel.data?.name);
-                      textInputRef.current && textInputRef.current.blur();
-                    }}
-                    style={{
-                      marginHorizontal: 4,
-                    }}
+              <View style={styles.memberDetails}>
+                <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
+                <View style={{ marginLeft: 8 }}>
+                  <Text style={[{ color: black }, styles.memberName]}>
+                    {m.user?.name}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.memberActiveStatus,
+                      {
+                        color: grey,
+                      },
+                    ]}
                   >
-                    <CircleClose height={24} width={24} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={async () => {
-                      // @ts-ignore
-                      await channel.update({
-                        ...channel.data,
-                        name: groupName,
-                      });
-                      textInputRef.current && textInputRef.current.blur();
-                    }}
-                    style={{
-                      marginHorizontal: 4,
-                    }}
-                  >
-                    {!!groupName && (
-                      <Check fill={accent_blue} height={24} width={24} />
-                    )}
-                  </TouchableOpacity>
+                    {getUserActivityStatus(m.user)}
+                  </Text>
                 </View>
-              )}
+              </View>
+              <Text style={{ color: grey }}>
+                {channel.data?.created_by?.id === m.user?.id ? 'owner' : ''}
+              </Text>
             </View>
-            <TouchableOpacity
-              style={[
-                styles.actionContainer,
-                {
-                  borderBottomColor: border,
-                },
-              ]}
-            >
-              <View style={styles.actionLabelContainer}>
-                <Mute height={24} width={24} />
-                <Text
-                  style={{
-                    color: black,
-                    marginLeft: 16,
-                  }}
-                >
-                  Mute group
-                </Text>
-              </View>
-              <View>
-                <Switch
-                  onValueChange={async () => {
-                    if (muted) {
-                      await channel.unmute();
-                    } else {
-                      await channel.mute();
-                    }
+          );
+        })}
+        {allMembers.length !== members.length && (
+          <TouchableOpacity
+            onPress={() => {
+              setMembers(Object.values(channel.state.members));
+            }}
+            style={[
+              styles.loadMoreButton,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <DownArrow height={24} width={24} />
+            <View style={{ marginLeft: 21 }}>
+              <Text
+                style={{
+                  color: grey,
+                }}
+              >
+                {`${allMembers.length - members.length} more`}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
-                    setMuted((previousState) => !previousState);
+        <Spacer />
+        <View style={styles.actionListContainer}>
+          <View
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+                paddingLeft: 7,
+              },
+            ]}
+          >
+            <View style={styles.changeNameInputContainer}>
+              <Text style={{ color: grey }}>NAME</Text>
+              <TextInput
+                onBlur={() => {
+                  setTextInputFocused(false);
+                }}
+                onChangeText={(name) => {
+                  setGroupName(name);
+                }}
+                onFocus={() => {
+                  setTextInputFocused(true);
+                }}
+                placeholder='Add a group name'
+                ref={(ref) => {
+                  // @ts-ignore
+                  textInputRef.current = ref;
+                }}
+                style={[{ color: black }, styles.changeNameInputBox]}
+                value={groupName}
+              />
+            </View>
+            {textInputFocused && (
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setGroupName(channel.data?.name);
+                    textInputRef.current && textInputRef.current.blur();
                   }}
-                  trackColor={{
-                    false: white_smoke,
-                    true: accent_green,
-                  }}
-                  value={muted}
-                />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ChannelImagesScreen', {
-                  channel,
-                });
-              }}
-              style={[
-                styles.actionContainer,
-                {
-                  borderBottomColor: border,
-                },
-              ]}
-            >
-              <View style={styles.actionLabelContainer}>
-                <Picture fill={grey} />
-                <Text
                   style={{
-                    color: black,
-                    marginLeft: 16,
+                    marginHorizontal: 4,
                   }}
                 >
-                  Photos and Videos
-                </Text>
-              </View>
-              <View>
-                <GoForward height={24} width={24} />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ChannelFilesScreen', {
-                  channel,
-                });
-              }}
-              style={[
-                styles.actionContainer,
-                {
-                  borderBottomColor: border,
-                },
-              ]}
-            >
-              <View style={styles.actionLabelContainer}>
-                <File />
-                <Text
+                  <CircleClose height={24} width={24} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={async () => {
+                    // @ts-ignore
+                    await channel.update({
+                      ...channel.data,
+                      name: groupName,
+                    });
+                    textInputRef.current && textInputRef.current.blur();
+                  }}
                   style={{
-                    color: black,
-                    marginLeft: 16,
+                    marginHorizontal: 4,
                   }}
                 >
-                  Files
-                </Text>
+                  {!!groupName && (
+                    <Check fill={accent_blue} height={24} width={24} />
+                  )}
+                </TouchableOpacity>
               </View>
-              <View>
-                <GoForward height={24} width={24} />
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={openLeaveGroupConfirmationSheet}
-              style={[
-                styles.actionContainer,
-                {
-                  borderBottomColor: border,
-                },
-              ]}
-            >
-              <View style={styles.actionLabelContainer}>
-                <RemoveUser height={24} width={24} />
-                <Text
-                  style={{
-                    color: black,
-                    marginLeft: 16,
-                  }}
-                >
-                  Leave Group
-                </Text>
-              </View>
-            </TouchableOpacity>
+            )}
           </View>
-        </ThemeProvider>
+          <TouchableOpacity
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <Mute height={24} width={24} />
+              <Text
+                style={{
+                  color: black,
+                  marginLeft: 16,
+                }}
+              >
+                Mute group
+              </Text>
+            </View>
+            <View>
+              <Switch
+                onValueChange={async () => {
+                  if (muted) {
+                    await channel.unmute();
+                  } else {
+                    await channel.mute();
+                  }
+
+                  setMuted((previousState) => !previousState);
+                }}
+                trackColor={{
+                  false: white_smoke,
+                  true: accent_green,
+                }}
+                value={muted}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelImagesScreen', {
+                channel,
+              });
+            }}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <Picture fill={grey} />
+              <Text
+                style={{
+                  color: black,
+                  marginLeft: 16,
+                }}
+              >
+                Photos and Videos
+              </Text>
+            </View>
+            <View>
+              <GoForward height={24} width={24} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelFilesScreen', {
+                channel,
+              });
+            }}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <File />
+              <Text
+                style={{
+                  color: black,
+                  marginLeft: 16,
+                }}
+              >
+                Files
+              </Text>
+            </View>
+            <View>
+              <GoForward height={24} width={24} />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={openLeaveGroupConfirmationSheet}
+            style={[
+              styles.actionContainer,
+              {
+                borderBottomColor: border,
+              },
+            ]}
+          >
+            <View style={styles.actionLabelContainer}>
+              <RemoveUser height={24} width={24} />
+              <Text
+                style={{
+                  color: black,
+                  marginLeft: 16,
+                }}
+              >
+                Leave Group
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </>
   );
