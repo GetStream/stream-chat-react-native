@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import type { Theme } from 'stream-chat-react-native/v2';
+import type { DeepPartial, Theme } from 'stream-chat-react-native/v2';
 
 export const useStreamChatTheme = () => {
   const colorScheme = useColorScheme();
-  const getChatStyle = (): Partial<Theme> => ({
+  const getChatStyle = (): DeepPartial<Theme> => ({
     colors:
       colorScheme === 'dark'
         ? {
@@ -53,6 +53,9 @@ export const useStreamChatTheme = () => {
             white_smoke: '#F2F2F2',
             white_snow: '#FCFCFC',
           },
+    imageGallery: {
+      blurType: colorScheme === 'dark' ? 'dark' : 'light',
+    },
   });
   const [chatStyle, setChatStyle] = useState(getChatStyle());
 

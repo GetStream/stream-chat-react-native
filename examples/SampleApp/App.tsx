@@ -1,7 +1,11 @@
 import React from 'react';
-import { LogBox } from 'react-native';
+import { LogBox, useColorScheme } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import {
   SafeAreaProvider,
@@ -60,10 +64,20 @@ const App = () => {
     logout,
     switchUser,
   } = useChatClient();
+  const colorScheme = useColorScheme();
+  const streamChatTheme = useStreamChatTheme();
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer
+        theme={{
+          colors: {
+            ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+            background: streamChatTheme.colors?.white || '#FFFFFF',
+          },
+          dark: colorScheme === 'dark',
+        }}
+      >
         <AppContext.Provider
           value={{ chatClient, loginUser, logout, switchUser }}
         >
@@ -137,22 +151,27 @@ const DrawerNavigator: React.FC<{
   );
 };
 
-const UserSelector = () => (
-  <ThemeProvider>
-    <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
-      <UserSelectorStack.Screen
-        component={AdvancedUserSelectorScreen}
-        name='AdvancedUserSelectorScreen'
-        options={{ gestureEnabled: false, headerShown: false }}
-      />
-      <UserSelectorStack.Screen
-        component={UserSelectorScreen}
-        name='UserSelectorScreen'
-        options={{ gestureEnabled: false, headerShown: false }}
-      />
-    </UserSelectorStack.Navigator>
-  </ThemeProvider>
-);
+const UserSelector = () => {
+  const streamChatTheme = useStreamChatTheme();
+
+  return (
+    <ThemeProvider style={streamChatTheme}>
+      <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
+        <UserSelectorStack.Screen
+          component={AdvancedUserSelectorScreen}
+          name='AdvancedUserSelectorScreen'
+          options={{ gestureEnabled: false, headerShown: false }}
+        />
+        <UserSelectorStack.Screen
+          component={UserSelectorScreen}
+          name='UserSelectorScreen'
+          options={{ gestureEnabled: false, headerShown: false }}
+        />
+      </UserSelectorStack.Navigator>
+    </ThemeProvider>
+  );
+};
+
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => (
   <Stack.Navigator initialRouteName='ChatScreen'>
