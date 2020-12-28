@@ -49,7 +49,7 @@ import type { MessageInputProps } from '../../components/MessageInput/MessageInp
 import type { MoreOptionsButtonProps } from '../../components/MessageInput/MoreOptionsButton';
 import type { SendButtonProps } from '../../components/MessageInput/SendButton';
 import type { UploadProgressIndicatorProps } from '../../components/MessageInput/UploadProgressIndicator';
-import type { Message } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -234,7 +234,7 @@ export type InputMessageInputContextValue<
   CommandsButton: React.ComponentType<
     CommandsButtonProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  editing: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
+  editing: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   editMessage: StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage'];
   /**
    * Custom UI component for FileUploadPreview.
@@ -266,7 +266,7 @@ export type InputMessageInputContextValue<
   >;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  replyToMessage: boolean | Message<At, Ch, Co, Ev, Me, Re, Us>;
+  replyToMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component for send button.
    *

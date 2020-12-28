@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext, useState } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { Message } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -23,12 +23,12 @@ export type ImageGalleryContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  images: Message<At, Ch, Co, Ev, Me, Re, Us>[];
+  images: MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
   setImage: React.Dispatch<
     React.SetStateAction<{ messageId?: string; url?: string } | undefined>
   >;
   setImages: React.Dispatch<
-    React.SetStateAction<Message<At, Ch, Co, Ev, Me, Re, Us>[]>
+    React.SetStateAction<MessageType<At, Ch, Co, Ev, Me, Re, Us>[]>
   >;
   image?: { messageId?: string; url?: string };
 };
@@ -48,9 +48,9 @@ export const ImageGalleryProvider = <
 >({
   children,
 }: PropsWithChildren<UnknownType>) => {
-  const [images, setImages] = useState<Message<At, Ch, Co, Ev, Me, Re, Us>[]>(
-    [],
-  );
+  const [images, setImages] = useState<
+    MessageType<At, Ch, Co, Ev, Me, Re, Us>[]
+  >([]);
   const [image, setImage] = useState<{ messageId?: string; url?: string }>();
 
   const imageGalleryContext = {

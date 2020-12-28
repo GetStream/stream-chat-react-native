@@ -101,7 +101,7 @@ import {
 import { FlatList as FlatListDefault } from '../../native';
 import { reactionData as reactionDataDefault } from '../../utils/utils';
 
-import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
+import type { MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,

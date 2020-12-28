@@ -6,7 +6,7 @@ import type { GestureResponderEvent } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import type { Message } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   GroupType,
   MessageContentType,
@@ -70,7 +70,7 @@ export type MessageContextValue<
   /** Whether or not this is the last message in a group of messages */
   lastGroupMessage: boolean;
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
   /**

@@ -105,6 +105,7 @@ export * from './MessageInput/ShowThreadMessageInChannelButton';
 export * from './MessageInput/UploadProgressIndicator';
 
 export * from './MessageList/DateHeader';
+export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';

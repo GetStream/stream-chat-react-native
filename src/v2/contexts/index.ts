@@ -6,6 +6,7 @@ export * from './chatContext/ChatContext';
 export * from './imageGalleryContext/ImageGalleryContext';
 export * from './keyboardContext/KeyboardContext';
 export * from './messageContext/MessageContext';
+export * from './messageInputContext/hooks/useCreateMessageInputContext';
 export * from './messageInputContext/hooks/useMessageDetailsForState';
 export * from './messageInputContext/MessageInputContext';
 export * from './messageOverlayContext/MessageOverlayContext';

@@ -1,6 +1,6 @@
 import type { ImmutableDate } from 'seamless-immutable';
 
-import type { Message } from '../hooks/useMessageList';
+import type { MessageType } from '../hooks/useMessageList';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
@@ -42,7 +42,7 @@ export const getReadStates = <
     .asMutable()
     .filter((msg) => msg.updated_at)
     .reverse() as Array<
-    Message<At, Ch, Co, Ev, Me, Re, Us> & {
+    MessageType<At, Ch, Co, Ev, Me, Re, Us> & {
       updated_at: string | ImmutableDate;
     }
   >;

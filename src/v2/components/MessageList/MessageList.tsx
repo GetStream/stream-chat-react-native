@@ -11,7 +11,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { Message as MessageType, useMessageList } from './hooks/useMessageList';
+import { MessageType, useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {

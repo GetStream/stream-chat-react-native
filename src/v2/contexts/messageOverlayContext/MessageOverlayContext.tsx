@@ -5,7 +5,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
-import type { Message } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Alignment } from '../messageContext/MessageContext';
 import type {
   GroupType,
@@ -45,7 +45,7 @@ export type MessageOverlayData<
   groupStyles?: GroupType[];
   handleReaction?: (reactionType: string) => Promise<void>;
   images?: Attachment<At>[];
-  message?: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageActions?: MessageAction[];
   messageContentOrder?: MessageContentType[];
   messageReactionTitle?: string;

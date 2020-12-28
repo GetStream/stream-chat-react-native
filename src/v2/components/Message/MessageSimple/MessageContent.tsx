@@ -475,11 +475,18 @@ const areEqual = <
     prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
+  const prevAttachments = prevMessage.attachments;
+  const nextAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    (Array.isArray(prevMessage.attachments) &&
-      Array.isArray(nextMessage.attachments) &&
-      prevMessage.attachments.length === nextMessage.attachments.length) ||
-    prevMessage.attachments === nextMessage.attachments;
+    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
+      ? prevAttachments.length === nextAttachments.length &&
+        prevAttachments.every(
+          (attachment, index) =>
+            attachment.image_url === nextAttachments[index].image_url &&
+            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
+            attachment.thumb_url === nextAttachments[index].thumb_url,
+        )
+      : prevAttachments === nextAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =
