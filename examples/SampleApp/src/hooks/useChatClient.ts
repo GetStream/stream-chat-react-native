@@ -76,7 +76,6 @@ export const useChatClient = () => {
           '@stream-rn-sampleapp-login-config',
           null,
         );
-        console.log('existing config - ', config);
 
         if (config) {
           await loginUser(config);

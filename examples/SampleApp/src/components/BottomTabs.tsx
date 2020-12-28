@@ -5,6 +5,7 @@ import { useTheme } from 'stream-chat-react-native/v2';
 
 import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const BottomTabs: React.FC<BottomTabBarProps> = ({
   navigation,
@@ -15,7 +16,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
       colors: { black, grey, white },
     },
   } = useTheme();
-
+  const { bottom } = useSafeAreaInsets();
   const getTitle = (key: string) => {
     switch (key) {
       case 'ChatScreen':
@@ -43,6 +44,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
       style={[
         {
           backgroundColor: white,
+          paddingBottom: bottom,
         },
         styles.tabListContainer,
       ]}
