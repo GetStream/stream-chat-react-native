@@ -957,10 +957,10 @@ d@1, d@^1.0.1:
     es5-ext "^0.10.50"
     type "^1.0.1"
 
-dayjs@1.9.7:
-  version "1.9.7"
-  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.9.7.tgz#4b260bb17dceed2d5f29038dfee03c65a6786fc0"
-  integrity sha512-IC877KBdMhBrCfBfJXHQlo0G8keZ0Opy7YIIq5QKtUbCuHMzim8S4PyiVK4YmihI3iOF9lhfUBW4AQWHTR5WHA==
+dayjs@1.9.8:
+  version "1.9.8"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.9.8.tgz#9a65fbdca037e3d5835f98672da6e796f757cd58"
+  integrity sha512-F42qBtJRa30FKF7XDnOQyNUTsaxDkuaZRj/i7BejSHC34LlLfPoIU4aeopvWfM+m1dJ6/DHKAWLg2ur+pLgq1w==
 
 debug@^4.1.0:
   version "4.2.0"
@@ -1315,10 +1315,10 @@ loader-utils@^2.0.0:
     emojis-list "^3.0.0"
     json5 "^2.1.2"
 
-lodash-es@4.17.15:
-  version "4.17.15"
-  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.15.tgz#21bd96839354412f23d7a10340e5eac6ee455d78"
-  integrity sha512-rlrc3yU3+JNOpZ9zj5pQtxnx2THmvRykwL4Xlxoa8I9lHBlVbbyPhgyPMioxVZ4NqyxaVVtaJnzsyOidQIhyyQ==
+lodash-es@4.17.20:
+  version "4.17.20"
+  resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.20.tgz#29f6332eefc60e849f869c264bc71126ad61e8f7"
+  integrity sha512-JD1COMZsq8maT6mnuz1UMV0jvYD0E0aUsSOdrr1/nAG3dhqQXwRRgeW0cSqH1U43INKcqxaiVIQNOUDld7gRDA==
 
 lodash.includes@^4.3.0:
   version "4.3.0"
@@ -1729,10 +1729,10 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.10.1-dev.0:
-  version "2.10.1-dev.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.10.1-dev.0.tgz#7773c121e9ecd1d655e5f6d17f163262a7d8e950"
-  integrity sha512-QVqbflL98XFAcss9tN8haf1IT7v7LzX1wDgqxeBV1OmG2KnbKl12P3CSb503xUrLS1yBZMCi6V0c1gTuynkdnA==
+stream-chat@2.10.1-dev.1:
+  version "2.10.1-dev.1"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.10.1-dev.1.tgz#f472bbf9aa6cf1cbe6f20f2d1162dd6b98c27a01"
+  integrity sha512-a3RBg+cWiQ5HGlzklMCaj4vpl2FDSQhE1ibRpIwowZKEZ22/iWT2+poKXaHznA0f8vUS4Be+xEJE1QDhQwO4RA==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"

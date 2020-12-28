@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { LogBox, SafeAreaView, View, useColorScheme } from 'react-native';
 import {
-  LogBox,
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+  RouteProp,
+} from '@react-navigation/native';
 import {
   createStackNavigator,
   StackNavigationProp,
@@ -21,16 +20,16 @@ import {
   Channel,
   ChannelList,
   Chat,
-  DeepPartial,
   MessageInput,
   MessageList,
   OverlayProvider,
   Streami18n,
-  Theme,
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
 } from 'stream-chat-react-native/v2';
+
+import { useStreamChatTheme } from './useStreamChatTheme';
 
 LogBox.ignoreAllLogs(true);
 
@@ -41,20 +40,6 @@ type LocalEventType = Record<string, unknown>;
 type LocalMessageType = Record<string, unknown>;
 type LocalResponseType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
-
-// Read more about style customizations at - https://getstream.io/chat/react-native-chat/tutorial/#custom-styles
-const theme: DeepPartial<Theme> = {
-  avatar: {
-    image: {
-      height: 32,
-      width: 32,
-    },
-  },
-  spinner: {
-    height: 15,
-    width: 15,
-  },
-};
 
 const chatClient = new StreamChat<
   LocalAttachmentType,
@@ -277,7 +262,9 @@ type AppContextType = {
 const AppContext = React.createContext({} as AppContextType);
 
 const App = () => {
+  const colorScheme = useColorScheme();
   const { bottom } = useSafeAreaInsets();
+  const theme = useStreamChatTheme();
 
   const [channel, setChannel] = useState<
     ChannelType<
@@ -314,7 +301,15 @@ const App = () => {
   }, []);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      theme={{
+        colors: {
+          ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
+          background: theme.colors?.white || '#FFFFFF',
+        },
+        dark: colorScheme === 'dark',
+      }}
+    >
       <AppContext.Provider value={{ channel, setChannel, setThread, thread }}>
         <OverlayProvider<
           LocalAttachmentType,
@@ -333,7 +328,6 @@ const App = () => {
             <Stack.Navigator
               initialRouteName='ChannelList'
               screenOptions={{
-                cardStyle: { backgroundColor: 'white' },
                 headerTitleStyle: { alignSelf: 'center', fontWeight: 'bold' },
               }}
             >
@@ -359,8 +353,14 @@ const App = () => {
   );
 };
 
-export default () => (
-  <SafeAreaProvider>
-    <App />
-  </SafeAreaProvider>
-);
+export default () => {
+  const theme = useStreamChatTheme();
+
+  return (
+    <SafeAreaProvider
+      style={{ backgroundColor: theme.colors?.white || '#FFFFFF' }}
+    >
+      <App />
+    </SafeAreaProvider>
+  );
+};

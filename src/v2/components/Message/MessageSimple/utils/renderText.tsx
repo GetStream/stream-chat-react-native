@@ -1,7 +1,6 @@
 import React from 'react';
 import { Linking, Text } from 'react-native';
 import anchorme from 'anchorme';
-import merge from 'lodash/merge';
 import truncate from 'lodash/truncate';
 // @ts-expect-error
 import Markdown from 'react-native-markdown-package';
@@ -120,26 +119,32 @@ export const renderText = <
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
-  const styles = merge(
-    defaultMarkdownStyles,
-    {
-      autolink: {
-        color: colors.accent_blue,
-      },
-      inlineCode: {
-        backgroundColor: colors.white_smoke,
-        borderColor: colors.grey_gainsboro,
-        color: colors.accent_red,
-      },
-      mentions: {
-        color: colors.accent_blue,
-      },
-      text: {
-        color: colors.black,
-      },
+  const styles: MarkdownStyle = {
+    ...defaultMarkdownStyles,
+    ...markdownStyles,
+    autolink: {
+      ...defaultMarkdownStyles.autolink,
+      color: colors.accent_blue,
+      ...markdownStyles?.autolink,
     },
-    markdownStyles,
-  );
+    inlineCode: {
+      ...defaultMarkdownStyles.inlineCode,
+      backgroundColor: colors.white_smoke,
+      borderColor: colors.grey_gainsboro,
+      color: colors.accent_red,
+      ...markdownStyles?.inlineCode,
+    },
+    mentions: {
+      ...defaultMarkdownStyles.mentions,
+      color: colors.accent_blue,
+      ...markdownStyles?.mentions,
+    },
+    text: {
+      ...defaultMarkdownStyles.text,
+      color: colors.black,
+      ...markdownStyles?.text,
+    },
+  };
 
   const onLink = (url: string) =>
     onLinkParams
