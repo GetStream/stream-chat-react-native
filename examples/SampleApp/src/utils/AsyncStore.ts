@@ -10,7 +10,7 @@ export default {
 
     return JSON.parse(value) as T;
   },
-  removeItem: async (key) => {
+  removeItem: async (key: string) => {
     await AsyncStorage.removeItem(key);
   },
   setItem: async <T>(key: string, value: T) => {
