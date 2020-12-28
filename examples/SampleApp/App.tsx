@@ -21,6 +21,7 @@ import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
+import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 import { ChannelFilesScreen } from './src/screens/ChannelFilesScreen';
 import { ChannelImagesScreen } from './src/screens/ChannelImagesScreen';
 import { ChannelScreen } from './src/screens/ChannelScreen';
@@ -46,8 +47,6 @@ import {
   StackNavigatorParamList,
 } from './src/types';
 
-import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
-
 import type { StreamChat } from 'stream-chat';
 
 LogBox.ignoreAllLogs(true);
@@ -68,7 +67,9 @@ const App = () => {
   const streamChatTheme = useStreamChatTheme();
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider
+      style={{ backgroundColor: streamChatTheme.colors?.white || '#FFFFFF' }}
+    >
       <NavigationContainer
         theme={{
           colors: {
