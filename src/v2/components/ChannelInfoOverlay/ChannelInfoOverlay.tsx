@@ -173,7 +173,7 @@ const ChannelInfoOverlayWithContext = <
         userItemContainer,
         userName,
       },
-      colors: { danger, textGrey },
+      colors: { accent_red, black, border, grey, white },
     },
   } = useTheme();
 
@@ -366,7 +366,12 @@ const ChannelInfoOverlayWithContext = <
                 }) => {
                   viewHeight.value = height;
                 }}
-                style={[styles.containerInner, containerInner, showScreenStyle]}
+                style={[
+                  styles.containerInner,
+                  { backgroundColor: white },
+                  containerInner,
+                  showScreenStyle,
+                ]}
               >
                 <SafeAreaView>
                   {channel && (
@@ -374,11 +379,21 @@ const ChannelInfoOverlayWithContext = <
                       <View style={[styles.detailsContainer, detailsContainer]}>
                         <Text
                           numberOfLines={1}
-                          style={[styles.channelName, channelNameStyle]}
+                          style={[
+                            styles.channelName,
+                            { color: black },
+                            channelNameStyle,
+                          ]}
                         >
                           {channelName}
                         </Text>
-                        <Text style={[styles.channelStatus, channelStatus]}>
+                        <Text
+                          style={[
+                            styles.channelStatus,
+                            { color: grey },
+                            channelStatus,
+                          ]}
+                        >
                           {otherMembers.length === 1
                             ? otherMembers[0].user?.online
                               ? t('Online')
@@ -434,7 +449,13 @@ const ChannelInfoOverlayWithContext = <
                                   }
                                   size={avatarSize}
                                 />
-                                <Text style={[styles.userName, userName]}>
+                                <Text
+                                  style={[
+                                    styles.userName,
+                                    { color: black },
+                                    userName,
+                                  ]}
+                                >
                                   {item.name || item.id || ''}
                                 </Text>
                               </View>
@@ -456,11 +477,24 @@ const ChannelInfoOverlayWithContext = <
                             }
                           }}
                         >
-                          <View style={[styles.row, row, leaveGroupRow]}>
+                          <View
+                            style={[
+                              styles.row,
+                              { borderTopColor: border },
+                              row,
+                              leaveGroupRow,
+                            ]}
+                          >
                             <View style={[styles.rowInner, rowInner]}>
-                              <UserMinus pathFill={textGrey} />
+                              <UserMinus pathFill={grey} />
                             </View>
-                            <Text style={[styles.rowText, leaveGroupText]}>
+                            <Text
+                              style={[
+                                styles.rowText,
+                                { color: black },
+                                leaveGroupText,
+                              ]}
+                            >
                               {t('Leave Group')}
                             </Text>
                           </View>
@@ -474,11 +508,27 @@ const ChannelInfoOverlayWithContext = <
                           }
                         }}
                       >
-                        <View style={[styles.row, row, deleteRow]}>
+                        <View
+                          style={[
+                            styles.row,
+                            {
+                              borderBottomColor: border,
+                              borderTopColor: border,
+                            },
+                            row,
+                            deleteRow,
+                          ]}
+                        >
                           <View style={[styles.rowInner, rowInner]}>
-                            <Delete pathFill={danger} />
+                            <Delete pathFill={accent_red} />
                           </View>
-                          <Text style={[styles.rowText, deleteText]}>
+                          <Text
+                            style={[
+                              styles.rowText,
+                              { color: accent_red },
+                              deleteText,
+                            ]}
+                          >
                             {t('Delete')}
                           </Text>
                         </View>

@@ -1,14 +1,22 @@
 import React from 'react';
-import { useTheme } from '@react-navigation/native';
-import { ActivityIndicator, SafeAreaView, View } from 'react-native';
-import { AppTheme } from '../types';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  useColorScheme,
+  View,
+} from 'react-native';
+import { useTheme } from 'stream-chat-react-native/v2';
 
 export const LoadingScreen = () => {
-  const { colors } = useTheme() as AppTheme;
+  const colorScheme = useColorScheme();
+  const { theme } = useTheme();
   return (
     <SafeAreaView
       style={{
-        backgroundColor: colors.background,
+        backgroundColor:
+          theme?.colors?.white_snow || colorScheme === 'dark'
+            ? '#070A0D'
+            : '#FCFCFC',
       }}
     >
       <View
@@ -19,7 +27,14 @@ export const LoadingScreen = () => {
           width: '100%',
         }}
       >
-        <ActivityIndicator color={colors.text} size='small' />
+        <ActivityIndicator
+          color={
+            theme?.colors?.black || colorScheme === 'dark'
+              ? '#FFFFFF'
+              : '#000000'
+          }
+          size='small'
+        />
       </View>
     </SafeAreaView>
   );

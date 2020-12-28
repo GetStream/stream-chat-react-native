@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
-import { SafeAreaView, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import { useHeaderHeight } from '@react-navigation/stack';
-import { Channel, Chat, Thread } from 'stream-chat-react-native/v2';
+import { Channel, Thread } from 'stream-chat-react-native/v2';
+
+import { ScreenHeader } from '../components/ScreenHeader';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -13,7 +14,13 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { ScreenHeader } from '../components/ScreenHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 type ThreadScreenRouteProp = RouteProp<StackNavigatorParamList, 'ThreadScreen'>;
 
@@ -24,26 +31,28 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
   route: {
     params: { channel, thread },
   },
-}) => {
-  const headerHeight = useHeaderHeight();
-
-  return (
-    <Channel
+}) => (
+  <SafeAreaView style={{ flex: 1 }}>
+    <Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >
       channel={channel}
       enforceUniqueReaction
-      keyboardVerticalOffset={headerHeight}
+      keyboardVerticalOffset={0}
       thread={thread}
     >
-      <ScreenHeader
-        subtitle={`with ${thread.user?.name}`}
-        title={'Thread Reply'}
-      />
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'flex-start',
-        }}
-      >
+      <View style={styles.container}>
+        <ScreenHeader
+          inSafeArea
+          subtitleText={`with ${thread?.user?.name}`}
+          title='Thread Reply'
+        />
         <Thread<
           LocalAttachmentType,
           LocalChannelType,
@@ -55,5 +64,5 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         > />
       </View>
     </Channel>
-  );
-};
+  </SafeAreaView>
+);

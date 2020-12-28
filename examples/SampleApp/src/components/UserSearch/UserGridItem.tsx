@@ -1,11 +1,10 @@
-import { useTheme } from '@react-navigation/native';
-import React, { useContext } from 'react';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { UserResponse } from 'stream-chat';
-import { Avatar } from 'stream-chat-react-native/v2';
-import { AppContext } from '../../context/AppContext';
+import { Avatar, useTheme } from 'stream-chat-react-native/v2';
+
 import { Close } from '../../icons/Close';
-import { AppTheme, LocalUserType } from '../../types';
+import { LocalUserType } from '../../types';
 
 export type UserGridItemProps = {
   onPress: () => void;
@@ -17,7 +16,11 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
   removeButton = true,
   user,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { white_snow },
+    },
+  } = useTheme();
   return (
     <View style={styles.selectedUserItemContainer}>
       <TouchableOpacity
@@ -31,7 +34,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
             style={[
               styles.selectedUserRemoveIcon,
               {
-                backgroundColor: colors.background,
+                backgroundColor: white_snow,
               },
             ]}
           >
@@ -47,34 +50,34 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
 };
 
 const styles = StyleSheet.create({
+  selectedUserItem: {
+    margin: 8,
+  },
+  selectedUserItemContainer: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    padding: 8,
+    width: 80,
+  },
+  selectedUserItemName: {
+    flexWrap: 'wrap',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  selectedUserRemoveIcon: {
+    alignItems: 'center',
+    borderRadius: 15,
+    height: 24,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: -2,
+    top: -2,
+    width: 24,
+  },
   selectedUsersContainer: {
     alignItems: 'flex-start',
     flexDirection: 'row',
     flexWrap: 'wrap',
-  },
-  selectedUserItemContainer: {
-    flexDirection: 'column',
-    width: 80,
-    alignItems: 'center',
-    padding: 8,
-  },
-  selectedUserItem: {
-    margin: 8,
-  },
-  selectedUserItemName: {
-    fontWeight: '600',
-    fontSize: 12,
-    flexWrap: 'wrap',
-    textAlign: 'center',
-  },
-  selectedUserRemoveIcon: {
-    borderRadius: 15,
-    position: 'absolute',
-    justifyContent: 'center',
-    alignItems: 'center',
-    right: -2,
-    top: -2,
-    height: 24,
-    width: 24,
   },
 });

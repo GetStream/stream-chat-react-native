@@ -7,7 +7,6 @@ import { useTranslationContext } from '../../../contexts/translationContext/Tran
 
 const styles = StyleSheet.create({
   errorButtonText: {
-    color: '#005FFF',
     fontSize: 14,
     fontWeight: '600',
     marginHorizontal: 24,
@@ -16,7 +15,6 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
     bottom: 0,
     left: 0,
     paddingTop: 16,
@@ -51,6 +49,7 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (
   const {
     theme: {
       attachmentPicker: { errorButtonText, errorContainer, errorText },
+      colors: { accent_blue, grey, white_smoke },
     },
   } = useTheme();
   const { t } = useTranslationContext();
@@ -71,12 +70,15 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (
     <View
       style={[
         styles.errorContainer,
-        { height: attachmentPickerBottomSheetHeight ?? 308 },
+        {
+          backgroundColor: white_smoke,
+          height: attachmentPickerBottomSheetHeight ?? 308,
+        },
         errorContainer,
       ]}
     >
       <AttachmentPickerErrorImage />
-      <Text style={[styles.errorText, errorText]}>
+      <Text style={[styles.errorText, { color: grey }, errorText]}>
         {attachmentPickerErrorText ||
           t(
             'Please enable access to your photos and videos so you can share them.',
@@ -84,7 +86,11 @@ export const AttachmentPickerError: React.FC<AttachmentPickerErrorProps> = (
       </Text>
       <Text
         onPress={openSettings}
-        style={[styles.errorButtonText, errorButtonText]}
+        style={[
+          styles.errorButtonText,
+          { color: accent_blue },
+          errorButtonText,
+        ]}
         suppressHighlighting
       >
         {attachmentPickerErrorButtonText || t('Allow access to your Gallery')}

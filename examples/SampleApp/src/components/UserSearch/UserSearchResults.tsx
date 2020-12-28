@@ -3,17 +3,17 @@ import {
   ActivityIndicator,
   SectionList,
   StyleSheet,
+  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import { AppTheme, LocalUserType } from '../../types';
-import { UserResponse } from 'stream-chat';
-import { Text } from 'react-native';
-import { EmptySearchState } from '../../icons/EmptySearchState';
-import { Avatar } from 'stream-chat-react-native/v2';
-import { CheckSend } from '../../icons/CheckSend';
 import Dayjs from 'dayjs';
+import { UserResponse } from 'stream-chat';
+import { Avatar, useTheme } from 'stream-chat-react-native/v2';
+
+import { CheckSend } from '../../icons/CheckSend';
+import { EmptySearchState } from '../../icons/EmptySearchState';
+import { LocalUserType } from '../../types';
 
 type UserSearchResultsProps = {
   results: UserResponse[];
@@ -37,7 +37,11 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   toggleSelectedUser,
 }) => {
   const [sections, setSections] = useState([]);
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { bg_gradient_end, black, border, grey, white_smoke, white_snow },
+    },
+  } = useTheme();
 
   useEffect(() => {
     const newSections: Record<
@@ -48,7 +52,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
       }
     > = {};
 
-    results.forEach((user, index) => {
+    results.forEach((user) => {
       const initial = user.name?.toLowerCase().slice(0, 1);
 
       if (!initial) return;
@@ -67,18 +71,17 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   }, [results]);
 
   return (
-    <View style={{ flexGrow: 1, flexShrink: 1 }}>
+    <View style={{ backgroundColor: white_snow, flexGrow: 1, flexShrink: 1 }}>
       {groupedAlphabetically && (
         <View
           style={{
-            backgroundColor: colors.backgroundFadeGradient,
             padding: 5,
             paddingLeft: 8,
           }}
         >
           <Text
             style={{
-              color: colors.text,
+              color: black,
             }}
           >
             {searchText ? `Matches for "${searchText}"` : 'On the platform'}
@@ -112,7 +115,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               style={[
                 styles.searchResultContainer,
                 {
-                  borderBottomColor: colors.borderLight,
+                  borderBottomColor: border,
                   borderBottomWidth: 1,
                 },
               ]}
@@ -123,7 +126,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                   style={[
                     styles.searchResultUserName,
                     {
-                      color: colors.text,
+                      color: black,
                     },
                   ]}
                 >
@@ -134,7 +137,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                     style={[
                       styles.searchResultUserLastOnline,
                       {
-                        color: colors.textLight,
+                        color: grey,
                       },
                     ]}
                   >
@@ -158,8 +161,8 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               <Text
                 key={title}
                 style={{
-                  backgroundColor: colors.greyContentBackground,
-                  color: colors.textLight,
+                  backgroundColor: white_smoke,
+                  color: grey,
                   padding: 6,
                 }}
               >
@@ -219,22 +222,5 @@ const styles = StyleSheet.create({
   },
   emptyResultIndicatorEmoji: {
     fontSize: 60,
-  },
-  textInputContainer: {
-    minWidth: 100,
-    height: 32,
-    margin: 4,
-    borderRadius: 16,
-    backgroundColor: '#ccc',
-  },
-
-  textInput: {
-    margin: 0,
-    padding: 0,
-    paddingLeft: 12,
-    paddingRight: 12,
-    height: 32,
-    fontSize: 14,
-    color: 'rgba(0, 0, 0, 0.87)',
   },
 });

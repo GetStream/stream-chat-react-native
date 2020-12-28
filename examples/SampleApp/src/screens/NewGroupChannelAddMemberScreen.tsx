@@ -1,7 +1,6 @@
-/* eslint-disable sort-keys */
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useContext } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import {
   FlatList,
   StyleSheet,
@@ -9,7 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { ThemeProvider } from 'stream-chat-react-native/v2';
+import { ThemeProvider, useTheme } from 'stream-chat-react-native/v2';
+
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
@@ -17,7 +17,7 @@ import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
-import { AppTheme, StackNavigatorParamList } from '../types';
+import { StackNavigatorParamList } from '../types';
 
 export type NewGroupChannelAddMemberScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -25,7 +25,11 @@ export type NewGroupChannelAddMemberScreenNavigationProp = StackNavigationProp<
 >;
 
 export const NewGroupChannelAddMemberScreen: React.FC = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, border, grey, white },
+    },
+  } = useTheme();
   const navigation = useNavigation<NewGroupChannelAddMemberScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
   const {
@@ -65,14 +69,14 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
               )}
             </TouchableOpacity>
           )}
-          title={'Add Group Members'}
+          titleText='Add Group Members'
         />
         <View style={{ flexGrow: 1, flexShrink: 1 }}>
           <View
             style={[
               styles.searchContainer,
               {
-                borderBottomColor: colors.borderLight,
+                borderBottomColor: border,
               },
             ]}
           >
@@ -86,7 +90,8 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                 style={[
                   styles.inputBoxContainer,
                   {
-                    borderColor: colors.border,
+                    backgroundColor: white,
+                    borderColor: border,
                   },
                 ]}
               >
@@ -94,12 +99,12 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
                 <TextInput
                   onChangeText={onChangeSearchText}
                   onFocus={onFocusInput}
-                  placeholder={'Search'}
-                  placeholderTextColor={colors.textLight}
+                  placeholder='Search'
+                  placeholderTextColor={grey}
                   style={[
                     styles.inputBox,
                     {
-                      color: colors.text,
+                      color: black,
                     },
                   ]}
                   value={searchText}
@@ -143,65 +148,63 @@ export const NewGroupChannelAddMemberScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    flexDirection: 'row',
     height: 56,
-  },
-  navigationButton: {
-    padding: 15,
-  },
-  searchContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-  },
-  inputBoxContainer: {
-    flexDirection: 'row',
-    margin: 8,
-    padding: 10,
-    paddingTop: 8,
-    paddingBottom: 8,
-    backgroundColor: 'white',
-    borderRadius: 18,
-    borderWidth: 1,
-    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   inputBox: {
     flex: 1,
     marginLeft: 10,
     padding: 0,
   },
-
-  selectedUsersContainer: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  selectedUserItemContainer: {
-    flexDirection: 'column',
-    width: 80,
+  inputBoxContainer: {
     alignItems: 'center',
-    padding: 8,
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    margin: 8,
+    padding: 10,
+    paddingBottom: 8,
+    paddingTop: 8,
+  },
+  navigationButton: {
+    padding: 15,
+  },
+  searchContainer: {
+    alignItems: 'flex-start',
+    borderBottomWidth: 1,
+    display: 'flex',
+    flexDirection: 'row',
   },
   selectedUserItem: {
     margin: 8,
   },
+  selectedUserItemContainer: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    padding: 8,
+    width: 80,
+  },
   selectedUserItemName: {
-    fontWeight: '600',
-    fontSize: 12,
     flexWrap: 'wrap',
+    fontSize: 12,
+    fontWeight: '600',
     textAlign: 'center',
   },
   selectedUserRemoveIcon: {
-    borderRadius: 15,
-    position: 'absolute',
-    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 15,
+    height: 24,
+    justifyContent: 'center',
+    position: 'absolute',
     right: -2,
     top: -2,
-    height: 24,
     width: 24,
+  },
+  selectedUsersContainer: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

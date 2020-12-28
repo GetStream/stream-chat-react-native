@@ -161,6 +161,7 @@
         "no-var": 2,
         "object-shorthand": 1,
         "prefer-const": 1,
+        "react/display-name": 0,
         "react/jsx-sort-props": [
           "error",
           {

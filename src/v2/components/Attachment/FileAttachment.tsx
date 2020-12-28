@@ -127,6 +127,7 @@ const FileAttachmentWithContext = <
 
   const {
     theme: {
+      colors: { black, grey, white },
       messageSimple: {
         file: { container, details, fileSize, title },
       },
@@ -140,7 +141,14 @@ const FileAttachmentWithContext = <
       testID='file-attachment'
       {...additionalTouchableProps}
     >
-      <View style={[styles.container, container, stylesProp.container]}>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: white },
+          container,
+          stylesProp.container,
+        ]}
+      >
         <AttachmentFileIcon
           mimeType={attachment.mime_type}
           size={attachmentSize}
@@ -148,11 +156,13 @@ const FileAttachmentWithContext = <
         <View style={[styles.details, details, stylesProp.details]}>
           <Text
             numberOfLines={2}
-            style={[styles.title, title, stylesProp.title]}
+            style={[styles.title, { color: black }, title, stylesProp.title]}
           >
             {attachment.title}
           </Text>
-          <Text style={[styles.size, fileSize, stylesProp.size]}>
+          <Text
+            style={[styles.size, { color: grey }, fileSize, stylesProp.size]}
+          >
             {getFileSizeDisplayText(attachment.file_size)}
           </Text>
         </View>

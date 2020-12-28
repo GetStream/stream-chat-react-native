@@ -1,5 +1,7 @@
+import type { Channel, UserResponse } from 'stream-chat';
+import type { ThreadContextValue } from 'stream-chat-react-native/v2';
 import type { Theme } from '@react-navigation/native';
-import { Channel, MessageResponse, UserResponse } from 'stream-chat';
+
 export type LocalAttachmentType = Record<string, unknown>;
 export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
@@ -68,14 +70,15 @@ export type StackNavigatorParamList = {
       LocalReactionType,
       LocalUserType
     >;
-    thread: MessageResponse<
+    thread: ThreadContextValue<
       LocalAttachmentType,
       LocalChannelType,
       LocalCommandType,
+      LocalEventType,
       LocalMessageType,
       LocalReactionType,
       LocalUserType
-    >;
+    >['thread'];
   };
 };
 

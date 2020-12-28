@@ -1,21 +1,19 @@
-/* eslint-disable sort-keys */
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {
   CompositeNavigationProp,
   useNavigation,
-  useTheme,
 } from '@react-navigation/native';
-import {
-  AppTheme,
-  DrawerNavigatorParamList,
-  StackNavigatorParamList,
-} from '../types';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useAttachmentPickerContext } from 'stream-chat-react-native/v2';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  useAttachmentPickerContext,
+  useTheme,
+} from 'stream-chat-react-native/v2';
+
 import { GoBack } from '../icons/GoBack';
+import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
@@ -39,6 +37,7 @@ export const BackButton = () => {
 
 type ScreenHeaderProps = {
   titleText: string;
+  inSafeArea?: boolean;
   LeftContent?: React.ElementType;
   RightContent?: React.ElementType;
   Subtitle?: React.ElementType | null;
@@ -49,12 +48,13 @@ type ScreenHeaderProps = {
 const HEADER_CONTENT_HEIGHT = 55;
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
+  inSafeArea = false,
   LeftContent = BackButton,
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
   Subtitle = null,
+  subtitleText = false,
   Title = null,
   titleText = 'Stream Chat',
-  subtitleText = false,
 }) => {
   const insets = useSafeAreaInsets();
   const { setTopInset, topInset } = useAttachmentPickerContext();
@@ -63,7 +63,11 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
       setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
     }
   }, [insets.top]);
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, border, grey, white },
+    },
+  } = useTheme();
 
   return (
     <>
@@ -71,8 +75,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
         style={[
           styles.safeAreaContainer,
           {
-            backgroundColor: colors.backgroundNavigation,
-            height: HEADER_CONTENT_HEIGHT + insets.top,
+            backgroundColor: white,
+            borderBottomColor: border,
+            height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
           },
         ]}
       >
@@ -80,8 +85,8 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           style={[
             styles.contentContainer,
             {
-              marginTop: insets.top,
               height: HEADER_CONTENT_HEIGHT,
+              marginTop: inSafeArea ? 0 : insets.top,
               paddingBottom: 10,
               paddingLeft: 10,
               paddingRight: 10,
@@ -104,7 +109,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                   style={[
                     styles.title,
                     {
-                      color: colors.text,
+                      color: black,
                       fontSize: 16,
                       fontWeight: '700',
                     },
@@ -120,7 +125,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
               !!subtitleText && (
                 <Text
                   style={{
-                    color: colors.textLight,
+                    color: grey,
                     fontSize: 12,
                   }}
                 >
@@ -137,25 +142,24 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
-  safeAreaContainer: {
-    borderBottomColor: 'rgba(0, 0, 0, 0.0677)',
-    borderBottomWidth: 1,
-  },
   contentContainer: {
-    justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   logo: {
+    borderRadius: 5,
     height: 30,
     width: 30,
-    borderRadius: 5,
+  },
+  newDMButton: {
+    borderRadius: 20,
+  },
+  safeAreaContainer: {
+    borderBottomWidth: 1,
   },
   title: {
     fontSize: 17,
     fontWeight: '600',
-  },
-  newDMButton: {
-    borderRadius: 20,
   },
 });

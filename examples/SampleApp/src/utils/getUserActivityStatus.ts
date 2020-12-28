@@ -2,10 +2,17 @@ import Dayjs from 'dayjs';
 import { UserResponse } from 'stream-chat';
 import { LocalUserType } from '../types';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { Immutable } from 'seamless-immutable';
 
 Dayjs.extend(relativeTime);
 
-export const getUserActivityStatus = (user: UserResponse<LocalUserType>) => {
+export const getUserActivityStatus = (
+  user?: Immutable<UserResponse<LocalUserType>> | UserResponse<LocalUserType>,
+) => {
+  if (!user) {
+    return 'Status unknown';
+  }
+
   if (Dayjs(user.last_active).isBefore(Dayjs())) {
     return `Last seen ${Dayjs(user?.last_active).fromNow()}`;
   }

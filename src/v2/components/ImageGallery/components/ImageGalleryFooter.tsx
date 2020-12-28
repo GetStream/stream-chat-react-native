@@ -114,6 +114,7 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const {
     theme: {
+      colors: { black, white },
       imageGallery: {
         footer: {
           centerContainer,
@@ -168,7 +169,9 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
       pointerEvents={'box-none'}
       style={styles.wrapper}
     >
-      <ReanimatedSafeAreaView style={[container, footerStyle]}>
+      <ReanimatedSafeAreaView
+        style={[{ backgroundColor: white }, container, footerStyle]}
+      >
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ openGridView, photo, share, shareMenuOpen })
@@ -183,7 +186,13 @@ export const ImageGalleryFooter = <Us extends UnknownType = DefaultUserType>(
             centerElement({ openGridView, photo, share, shareMenuOpen })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
-              <Text style={[styles.imageCountText, imageCountText]}>
+              <Text
+                style={[
+                  styles.imageCountText,
+                  { color: black },
+                  imageCountText,
+                ]}
+              >
                 {t('{{ index }} of {{ photoLength }}', {
                   index: selectedIndex + 1,
                   photoLength,

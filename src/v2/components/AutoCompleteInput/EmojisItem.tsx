@@ -33,6 +33,7 @@ export const EmojisItem: React.FC<EmojisItemProps> = ({
 }) => {
   const {
     theme: {
+      colors: { black },
       messageInput: {
         suggestions: {
           emoji: { container, text },
@@ -43,10 +44,16 @@ export const EmojisItem: React.FC<EmojisItemProps> = ({
 
   return (
     <View style={[styles.container, container]}>
-      <Text style={[styles.text, text]} testID='emojis-item-unicode'>
+      <Text
+        style={[styles.text, { color: black }, text]}
+        testID='emojis-item-unicode'
+      >
         {unicode}
       </Text>
-      <Text style={[styles.text, text]} testID='emojis-item-name'>
+      <Text
+        style={[styles.text, { color: black }, text]}
+        testID='emojis-item-name'
+      >
         {` ${name}`}
       </Text>
     </View>

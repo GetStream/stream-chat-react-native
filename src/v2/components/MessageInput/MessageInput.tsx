@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   container: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderTopWidth: 1,
     padding: 10,
   },
@@ -86,7 +85,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   inputBoxContainer: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderRadius: 20,
     borderWidth: 1,
     flex: 1,
@@ -228,14 +226,23 @@ export const MessageInputWithContext = <
 
   const {
     theme: {
-      colors: { grey, textGrey, white },
+      colors: {
+        accent_blue,
+        black,
+        border,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        white,
+        white_smoke,
+      },
       messageInput: {
         attachButtonContainer,
         attachmentSelectionBar,
         autoCompleteInputContainer,
         commandsButtonContainer,
         composerContainer,
-        container: { ...container },
+        container,
         editingBoxHeader,
         editingBoxHeaderTitle,
         giphyContainer,
@@ -400,16 +407,26 @@ export const MessageInputWithContext = <
             layout: { height: newHeight },
           },
         }) => setHeight(newHeight)}
-        style={[styles.container, container]}
+        style={[
+          styles.container,
+          { backgroundColor: white, borderColor: border },
+          container,
+        ]}
       >
         {(editing || replyToMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
             {editing ? (
-              <Edit pathFill={grey} />
+              <Edit pathFill={grey_gainsboro} />
             ) : (
-              <CurveLineLeftUp pathFill={grey} />
+              <CurveLineLeftUp pathFill={grey_gainsboro} />
             )}
-            <Text style={[styles.editingBoxHeaderTitle, editingBoxHeaderTitle]}>
+            <Text
+              style={[
+                styles.editingBoxHeaderTitle,
+                { color: black },
+                editingBoxHeaderTitle,
+              ]}
+            >
               {editing ? t('Editing Message') : t('Reply to Message')}
             </Text>
             <TouchableOpacity
@@ -428,7 +445,7 @@ export const MessageInputWithContext = <
               }}
               testID='close-button'
             >
-              <CircleClose pathFill={textGrey} />
+              <CircleClose pathFill={grey} />
             </TouchableOpacity>
           </View>
         )}
@@ -476,7 +493,10 @@ export const MessageInputWithContext = <
               <View
                 style={[
                   styles.inputBoxContainer,
-                  { paddingVertical: giphyActive ? 8 : 12 },
+                  {
+                    borderColor: grey_whisper,
+                    paddingVertical: giphyActive ? 8 : 12,
+                  },
                   inputBoxContainer,
                 ]}
               >
@@ -498,9 +518,19 @@ export const MessageInputWithContext = <
                   ]}
                 >
                   {giphyActive && (
-                    <View style={[styles.giphyContainer, giphyContainer]}>
+                    <View
+                      style={[
+                        styles.giphyContainer,
+                        { backgroundColor: accent_blue },
+                        giphyContainer,
+                      ]}
+                    >
                       <Lightning height={16} pathFill={white} width={16} />
-                      <Text style={[styles.giphyText, giphyText]}>GIPHY</Text>
+                      <Text
+                        style={[styles.giphyText, { color: white }, giphyText]}
+                      >
+                        GIPHY
+                      </Text>
                     </View>
                   )}
                   <AutoCompleteInput<At, Ch, Co, Ev, Me, Re, Us>
@@ -514,7 +544,7 @@ export const MessageInputWithContext = <
                       }}
                       testID='close-button'
                     >
-                      <CircleClose height={20} pathFill={textGrey} width={20} />
+                      <CircleClose height={20} pathFill={grey} width={20} />
                     </TouchableOpacity>
                   )}
                 </View>
@@ -533,7 +563,7 @@ export const MessageInputWithContext = <
         <View
           style={[
             styles.suggestionsListContainer,
-            { bottom: height },
+            { backgroundColor: white, bottom: height },
             suggestionsListContainer,
           ]}
         >
@@ -549,6 +579,7 @@ export const MessageInputWithContext = <
         <View
           style={[
             {
+              backgroundColor: white_smoke,
               height:
                 (attachmentPickerBottomSheetHeight
                   ? attachmentPickerBottomSheetHeight +

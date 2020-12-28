@@ -55,6 +55,7 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
   } = props;
   const {
     theme: {
+      colors: { black, white },
       imageGallery: {
         grid: { handle, handleText },
       },
@@ -63,7 +64,7 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
   const { t } = useTranslationContext();
 
   return (
-    <View style={[styles.handle, handle]}>
+    <View style={[styles.handle, { backgroundColor: white }, handle]}>
       {leftComponent ? (
         leftComponent({ closeGridView })
       ) : (
@@ -72,7 +73,9 @@ export const ImageGridHandle: React.FC<Props> = (props) => {
       {centerComponent ? (
         centerComponent({ closeGridView })
       ) : (
-        <Text style={[styles.text, handleText]}>{t('Photos')}</Text>
+        <Text style={[styles.text, { color: black }, handleText]}>
+          {t('Photos')}
+        </Text>
       )}
       {rightComponent ? (
         rightComponent({ closeGridView })

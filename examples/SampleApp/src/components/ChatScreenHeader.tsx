@@ -1,24 +1,19 @@
-/* eslint-disable sort-keys */
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext } from 'react';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {
   CompositeNavigationProp,
   useNavigation,
-  useTheme,
 } from '@react-navigation/native';
-import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
-import { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import {
-  AppTheme,
-  DrawerNavigatorParamList,
-  StackNavigatorParamList,
-} from '../types';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Spinner, useChatContext, useTheme } from 'stream-chat-react-native/v2';
+
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
-import { Spinner, useChatContext } from 'stream-chat-react-native/v2';
+
+import { AppContext } from '../context/AppContext';
+import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
+import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
 
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
@@ -26,13 +21,17 @@ type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
 >;
 
 export const NetworkDownIndicator = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black },
+    },
+  } = useTheme();
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
       <Spinner />
       <Text
         style={{
-          color: colors.text,
+          color: black,
           fontSize: 16,
           fontWeight: '700',
           marginLeft: 13,
@@ -49,6 +48,12 @@ export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
   const { chatClient } = useContext(AppContext);
 
   const { isOnline } = useChatContext();
+
+  const {
+    theme: {
+      colors: { accent_blue },
+    },
+  } = useTheme();
 
   return (
     <>
@@ -75,7 +80,7 @@ export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
           >
             <NewDirectMessageIcon
               active
-              color={'#006CFF'}
+              color={accent_blue}
               height={25}
               width={25}
             />
@@ -87,27 +92,3 @@ export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderBottomColor: 'rgba(0, 0, 0, 0.0677)',
-    borderBottomWidth: 1,
-  },
-  logo: {
-    height: 30,
-    width: 30,
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '600',
-  },
-  newDMButton: {
-    borderRadius: 20,
-  },
-});

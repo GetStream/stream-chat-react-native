@@ -106,7 +106,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
 
   const {
     theme: {
-      colors: { grey, primary, white },
+      colors: { accent_blue, black, grey_gainsboro, white },
       overlay: {
         padding: overlayPadding,
         reactions: {
@@ -175,17 +175,17 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
                   (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
                 }
                 cy={y - radius * 2 - radius / 4}
-                fill={alignment === 'left' ? grey : white}
+                fill={alignment === 'left' ? grey_gainsboro : white}
                 r={radius * 2}
-                stroke={alignment === 'left' ? white : grey}
+                stroke={alignment === 'left' ? white : grey_gainsboro}
                 strokeWidth={radius / 2}
               />
               <Circle
                 cx={x}
                 cy={y}
-                fill={alignment === 'left' ? grey : white}
+                fill={alignment === 'left' ? grey_gainsboro : white}
                 r={radius}
-                stroke={alignment === 'left' ? white : grey}
+                stroke={alignment === 'left' ? white : grey_gainsboro}
                 strokeWidth={radius / 2}
               />
             </Svg>
@@ -193,8 +193,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
               style={[
                 styles.reactionBubbleBackground,
                 {
-                  backgroundColor: alignment === 'left' ? grey : white,
-                  borderColor: alignment === 'left' ? white : grey,
+                  backgroundColor:
+                    alignment === 'left' ? grey_gainsboro : white,
+                  borderColor: alignment === 'left' ? white : grey_gainsboro,
                   borderWidth: radius / 2,
                   left,
                   top,
@@ -210,7 +211,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
                     (radius * 2 - radius / 4) * (alignment === 'left' ? 1 : -1)
                   }
                   cy={y - radius * 2 - radius / 4}
-                  fill={alignment === 'left' ? grey : white}
+                  fill={alignment === 'left' ? grey_gainsboro : white}
                   r={radius * 2 - radius / 2}
                 />
               </Svg>
@@ -219,7 +220,8 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
               style={[
                 styles.reactionBubble,
                 {
-                  backgroundColor: alignment === 'left' ? grey : white,
+                  backgroundColor:
+                    alignment === 'left' ? grey_gainsboro : white,
                   height:
                     (reactionBubble.borderRadius ||
                       styles.reactionBubble.borderRadius) -
@@ -235,7 +237,7 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
               ]}
             >
               <ReactionIcon
-                pathFill={primary}
+                pathFill={accent_blue}
                 size={
                   (reactionBubble.borderRadius ||
                     styles.reactionBubble.borderRadius) / 2
@@ -246,7 +248,9 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
             </View>
           </View>
         </View>
-        <Text style={[styles.avatarName, avatarName]}>{name}</Text>
+        <Text style={[styles.avatarName, { color: black }, avatarName]}>
+          {name}
+        </Text>
       </View>
     );
   };
@@ -287,9 +291,14 @@ export const OverlayReactions: React.FC<OverlayReactionsProps> = (props) => {
         layoutWidth.value = layout.width;
         layoutHeight.value = layout.height;
       }}
-      style={[styles.container, container, showScreenStyle]}
+      style={[
+        styles.container,
+        { backgroundColor: white },
+        container,
+        showScreenStyle,
+      ]}
     >
-      <Text style={[styles.title, titleStyle]}>{title}</Text>
+      <Text style={[styles.title, { color: black }, titleStyle]}>{title}</Text>
       <FlatList
         data={reactions}
         keyExtractor={({ name }, index) => `${name}_${index}`}

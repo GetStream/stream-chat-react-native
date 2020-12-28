@@ -268,7 +268,7 @@ const MessageWithContext = <
 
   const {
     theme: {
-      colors: { danger, primary, textGrey },
+      colors: { accent_blue, accent_red, grey },
     },
   } = useTheme();
 
@@ -458,7 +458,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <UserDelete pathFill={textGrey} />,
+      icon: <UserDelete pathFill={grey} />,
       title: message.user?.banned ? t('Unblock User') : t('Block User'),
     };
 
@@ -468,7 +468,7 @@ const MessageWithContext = <
         setOverlay('none');
         Clipboard.setString(message.text || '');
       },
-      icon: <Copy pathFill={textGrey} />,
+      icon: <Copy pathFill={grey} />,
       title: t('Copy Message'),
     };
 
@@ -480,9 +480,9 @@ const MessageWithContext = <
           updateMessage(data.message);
         }
       },
-      icon: <Delete pathFill={danger} />,
+      icon: <Delete pathFill={accent_red} />,
       title: t('Delete Message'),
-      titleStyle: { color: danger },
+      titleStyle: { color: accent_red },
     };
 
     const editMessage = {
@@ -490,7 +490,7 @@ const MessageWithContext = <
         setOverlay('none');
         setEditingState(message);
       },
-      icon: <Edit pathFill={textGrey} />,
+      icon: <Edit pathFill={grey} />,
       title: t('Edit Message'),
     };
 
@@ -537,7 +537,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <Mute pathFill={textGrey} />,
+      icon: <Mute pathFill={grey} />,
       title: isMuted ? t('Unmute User') : t('Mute User'),
     };
 
@@ -546,7 +546,7 @@ const MessageWithContext = <
         setOverlay('none');
         setReplyToMessageState(message);
       },
-      icon: <CurveLineLeftUp pathFill={textGrey} />,
+      icon: <CurveLineLeftUp pathFill={grey} />,
       title: t('Reply'),
     };
 
@@ -555,7 +555,7 @@ const MessageWithContext = <
         setOverlay('none');
         onOpenThread();
       },
-      icon: <ThreadReply pathFill={textGrey} />,
+      icon: <ThreadReply pathFill={grey} />,
       title: t('Thread Reply'),
     };
 
@@ -579,7 +579,7 @@ const MessageWithContext = <
                   updated_at: undefined,
                 } as MessageResponse<At, Ch, Co, Me, Re, Us>);
               },
-              icon: <SendUp pathFill={primary} />,
+              icon: <SendUp pathFill={accent_blue} />,
               title: t('Resend'),
             },
             editMessage,

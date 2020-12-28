@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { StreamChat } from 'stream-chat';
 
-import { Channel as ChannelType, StreamChat } from 'stream-chat';
+import { USER_TOKENS, USERS } from '../ChatUsers';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -12,7 +13,6 @@ import {
   LoginConfig,
 } from '../types';
 import AsyncStore from '../utils/AsyncStore';
-import { USER_TOKENS, USERS } from '../ChatUsers';
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -28,7 +28,6 @@ export const useChatClient = () => {
     LocalResponseType,
     LocalUserType
   > | null>(null);
-
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
@@ -73,13 +72,15 @@ export const useChatClient = () => {
           userToken: USER_TOKENS[id],
         });
       } else {
-        const config: LoginConfig = await AsyncStore.getItem(
+        const config = await AsyncStore.getItem<LoginConfig | null>(
           '@stream-rn-sampleapp-login-config',
-          false,
+          null,
         );
         console.log('existing config - ', config);
 
-        await loginUser(config);
+        if (config) {
+          await loginUser(config);
+        }
       }
     } catch (e) {
       console.warn(e);

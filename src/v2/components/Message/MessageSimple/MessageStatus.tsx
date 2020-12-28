@@ -63,6 +63,7 @@ const MessageStatusWithContext = <
 
   const {
     theme: {
+      colors: { accent_blue },
       messageSimple: {
         status: {
           checkAllIcon,
@@ -87,11 +88,13 @@ const MessageStatusWithContext = <
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
-          <Text style={[styles.readByCount, readByCount]}>
+          <Text
+            style={[styles.readByCount, { color: accent_blue }, readByCount]}
+          >
             {message.readBy}
           </Text>
         ) : null}
-        <CheckAll {...checkAllIcon} />
+        <CheckAll pathFill={accent_blue} {...checkAllIcon} />
       </View>
     );
   }

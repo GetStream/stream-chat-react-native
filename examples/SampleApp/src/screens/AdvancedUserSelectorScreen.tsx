@@ -1,11 +1,10 @@
-import { useTheme } from '@react-navigation/native';
 import React, { useContext, useState } from 'react';
 import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppTheme } from '../types';
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
 import { AppContext } from '../context/AppContext';
-import { KeyboardCompatibleView } from '../../../../src/v2';
+import { KeyboardCompatibleView, useTheme } from 'stream-chat-react-native/v2';
 
 type LabeledTextInputProps = {
   onChangeText: (text: string) => void;
@@ -20,11 +19,15 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
   onChangeText,
   value,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { accent_red, grey, grey_whisper },
+    },
+  } = useTheme();
   return (
     <View
       style={{
-        backgroundColor: colors.greyContentBackground,
+        backgroundColor: grey_whisper,
         borderRadius: 8,
         height: 48,
         justifyContent: 'center',
@@ -35,7 +38,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
       {!!value && (
         <Text
           style={{
-            color: colors.textLight,
+            color: grey,
             fontSize: 10,
             fontWeight: '700',
           }}
@@ -46,7 +49,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
       {!!error && (
         <Text
           style={{
-            color: colors.danger,
+            color: accent_red,
             fontSize: 10,
             fontWeight: '700',
           }}
@@ -57,6 +60,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
       <TextInput
         onChangeText={onChangeText}
         placeholder={label}
+        placeholderTextColor={grey}
         returnKeyType='next'
         value={value}
       />
@@ -65,7 +69,12 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 };
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { grey_gainsboro, white, white_snow },
+    },
+  } = useTheme();
+
   const { loginUser } = useContext(AppContext);
   const [apiKey, setApiKey] = useState<string>('');
   const [apiKeyError, setApiKeyError] = useState<boolean>(false);
@@ -96,7 +105,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
   };
   return (
     <KeyboardCompatibleView keyboardVerticalOffset={10}>
-      <View style={{ height: '100%' }}>
+      <View style={{ backgroundColor: white_snow, height: '100%' }}>
         <ScreenHeader titleText={'Advanced Options'} />
         <View
           style={{
@@ -175,7 +184,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
             >
               <Text
                 style={{
-                  color: colors.textInverted,
+                  color: white,
                 }}
               >
                 Login
@@ -183,7 +192,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
             </TouchableOpacity>
             <Text
               style={{
-                color: colors.footnote,
+                color: grey_gainsboro,
                 marginTop: 16,
                 textAlign: 'center',
               }}

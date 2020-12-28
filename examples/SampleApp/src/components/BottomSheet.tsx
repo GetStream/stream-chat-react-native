@@ -1,6 +1,4 @@
-import React from 'react';
-import { useTheme } from '@react-navigation/native';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
@@ -21,20 +19,14 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { KeyboardCompatibleView, vh, vw } from 'stream-chat-react-native/v2';
-
-import {
-  AppTheme,
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
-import { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  KeyboardCompatibleView,
+  useTheme,
+  vh,
+  vw,
+} from 'stream-chat-react-native/v2';
+
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 
@@ -60,7 +52,12 @@ export const BottomSheet = (props: BottomSheetProps) => {
   const viewHeight = useSharedValue(0);
 
   const showScreen = useSharedValue(0);
-  const { colors } = useTheme() as AppTheme;
+
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
 
   const fadeScreen = (show: boolean) => {
     'worklet';
@@ -217,7 +214,11 @@ export const BottomSheet = (props: BottomSheetProps) => {
                   }) => {
                     viewHeight.value = height;
                   }}
-                  style={[styles.container, showScreenStyle]}
+                  style={[
+                    styles.container,
+                    { backgroundColor: white },
+                    showScreenStyle,
+                  ]}
                 >
                   {type === 'addMembers' && (
                     <AddMemberBottomSheet
@@ -248,34 +249,9 @@ export const BottomSheet = (props: BottomSheetProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
     borderRadius: 16,
     flexDirection: 'column',
     paddingHorizontal: 16,
     width: '100%',
-  },
-  inputBox: {
-    flex: 1,
-    marginLeft: 10,
-    padding: 0,
-  },
-  inputBoxContainer: {
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 18,
-    borderWidth: 1,
-    flexDirection: 'row',
-    flexGrow: 1,
-    flexShrink: 1,
-    margin: 8,
-    padding: 10,
-    paddingBottom: 8,
-    paddingTop: 8,
-  },
-  searchContainer: {
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-    display: 'flex',
-    flexDirection: 'row',
   },
 });

@@ -27,10 +27,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Check } from '../../icons/Check';
-import { CheckAll } from '../../icons/CheckAll';
-import { Delete } from '../../icons/Delete';
-import { MenuPointHorizontal } from '../../icons/MenuPointHorizontal';
+import { Check, CheckAll, Delete, MenuPointHorizontal } from '../../icons';
 import { vw } from '../../utils/utils';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -201,7 +198,16 @@ const ChannelPreviewMessengerWithContext = <
         unreadContainer,
         unreadText,
       },
-      colors: { danger },
+      colors: {
+        accent_blue,
+        accent_red,
+        black,
+        border,
+        grey,
+        white,
+        white_smoke,
+        white_snow,
+      },
     },
   } = useTheme();
 
@@ -225,7 +231,13 @@ const ChannelPreviewMessengerWithContext = <
         renderRightActions ? (
           renderRightActions(progress, drag)
         ) : (
-          <View style={[styles.swipeableContainer, swipeableContainer]}>
+          <View
+            style={[
+              styles.swipeableContainer,
+              { backgroundColor: white_smoke },
+              swipeableContainer,
+            ]}
+          >
             <RectButton
               onPress={() => {
                 setData({ channel, clientId: client.userID });
@@ -239,7 +251,7 @@ const ChannelPreviewMessengerWithContext = <
               onPress={() => channel.delete()}
               style={[styles.rightSwipeableButton, rightSwipeableButton]}
             >
-              <Delete pathFill={danger} />
+              <Delete pathFill={accent_red} />
             </RectButton>
           </View>
         )
@@ -251,7 +263,11 @@ const ChannelPreviewMessengerWithContext = <
             onSelect(channel);
           }
         }}
-        style={[styles.container, container]}
+        style={[
+          styles.container,
+          { backgroundColor: white_snow, borderBottomColor: border },
+          container,
+        ]}
         testID='channel-preview-button'
       >
         {displayAvatar.images ? (
@@ -270,24 +286,39 @@ const ChannelPreviewMessengerWithContext = <
         )}
         <View style={[styles.contentContainer, contentContainer]}>
           <View style={[styles.row, row]}>
-            <Text numberOfLines={1} style={[styles.title, title]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.title, { color: black }, title]}
+            >
               {displayName}
             </Text>
-            <View style={[styles.unreadContainer, unreadContainer]}>
+            <View
+              style={[
+                styles.unreadContainer,
+                { backgroundColor: accent_red },
+                unreadContainer,
+              ]}
+            >
               {!!unread && (
-                <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
+                <Text
+                  numberOfLines={1}
+                  style={[styles.unreadText, { color: white }, unreadText]}
+                >
                   {unread}
                 </Text>
               )}
             </View>
           </View>
           <View style={[styles.row, row]}>
-            <Text numberOfLines={1} style={[styles.message, message]}>
+            <Text
+              numberOfLines={1}
+              style={[styles.message, { color: grey }, message]}
+            >
               {latestMessagePreview.previews.map((preview, index) =>
                 preview.text ? (
                   <Text
                     key={`${preview.text}_${index}`}
-                    style={preview.bold ? styles.bold : {}}
+                    style={[{ color: black }, preview.bold ? styles.bold : {}]}
                   >
                     {preview.text}
                   </Text>
@@ -296,11 +327,11 @@ const ChannelPreviewMessengerWithContext = <
             </Text>
             <View style={styles.flexRow}>
               {status === 2 ? (
-                <CheckAll {...checkAllIcon} />
+                <CheckAll pathFill={accent_blue} {...checkAllIcon} />
               ) : status === 1 ? (
                 <Check {...checkIcon} />
               ) : null}
-              <Text style={[styles.date, date]}>
+              <Text style={[styles.date, { color: grey }, date]}>
                 {formatLatestMessageDate && latestMessageDate
                   ? formatLatestMessageDate(latestMessageDate)
                   : latestMessagePreview.created_at}
@@ -312,70 +343,6 @@ const ChannelPreviewMessengerWithContext = <
     </Swipeable>
   );
 };
-
-// const areEqual = <
-//   At extends UnknownType = DefaultAttachmentType,
-//   Ch extends DefaultChannelType = DefaultChannelType,
-//   Co extends string = DefaultCommandType,
-//   Ev extends UnknownType = DefaultEventType,
-//   Me extends UnknownType = DefaultMessageType,
-//   Re extends UnknownType = DefaultReactionType,
-//   Us extends UnknownType = DefaultUserType
-// >(
-//   prevProps: ChannelPreviewMessengerPropsWithContext<
-//     At,
-//     Ch,
-//     Co,
-//     Ev,
-//     Me,
-//     Re,
-//     Us
-//   >,
-//   nextProps: ChannelPreviewMessengerPropsWithContext<
-//     At,
-//     Ch,
-//     Co,
-//     Ev,
-//     Me,
-//     Re,
-//     Us
-//   >,
-// ) => {
-//   const {
-//     channel: prevChannel,
-//     latestMessagePreview: prevLatestMessagePreview,
-//   } = prevProps;
-//   const {
-//     channel: nextChannel,
-//     latestMessagePreview: nextLatestMessagePreview,
-//   } = nextProps;
-
-//   const channelEqual =
-//     prevChannel.data?.image === nextChannel.data?.image &&
-//     prevChannel.data?.name === nextChannel.data?.name &&
-//     Object.keys(prevChannel.state.members).every(
-//       (memberId) =>
-//         nextChannel.state.members[memberId].user?.online ===
-//         prevChannel.state.members[memberId].user?.online,
-//     );
-//   if (!channelEqual) return false;
-
-//   const latestMessagePreviewEqual =
-//     prevLatestMessagePreview.previews
-//       .map(({ bold, text }) => `${bold}${text}`)
-//       .join() ===
-//     nextLatestMessagePreview.previews
-//       .map(({ bold, text }) => `${bold}${text}`)
-//       .join();
-//   if (!latestMessagePreviewEqual) return false;
-
-//   return true;
-// };
-
-// const MemoizedChannelPreviewMessenger = React.memo(
-//   ChannelPreviewMessengerWithContext,
-//   areEqual,
-// ) as typeof ChannelPreviewMessengerWithContext;
 
 export type ChannelPreviewMessengerProps<
   At extends UnknownType = DefaultAttachmentType,

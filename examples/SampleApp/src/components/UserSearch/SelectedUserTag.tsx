@@ -1,9 +1,9 @@
-import React, { Ref, useEffect, useRef, useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { AppTheme, LocalUserType } from '../../types';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { UserResponse } from 'stream-chat';
-import { Text } from 'react-native';
+import { useTheme } from 'stream-chat-react-native/v2';
+
+import { LocalUserType } from '../../types';
 
 type SelectedUserTagProps = {
   index: number;
@@ -18,17 +18,18 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
   onPress,
   tag,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, white_smoke },
+    },
+  } = useTheme();
 
   return (
     <TouchableOpacity
       disabled={disabled}
       key={`${tag}-${index}`}
       onPress={onPress}
-      style={[
-        styles.tagContainer,
-        { backgroundColor: colors.greyContentBackground },
-      ]}
+      style={[styles.tagContainer, { backgroundColor: white_smoke }]}
     >
       <Image
         source={{
@@ -41,7 +42,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
         style={[
           styles.tagText,
           {
-            color: colors.text,
+            color: black,
           },
         ]}
       >
@@ -69,5 +70,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
   },
-  blurredTagText: { color: '#0080ff' },
 });

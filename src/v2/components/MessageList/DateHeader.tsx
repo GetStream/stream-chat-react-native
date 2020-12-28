@@ -7,7 +7,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     alignSelf: 'center',
-    backgroundColor: '#00000099',
     borderRadius: 8,
     height: 16,
     justifyContent: 'center',
@@ -28,13 +27,16 @@ export type DateHeaderProps = {
 export const DateHeader: React.FC<DateHeaderProps> = ({ dateString }) => {
   const {
     theme: {
+      colors: { overlay_dark, white },
       dateHeader: { container, text },
     },
   } = useTheme();
 
   return (
-    <View style={[styles.container, container]}>
-      <Text style={[styles.text, text]}>{dateString}</Text>
+    <View
+      style={[styles.container, { backgroundColor: overlay_dark }, container]}
+    >
+      <Text style={[styles.text, { color: white }, text]}>{dateString}</Text>
     </View>
   );
 };

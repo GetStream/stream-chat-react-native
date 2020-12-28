@@ -50,7 +50,7 @@ const AttachButtonWithContext = <
   const { disabled, handleOnPress, selectedPicker } = props;
   const {
     theme: {
-      colors: { primary, textGrey },
+      colors: { accent_blue, grey },
       messageInput: { attachButton },
     },
   } = useTheme();
@@ -62,7 +62,7 @@ const AttachButtonWithContext = <
       style={[attachButton]}
       testID='attach-button'
     >
-      <Attach pathFill={selectedPicker === 'images' ? primary : textGrey} />
+      <Attach pathFill={selectedPicker === 'images' ? accent_blue : grey} />
     </TouchableOpacity>
   );
 };

@@ -1,8 +1,4 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
-import React from 'react';
-import { useContext } from 'react';
-import { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Image,
   Platform,
@@ -10,235 +6,185 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useTheme } from 'stream-chat-react-native/v2';
+
 import { USERS } from '../ChatUsers';
 import { AppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
 import { Settings } from '../icons/Settings';
-import { AppTheme, DrawerNavigatorParamList } from '../types';
 import AsyncStore from '../utils/AsyncStore';
+
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
-export type UserSelectorScreenNavigationProp = DrawerNavigationProp<
-  DrawerNavigatorParamList,
-  'UserSelectorScreen'
->;
+import { useNavigation } from '@react-navigation/native';
 
-export type UserSelectorScreenProps = {
-  navigation: UserSelectorScreenNavigationProp;
-};
-
-export const UserSelectorScreen: React.FC<UserSelectorScreenProps> = ({
-  navigation,
-}) => {
-  const { colors } = useTheme() as AppTheme;
-  const { switchUser } = useContext(AppContext);
-  useEffect(() => {
-    AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
-  }, []);
-
-  return (
-    <SafeAreaView>
-      <View
-        style={{
-          backgroundColor: colors.background,
-          height: '100%',
-          paddingTop: 34,
-          width: '100%',
-        }}
-      >
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'column',
-            flexGrow: 1,
-            flexShrink: 1,
-            justifyContent: 'center',
-            width: '100%',
-          }}
-        >
-          <StreamLogo />
-          <Text
-            style={{
-              color: colors.text,
-              fontSize: 22,
-              fontWeight: 'bold',
-              marginTop: 20,
-            }}
-          >
-            Welcome to Stream Chat
-          </Text>
-          <Text
-            style={{
-              color: colors.text,
-              fontSize: 14.5,
-              marginTop: 10,
-            }}
-          >
-            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
-            sdk:
-          </Text>
-          <ScrollView style={{ height: 200, marginTop: 50, width: '100%' }}>
-            {Object.values(USERS).map((u, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  switchUser(u.id);
-                }}
-                style={{
-                  borderBottomColor: colors.borderLight,
-                  borderBottomWidth: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingBottom: 12,
-                  paddingLeft: 8,
-                  paddingRight: 23,
-                  paddingTop: 12,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                  }}
-                >
-                  <Image
-                    source={{
-                      uri: u.image,
-                    }}
-                    style={{
-                      borderRadius: 20,
-                      height: 40,
-                      width: 40,
-                    }}
-                  />
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      marginLeft: 16,
-                    }}
-                  >
-                    <Text
-                      style={[
-                        styles.userName,
-                        {
-                          color: colors.text,
-                        },
-                      ]}
-                    >
-                      {u.name}
-                    </Text>
-                    <Text style={{ color: colors.textSecondary }}>
-                      Stream test account
-                    </Text>
-                  </View>
-                </View>
-                <View style={{ height: 20, width: 20 }}>
-                  <RightArrow />
-                </View>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              key={'advanced'}
-              onPress={() => {
-                navigation.navigate('AdvancedUserSelectorScreen');
-              }}
-              style={{
-                borderBottomColor: colors.borderLight,
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingBottom: 12,
-                paddingLeft: 8,
-                paddingRight: 23,
-                paddingTop: 12,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                }}
-              >
-                <View
-                  style={{
-                    alignItems: 'center',
-                    backgroundColor: colors.greyContentBackground,
-                    borderRadius: 20,
-                    height: 40,
-                    justifyContent: 'center',
-                    width: 40,
-                  }}
-                >
-                  <Settings />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    marginLeft: 16,
-                  }}
-                >
-                  <Text
-                    style={[
-                      styles.userName,
-                      {
-                        color: colors.text,
-                      },
-                    ]}
-                  >
-                    Advanced Options
-                  </Text>
-                  <Text style={{ color: colors.textSecondary }}>
-                    Custom settings
-                  </Text>
-                </View>
-              </View>
-              <View style={{ height: 20, width: 20 }}>
-                <RightArrow />
-              </View>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-        <Text style={{ color: colors.footnote, textAlign: 'center' }}>
-          Stream SDK v{version}
-        </Text>
-      </View>
-    </SafeAreaView>
-  );
-};
-
-/* eslint-disable sort-keys */
 const styles = StyleSheet.create({
+  avatarImage: {
+    borderRadius: 20,
+    height: 40,
+    width: 40,
+  },
   container: {
-    padding: 8,
-    flexGrow: 1,
-    height: '100%',
+    flex: 1,
   },
-  menuContainer: {
+  contentContainer: {
     flexGrow: 1,
-    flexShrink: 1,
+  },
+  footerText: {
+    textAlign: 'center',
+  },
+  nameContainer: {
+    marginLeft: 8,
+  },
+  rightArrow: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: 12,
+  },
+  scrollContainer: {
+    flex: 1,
+    overflow: 'visible',
+  },
+  subTitle: {
+    fontSize: 14,
+    marginTop: 13,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
     marginTop: 20,
-    justifyContent: 'space-between',
   },
-  menuIcon: {
-    height: 18,
-    width: 18,
-  },
-  menuItem: {
-    padding: 10,
+  titleContainer: {
     alignItems: 'center',
-    flexDirection: 'row',
+    paddingBottom: 31,
+    paddingTop: 34,
   },
-  menuTitle: {
-    fontSize: 14.5,
-    marginLeft: 10,
-  },
-  row: {
+  userContainer: {
     alignItems: 'center',
+    borderBottomWidth: 1,
     flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
   },
   userName: {
     fontSize: 16,
     fontWeight: 'bold',
   },
 });
+
+export const UserSelectorScreen: React.FC = () => {
+  const {
+    theme: {
+      colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
+    },
+  } = useTheme();
+  const navigation = useNavigation();
+  const { switchUser } = useContext(AppContext);
+
+  useEffect(() => {
+    AsyncStore.setItem('@stream-rn-sampleapp-user-id', '');
+  }, []);
+
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: white_snow }]}>
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        style={styles.scrollContainer}
+      >
+        <View style={styles.titleContainer}>
+          <StreamLogo />
+          <Text style={[styles.title, { color: black }]}>
+            Welcome to Stream Chat
+          </Text>
+          <Text style={[styles.subTitle, { color: black }]}>
+            Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
+            sdk:
+          </Text>
+        </View>
+
+        {Object.values(USERS).map((u, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              switchUser(u.id);
+            }}
+            style={[styles.userContainer, { borderBottomColor: border }]}
+          >
+            <Image
+              source={{
+                uri: u.image,
+              }}
+              style={styles.avatarImage}
+            />
+            <View style={styles.nameContainer}>
+              <Text
+                style={[
+                  styles.userName,
+                  {
+                    color: black,
+                  },
+                ]}
+              >
+                {u.name}
+              </Text>
+              <Text style={{ color: grey }}>Stream test account</Text>
+            </View>
+            <View style={styles.rightArrow}>
+              <RightArrow height={24} width={24} />
+            </View>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity
+          key={'advanced'}
+          onPress={() => {
+            navigation.navigate('AdvancedUserSelectorScreen');
+          }}
+          style={[styles.userContainer, { borderBottomColor: border }]}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+            }}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: grey_whisper,
+                borderRadius: 20,
+                height: 40,
+                justifyContent: 'center',
+                width: 40,
+              }}
+            >
+              <Settings />
+            </View>
+            <View style={styles.nameContainer}>
+              <Text
+                style={[
+                  styles.userName,
+                  {
+                    color: black,
+                  },
+                ]}
+              >
+                Advanced Options
+              </Text>
+              <Text style={{ color: grey }}>Custom settings</Text>
+            </View>
+          </View>
+          <View style={styles.rightArrow}>
+            <RightArrow height={24} width={24} />
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+      <Text style={[styles.footerText, { color: grey_gainsboro }]}>
+        Stream SDK v{version}
+      </Text>
+    </SafeAreaView>
+  );
+};
