@@ -83,7 +83,7 @@ import type {
   Message as StreamMessage,
 } from 'stream-chat';
 
-import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
+import type { MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,

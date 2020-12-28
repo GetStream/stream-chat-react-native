@@ -14,7 +14,7 @@ import {
   ReactNodeOutput,
 } from 'simple-markdown';
 
-import type { Message } from '../../../MessageList/hooks/useMessageList';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -73,7 +73,7 @@ export type RenderTextParams<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
 > & {
   colors: typeof Colors;
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   onLink?: (url: string) => Promise<void>;

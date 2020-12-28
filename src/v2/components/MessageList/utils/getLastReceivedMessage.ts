@@ -8,7 +8,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type { Message } from '../hooks/useMessageList';
+import type { MessageType } from '../hooks/useMessageList';
 
 export const getLastReceivedMessage = <
   At extends UnknownType = DefaultAttachmentType,
@@ -19,7 +19,7 @@ export const getLastReceivedMessage = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  messages: Message<At, Ch, Co, Ev, Me, Re, Us>[],
+  messages: MessageType<At, Ch, Co, Ev, Me, Re, Us>[],
 ) => {
   /**
    * There are no status on dates so they will be skipped

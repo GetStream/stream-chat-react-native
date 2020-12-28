@@ -32,7 +32,7 @@ export type UseMessageListParams = {
   threadList?: boolean;
 };
 
-export type Message<
+export type MessageType<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -53,8 +53,8 @@ export type ImmutableMessages<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > =
-  | Message<At, Ch, Co, Ev, Me, Re, Us>[]
-  | SeamlessImmutable.ImmutableArray<Message<At, Ch, Co, Ev, Me, Re, Us>>;
+  | MessageType<At, Ch, Co, Ev, Me, Re, Us>[]
+  | SeamlessImmutable.ImmutableArray<MessageType<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const isImmutableMessageArray = <
   At extends UnknownType = DefaultAttachmentType,
@@ -115,5 +115,5 @@ export const useMessageList = <
 
   return (inverted
     ? messagesWithStylesAndRead.reverse()
-    : messagesWithStylesAndRead) as Message<At, Ch, Co, Ev, Me, Re, Us>[];
+    : messagesWithStylesAndRead) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 };

@@ -8,7 +8,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Message } from './hooks/useMessageList';
+import type { MessageType } from './hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -53,7 +53,7 @@ export type MessageSystemProps<
   Us extends UnknownType = DefaultUserType
 > = {
   /** Current [message object](https://getstream.io/chat/docs/#message_format) */
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Formatter function for date object.
    *

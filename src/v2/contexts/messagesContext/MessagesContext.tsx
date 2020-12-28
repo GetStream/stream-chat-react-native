@@ -26,7 +26,7 @@ import type { MessageSimpleProps } from '../../components/Message/MessageSimple/
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
 import type { MarkdownRules } from '../../components/Message/MessageSimple/utils/renderText';
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
-import type { Message } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { MessageNotificationProps } from '../../components/MessageList/MessageNotification';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
@@ -207,9 +207,9 @@ export type MessagesContextValue<
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
-  setEditingState: (message: Message<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   setReplyToMessageState: (
-    message: Message<At, Ch, Co, Ev, Me, Re, Us>,
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   supportedReactions: ReactionData[];
   /**
