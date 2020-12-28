@@ -103,3 +103,11 @@ export type AppTheme = Theme & {
     textSecondary: string;
   };
 };
+
+export type LoginConfig = {
+  apiKey: string;
+  userId: string;
+  userName: string;
+  userToken: string;
+  userImage?: string;
+};

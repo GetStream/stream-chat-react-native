@@ -39,17 +39,25 @@ import { streamTheme } from './src/utils/streamTheme';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AppOverlayProvider } from './src/context/AppOverlayContext';
 import { ThreadScreen } from './src/screens/ThreadScreen';
+import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
 
 const Stack = createStackNavigator<StackNavigatorParamList>();
 const Drawer = createDrawerNavigator();
+const UserSelectorStack = createStackNavigator();
 
 const App = () => {
   const scheme = useColorScheme();
 
-  const { chatClient, isConnecting, switchUser } = useChatClient();
+  const {
+    chatClient,
+    isConnecting,
+    loginUser,
+    logout,
+    switchUser,
+  } = useChatClient();
 
   if (isConnecting) {
     return (
@@ -61,8 +69,14 @@ const App = () => {
 
   return (
     <NavigationContainer theme={scheme === 'dark' ? DarkTheme : LightTheme}>
-      <AppContext.Provider value={{ chatClient, switchUser }}>
-        <DrawerNavigator chatClient={chatClient} />
+      <AppContext.Provider
+        value={{ chatClient, loginUser, logout, switchUser }}
+      >
+        {chatClient ? (
+          <DrawerNavigator chatClient={chatClient} />
+        ) : (
+          <UserSelection />
+        )}
       </AppContext.Provider>
     </NavigationContainer>
   );
@@ -72,7 +86,6 @@ const DrawerNavigator = ({ chatClient }) => {
   const streamChatTheme = useStreamChatTheme();
   const { bottom } = useSafeAreaInsets();
 
-  if (!chatClient) return null;
   return (
     <OverlayProvider<
       LocalAttachmentType,
@@ -93,17 +106,12 @@ const DrawerNavigator = ({ chatClient }) => {
             drawerStyle={{
               width: 300,
             }}
-            initialRouteName={chatClient ? 'HomeScreen' : 'UserSelectorScreen'}
+            initialRouteName={'HomeScreen'}
           >
             <Drawer.Screen
               component={HomeScreen}
               name='HomeScreen'
               options={{ headerShown: false }}
-            />
-            <Drawer.Screen
-              component={UserSelectorScreen}
-              name='UserSelectorScreen'
-              options={{ gestureEnabled: false, headerShown: false }}
             />
           </Drawer.Navigator>
         </AppOverlayProvider>
@@ -112,6 +120,20 @@ const DrawerNavigator = ({ chatClient }) => {
   );
 };
 
+const UserSelection = () => (
+  <UserSelectorStack.Navigator initialRouteName='UserSelectorScreen'>
+    <UserSelectorStack.Screen
+      component={AdvancedUserSelectorScreen}
+      name='AdvancedUserSelectorScreen'
+      options={{ gestureEnabled: false, headerShown: false }}
+    />
+    <UserSelectorStack.Screen
+      component={UserSelectorScreen}
+      name='UserSelectorScreen'
+      options={{ gestureEnabled: false, headerShown: false }}
+    />
+  </UserSelectorStack.Navigator>
+);
 // TODO: Split the stack into multiple stacks - ChannelStack, CreateChannelStack etc.
 const HomeScreen = () => {
   const { bottom } = useSafeAreaInsets();

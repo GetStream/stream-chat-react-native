@@ -14,7 +14,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
   navigation,
 }) => {
   const { colors } = useTheme() as AppTheme;
-  const { chatClient } = useContext(AppContext);
+  const { chatClient, logout } = useContext(AppContext);
   if (!chatClient) return null;
 
   const userImage = chatClient.user?.image;
@@ -80,10 +80,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'UserSelectorScreen' }],
-              });
+              logout();
             }}
             style={styles.menuItem}
           >

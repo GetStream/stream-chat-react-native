@@ -7,6 +7,7 @@ import {
   Image,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -16,6 +17,7 @@ import { USERS } from '../ChatUsers';
 import { AppContext } from '../context/AppContext';
 import { RightArrow } from '../icons/RightArrow';
 import { StreamLogo } from '../icons/StreamLogo';
+import { Settings } from '../icons/Settings';
 import { AppTheme, DrawerNavigatorParamList } from '../types';
 import AsyncStore from '../utils/AsyncStore';
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
@@ -43,7 +45,7 @@ export const UserSelectorScreen: React.FC<UserSelectorScreenProps> = ({
         style={{
           backgroundColor: colors.background,
           height: '100%',
-          justifyContent: 'center',
+          paddingTop: 34,
           width: '100%',
         }}
       >
@@ -78,13 +80,12 @@ export const UserSelectorScreen: React.FC<UserSelectorScreenProps> = ({
             Select a user to try the {Platform.OS === 'ios' ? 'iOS' : 'Android'}{' '}
             sdk:
           </Text>
-          <View style={{ marginTop: 50, width: '100%' }}>
+          <ScrollView style={{ height: 200, marginTop: 50, width: '100%' }}>
             {Object.values(USERS).map((u, index) => (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
                   switchUser(u.id);
-                  navigation.jumpTo('HomeScreen');
                 }}
                 style={{
                   borderBottomColor: colors.borderLight,
@@ -138,7 +139,65 @@ export const UserSelectorScreen: React.FC<UserSelectorScreenProps> = ({
                 </View>
               </TouchableOpacity>
             ))}
-          </View>
+            <TouchableOpacity
+              key={'advanced'}
+              onPress={() => {
+                navigation.navigate('AdvancedUserSelectorScreen');
+              }}
+              style={{
+                borderBottomColor: colors.borderLight,
+                borderBottomWidth: 1,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingBottom: 12,
+                paddingLeft: 8,
+                paddingRight: 23,
+                paddingTop: 12,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                }}
+              >
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: colors.greyContentBackground,
+                    borderRadius: 20,
+                    height: 40,
+                    justifyContent: 'center',
+                    width: 40,
+                  }}
+                >
+                  <Settings />
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    marginLeft: 16,
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.userName,
+                      {
+                        color: colors.text,
+                      },
+                    ]}
+                  >
+                    Advanced Options
+                  </Text>
+                  <Text style={{ color: colors.textSecondary }}>
+                    Custom settings
+                  </Text>
+                </View>
+              </View>
+              <View style={{ height: 20, width: 20 }}>
+                <RightArrow />
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
         <Text style={{ color: colors.footnote, textAlign: 'center' }}>
           Stream SDK v{version}
