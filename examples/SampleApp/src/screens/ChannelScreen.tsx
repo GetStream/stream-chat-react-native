@@ -7,6 +7,7 @@ import {
   Avatar,
   Channel,
   getChannelPreviewDisplayAvatar,
+  GroupAvatar,
   MessageInput,
   MessageList,
   Spinner,
@@ -93,6 +94,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
     Object.values(channel.state.members).length === 2 &&
     channel.id?.indexOf('!members-') === 0;
 
+  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
   return (
     <ScreenHeader
       RightContent={() => (
@@ -109,10 +111,19 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
             }
           }}
         >
-          <Avatar
-            {...getChannelPreviewDisplayAvatar(channel, chatClient)}
-            size={40}
-          />
+          {displayAvatar.images ? (
+            <GroupAvatar
+              images={displayAvatar.images}
+              names={displayAvatar.names}
+              size={40}
+            />
+          ) : (
+            <Avatar
+              image={displayAvatar.image}
+              name={displayAvatar.name}
+              size={40}
+            />
+          )}
         </TouchableOpacity>
       )}
       Subtitle={isOnline ? null : NetworkDownIndicator}
