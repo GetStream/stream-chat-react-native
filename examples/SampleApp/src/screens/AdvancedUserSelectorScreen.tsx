@@ -1,10 +1,62 @@
 import React, { useContext, useState } from 'react';
-import { Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { ScreenHeader } from '../components/ScreenHeader';
-import { AppTheme } from '../types';
-import { version } from '../../node_modules/stream-chat-react-native/package.json';
-import { AppContext } from '../context/AppContext';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardCompatibleView, useTheme } from 'stream-chat-react-native/v2';
+
+import { ScreenHeader } from '../components/ScreenHeader';
+import { AppContext } from '../context/AppContext';
+
+import { version } from '../../node_modules/stream-chat-react-native/package.json';
+
+const styles = StyleSheet.create({
+  bottomContainer: {
+    paddingHorizontal: 16,
+  },
+  bottomInnerContainer: {
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    borderRadius: 26,
+    padding: 16,
+    width: '100%',
+  },
+  container: {
+    height: '100%',
+  },
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  input: {
+    fontSize: 14,
+    includeFontPadding: false,
+    padding: 0,
+    paddingTop: 0,
+    textAlignVertical: 'center',
+  },
+  labelsContainer: { paddingHorizontal: 16, paddingTop: 8 },
+  labelText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  labelTextContainer: {
+    borderRadius: 6,
+    height: 48,
+    justifyContent: 'center',
+    marginTop: 8,
+    paddingHorizontal: 16,
+  },
+  versionText: {
+    marginTop: 16,
+    textAlign: 'center',
+  },
+});
 
 type LabeledTextInputProps = {
   onChangeText: (text: string) => void;
@@ -21,38 +73,39 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 }) => {
   const {
     theme: {
-      colors: { accent_red, grey, grey_whisper },
+      colors: { accent_red, black, grey, grey_whisper },
     },
   } = useTheme();
   return (
     <View
-      style={{
-        backgroundColor: grey_whisper,
-        borderRadius: 8,
-        height: 48,
-        justifyContent: 'center',
-        marginTop: 8,
-        paddingHorizontal: 16,
-      }}
+      style={[
+        styles.labelTextContainer,
+        {
+          backgroundColor: grey_whisper,
+          paddingVertical: !!value || !!error ? 16 : 8,
+        },
+      ]}
     >
       {!!value && (
         <Text
-          style={{
-            color: grey,
-            fontSize: 10,
-            fontWeight: '700',
-          }}
+          style={[
+            styles.labelText,
+            {
+              color: grey,
+            },
+          ]}
         >
           {label}
         </Text>
       )}
       {!!error && (
         <Text
-          style={{
-            color: accent_red,
-            fontSize: 10,
-            fontWeight: '700',
-          }}
+          style={[
+            styles.labelText,
+            {
+              color: accent_red,
+            },
+          ]}
         >
           Please enter {label}
         </Text>
@@ -62,6 +115,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         placeholder={label}
         placeholderTextColor={grey}
         returnKeyType='next'
+        style={[styles.input, { color: black }]}
         value={value}
       />
     </View>
@@ -69,20 +123,21 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 };
 
 export const AdvancedUserSelectorScreen: React.FC = () => {
+  const { bottom } = useSafeAreaInsets();
   const {
     theme: {
-      colors: { grey_gainsboro, white, white_snow },
+      colors: { button_background, button_text, grey_gainsboro, white_snow },
     },
   } = useTheme();
 
   const { loginUser } = useContext(AppContext);
-  const [apiKey, setApiKey] = useState<string>('');
-  const [apiKeyError, setApiKeyError] = useState<boolean>(false);
-  const [userId, setUserId] = useState<string>('');
-  const [userIdError, setUserIdError] = useState<boolean>(false);
-  const [userToken, setUserToken] = useState<string>('');
-  const [userTokenError, setUserTokenError] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>('');
+  const [apiKey, setApiKey] = useState('');
+  const [apiKeyError, setApiKeyError] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [userIdError, setUserIdError] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userToken, setUserToken] = useState('');
+  const [userTokenError, setUserTokenError] = useState(false);
 
   const isValidInput = () => {
     let isValid = true;
@@ -104,17 +159,19 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
     return isValid;
   };
   return (
-    <KeyboardCompatibleView keyboardVerticalOffset={10}>
-      <View style={{ backgroundColor: white_snow, height: '100%' }}>
-        <ScreenHeader titleText={'Advanced Options'} />
-        <View
-          style={{
-            flexGrow: 1,
-            flexShrink: 1,
-            justifyContent: 'space-between',
-          }}
-        >
-          <View style={{ paddingHorizontal: 16, paddingVertical: 8 }}>
+    <KeyboardCompatibleView keyboardVerticalOffset={0}>
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: white_snow,
+            paddingBottom: bottom,
+          },
+        ]}
+      >
+        <ScreenHeader titleText='Advanced Options' />
+        <View style={styles.innerContainer}>
+          <View style={styles.labelsContainer}>
             <LabeledTextInput
               error={apiKeyError}
               label='Chat API Key'
@@ -150,11 +207,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
               value={userName}
             />
           </View>
-          <View
-            style={{
-              padding: 16,
-            }}
-          >
+          <View style={styles.bottomContainer}>
             <TouchableOpacity
               onPress={async () => {
                 if (!isValidInput()) return;
@@ -172,30 +225,28 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
                   );
                 }
               }}
-              style={{
-                alignItems: 'center',
-                alignSelf: 'flex-end',
-                // TODO: Replace following color with theme color.
-                backgroundColor: '#005FFF',
-                borderRadius: 26,
-                padding: 16,
-                width: '100%',
-              }}
+              style={[
+                styles.bottomInnerContainer,
+                {
+                  backgroundColor: button_background,
+                },
+              ]}
             >
               <Text
                 style={{
-                  color: white,
+                  color: button_text,
                 }}
               >
                 Login
               </Text>
             </TouchableOpacity>
             <Text
-              style={{
-                color: grey_gainsboro,
-                marginTop: 16,
-                textAlign: 'center',
-              }}
+              style={[
+                styles.versionText,
+                {
+                  color: grey_gainsboro,
+                },
+              ]}
             >
               Stream SDK v{version}
             </Text>

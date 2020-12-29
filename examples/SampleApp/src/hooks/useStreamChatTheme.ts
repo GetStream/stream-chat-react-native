@@ -16,6 +16,8 @@ export const useStreamChatTheme = () => {
             black: '#FFFFFF',
             blue_alice: '#00193D',
             border: '#141924',
+            button_background: '#FFFFFF',
+            button_text: '#005FFF',
             grey: '#7A7A7A',
             grey_gainsboro: '#2D2F2F',
             grey_whisper: '#1C1E22',
@@ -39,6 +41,8 @@ export const useStreamChatTheme = () => {
             black: '#000000',
             blue_alice: '#E9F2FF',
             border: '#00000014', // 14 = 8% opacity; top: x=0, y=-1; bottom: x=0, y=1
+            button_background: '#005FFF',
+            button_text: '#FFFFFF',
             grey: '#7A7A7A',
             grey_gainsboro: '#DBDBDB',
             grey_whisper: '#ECEBEB',
