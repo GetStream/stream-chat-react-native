@@ -186,6 +186,7 @@ const App = () => {
                 name='Channel'
                 options={() => ({
                   headerBackTitle: 'Back',
+                  headerRight: () => <></>,
                   headerTitle: channel?.data?.name,
                 })}
               />
@@ -194,7 +195,11 @@ const App = () => {
                 name='ChannelList'
                 options={{ headerTitle: 'Channel List' }}
               />
-              <Stack.Screen component={ThreadScreen} name='Thread' />
+              <Stack.Screen
+                component={ThreadScreen}
+                name='Thread'
+                options={() => ({ headerLeft: () => <></> })}
+              />
             </Stack.Navigator>
           )}
         </OverlayProvider>
