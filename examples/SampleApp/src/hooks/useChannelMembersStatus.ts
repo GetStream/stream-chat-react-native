@@ -11,6 +11,7 @@ import {
 import Dayjs from 'dayjs';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 export const useChannelMembersStatus = (
   channel: Channel<
@@ -29,15 +30,14 @@ export const useChannelMembersStatus = (
   const getStatus = () => {
     let newStatus = '';
     const isOneOnOneConversation =
-      Object.values(channel.state.members).length === 2 &&
-      channel.id?.indexOf('!members-') === 0;
+      memberCount === 2 && channel.id?.indexOf('!members-') === 0;
 
     if (isOneOnOneConversation) {
       const { user } = Object.values(channel.state.members).find(
         (m) => m.user?.id !== chatClient?.user?.id,
       );
 
-      newStatus = getUserActivityStatus(user);
+      return (newStatus = getUserActivityStatus(user));
     } else {
       const memberCountText = `${memberCount} Members`;
       const onlineCountText =
@@ -57,16 +57,4 @@ export const useChannelMembersStatus = (
   }, [watchersCount, memberCount, chatClient]);
 
   return status;
-};
-
-export const getUserActivityStatus = (user: UserResponse<LocalUserType>) => {
-  if (Dayjs(user.last_active).isBefore(Dayjs())) {
-    return `Last seen ${Dayjs(user?.last_active).fromNow()}`;
-  }
-
-  if (user.online) {
-    return `Online for ${Dayjs(user?.last_active).toNow()}`;
-  }
-
-  return '';
 };
