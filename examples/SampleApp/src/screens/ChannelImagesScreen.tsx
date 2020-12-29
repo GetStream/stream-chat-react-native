@@ -112,6 +112,9 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
       <ScreenHeader titleText='Photos and Videos' />
       {(sections.length > 0 || !loading) && (
         <SectionList
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
           ListEmptyComponent={EmptyListComponent}
           onEndReached={loadMore}
           renderItem={({ index, item }) => (
@@ -187,10 +190,9 @@ const EmptyListComponent = () => {
         height: '100%',
         justifyContent: 'center',
         padding: 40,
-        width: '100%',
       }}
     >
-      <View style={{ alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Picture fill={grey_gainsboro} scale={6} />
         <Text style={{ color: black, fontSize: 16 }}>No media</Text>
         <Text style={{ color: grey, marginTop: 8, textAlign: 'center' }}>
