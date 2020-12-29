@@ -9,7 +9,6 @@ import {
   LocalUserType,
 } from '../types';
 import Dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 
@@ -24,10 +23,10 @@ export const useChannelMembersStatus = (
     LocalUserType
   >,
 ) => {
-  const [status, setStatus] = useState('');
-  const { chatClient } = useContext(AppContext);
+  const watchersCount = channel.state.watcher_count;
+  const memberCount = channel?.data?.member_count;
 
-  useEffect(() => {
+  const getStatus = () => {
     let newStatus = '';
     const isOneOnOneConversation =
       Object.values(channel.state.members).length === 2 &&
@@ -40,18 +39,22 @@ export const useChannelMembersStatus = (
 
       newStatus = getUserActivityStatus(user);
     } else {
-      const watchersCount = channel.state.watcher_count;
-      const memberCount = channel?.data?.member_count;
-
       const memberCountText = `${memberCount} Members`;
       const onlineCountText =
         watchersCount > 0 ? `${watchersCount} Online` : '';
 
       newStatus = `${[memberCountText, onlineCountText].join(',')}`;
-    }
 
-    setStatus(newStatus);
-  }, [channel, chatClient]);
+      return newStatus;
+    }
+  };
+
+  const [status, setStatus] = useState(getStatus());
+  const { chatClient } = useContext(AppContext);
+
+  useEffect(() => {
+    setStatus(getStatus());
+  }, [watchersCount, memberCount, chatClient]);
 
   return status;
 };

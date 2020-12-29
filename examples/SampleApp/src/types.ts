@@ -43,6 +43,15 @@ export type StackNavigatorParamList = {
     >;
   };
   ChannelScreen: {
+    channel?: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
     channelId?: string;
     messageId?: string;
   };
