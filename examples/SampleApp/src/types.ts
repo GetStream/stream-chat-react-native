@@ -1,3 +1,4 @@
+import type { Immutable } from 'seamless-immutable';
 import type { Channel, UserResponse } from 'stream-chat';
 import type { ThreadContextValue } from 'stream-chat-react-native/v2';
 import type { Theme } from '@react-navigation/native';
@@ -20,10 +21,26 @@ export type DrawerNavigatorParamList = {
 
 export type StackNavigatorParamList = {
   ChannelFilesScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   ChannelImagesScreen: {
-    channel: Channel;
+    channel: Channel<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >;
   };
   ChannelScreen: {
     channelId?: string;
@@ -58,7 +75,7 @@ export type StackNavigatorParamList = {
     >;
   };
   SharedGroupsScreen: {
-    user: UserResponse<LocalUserType>;
+    user: Immutable<UserResponse<LocalUserType>> | UserResponse<LocalUserType>;
   };
   ThreadScreen: {
     channel: Channel<
@@ -80,6 +97,11 @@ export type StackNavigatorParamList = {
       LocalUserType
     >['thread'];
   };
+};
+
+export type UserSelectorParamList = {
+  AdvancedUserSelectorScreen: undefined;
+  UserSelectorScreen: undefined;
 };
 
 export type BottomTabNavigatorParamList = {

@@ -9,7 +9,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { AppContext } from '../context/AppContext';
@@ -101,7 +102,13 @@ type OneOnOneChannelDetailScreenRouteProp = RouteProp<
   'OneOnOneChannelDetailScreen'
 >;
 
-type OneOnOneChannelDetailScreenProps = {
+type OneOnOneChannelDetailScreenNavigationProp = StackNavigationProp<
+  StackNavigatorParamList,
+  'OneOnOneChannelDetailScreen'
+>;
+
+type Props = {
+  navigation: OneOnOneChannelDetailScreenNavigationProp;
   route: OneOnOneChannelDetailScreenRouteProp;
 };
 
@@ -123,12 +130,12 @@ const Spacer = () => {
   );
 };
 
-export const OneOnOneChannelDetailScreen: React.FC<OneOnOneChannelDetailScreenProps> = ({
+export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
+  navigation,
   route: {
     params: { channel },
   },
 }) => {
-  const navigation = useNavigation();
   const {
     theme: {
       colors: {

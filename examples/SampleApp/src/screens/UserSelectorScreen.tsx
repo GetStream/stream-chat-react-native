@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native/v2';
 
@@ -20,6 +20,8 @@ import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
+
+import type { UserSelectorParamList } from '../types';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -77,13 +79,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export const UserSelectorScreen: React.FC = () => {
+export type UserSelectorScreenNavigationProp = StackNavigationProp<
+  UserSelectorParamList,
+  'UserSelectorScreen'
+>;
+
+type Props = {
+  navigation: UserSelectorScreenNavigationProp;
+};
+
+export const UserSelectorScreen: React.FC<Props> = ({ navigation }) => {
   const {
     theme: {
       colors: { black, border, grey, grey_gainsboro, grey_whisper, white_snow },
     },
   } = useTheme();
-  const navigation = useNavigation();
   const { switchUser } = useContext(AppContext);
 
   useEffect(() => {

@@ -97,9 +97,9 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
               <EmptySearchState height={124} width={124} />
-              <Text>No user matches these keywords</Text>
-              <Text>{loading ? 'true' : 'false'}</Text>
-              <Text>{results.length}</Text>
+              <Text>
+                {loading ? 'Loading...' : 'No user matches these keywords'}
+              </Text>
             </View>
           )}
           onEndReached={() => {

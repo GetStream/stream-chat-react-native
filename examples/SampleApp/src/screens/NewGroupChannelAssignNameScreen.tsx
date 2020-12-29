@@ -157,7 +157,7 @@ export const NewGroupChannelAssignNameScreen: React.FC<NewGroupChannelAssignName
             {selectedUsers.length} Members
           </Text>
         </View>
-        {selectedUsers.length > 0 && (
+        {selectedUsers.length >= 0 && (
           <UserSearchResults
             groupedAlphabetically={false}
             results={selectedUsers}

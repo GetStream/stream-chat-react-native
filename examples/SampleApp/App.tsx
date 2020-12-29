@@ -45,6 +45,7 @@ import {
   LocalResponseType,
   LocalUserType,
   StackNavigatorParamList,
+  UserSelectorParamList,
 } from './src/types';
 
 import type { StreamChat } from 'stream-chat';
@@ -54,7 +55,7 @@ console.assert = () => null;
 
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator<StackNavigatorParamList>();
-const UserSelectorStack = createStackNavigator();
+const UserSelectorStack = createStackNavigator<UserSelectorParamList>();
 const App = () => {
   const {
     chatClient,
