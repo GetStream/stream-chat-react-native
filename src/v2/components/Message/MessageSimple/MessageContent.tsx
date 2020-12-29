@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import merge from 'lodash/merge';
 
 import { MessageTextContainer } from './MessageTextContainer';
 
@@ -161,7 +162,14 @@ export const MessageContentWithContext = <
 
   const {
     theme: {
-      colors: { attachmentBackground, grey, transparent },
+      colors: {
+        accent_red,
+        blue_alice,
+        grey,
+        grey_gainsboro,
+        grey_whisper,
+        transparent,
+      },
       messageSimple: {
         content: {
           container: { borderRadiusL, borderRadiusS, ...container },
@@ -222,17 +230,18 @@ export const MessageContentWithContext = <
         ]}
       >
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
-          markdownStyles={deletedText}
+          markdownStyles={merge({ em: { color: grey } }, deletedText)}
           message={{ ...message, text: '_Message deleted_' }}
         />
         {MessageFooter ? (
           <MessageFooter testID='message-footer' />
         ) : (
           <View style={metaContainer} testID='message-status-time'>
-            <Eye {...eyeIcon} />
+            <Eye pathFill={grey} {...eyeIcon} />
             <Text
               style={[
                 {
+                  color: grey,
                   textAlign: alignment,
                 },
                 metaText,
@@ -244,6 +253,7 @@ export const MessageContentWithContext = <
             <Text
               style={[
                 {
+                  color: grey,
                   textAlign: alignment,
                 },
                 metaText,
@@ -290,10 +300,10 @@ export const MessageContentWithContext = <
                 : otherAttachments.length
                 ? otherAttachments[0].type === 'giphy'
                   ? transparent
-                  : attachmentBackground
+                  : blue_alice
                 : alignment === 'left' || error
                 ? transparent
-                : grey,
+                : grey_gainsboro,
               borderBottomLeftRadius:
                 groupStyle === 'left_bottom' || groupStyle === 'left_single'
                   ? borderRadiusS
@@ -302,6 +312,7 @@ export const MessageContentWithContext = <
                 groupStyle === 'right_bottom' || groupStyle === 'right_single'
                   ? borderRadiusS
                   : borderRadiusL,
+              borderColor: grey_whisper,
             },
             onlyEmojis || otherAttachments.length ? { borderWidth: 0 } : {},
             containerInner,
@@ -352,7 +363,7 @@ export const MessageContentWithContext = <
         {error && (
           <View style={StyleSheet.absoluteFill}>
             <View style={errorIconContainer}>
-              <Error {...errorIcon} />
+              <Error pathFill={accent_red} {...errorIcon} />
             </View>
           </View>
         )}
@@ -367,6 +378,7 @@ export const MessageContentWithContext = <
               <Text
                 style={[
                   {
+                    color: grey,
                     textAlign: alignment,
                   },
                   metaText,
@@ -380,10 +392,12 @@ export const MessageContentWithContext = <
           {Object.keys(members).length > 2 &&
           alignment === 'left' &&
           message.user?.name ? (
-            <Text style={messageUser}>{message.user.name}</Text>
+            <Text style={[{ color: grey }, messageUser]}>
+              {message.user.name}
+            </Text>
           ) : null}
           {showMessageStatus && <MessageStatus />}
-          <Text style={[{ textAlign: alignment }, metaText]}>
+          <Text style={[{ color: grey, textAlign: alignment }, metaText]}>
             {getDateText(formatDate)}
           </Text>
         </View>
@@ -461,11 +475,18 @@ const areEqual = <
     prevMessage.text === nextMessage.text;
   if (!messageEqual) return false;
 
+  const prevAttachments = prevMessage.attachments;
+  const nextAttachments = nextMessage.attachments;
   const attachmentsEqual =
-    (Array.isArray(prevMessage.attachments) &&
-      Array.isArray(nextMessage.attachments) &&
-      prevMessage.attachments.length === nextMessage.attachments.length) ||
-    prevMessage.attachments === nextMessage.attachments;
+    Array.isArray(prevAttachments) && Array.isArray(nextAttachments)
+      ? prevAttachments.length === nextAttachments.length &&
+        prevAttachments.every(
+          (attachment, index) =>
+            attachment.image_url === nextAttachments[index].image_url &&
+            attachment.og_scrape_url === nextAttachments[index].og_scrape_url &&
+            attachment.thumb_url === nextAttachments[index].thumb_url,
+        )
+      : prevAttachments === nextAttachments;
   if (!attachmentsEqual) return false;
 
   const latestReactionsEqual =

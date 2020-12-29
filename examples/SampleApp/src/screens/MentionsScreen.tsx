@@ -1,19 +1,13 @@
 import React from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import { AppTheme, BottomTabNavigatorParamList } from '../types';
+import { StyleSheet, View } from 'react-native';
+import { useTheme } from 'stream-chat-react-native/v2';
+
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
-import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import dayjs from 'dayjs';
-import { Avatar } from 'stream-chat-react-native/v2';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
+import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
+import { BottomTabNavigatorParamList } from '../types';
+
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 export type MentionsScreenProps = {
   navigation: StackNavigationProp<
@@ -23,7 +17,11 @@ export type MentionsScreenProps = {
 };
 
 export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { border, white_snow },
+    },
+  } = useTheme();
   const {
     loadMore,
     messages,
@@ -37,15 +35,15 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
         style={[
           styles.container,
           {
-            backgroundColor: colors.background,
+            backgroundColor: white_snow,
           },
         ]}
       >
         <ChatScreenHeader />
         <View
           style={{
-            backgroundColor: colors.background,
-            borderColor: 'black',
+            backgroundColor: white_snow,
+            borderColor: border,
             flexGrow: 1,
             flexShrink: 1,
           }}

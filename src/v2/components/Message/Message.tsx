@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Clipboard,
   GestureResponderEvent,
+  Image,
   Keyboard,
   Platform,
   ViewStyle,
@@ -83,7 +84,7 @@ import type {
   Message as StreamMessage,
 } from 'stream-chat';
 
-import type { Message as MessageType } from '../MessageList/hooks/useMessageList';
+import type { MessageType } from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -95,6 +96,25 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+
+const prefetchImage = ({
+  height,
+  url,
+}: {
+  height: number | string;
+  url: string;
+}) => {
+  if (url.includes('&h=%2A')) {
+    try {
+      Image.prefetch(url.replace('h=%2A', `h=${height}`));
+    } catch (e) {
+      console.log('resize prefetch failed', e);
+      Image.prefetch(url);
+    }
+  } else {
+    Image.prefetch(url);
+  }
+};
 
 export type MessagePropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -268,7 +288,10 @@ const MessageWithContext = <
 
   const {
     theme: {
-      colors: { danger, primary, textGrey },
+      colors: { accent_blue, accent_red, grey },
+      messageSimple: {
+        gallery: { halfSize, size },
+      },
     },
   } = useTheme();
 
@@ -377,6 +400,27 @@ const MessageWithContext = <
           other: [] as Attachment<At>[],
         };
 
+  // prefetch images for Gallery component rendering
+  const attachmentImageLength = attachments.images.length;
+  useEffect(() => {
+    if (attachmentImageLength) {
+      attachments.images.slice(0, 3).forEach((image, index) => {
+        const url = image.image_url || image.thumb_url;
+        if (url) {
+          if (attachmentImageLength <= 2) {
+            prefetchImage({ height: size || 200, url });
+          } else {
+            if (index === 0) {
+              prefetchImage({ height: size || 200, url });
+            } else {
+              prefetchImage({ height: halfSize || 100, url });
+            }
+          }
+        }
+      });
+    }
+  }, [attachmentImageLength]);
+
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     switch (content) {
       case 'attachments':
@@ -458,7 +502,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <UserDelete pathFill={textGrey} />,
+      icon: <UserDelete pathFill={grey} />,
       title: message.user?.banned ? t('Unblock User') : t('Block User'),
     };
 
@@ -468,7 +512,7 @@ const MessageWithContext = <
         setOverlay('none');
         Clipboard.setString(message.text || '');
       },
-      icon: <Copy pathFill={textGrey} />,
+      icon: <Copy pathFill={grey} />,
       title: t('Copy Message'),
     };
 
@@ -480,9 +524,9 @@ const MessageWithContext = <
           updateMessage(data.message);
         }
       },
-      icon: <Delete pathFill={danger} />,
+      icon: <Delete pathFill={accent_red} />,
       title: t('Delete Message'),
-      titleStyle: { color: danger },
+      titleStyle: { color: accent_red },
     };
 
     const editMessage = {
@@ -490,7 +534,7 @@ const MessageWithContext = <
         setOverlay('none');
         setEditingState(message);
       },
-      icon: <Edit pathFill={textGrey} />,
+      icon: <Edit pathFill={grey} />,
       title: t('Edit Message'),
     };
 
@@ -537,7 +581,7 @@ const MessageWithContext = <
           }
         }
       },
-      icon: <Mute pathFill={textGrey} />,
+      icon: <Mute pathFill={grey} />,
       title: isMuted ? t('Unmute User') : t('Mute User'),
     };
 
@@ -546,7 +590,7 @@ const MessageWithContext = <
         setOverlay('none');
         setReplyToMessageState(message);
       },
-      icon: <CurveLineLeftUp pathFill={textGrey} />,
+      icon: <CurveLineLeftUp pathFill={grey} />,
       title: t('Reply'),
     };
 
@@ -555,7 +599,7 @@ const MessageWithContext = <
         setOverlay('none');
         onOpenThread();
       },
-      icon: <ThreadReply pathFill={textGrey} />,
+      icon: <ThreadReply pathFill={grey} />,
       title: t('Thread Reply'),
     };
 
@@ -579,7 +623,7 @@ const MessageWithContext = <
                   updated_at: undefined,
                 } as MessageResponse<At, Ch, Co, Me, Re, Us>);
               },
-              icon: <SendUp pathFill={primary} />,
+              icon: <SendUp pathFill={accent_blue} />,
               title: t('Resend'),
             },
             editMessage,

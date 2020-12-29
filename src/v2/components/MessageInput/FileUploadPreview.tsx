@@ -38,12 +38,10 @@ const FILE_PREVIEW_HEIGHT = 60;
 
 const styles = StyleSheet.create({
   dismiss: {
-    backgroundColor: '#00000033', // 20 = 33% opacity
     borderRadius: 24,
     height: 24,
   },
   fileContainer: {
-    borderColor: '#00000029', // 29 = 16% opacity
     borderRadius: 12,
     borderWidth: 1,
     flexDirection: 'row',
@@ -102,6 +100,7 @@ const FileUploadPreviewWithContext = <
 
   const {
     theme: {
+      colors: { black, grey, grey_whisper, overlay_dark },
       messageInput: {
         fileUploadPreview: {
           dismiss,
@@ -139,6 +138,7 @@ const FileUploadPreviewWithContext = <
               }
             : {},
           {
+            borderColor: grey_whisper,
             width: flatListWidth - 16,
           },
           fileContainer,
@@ -152,6 +152,7 @@ const FileUploadPreviewWithContext = <
               style={[
                 styles.filenameText,
                 {
+                  color: black,
                   width:
                     flatListWidth -
                     16 - // 16 = horizontal padding
@@ -164,7 +165,7 @@ const FileUploadPreviewWithContext = <
             >
               {item.file.name || ''}
             </Text>
-            <Text style={[styles.fileSizeText, fileSizeText]}>
+            <Text style={[styles.fileSizeText, { color: grey }, fileSizeText]}>
               {getFileSizeDisplayText(item.file.size)}
             </Text>
           </View>
@@ -173,7 +174,7 @@ const FileUploadPreviewWithContext = <
           onPress={() => {
             removeFile(item.id);
           }}
-          style={[styles.dismiss, dismiss]}
+          style={[styles.dismiss, { backgroundColor: overlay_dark }, dismiss]}
           testID='remove-file-upload-preview'
         >
           <Close />

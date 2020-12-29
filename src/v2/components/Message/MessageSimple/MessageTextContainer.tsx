@@ -94,6 +94,7 @@ const MessageTextContainerWithContext = <
 
   const {
     theme: {
+      colors,
       messageSimple: {
         content: {
           markdown,
@@ -116,6 +117,7 @@ const MessageTextContainerWithContext = <
         <MessageText {...props} renderText={renderText} theme={theme} />
       ) : (
         renderText<At, Ch, Co, Ev, Me, Re, Us>({
+          colors,
           markdownRules,
           markdownStyles: {
             ...markdownStyles,

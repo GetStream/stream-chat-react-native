@@ -25,6 +25,7 @@ export const LoadingDot: React.FC<Props> = (props) => {
 
   const {
     theme: {
+      colors: { black },
       loadingDots: { loadingDot },
     },
   } = useTheme();
@@ -54,6 +55,7 @@ export const LoadingDot: React.FC<Props> = (props) => {
     <Animated.View
       style={[
         {
+          backgroundColor: black,
           borderRadius: diameter / 2,
           height: diameter,
           width: diameter,

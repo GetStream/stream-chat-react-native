@@ -1,10 +1,20 @@
 import React from 'react';
+
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Folder } from '../../../icons';
 
 type Props = {
   numberOfImageUploads: number;
 };
 
-export const FileSelectorIcon: React.FC<Props> = ({ numberOfImageUploads }) => (
-  <Folder pathFill={numberOfImageUploads === 0 ? '#7A7A7A' : '#DBDBDB'} />
-);
+export const FileSelectorIcon: React.FC<Props> = ({ numberOfImageUploads }) => {
+  const {
+    theme: {
+      colors: { grey, grey_gainsboro },
+    },
+  } = useTheme();
+
+  return (
+    <Folder pathFill={numberOfImageUploads === 0 ? grey : grey_gainsboro} />
+  );
+};

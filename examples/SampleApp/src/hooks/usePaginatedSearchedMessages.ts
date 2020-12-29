@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { ChannelFilters, MessageFilters, MessageResponse } from 'stream-chat';
+import { MessageFilters, MessageResponse } from 'stream-chat';
 import { useEffect } from 'react';
 import { AppContext } from '../context/AppContext';
 import {

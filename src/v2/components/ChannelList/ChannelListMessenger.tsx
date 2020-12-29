@@ -27,22 +27,6 @@ import type {
 const styles = StyleSheet.create({
   flatList: { flexGrow: 1, flexShrink: 1 },
   flatListContentContainer: { flexGrow: 1 },
-  header: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 8,
-  },
-  searchContainer: {
-    alignItems: 'center',
-    borderRadius: 18,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    width: '100%',
-  },
-  searchInput: { paddingLeft: 16 },
   statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
 });
 
@@ -99,38 +83,6 @@ const StatusIndicator = <
   return null;
 };
 
-// const HeaderComponent: React.FC<Pick<TranslationContextValue, 't'>> = ({
-//   t,
-// }) => {
-//   const {
-//     theme: {
-//       channelListMessenger: { header, searchContainer, searchInput },
-//       colors: { textGrey },
-//     },
-//   } = useTheme();
-
-//   return (
-//     <View style={[styles.header, header]}>
-//       <View style={[styles.searchContainer, searchContainer]}>
-//         <Search height={20} width={20} />
-//         <TextInput
-//           multiline={false}
-//           placeholder={t('Search')}
-//           placeholderTextColor={textGrey}
-//           style={[styles.searchInput, searchInput]}
-//         />
-//       </View>
-//     </View>
-//   );
-// };
-
-// HeaderComponent.displayName = 'HeaderComponent{channelListMessenger}';
-
-// const MemoizedHeaderComponent = React.memo(
-//   HeaderComponent,
-//   () => true,
-// ) as typeof HeaderComponent;
-
 const ChannelListMessengerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -166,6 +118,7 @@ const ChannelListMessengerWithContext = <
   const {
     theme: {
       channelListMessenger: { flatList, flatListContent },
+      colors: { white_snow },
     },
   } = useTheme();
 
@@ -201,6 +154,7 @@ const ChannelListMessengerWithContext = <
       <FlatList
         contentContainerStyle={[
           styles.flatListContentContainer,
+          { backgroundColor: white_snow },
           flatListContent,
         ]}
         data={channels}
@@ -208,7 +162,7 @@ const ChannelListMessengerWithContext = <
         keyExtractor={(item) => item.cid}
         ListEmptyComponent={
           loading ? (
-            <View>
+            <View style={{ backgroundColor: white_snow, flex: 1 }}>
               {Array.from(Array(numberOfSkeletons)).map((_, index) => (
                 <Skeleton key={`skeleton_${index}`} />
               ))}
@@ -236,7 +190,7 @@ const ChannelListMessengerWithContext = <
           <RefreshControl onRefresh={refreshList} refreshing={refreshing} />
         }
         renderItem={({ item }) => renderItem(item)}
-        style={[styles.flatList, flatList]}
+        style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
         testID='channel-list-messenger'
         {...additionalFlatListProps}
       />
@@ -244,71 +198,6 @@ const ChannelListMessengerWithContext = <
     </>
   );
 };
-
-// const areEqual = <
-//   At extends UnknownType = DefaultAttachmentType,
-//   Ch extends UnknownType = DefaultChannelType,
-//   Co extends string = DefaultCommandType,
-//   Ev extends UnknownType = DefaultEventType,
-//   Me extends UnknownType = DefaultMessageType,
-//   Re extends UnknownType = DefaultReactionType,
-//   Us extends UnknownType = DefaultUserType
-// >(
-//   prevProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-//   nextProps: ChannelListMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-// ) => {
-//   const {
-//     channels: prevChannels,
-//     error: prevError,
-//     forceUpdate: prevForceUpdate,
-//     loadingChannels: prevLoadingChannels,
-//     loadingNextPage: prevLoadingNextPage,
-//     refreshing: prevRefreshing,
-//   } = prevProps;
-//   const {
-//     channels: nextChannels,
-//     error: nextError,
-//     forceUpdate: nextForceUpdate,
-//     loadingChannels: nextLoadingChannels,
-//     loadingNextPage: nextLoadingNextPage,
-//     refreshing: nextRefreshing,
-//   } = nextProps;
-
-//   const refreshingEqual = prevRefreshing === nextRefreshing;
-//   if (!refreshingEqual) return false;
-
-//   const loadingChannelsEqual = prevLoadingChannels === nextLoadingChannels;
-//   if (!loadingChannelsEqual) return false;
-
-//   const loadingNextPageEqual = prevLoadingNextPage === nextLoadingNextPage;
-//   if (!loadingNextPageEqual) return false;
-
-//   const forceUpdateEqual = prevForceUpdate === nextForceUpdate;
-//   if (!forceUpdateEqual) return false;
-
-//   const errorEqual = prevError === nextError;
-//   if (!errorEqual) return false;
-
-//   const channelsEqual =
-//     prevChannels.length === nextChannels.length &&
-//     prevChannels.every(
-//       (channel, index) =>
-//         channel.data?.name === nextChannels[index].data?.name &&
-//         Object.keys(channel.state.members).every(
-//           (memberId) =>
-//             nextChannels[index].state.members[memberId].user?.online ===
-//             channel.state.members[memberId].user?.online,
-//         ),
-//     );
-//   if (!channelsEqual) return false;
-
-//   return true;
-// };
-
-// const MemoizedChannelListMessenger = React.memo(
-//   ChannelListMessengerWithContext,
-//   areEqual,
-// ) as typeof ChannelListMessengerWithContext;
 
 export type ChannelListMessengerProps<
   At extends UnknownType = DefaultAttachmentType,

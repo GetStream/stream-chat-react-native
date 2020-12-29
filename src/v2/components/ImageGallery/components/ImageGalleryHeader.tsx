@@ -100,6 +100,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
   const [height, setHeight] = useState(200);
   const {
     theme: {
+      colors: { black, white },
       imageGallery: {
         header: {
           centerContainer,
@@ -152,7 +153,9 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       pointerEvents={'box-none'}
     >
-      <ReanimatedSafeAreaView style={[container, headerStyle]}>
+      <ReanimatedSafeAreaView
+        style={[{ backgroundColor: white }, container, headerStyle]}
+      >
         <View style={[styles.innerContainer, innerContainer]}>
           {leftElement ? (
             leftElement({ hideOverlay, photo })
@@ -167,10 +170,12 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
             centerElement({ hideOverlay, photo })
           ) : (
             <View style={[styles.centerContainer, centerContainer]}>
-              <Text style={[styles.userName, usernameText]}>
+              <Text style={[styles.userName, { color: black }, usernameText]}>
                 {photo?.user?.name || t('Unknown User')}
               </Text>
-              <Text style={[styles.date, dateText]}>{date}</Text>
+              <Text style={[styles.date, { color: black }, dateText]}>
+                {date}
+              </Text>
             </View>
           )}
           {rightElement ? (

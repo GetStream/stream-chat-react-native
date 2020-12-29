@@ -1,5 +1,12 @@
-import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Image,
+  ImageProps,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   ImageGalleryContextValue,
@@ -31,6 +38,38 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+const GalleryImage: React.FC<
+  Omit<ImageProps, 'height' | 'source'> & {
+    height: number | string;
+    uri: string;
+  }
+> = (props) => {
+  const { height, uri, ...rest } = props;
+
+  const [error, setError] = useState(false);
+
+  return (
+    <Image
+      key={uri}
+      {...rest}
+      onError={() => setError(true)}
+      source={{
+        uri: uri.includes('&h=%2A')
+          ? error
+            ? uri
+            : uri.replace('h=%2A', `h=${height}`)
+          : uri,
+      }}
+    />
+  );
+};
+
+const MemoizedGalleryImage = React.memo(
+  GalleryImage,
+  (prevProps, nextProps) =>
+    prevProps.height === nextProps.height && prevProps.uri === nextProps.uri,
+) as typeof GalleryImage;
+
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   galleryContainer: {
@@ -45,7 +84,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  moreImagesText: { fontSize: 26, fontWeight: '700' },
+  moreImagesText: { color: '#FFFFFF', fontSize: 26, fontWeight: '700' },
 });
 
 export type GalleryPropsWithContext<
@@ -98,6 +137,7 @@ const GalleryWithContext = <
 
   const {
     theme: {
+      colors: { overlay },
       imageGallery: { blurType },
       messageSimple: {
         content: {
@@ -120,14 +160,13 @@ const GalleryWithContext = <
 
   if (!images?.length) return null;
 
-  // [[{ url: string }], [{ url: string }, { url: string }]]
+  // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
   const galleryImages = images
     .slice(0, 3)
     .reduce((returnArray, currentImage, index) => {
       const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
       if (attachmentUrl) {
         const url = makeImageCompatibleUrl(attachmentUrl);
-        Image.prefetch(url);
         if (images.length <= 2) {
           returnArray[0] = [
             ...(returnArray[0] || []),
@@ -193,9 +232,9 @@ const GalleryWithContext = <
               testID='image-multiple'
               {...additionalTouchableProps}
             >
-              <Image
+              <MemoizedGalleryImage
+                height={height}
                 resizeMode='cover'
-                source={{ uri: url }}
                 style={[
                   styles.flex,
                   {
@@ -227,12 +266,14 @@ const GalleryWithContext = <
                   },
                   image,
                 ]}
+                uri={url}
               />
               {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
                 <View
                   style={[
                     StyleSheet.absoluteFillObject,
                     styles.moreImagesContainer,
+                    { backgroundColor: overlay },
                     moreImagesContainer,
                   ]}
                 >

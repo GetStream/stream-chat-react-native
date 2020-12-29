@@ -51,6 +51,7 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
   const {
     theme: {
       attachmentPicker: { image, imageOverlay },
+      colors: { overlay },
     },
   } = useTheme();
 
@@ -70,7 +71,9 @@ const AttachmentImage: React.FC<AttachmentImageProps> = (props) => {
         ]}
       >
         {selected && (
-          <View style={[styles.overlay, imageOverlay]}>
+          <View
+            style={[styles.overlay, { backgroundColor: overlay }, imageOverlay]}
+          >
             <ImageOverlaySelectedComponent />
           </View>
         )}
@@ -156,6 +159,7 @@ export const AttachmentPicker = React.forwardRef(
     const {
       theme: {
         attachmentPicker: { bottomSheetContentContainer },
+        colors: { white },
       },
     } = useTheme();
     const {
@@ -286,6 +290,7 @@ export const AttachmentPicker = React.forwardRef(
           <BottomSheetFlatList
             contentContainerStyle={[
               styles.container,
+              { backgroundColor: white },
               bottomSheetContentContainer,
               { opacity: photoError ? 0 : 1 },
             ]}

@@ -65,6 +65,7 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
 }) => {
   const {
     theme: {
+      colors: { white },
       imageGallery: {
         grid: { gridAvatar, gridAvatarWrapper, gridImage },
       },
@@ -95,7 +96,11 @@ const GridImage = <Us extends DefaultUserType = DefaultUserType>({
           ? avatarComponent({ item: restItem })
           : user?.image && (
               <Avatar
-                containerStyle={[styles.avatarImageWrapper, gridAvatarWrapper]}
+                containerStyle={[
+                  styles.avatarImageWrapper,
+                  { backgroundColor: white },
+                  gridAvatarWrapper,
+                ]}
                 image={user?.image}
                 imageStyle={gridAvatar}
                 size={22}
@@ -143,6 +148,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
 
   const {
     theme: {
+      colors: { white },
       imageGallery: {
         grid: { contentContainer },
       },
@@ -162,7 +168,11 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
 
   return (
     <BottomSheetFlatList
-      contentContainerStyle={[styles.contentContainer, contentContainer]}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { backgroundColor: white },
+        contentContainer,
+      ]}
       data={imageGridItems}
       keyExtractor={(item, index) => `${item.uri}-${index}`}
       numColumns={numberOfImageGalleryGridColumns || 3}

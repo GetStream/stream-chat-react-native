@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons';
 
 const styles = StyleSheet.create({
   check: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     height: 24,
     marginRight: 8,
@@ -14,8 +14,21 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageOverlaySelectedComponent: React.FC = () => (
-  <View style={styles.check}>
-    <Check />
-  </View>
-);
+export const ImageOverlaySelectedComponent: React.FC = () => {
+  const {
+    theme: {
+      attachmentPicker: {
+        imageOverlaySelectedComponent: { check },
+      },
+      colors: { white },
+    },
+  } = useTheme();
+  return (
+    <View style={[styles.check, { backgroundColor: white }, check]}>
+      <Check />
+    </View>
+  );
+};
+
+ImageOverlaySelectedComponent.displayName =
+  'ImageOverlaySelectedComponent{attachmentPicker{imageOverlaySelectedComponent}}';

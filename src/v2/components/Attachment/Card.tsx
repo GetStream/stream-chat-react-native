@@ -142,6 +142,7 @@ const CardWithContext = <
 
   const {
     theme: {
+      colors: { accent_blue, black, blue_alice, transparent },
       messageSimple: {
         card: {
           authorName,
@@ -188,12 +189,18 @@ const CardWithContext = <
               <View
                 style={[
                   styles.authorNameContainer,
+                  { backgroundColor: blue_alice },
                   authorNameContainer,
                   stylesProp.authorNameContainer,
                 ]}
               >
                 <Text
-                  style={[styles.authorName, authorName, stylesProp.authorName]}
+                  style={[
+                    styles.authorName,
+                    { color: accent_blue },
+                    authorName,
+                    stylesProp.authorName,
+                  ]}
                 >
                   {author_name}
                 </Text>
@@ -209,7 +216,8 @@ const CardWithContext = <
           <View
             style={[
               authorNameFooterContainer,
-              !uri ? noURI : {},
+              { backgroundColor: transparent },
+              !uri ? { borderLeftColor: accent_blue, ...noURI } : {},
               stylesProp.authorNameFooterContainer,
             ]}
           >
@@ -217,6 +225,7 @@ const CardWithContext = <
               <Text
                 style={[
                   styles.authorNameFooter,
+                  { color: accent_blue },
                   authorNameFooter,
                   stylesProp.authorNameFooter,
                 ]}
@@ -227,7 +236,12 @@ const CardWithContext = <
             {title && (
               <Text
                 numberOfLines={1}
-                style={[styles.title, titleStyle, stylesProp.title]}
+                style={[
+                  styles.title,
+                  { color: black },
+                  titleStyle,
+                  stylesProp.title,
+                ]}
               >
                 {title}
               </Text>
@@ -237,6 +251,7 @@ const CardWithContext = <
                 numberOfLines={3}
                 style={[
                   styles.description,
+                  { color: black },
                   description,
                   stylesProp.description,
                 ]}

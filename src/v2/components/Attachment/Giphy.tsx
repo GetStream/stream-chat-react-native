@@ -139,7 +139,7 @@ const GiphyWithContext = <
 
   const {
     theme: {
-      colors: { white },
+      colors: { accent_blue, black, border, grey, white },
       messageSimple: {
         giphy: {
           cancel,
@@ -165,7 +165,13 @@ const GiphyWithContext = <
   if (!uri) return null;
 
   return actions ? (
-    <View style={[styles.selectionContainer, selectionContainer]}>
+    <View
+      style={[
+        styles.selectionContainer,
+        { backgroundColor: white, borderColor: `${black}0D` },
+        selectionContainer,
+      ]}
+    >
       <View style={styles.margin}>
         <Image
           resizeMode='cover'
@@ -173,23 +179,37 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, giphyContainer]}>
+          <View
+            style={[
+              styles.giphyContainer,
+              { backgroundColor: grey },
+              giphyContainer,
+            ]}
+          >
             <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, giphyText]}>
+            <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
             </Text>
           </View>
         </View>
       </View>
       <View>
-        <View style={[styles.selector, selector]}>
+        <View
+          style={[styles.selector, { borderBottomColor: border }, selector]}
+        >
           <TouchableOpacity
             onPress={() => handleAction('image_action', 'shuffle')}
-            style={[styles.shuffleButton, shuffleButton]}
+            style={[
+              styles.shuffleButton,
+              { borderColor: border },
+              shuffleButton,
+            ]}
           >
             <Left />
           </TouchableOpacity>
-          <Text style={[styles.title, titleStyle]}>{`"${title}"`}</Text>
+          <Text
+            style={[styles.title, { color: black }, titleStyle]}
+          >{`"${title}"`}</Text>
           <TouchableOpacity
             onPress={() => {
               if (actions?.[1].name && actions?.[1].value && handleAction) {
@@ -208,9 +228,15 @@ const GiphyWithContext = <
                 handleAction(actions[2].name, actions[2].value);
               }
             }}
-            style={[styles.cancelContainer, cancelContainer]}
+            style={[
+              styles.cancelContainer,
+              { borderRightColor: border },
+              cancelContainer,
+            ]}
           >
-            <Text style={[styles.cancel, cancel]}>{actions?.[2].text}</Text>
+            <Text style={[styles.cancel, { color: grey }, cancel]}>
+              {actions?.[2].text}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -220,7 +246,9 @@ const GiphyWithContext = <
             }}
             style={[styles.sendContainer, sendContainer]}
           >
-            <Text style={[styles.send, send]}>{actions?.[0].text}</Text>
+            <Text style={[styles.send, { color: accent_blue }, send]}>
+              {actions?.[0].text}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -241,7 +269,7 @@ const GiphyWithContext = <
         <View style={[styles.giphyMask, giphyMask]}>
           <View style={[styles.giphyContainer, giphyContainer]}>
             <Lightning height={16} pathFill={white} width={16} />
-            <Text style={[styles.giphyText, giphyText]}>
+            <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}
             </Text>
           </View>

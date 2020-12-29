@@ -1,8 +1,5 @@
-/* eslint-disable sort-keys */
-import { useTheme } from '@react-navigation/native';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useCallback, useContext, useEffect, useRef } from 'react';
-import { useState } from 'react';
 import {
   Alert,
   Platform,
@@ -19,13 +16,14 @@ import {
   MessageList,
   SendButton,
   SendButtonProps,
+  useTheme,
 } from 'stream-chat-react-native/v2';
 
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { AddUser } from '../icons/AddUser';
-import { AppTheme, StackNavigatorParamList } from '../types';
+import { StackNavigatorParamList } from '../types';
 import {
   LocalAttachmentType,
   LocalChannelType,
@@ -59,7 +57,11 @@ export type NewDirectMessagingScreenProps = {
 export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> = ({
   navigation,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { accent_blue, black, border, grey, white },
+    },
+  } = useTheme();
   const { chatClient } = useContext(AppContext);
 
   const messageInputRef = useRef<TextInput>(null);
@@ -81,7 +83,6 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
   const [update, setUpdate] = useState(0);
-  // @ts-ignore
 
   const {
     loading: loadingResults,
@@ -103,9 +104,9 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     const initChannel = async () => {
       if (!chatClient?.user?.id || !selectedUsers) return;
 
-      // If there are no selected usres, then set dummy channel.
+      // If there are no selected users, then set dummy channel.
       if (selectedUsers.length === 0) {
-        setUpdate(u => u + 1);
+        setUpdate((u) => u + 1);
         return;
       }
 
@@ -114,8 +115,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       members = members.concat(selectedUsers.map((t) => t.id));
       // Check if the channel already exists.
       const channels = await chatClient.queryChannels({
-        members,
         distinct: true,
+        members,
       });
 
       if (channels.length === 1) {
@@ -177,9 +178,10 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 
   const renderContent = () => (
     <>
-      <ScreenHeader titleText={'New Chat'} />
+      <ScreenHeader titleText='New Chat' />
       <View
         style={{
+          backgroundColor: white,
           paddingTop: 15,
           width: '100%',
           ...grow,
@@ -194,7 +196,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           style={[
             styles.searchContainer,
             {
-              borderBottomColor: colors.borderLight,
+              borderBottomColor: border,
             },
           ]}
         >
@@ -202,7 +204,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             <Text
               style={[
                 {
-                  color: colors.text,
+                  color: black,
                 },
               ]}
             >
@@ -210,14 +212,14 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             </Text>
           </View>
           <View style={styles.searchContainerMiddle}>
-            <View style={styles.selectedusersContainer}>
+            <View style={styles.selectedUsersContainer}>
               {selectedUsers.map((tag, index) => {
                 const tagProps = {
+                  disabled: !focusOnSearchInput,
                   index,
                   onPress: () => {
                     toggleUser && toggleUser(tag);
                   },
-                  disabled: !focusOnSearchInput,
                   tag,
                 };
 
@@ -235,8 +237,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
               <TextInput
                 onChangeText={onChangeSearchText}
                 onFocus={onFocusInput}
-                placeholder={'Type a name'}
-                placeholderTextColor={colors.textLight}
+                placeholder='Type a name'
+                placeholderTextColor={grey}
                 ref={(ref) => {
                   if (!ref) return;
 
@@ -246,7 +248,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                 style={[
                   styles.inputBox,
                   {
-                    color: colors.text,
+                    color: black,
                   },
                 ]}
                 value={searchText}
@@ -271,13 +273,13 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
                 style={styles.createGroupButtonContainer}
               >
                 <RoundButton>
-                  <Contacts fill={'#006CFF'} height={25} width={25} />
+                  <Contacts fill={accent_blue} height={25} width={25} />
                 </RoundButton>
                 <Text
                   style={[
                     styles.createGroupButtonText,
                     {
-                      color: colors.text,
+                      color: black,
                     },
                   ]}
                 >
@@ -351,19 +353,23 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
 };
 
 const EmptyMessagesIndicator = () => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black },
+    },
+  } = useTheme();
   return (
     <View
       style={{
+        alignItems: 'center',
         flexGrow: 1,
         flexShrink: 1,
-        alignItems: 'center',
         justifyContent: 'center',
       }}
     >
       <Text
         style={{
-          color: colors.text,
+          color: black,
         }}
       >
         No chats here yet
@@ -373,15 +379,35 @@ const EmptyMessagesIndicator = () => {
 };
 
 const styles = StyleSheet.create({
+  createGroupButtonContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingBottom: 15,
+    paddingLeft: 10,
+    paddingTop: 15,
+  },
+  createGroupButtonText: {
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
   grow: {
     flexGrow: 1,
     flexShrink: 1,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    flexDirection: 'row',
     height: 56,
+    justifyContent: 'space-between',
+  },
+  inputBox: {
+    marginRight: 2,
+    padding: 0,
+  },
+  inputBoxContainer: {
+    flexDirection: 'row',
+    margin: 4,
+    width: '100%',
   },
   searchContainer: {
     alignItems: 'flex-start',
@@ -403,34 +429,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     paddingBottom: 16,
   },
-  selectedusersContainer: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  inputBoxContainer: {
-    flexDirection: 'row',
-    margin: 4,
-    width: '100%',
-  },
-  inputBox: {
-    marginRight: 2,
-    padding: 0,
-  },
-
-  createGroupButtonContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingBottom: 15,
-    paddingLeft: 10,
-    paddingTop: 15,
-  },
-  createGroupButtonText: {
-    fontWeight: 'bold',
-    marginLeft: 8,
-  },
   searchResultsLableContainer: {
     padding: 5,
     paddingLeft: 8,
+  },
+  selectedUsersContainer: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
 });

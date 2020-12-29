@@ -1,10 +1,9 @@
 import React from 'react';
-import { useTheme } from '@react-navigation/native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Delete } from '../icons/Delete';
-import { AppTheme } from '../types';
+import { useTheme } from 'stream-chat-react-native/v2';
 
+import { Delete } from '../icons/Delete';
 
 export type ConfirmationBottomSheetProps = {
   dismissHandler: () => void;
@@ -25,7 +24,11 @@ export const ConfirmationBottomSheet = (
     subtext,
     title,
   } = props;
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { accent_red, black, border, grey, white },
+    },
+  } = useTheme();
   const inset = useSafeAreaInsets();
 
   return (
@@ -33,31 +36,32 @@ export const ConfirmationBottomSheet = (
       style={[
         styles.container,
         {
+          backgroundColor: white,
           marginBottom: inset.bottom,
         },
       ]}
     >
       <View style={styles.description}>
-        <Delete fill={colors.danger} height={24} width={24} />
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-        <Text style={[styles.subtext, { color: colors.text }]}>{subtext}</Text>
+        <Delete fill={accent_red} height={24} width={24} />
+        <Text style={[styles.title, { color: black }]}>{title}</Text>
+        <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
       </View>
       <View
         style={[
           styles.actionButtonsContainer,
           {
-            borderTopColor: colors.borderLight,
+            borderTopColor: border,
           },
         ]}
       >
         <TouchableOpacity onPress={dismissHandler} style={styles.actionButton}>
-          <Text>{cancelText}</Text>
+          <Text style={{ color: grey }}>{cancelText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onConfirm}
           style={[styles.actionButton, { alignItems: 'flex-end' }]}
         >
-          <Text>{confirmText}</Text>
+          <Text style={{ color: accent_red }}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -77,7 +81,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   container: {
-    backgroundColor: 'white',
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     display: 'flex',

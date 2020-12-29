@@ -11,7 +11,7 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { Message as MessageType, useMessageList } from './hooks/useMessageList';
+import { MessageType, useMessageList } from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
@@ -60,6 +60,10 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    padding: 10,
+    width: '100%',
+  },
   container: {
     alignItems: 'center',
     flex: 1,
@@ -67,12 +71,8 @@ const styles = StyleSheet.create({
   },
   errorNotification: {
     alignItems: 'center',
-    backgroundColor: '#FAE6E8',
     padding: 5,
     zIndex: 10,
-  },
-  errorNotificationText: {
-    backgroundColor: '#FAE6E8',
   },
   flex: { flex: 1 },
   listContainer: {
@@ -85,12 +85,6 @@ const styles = StyleSheet.create({
   stickyHeader: {
     position: 'absolute',
     top: 0,
-  },
-  targetedMessageUnderlay: {
-    backgroundColor: '#FBF4DD',
-  },
-  unreadMessageUnderlay: {
-    backgroundColor: '#F9F9F9',
   },
 });
 
@@ -297,12 +291,20 @@ const MessageListWithContext = <
 
   const {
     theme: {
-      colors: { primary },
+      colors: {
+        accent_blue,
+        accent_red,
+        bg_gradient_end,
+        grey_gainsboro,
+        targetedMessageBackground,
+        white_snow,
+      },
       messageList: {
         container,
         errorNotification,
         errorNotificationText,
         listContainer,
+        targetedMessageUnderlay,
       },
     },
   } = useTheme();
@@ -460,11 +462,12 @@ const MessageListWithContext = <
     if (message.type !== 'message.read') {
       const additionalStyles = [];
       if (targetedMessage === message.id) {
-        additionalStyles.push(styles.targetedMessageUnderlay);
+        additionalStyles.push({ backgroundColor: targetedMessageBackground });
+        additionalStyles.push(targetedMessageUnderlay);
       }
 
       if (isUnread && newMessagesNotification) {
-        additionalStyles.push(styles.unreadMessageUnderlay);
+        additionalStyles.push({ backgroundColor: bg_gradient_end });
       }
 
       return (
@@ -615,7 +618,10 @@ const MessageListWithContext = <
   };
 
   return (
-    <View collapsable={false} style={[styles.container, container]}>
+    <View
+      collapsable={false}
+      style={[styles.container, { backgroundColor: white_snow }, container]}
+    >
       <FlatList
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
@@ -637,8 +643,8 @@ const MessageListWithContext = <
           HeaderComponent ? (
             HeaderComponent
           ) : Platform.OS !== 'android' && loadingMoreRecent ? (
-            <View style={{ padding: 10, width: '100%' }}>
-              <ActivityIndicator color={primary} size='small' />
+            <View style={[styles.activityIndicatorContainer]}>
+              <ActivityIndicator color={accent_blue} size='small' />
             </View>
           ) : null
         }
@@ -686,10 +692,14 @@ const MessageListWithContext = <
       />
       {!isOnline && (
         <View
-          style={[styles.errorNotification, errorNotification]}
+          style={[
+            styles.errorNotification,
+            { backgroundColor: `${grey_gainsboro}E6` },
+            errorNotification,
+          ]}
           testID='error-notification'
         >
-          <Text style={[styles.errorNotificationText, errorNotificationText]}>
+          <Text style={[{ color: accent_red }, errorNotificationText]}>
             {t('Connection failure, reconnecting now...')}
           </Text>
         </View>

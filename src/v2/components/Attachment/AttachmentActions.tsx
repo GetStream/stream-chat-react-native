@@ -74,6 +74,7 @@ const AttachmentActionsWithContext = <
 
   const {
     theme: {
+      colors: { accent_blue, black, border, transparent, white },
       messageSimple: {
         actions: {
           button: {
@@ -110,9 +111,11 @@ const AttachmentActionsWithContext = <
               styles.actionButton,
               {
                 backgroundColor: primary
-                  ? primaryBackgroundColor
-                  : defaultBackgroundColor,
-                borderColor: primary ? primaryBorderColor : defaultBorderColor,
+                  ? primaryBackgroundColor || accent_blue
+                  : defaultBackgroundColor || white,
+                borderColor: primary
+                  ? primaryBorderColor || border
+                  : defaultBorderColor || transparent,
               },
               buttonStyle,
               stylesProp.actionButton,
@@ -122,7 +125,9 @@ const AttachmentActionsWithContext = <
             <Text
               style={[
                 {
-                  color: primary ? primaryColor : defaultColor,
+                  color: primary
+                    ? primaryColor || white
+                    : defaultColor || black,
                 },
                 buttonTextStyle,
                 stylesProp.buttonText,

@@ -76,6 +76,7 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
         presenceIndicator,
         presenceIndicatorContainer,
       },
+      colors: { accent_green, white },
     },
   } = useTheme();
 
@@ -133,7 +134,12 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
           ]}
         >
           <Svg>
-            <Circle {...presenceIndicator} {...presenceIndicatorProp} />
+            <Circle
+              fill={accent_green}
+              stroke={white}
+              {...presenceIndicator}
+              {...presenceIndicatorProp}
+            />
           </Svg>
         </View>
       )}

@@ -2,17 +2,17 @@ import React from 'react';
 import {
   ActivityIndicator,
   FlatList,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useNavigation, useTheme } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { Avatar } from 'stream-chat-react-native/v2';
+import { MessageResponse } from 'stream-chat';
+import { Avatar, useTheme } from 'stream-chat-react-native/v2';
+
+import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 import {
-  AppTheme,
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -20,11 +20,9 @@ import {
   LocalReactionType,
   LocalUserType,
 } from '../../types';
-import { MessageResponse } from 'stream-chat';
-import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
 export type MessageSearchListProps = {
-  EmptySearchIndicator: React.Component;
+  EmptySearchIndicator: React.ComponentType;
   loadMore: () => void;
   messages: MessageResponse<
     LocalAttachmentType,
@@ -47,7 +45,11 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
   refreshList,
   showResultCount = false,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, border, grey, white_snow },
+    },
+  } = useTheme();
   const navigation = useNavigation();
 
   if (loading && !refreshing && (!messages || messages.length === 0)) {
@@ -59,7 +61,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
           justifyContent: 'center',
         }}
       >
-        <ActivityIndicator size={'small'} />
+        <ActivityIndicator size='small' />
       </View>
     );
   }
@@ -70,15 +72,16 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
       {showResultCount && (
         <View
           style={{
-            backgroundColor: colors.greyContentBackground,
+            backgroundColor: white_snow,
             paddingHorizontal: 10,
             paddingVertical: 2,
           }}
         >
-          <Text>
+          <Text style={{ color: grey }}>
             {messages.length >= MESSAGE_SEARCH_LIMIT
               ? MESSAGE_SEARCH_LIMIT
-              : messages.length}{messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '}
+              : messages.length}
+            {messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '}
             results
           </Text>
         </View>
@@ -98,7 +101,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
               });
             }}
             style={{
-              borderBottomColor: colors.borderLight,
+              borderBottomColor: border,
               borderBottomWidth: 1,
               flexDirection: 'row',
               padding: 12,
@@ -118,7 +121,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
                   marginRight: 20,
                 }}
               >
-                <Text style={{ color: colors.text }}>
+                <Text style={{ color: black }}>
                   <Text style={{ fontWeight: '700' }}>{item.user?.name} </Text>
                   {!!item.channel?.name && (
                     <Text>
@@ -133,7 +136,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
                 <Text
                   numberOfLines={1}
                   style={{
-                    color: colors.textLight,
+                    color: grey,
                     flexWrap: 'nowrap',
                     fontSize: 12,
                     fontWeight: '400',
@@ -146,11 +149,11 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
             <View>
               <Text
                 style={{
-                  color: colors.textLight,
+                  color: grey,
                   fontSize: 12,
                 }}
               >
-                {dayjs(item.created_at).calendar(null, {
+                {dayjs(item.created_at).calendar(undefined, {
                   lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
                   lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
                   sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )

@@ -48,7 +48,7 @@ const Icon = <Co extends string = DefaultCommandType>({
 }) => {
   const {
     theme: {
-      colors: { white },
+      colors: { accent_blue, white },
       messageInput: {
         suggestions: {
           command: { iconContainer },
@@ -59,49 +59,97 @@ const Icon = <Co extends string = DefaultCommandType>({
   switch (name) {
     case 'ban':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <UserDelete height={16} pathFill={white} width={16} />
         </View>
       );
     case 'flag':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <Flag pathFill={white} />
         </View>
       );
     case 'giphy':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <GiphyIcon />
         </View>
       );
     case 'imgur':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <Imgur />
         </View>
       );
     case 'mute':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <Mute height={16} pathFill={white} width={16} />
         </View>
       );
     case 'unban':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <UserAdd height={16} pathFill={white} width={16} />
         </View>
       );
     case 'unmute':
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <Sound pathFill={white} />
         </View>
       );
     default:
       return (
-        <View style={[styles.iconContainer, iconContainer]}>
+        <View
+          style={[
+            styles.iconContainer,
+            { backgroundColor: accent_blue },
+            iconContainer,
+          ]}
+        >
           <Lightning height={16} pathFill={white} width={16} />
         </View>
       );
@@ -126,6 +174,7 @@ export const CommandsItem = <Co extends string = DefaultCommandType>({
 }: CommandsItemProps<Co>) => {
   const {
     theme: {
+      colors: { black, grey },
       messageInput: {
         suggestions: {
           command: { args: argsStyle, container, title },
@@ -137,10 +186,16 @@ export const CommandsItem = <Co extends string = DefaultCommandType>({
   return (
     <View style={[styles.container, container]}>
       <Icon name={name} />
-      <Text style={[styles.title, title]} testID='commands-item-title'>
+      <Text
+        style={[styles.title, { color: black }, title]}
+        testID='commands-item-title'
+      >
         {(name || '').replace(/^\w/, (char) => char.toUpperCase())}
       </Text>
-      <Text style={[styles.args, argsStyle]} testID='commands-item-args'>
+      <Text
+        style={[styles.args, { color: grey }, argsStyle]}
+        testID='commands-item-args'
+      >
         {`/${name} ${args}`}
       </Text>
     </View>

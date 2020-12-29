@@ -24,7 +24,6 @@ const styles = StyleSheet.create({
   },
   container: {
     borderBottomWidth: 1,
-    flex: 1,
     flexDirection: 'row',
   },
 });
@@ -43,7 +42,7 @@ export const Skeleton: React.FC = () => {
         gradientStop,
         height = 64,
       },
-      colors: { background: backgroundColor, black, grey },
+      colors: { black, border, white_snow },
     },
   } = useTheme();
 
@@ -121,11 +120,11 @@ export const Skeleton: React.FC = () => {
 
   return (
     <View
-      style={[styles.container, container]}
+      style={[styles.container, { borderBottomColor: border }, container]}
       testID='channel-preview-skeleton'
     >
       <View
-        style={[styles.background, background, { backgroundColor: grey }]}
+        style={[styles.background, { backgroundColor: white_snow }, background]}
       />
       <Animated.View style={[animatedStyle, styles.background]}>
         <Svg height={height} width={width}>
@@ -145,24 +144,14 @@ export const Skeleton: React.FC = () => {
               y1={0}
               y2={0}
             >
-              <Stop
-                offset={1}
-                stopColor={black}
-                stopOpacity={0.1}
-                {...gradientStart}
-              />
-              <Stop
-                offset={0}
-                stopColor={black}
-                stopOpacity={0.5}
-                {...gradientStop}
-              />
+              <Stop offset={1} stopColor={black} {...gradientStart} />
+              <Stop offset={0} stopColor={black} {...gradientStop} />
             </LinearGradient>
           </Defs>
         </Svg>
       </Animated.View>
       <Svg height={height} width={width}>
-        <Path d={d.value} fill={backgroundColor} />
+        <Path d={d.value} fill={white_snow} />
       </Svg>
     </View>
   );

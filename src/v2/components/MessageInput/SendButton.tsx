@@ -50,7 +50,7 @@ const SendButtonWithContext = <
   const { disabled = false, giphyActive, sendMessage } = props;
   const {
     theme: {
-      colors: { primary },
+      colors: { accent_blue, grey_gainsboro },
       messageInput: { sendButton },
     },
   } = useTheme();
@@ -62,9 +62,9 @@ const SendButtonWithContext = <
       style={[sendButton]}
       testID='send-button'
     >
-      {giphyActive && <Search pathFill={primary} />}
-      {!giphyActive && disabled && <SendRight pathFill='#DBDBDB' />}
-      {!giphyActive && !disabled && <SendUp pathFill={primary} />}
+      {giphyActive && <Search pathFill={accent_blue} />}
+      {!giphyActive && disabled && <SendRight pathFill={grey_gainsboro} />}
+      {!giphyActive && !disabled && <SendUp pathFill={accent_blue} />}
     </TouchableOpacity>
   );
 };

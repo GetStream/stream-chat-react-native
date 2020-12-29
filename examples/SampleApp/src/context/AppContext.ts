@@ -10,6 +10,7 @@ import {
   LocalMessageType,
   LocalResponseType,
   LocalUserType,
+  LoginConfig,
 } from '../types';
 
 type AppContextType = {
@@ -33,6 +34,8 @@ type AppContextType = {
     LocalResponseType,
     LocalUserType
   > | null;
+  loginUser: (config: LoginConfig) => void;
+  logout: () => void;
   switchUser: (userId?: string) => void;
   // setChannel: React.Dispatch<
   //   React.SetStateAction<

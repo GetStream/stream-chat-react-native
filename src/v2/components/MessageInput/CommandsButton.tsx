@@ -55,7 +55,7 @@ export const CommandsButtonWithContext = <
 
   const {
     theme: {
-      colors: { primary, textGrey },
+      colors: { accent_blue, grey },
       messageInput: { commandsButton },
     },
   } = useTheme();
@@ -71,8 +71,8 @@ export const CommandsButtonWithContext = <
         pathFill={
           suggestions &&
           suggestions.data.some((suggestion) => isSuggestionCommand(suggestion))
-            ? primary
-            : textGrey
+            ? accent_blue
+            : grey
         }
       />
     </TouchableOpacity>

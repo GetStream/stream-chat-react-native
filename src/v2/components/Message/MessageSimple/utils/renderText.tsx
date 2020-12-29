@@ -13,7 +13,7 @@ import {
   ReactNodeOutput,
 } from 'simple-markdown';
 
-import type { Message } from '../../../MessageList/hooks/useMessageList';
+import type { MessageType } from '../../../MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -26,13 +26,16 @@ import type {
 } from '../../../../types/types';
 
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
-import type { MarkdownStyle } from '../../../../contexts/themeContext/utils/theme';
+import type {
+  Colors,
+  MarkdownStyle,
+} from '../../../../contexts/themeContext/utils/theme';
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
-    backgroundColor: '#F3F3F3',
-    borderColor: '#DDDDDD',
-    color: 'red',
+    backgroundColor: '#F2F2F2', // TODO: figure out a way use theme color 'white_smoke'
+    borderColor: '#DBDBDB', // TODO: figure out a way use theme color 'grey_gainsboro'
+    color: '#FF3742',
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
@@ -68,7 +71,8 @@ export type RenderTextParams<
 > = Partial<
   Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'>
 > & {
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
+  colors: typeof Colors;
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   markdownRules?: MarkdownRules;
   markdownStyles?: MarkdownStyle;
   onLink?: (url: string) => Promise<void>;
@@ -86,6 +90,7 @@ export const renderText = <
   params: RenderTextParams<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
+    colors,
     markdownRules,
     markdownStyles,
     message,
@@ -114,9 +119,31 @@ export const renderText = <
   }
 
   newText = newText.replace(/[<&"'>]/g, '\\$&');
-  const styles = {
+  const styles: MarkdownStyle = {
     ...defaultMarkdownStyles,
     ...markdownStyles,
+    autolink: {
+      ...defaultMarkdownStyles.autolink,
+      color: colors.accent_blue,
+      ...markdownStyles?.autolink,
+    },
+    inlineCode: {
+      ...defaultMarkdownStyles.inlineCode,
+      backgroundColor: colors.white_smoke,
+      borderColor: colors.grey_gainsboro,
+      color: colors.accent_red,
+      ...markdownStyles?.inlineCode,
+    },
+    mentions: {
+      ...defaultMarkdownStyles.mentions,
+      color: colors.accent_blue,
+      ...markdownStyles?.mentions,
+    },
+    text: {
+      ...defaultMarkdownStyles.text,
+      color: colors.black,
+      ...markdownStyles?.text,
+    },
   };
 
   const onLink = (url: string) =>

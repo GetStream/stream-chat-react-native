@@ -123,44 +123,6 @@ const ChannelPreviewWithContext = <
   );
 };
 
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ChannelPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const {
-    last_message_at: prevLast,
-    members: prevMembers,
-  } = prevProps.channel.state;
-  const {
-    last_message_at: nextLast,
-    members: nextMembers,
-  } = nextProps.channel.state;
-
-  const lastMessageAtEqual = prevLast?.toString() === nextLast?.toString();
-  if (!lastMessageAtEqual) return false;
-
-  const membersEqual = Object.keys(prevMembers).every(
-    (memberId) =>
-      nextMembers[memberId].user?.online === prevMembers[memberId].user?.online,
-  );
-  if (!membersEqual) return false;
-
-  return true;
-};
-
-const MemoizedChannelPreview = React.memo(
-  ChannelPreviewWithContext,
-  areEqual,
-) as typeof ChannelPreviewWithContext;
-
 export type ChannelPreviewProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -188,5 +150,5 @@ export const ChannelPreview = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { Preview } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  return <MemoizedChannelPreview {...{ client, Preview }} {...props} />;
+  return <ChannelPreviewWithContext {...{ client, Preview }} {...props} />;
 };

@@ -1,25 +1,25 @@
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { useTheme } from '@react-navigation/native';
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Edit, Group, User, useTheme } from 'stream-chat-react-native/v2';
+
 import { AppContext } from '../context/AppContext';
-import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
-import { NewGroupIcon } from '../icons/NewGroupIcon';
-import { SignOut } from '../icons/SignOut';
-import { AppTheme } from '../types';
 
 export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
   navigation,
 }) => {
-  const { colors } = useTheme() as AppTheme;
-  const { chatClient } = useContext(AppContext);
+  const {
+    theme: {
+      colors: { black, grey, white_snow },
+    },
+  } = useTheme();
+  const { chatClient, logout } = useContext(AppContext);
   if (!chatClient) return null;
 
   const userImage = chatClient.user?.image;
   return (
-    <SafeAreaView style={{ backgroundColor: colors.background }}>
+    <SafeAreaView style={{ backgroundColor: white_snow }}>
       <View style={styles.container}>
         <View style={[styles.row]}>
           <Image
@@ -36,7 +36,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
             style={[
               styles.userName,
               {
-                color: colors.text,
+                color: black,
               },
             ]}
           >
@@ -49,12 +49,12 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
               onPress={() => navigation.navigate('NewDirectMessagingScreen')}
               style={styles.menuItem}
             >
-              <NewDirectMessageIcon height={24} width={24} />
+              <Edit height={24} pathFill={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
                   {
-                    color: colors.text,
+                    color: black,
                   },
                 ]}
               >
@@ -62,15 +62,17 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigation.navigate('NewGroupChannelAddMemberScreen')}
+              onPress={() =>
+                navigation.navigate('NewGroupChannelAddMemberScreen')
+              }
               style={styles.menuItem}
             >
-              <NewGroupIcon height={24} width={24} />
+              <Group height={24} pathFill={grey} width={24} />
               <Text
                 style={[
                   styles.menuTitle,
                   {
-                    color: colors.text,
+                    color: black,
                   },
                 ]}
               >
@@ -80,19 +82,16 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
           </View>
           <TouchableOpacity
             onPress={() => {
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'UserSelectorScreen' }],
-              });
+              logout();
             }}
             style={styles.menuItem}
           >
-            <SignOut height={24} width={24} />
+            <User height={24} pathFill={grey} width={24} />
             <Text
               style={[
                 styles.menuTitle,
                 {
-                  color: colors.text,
+                  color: black,
                 },
               ]}
             >
@@ -105,27 +104,26 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
   );
 };
 
-/* eslint-disable sort-keys */
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
     flexGrow: 1,
     height: '100%',
+    padding: 8,
   },
   menuContainer: {
     flexGrow: 1,
     flexShrink: 1,
-    marginTop: 20,
     justifyContent: 'space-between',
+    marginTop: 20,
   },
   menuIcon: {
     height: 18,
     width: 18,
   },
   menuItem: {
-    padding: 10,
     alignItems: 'center',
     flexDirection: 'row',
+    padding: 10,
   },
   menuTitle: {
     fontSize: 14.5,
@@ -137,7 +135,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    marginLeft: 16,
     fontWeight: 'bold',
+    marginLeft: 16,
   },
 });

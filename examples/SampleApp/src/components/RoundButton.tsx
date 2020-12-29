@@ -1,11 +1,6 @@
-/* eslint-disable sort-keys */
-import React, { Children } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { useTheme } from '@react-navigation/native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { AppTheme } from '../types';
+import React from 'react';
+import { TouchableOpacity } from 'react-native';
+import { useTheme } from 'stream-chat-react-native/v2';
 
 type RoundButtonProps = {
   disabled?: boolean;
@@ -16,27 +11,30 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
   disabled = false,
   onPress,
 }) => {
-  const { colors } = useTheme() as AppTheme;
+  const {
+    theme: {
+      colors: { black, icon_background },
+    },
+  } = useTheme();
   return (
     <TouchableOpacity
       disabled={disabled}
       onPress={onPress}
       style={{
-        borderRadius: 20,
-        height: 40,
-        width: 40,
-        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: colors.iconButtonBackground,
-        shadowColor: '#000',
+        backgroundColor: icon_background,
+        borderRadius: 20,
+        elevation: 5,
+        height: 40,
+        justifyContent: 'center',
+        shadowColor: black,
         shadowOffset: {
-          width: 0,
           height: 2,
+          width: 0,
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-
-        elevation: 5,
+        width: 40,
       }}
     >
       {children}
