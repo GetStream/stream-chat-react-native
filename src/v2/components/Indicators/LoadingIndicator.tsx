@@ -9,7 +9,7 @@ import { useTranslationContext } from '../../contexts/translationContext/Transla
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    height: '100%',
+    flex: 1,
     justifyContent: 'center',
   },
   loadingText: {

@@ -336,7 +336,7 @@ const MessageListWithContext = <
    * we set the loading state one cycle behind to ensure the messages are set before the
    * change to the loading state is registered.
    */
-  const [messagesLoading, setMessagesLoading] = useState(false);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
