@@ -1,18 +1,44 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Channel, MessageResponse } from 'stream-chat';
-import { useEffect } from 'react';
+
 import { AppContext } from '../context/AppContext';
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType,
+} from '../types';
 
 export const usePaginatedAttachments = (
-  channel: Channel,
+  channel: Channel<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalResponseType,
+    LocalUserType
+  >,
   attachmentType: string,
 ) => {
   const { chatClient } = useContext(AppContext);
-  const [loading, setLoading] = useState(true);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
+  const [loading, setLoading] = useState(true);
+  const [messages, setMessages] = useState<
+    MessageResponse<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalResponseType,
+      LocalUserType
+    >[]
+  >([]);
 
   const fetchAttachments = async () => {
     if (queryInProgress.current) {
@@ -41,7 +67,7 @@ export const usePaginatedAttachments = (
           offset: offset.current,
         },
       );
-      console.log(res);
+
       const newMessages = res?.results.map((r) => r.message);
 
       if (!newMessages) {
@@ -69,7 +95,6 @@ export const usePaginatedAttachments = (
     fetchAttachments();
   }, []);
 
-  /* eslint-disable sort-keys */
   return {
     loading,
     loadMore,

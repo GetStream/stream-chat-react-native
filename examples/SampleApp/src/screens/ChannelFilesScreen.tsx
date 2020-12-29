@@ -6,9 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
 import Dayjs from 'dayjs';
-import { Attachment } from 'stream-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   FileIcon,
   getFileSizeDisplayText,
@@ -16,12 +15,65 @@ import {
   ThemeProvider,
   useTheme,
 } from 'stream-chat-react-native/v2';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
-import { LocalAttachmentType, StackNavigatorParamList } from '../types';
+
+import type { RouteProp } from '@react-navigation/native';
+import type { Attachment } from 'stream-chat';
+
+import type { LocalAttachmentType, StackNavigatorParamList } from '../types';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    borderRadius: 12,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  details: {
+    flex: 1,
+    paddingLeft: 16,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: 40,
+  },
+  flex: {
+    flex: 1,
+  },
+  noFiles: {
+    fontSize: 16,
+    paddingBottom: 8,
+  },
+  noFilesDetails: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  sectionContainer: {
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  sectionContentContainer: {
+    flexGrow: 1,
+  },
+  sectionTitle: {
+    fontSize: 14,
+  },
+  size: {
+    fontSize: 12,
+  },
+  title: {
+    fontSize: 14,
+    fontWeight: '700',
+    paddingBottom: 2,
+  },
+});
 
 type ChannelFilesScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -41,12 +93,13 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     channel,
     'file',
   );
+  const insets = useSafeAreaInsets();
   const {
     theme: {
       colors: { black, border, grey, white_snow },
     },
   } = useTheme();
-  const insets = useSafeAreaInsets();
+
   const [sections, setSections] = useState<
     Array<{
       data: Attachment[];
@@ -55,8 +108,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   >([]);
 
   useEffect(() => {
-    // eslint-disable-next-line no-shadow
-    const sections: Record<
+    const newSections: Record<
       string,
       {
         data: Attachment[];
@@ -65,10 +117,10 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
     > = {};
 
     messages.forEach((message) => {
-      const month = Dayjs(message.created_at as string).format('MMM YYYY');
+      const month = Dayjs(message.created_at).format('MMM YYYY');
 
-      if (!sections[month]) {
-        sections[month] = {
+      if (!newSections[month]) {
+        newSections[month] = {
           data: [],
           title: month,
         };
@@ -77,46 +129,46 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       message.attachments?.forEach((a) => {
         if (a.type !== 'file') return;
 
-        sections[month].data.push(a);
+        newSections[month].data.push(a);
       });
     });
 
-    setSections(Object.values(sections));
+    setSections(Object.values(newSections));
   }, [messages]);
 
   return (
     <View
-      style={{
-        flexGrow: 1,
-        flexShrink: 1,
-        paddingBottom: insets.bottom,
-      }}
+      style={[
+        styles.flex,
+        {
+          backgroundColor: white_snow,
+          paddingBottom: insets.bottom,
+        },
+      ]}
     >
       <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
           <SectionList<Attachment<LocalAttachmentType>>
-            contentContainerStyle={{
-              flexGrow: 1,
-            }}
+            contentContainerStyle={styles.sectionContentContainer}
             ListEmptyComponent={EmptyListComponent}
             onEndReached={loadMore}
-            renderItem={({ item: attachment }) => (
+            renderItem={({ index, item: attachment, section }) => (
               <TouchableOpacity
-                key={attachment.id}
+                key={`${attachment.asset_url}${attachment.image_url}${attachment.og_scrape_url}${attachment.thumb_url}${attachment.type}`}
                 onPress={() => goToURL(attachment.asset_url)}
                 style={{
                   borderBottomColor: border,
-                  borderBottomWidth: 1,
+                  borderBottomWidth: index === section.data.length - 1 ? 0 : 1,
                 }}
               >
                 <View
-                  style={[{ backgroundColor: white_snow }, styles.container]}
+                  style={[styles.container, { backgroundColor: white_snow }]}
                 >
                   <FileIcon mimeType={attachment.mime_type} />
-                  <View style={[styles.details]}>
+                  <View style={styles.details}>
                     <Text
-                      numberOfLines={2}
+                      numberOfLines={1}
                       style={[
                         styles.title,
                         {
@@ -142,19 +194,14 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
             )}
             renderSectionHeader={({ section: { title } }) => (
               <View
-                style={{
-                  backgroundColor: white_snow,
-                  borderRadius: 10,
-                  padding: 16,
-                  paddingTop: 16,
-                }}
+                style={[
+                  styles.sectionContainer,
+                  {
+                    backgroundColor: white_snow,
+                  },
+                ]}
               >
-                <Text
-                  style={{
-                    color: black,
-                    fontSize: 12,
-                  }}
-                >
+                <Text style={[styles.sectionTitle, { color: black }]}>
                   {title}
                 </Text>
               </View>
@@ -175,43 +222,12 @@ const EmptyListComponent = () => {
     },
   } = useTheme();
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        flex: 1,
-        justifyContent: 'center',
-        margin: 40,
-      }}
-    >
-      <View style={{ alignItems: 'center' }}>
-        <File fill={grey_gainsboro} scale={6} />
-        <Text style={{ color: black, fontSize: 16 }}>No files</Text>
-        <Text style={{ color: grey, marginTop: 8, textAlign: 'center' }}>
-          Files sent on this chat will appear here
-        </Text>
-      </View>
+    <View style={styles.emptyContainer}>
+      <File fill={grey_gainsboro} scale={6} />
+      <Text style={[styles.noFiles, { color: black }]}>No files</Text>
+      <Text style={[styles.noFilesDetails, { color: grey }]}>
+        Files sent on this chat will appear here.
+      </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    borderRadius: 12,
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  details: {
-    flexGrow: 1,
-    flexShrink: 1,
-    paddingLeft: 16,
-  },
-  size: {
-    fontSize: 12,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
-});
