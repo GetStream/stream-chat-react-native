@@ -88,7 +88,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           </Text>
         </View>
       )}
-      {loading && results.length === 0 && searchText === '' ? (
+      {loading && (!results || results.length === 0) && searchText === '' ? (
         <ActivityIndicator size='small' />
       ) : (
         <SectionList<UserResponse<LocalUserType>>

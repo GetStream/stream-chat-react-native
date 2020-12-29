@@ -56,6 +56,8 @@ export const usePaginatedUsers = () => {
 
   const onFocusInput = () => {
     if (!searchText) {
+      setResults(initialResults || []); // <-- here
+      setLoading(false);
       return;
     }
 

@@ -38,6 +38,7 @@ import { RoundButton } from '../components/RoundButton';
 import { Contacts } from '../icons/Contacts';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { User } from '../icons/User';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type SendMessageButtonProps = SendButtonProps;
 
@@ -62,6 +63,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       colors: { accent_blue, black, border, grey, white },
     },
   } = useTheme();
+  const { bottom } = useSafeAreaInsets();
   const { chatClient } = useContext(AppContext);
 
   const messageInputRef = useRef<TextInput>(null);
@@ -82,6 +84,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   >(null);
   const [focusOnMessageInput, setFocusOnMessageInput] = useState(false);
   const [focusOnSearchInput, setFocusOnSearchInput] = useState(true);
+  // To force re-render
   const [update, setUpdate] = useState(0);
 
   const {
@@ -171,21 +174,17 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
     }
   };
 
-  const grow = {
-    flexGrow: 1,
-    flexShrink: 1,
-  };
-
   const renderContent = () => (
     <>
       <ScreenHeader titleText='New Chat' />
       <View
-        style={{
-          backgroundColor: white,
-          paddingTop: 15,
-          width: '100%',
-          ...grow,
-        }}
+        style={[
+          {
+            backgroundColor: white,
+            flexShrink: 1,
+            paddingTop: 15,
+          },
+        ]}
       >
         <TouchableOpacity
           activeOpacity={1}
@@ -306,16 +305,18 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
       </View>
     </>
   );
+
   if (!chatClient) return null;
 
   if (!currentChannel.current) return renderContent();
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, paddingBottom: bottom }}>
       <Channel
         additionalTextInputProps={{
           onFocus: () => {
             setFocusOnMessageInput(true);
+            setFocusOnSearchInput(false);
           },
         }}
         channel={currentChannel.current}
@@ -334,19 +335,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
         }}
       >
         {renderContent()}
-        {results && results.length >= 0 && !focusOnSearchInput && (
-          <View
-            style={{
-              flexGrow: 1,
-              flexShrink: 1,
-            }}
-          >
-            <View style={styles.grow}>
-              {focusOnMessageInput && <MessageList />}
-            </View>
-            {selectedUsers.length > 0 && <MessageInput />}
+        {!focusOnSearchInput && (
+          <View style={styles.grow}>
+            {focusOnMessageInput && <MessageList />}
           </View>
         )}
+        {selectedUsers.length > 0 && <MessageInput />}
       </Channel>
     </View>
   );
