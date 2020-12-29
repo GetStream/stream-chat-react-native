@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Clipboard,
   GestureResponderEvent,
+  Image,
   Keyboard,
   Platform,
   ViewStyle,
@@ -95,6 +96,25 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+
+const prefetchImage = ({
+  height,
+  url,
+}: {
+  height: number | string;
+  url: string;
+}) => {
+  if (url.includes('&h=%2A')) {
+    try {
+      Image.prefetch(url.replace('h=%2A', `h=${height}`));
+    } catch (e) {
+      console.log('resize prefetch failed', e);
+      Image.prefetch(url);
+    }
+  } else {
+    Image.prefetch(url);
+  }
+};
 
 export type MessagePropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -269,6 +289,9 @@ const MessageWithContext = <
   const {
     theme: {
       colors: { accent_blue, accent_red, grey },
+      messageSimple: {
+        gallery: { halfSize, size },
+      },
     },
   } = useTheme();
 
@@ -376,6 +399,27 @@ const MessageWithContext = <
           images: [] as Attachment<At>[],
           other: [] as Attachment<At>[],
         };
+
+  // prefetch images for Gallery component rendering
+  const attachmentImageLength = attachments.images.length;
+  useEffect(() => {
+    if (attachmentImageLength) {
+      attachments.images.slice(0, 3).forEach((image, index) => {
+        const url = image.image_url || image.thumb_url;
+        if (url) {
+          if (attachmentImageLength <= 2) {
+            prefetchImage({ height: size || 200, url });
+          } else {
+            if (index === 0) {
+              prefetchImage({ height: size || 200, url });
+            } else {
+              prefetchImage({ height: halfSize || 100, url });
+            }
+          }
+        }
+      });
+    }
+  }, [attachmentImageLength]);
 
   const messageContentOrder = messageContentOrderProp.filter((content) => {
     switch (content) {
