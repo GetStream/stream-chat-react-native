@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -46,7 +46,17 @@ export type ChannelScreenProps = {
   route: ChannelScreenRouteProp;
 };
 
-export type ChannelHeaderProps = unknown;
+export type ChannelHeaderProps = {
+  channel: StreamChatChannel<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >;
+};
 
 export const NetworkDownIndicator = () => {
   const {
@@ -71,26 +81,16 @@ export const NetworkDownIndicator = () => {
   );
 };
 
-const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
+const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const navigation = useNavigation<ChannelScreenNavigationProp>();
   const { chatClient } = useContext(AppContext);
-  const { channel } = useChannelContext<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >();
   const displayName = useChannelPreviewDisplayName(channel, 30);
   const membersStatus = useChannelMembersStatus(channel);
   const { isOnline } = useChatContext();
   const typing = useTypingString();
 
-  if (!chatClient || !channel) return null;
-
   const isOneOnOneConversation =
+    channel &&
     Object.values(channel.state.members).length === 2 &&
     channel.id?.indexOf('!members-') === 0;
 
@@ -123,9 +123,10 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = () => {
   );
 };
 
+// Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   route: {
-    params: { channelId, messageId },
+    params: { channel: channelFromProp = null, channelId, messageId },
   },
 }) => {
   const { chatClient } = useContext(AppContext);
@@ -139,13 +140,14 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     LocalMessageType,
     LocalReactionType,
     LocalUserType
-  > | null>(null);
+  > | null>(channelFromProp);
 
   useEffect(() => {
     const initChannel = async () => {
-      if (!chatClient) return;
+      if (!chatClient || !channelId) return;
 
       const channel = chatClient?.channel('messaging', channelId);
+
       if (!channel?.initialized) {
         await channel?.watch();
       }
@@ -168,7 +170,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
           messageId={messageId}
         >
-          <ChannelHeader />
+          <ChannelHeader channel={channel} />
           <MessageList<
             LocalAttachmentType,
             LocalChannelType,

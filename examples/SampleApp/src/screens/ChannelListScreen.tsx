@@ -209,7 +209,7 @@ export const ChannelListScreen: React.FC = () => {
                 HeaderNetworkDownIndicator={() => null}
                 onSelect={(channel) => {
                   navigation.navigate('ChannelScreen', {
-                    channelId: channel.id,
+                    channel,
                   });
                 }}
                 options={options}
