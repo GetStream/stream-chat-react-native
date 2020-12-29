@@ -28,11 +28,17 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  IconProps,
+  LOLReaction,
+  LoveReaction,
+  ThumbsDownReaction,
+  ThumbsUpReaction,
+  WutReaction,
+} from '../../icons';
 
 import { triggerHaptic } from '../../native';
-import { ReactionData, reactionData } from '../../utils/utils';
 
-import type { IconProps } from '../../icons';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -43,6 +49,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { ReactionData } from '../../utils/utils';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -63,6 +70,29 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
+const reactionData: ReactionData[] = [
+  {
+    Icon: LoveReaction,
+    type: 'love',
+  },
+  {
+    Icon: ThumbsUpReaction,
+    type: 'like',
+  },
+  {
+    Icon: ThumbsDownReaction,
+    type: 'sad',
+  },
+  {
+    Icon: LOLReaction,
+    type: 'haha',
+  },
+  {
+    Icon: WutReaction,
+    type: 'wow',
+  },
+];
 
 type ReactionButtonProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -387,7 +417,7 @@ const OverlayReactionListWithContext = <
             reactionList,
           ]}
         >
-          {supportedReactions?.map(({ Icon, type }: ReactionData, index) => (
+          {supportedReactions?.map(({ Icon, type }, index) => (
             <ReactionButton<At, Ch, Co, Ev, Me, Re, Us>
               handleReaction={handleReaction}
               Icon={Icon}

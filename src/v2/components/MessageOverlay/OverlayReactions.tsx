@@ -16,11 +16,18 @@ import Svg, { Circle } from 'react-native-svg';
 
 import { Avatar } from '../Avatar/Avatar';
 
-import { Unknown } from '../../icons/Unknown';
+import {
+  LOLReaction,
+  LoveReaction,
+  ThumbsDownReaction,
+  ThumbsUpReaction,
+  Unknown,
+  WutReaction,
+} from '../../icons';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { ReactionData, reactionData } from '../../utils/utils';
 
 import type { Alignment } from '../../contexts/messageContext/MessageContext';
+import type { ReactionData } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   avatarContainer: {
@@ -61,6 +68,29 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
 });
+
+const reactionData: ReactionData[] = [
+  {
+    Icon: LoveReaction,
+    type: 'love',
+  },
+  {
+    Icon: ThumbsUpReaction,
+    type: 'like',
+  },
+  {
+    Icon: ThumbsDownReaction,
+    type: 'sad',
+  },
+  {
+    Icon: LOLReaction,
+    type: 'haha',
+  },
+  {
+    Icon: WutReaction,
+    type: 'wow',
+  },
+];
 
 export type Reaction = {
   alignment: Alignment;

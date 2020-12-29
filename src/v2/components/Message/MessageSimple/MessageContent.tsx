@@ -319,7 +319,7 @@ export const MessageContentWithContext = <
           ]}
           testID='message-content-wrapper'
         >
-          {message.reply_to_message && (
+          {message.quoted_message && (
             <View style={[styles.replyContainer]}>
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>

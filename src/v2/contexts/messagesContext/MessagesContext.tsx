@@ -208,7 +208,7 @@ export type MessagesContextValue<
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
   setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  setReplyToMessageState: (
+  setQuotedMessageState: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   supportedReactions: ReactionData[];

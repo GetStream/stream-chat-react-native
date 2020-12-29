@@ -128,7 +128,7 @@ type MessageInputPropsWithContext<
     | 'AttachButton'
     | 'CommandsButton'
     | 'clearEditingState'
-    | 'clearReplyToMessageState'
+    | 'clearQuotedMessageState'
     | 'editing'
     | 'FileUploadPreview'
     | 'fileUploads'
@@ -144,7 +144,7 @@ type MessageInputPropsWithContext<
     | 'MoreOptionsButton'
     | 'numberOfUploads'
     | 'pickFile'
-    | 'replyToMessage'
+    | 'quotedMessage'
     | 'resetInput'
     | 'SendButton'
     | 'sending'
@@ -183,7 +183,7 @@ export const MessageInputWithContext = <
     asyncUploads,
     AttachButton,
     clearEditingState,
-    clearReplyToMessageState,
+    clearQuotedMessageState,
     CommandsButton,
     componentType,
     disabled,
@@ -203,9 +203,9 @@ export const MessageInputWithContext = <
     MoreOptionsButton,
     numberOfUploads,
     pickFile,
+    quotedMessage,
     removeImage,
     Reply,
-    replyToMessage,
     resetInput,
     SendButton,
     sending,
@@ -413,7 +413,7 @@ export const MessageInputWithContext = <
           container,
         ]}
       >
-        {(editing || replyToMessage) && (
+        {(editing || quotedMessage) && (
           <View style={[styles.editingBoxHeader, editingBoxHeader]}>
             {editing ? (
               <Edit pathFill={grey_gainsboro} />
@@ -436,8 +436,8 @@ export const MessageInputWithContext = <
                 if (editing) {
                   clearEditingState();
                 }
-                if (replyToMessage) {
-                  clearReplyToMessageState();
+                if (quotedMessage) {
+                  clearQuotedMessageState();
                 }
                 if (inputBoxRef.current) {
                   inputBoxRef.current.blur();
@@ -500,7 +500,7 @@ export const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {replyToMessage && (
+                {quotedMessage && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
                   </View>
@@ -616,7 +616,7 @@ const areEqual = <
     giphyActive: prevGiphyActive,
     imageUploads: prevImageUploads,
     isValidMessage: prevIsValidMessage,
-    replyToMessage: prevReplyToMessage,
+    quotedMessage: prevQuotedMessage,
     sending: prevSending,
     showMoreOptions: prevShowMoreOptions,
     suggestions: prevSuggestions,
@@ -632,7 +632,7 @@ const areEqual = <
     giphyActive: nextGiphyActive,
     imageUploads: nextImageUploads,
     isValidMessage: nextIsValidMessage,
-    replyToMessage: nextReplyToMessage,
+    quotedMessage: nextQuotedMessage,
     sending: nextSending,
     showMoreOptions: nextShowMoreOptions,
     suggestions: nextSuggestions,
@@ -656,14 +656,14 @@ const areEqual = <
   const giphyActiveEqual = prevGiphyActive === nextGiphyActive;
   if (!giphyActiveEqual) return false;
 
-  const replyToMessageEqual =
-    !!prevReplyToMessage &&
-    !!nextReplyToMessage &&
-    typeof prevReplyToMessage !== 'boolean' &&
-    typeof nextReplyToMessage !== 'boolean'
-      ? prevReplyToMessage.id === nextReplyToMessage.id
-      : !!prevReplyToMessage === !!nextReplyToMessage;
-  if (!replyToMessageEqual) return false;
+  const quotedMessageEqual =
+    !!prevQuotedMessage &&
+    !!nextQuotedMessage &&
+    typeof prevQuotedMessage !== 'boolean' &&
+    typeof nextQuotedMessage !== 'boolean'
+      ? prevQuotedMessage.id === nextQuotedMessage.id
+      : !!prevQuotedMessage === !!nextQuotedMessage;
+  if (!quotedMessageEqual) return false;
 
   const sendingEqual = prevSending.current === nextSending.current;
   if (!sendingEqual) return false;
@@ -756,7 +756,7 @@ export const MessageInput = <
     asyncUploads,
     AttachButton,
     clearEditingState,
-    clearReplyToMessageState,
+    clearQuotedMessageState,
     CommandsButton,
     editing,
     FileUploadPreview,
@@ -773,8 +773,8 @@ export const MessageInput = <
     MoreOptionsButton,
     numberOfUploads,
     pickFile,
+    quotedMessage,
     removeImage,
-    replyToMessage,
     resetInput,
     SendButton,
     sending,
@@ -805,7 +805,7 @@ export const MessageInput = <
         asyncUploads,
         AttachButton,
         clearEditingState,
-        clearReplyToMessageState,
+        clearQuotedMessageState,
         CommandsButton,
         componentType,
         disabled,
@@ -825,9 +825,9 @@ export const MessageInput = <
         MoreOptionsButton,
         numberOfUploads,
         pickFile,
+        quotedMessage,
         removeImage,
         Reply,
-        replyToMessage,
         resetInput,
         SendButton,
         sending,

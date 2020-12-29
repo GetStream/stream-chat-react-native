@@ -98,8 +98,14 @@ import {
   TranslationContextValue,
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
+import {
+  LOLReaction,
+  LoveReaction,
+  ThumbsDownReaction,
+  ThumbsUpReaction,
+  WutReaction,
+} from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
-import { reactionData as reactionDataDefault } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 
@@ -113,7 +119,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { generateRandomId } from '../../utils/utils';
+import { generateRandomId, ReactionData } from '../../utils/utils';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
 const styles = StyleSheet.create({
@@ -121,6 +127,29 @@ const styles = StyleSheet.create({
 });
 
 const limitForUnreadScrolledUp = 4;
+
+export const reactionData: ReactionData[] = [
+  {
+    Icon: LoveReaction,
+    type: 'love',
+  },
+  {
+    Icon: ThumbsUpReaction,
+    type: 'like',
+  },
+  {
+    Icon: ThumbsDownReaction,
+    type: 'sad',
+  },
+  {
+    Icon: LOLReaction,
+    type: 'haha',
+  },
+  {
+    Icon: WutReaction,
+    type: 'wow',
+  },
+];
 
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -357,7 +386,7 @@ export const ChannelWithContext = <
     setInputRef,
     ShowThreadMessageInChannelButton = ShowThreadMessageInChannelButtonDefault,
     StickyHeader,
-    supportedReactions = reactionDataDefault,
+    supportedReactions = reactionData,
     t,
     thread: threadProps,
     TypingIndicator = TypingIndicatorDefault,
@@ -393,12 +422,12 @@ export const ChannelWithContext = <
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+  const [quotedMessage, setQuotedMessage] = useState<
+    boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
+  >(false);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
-  const [replyToMessage, setReplyToMessage] = useState<
-    boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
-  >(false);
   const [thread, setThread] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']
   >(threadProps || null);
@@ -1026,7 +1055,7 @@ export const ChannelWithContext = <
     setEditing(message);
   };
 
-  const setReplyToMessageState: MessagesContextValue<
+  const setQuotedMessageState: MessagesContextValue<
     At,
     Ch,
     Co,
@@ -1034,8 +1063,8 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['setReplyToMessageState'] = (message) => {
-    setReplyToMessage(message);
+  >['setQuotedMessageState'] = (message) => {
+    setQuotedMessage(message);
   };
 
   const clearEditingState: InputMessageInputContextValue<
@@ -1048,7 +1077,7 @@ export const ChannelWithContext = <
     Us
   >['clearEditingState'] = () => setEditing(false);
 
-  const clearReplyToMessageState: InputMessageInputContextValue<
+  const clearQuotedMessageState: InputMessageInputContextValue<
     At,
     Ch,
     Co,
@@ -1056,7 +1085,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['clearReplyToMessageState'] = () => setReplyToMessage(false);
+  >['clearQuotedMessageState'] = () => setQuotedMessage(false);
 
   const removeMessage: MessagesContextValue<
     At,
@@ -1198,7 +1227,7 @@ export const ChannelWithContext = <
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
-    clearReplyToMessageState,
+    clearQuotedMessageState,
     CommandsButton,
     compressImageQuality,
     doDocUploadRequest,
@@ -1215,7 +1244,7 @@ export const ChannelWithContext = <
     MoreOptionsButton,
     numberOfLines,
     onChangeText,
-    replyToMessage,
+    quotedMessage,
     SendButton,
     sendImageAsync,
     sendMessage,
@@ -1269,7 +1298,7 @@ export const ChannelWithContext = <
     Reply,
     retrySendMessage,
     setEditingState,
-    setReplyToMessageState,
+    setQuotedMessageState,
     supportedReactions,
     TypingIndicator,
     TypingIndicatorContainer,

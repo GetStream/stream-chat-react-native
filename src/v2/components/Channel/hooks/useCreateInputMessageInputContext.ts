@@ -24,7 +24,7 @@ export const useCreateInputMessageInputContext = <
   additionalTextInputProps,
   AttachButton,
   clearEditingState,
-  clearReplyToMessageState,
+  clearQuotedMessageState,
   CommandsButton,
   compressImageQuality,
   doDocUploadRequest,
@@ -41,7 +41,7 @@ export const useCreateInputMessageInputContext = <
   MoreOptionsButton,
   numberOfLines,
   onChangeText,
-  replyToMessage,
+  quotedMessage,
   SendButton,
   sendImageAsync,
   sendMessage,
@@ -50,10 +50,10 @@ export const useCreateInputMessageInputContext = <
   UploadProgressIndicator,
 }: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const editingExists = !!editing;
-  const replyToMessageId = replyToMessage
-    ? typeof replyToMessage === 'boolean'
+  const quotedMessageId = quotedMessage
+    ? typeof quotedMessage === 'boolean'
       ? ''
-      : replyToMessage.id
+      : quotedMessage.id
     : '';
 
   const inputMessageInputContext: InputMessageInputContextValue<
@@ -69,7 +69,7 @@ export const useCreateInputMessageInputContext = <
       additionalTextInputProps,
       AttachButton,
       clearEditingState,
-      clearReplyToMessageState,
+      clearQuotedMessageState,
       CommandsButton,
       compressImageQuality,
       doDocUploadRequest,
@@ -86,7 +86,7 @@ export const useCreateInputMessageInputContext = <
       MoreOptionsButton,
       numberOfLines,
       onChangeText,
-      replyToMessage,
+      quotedMessage,
       SendButton,
       sendImageAsync,
       sendMessage,
@@ -94,7 +94,7 @@ export const useCreateInputMessageInputContext = <
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
     }),
-    [compressImageQuality, editingExists, initialValue, replyToMessageId],
+    [compressImageQuality, editingExists, initialValue, quotedMessageId],
   );
 
   return inputMessageInputContext;

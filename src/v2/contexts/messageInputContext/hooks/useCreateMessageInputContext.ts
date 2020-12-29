@@ -30,7 +30,7 @@ export const useCreateMessageInputContext = <
   asyncUploads,
   AttachButton,
   clearEditingState,
-  clearReplyToMessageState,
+  clearQuotedMessageState,
   CommandsButton,
   compressImageQuality,
   doDocUploadRequest,
@@ -57,9 +57,9 @@ export const useCreateMessageInputContext = <
   onChangeText,
   onSelectItem,
   pickFile,
+  quotedMessage,
   removeFile,
   removeImage,
-  replyToMessage,
   resetInput,
   SendButton,
   sendImageAsync,
@@ -96,10 +96,10 @@ export const useCreateMessageInputContext = <
   const fileUploadsValue = fileUploads.map(({ state }) => state).join();
   const imageUploadsValue = imageUploads.map(({ state }) => state).join();
   const mentionedUsersLength = mentionedUsers.length;
-  const replyToMessageId = replyToMessage
-    ? typeof replyToMessage === 'boolean'
+  const quotedMessageId = quotedMessage
+    ? typeof quotedMessage === 'boolean'
       ? ''
-      : replyToMessage.id
+      : quotedMessage.id
     : '';
   const threadId = thread?.id;
 
@@ -119,7 +119,7 @@ export const useCreateMessageInputContext = <
       asyncUploads,
       AttachButton,
       clearEditingState,
-      clearReplyToMessageState,
+      clearQuotedMessageState,
       CommandsButton,
       compressImageQuality,
       doDocUploadRequest,
@@ -146,9 +146,9 @@ export const useCreateMessageInputContext = <
       onChangeText,
       onSelectItem,
       pickFile,
+      quotedMessage,
       removeFile,
       removeImage,
-      replyToMessage,
       resetInput,
       SendButton,
       sendImageAsync,
@@ -186,7 +186,7 @@ export const useCreateMessageInputContext = <
       giphyActive,
       imageUploadsValue,
       mentionedUsersLength,
-      replyToMessageId,
+      quotedMessageId,
       showMoreOptions,
       text,
       threadId,

@@ -154,7 +154,7 @@ export type MessagePropsWithContext<
     | 'reactionsEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
-    | 'setReplyToMessageState'
+    | 'setQuotedMessageState'
     | 'supportedReactions'
     | 'updateMessage'
   > &
@@ -277,7 +277,7 @@ const MessageWithContext = <
     setData,
     setEditingState,
     setOverlay,
-    setReplyToMessageState,
+    setQuotedMessageState,
     showAvatar,
     showMessageStatus,
     supportedReactions,
@@ -341,9 +341,9 @@ const MessageWithContext = <
     }
     if (error) {
       showMessageOverlay(false, true);
-    } else if (goToMessage && message.reply_to_message) {
+    } else if (goToMessage && message.quoted_message) {
       // @ts-expect-error until types get added to stream-chat-js
-      goToMessage(message.reply_to_message.id);
+      goToMessage(message.quoted_message.id);
     }
   };
 
@@ -588,7 +588,7 @@ const MessageWithContext = <
     const reply = {
       action: () => {
         setOverlay('none');
-        setReplyToMessageState(message);
+        setQuotedMessageState(message);
       },
       icon: <CurveLineLeftUp pathFill={grey} />,
       title: t('Reply'),
@@ -891,7 +891,7 @@ export const Message = <
     removeMessage,
     retrySendMessage,
     setEditingState,
-    setReplyToMessageState,
+    setQuotedMessageState,
     supportedReactions,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -920,7 +920,7 @@ export const Message = <
         setData,
         setEditingState,
         setOverlay,
-        setReplyToMessageState,
+        setQuotedMessageState,
         supportedReactions,
         t,
         updateMessage,

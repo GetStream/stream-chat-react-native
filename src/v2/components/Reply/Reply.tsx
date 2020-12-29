@@ -70,7 +70,7 @@ type ReplyPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'replyToMessage'
+  'quotedMessage'
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -102,7 +102,7 @@ export const ReplyWithContext = <
     AttachmentFileIcon,
     attachmentSize = 40,
     MessageAvatar,
-    replyToMessage,
+    quotedMessage,
     styles: stylesProp = {},
     t,
   } = props;
@@ -123,11 +123,11 @@ export const ReplyWithContext = <
     },
   } = useTheme();
 
-  if (typeof replyToMessage === 'boolean') return null;
+  if (typeof quotedMessage === 'boolean') return null;
 
   const lastAttachment =
-    replyToMessage.attachments &&
-    (replyToMessage.attachments.slice(-1)[0] as AttachmentType<At>);
+    quotedMessage.attachments &&
+    (quotedMessage.attachments.slice(-1)[0] as AttachmentType<At>);
 
   const messageType = lastAttachment
     ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'
@@ -156,7 +156,7 @@ export const ReplyWithContext = <
       <MessageAvatar
         alignment={'left'}
         lastGroupMessage
-        message={replyToMessage}
+        message={quotedMessage}
         size={24}
       />
       <View
@@ -210,11 +210,11 @@ export const ReplyWithContext = <
         <MessageTextContainer<At, Ch, Co, Ev, Me, Re, Us>
           markdownStyles={{ text: styles.text, ...markdownStyles }}
           message={{
-            ...replyToMessage,
-            text: replyToMessage.text
-              ? replyToMessage.text.length > 170
-                ? `${replyToMessage.text.slice(0, 170)}...`
-                : replyToMessage.text
+            ...quotedMessage,
+            text: quotedMessage.text
+              ? quotedMessage.text.length > 170
+                ? `${quotedMessage.text.slice(0, 170)}...`
+                : quotedMessage.text
               : messageType === 'image'
               ? t('Photo')
               : messageType === 'file'
@@ -267,17 +267,17 @@ const areEqual = <
   prevProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { replyToMessage: prevReplyToMessage } = prevProps;
-  const { replyToMessage: nextReplyToMessage } = nextProps;
+  const { quotedMessage: prevQuotedMessage } = prevProps;
+  const { quotedMessage: nextQuotedMessage } = nextProps;
 
-  const replyToMessageEqual =
-    !!prevReplyToMessage &&
-    !!nextReplyToMessage &&
-    typeof prevReplyToMessage !== 'boolean' &&
-    typeof nextReplyToMessage !== 'boolean'
-      ? prevReplyToMessage.id === nextReplyToMessage.id
-      : !!prevReplyToMessage === !!nextReplyToMessage;
-  if (!replyToMessageEqual) return false;
+  const quotedMessageEqual =
+    !!prevQuotedMessage &&
+    !!nextQuotedMessage &&
+    typeof prevQuotedMessage !== 'boolean' &&
+    typeof nextQuotedMessage !== 'boolean'
+      ? prevQuotedMessage.id === nextQuotedMessage.id
+      : !!prevQuotedMessage === !!nextQuotedMessage;
+  if (!quotedMessageEqual) return false;
 
   return true;
 };
@@ -320,7 +320,7 @@ export const Reply = <
     MessageAvatar = MessageAvatarDefault,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { replyToMessage } = useMessageInputContext<
+  const { quotedMessage } = useMessageInputContext<
     At,
     Ch,
     Co,
@@ -337,8 +337,8 @@ export const Reply = <
       {...{
         AttachmentFileIcon,
         MessageAvatar,
-        replyToMessage: message
-          ? (message.reply_to_message as MessageInputContextValue<
+        quotedMessage: message
+          ? (message.quoted_message as MessageInputContextValue<
               At,
               Ch,
               Co,
@@ -346,8 +346,8 @@ export const Reply = <
               Me,
               Re,
               Us
-            >['replyToMessage'])
-          : replyToMessage,
+            >['quotedMessage'])
+          : quotedMessage,
         t,
       }}
       {...props}

@@ -225,7 +225,7 @@ export type InputMessageInputContextValue<
     AttachButtonProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   clearEditingState: () => void;
-  clearReplyToMessageState: () => void;
+  clearQuotedMessageState: () => void;
   /**
    * Custom UI component for commands button.
    *
@@ -266,7 +266,7 @@ export type InputMessageInputContextValue<
   >;
   /** Limit on the number of lines in the text input before scrolling */
   numberOfLines: number;
-  replyToMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  quotedMessage: boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Custom UI component for send button.
    *
@@ -633,14 +633,14 @@ export const MessageInputProvider = <
             mentioned_users: uniq(mentionedUsers),
             /** Parent message id - in case of thread */
             parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
-            reply_to_message_id:
-              typeof value.replyToMessage === 'boolean'
+            quoted_message_id:
+              typeof value.quotedMessage === 'boolean'
                 ? undefined
-                : value.replyToMessage.id,
+                : value.quotedMessage.id,
             show_in_channel: sendThreadMessageInChannel || undefined,
             text: prevText,
           } as unknown) as StreamMessage<At, Me, Us>)
-          .then(value.clearReplyToMessageState);
+          .then(value.clearQuotedMessageState);
 
         sending.current = false;
         resetInput(attachments);
@@ -674,10 +674,10 @@ export const MessageInputProvider = <
           attachments,
           mentioned_users: [],
           parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
-          reply_to_message_id:
-            typeof value.replyToMessage === 'boolean'
+          quoted_message_id:
+            typeof value.quotedMessage === 'boolean'
               ? undefined
-              : value.replyToMessage.id,
+              : value.quotedMessage.id,
           show_in_channel: sendThreadMessageInChannel || undefined,
           text: '',
         } as unknown) as Partial<StreamMessage<At, Me, Us>>);

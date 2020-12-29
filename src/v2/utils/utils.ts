@@ -1,11 +1,6 @@
 import debounce from 'lodash/debounce';
 import { Dimensions, Platform, StatusBar } from 'react-native';
 
-import { LOLReaction } from '../icons/LOLReaction';
-import { LoveReaction } from '../icons/LoveReaction';
-import { ThumbsDownReaction } from '../icons/ThumbsDownReaction';
-import { ThumbsUpReaction } from '../icons/ThumbsUpReaction';
-import { WutReaction } from '../icons/WutReaction';
 import { compiledEmojis, Emoji } from '../emoji-data/compiled';
 
 import type React from 'react';
@@ -40,29 +35,6 @@ export type ReactionData = {
   Icon: React.FC<IconProps>;
   type: string;
 };
-
-export const reactionData: ReactionData[] = [
-  {
-    Icon: LoveReaction,
-    type: 'love',
-  },
-  {
-    Icon: ThumbsUpReaction,
-    type: 'like',
-  },
-  {
-    Icon: ThumbsDownReaction,
-    type: 'sad',
-  },
-  {
-    Icon: LOLReaction,
-    type: 'haha',
-  },
-  {
-    Icon: WutReaction,
-    type: 'wow',
-  },
-];
 
 export const FileState = Object.freeze({
   // finished and uploaded state are the same thing. First is set on frontend,
