@@ -159,7 +159,7 @@ export type Theme = {
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
   };
-  colors: typeof Colors;
+  colors: typeof Colors & { [key: string]: string };
   dateHeader: {
     container: ViewStyle;
     text: TextStyle;
