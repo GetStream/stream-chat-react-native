@@ -26,7 +26,7 @@ export const ConfirmationBottomSheet = (
   } = props;
   const {
     theme: {
-      colors: { accent_red, black, border, white },
+      colors: { accent_red, black, border, grey, white },
     },
   } = useTheme();
   const inset = useSafeAreaInsets();
@@ -55,13 +55,13 @@ export const ConfirmationBottomSheet = (
         ]}
       >
         <TouchableOpacity onPress={dismissHandler} style={styles.actionButton}>
-          <Text>{cancelText}</Text>
+          <Text style={{ color: grey }}>{cancelText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onConfirm}
           style={[styles.actionButton, { alignItems: 'flex-end' }]}
         >
-          <Text>{confirmText}</Text>
+          <Text style={{ color: accent_red }}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
     </View>

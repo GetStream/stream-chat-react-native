@@ -105,7 +105,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     if (!chatClient?.user?.id) return;
     openBottomSheet({
       params: {
-        confirmText: 'DELETE',
         onConfirm: leaveGroup,
         subtext: 'Are you sure you want to leave this group?',
         title: 'Leave Group',
