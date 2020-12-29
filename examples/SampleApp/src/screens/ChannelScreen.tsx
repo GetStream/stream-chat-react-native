@@ -31,6 +31,7 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -129,6 +130,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const navigation = useNavigation();
+  const { bottom } = useSafeAreaInsets();
   const [channel, setChannel] = useState<StreamChatChannel<
     LocalAttachmentType,
     LocalChannelType,
@@ -157,7 +159,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 
   return (
     <View style={{ height: '100%' }}>
-      <View style={{ flexGrow: 1, flexShrink: 1 }}>
+      <View style={{ flexGrow: 1, flexShrink: 1, paddingBottom: bottom }}>
         <Channel
           channel={channel}
           disableTypingIndicator
