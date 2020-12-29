@@ -2,13 +2,14 @@ import React, { useContext, useEffect } from 'react';
 import {
   Image,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { USERS } from '../ChatUsers';
@@ -19,7 +20,6 @@ import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
-import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   avatarImage: {
@@ -140,7 +140,6 @@ export const UserSelectorScreen: React.FC = () => {
           </TouchableOpacity>
         ))}
         <TouchableOpacity
-          key={'advanced'}
           onPress={() => {
             navigation.navigate('AdvancedUserSelectorScreen');
           }}
