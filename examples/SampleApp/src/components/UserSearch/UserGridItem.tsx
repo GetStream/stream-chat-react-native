@@ -18,7 +18,7 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
 }) => {
   const {
     theme: {
-      colors: { white_snow },
+      colors: { black, white_snow },
     },
   } = useTheme();
   return (
@@ -42,7 +42,10 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
           </View>
         )}
       </TouchableOpacity>
-      <Text numberOfLines={2} style={styles.selectedUserItemName}>
+      <Text
+        numberOfLines={2}
+        style={[{ color: black }, styles.selectedUserItemName]}
+      >
         {user.name}
       </Text>
     </View>
