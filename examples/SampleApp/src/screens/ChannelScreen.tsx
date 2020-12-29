@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -11,7 +11,6 @@ import {
   MessageInput,
   MessageList,
   Spinner,
-  useChannelContext,
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
@@ -89,6 +88,8 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const membersStatus = useChannelMembersStatus(channel);
   const { isOnline } = useChatContext();
   const typing = useTypingString();
+
+  if (!channel || !chatClient) return null;
 
   const isOneOnOneConversation =
     channel &&
