@@ -1,7 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { generateRandomId, useTheme } from 'stream-chat-react-native/v2';
 
 import { RoundButton } from '../components/RoundButton';
@@ -9,6 +7,9 @@ import { ScreenHeader } from '../components/ScreenHeader';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
 import { Check } from '../icons/Check';
+
+import type { RouteProp } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList } from '../types';
 

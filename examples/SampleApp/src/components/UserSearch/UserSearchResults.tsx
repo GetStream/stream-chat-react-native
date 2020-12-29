@@ -8,12 +8,14 @@ import {
   View,
 } from 'react-native';
 import Dayjs from 'dayjs';
-import { UserResponse } from 'stream-chat';
 import { Avatar, useTheme } from 'stream-chat-react-native/v2';
 
 import { CheckSend } from '../../icons/CheckSend';
 import { EmptySearchState } from '../../icons/EmptySearchState';
-import { LocalUserType } from '../../types';
+
+import type { UserResponse } from 'stream-chat';
+
+import type { LocalUserType } from '../../types';
 
 type UserSearchResultsProps = {
   results: UserResponse[];

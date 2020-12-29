@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react';
 import {
+  StyleProp,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
   ViewStyle,
 } from 'react-native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {
   CompositeNavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   useAttachmentPickerContext,
@@ -19,8 +18,13 @@ import {
 } from 'stream-chat-react-native/v2';
 
 import { GoBack } from '../icons/GoBack';
-import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
-import { StyleProp } from 'react-native';
+
+import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type {
+  DrawerNavigatorParamList,
+  StackNavigatorParamList,
+} from '../types';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,

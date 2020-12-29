@@ -1,10 +1,13 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Channel, Thread } from 'stream-chat-react-native/v2';
 
 import { ScreenHeader } from '../components/ScreenHeader';
-import {
+
+import type { RouteProp } from '@react-navigation/native';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -14,7 +17,6 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const styles = StyleSheet.create({
   container: {

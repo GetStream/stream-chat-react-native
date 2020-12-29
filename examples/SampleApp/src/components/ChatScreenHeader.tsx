@@ -1,11 +1,9 @@
 import React, { useContext } from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {
   CompositeNavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Spinner, useChatContext, useTheme } from 'stream-chat-react-native/v2';
 
 import { RoundButton } from './RoundButton';
@@ -13,7 +11,14 @@ import { ScreenHeader } from './ScreenHeader';
 
 import { AppContext } from '../context/AppContext';
 import { NewDirectMessageIcon } from '../icons/NewDirectMessageIcon';
-import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
+
+import type { DrawerNavigationProp } from '@react-navigation/drawer';
+import type { StackNavigationProp } from '@react-navigation/stack';
+
+import type {
+  DrawerNavigatorParamList,
+  StackNavigatorParamList,
+} from '../types';
 
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,

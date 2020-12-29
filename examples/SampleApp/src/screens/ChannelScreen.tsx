@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { Channel as StreamChatChannel } from 'stream-chat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Avatar,
   Channel,
@@ -10,7 +9,6 @@ import {
   MessageInput,
   MessageList,
   Spinner,
-  useChannelContext,
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
@@ -20,7 +18,11 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
-import {
+
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { Channel as StreamChatChannel } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -31,7 +33,6 @@ import {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,

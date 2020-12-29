@@ -5,9 +5,10 @@ import { useTheme } from 'stream-chat-react-native/v2';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import { BottomTabNavigatorParamList } from '../types';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
+
+import type { BottomTabNavigatorParamList } from '../types';
 
 export type MentionsScreenProps = {
   navigation: StackNavigationProp<

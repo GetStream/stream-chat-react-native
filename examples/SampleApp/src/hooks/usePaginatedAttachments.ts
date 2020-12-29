@@ -1,7 +1,9 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { Channel, MessageResponse } from 'stream-chat';
 
 import { AppContext } from '../context/AppContext';
+
+import type { Channel, MessageResponse } from 'stream-chat';
+
 import type {
   LocalAttachmentType,
   LocalChannelType,

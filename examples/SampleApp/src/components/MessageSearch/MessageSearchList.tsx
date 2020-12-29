@@ -8,11 +8,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { MessageResponse } from 'stream-chat';
 import { Avatar, useTheme } from 'stream-chat-react-native/v2';
 
 import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
-import {
+
+import type { MessageResponse } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -23,6 +25,7 @@ import {
 
 export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
+  loading: boolean;
   loadMore: () => void;
   messages: MessageResponse<
     LocalAttachmentType,

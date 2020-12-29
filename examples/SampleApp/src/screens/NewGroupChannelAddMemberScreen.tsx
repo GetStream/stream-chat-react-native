@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { ScreenHeader } from '../components/ScreenHeader';
@@ -16,6 +15,8 @@ import { AppContext } from '../context/AppContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { RightArrow } from '../icons/RightArrow';
 import { Search } from '../icons/Search';
+
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { StackNavigatorParamList } from '../types';
 

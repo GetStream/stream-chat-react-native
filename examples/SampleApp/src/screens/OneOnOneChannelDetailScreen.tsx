@@ -9,8 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { AppContext } from '../context/AppContext';
@@ -21,10 +19,14 @@ import { File } from '../icons/File';
 import { GoBack } from '../icons/GoBack';
 import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
-import { Picture } from '../icons/Picture';
 import { Notification } from '../icons/Notification';
-import { StackNavigatorParamList } from '../types';
+import { Picture } from '../icons/Picture';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+
+import type { RouteProp } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+
+import type { StackNavigatorParamList } from '../types';
 
 const styles = StyleSheet.create({
   actionContainer: {

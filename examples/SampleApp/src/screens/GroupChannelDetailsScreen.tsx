@@ -11,7 +11,6 @@ import {
 import { RouteProp, useNavigation } from '@react-navigation/native';
 import {
   Avatar,
-  ThemeProvider,
   useChannelPreviewDisplayName,
   useOverlayContext,
   useTheme,
@@ -31,8 +30,9 @@ import { GoForward } from '../icons/GoForward';
 import { Mute } from '../icons/Mute';
 import { Picture } from '../icons/Picture';
 import { RemoveUser } from '../icons/RemoveUser';
-import { StackNavigatorParamList } from '../types';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+
+import type { StackNavigatorParamList } from '../types';
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,

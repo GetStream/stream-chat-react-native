@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
-import { LocalUserType } from '../../types';
-import { UserResponse } from 'stream-chat';
-import { Text } from 'react-native';
-import { EmptySearchState } from '../../icons/EmptySearchState';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
 import { UserGridItem } from './UserGridItem';
+
+import { EmptySearchState } from '../../icons/EmptySearchState';
+
+import type { UserResponse } from 'stream-chat';
+
+import type { LocalUserType } from '../../types';
 
 type UserSearchResultsGridProps = {
   onPress: (user: UserResponse<LocalUserType>) => void;

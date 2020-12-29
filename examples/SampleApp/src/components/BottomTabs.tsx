@@ -1,11 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 export const BottomTabs: React.FC<BottomTabBarProps> = ({
   navigation,

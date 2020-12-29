@@ -16,7 +16,8 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
 import { Contacts } from '../icons/Contacts';
-import {
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,

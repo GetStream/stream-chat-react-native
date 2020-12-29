@@ -1,8 +1,10 @@
-import { useContext, useRef, useState } from 'react';
-import { MessageFilters, MessageResponse } from 'stream-chat';
-import { useEffect } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+
 import { AppContext } from '../context/AppContext';
-import {
+
+import type { MessageFilters, MessageResponse } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,

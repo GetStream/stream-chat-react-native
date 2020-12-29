@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react';
 import { StreamChat } from 'stream-chat';
 
 import { USER_TOKENS, USERS } from '../ChatUsers';
-import {
+import AsyncStore from '../utils/AsyncStore';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -12,7 +14,6 @@ import {
   LocalUserType,
   LoginConfig,
 } from '../types';
-import AsyncStore from '../utils/AsyncStore';
 
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;

@@ -1,9 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { UserResponse } from 'stream-chat';
 import { useTheme } from 'stream-chat-react-native/v2';
 
-import { LocalUserType } from '../../types';
+import type { UserResponse } from 'stream-chat';
+
+import type { LocalUserType } from '../../types';
 
 type SelectedUserTagProps = {
   index: number;

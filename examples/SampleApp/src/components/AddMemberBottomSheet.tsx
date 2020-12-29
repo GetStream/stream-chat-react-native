@@ -8,7 +8,6 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Channel, UserResponse } from 'stream-chat';
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
@@ -16,7 +15,10 @@ import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
 import { CircleClose } from '../icons/CircleClose';
 import { Search } from '../icons/Search';
-import {
+
+import type { Channel, UserResponse } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,

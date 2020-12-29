@@ -10,9 +10,6 @@ import {
   CompositeNavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { ChannelSort } from 'stream-chat';
 import {
   ChannelList,
   CircleClose,
@@ -24,7 +21,12 @@ import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { AppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
-import {
+
+import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ChannelSort } from 'stream-chat';
+
+import type {
   BottomTabNavigatorParamList,
   LocalAttachmentType,
   LocalChannelType,
@@ -78,7 +80,7 @@ export const ChannelListScreen: React.FC = () => {
     () => ({
       ...baseFilters,
       members: {
-        $in: [chatClient.user?.id || ''],
+        $in: [chatClient?.user?.id || ''],
       },
     }),
     [chatClient],

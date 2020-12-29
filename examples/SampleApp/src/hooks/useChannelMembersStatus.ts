@@ -1,5 +1,10 @@
-import { Channel, UserResponse } from 'stream-chat';
-import {
+import { useContext, useEffect, useState } from 'react';
+
+import { AppContext } from '../context/AppContext';
+import { getUserActivityStatus } from '../utils/getUserActivityStatus';
+
+import type { Channel } from 'stream-chat';
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -8,10 +13,6 @@ import {
   LocalReactionType,
   LocalUserType,
 } from '../types';
-import Dayjs from 'dayjs';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../context/AppContext';
-import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 export const useChannelMembersStatus = (
   channel: Channel<

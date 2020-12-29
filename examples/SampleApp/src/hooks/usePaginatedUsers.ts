@@ -1,7 +1,10 @@
 import { useContext, useEffect, useRef, useState } from 'react';
-import { UserFilters, UserResponse } from 'stream-chat';
+
 import { AppContext } from '../context/AppContext';
-import { LocalUserType } from '../types';
+
+import type { UserFilters, UserResponse } from 'stream-chat';
+
+import type { LocalUserType } from '../types';
 
 export const usePaginatedUsers = () => {
   const { chatClient } = useContext(AppContext);

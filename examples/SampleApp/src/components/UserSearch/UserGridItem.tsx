@@ -1,10 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { UserResponse } from 'stream-chat';
 import { Avatar, useTheme } from 'stream-chat-react-native/v2';
 
 import { Close } from '../../icons/Close';
-import { LocalUserType } from '../../types';
+
+import type { UserResponse } from 'stream-chat';
+
+import type { LocalUserType } from '../../types';
 
 export type UserGridItemProps = {
   onPress: () => void;

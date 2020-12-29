@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native/v2';
 
@@ -20,6 +19,8 @@ import { Settings } from '../icons/Settings';
 import AsyncStore from '../utils/AsyncStore';
 
 import { version } from '../../node_modules/stream-chat-react-native/package.json';
+
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { UserSelectorParamList } from '../types';
 

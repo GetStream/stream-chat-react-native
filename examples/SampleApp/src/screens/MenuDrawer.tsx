@@ -1,10 +1,11 @@
 import React, { useContext } from 'react';
 import { Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
-import { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Edit, Group, User, useTheme } from 'stream-chat-react-native/v2';
 
 import { AppContext } from '../context/AppContext';
+
+import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 
 export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
   navigation,
