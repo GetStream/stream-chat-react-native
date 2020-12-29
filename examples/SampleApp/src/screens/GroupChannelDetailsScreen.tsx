@@ -45,7 +45,7 @@ type GroupChannelDetailsProps = {
 const Spacer = () => {
   const {
     theme: {
-      colors: { white_smoke },
+      colors: { grey_gainsboro },
     },
   } = useTheme();
   return (
@@ -53,7 +53,7 @@ const Spacer = () => {
       style={[
         styles.spacer,
         {
-          backgroundColor: white_smoke,
+          backgroundColor: grey_gainsboro,
         },
       ]}
     />

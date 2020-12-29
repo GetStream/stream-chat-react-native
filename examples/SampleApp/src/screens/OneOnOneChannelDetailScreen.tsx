@@ -260,7 +260,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
               style={[
                 styles.userName,
                 {
-                  color: black,
+                  color: grey,
                 },
               ]}
             >
