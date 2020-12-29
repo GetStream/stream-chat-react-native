@@ -105,15 +105,13 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   return (
     <View
       style={{
-        flexGrow: 1,
-        flexShrink: 1,
+        flex: 1,
         paddingBottom: insets.bottom,
       }}
     >
       <ScreenHeader titleText='Photos and Videos' />
       {(sections.length > 0 || !loading) && (
         <SectionList
-          contentContainerStyle={{ height: '100%' }}
           ListEmptyComponent={EmptyListComponent}
           onEndReached={loadMore}
           renderItem={({ index, item }) => (
