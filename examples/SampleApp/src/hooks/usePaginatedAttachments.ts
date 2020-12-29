@@ -41,7 +41,7 @@ export const usePaginatedAttachments = (
           offset: offset.current,
         },
       );
-
+      console.log(res);
       const newMessages = res?.results.map((r) => r.message);
 
       if (!newMessages) {

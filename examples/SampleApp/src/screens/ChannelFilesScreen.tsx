@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { File } from '../icons/File';
-import { StackNavigatorParamList } from '../types';
+import { LocalAttachmentType, StackNavigatorParamList } from '../types';
 
 type ChannelFilesScreenRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -43,7 +43,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
   );
   const {
     theme: {
-      colors: { black, white, white_snow },
+      colors: { black, border, grey, white_snow },
     },
   } = useTheme();
   const insets = useSafeAreaInsets();
@@ -95,22 +95,45 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
       <ScreenHeader titleText='Files' />
       <ThemeProvider>
         {(sections.length > 0 || !loading) && (
-          <SectionList<Attachment>
-            contentContainerStyle={{ height: '100%', paddingHorizontal: 16 }}
+          <SectionList<Attachment<LocalAttachmentType>>
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
             ListEmptyComponent={EmptyListComponent}
             onEndReached={loadMore}
             renderItem={({ item: attachment }) => (
               <TouchableOpacity
                 key={attachment.id}
                 onPress={() => goToURL(attachment.asset_url)}
+                style={{
+                  borderBottomColor: border,
+                  borderBottomWidth: 1,
+                }}
               >
-                <View style={[{ backgroundColor: white }, styles.container]}>
+                <View
+                  style={[{ backgroundColor: white_snow }, styles.container]}
+                >
                   <FileIcon mimeType={attachment.mime_type} />
                   <View style={[styles.details]}>
-                    <Text numberOfLines={2} style={[styles.title]}>
+                    <Text
+                      numberOfLines={2}
+                      style={[
+                        styles.title,
+                        {
+                          color: black,
+                        },
+                      ]}
+                    >
                       {attachment.title}
                     </Text>
-                    <Text style={[styles.size]}>
+                    <Text
+                      style={[
+                        styles.size,
+                        {
+                          color: grey,
+                        },
+                      ]}
+                    >
                       {getFileSizeDisplayText(attachment.file_size)}
                     </Text>
                   </View>
@@ -136,7 +159,7 @@ export const ChannelFilesScreen: React.FC<ChannelFilesScreenProps> = ({
                 </Text>
               </View>
             )}
-            sections={[]}
+            sections={sections}
             stickySectionHeadersEnabled
           />
         )}
@@ -155,10 +178,9 @@ const EmptyListComponent = () => {
     <View
       style={{
         alignItems: 'center',
-        height: '100%',
+        flex: 1,
         justifyContent: 'center',
-        padding: 40,
-        width: '100%',
+        margin: 40,
       }}
     >
       <View style={{ alignItems: 'center' }}>
@@ -177,9 +199,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     flexDirection: 'row',
-    padding: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   details: {
+    flexGrow: 1,
+    flexShrink: 1,
     paddingLeft: 16,
   },
   size: {

@@ -3,7 +3,10 @@ import type { Channel, UserResponse } from 'stream-chat';
 import type { ThreadContextValue } from 'stream-chat-react-native/v2';
 import type { Theme } from '@react-navigation/native';
 
-export type LocalAttachmentType = Record<string, unknown>;
+export type LocalAttachmentType = {
+  file_size?: number;
+  mime_type?: string;
+};
 export type LocalChannelType = Record<string, unknown>;
 export type LocalCommandType = string;
 export type LocalEventType = Record<string, unknown>;
