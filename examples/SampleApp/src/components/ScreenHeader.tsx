@@ -1,5 +1,11 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 import { DrawerNavigationProp } from '@react-navigation/drawer';
 import {
   CompositeNavigationProp,
@@ -14,6 +20,7 @@ import {
 
 import { GoBack } from '../icons/GoBack';
 import { DrawerNavigatorParamList, StackNavigatorParamList } from '../types';
+import { StyleProp } from 'react-native';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
@@ -40,6 +47,7 @@ type ScreenHeaderProps = {
   inSafeArea?: boolean;
   LeftContent?: React.ElementType;
   RightContent?: React.ElementType;
+  style?: StyleProp<ViewStyle>;
   Subtitle?: React.ElementType | null;
   subtitleText?: string | boolean;
   Title?: React.ElementType | null;
@@ -51,6 +59,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   inSafeArea = false,
   LeftContent = BackButton,
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
+  style,
   Subtitle = null,
   subtitleText = false,
   Title = null,
@@ -79,6 +88,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             borderBottomColor: border,
             height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
           },
+          style,
         ]}
       >
         <View
