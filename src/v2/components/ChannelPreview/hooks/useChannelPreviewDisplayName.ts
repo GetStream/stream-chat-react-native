@@ -92,7 +92,14 @@ export const useChannelPreviewDisplayName = <
   const channelName = channel?.data?.name;
   const maxCharacterLength = characterLength || maxCharacterLengthDefault;
 
-  const [displayName, setDisplayName] = useState('');
+  const [displayName, setDisplayName] = useState(
+    getChannelPreviewDisplayName({
+      channelName,
+      currentUserId,
+      maxCharacterLength,
+      members,
+    }),
+  );
 
   useEffect(() => {
     setDisplayName(
