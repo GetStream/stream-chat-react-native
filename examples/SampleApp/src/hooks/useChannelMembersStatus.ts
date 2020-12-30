@@ -4,6 +4,7 @@ import { AppContext } from '../context/AppContext';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
 import type { Channel } from 'stream-chat';
+
 import type {
   LocalAttachmentType,
   LocalChannelType,
@@ -34,11 +35,11 @@ export const useChannelMembersStatus = (
       memberCount === 2 && channel.id?.indexOf('!members-') === 0;
 
     if (isOneOnOneConversation) {
-      const { user } = Object.values(channel.state.members).find(
+      const result = Object.values(channel.state.members).find(
         (m) => m.user?.id !== chatClient?.user?.id,
       );
 
-      return (newStatus = getUserActivityStatus(user));
+      return (newStatus = getUserActivityStatus(result?.user));
     } else {
       const memberCountText = `${memberCount} Members`;
       const onlineCountText =

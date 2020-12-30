@@ -22,19 +22,6 @@ export const usePaginatedUsers = () => {
     UserResponse<LocalUserType>[] | null
   >(null);
 
-  const toggleUser = (user: UserResponse<LocalUserType>) => {
-    if (!user || !user.name) {
-      return;
-    }
-
-    const existingIndex = selectedUserIds.indexOf(user.id);
-    if (existingIndex > -1) {
-      removeUser(existingIndex);
-    } else {
-      addUser(user);
-    }
-  };
-
   const addUser = (user: UserResponse<LocalUserType>) => {
     const newSelectedUsers = [...selectedUsers, user];
     setSelectedUsers(newSelectedUsers);
@@ -48,23 +35,31 @@ export const usePaginatedUsers = () => {
       return;
     }
 
-    // TODO: Fix this ... replace with splice
-    const newSelectedUsers = [
-      ...selectedUsers.slice(0, index),
-      ...selectedUsers.slice(index + 1),
-    ];
+    const newSelectedUsers = selectedUsers.slice().splice(index, 1);
     selectedUserIds.splice(index, 1);
     setSelectedUsers(newSelectedUsers);
+  };
+
+  const toggleUser = (user: UserResponse<LocalUserType>) => {
+    if (!user.name) {
+      return;
+    }
+
+    const existingIndex = selectedUserIds.indexOf(user.id);
+    if (existingIndex > -1) {
+      removeUser(existingIndex);
+    } else {
+      addUser(user);
+    }
   };
 
   const onFocusInput = () => {
     if (!searchText) {
       setResults(initialResults || []); // <-- here
       setLoading(false);
-      return;
+    } else {
+      fetchUsers(searchText);
     }
-
-    fetchUsers(searchText);
   };
 
   const onChangeSearchText = (newText: string) => {
@@ -77,7 +72,7 @@ export const usePaginatedUsers = () => {
     }
   };
 
-  const fetchUsers = async (q = '') => {
+  const fetchUsers = async (query = '') => {
     if (queryInProgress.current) return;
     setLoading(true);
 
@@ -87,9 +82,11 @@ export const usePaginatedUsers = () => {
         role: 'user',
       };
 
-      if (q) filter.name = { $autocomplete: q };
+      if (query) {
+        filter.name = { $autocomplete: query };
+      }
 
-      if (q !== searchText) {
+      if (query !== searchText) {
         offset.current = 0;
         hasMoreResults.current = true;
       } else {
@@ -110,6 +107,7 @@ export const usePaginatedUsers = () => {
           presence: true,
         },
       );
+
       if (!res?.users) {
         queryInProgress.current = false;
         return;
@@ -117,7 +115,7 @@ export const usePaginatedUsers = () => {
 
       // Dumb check to avoid duplicates
       if (
-        q === searchText &&
+        query === searchText &&
         results.findIndex((r) => res?.users[0].id === r.id) > -1
       ) {
         queryInProgress.current = false;
@@ -125,7 +123,7 @@ export const usePaginatedUsers = () => {
       }
 
       setResults((r) => {
-        if (q !== searchText) {
+        if (query !== searchText) {
           return res?.users;
         }
         return r.concat(res?.users || []);
@@ -133,12 +131,12 @@ export const usePaginatedUsers = () => {
 
       if (
         res?.users.length < 10 &&
-        (offset.current === 0 || q === searchText)
+        (offset.current === 0 || query === searchText)
       ) {
         hasMoreResults.current = false;
       }
 
-      if (!q && offset.current === 0) {
+      if (!query && offset.current === 0) {
         setInitialResults(res?.users || []);
       }
     } catch (e) {

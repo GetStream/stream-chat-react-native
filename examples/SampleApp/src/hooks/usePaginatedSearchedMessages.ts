@@ -77,6 +77,7 @@ export const usePaginatedSearchedMessages = (
         done();
         return;
       }
+
       const res = await chatClient?.search(
         {
           members: {

@@ -46,6 +46,7 @@ export const usePaginatedAttachments = (
     if (queryInProgress.current) {
       return;
     }
+
     setLoading(true);
 
     try {

@@ -15,9 +15,8 @@ import type {
   LoginConfig,
 } from '../types';
 
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
+const getRandomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min)) + min;
 
 export const useChatClient = () => {
   const [chatClient, setChatClient] = useState<StreamChat<
@@ -61,16 +60,15 @@ export const useChatClient = () => {
 
   const switchUser = async (userId?: string) => {
     setIsConnecting(true);
-    try {
-      const id = userId;
 
-      if (id) {
+    try {
+      if (userId) {
         await loginUser({
           apiKey: 'q95x9hkbyd6p',
-          userId: USERS[id].id,
-          userImage: USERS[id].image,
-          userName: USERS[id].name || '',
-          userToken: USER_TOKENS[id],
+          userId: USERS[userId].id,
+          userImage: USERS[userId].image,
+          userName: USERS[userId].name || '',
+          userToken: USER_TOKENS[userId],
         });
       } else {
         const config = await AsyncStore.getItem<LoginConfig | null>(
