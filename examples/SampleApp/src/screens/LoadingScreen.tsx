@@ -2,10 +2,20 @@ import React from 'react';
 import {
   ActivityIndicator,
   SafeAreaView,
+  StyleSheet,
   useColorScheme,
   View,
 } from 'react-native';
 import { useTheme } from 'stream-chat-react-native/v2';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    width: '100%',
+  },
+});
 
 export const LoadingScreen = () => {
   const colorScheme = useColorScheme();
@@ -19,14 +29,7 @@ export const LoadingScreen = () => {
             : '#FCFCFC',
       }}
     >
-      <View
-        style={{
-          alignItems: 'center',
-          height: '100%',
-          justifyContent: 'center',
-          width: '100%',
-        }}
-      >
+      <View style={styles.container}>
         <ActivityIndicator
           color={
             theme?.colors?.black || colorScheme === 'dark'

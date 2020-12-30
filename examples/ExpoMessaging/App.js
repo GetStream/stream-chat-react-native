@@ -163,7 +163,7 @@ const App = () => {
       theme={{
         colors: {
           ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-          background: theme.colors?.white || '#FFFFFF',
+          background: theme.colors?.white_snow || '#FCFCFC',
         },
         dark: colorScheme === 'dark',
       }}
@@ -212,7 +212,7 @@ export default () => {
   const theme = useStreamChatTheme();
   return (
     <SafeAreaProvider
-      style={{ backgroundColor: theme.colors?.white || '#FFFFFF' }}
+      style={{ backgroundColor: theme.colors?.white_snow || '#FCFCFC' }}
     >
       <App />
     </SafeAreaProvider>

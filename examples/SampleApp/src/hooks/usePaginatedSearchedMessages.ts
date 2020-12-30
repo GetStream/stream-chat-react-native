@@ -29,16 +29,15 @@ export const usePaginatedSearchedMessages = (
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(true);
   const [messages, setMessages] = useState<
-    | MessageResponse<
-        LocalAttachmentType,
-        LocalChannelType,
-        LocalCommandType,
-        LocalMessageType,
-        LocalReactionType,
-        LocalUserType
-      >[]
-    | null
-  >(null);
+    MessageResponse<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >[]
+  >();
   const offset = useRef(0);
   const hasMoreResults = useRef(true);
   const queryInProgress = useRef(false);
@@ -51,7 +50,7 @@ export const usePaginatedSearchedMessages = (
   };
 
   const reset = () => {
-    setMessages(null);
+    setMessages(undefined);
     offset.current = 0;
     hasMoreResults.current = true;
   };
@@ -81,7 +80,7 @@ export const usePaginatedSearchedMessages = (
       const res = await chatClient?.search(
         {
           members: {
-            $in: [chatClient?.user?.id],
+            $in: [chatClient?.user?.id || null],
           },
         },
         messageFilters,
@@ -109,9 +108,9 @@ export const usePaginatedSearchedMessages = (
             return newMessages;
           }
 
-          const messages = existingMessages.concat(newMessages);
-          messagesLength = messages.length;
-          return messages;
+          const returnMessages = existingMessages.concat(newMessages);
+          messagesLength = returnMessages.length;
+          return returnMessages;
         });
       }
 

@@ -27,14 +27,16 @@ export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
   loading: boolean;
   loadMore: () => void;
-  messages: MessageResponse<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  >[];
+  messages:
+    | MessageResponse<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >[]
+    | undefined;
   refreshing: boolean;
   refreshList: () => void;
   showResultCount?: boolean;
@@ -72,7 +74,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
 
   return (
     <>
-      {showResultCount && (
+      {messages && showResultCount && (
         <View
           style={{
             backgroundColor: white_snow,
@@ -81,11 +83,13 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
           }}
         >
           <Text style={{ color: grey }}>
-            {messages.length >= MESSAGE_SEARCH_LIMIT
-              ? MESSAGE_SEARCH_LIMIT
-              : messages.length}
-            {messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '}
-            results
+            {`${
+              messages.length >= MESSAGE_SEARCH_LIMIT
+                ? MESSAGE_SEARCH_LIMIT
+                : messages.length
+            }${messages.length >= MESSAGE_SEARCH_LIMIT ? '+ ' : ' '} result${
+              messages.length === 1 ? '' : 's'
+            }`}
           </Text>
         </View>
       )}

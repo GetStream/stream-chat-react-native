@@ -6,10 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {
-  CompositeNavigationProp,
-  useNavigation,
-} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   ChannelList,
   CircleClose,
@@ -22,12 +19,9 @@ import { MessageSearchList } from '../components/MessageSearch/MessageSearchList
 import { AppContext } from '../context/AppContext';
 import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessages';
 
-import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ChannelSort } from 'stream-chat';
 
 import type {
-  BottomTabNavigatorParamList,
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -35,8 +29,42 @@ import type {
   LocalMessageType,
   LocalResponseType,
   LocalUserType,
-  StackNavigatorParamList,
 } from '../types';
+
+const styles = StyleSheet.create({
+  channelListContainer: {
+    height: '100%',
+    position: 'absolute',
+    width: '100%',
+  },
+  emptyIndicatorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
+  },
+  emptyIndicatorText: { paddingTop: 28 },
+  flex: {
+    flex: 1,
+  },
+  searchContainer: {
+    alignItems: 'center',
+    borderRadius: 18,
+    borderWidth: 1,
+    flexDirection: 'row',
+    margin: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingHorizontal: 10,
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
+  },
+});
 
 const baseFilters = {
   type: 'messaging',
@@ -48,25 +76,19 @@ const options = {
   watch: true,
 };
 
-type ChannelListScreenNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<BottomTabNavigatorParamList, 'ChannelListScreen'>,
-  StackNavigationProp<StackNavigatorParamList>
->;
-
-// type Props = {
-//   navigation: ChannelListScreenNavigationProp;
-// };
 export const ChannelListScreen: React.FC = () => {
   const { chatClient } = useContext(AppContext);
+  const navigation = useNavigation();
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, white_snow },
+      colors: { black, grey, grey_gainsboro, grey_whisper, white, white_snow },
     },
   } = useTheme();
+
+  const searchInputRef = useRef<TextInput | null>(null);
   const [searchInputText, setSearchInputText] = useState('');
-  const searchInputFocused = useRef(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const navigation = useNavigation();
+
   const {
     loading,
     loadMore,
@@ -75,7 +97,7 @@ export const ChannelListScreen: React.FC = () => {
     refreshList,
     reset,
   } = usePaginatedSearchedMessages(searchQuery);
-  const searchInputRef = useRef();
+
   const filters = useMemo(
     () => ({
       ...baseFilters,
@@ -87,16 +109,10 @@ export const ChannelListScreen: React.FC = () => {
   );
 
   const EmptySearchIndicator = () => (
-    <View
-      style={{
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 100,
-      }}
-    >
-      <Search fill={grey_gainsboro} scale={5} />
-      <Text style={{ color: grey, marginTop: 20 }}>
-        {`No results found for "${searchQuery}"`}
+    <View style={styles.emptyIndicatorContainer}>
+      <Search height={112} pathFill={grey_gainsboro} width={112} />
+      <Text style={[styles.emptyIndicatorText, { color: grey }]}>
+        {`No results for "${searchQuery}"`}
       </Text>
     </View>
   );
@@ -107,7 +123,7 @@ export const ChannelListScreen: React.FC = () => {
     <>
       <View
         style={[
-          styles.container,
+          styles.flex,
           {
             backgroundColor: white_snow,
           },
@@ -115,12 +131,13 @@ export const ChannelListScreen: React.FC = () => {
       >
         <ChatScreenHeader />
 
-        <View style={styles.listContainer}>
+        <View style={styles.flex}>
           <View
             style={[
               styles.searchContainer,
               {
-                borderColor: border,
+                backgroundColor: white,
+                borderColor: grey_whisper,
               },
             ]}
           >
@@ -133,15 +150,12 @@ export const ChannelListScreen: React.FC = () => {
                   setSearchQuery('');
                 }
               }}
-              onFocus={() => {
-                searchInputFocused.current = true;
-              }}
               onSubmitEditing={({ nativeEvent: { text } }) => {
                 setSearchQuery(text);
               }}
               placeholder='Search'
               placeholderTextColor={grey}
-              ref={(ref) => (searchInputRef.current = ref)}
+              ref={searchInputRef}
               returnKeyType='search'
               style={[styles.searchInput, { color: black }]}
               value={searchInputText}
@@ -151,7 +165,9 @@ export const ChannelListScreen: React.FC = () => {
                 onPress={() => {
                   setSearchInputText('');
                   setSearchQuery('');
-                  searchInputRef.current.blur();
+                  if (searchInputRef.current) {
+                    searchInputRef.current.blur();
+                  }
                   reset();
                 }}
               >
@@ -159,37 +175,23 @@ export const ChannelListScreen: React.FC = () => {
               </TouchableOpacity>
             )}
           </View>
-          {(!!searchQuery || (messages && messages?.length > 0)) && (
-            <View
-              style={{
-                flexGrow: 1,
-                flexShrink: 1,
-              }}
-            >
-              <MessageSearchList
-                EmptySearchIndicator={EmptySearchIndicator}
-                loading={loading}
-                loadMore={loadMore}
-                messages={messages}
-                refreshing={refreshing}
-                refreshList={refreshList}
-                showResultCount
-              />
-            </View>
+          {(!!searchQuery || (messages && messages.length > 0)) && (
+            <MessageSearchList
+              EmptySearchIndicator={EmptySearchIndicator}
+              loading={loading}
+              loadMore={loadMore}
+              messages={messages}
+              refreshing={refreshing}
+              refreshList={refreshList}
+              showResultCount
+            />
           )}
-          <View
-            style={{
-              flexGrow: 1,
-              flexShrink: 1,
-            }}
-          >
+          <View style={styles.flex}>
             <View
-              style={{
-                height: '100%',
-                opacity: searchQuery ? 0 : 1,
-                position: 'absolute',
-                width: '100%',
-              }}
+              style={[
+                styles.channelListContainer,
+                { opacity: searchQuery ? 0 : 1 },
+              ]}
             >
               <ChannelList<
                 LocalAttachmentType,
@@ -224,25 +226,3 @@ export const ChannelListScreen: React.FC = () => {
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContainer: {
-    flex: 1,
-  },
-  searchContainer: {
-    alignItems: 'center',
-    borderRadius: 16,
-    borderWidth: 1,
-    flexDirection: 'row',
-    margin: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  searchInput: {
-    flex: 1,
-    marginHorizontal: 10,
-  },
-});

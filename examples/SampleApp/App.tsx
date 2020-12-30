@@ -36,7 +36,10 @@ import { OneOnOneChannelDetailScreen } from './src/screens/OneOnOneChannelDetail
 import { SharedGroupsScreen } from './src/screens/SharedGroupsScreen';
 import { ThreadScreen } from './src/screens/ThreadScreen';
 import { UserSelectorScreen } from './src/screens/UserSelectorScreen';
-import {
+
+import type { StreamChat } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -47,8 +50,6 @@ import {
   StackNavigatorParamList,
   UserSelectorParamList,
 } from './src/types';
-
-import type { StreamChat } from 'stream-chat';
 
 LogBox.ignoreAllLogs(true);
 console.assert = () => null;
@@ -69,13 +70,15 @@ const App = () => {
 
   return (
     <SafeAreaProvider
-      style={{ backgroundColor: streamChatTheme.colors?.white || '#FFFFFF' }}
+      style={{
+        backgroundColor: streamChatTheme.colors?.white_snow || '#FCFCFC',
+      }}
     >
       <NavigationContainer
         theme={{
           colors: {
             ...(colorScheme === 'dark' ? DarkTheme : DefaultTheme).colors,
-            background: streamChatTheme.colors?.white || '#FFFFFF',
+            background: streamChatTheme.colors?.white_snow || '#FCFCFC',
           },
           dark: colorScheme === 'dark',
         }}
