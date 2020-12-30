@@ -125,11 +125,12 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
                 style={{
                   flexGrow: 1,
                   flexShrink: 1,
+                  justifyContent: 'center',
                   marginLeft: 10,
                   marginRight: 20,
                 }}
               >
-                <Text style={{ color: black }}>
+                <Text numberOfLines={1} style={{ color: black }}>
                   <Text style={{ fontWeight: '700' }}>{item.user?.name} </Text>
                   {!!item.channel?.name && (
                     <Text>
@@ -154,7 +155,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
                 </Text>
               </View>
             </View>
-            <View>
+            <View style={{ justifyContent: 'center' }}>
               <Text
                 style={{
                   color: grey,

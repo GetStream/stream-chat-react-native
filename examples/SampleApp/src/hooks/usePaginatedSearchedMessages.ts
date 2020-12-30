@@ -27,7 +27,7 @@ export const usePaginatedSearchedMessages = (
       > = {},
 ) => {
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [messages, setMessages] = useState<
     MessageResponse<
       LocalAttachmentType,
