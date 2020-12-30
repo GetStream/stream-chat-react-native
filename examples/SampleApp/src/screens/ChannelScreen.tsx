@@ -11,7 +11,7 @@ import {
   useFocusEffect,
   useNavigation,
 } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Avatar,
   Channel,
@@ -123,7 +123,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
   return (
     <ScreenHeader
-      inSafeArea
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
@@ -169,6 +168,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const navigation = useNavigation();
+  const { bottom } = useSafeAreaInsets();
   const {
     theme: {
       colors: { white },
@@ -222,7 +222,9 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
+    <View
+      style={[styles.flex, { backgroundColor: white, paddingBottom: bottom }]}
+    >
       <Channel
         channel={channel}
         disableTypingIndicator
@@ -252,6 +254,6 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         />
         <MessageInput />
       </Channel>
-    </SafeAreaView>
+    </View>
   );
 };

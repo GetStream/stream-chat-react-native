@@ -69,10 +69,20 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
+  contentContainer: {
+    flexGrow: 1,
+  },
   errorNotification: {
     alignItems: 'center',
-    padding: 5,
-    zIndex: 10,
+    left: 0,
+    paddingVertical: 4,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  errorNotificationText: {
+    color: '#FFFFFF',
+    fontSize: 14,
   },
   flex: { flex: 1 },
   listContainer: {
@@ -293,9 +303,8 @@ const MessageListWithContext = <
     theme: {
       colors: {
         accent_blue,
-        accent_red,
         bg_gradient_end,
-        grey_gainsboro,
+        grey,
         targetedMessageBackground,
         white_snow,
       },
@@ -331,11 +340,6 @@ const MessageListWithContext = <
   const lastMessageListLength = useRef(channel?.state.messages.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const messageScrollPosition = useRef(0);
-  /**
-   * In order to prevent the LoadingIndicator component from showing up briefly on mount,
-   * we set the loading state one cycle behind to ensure the messages are set before the
-   * change to the loading state is registered.
-   */
   const [messagesLoading, setMessagesLoading] = useState(true);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
@@ -583,23 +587,12 @@ const MessageListWithContext = <
     .join();
 
   const numberOfMessagesWithImages = messagesWithImages.length;
+  const threadExists = !!thread;
   useEffect(() => {
     if ((threadList && thread) || (!threadList && !thread)) {
       setImages(messagesWithImages);
     }
-  }, [imageString, numberOfMessagesWithImages, thread, threadList]);
-
-  // We can't provide ListEmptyComponent to FlatList when inverted flag is set.
-  // https://github.com/facebook/react-native/issues/21196
-  if (messageList.length === 0 && !threadList) {
-    return messagesLoading ? (
-      <LoadingIndicator listType='message' />
-    ) : (
-      <View style={styles.flex} testID='empty-state'>
-        <EmptyStateIndicator listType='message' />
-      </View>
-    );
-  }
+  }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
 
   const stickyHeaderFormatDate =
     stickyHeaderDate.getFullYear() === new Date().getFullYear()
@@ -628,10 +621,10 @@ const MessageListWithContext = <
       : 0;
   return (
     <View
-      collapsable={false}
       style={[styles.container, { backgroundColor: white_snow }, container]}
     >
       <FlatList
+        contentContainerStyle={styles.contentContainer}
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
@@ -639,6 +632,17 @@ const MessageListWithContext = <
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
+        ListEmptyComponent={
+          <View style={styles.flex}>
+            {messagesLoading ? (
+              <LoadingIndicator listType='message' />
+            ) : (
+              <View style={styles.flex} testID='empty-state'>
+                <EmptyStateIndicator listType='message' />
+              </View>
+            )}
+          </View>
+        }
         ListFooterComponent={FooterComponent}
         // TODO: Scrolling doesn't work perfectly with this loading indicator. Investigate and fix.
         ListHeaderComponent={() =>
@@ -696,13 +700,13 @@ const MessageListWithContext = <
         <View
           style={[
             styles.errorNotification,
-            { backgroundColor: `${grey_gainsboro}E6` },
+            { backgroundColor: `${grey}E6` },
             errorNotification,
           ]}
           testID='error-notification'
         >
-          <Text style={[{ color: accent_red }, errorNotificationText]}>
-            {t('Connection failure, reconnecting now...')}
+          <Text style={[styles.errorNotificationText, errorNotificationText]}>
+            {t('Reconnecting...')}
           </Text>
         </View>
       )}

@@ -105,14 +105,15 @@ const prefetchImage = ({
   url: string;
 }) => {
   if (url.includes('&h=%2A')) {
-    try {
-      Image.prefetch(url.replace('h=%2A', `h=${height}`));
-    } catch (e) {
-      console.log('resize prefetch failed', e);
-      Image.prefetch(url);
-    }
+    Image.prefetch(url.replace('h=%2A', `h=${height}`))
+      .catch(() => Image.prefetch(url))
+      .catch(() => {
+        // do nothing, not a big deal that prefetch failed
+      });
   } else {
-    Image.prefetch(url);
+    Image.prefetch(url).catch(() => {
+      // do nothing, not a big deal that prefetch failed
+    });
   }
 };
 

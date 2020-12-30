@@ -26,7 +26,9 @@ export const ChannelListHeaderNetworkDownIndicator: React.FC = () => {
   const { t } = useTranslationContext();
 
   return (
-    <View style={[styles.container, { backgroundColor: grey }, container]}>
+    <View
+      style={[styles.container, { backgroundColor: `${grey}E6` }, container]}
+    >
       <Text style={[styles.errorText, { color: white }, errorText]}>
         {t('Reconnecting...')}
       </Text>
