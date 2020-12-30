@@ -347,36 +347,34 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 value={groupName}
               />
             </View>
-            {textInputFocused && (
-              <View style={styles.row}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setGroupName(channel.data?.name);
-                    textInputRef.current && textInputRef.current.blur();
-                  }}
-                  style={{
-                    paddingRight: 8,
-                  }}
-                >
-                  <CircleClose height={24} width={24} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={async () => {
-                    await channel.update({
-                      ...channel.data,
-                      name: groupName,
-                    } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalResponseType, LocalUserType>['update']>[0]);
-                    if (textInputRef.current) {
-                      textInputRef.current.blur();
-                    }
-                  }}
-                >
-                  {!!groupName && (
-                    <Check fill={accent_blue} height={24} width={24} />
-                  )}
-                </TouchableOpacity>
-              </View>
-            )}
+            <View style={[styles.row, { opacity: textInputFocused ? 1 : 0 }]}>
+              <TouchableOpacity
+                onPress={() => {
+                  setGroupName(channel.data?.name);
+                  textInputRef.current && textInputRef.current.blur();
+                }}
+                style={{
+                  paddingRight: 8,
+                }}
+              >
+                <CircleClose height={24} width={24} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={async () => {
+                  await channel.update({
+                    ...channel.data,
+                    name: groupName,
+                  } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalResponseType, LocalUserType>['update']>[0]);
+                  if (textInputRef.current) {
+                    textInputRef.current.blur();
+                  }
+                }}
+              >
+                {!!groupName && (
+                  <Check fill={accent_blue} height={24} width={24} />
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
           <TouchableOpacity
             style={[
