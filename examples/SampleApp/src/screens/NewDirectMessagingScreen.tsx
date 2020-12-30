@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   createGroupButtonText: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginLeft: 8,
   },
   emptyMessageContainer: {

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   displayName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginTop: 16,
   },
   itemText: {

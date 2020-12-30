@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginTop: 18,
   },
 });
