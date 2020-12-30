@@ -8,6 +8,7 @@ import {
   ChannelListMessengerProps,
   ChannelPreviewMessengerProps,
   getChannelPreviewDisplayAvatar,
+  GroupAvatar,
   useChannelPreviewDisplayName,
   useChannelsContext,
   useTheme,
@@ -86,6 +87,8 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
 
   if (Object.keys(channel.state.members).length === 2) return null;
 
+  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
+
   const switchToChannel = () => {
     navigation.reset({
       index: 1,
@@ -115,10 +118,19 @@ const CustomPreview: React.FC<CustomPreviewProps> = ({ channel }) => {
       ]}
     >
       <View style={styles.groupContainer}>
-        <Avatar
-          {...getChannelPreviewDisplayAvatar(channel, chatClient)}
-          size={40}
-        />
+        {displayAvatar.images ? (
+          <GroupAvatar
+            images={displayAvatar.images}
+            names={displayAvatar.names}
+            size={40}
+          />
+        ) : (
+          <Avatar
+            image={displayAvatar.image}
+            name={displayAvatar.name}
+            size={40}
+          />
+        )}
         <Text style={[styles.nameText, { color: black }]}>{name}</Text>
       </View>
       <Text

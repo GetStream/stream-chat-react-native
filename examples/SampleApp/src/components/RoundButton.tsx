@@ -1,6 +1,23 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from 'stream-chat-react-native/v2';
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    borderRadius: 20,
+    elevation: 4,
+    height: 40,
+    justifyContent: 'center',
+    shadowOffset: {
+      height: 1,
+      width: 0,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    width: 40,
+  },
+});
 
 type RoundButtonProps = {
   disabled?: boolean;
@@ -20,22 +37,13 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
     <TouchableOpacity
       disabled={disabled}
       onPress={onPress}
-      style={{
-        alignItems: 'center',
-        backgroundColor: icon_background,
-        borderRadius: 20,
-        elevation: 4,
-        height: 40,
-        justifyContent: 'center',
-        shadowColor: black,
-        shadowOffset: {
-          height: 1,
-          width: 0,
+      style={[
+        styles.container,
+        {
+          backgroundColor: icon_background,
+          shadowColor: black,
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        width: 40,
-      }}
+      ]}
     >
       {children}
     </TouchableOpacity>
