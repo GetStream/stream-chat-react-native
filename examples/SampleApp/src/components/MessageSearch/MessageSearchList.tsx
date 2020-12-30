@@ -100,78 +100,87 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
         onEndReached={loadMore}
         onRefresh={refreshList}
         refreshing={refreshing}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('ChannelScreen', {
-                channelId: item.channel?.id,
-                messageId: item.id,
-              });
-            }}
-            style={{
-              borderBottomColor: border,
-              borderBottomWidth: 1,
-              flexDirection: 'row',
-              padding: 12,
-            }}
-          >
-            <View style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}>
-              <Avatar
-                image={item.user?.image}
-                name={item.user?.name}
-                size={40}
-              />
+        renderItem={({ item }) => {
+          // TODO: Remove the following if condition once we have two way scroll functionality on threads.
+          if (item.parent_id) return null;
+
+          return (
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('ChannelScreen', {
+                  channelId: item.channel?.id,
+                  messageId: item.id,
+                });
+              }}
+              style={{
+                borderBottomColor: border,
+                borderBottomWidth: 1,
+                flexDirection: 'row',
+                padding: 12,
+              }}
+            >
               <View
-                style={{
-                  flexGrow: 1,
-                  flexShrink: 1,
-                  justifyContent: 'center',
-                  marginLeft: 10,
-                  marginRight: 20,
-                }}
+                style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}
               >
-                <Text numberOfLines={1} style={{ color: black }}>
-                  <Text style={{ fontWeight: '700' }}>{item.user?.name} </Text>
-                  {!!item.channel?.name && (
-                    <Text>
-                      in
-                      <Text style={{ fontWeight: '700' }}>
-                        {' '}
-                        {item.channel?.name}
-                      </Text>
-                    </Text>
-                  )}
-                </Text>
-                <Text
-                  numberOfLines={1}
+                <Avatar
+                  image={item.user?.image}
+                  name={item.user?.name}
+                  size={40}
+                />
+                <View
                   style={{
-                    color: grey,
-                    flexWrap: 'nowrap',
-                    fontSize: 12,
-                    fontWeight: '400',
+                    flexGrow: 1,
+                    flexShrink: 1,
+                    justifyContent: 'center',
+                    marginLeft: 10,
+                    marginRight: 20,
                   }}
                 >
-                  {item.text}
+                  <Text numberOfLines={1} style={{ color: black }}>
+                    <Text style={{ fontWeight: '700' }}>
+                      {item.user?.name}{' '}
+                    </Text>
+                    {!!item.channel?.name && (
+                      <Text>
+                        in
+                        <Text style={{ fontWeight: '700' }}>
+                          {' '}
+                          {item.channel?.name}
+                        </Text>
+                      </Text>
+                    )}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: grey,
+                      flexWrap: 'nowrap',
+                      fontSize: 12,
+                      fontWeight: '400',
+                    }}
+                  >
+                    {item.text}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ justifyContent: 'center' }}>
+                <Text
+                  style={{
+                    color: grey,
+                    fontSize: 12,
+                  }}
+                >
+                  {dayjs(item.created_at).calendar(undefined, {
+                    lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
+                    lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
+                    sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )
+                    sameElse: 'DD/MM/YYYY', // Everything else ( 17/10/2011 )
+                  })}
                 </Text>
               </View>
-            </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Text
-                style={{
-                  color: grey,
-                  fontSize: 12,
-                }}
-              >
-                {dayjs(item.created_at).calendar(undefined, {
-                  lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
-                  lastWeek: 'DD/MM', // Last week ( Last Monday at 2:30 AM )
-                  sameDay: 'h:mm A', // The same day ( Today at 2:30 AM )
-                  sameElse: 'DD/MM/YYYY', // Everything else ( 17/10/2011 )
-                })}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          );
+        }}
         style={{ flex: 1 }}
       />
     </>

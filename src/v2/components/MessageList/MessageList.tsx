@@ -366,7 +366,7 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (channel && channel.countUnread() <= 4) {
+    if (channel && channel.countUnread() <= limitForUnreadScrolledUp) {
       channel.markRead();
     }
   }, [channel]);
@@ -461,13 +461,15 @@ const MessageListWithContext = <
 
     if (message.type !== 'message.read') {
       const additionalStyles = [];
-      if (targetedMessage === message.id) {
-        additionalStyles.push({ backgroundColor: targetedMessageBackground });
-        additionalStyles.push(targetedMessageUnderlay);
-      }
 
       if (isUnread && newMessagesNotification) {
         additionalStyles.push({ backgroundColor: bg_gradient_end });
+      }
+
+      // Targeted message styling should take priority over unread styles.
+      if (targetedMessage === message.id) {
+        additionalStyles.push({ backgroundColor: targetedMessageBackground });
+        additionalStyles.push(targetedMessageUnderlay);
       }
 
       return (
@@ -617,6 +619,13 @@ const MessageListWithContext = <
     }
   };
 
+  const initialScrollIndex =
+    !channel?.state.isUpToDate || targetedMessage
+      ? 0
+      : initialScrollToFirstUnreadMessage &&
+        channel?.countUnread() > limitForUnreadScrolledUp
+      ? Math.min(channel?.countUnread() - 1, limitForUnreadScrolledUp - 1)
+      : 0;
   return (
     <View
       collapsable={false}
@@ -626,14 +635,7 @@ const MessageListWithContext = <
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
-        initialScrollIndex={
-          !channel?.state.isUpToDate
-            ? 0
-            : initialScrollToFirstUnreadMessage &&
-              channel?.countUnread() > limitForUnreadScrolledUp
-            ? Math.min(channel?.countUnread() - 1, limitForUnreadScrolledUp - 1)
-            : 0
-        }
+        initialScrollIndex={initialScrollIndex}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}

@@ -624,8 +624,8 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadChannelAtMessage'] = ({ after = 2, before = 10, messageId }) =>
-    channelQueryCall(() => {
-      queryAtMessage({ after, before, messageId });
+    channelQueryCall(async () => {
+      await queryAtMessage({ after, before, messageId });
 
       if (messageId) {
         setTargetedMessage(messageId);
@@ -635,7 +635,7 @@ export const ChannelWithContext = <
   const loadChannel = () =>
     channelQueryCall(() => {
       if (!channel?.initialized) {
-        channel?.watch();
+        return channel?.watch();
       }
     });
 
