@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Channel, Thread, useTheme } from 'stream-chat-react-native/v2';
+import {
+  Channel,
+  Thread,
+  useAttachmentPickerContext,
+  useTheme,
+} from 'stream-chat-react-native/v2';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 
@@ -39,6 +44,12 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
       colors: { white },
     },
   } = useTheme();
+  const { setSelectedImages } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setSelectedImages([]);
+    return () => setSelectedImages([]);
+  }, []);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
