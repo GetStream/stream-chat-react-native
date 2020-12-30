@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
   },
   emptyIndicatorContainer: {
     alignItems: 'center',
-    flex: 1,
     justifyContent: 'center',
+    paddingTop: 40,
   },
   emptyIndicatorText: { paddingTop: 28 },
   flex: {
@@ -120,109 +120,107 @@ export const ChannelListScreen: React.FC = () => {
   if (!chatClient) return null;
 
   return (
-    <>
-      <View
-        style={[
-          styles.flex,
-          {
-            backgroundColor: white_snow,
-          },
-        ]}
-      >
-        <ChatScreenHeader />
+    <View
+      style={[
+        styles.flex,
+        {
+          backgroundColor: white_snow,
+        },
+      ]}
+    >
+      <ChatScreenHeader />
 
-        <View style={styles.flex}>
+      <View style={styles.flex}>
+        <View
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor: white,
+              borderColor: grey_whisper,
+            },
+          ]}
+        >
+          <Search pathFill={black} />
+          <TextInput
+            onChangeText={(text) => {
+              setSearchInputText(text);
+              if (!text) {
+                reset();
+                setSearchQuery('');
+              }
+            }}
+            onSubmitEditing={({ nativeEvent: { text } }) => {
+              setSearchQuery(text);
+            }}
+            placeholder='Search'
+            placeholderTextColor={grey}
+            ref={searchInputRef}
+            returnKeyType='search'
+            style={[styles.searchInput, { color: black }]}
+            value={searchInputText}
+          />
+          {!!searchInputText && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchInputText('');
+                setSearchQuery('');
+                if (searchInputRef.current) {
+                  searchInputRef.current.blur();
+                }
+                reset();
+              }}
+            >
+              <CircleClose pathFill={grey} />
+            </TouchableOpacity>
+          )}
+        </View>
+        {(!!searchQuery || (messages && messages.length > 0)) && (
+          <MessageSearchList
+            EmptySearchIndicator={EmptySearchIndicator}
+            loading={loading}
+            loadMore={loadMore}
+            messages={messages}
+            refreshing={refreshing}
+            refreshList={refreshList}
+            showResultCount
+          />
+        )}
+        <View style={{ flex: searchQuery ? 0 : 1 }}>
           <View
             style={[
-              styles.searchContainer,
-              {
-                backgroundColor: white,
-                borderColor: grey_whisper,
-              },
+              styles.channelListContainer,
+              { opacity: searchQuery ? 0 : 1 },
             ]}
           >
-            <Search pathFill={black} />
-            <TextInput
-              onChangeText={(text) => {
-                setSearchInputText(text);
-                if (!text) {
-                  reset();
-                  setSearchQuery('');
-                }
-              }}
-              onSubmitEditing={({ nativeEvent: { text } }) => {
-                setSearchQuery(text);
-              }}
-              placeholder='Search'
-              placeholderTextColor={grey}
-              ref={searchInputRef}
-              returnKeyType='search'
-              style={[styles.searchInput, { color: black }]}
-              value={searchInputText}
-            />
-            {!!searchInputText && (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchInputText('');
-                  setSearchQuery('');
-                  if (searchInputRef.current) {
-                    searchInputRef.current.blur();
-                  }
-                  reset();
-                }}
-              >
-                <CircleClose pathFill={grey} />
-              </TouchableOpacity>
-            )}
-          </View>
-          {(!!searchQuery || (messages && messages.length > 0)) && (
-            <MessageSearchList
-              EmptySearchIndicator={EmptySearchIndicator}
-              loading={loading}
-              loadMore={loadMore}
-              messages={messages}
-              refreshing={refreshing}
-              refreshList={refreshList}
-              showResultCount
-            />
-          )}
-          <View style={styles.flex}>
-            <View
-              style={[
-                styles.channelListContainer,
-                { opacity: searchQuery ? 0 : 1 },
-              ]}
+            <ChannelList<
+              LocalAttachmentType,
+              LocalChannelType,
+              LocalCommandType,
+              LocalEventType,
+              LocalMessageType,
+              LocalResponseType,
+              LocalUserType
             >
-              <ChannelList<
-                LocalAttachmentType,
-                LocalChannelType,
-                LocalCommandType,
-                LocalEventType,
-                LocalMessageType,
-                LocalResponseType,
-                LocalUserType
-              >
-                additionalFlatListProps={{
-                  getItemLayout: (_, index) => ({
-                    index,
-                    length: 65,
-                    offset: 65 * index,
-                  }),
-                }}
-                filters={filters}
-                HeaderNetworkDownIndicator={() => null}
-                onSelect={(channel) => {
-                  navigation.navigate('ChannelScreen', {
-                    channel,
-                  });
-                }}
-                options={options}
-                sort={sort}
-              />
-            </View>
+              additionalFlatListProps={{
+                getItemLayout: (_, index) => ({
+                  index,
+                  length: 65,
+                  offset: 65 * index,
+                }),
+              }}
+              filters={filters}
+              HeaderNetworkDownIndicator={() => null}
+              onSelect={(channel) => {
+                navigation.navigate('ChannelScreen', {
+                  channel,
+                });
+              }}
+              options={options}
+              sort={sort}
+            />
           </View>
         </View>
       </View>
-    </>
+    </View>
   );
 };
