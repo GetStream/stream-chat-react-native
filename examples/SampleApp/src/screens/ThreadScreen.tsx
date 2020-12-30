@@ -34,7 +34,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
     params: { channel, thread },
   },
 }) => (
-  <SafeAreaView style={{ flex: 1 }}>
+  <SafeAreaView style={styles.container}>
     <Channel<
       LocalAttachmentType,
       LocalChannelType,

@@ -83,38 +83,37 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   } = useTheme();
 
   return (
-    <>
+    <View
+      style={[
+        styles.safeAreaContainer,
+        {
+          backgroundColor: white,
+          borderBottomColor: border,
+          height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
+        },
+        style,
+      ]}
+    >
       <View
         style={[
-          styles.safeAreaContainer,
+          styles.contentContainer,
           {
-            backgroundColor: white,
-            borderBottomColor: border,
-            height: HEADER_CONTENT_HEIGHT + (inSafeArea ? 0 : insets.top),
+            height: HEADER_CONTENT_HEIGHT,
+            marginTop: inSafeArea ? 0 : insets.top,
+            paddingBottom: 10,
+            paddingHorizontal: 10,
           },
-          style,
         ]}
       >
-        <View
-          style={[
-            styles.contentContainer,
-            {
-              height: HEADER_CONTENT_HEIGHT,
-              marginTop: inSafeArea ? 0 : insets.top,
-              paddingBottom: 10,
-              paddingLeft: 10,
-              paddingRight: 10,
-            },
-          ]}
-        >
-          <LeftContent />
+        <LeftContent />
 
-          <View
-            style={{
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>
             {Title ? (
               <Title />
             ) : (
@@ -133,25 +132,25 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                 </Text>
               )
             )}
-            {Subtitle ? (
-              <Subtitle />
-            ) : (
-              !!subtitleText && (
-                <Text
-                  style={{
-                    color: grey,
-                    fontSize: 12,
-                  }}
-                >
-                  {subtitleText}
-                </Text>
-              )
-            )}
           </View>
-          <RightContent />
+          {Subtitle ? (
+            <Subtitle />
+          ) : (
+            !!subtitleText && (
+              <Text
+                style={{
+                  color: grey,
+                  fontSize: 12,
+                }}
+              >
+                {subtitleText}
+              </Text>
+            )
+          )}
         </View>
+        <RightContent />
       </View>
-    </>
+    </View>
   );
 };
 

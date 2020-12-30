@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
   },
   emptyIndicatorContainer: {
     alignItems: 'center',
+    flex: 1,
     justifyContent: 'center',
-    paddingTop: 40,
   },
   emptyIndicatorText: { paddingTop: 28 },
   flex: {

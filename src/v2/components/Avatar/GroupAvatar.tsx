@@ -112,7 +112,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
     <View
       style={[
         styles.container,
-        { borderRadius: size / 2, width: size },
+        { borderRadius: size / 2, height: size, width: size },
         container,
         containerStyle,
       ]}

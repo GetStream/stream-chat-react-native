@@ -1,11 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Avatar,
   Channel,
   getChannelPreviewDisplayAvatar,
+  GroupAvatar,
   MessageInput,
   MessageList,
   Spinner,
@@ -33,6 +40,14 @@ import type {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
+
+const styles = StyleSheet.create({
+  flex: { flex: 1 },
+  networkDownIndicatorContainer: { alignItems: 'center', flexDirection: 'row' },
+  searchingForNetworkText: {
+    paddingLeft: 8,
+  },
+});
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
   StackNavigatorParamList,
@@ -66,15 +81,17 @@ export const NetworkDownIndicator = () => {
     },
   } = useTheme();
   return (
-    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+    <View style={styles.networkDownIndicatorContainer}>
       <Spinner />
       <Text
-        style={{
-          color: grey,
-          fontSize: 12,
-          fontWeight: '400',
-          marginLeft: 5,
-        }}
+        style={
+          (styles.searchingForNetworkText,
+          [
+            {
+              color: grey,
+            },
+          ])
+        }
       >
         Searching for network
       </Text>
@@ -83,12 +100,16 @@ export const NetworkDownIndicator = () => {
 };
 
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
-  const navigation = useNavigation<ChannelScreenNavigationProp>();
-  const { chatClient } = useContext(AppContext);
-  const displayName = useChannelPreviewDisplayName(channel, 30);
   const membersStatus = useChannelMembersStatus(channel);
+  const displayName = useChannelPreviewDisplayName(channel, 30);
   const { isOnline } = useChatContext();
+  const { chatClient } = useContext(AppContext);
+  const navigation = useNavigation<ChannelScreenNavigationProp>();
   const typing = useTypingString();
+
+  if (!channel || !chatClient) return null;
+
+  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
   const isOneOnOneConversation =
     channel &&
@@ -97,6 +118,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 
   return (
     <ScreenHeader
+      inSafeArea
       RightContent={() => (
         <TouchableOpacity
           onPress={() => {
@@ -111,10 +133,19 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             }
           }}
         >
-          <Avatar
-            {...getChannelPreviewDisplayAvatar(channel, chatClient)}
-            size={40}
-          />
+          {displayAvatar.images ? (
+            <GroupAvatar
+              images={displayAvatar.images}
+              names={displayAvatar.names}
+              size={40}
+            />
+          ) : (
+            <Avatar
+              image={displayAvatar.image}
+              name={displayAvatar.name}
+              size={40}
+            />
+          )}
         </TouchableOpacity>
       )}
       Subtitle={isOnline ? null : NetworkDownIndicator}
@@ -127,32 +158,40 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
 // Either provide channel or channelId.
 export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   route: {
-    params: { channel: channelFromProp = null, channelId, messageId },
+    params: { channel: channelFromProp, channelId, messageId },
   },
 }) => {
   const { chatClient } = useContext(AppContext);
   const navigation = useNavigation();
-  const { bottom } = useSafeAreaInsets();
-  const [channel, setChannel] = useState<StreamChatChannel<
-    LocalAttachmentType,
-    LocalChannelType,
-    LocalCommandType,
-    LocalEventType,
-    LocalMessageType,
-    LocalReactionType,
-    LocalUserType
-  > | null>(channelFromProp);
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
+
+  const [channel, setChannel] = useState<
+    | StreamChatChannel<
+        LocalAttachmentType,
+        LocalChannelType,
+        LocalCommandType,
+        LocalEventType,
+        LocalMessageType,
+        LocalReactionType,
+        LocalUserType
+      >
+    | undefined
+  >(channelFromProp);
 
   useEffect(() => {
     const initChannel = async () => {
       if (!chatClient || !channelId) return;
 
-      const channel = chatClient?.channel('messaging', channelId);
+      const newChannel = chatClient?.channel('messaging', channelId);
 
-      if (!channel?.initialized) {
-        await channel?.watch();
+      if (!newChannel?.initialized) {
+        await newChannel?.watch();
       }
-      setChannel(channel);
+      setChannel(newChannel);
     };
 
     initChannel();
@@ -161,36 +200,34 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
   if (!channel || !chatClient) return null;
 
   return (
-    <View style={{ height: '100%' }}>
-      <View style={{ flexGrow: 1, flexShrink: 1, paddingBottom: bottom }}>
-        <Channel
-          channel={channel}
-          disableTypingIndicator
-          enforceUniqueReaction
-          initialScrollToFirstUnreadMessage
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
-          messageId={messageId}
+    <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
+      <Channel
+        channel={channel}
+        disableTypingIndicator
+        enforceUniqueReaction
+        initialScrollToFirstUnreadMessage
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+        messageId={messageId}
+      >
+        <ChannelHeader channel={channel} />
+        <MessageList<
+          LocalAttachmentType,
+          LocalChannelType,
+          LocalCommandType,
+          LocalEventType,
+          LocalMessageType,
+          LocalResponseType,
+          LocalUserType
         >
-          <ChannelHeader channel={channel} />
-          <MessageList<
-            LocalAttachmentType,
-            LocalChannelType,
-            LocalCommandType,
-            LocalEventType,
-            LocalMessageType,
-            LocalResponseType,
-            LocalUserType
-          >
-            onThreadSelect={(thread) => {
-              navigation.navigate('ThreadScreen', {
-                channel,
-                thread,
-              });
-            }}
-          />
-          <MessageInput />
-        </Channel>
-      </View>
-    </View>
+          onThreadSelect={(thread) => {
+            navigation.navigate('ThreadScreen', {
+              channel,
+              thread,
+            });
+          }}
+        />
+        <MessageInput />
+      </Channel>
+    </SafeAreaView>
   );
 };
