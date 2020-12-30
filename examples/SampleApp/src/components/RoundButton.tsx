@@ -24,16 +24,16 @@ export const RoundButton: React.FC<RoundButtonProps> = ({
         alignItems: 'center',
         backgroundColor: icon_background,
         borderRadius: 20,
-        elevation: 5,
+        elevation: 4,
         height: 40,
         justifyContent: 'center',
         shadowColor: black,
         shadowOffset: {
-          height: 2,
+          height: 1,
           width: 0,
         },
         shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        shadowRadius: 4,
         width: 40,
       }}
     >

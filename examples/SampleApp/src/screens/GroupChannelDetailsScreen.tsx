@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { RouteProp, useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Avatar,
   useChannelPreviewDisplayName,
@@ -32,7 +33,100 @@ import { Picture } from '../icons/Picture';
 import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
-import type { StackNavigatorParamList } from '../types';
+import type { Channel } from 'stream-chat';
+
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType,
+  StackNavigatorParamList,
+} from '../types';
+
+const styles = StyleSheet.create({
+  actionContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  actionLabelContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  changeNameContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 8,
+    paddingRight: 16,
+    paddingVertical: 20,
+  },
+  changeNameInputBox: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '700',
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingLeft: 14,
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
+  },
+  changeNameInputContainer: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  container: {
+    flex: 1,
+  },
+  itemText: {
+    fontSize: 14,
+    paddingLeft: 16,
+  },
+  loadMoreButton: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    width: '100%',
+  },
+  loadMoreText: {
+    fontSize: 14,
+    paddingLeft: 20,
+  },
+  memberContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    width: '100%',
+  },
+  memberDetails: {
+    paddingLeft: 8,
+  },
+  memberName: {
+    fontSize: 14,
+    fontWeight: '700',
+    paddingBottom: 1,
+  },
+  memberRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  row: { flexDirection: 'row' },
+  spacer: {
+    height: 8,
+  },
+});
 
 type GroupChannelDetailsRouteProp = RouteProp<
   StackNavigatorParamList,
@@ -67,23 +161,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 }) => {
   const { chatClient } = useContext(AppContext);
   const { openBottomSheet } = useContext(AppOverlayContext);
-  const textInputRef = useRef<TextInput>(null);
-  const [muted, setMuted] = useState(
-    chatClient?.mutedChannels &&
-      chatClient?.mutedChannels?.findIndex(
-        (mute) => mute.channel?.id === channel?.id,
-      ) > -1,
-  );
-  const [groupName, setGroupName] = useState(channel.data?.name);
-  const allMembers = Object.values(channel.state.members);
-  const [members, setMembers] = useState(
-    Object.values(channel.state.members).slice(0, 3),
-  );
-  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
-  const [textInputFocused, setTextInputFocused] = useState(false);
   const navigation = useNavigation();
-  const displayName = useChannelPreviewDisplayName(channel, 30);
-  const membersStatus = useChannelMembersStatus(channel);
+  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
   const {
     theme: {
       colors: {
@@ -98,32 +177,53 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     },
   } = useTheme();
 
+  const textInputRef = useRef<TextInput>(null);
+  const [muted, setMuted] = useState(
+    chatClient?.mutedChannels &&
+      chatClient?.mutedChannels?.findIndex(
+        (mute) => mute.channel?.id === channel?.id,
+      ) !== -1,
+  );
+  const [groupName, setGroupName] = useState(channel.data?.name);
+  const allMembers = Object.values(channel.state.members);
+  const [members, setMembers] = useState(
+    Object.values(channel.state.members).slice(0, 3),
+  );
+  const [textInputFocused, setTextInputFocused] = useState(false);
+
+  const membersStatus = useChannelMembersStatus(channel);
+  const displayName = useChannelPreviewDisplayName(channel, 30);
+
+  if (!channel) return null;
+
   /**
    * Opens confirmation sheet for leaving the group
    */
   const openLeaveGroupConfirmationSheet = () => {
-    if (!chatClient?.user?.id) return;
-    openBottomSheet({
-      params: {
-        onConfirm: leaveGroup,
-        subtext: 'Are you sure you want to leave this group?',
-        title: 'Leave Group',
-      },
-      type: 'confirmation',
-    });
+    if (chatClient?.user?.id) {
+      openBottomSheet({
+        params: {
+          onConfirm: leaveGroup,
+          subtext: 'Are you sure you want to leave this group?',
+          title: 'Leave Group',
+        },
+        type: 'confirmation',
+      });
+    }
   };
 
   /**
    * Cancels the confirmation sheet.
    */
   const openAddMembersSheet = () => {
-    if (!chatClient?.user?.id) return;
-    openBottomSheet({
-      params: {
-        channel,
-      },
-      type: 'addMembers',
-    });
+    if (chatClient?.user?.id) {
+      openBottomSheet({
+        params: {
+          channel,
+        },
+        type: 'addMembers',
+      });
+    }
   };
 
   /**
@@ -148,18 +248,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     });
   };
 
-  if (!channel) return null;
-
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       <ScreenHeader
+        inSafeArea
         RightContent={() => (
-          <RoundButton
-            onPress={() => {
-              openAddMembersSheet();
-            }}
-          >
-            <AddUser fill={accent_blue} height={25} width={25} />
+          <RoundButton onPress={openAddMembersSheet}>
+            <AddUser fill={accent_blue} height={24} width={24} />
           </RoundButton>
         )}
         subtitleText={`${membersStatus}`}
@@ -182,26 +277,19 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 },
               ]}
             >
-              <View style={styles.memberDetails}>
+              <View style={styles.memberRow}>
                 <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
-                <View style={{ marginLeft: 8 }}>
+                <View style={styles.memberDetails}>
                   <Text style={[{ color: black }, styles.memberName]}>
                     {m.user?.name}
                   </Text>
-                  <Text
-                    style={[
-                      styles.memberActiveStatus,
-                      {
-                        color: grey,
-                      },
-                    ]}
-                  >
+                  <Text style={{ color: grey }}>
                     {getUserActivityStatus(m.user)}
                   </Text>
                 </View>
               </View>
               <Text style={{ color: grey }}>
-                {channel.data?.created_by?.id === m.user?.id ? 'owner' : ''}
+                {channel.data?.created_by_id === m.user?.id ? 'owner' : ''}
               </Text>
             </View>
           );
@@ -219,26 +307,26 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             ]}
           >
             <DownArrow height={24} width={24} />
-            <View style={{ marginLeft: 21 }}>
-              <Text
-                style={{
+            <Text
+              style={[
+                styles.loadMoreText,
+                {
                   color: grey,
-                }}
-              >
-                {`${allMembers.length - members.length} more`}
-              </Text>
-            </View>
+                },
+              ]}
+            >
+              {`${allMembers.length - members.length} more`}
+            </Text>
           </TouchableOpacity>
         )}
 
         <Spacer />
-        <View style={styles.actionListContainer}>
+        <>
           <View
             style={[
-              styles.actionContainer,
+              styles.changeNameContainer,
               {
                 borderBottomColor: border,
-                paddingLeft: 7,
               },
             ]}
           >
@@ -248,45 +336,39 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 onBlur={() => {
                   setTextInputFocused(false);
                 }}
-                onChangeText={(name) => {
-                  setGroupName(name);
-                }}
+                onChangeText={setGroupName}
                 onFocus={() => {
                   setTextInputFocused(true);
                 }}
                 placeholder='Add a group name'
-                ref={(ref) => {
-                  // @ts-ignore
-                  textInputRef.current = ref;
-                }}
+                placeholderTextColor={grey}
+                ref={textInputRef}
                 style={[{ color: black }, styles.changeNameInputBox]}
                 value={groupName}
               />
             </View>
             {textInputFocused && (
-              <View style={{ flexDirection: 'row' }}>
+              <View style={styles.row}>
                 <TouchableOpacity
                   onPress={() => {
                     setGroupName(channel.data?.name);
                     textInputRef.current && textInputRef.current.blur();
                   }}
                   style={{
-                    marginHorizontal: 4,
+                    paddingRight: 8,
                   }}
                 >
                   <CircleClose height={24} width={24} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={async () => {
-                    // @ts-ignore
                     await channel.update({
                       ...channel.data,
                       name: groupName,
-                    });
-                    textInputRef.current && textInputRef.current.blur();
-                  }}
-                  style={{
-                    marginHorizontal: 4,
+                    } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalResponseType, LocalUserType>['update']>[0]);
+                    if (textInputRef.current) {
+                      textInputRef.current.blur();
+                    }
                   }}
                 >
                   {!!groupName && (
@@ -307,10 +389,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View style={styles.actionLabelContainer}>
               <Mute height={24} width={24} />
               <Text
-                style={{
-                  color: black,
-                  marginLeft: 16,
-                }}
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
               >
                 Mute group
               </Text>
@@ -350,10 +434,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View style={styles.actionLabelContainer}>
               <Picture fill={grey} />
               <Text
-                style={{
-                  color: black,
-                  marginLeft: 16,
-                }}
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
               >
                 Photos and Videos
               </Text>
@@ -378,10 +464,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View style={styles.actionLabelContainer}>
               <File />
               <Text
-                style={{
-                  color: black,
-                  marginLeft: 16,
-                }}
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
               >
                 Files
               </Text>
@@ -402,70 +490,19 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <View style={styles.actionLabelContainer}>
               <RemoveUser height={24} width={24} />
               <Text
-                style={{
-                  color: black,
-                  marginLeft: 16,
-                }}
+                style={[
+                  styles.itemText,
+                  {
+                    color: black,
+                  },
+                ]}
               >
                 Leave Group
               </Text>
             </View>
           </TouchableOpacity>
-        </View>
+        </>
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  actionContainer: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-  actionLabelContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  actionListContainer: {},
-  changeNameInputBox: {
-    flexGrow: 1,
-    flexShrink: 1,
-    marginLeft: 13,
-    padding: 0,
-  },
-  changeNameInputContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  loadMoreButton: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    padding: 21,
-    width: '100%',
-  },
-  memberActiveStatus: { fontSize: 12.5 },
-  memberContainer: {
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 12,
-    width: '100%',
-  },
-  memberDetails: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  memberName: {
-    fontWeight: '500',
-  },
-  spacer: {
-    height: 8,
-  },
-});

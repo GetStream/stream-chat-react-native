@@ -59,10 +59,11 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize: 16,
     fontWeight: '600',
-    marginTop: 16,
+    paddingTop: 16,
   },
   itemText: {
-    marginLeft: 16,
+    fontSize: 14,
+    paddingLeft: 16,
   },
   onlineIndicator: {
     borderRadius: 4,
@@ -71,12 +72,13 @@ const styles = StyleSheet.create({
   },
   onlineStatus: {
     fontSize: 12,
-    marginLeft: 8,
+    paddingLeft: 8,
   },
   onlineStatusContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    marginTop: 8,
+    paddingBottom: 16,
+    paddingTop: 8,
   },
   spacer: {
     height: 8,
@@ -84,7 +86,7 @@ const styles = StyleSheet.create({
   userInfoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
+    paddingTop: 20,
   },
   userName: {
     fontSize: 14,
@@ -94,7 +96,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 16,
     padding: 20,
   },
 });
