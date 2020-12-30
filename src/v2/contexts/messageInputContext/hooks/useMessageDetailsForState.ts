@@ -62,6 +62,10 @@ export const useMessageDetailsForState = <
     }
   }, [text]);
 
+  const messageValue =
+    typeof message === 'boolean'
+      ? ''
+      : `${message.id}${message.text}${message.updated_at}`;
   useEffect(() => {
     if (message && !isEditingBoolean<At, Ch, Co, Ev, Me, Re, Us>(message)) {
       setText(message?.text || '');
@@ -102,7 +106,7 @@ export const useMessageDetailsForState = <
         setImageUploads(newImageUploads);
       }
     }
-  }, [message]);
+  }, [messageValue]);
 
   return {
     fileUploads,

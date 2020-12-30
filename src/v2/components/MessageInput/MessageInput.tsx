@@ -278,8 +278,10 @@ export const MessageInputWithContext = <
     };
   }, [maxNumberOfFiles]);
 
+  const selectedImagesLength = selectedImages.length;
+  const imageUploadsLength = imageUploads.length;
   useEffect(() => {
-    if (selectedImages.length > imageUploads.length) {
+    if (selectedImagesLength > imageUploadsLength) {
       const imagesToUpload = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
           (imageUpload) =>
@@ -289,7 +291,7 @@ export const MessageInputWithContext = <
         return !uploadedImage;
       });
       imagesToUpload.forEach((image) => uploadNewImage({ uri: image }));
-    } else if (selectedImages.length < imageUploads.length) {
+    } else if (selectedImagesLength < imageUploadsLength) {
       const imagesToRemove = imageUploads.filter(
         (imageUpload) =>
           !selectedImages.find(
@@ -300,10 +302,10 @@ export const MessageInputWithContext = <
       );
       imagesToRemove.forEach((image) => removeImage(image.id));
     }
-  }, [selectedImages.length]);
+  }, [selectedImagesLength]);
 
   useEffect(() => {
-    if (imageUploads.length < selectedImages.length) {
+    if (imageUploadsLength < selectedImagesLength) {
       const updatedSelectedImages = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
           (imageUpload) =>
@@ -313,15 +315,16 @@ export const MessageInputWithContext = <
         return uploadedImage;
       });
       setSelectedImages(updatedSelectedImages);
-    } else if (imageUploads.length > selectedImages.length) {
+    } else if (imageUploadsLength > selectedImagesLength) {
       setSelectedImages(
         imageUploads
           .map((imageUpload) => imageUpload.url)
           .filter(Boolean) as string[],
       );
     }
-  }, [imageUploads.length]);
+  }, [imageUploadsLength]);
 
+  const editingExists = !!editing;
   useEffect(() => {
     if (editing && inputBoxRef.current) {
       inputBoxRef.current.focus();
@@ -330,8 +333,12 @@ export const MessageInputWithContext = <
     if (!editing) {
       resetInput();
     }
-  }, [editing]);
+  }, [editingExists]);
 
+  const asyncIdsString = asyncIds.join();
+  const asyncUploadsString = Object.values(asyncUploads)
+    .map(({ state, url }) => `${state}${url}`)
+    .join();
   useEffect(() => {
     if (Object.keys(asyncUploads).length) {
       /**
@@ -342,7 +349,7 @@ export const MessageInputWithContext = <
       asyncIds.forEach((id) => sendMessageAsync(id));
       sending.current = false;
     }
-  }, [asyncIds, asyncUploads, sending, sendMessageAsync]);
+  }, [asyncIdsString, asyncUploadsString, sendMessageAsync]);
 
   const getMembers = () => {
     const result: UserResponse<Us>[] = [];

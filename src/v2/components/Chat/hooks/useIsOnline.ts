@@ -34,6 +34,7 @@ export const useIsOnline = <
   const [isOnline, setIsOnline] = useState(true);
   const [connectionRecovering, setConnectionRecovering] = useState(false);
 
+  const clientExits = !!client;
   useEffect(() => {
     const handleChangedEvent = (
       event: StreamEvent<At, Ch, Co, Ev, Me, Re, Us>,
@@ -88,7 +89,7 @@ export const useIsOnline = <
         unsubscribeNetInfo();
       }
     };
-  }, [client]);
+  }, [clientExits]);
 
   return { connectionRecovering, isOnline };
 };

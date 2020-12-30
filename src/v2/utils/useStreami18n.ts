@@ -12,6 +12,7 @@ export const useStreami18n = ({
 }) => {
   const [loadingTranslators, setLoadingTranslators] = useState(true);
 
+  const i18nInstanceExists = !!i18nInstance;
   useEffect(() => {
     let streami18n: Streami18n;
 
@@ -29,7 +30,7 @@ export const useStreami18n = ({
     });
 
     setLoadingTranslators(false);
-  }, [i18nInstance]);
+  }, [i18nInstanceExists]);
 
   return loadingTranslators;
 };

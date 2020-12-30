@@ -451,6 +451,7 @@ export const ChannelWithContext = <
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
 
+  const channelExists = !!channel;
   useEffect(() => {
     if (channel) {
       if (messageId) {
@@ -472,8 +473,9 @@ export const ChannelWithContext = <
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
-  }, [channel]);
+  }, [channelExists]);
 
+  const threadPropsExists = !!threadProps;
   useEffect(() => {
     if (threadProps) {
       setThread(threadProps);
@@ -485,7 +487,7 @@ export const ChannelWithContext = <
     } else {
       setThread(null);
     }
-  }, [threadProps]);
+  }, [threadPropsExists]);
 
   /**
    * CHANNEL CONSTS
