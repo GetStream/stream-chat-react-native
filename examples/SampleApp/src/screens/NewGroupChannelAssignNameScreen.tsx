@@ -51,17 +51,13 @@ const ConfirmButton: React.FC<ConfirmButtonProps> = (props) => {
   const { disabled, onPress } = props;
   const {
     theme: {
-      colors: { accent_blue },
+      colors: { accent_blue, grey },
     },
   } = useTheme();
 
   return (
     <RoundButton disabled={disabled} onPress={onPress}>
-      <Check
-        fill={!disabled ? accent_blue : undefined}
-        height={24}
-        width={24}
-      />
+      <Check fill={!disabled ? accent_blue : grey} height={24} width={24} />
     </RoundButton>
   );
 };
