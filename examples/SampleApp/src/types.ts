@@ -117,7 +117,7 @@ export type UserSelectorParamList = {
 };
 
 export type BottomTabNavigatorParamList = {
-  ChannelListScreen: undefined;
+  ChatScreen: undefined;
   MentionsScreen: undefined;
 };
 

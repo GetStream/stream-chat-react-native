@@ -637,6 +637,8 @@ export const ChannelWithContext = <
       if (!channel?.initialized) {
         return channel?.watch();
       }
+
+      return;
     });
 
   const reloadChannel = async () =>

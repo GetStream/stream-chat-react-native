@@ -7,6 +7,7 @@ import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { UnreadCountBadge } from './UnreadCountBadge';
 
 export const BottomTabs: React.FC<BottomTabBarProps> = ({
   navigation,
@@ -22,22 +23,19 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
     switch (key) {
       case 'ChatScreen':
         return {
-          icon: <ChatsTab height={25} width={25} />,
-          iconActive: <ChatsTab active height={25} width={25} />,
-          title: 'Home',
+          icon: <ChatsTab />,
+          iconActive: <ChatsTab active />,
+          notification: <UnreadCountBadge />,
+          title: 'Chats',
         };
       case 'MentionsScreen':
         return {
-          icon: <MentionsTab height={25} width={25} />,
-          iconActive: <MentionsTab active height={25} width={25} />,
+          icon: <MentionsTab />,
+          iconActive: <MentionsTab active />,
           title: 'Mentions',
         };
       default:
-        return {
-          icon: <ChatsTab height={25} width={25} />,
-          iconActive: <ChatsTab active height={25} width={25} />,
-          title: 'Home',
-        };
+        return null;
     }
   };
   return (
@@ -53,6 +51,8 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
       {state.routes.map((route, index) => {
         const tab = getTitle(route.name);
 
+        if (!tab) return null;
+
         const isFocused = state.index === index;
 
         const onPress = () => {
@@ -67,13 +67,24 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
             onPress={onPress}
             style={styles.tabContainer}
           >
-            {isFocused ? tab.iconActive : tab.icon}
+            <View>
+              {isFocused ? tab.iconActive : tab.icon}
+              {tab.notification && (
+                <View
+                  style={{
+                    left: 25, // size of icon
+                    position: 'absolute',
+                  }}
+                >
+                  {tab.notification}
+                </View>
+              )}
+            </View>
             <Text
               style={[
                 styles.tabTitle,
                 {
                   color: isFocused ? black : grey,
-                  opacity: isFocused ? 1 : 0.5,
                 },
               ]}
             >
@@ -100,5 +111,7 @@ const styles = StyleSheet.create({
   },
   tabTitle: {
     fontSize: 12,
+    marginTop: 7,
+    textAlign: 'center',
   },
 });

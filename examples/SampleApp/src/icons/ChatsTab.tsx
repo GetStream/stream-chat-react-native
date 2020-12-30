@@ -4,7 +4,7 @@ import { useTheme } from 'stream-chat-react-native/v2';
 
 import { IconProps } from '../utils/base';
 
-export const ChatsTab: React.FC<IconProps> = ({ active, height, width }) => {
+export const ChatsTab: React.FC<IconProps> = ({ active, height = 24, width = 24 }) => {
   const {
     theme: {
       colors: { black, grey },

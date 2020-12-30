@@ -29,7 +29,7 @@ type Props = {
 
 export const ChatScreen: React.FC<Props> = () => (
   <Tab.Navigator tabBar={(props) => <BottomTabs {...props} />}>
-    <Tab.Screen component={ChannelListScreen} name='ChannelListScreen' />
+    <Tab.Screen component={ChannelListScreen} name='ChatScreen' />
     <Tab.Screen component={MentionsScreen} name='MentionsScreen' />
   </Tab.Navigator>
 );

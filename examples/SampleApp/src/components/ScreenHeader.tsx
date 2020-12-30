@@ -25,12 +25,13 @@ import type {
   DrawerNavigatorParamList,
   StackNavigatorParamList,
 } from '../types';
+import { UnreadCountBadge } from './UnreadCountBadge';
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
-export const BackButton = () => {
+export const BackButton = ({ showUnreadCountBadge = false }) => {
   const navigation = useNavigation<ScreenHeaderNavigationProp>();
   return (
     <TouchableOpacity
@@ -38,10 +39,22 @@ export const BackButton = () => {
         navigation.goBack();
       }}
       style={{
+        flexWrap: 'nowrap',
+        overflow: 'visible',
         padding: 10,
       }}
     >
-      <GoBack height={24} width={24} />
+      <GoBack />
+      {!!showUnreadCountBadge && (
+        <View
+          style={{
+            left: 25,
+            position: 'absolute',
+          }}
+        >
+          <UnreadCountBadge />
+        </View>
+      )}
     </TouchableOpacity>
   );
 };
@@ -51,6 +64,7 @@ type ScreenHeaderProps = {
   inSafeArea?: boolean;
   LeftContent?: React.ElementType;
   RightContent?: React.ElementType;
+  showUnreadCountBadge?: boolean;
   style?: StyleProp<ViewStyle>;
   Subtitle?: React.ElementType | null;
   subtitleText?: string | boolean;
@@ -61,8 +75,9 @@ const HEADER_CONTENT_HEIGHT = 55;
 
 export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
   inSafeArea = false,
-  LeftContent = BackButton,
+  LeftContent,
   RightContent = () => <View style={{ height: 24, width: 24 }} />,
+  showUnreadCountBadge = false,
   style,
   Subtitle = null,
   subtitleText = false,
@@ -105,11 +120,18 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           },
         ]}
       >
-        <LeftContent />
-
+        <View style={{ flex: 1 }}>
+          {LeftContent ? (
+            <LeftContent />
+          ) : (
+            <BackButton showUnreadCountBadge={showUnreadCountBadge} />
+          )}
+        </View>
         <View
           style={{
             alignItems: 'center',
+            flexGrow: 1,
+            flexShrink: 1,
             justifyContent: 'center',
           }}
         >
@@ -148,7 +170,9 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             )
           )}
         </View>
-        <RightContent />
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+          <RightContent />
+        </View>
       </View>
     </View>
   );
@@ -158,7 +182,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   logo: {
     borderRadius: 5,

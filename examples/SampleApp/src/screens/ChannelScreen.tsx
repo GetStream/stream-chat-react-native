@@ -148,6 +148,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
           )}
         </TouchableOpacity>
       )}
+      showUnreadCountBadge
       Subtitle={isOnline ? null : NetworkDownIndicator}
       subtitleText={typing ? typing : membersStatus}
       titleText={displayName}

@@ -4,7 +4,7 @@ import { useTheme } from 'stream-chat-react-native/v2';
 
 import { IconProps } from '../utils/base';
 
-export const GoBack: React.FC<IconProps> = ({ height, width }) => {
+export const GoBack: React.FC<IconProps> = ({ height = 24, width = 24 }) => {
   const {
     theme: {
       colors: { black },
