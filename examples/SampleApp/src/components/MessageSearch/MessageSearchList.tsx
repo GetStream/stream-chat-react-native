@@ -94,6 +94,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
         </View>
       )}
       <FlatList
+        contentContainerStyle={{ flexGrow: 1 }}
         data={messages}
         ListEmptyComponent={EmptySearchIndicator}
         onEndReached={loadMore}
@@ -170,6 +171,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
             </View>
           </TouchableOpacity>
         )}
+        style={{ flex: 1 }}
       />
     </>
   );
