@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   unreadText: {
+    color: '#FFFFFF',
     fontSize: 11,
     fontWeight: '700',
     paddingHorizontal: 5,
@@ -204,7 +205,6 @@ const ChannelPreviewMessengerWithContext = <
         black,
         border,
         grey,
-        white,
         white_smoke,
         white_snow,
       },
@@ -300,10 +300,7 @@ const ChannelPreviewMessengerWithContext = <
               ]}
             >
               {!!unread && (
-                <Text
-                  numberOfLines={1}
-                  style={[styles.unreadText, { color: white }, unreadText]}
-                >
+                <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
                   {unread}
                 </Text>
               )}

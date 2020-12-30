@@ -404,17 +404,19 @@ const MessageWithContext = <
   const attachmentImageLength = attachments.images.length;
   useEffect(() => {
     if (attachmentImageLength) {
-      attachments.images.slice(0, 3).forEach((image, index) => {
+      attachments.images.slice(0, 4).forEach((image, index) => {
         const url = image.image_url || image.thumb_url;
         if (url) {
           if (attachmentImageLength <= 2) {
             prefetchImage({ height: size || 200, url });
-          } else {
+          } else if (attachmentImageLength === 3) {
             if (index === 0) {
               prefetchImage({ height: size || 200, url });
             } else {
               prefetchImage({ height: halfSize || 100, url });
             }
+          } else {
+            prefetchImage({ height: halfSize || 100, url });
           }
         }
       });

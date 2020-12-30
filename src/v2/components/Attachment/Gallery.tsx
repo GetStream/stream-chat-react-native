@@ -140,9 +140,6 @@ const GalleryWithContext = <
       colors: { overlay },
       imageGallery: { blurType },
       messageSimple: {
-        content: {
-          container: { borderRadiusL },
-        },
         gallery: {
           galleryContainer,
           galleryItemColumn,
@@ -162,7 +159,7 @@ const GalleryWithContext = <
 
   // [[{ height: number; url: string; }], [{ height: number; url: string; }, { height: number; url: string; }]]
   const galleryImages = images
-    .slice(0, 3)
+    .slice(0, 4)
     .reduce((returnArray, currentImage, index) => {
       const attachmentUrl = currentImage.image_url || currentImage.thumb_url;
       if (attachmentUrl) {
@@ -172,7 +169,7 @@ const GalleryWithContext = <
             ...(returnArray[0] || []),
             { height: size || 200, url },
           ];
-        } else {
+        } else if (images.length === 3) {
           if (index === 0) {
             returnArray[0] = [{ height: size || 200, url }];
           } else {
@@ -181,6 +178,11 @@ const GalleryWithContext = <
               { height: halfSize || 100, url },
             ];
           }
+        } else {
+          returnArray[index % 2] = [
+            ...(returnArray[index % 2] || []),
+            { height: halfSize || 100, url },
+          ];
         }
       }
       return returnArray;
@@ -240,11 +242,16 @@ const GalleryWithContext = <
                   {
                     borderBottomLeftRadius:
                       (images.length === 1 ||
-                        (colIndex === 0 && rowIndex === 0)) &&
+                        (images.length === 3 &&
+                          colIndex === 0 &&
+                          rowIndex === 0) ||
+                        (images.length === 4 &&
+                          colIndex === 0 &&
+                          rowIndex === 1)) &&
                       !messageText &&
                       groupStyle !== 'left_bottom' &&
                       groupStyle !== 'left_single'
-                        ? borderRadiusL
+                        ? 14
                         : 0,
                     borderBottomRightRadius:
                       (images.length === 1 ||
@@ -253,15 +260,15 @@ const GalleryWithContext = <
                       !messageText &&
                       groupStyle !== 'right_bottom' &&
                       groupStyle !== 'right_single'
-                        ? borderRadiusL
+                        ? 14
                         : 0,
                     borderTopLeftRadius:
-                      colIndex === 0 && rowIndex === 0 ? 13 : 0,
+                      colIndex === 0 && rowIndex === 0 ? 14 : 0,
                     borderTopRightRadius:
                       ((colIndex === 1 || images.length === 1) &&
                         rowIndex === 0) ||
-                      (colIndex === 0 && rowIndex === 1)
-                        ? 13
+                      (images.length === 3 && colIndex === 0 && rowIndex === 1)
+                        ? 14
                         : 0,
                   },
                   image,
