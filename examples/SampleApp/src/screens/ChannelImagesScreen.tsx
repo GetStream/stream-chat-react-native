@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   Dimensions,
+  FlatList,
   Image,
-  SectionList,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  ViewToken,
 } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
 import Dayjs from 'dayjs';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Attachment } from 'stream-chat';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  DateHeader,
+  MessageType,
+  Photo,
   useImageGalleryContext,
   useOverlayContext,
   useTheme,
@@ -20,19 +23,54 @@ import {
 import { ScreenHeader } from '../components/ScreenHeader';
 import { usePaginatedAttachments } from '../hooks/usePaginatedAttachments';
 import { Picture } from '../icons/Picture';
-import { StackNavigatorParamList } from '../types';
 
-// type ChannelImagesScreenNavigationProp = StackNavigationProp<
-//   StackNavigatorParamList,
-//   'ChannelImagesScreen'
-// >;
+import type { RouteProp } from '@react-navigation/native';
+import type { Attachment } from 'stream-chat';
+
+import type {
+  LocalAttachmentType,
+  LocalChannelType,
+  LocalCommandType,
+  LocalEventType,
+  LocalMessageType,
+  LocalResponseType,
+  LocalUserType,
+  StackNavigatorParamList,
+} from '../types';
+
+const screen = Dimensions.get('screen').width;
+
+const styles = StyleSheet.create({
+  contentContainer: { flexGrow: 1 },
+  emptyContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+  },
+  flex: { flex: 1 },
+  noMedia: {
+    fontSize: 16,
+    paddingBottom: 8,
+  },
+  noMediaDetails: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  stickyHeader: {
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 8, // DateHeader already has marginTop 8
+  },
+});
+
 type ChannelImagesScreenRouteProp = RouteProp<
   StackNavigatorParamList,
   'ChannelImagesScreen'
 >;
 
 export type ChannelImagesScreenProps = {
-  //   navigation: ChannelImagesScreenNavigationProp;
   route: ChannelImagesScreenRouteProp;
 };
 
@@ -41,139 +79,128 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
+  const { setImage, setImages } = useImageGalleryContext<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalResponseType,
+    LocalUserType
+  >();
+  const { setBlurType, setOverlay } = useOverlayContext();
   const { loading, loadMore, messages } = usePaginatedAttachments(
     channel,
     'image',
   );
-  const screen = Dimensions.get('screen').width;
-  const {
-    theme: {
-      colors: { overlay_dark, white },
-    },
-  } = useTheme();
-  const { setImage, setImages } = useImageGalleryContext();
-  const { setBlurType, setOverlay } = useOverlayContext();
-  const insets = useSafeAreaInsets();
-  const [sections, setSections] = useState<
-    Array<{
-      data: Array<Array<Attachment & { messageId: string }>>;
-      title: string;
-    }>
-  >([]);
 
-  useEffect(() => {
-    // eslint-disable-next-line no-shadow
-    const sections: Record<
-      string,
-      {
-        data: Array<Array<Attachment & { messageId: string }>>;
-        title: string;
-      }
-    > = {};
+  const [stickyHeaderDate, setStickyHeaderDate] = useState(
+    Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
+  );
+  const stickyHeaderDateRef = useRef('');
 
-    messages.forEach((message) => {
-      const month = Dayjs(message.created_at as string).format('MMM YYYY');
+  const updateStickyDate = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      if (viewableItems?.length) {
+        const lastItem = viewableItems[0];
 
-      if (!sections[month]) {
-        sections[month] = {
-          data: [],
-          title: month,
-        };
-      }
+        const created_at = lastItem?.item?.created_at;
 
-      message.attachments?.forEach((a) => {
-        if (a.type !== 'image') return;
-
-        if (!sections[month].data[0]) {
-          sections[month].data.push([a]);
-        } else {
-          if (
-            sections[month].data[sections[month].data.length - 1].length > 3
-          ) {
-            sections[month].data.push([a]);
-          } else {
-            sections[month].data[sections[month].data.length - 1].push(a);
-          }
+        if (
+          created_at &&
+          !lastItem.item.deleted_at &&
+          Dayjs(created_at).format('MMM YYYY') !== stickyHeaderDateRef.current
+        ) {
+          stickyHeaderDateRef.current = Dayjs(created_at).format('MMM YYYY');
+          setStickyHeaderDate(Dayjs(created_at).format('MMM YYYY'));
         }
-      });
-    });
+      }
+    },
+  );
 
-    setSections(Object.values(sections));
-    console.warn(Object.values(sections));
-  }, [messages]);
+  /**
+   * Photos array created from all currently available
+   * photo attachments
+   */
+  const photos = messages.reduce((acc: Photo<LocalUserType>[], cur) => {
+    const attachmentImages =
+      (cur.attachments as Attachment<LocalAttachmentType>[])?.filter(
+        (attachment) =>
+          attachment.type === 'image' &&
+          !attachment.title_link &&
+          !attachment.og_scrape_url &&
+          (attachment.image_url || attachment.thumb_url),
+      ) || [];
+
+    const attachmentPhotos = attachmentImages.map((attachmentImage) => ({
+      created_at: cur.created_at,
+      id: `photoId-${cur.id}-${
+        attachmentImage.image_url || attachmentImage.thumb_url
+      }`,
+      messageId: cur.id,
+      uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
+    }));
+
+    return [...acc, ...attachmentPhotos];
+  }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        paddingBottom: insets.bottom,
-      }}
-    >
-      <ScreenHeader titleText='Photos and Videos' />
-      {(sections.length > 0 || !loading) && (
-        <SectionList
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}
+    <SafeAreaView style={styles.flex}>
+      <ScreenHeader inSafeArea titleText='Photos and Videos' />
+      <View style={styles.flex}>
+        <FlatList
+          contentContainerStyle={styles.contentContainer}
+          data={photos}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           ListEmptyComponent={EmptyListComponent}
+          numColumns={3}
           onEndReached={loadMore}
-          renderItem={({ index, item }) => (
-            <View style={{ flexDirection: 'row' }}>
-              {item.map((a) => (
-                <TouchableOpacity
-                  key={a.image_url + a.messageId}
-                  onPress={() => {
-                    setImages(messages);
-                    setImage({
-                      messageId: a.messageId,
-                      url: a.image_url || a.thumb_url,
-                    });
-                    setBlurType('none');
-                    setOverlay('gallery');
-                  }}
-                  style={{
-                    marginTop: index === 0 ? -37 : 0,
-                  }}
-                >
-                  <Image
-                    source={{ uri: a.thumb_url || a.image_url }}
-                    style={{
-                      height: screen / 3,
-                      margin: 1,
-                      width: screen / 3 - 2,
-                    }}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-          renderSectionHeader={({ section: { title } }) => (
-            <View
-              style={{
-                alignSelf: 'center',
-                backgroundColor: overlay_dark,
-                borderRadius: 10,
-                marginTop: 15,
-                padding: 8,
-                paddingBottom: 4,
-                paddingTop: 4,
+          onViewableItemsChanged={updateStickyDate.current}
+          refreshing={loading}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => {
+                setImages(
+                  messages as MessageType<
+                    LocalAttachmentType,
+                    LocalChannelType,
+                    LocalCommandType,
+                    LocalEventType,
+                    LocalMessageType,
+                    LocalResponseType,
+                    LocalUserType
+                  >[],
+                );
+                setImage({
+                  messageId: item.messageId,
+                  url: item.uri,
+                });
+                setBlurType('dark');
+                setOverlay('gallery');
               }}
             >
-              <Text
+              <Image
+                source={{ uri: item.uri }}
                 style={{
-                  color: white,
-                  fontSize: 12,
+                  height: screen / 3,
+                  margin: 1,
+                  width: screen / 3 - 2,
                 }}
-              >
-                {title}
-              </Text>
-            </View>
+              />
+            </TouchableOpacity>
           )}
-          sections={sections}
-          stickySectionHeadersEnabled
+          style={styles.flex}
+          viewabilityConfig={{
+            viewAreaCoveragePercentThreshold: 50,
+          }}
         />
-      )}
-    </View>
+        {photos && photos.length ? (
+          <View style={styles.stickyHeader}>
+            <DateHeader dateString={stickyHeaderDate} />
+          </View>
+        ) : null}
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -184,21 +211,12 @@ const EmptyListComponent = () => {
     },
   } = useTheme();
   return (
-    <View
-      style={{
-        alignItems: 'center',
-        height: '100%',
-        justifyContent: 'center',
-        padding: 40,
-      }}
-    >
-      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <Picture fill={grey_gainsboro} scale={6} />
-        <Text style={{ color: black, fontSize: 16 }}>No media</Text>
-        <Text style={{ color: grey, marginTop: 8, textAlign: 'center' }}>
-          Photos or video sent in this chat will appear here
-        </Text>
-      </View>
+    <View style={styles.emptyContainer}>
+      <Picture fill={grey_gainsboro} scale={6} />
+      <Text style={[styles.noMedia, { color: black }]}>No media</Text>
+      <Text style={[styles.noMediaDetails, { color: grey }]}>
+        Photos or video sent in this chat will appear here
+      </Text>
     </View>
   );
 };
