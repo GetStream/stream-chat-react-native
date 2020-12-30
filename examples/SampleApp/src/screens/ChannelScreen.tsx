@@ -6,7 +6,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import {
+  RouteProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Avatar,
@@ -16,6 +20,7 @@ import {
   MessageInput,
   MessageList,
   Spinner,
+  ThreadContextValue,
   useChannelPreviewDisplayName,
   useChatContext,
   useTheme,
@@ -183,6 +188,18 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     | undefined
   >(channelFromProp);
 
+  const [selectedThread, setSelectedThread] = useState<
+    ThreadContextValue<
+      LocalAttachmentType,
+      LocalChannelType,
+      LocalCommandType,
+      LocalEventType,
+      LocalMessageType,
+      LocalReactionType,
+      LocalUserType
+    >['thread']
+  >();
+
   useEffect(() => {
     const initChannel = async () => {
       if (!chatClient || !channelId) return;
@@ -198,6 +215,10 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     initChannel();
   }, []);
 
+  useFocusEffect(() => {
+    setSelectedThread(undefined);
+  });
+
   if (!channel || !chatClient) return null;
 
   return (
@@ -209,6 +230,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
         initialScrollToFirstUnreadMessage
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
         messageId={messageId}
+        thread={selectedThread}
       >
         <ChannelHeader channel={channel} />
         <MessageList<
@@ -221,6 +243,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           LocalUserType
         >
           onThreadSelect={(thread) => {
+            setSelectedThread(thread);
             navigation.navigate('ThreadScreen', {
               channel,
               thread,
