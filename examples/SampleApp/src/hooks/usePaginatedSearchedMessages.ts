@@ -145,6 +145,8 @@ export const usePaginatedSearchedMessages = (
   };
 
   const reloadList = () => {
+    reset();
+
     setMessages([]);
     fetchMessages();
   };
