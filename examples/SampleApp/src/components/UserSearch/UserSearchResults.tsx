@@ -16,6 +16,7 @@ import { EmptySearchState } from '../../icons/EmptySearchState';
 import type { UserResponse } from 'stream-chat';
 
 import type { LocalUserType } from '../../types';
+import { Search } from '../../icons/Search';
 
 type UserSearchResultsProps = {
   results: UserResponse[];
@@ -41,7 +42,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   const [sections, setSections] = useState([]);
   const {
     theme: {
-      colors: { bg_gradient_end, black, border, grey, white_smoke, white_snow },
+      colors: { black, border, grey, grey_gainsboro, white_smoke, white_snow },
     },
   } = useTheme();
 
@@ -74,7 +75,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
 
   return (
     <View style={{ backgroundColor: white_snow, flexGrow: 1, flexShrink: 1 }}>
-      {groupedAlphabetically && (
+      {groupedAlphabetically && sections.length > 0 && (
         <View
           style={{
             padding: 5,
@@ -98,9 +99,9 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
           keyboardShouldPersistTaps='handled'
           ListEmptyComponent={() => (
             <View style={styles.emptyResultIndicator}>
-              <EmptySearchState height={124} width={124} />
-              <Text>
-                {loading ? 'Loading...' : 'No user matches these keywords'}
+              <Search fill={grey_gainsboro} scale={5} />
+              <Text style={[{ color: grey }, styles.emptyResultIndicatorText]}>
+                {loading ? 'Loading...' : 'No user matches these keywords...'}
               </Text>
             </View>
           )}
@@ -218,11 +219,13 @@ const styles = StyleSheet.create({
   searchResultUserName: { fontSize: 14 },
   searchResultUserLastOnline: { fontSize: 12.5 },
   emptyResultIndicator: {
-    height: 300,
+    marginTop: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  emptyResultIndicatorEmoji: {
-    fontSize: 60,
+  emptyResultIndicatorText: {
+    marginTop: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

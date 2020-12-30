@@ -362,7 +362,12 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
   return (
     <SafeAreaView
       edges={focusOnSearchInput ? ['top'] : undefined}
-      style={styles.container}
+      style={[
+        styles.container,
+        {
+          backgroundColor: white,
+        },
+      ]}
     >
       <Channel<
         LocalAttachmentType,
