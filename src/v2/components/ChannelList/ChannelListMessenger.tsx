@@ -25,7 +25,7 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
-  flatList: { flexGrow: 1, flexShrink: 1 },
+  flatList: { flex: 1 },
   flatListContentContainer: { flexGrow: 1 },
   statusIndicator: { left: 0, position: 'absolute', right: 0, top: 0 },
 });

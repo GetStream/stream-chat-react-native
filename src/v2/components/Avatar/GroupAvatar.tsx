@@ -71,7 +71,9 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
                 }`
               : ''
           }`;
-      Image.prefetch(url);
+      Image.prefetch(url).catch(() => {
+        // do nothing, not a big deal that prefetch failed
+      });
       if (imagesOrNames.length <= 2) {
         returnArray[0] = [
           ...(returnArray[0] || []),

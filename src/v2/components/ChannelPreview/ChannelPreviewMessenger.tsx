@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 12,
   },
-  contentContainer: { flexGrow: 1, flexShrink: 1 },
+  contentContainer: { flex: 1 },
   date: {
     fontSize: 12,
     marginLeft: 2,

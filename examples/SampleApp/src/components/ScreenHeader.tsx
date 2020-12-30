@@ -170,7 +170,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
             )
           )}
         </View>
-        <View style={{ flex: 1, alignItems: 'flex-end' }}>
+        <View style={{ alignItems: 'flex-end', flex: 1 }}>
           <RightContent />
         </View>
       </View>
