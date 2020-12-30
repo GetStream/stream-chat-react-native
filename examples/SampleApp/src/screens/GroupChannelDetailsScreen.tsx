@@ -249,7 +249,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <ScreenHeader
         inSafeArea
         RightContent={() => (

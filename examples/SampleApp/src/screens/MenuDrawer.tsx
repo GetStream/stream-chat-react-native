@@ -54,7 +54,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
 }) => {
   const {
     theme: {
-      colors: { black, grey, white_snow },
+      colors: { black, grey, white },
     },
   } = useTheme();
 
@@ -63,7 +63,7 @@ export const MenuDrawer: React.FC<DrawerContentComponentProps> = ({
   if (!chatClient) return null;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: white_snow }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: white }]}>
       <View style={styles.userRow}>
         <Image
           source={{

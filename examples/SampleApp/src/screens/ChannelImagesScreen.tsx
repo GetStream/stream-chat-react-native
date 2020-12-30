@@ -93,6 +93,11 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     channel,
     'image',
   );
+  const {
+    theme: {
+      colors: { white },
+    },
+  } = useTheme();
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState(
     Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
@@ -145,7 +150,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
   }, []);
 
   return (
-    <SafeAreaView style={styles.flex}>
+    <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
       <ScreenHeader inSafeArea titleText='Photos and Videos' />
       <View style={styles.flex}>
         <FlatList
