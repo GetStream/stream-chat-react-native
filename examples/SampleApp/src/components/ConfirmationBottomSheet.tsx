@@ -5,6 +5,37 @@ import { useTheme } from 'stream-chat-react-native/v2';
 
 import { Delete } from '../icons/Delete';
 
+const styles = StyleSheet.create({
+  actionButtonLeft: {
+    flex: 1,
+    padding: 20,
+  },
+  actionButtonRight: {
+    alignItems: 'flex-end',
+    flex: 1,
+    padding: 20,
+  },
+  actionButtonsContainer: {
+    borderTopWidth: 1,
+    flexDirection: 'row',
+  },
+  container: {
+    height: 224,
+  },
+  description: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  subtext: {
+    marginTop: 8,
+  },
+  title: {
+    fontWeight: '600',
+    marginTop: 18,
+  },
+});
+
 export type ConfirmationBottomSheetProps = {
   dismissHandler: () => void;
   onConfirm: () => void;
@@ -13,8 +44,9 @@ export type ConfirmationBottomSheetProps = {
   cancelText?: string;
   confirmText?: string;
 };
-export const ConfirmationBottomSheet = (
-  props: ConfirmationBottomSheetProps,
+
+export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
+  props,
 ) => {
   const {
     cancelText = 'CANCEL',
@@ -24,6 +56,7 @@ export const ConfirmationBottomSheet = (
     subtext,
     title,
   } = props;
+
   const {
     theme: {
       colors: { accent_red, black, border, grey, white },
@@ -54,51 +87,16 @@ export const ConfirmationBottomSheet = (
           },
         ]}
       >
-        <TouchableOpacity onPress={dismissHandler} style={styles.actionButton}>
+        <TouchableOpacity
+          onPress={dismissHandler}
+          style={styles.actionButtonLeft}
+        >
           <Text style={{ color: grey }}>{cancelText}</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={onConfirm}
-          style={[styles.actionButton, { alignItems: 'flex-end' }]}
-        >
+        <TouchableOpacity onPress={onConfirm} style={styles.actionButtonRight}>
           <Text style={{ color: accent_red }}>{confirmText}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-ConfirmationBottomSheet.displayName = 'ConfirmationBottomSheet';
-
-const styles = StyleSheet.create({
-  actionButton: {
-    flex: 1,
-    padding: 20,
-  },
-  actionButtonsContainer: {
-    alignSelf: 'flex-end',
-    borderTopWidth: 1,
-    flexDirection: 'row',
-  },
-  container: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    height: 224,
-    width: '100%',
-  },
-  description: {
-    alignItems: 'center',
-    flexGrow: 1,
-    flexShrink: 1,
-    justifyContent: 'center',
-  },
-  subtext: {
-    marginTop: 8,
-  },
-  title: {
-    fontWeight: '600',
-    marginTop: 18,
-  },
-});

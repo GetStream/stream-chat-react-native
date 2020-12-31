@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const UnreadCountBadge = () => {
+export const UnreadCountBadge: React.FC = () => {
   const {
     theme: {
       colors: { accent_red },
