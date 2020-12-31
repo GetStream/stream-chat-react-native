@@ -17,41 +17,71 @@ import {
   useTheme,
 } from 'stream-chat-react-native/v2';
 
+import { UnreadCountBadge } from './UnreadCountBadge';
+
 import { GoBack } from '../icons/GoBack';
 
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import type { StackNavigationProp } from '@react-navigation/stack';
+
 import type {
   DrawerNavigatorParamList,
   StackNavigatorParamList,
 } from '../types';
-import { UnreadCountBadge } from './UnreadCountBadge';
+
+const styles = StyleSheet.create({
+  backButton: {
+    padding: 10,
+  },
+  backButtonUnreadCount: {
+    left: 25,
+    position: 'absolute',
+  },
+  centerContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  contentContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+  },
+  leftContainer: {
+    width: 70,
+  },
+  rightContainer: {
+    alignItems: 'flex-end',
+    width: 70,
+  },
+  safeAreaContainer: {
+    borderBottomWidth: 1,
+  },
+  subTitle: {
+    fontSize: 12,
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
 
 type ScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
-export const BackButton = ({ showUnreadCountBadge = false }) => {
+
+export const BackButton: React.FC<{ showUnreadCountBadge?: boolean }> = ({
+  showUnreadCountBadge,
+}) => {
   const navigation = useNavigation<ScreenHeaderNavigationProp>();
+
   return (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.goBack();
-      }}
-      style={{
-        flexWrap: 'nowrap',
-        overflow: 'visible',
-        padding: 10,
-      }}
-    >
+    <TouchableOpacity onPress={navigation.goBack} style={styles.backButton}>
       <GoBack />
       {!!showUnreadCountBadge && (
-        <View
-          style={{
-            left: 25,
-            position: 'absolute',
-          }}
-        >
+        <View style={styles.backButtonUnreadCount}>
           <UnreadCountBadge />
         </View>
       )}
@@ -66,36 +96,39 @@ type ScreenHeaderProps = {
   RightContent?: React.ElementType;
   showUnreadCountBadge?: boolean;
   style?: StyleProp<ViewStyle>;
-  Subtitle?: React.ElementType | null;
-  subtitleText?: string | boolean;
-  Title?: React.ElementType | null;
+  Subtitle?: React.ElementType;
+  subtitleText?: string;
+  Title?: React.ElementType;
 };
 
 const HEADER_CONTENT_HEIGHT = 55;
 
-export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
-  inSafeArea = false,
-  LeftContent,
-  RightContent = () => <View style={{ height: 24, width: 24 }} />,
-  showUnreadCountBadge = false,
-  style,
-  Subtitle = null,
-  subtitleText = false,
-  Title = null,
-  titleText = 'Stream Chat',
-}) => {
-  const insets = useSafeAreaInsets();
-  const { setTopInset, topInset } = useAttachmentPickerContext();
-  useEffect(() => {
-    if (setTopInset && !topInset) {
-      setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
-    }
-  }, [insets.top]);
+export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
+  const {
+    inSafeArea,
+    LeftContent,
+    RightContent = () => <View style={{ height: 24, width: 24 }} />,
+    showUnreadCountBadge,
+    style,
+    Subtitle,
+    subtitleText,
+    Title,
+    titleText = 'Stream Chat',
+  } = props;
+
   const {
     theme: {
       colors: { black, border, grey, white },
     },
   } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { setTopInset, topInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    if (setTopInset && !topInset) {
+      setTopInset(HEADER_CONTENT_HEIGHT + insets.top);
+    }
+  }, [insets.top]);
 
   return (
     <View
@@ -115,26 +148,17 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           {
             height: HEADER_CONTENT_HEIGHT,
             marginTop: inSafeArea ? 0 : insets.top,
-            paddingBottom: 10,
-            paddingHorizontal: 10,
           },
         ]}
       >
-        <View style={{ flex: 1 }}>
+        <View style={styles.leftContainer}>
           {LeftContent ? (
             <LeftContent />
           ) : (
             <BackButton showUnreadCountBadge={showUnreadCountBadge} />
           )}
         </View>
-        <View
-          style={{
-            alignItems: 'center',
-            flexGrow: 1,
-            flexShrink: 1,
-            justifyContent: 'center',
-          }}
-        >
+        <View style={styles.centerContainer}>
           <View style={{ paddingBottom: !!Subtitle || !!subtitleText ? 3 : 0 }}>
             {Title ? (
               <Title />
@@ -145,8 +169,6 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
                     styles.title,
                     {
                       color: black,
-                      fontSize: 16,
-                      fontWeight: '700',
                     },
                   ]}
                 >
@@ -160,42 +182,22 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = ({
           ) : (
             !!subtitleText && (
               <Text
-                style={{
-                  color: grey,
-                  fontSize: 12,
-                }}
+                style={[
+                  styles.subTitle,
+                  {
+                    color: grey,
+                  },
+                ]}
               >
                 {subtitleText}
               </Text>
             )
           )}
         </View>
-        <View style={{ alignItems: 'flex-end', flex: 1 }}>
+        <View style={styles.rightContainer}>
           <RightContent />
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  logo: {
-    borderRadius: 5,
-    height: 30,
-    width: 30,
-  },
-  newDMButton: {
-    borderRadius: 20,
-  },
-  safeAreaContainer: {
-    borderBottomWidth: 1,
-  },
-  title: {
-    fontSize: 17,
-    fontWeight: '600',
-  },
-});

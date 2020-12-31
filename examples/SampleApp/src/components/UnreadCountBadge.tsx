@@ -1,7 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { isOwnUser } from 'stream-chat';
 import { useTheme } from 'stream-chat-react-native/v2';
+
 import { AppContext } from '../context/AppContext';
+
+const styles = StyleSheet.create({
+  unreadContainer: {
+    alignItems: 'center',
+    borderRadius: 8,
+    justifyContent: 'center',
+  },
+  unreadText: {
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '700',
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+});
 
 export const UnreadCountBadge = () => {
   const {
@@ -11,44 +28,31 @@ export const UnreadCountBadge = () => {
   } = useTheme();
 
   const { chatClient } = useContext(AppContext);
-  const [count, setCount] = useState<number | undefined>();
+  const [count, setCount] = useState<number>();
 
   useEffect(() => {
-    // TODO: Fix the types on js client leve for client.user.
-    // @ts-ignore
-    setCount(chatClient?.user.total_unread_count);
+    const user = chatClient?.user;
+    const unreadCount = isOwnUser(user) ? user.total_unread_count : undefined;
+    setCount(unreadCount);
     const listener = chatClient?.on((e) => {
       if (e.total_unread_count) {
-        // @ts-ignore
+        // @ts-expect-error
         setCount(e.total_unread_count);
       }
     });
 
     return () => {
-      listener?.unsubscribe();
+      if (listener) {
+        listener.unsubscribe();
+      }
     };
   }, [chatClient]);
 
   return (
     <View style={[styles.unreadContainer, { backgroundColor: accent_red }]}>
       {!!count && (
-        <Text style={[styles.unreadText]}>{count > 99 ? '99+' : count}</Text>
+        <Text style={styles.unreadText}>{count > 99 ? '99+' : count}</Text>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  unreadContainer: {
-    alignItems: 'center',
-    borderRadius: 8,
-    justifyContent: 'center',
-  },
-  unreadText: {
-    color: '#FFFF',
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
-});
