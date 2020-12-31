@@ -148,7 +148,9 @@ export type MessageSimpleProps<
      *
      * Wrap your action sheet component in `React.forwardRef` to gain access to the `actionSheetRef` set in MessageContent.
      */
-    ActionSheet?: React.ComponentType<MessageActionSheetProps>;
+    ActionSheet?: React.ComponentType<
+      MessageActionSheetProps<At, Ch, Co, Ev, Me, Re, Us>
+    >;
     /**
      * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
      * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props

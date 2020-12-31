@@ -600,7 +600,7 @@ export const ChannelWithContext = <
       return loadChannel();
     }
 
-    channel.state.setIsUptoDate(false);
+    channel.state.setIsUpToDate(false);
 
     return channelQueryCall(() =>
       query(
@@ -661,7 +661,7 @@ export const ChannelWithContext = <
       watch: true,
     });
 
-    channel.state.setIsUptoDate(offset === 0);
+    channel.state.setIsUpToDate(offset === 0);
   };
 
   /**
@@ -679,7 +679,7 @@ export const ChannelWithContext = <
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['loadChannelAtMessage']
   >[0]) => {
     if (!channel) return;
-    channel.state.setIsUptoDate(false);
+    channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
 
     if (!messageId) {
@@ -690,7 +690,7 @@ export const ChannelWithContext = <
         watch: true,
       });
 
-      channel.state.setIsUptoDate(true);
+      channel.state.setIsUpToDate(true);
       return;
     }
 
@@ -715,7 +715,7 @@ export const ChannelWithContext = <
       watch: true,
     });
 
-    channel.state.setIsUptoDate(false);
+    channel.state.setIsUpToDate(false);
   };
 
   /**
@@ -735,9 +735,9 @@ export const ChannelWithContext = <
     });
 
     if (state.messages.length < limit) {
-      channel.state.setIsUptoDate(true);
+      channel.state.setIsUpToDate(true);
     } else {
-      channel.state.setIsUptoDate(false);
+      channel.state.setIsUpToDate(false);
     }
   };
 

@@ -340,11 +340,19 @@ const MessageWithContext = <
     if (dismissKeyboardOnMessageTouch) {
       Keyboard.dismiss();
     }
+    const quotedMessage = message.quoted_message as MessageType<
+      At,
+      Ch,
+      Co,
+      Ev,
+      Me,
+      Re,
+      Us
+    >;
     if (error) {
       showMessageOverlay(false, true);
-    } else if (goToMessage && message.quoted_message) {
-      // @ts-expect-error until types get added to stream-chat-js
-      goToMessage(message.quoted_message.id);
+    } else if (goToMessage && quotedMessage) {
+      goToMessage(quotedMessage.id);
     }
   };
 
