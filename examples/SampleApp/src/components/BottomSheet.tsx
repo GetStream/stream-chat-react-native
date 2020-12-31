@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
+import { Keyboard, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -46,13 +46,21 @@ export type BottomSheetProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: Record<string, any>;
   visible: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
   type?: string;
 };
 
 const screenHeight = vh(100);
 
 export const BottomSheet = (props: BottomSheetProps) => {
-  const { dismissHandler, overlayOpacity, params, type, visible } = props;
+  const {
+    containerStyle,
+    dismissHandler,
+    overlayOpacity,
+    params,
+    type,
+    visible,
+  } = props;
 
   const {
     theme: {
@@ -189,7 +197,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
             }}
           >
             <Animated.View style={[styles.animatedContainer, panStyle]}>
-              <KeyboardCompatibleView keyboardVerticalOffset={0}>
+              <KeyboardCompatibleView keyboardVerticalOffset={10}>
                 <TapGestureHandler>
                   <Animated.View
                     onLayout={({
@@ -202,7 +210,10 @@ export const BottomSheet = (props: BottomSheetProps) => {
                     style={[
                       styles.container,
                       showScreenStyle,
-                      { backgroundColor: white },
+                      {
+                        backgroundColor: white,
+                      },
+                      containerStyle,
                     ]}
                   >
                     {type === 'addMembers' && (
