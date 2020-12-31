@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   },
   message: {
     flexShrink: 1,
-    fontSize: 12.5,
+    fontSize: 12,
   },
   presenceIndicatorContainer: {
     height: 12,

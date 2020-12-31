@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     flexDirection: 'row',
-    paddingVertical: 16,
   },
   searchContainerLeft: {
     fontSize: 15,
@@ -260,6 +259,8 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
           styles.searchContainer,
           {
             borderBottomColor: border,
+            paddingBottom: selectedUsers.length ? 8 : 16,
+            paddingTop: selectedUsers.length ? 8 : 16,
           },
         ]}
       >
@@ -271,7 +272,7 @@ export const NewDirectMessagingScreen: React.FC<NewDirectMessagingScreenProps> =
             },
           ]}
         >
-          To:
+          TO:
         </Text>
         <View style={styles.searchContainerMiddle}>
           <View style={styles.selectedUsersContainer}>
