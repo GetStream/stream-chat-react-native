@@ -81,8 +81,7 @@ export const AddMemberBottomSheet = (props: AddMemberBottomSheetProps) => {
       style={{
         flexGrow: 1,
         flexShrink: 1,
-        height: 300,
-        marginBottom: insets.bottom,
+        height: 334,
       }}
     >
       <View
