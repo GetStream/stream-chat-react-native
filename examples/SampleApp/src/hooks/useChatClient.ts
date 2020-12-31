@@ -10,7 +10,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   LoginConfig,
 } from '../types';
@@ -25,7 +25,7 @@ export const useChatClient = () => {
     LocalCommandType,
     LocalEventType,
     LocalMessageType,
-    LocalResponseType,
+    LocalReactionType,
     LocalUserType
   > | null>(null);
   const [isConnecting, setIsConnecting] = useState(true);
@@ -37,7 +37,7 @@ export const useChatClient = () => {
       LocalCommandType,
       LocalEventType,
       LocalMessageType,
-      LocalResponseType,
+      LocalReactionType,
       LocalUserType
     >(config.apiKey, {
       timeout: 6000,

@@ -33,7 +33,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -85,7 +85,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     LocalCommandType,
     LocalEventType,
     LocalMessageType,
-    LocalResponseType,
+    LocalReactionType,
     LocalUserType
   >();
   const { setBlurType, setOverlay } = useOverlayContext();
@@ -172,7 +172,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
                     LocalCommandType,
                     LocalEventType,
                     LocalMessageType,
-                    LocalResponseType,
+                    LocalReactionType,
                     LocalUserType
                   >[],
                 );

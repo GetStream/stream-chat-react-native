@@ -8,7 +8,7 @@ import {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   LoginConfig,
 } from '../types';
@@ -21,7 +21,7 @@ type AppContextType = {
   //       LocalCommandType,
   //       LocalEventType,
   //       LocalMessageType,
-  //       LocalResponseType,
+  //       LocalReactionType,
   //       LocalUserType
   //     >
   //   | undefined;
@@ -31,7 +31,7 @@ type AppContextType = {
     LocalCommandType,
     LocalEventType,
     LocalMessageType,
-    LocalResponseType,
+    LocalReactionType,
     LocalUserType
   > | null;
   loginUser: (config: LoginConfig) => void;
@@ -45,7 +45,7 @@ type AppContextType = {
   //         LocalCommandType,
   //         LocalEventType,
   //         LocalMessageType,
-  //         LocalResponseType,
+  //         LocalReactionType,
   //         LocalUserType
   //       >
   //     | undefined
@@ -59,7 +59,7 @@ type AppContextType = {
   //         LocalCommandType,
   //         LocalEventType,
   //         LocalMessageType,
-  //         LocalResponseType,
+  //         LocalReactionType,
   //         LocalUserType
   //       >['thread']
   //     | undefined
@@ -72,7 +72,7 @@ type AppContextType = {
   //       LocalCommandType,
   //       LocalEventType,
   //       LocalMessageType,
-  //       LocalResponseType,
+  //       LocalReactionType,
   //       LocalUserType
   //     >['thread']
   //   | undefined;

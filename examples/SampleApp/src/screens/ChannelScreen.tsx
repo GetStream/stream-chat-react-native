@@ -41,7 +41,6 @@ import type {
   LocalEventType,
   LocalMessageType,
   LocalReactionType,
-  LocalResponseType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -241,7 +240,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           LocalCommandType,
           LocalEventType,
           LocalMessageType,
-          LocalResponseType,
+          LocalReactionType,
           LocalUserType
         >
           onThreadSelect={(thread) => {
