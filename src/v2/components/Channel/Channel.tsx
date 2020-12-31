@@ -473,7 +473,7 @@ export const ChannelWithContext = <
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
-  }, [channelExists]);
+  }, [channelExists, messageId]);
 
   const threadPropsExists = !!threadProps;
   useEffect(() => {
