@@ -14,7 +14,7 @@ export const UnreadCountBadge = () => {
   const [count, setCount] = useState<number | undefined>();
 
   useEffect(() => {
-    // TODO: Fix the types on js client leve for client.user.
+    // TODO: Fix the types on js client level for client.user.
     // @ts-ignore
     setCount(chatClient?.user.total_unread_count);
     const listener = chatClient?.on((e) => {

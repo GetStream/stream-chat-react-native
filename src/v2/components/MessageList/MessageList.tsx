@@ -46,7 +46,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Attachment } from 'stream-chat';
+import type { Attachment, Channel as StreamChannel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -135,7 +135,6 @@ type MessageListPropsWithContext<
     | 'channel'
     | 'disabled'
     | 'EmptyStateIndicator'
-    | 'initialScrollToFirstUnreadMessage'
     | 'loadChannelAtMessage'
     | 'loading'
     | 'LoadingIndicator'
@@ -265,7 +264,6 @@ const MessageListWithContext = <
     FlatList,
     FooterComponent,
     HeaderComponent,
-    initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     inverted = true,
     isOnline,
@@ -370,6 +368,7 @@ const MessageListWithContext = <
   }, [disabled]);
 
   const channelExits = !!channel;
+
   useEffect(() => {
     if (channel && channel.countUnread() <= limitForUnreadScrolledUp) {
       channel.markRead();
@@ -427,10 +426,14 @@ const MessageListWithContext = <
 
   useEffect(() => {
     // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
-    setTimeout(() => {
-      setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
-    });
+    setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
   }, [messageListLength]);
+
+  const isUnreadMessage = (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+    lastRead: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
+  ) =>
+    message && lastRead && message.created_at && lastRead < message.created_at;
 
   const renderItem = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -441,18 +444,11 @@ const MessageListWithContext = <
     const lastRead = channel?.lastRead();
 
     const lastMessage = messageList?.[index + 1];
-    const insertInlineUnreadIndicator =
-      lastRead &&
-      message.created_at &&
-      lastMessage?.created_at &&
-      lastRead <= message.created_at &&
-      lastRead > lastMessage.created_at;
 
-    const isUnread =
-      lastRead &&
-      message.created_at &&
-      lastRead < message.created_at &&
-      !(message.id === messageList[0].id && insertInlineUnreadIndicator);
+    const showUnreadUnderlay =
+      isUnreadMessage(message, lastRead) && newMessagesNotification;
+    const insertInlineUnreadIndicator =
+      showUnreadUnderlay && !isUnreadMessage(lastMessage, lastRead);
 
     if (message.type === 'system') {
       return (
@@ -468,7 +464,7 @@ const MessageListWithContext = <
     if (message.type !== 'message.read') {
       const additionalStyles = [];
 
-      if (isUnread && newMessagesNotification) {
+      if (showUnreadUnderlay) {
         additionalStyles.push({ backgroundColor: bg_gradient_end });
       }
 
@@ -614,13 +610,6 @@ const MessageListWithContext = <
     }
   };
 
-  const initialScrollIndex =
-    !channel?.state.isUpToDate || targetedMessage
-      ? 0
-      : initialScrollToFirstUnreadMessage &&
-        channel?.countUnread() > limitForUnreadScrolledUp
-      ? Math.min(channel?.countUnread() - 1, limitForUnreadScrolledUp - 1)
-      : 0;
   return (
     <View
       style={[styles.container, { backgroundColor: white_snow }, container]}
@@ -630,7 +619,6 @@ const MessageListWithContext = <
         data={messageList}
         /** Disables the MessageList UI. Which means, message actions, reactions won't work. */
         extraData={disabled || !channel?.state.isUpToDate}
-        initialScrollIndex={initialScrollIndex}
         inverted={inverted}
         keyboardShouldPersistTaps='handled'
         keyExtractor={keyExtractor}
@@ -746,7 +734,6 @@ export const MessageList = <
     channel,
     disabled,
     EmptyStateIndicator,
-    initialScrollToFirstUnreadMessage,
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
@@ -794,7 +781,6 @@ export const MessageList = <
         disableTypingIndicator,
         EmptyStateIndicator,
         FlatList,
-        initialScrollToFirstUnreadMessage,
         InlineUnreadIndicator,
         isOnline,
         loadChannelAtMessage,
