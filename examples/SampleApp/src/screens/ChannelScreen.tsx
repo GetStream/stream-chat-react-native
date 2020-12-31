@@ -41,7 +41,6 @@ import type {
   LocalEventType,
   LocalMessageType,
   LocalReactionType,
-  LocalResponseType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -153,7 +152,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
         </TouchableOpacity>
       )}
       showUnreadCountBadge
-      Subtitle={isOnline ? null : NetworkDownIndicator}
+      Subtitle={isOnline ? undefined : NetworkDownIndicator}
       subtitleText={typing ? typing : membersStatus}
       titleText={displayName}
     />
@@ -241,7 +240,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
           LocalCommandType,
           LocalEventType,
           LocalMessageType,
-          LocalResponseType,
+          LocalReactionType,
           LocalUserType
         >
           onThreadSelect={(thread) => {

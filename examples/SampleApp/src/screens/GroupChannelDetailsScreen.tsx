@@ -41,7 +41,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -192,7 +192,15 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const [textInputFocused, setTextInputFocused] = useState(false);
 
   const membersStatus = useChannelMembersStatus(channel);
-  const displayName = useChannelPreviewDisplayName(channel, 30);
+  const displayName = useChannelPreviewDisplayName<
+    LocalAttachmentType,
+    LocalChannelType,
+    LocalCommandType,
+    LocalEventType,
+    LocalMessageType,
+    LocalReactionType,
+    LocalUserType
+  >(channel, 30);
 
   if (!channel) return null;
 
@@ -257,7 +265,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             <AddUser fill={accent_blue} height={24} width={24} />
           </RoundButton>
         )}
-        subtitleText={`${membersStatus}`}
+        subtitleText={membersStatus}
         titleText={displayName}
       />
       <ScrollView
@@ -364,7 +372,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                   await channel.update({
                     ...channel.data,
                     name: groupName,
-                  } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalResponseType, LocalUserType>['update']>[0]);
+                  } as Parameters<Channel<LocalAttachmentType, LocalChannelType, LocalCommandType, LocalEventType, LocalMessageType, LocalReactionType, LocalUserType>['update']>[0]);
                   if (textInputRef.current) {
                     textInputRef.current.blur();
                   }

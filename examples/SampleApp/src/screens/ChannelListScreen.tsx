@@ -27,7 +27,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
 } from '../types';
 
@@ -198,7 +198,7 @@ export const ChannelListScreen: React.FC = () => {
               LocalCommandType,
               LocalEventType,
               LocalMessageType,
-              LocalResponseType,
+              LocalReactionType,
               LocalUserType
             >
               additionalFlatListProps={{

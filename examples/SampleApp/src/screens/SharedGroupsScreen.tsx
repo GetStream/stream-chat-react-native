@@ -24,7 +24,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -69,7 +69,7 @@ type CustomPreviewProps = ChannelPreviewMessengerProps<
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType
 >;
 
@@ -170,7 +170,7 @@ type ListComponentProps = ChannelListMessengerProps<
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType
 >;
 
