@@ -684,9 +684,9 @@ export const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
-
+    setMessages(channel.state.messages);
     if (!messageId) {
-      channel.query({
+      await channel.query({
         messages: {
           limit: before,
         },

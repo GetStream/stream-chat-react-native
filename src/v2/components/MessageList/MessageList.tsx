@@ -338,7 +338,6 @@ const MessageListWithContext = <
   const lastMessageListLength = useRef(channel?.state.messages.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const messageScrollPosition = useRef(0);
-  const [messagesLoading, setMessagesLoading] = useState(true);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
@@ -374,10 +373,6 @@ const MessageListWithContext = <
       channel.markRead();
     }
   }, [channelExits]);
-
-  useEffect(() => {
-    setMessagesLoading(!!loading);
-  }, [loading]);
 
   const messageListValues = messageList.reduce(
     (acc, cur, index) =>
@@ -536,9 +531,6 @@ const MessageListWithContext = <
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
     }
-    if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({ index: 0 });
-    }
     setNewMessageNotification(false);
     if (!threadList) {
       markRead();
@@ -550,12 +542,14 @@ const MessageListWithContext = <
 
     if (indexOfParentInViewable > -1) {
       const indexOfParentInMessageList = messageList.findIndex(
-        (m) => m && m.id === messageId,
+        (message) => message?.id === messageId,
       );
-      flatListRef.current &&
+
+      if (flatListRef.current) {
         flatListRef.current.scrollToIndex({
           index: indexOfParentInMessageList - 1,
         });
+      }
 
       setTargetedMessage(messageId);
     } else {
@@ -628,7 +622,7 @@ const MessageListWithContext = <
         keyExtractor={keyExtractor}
         ListEmptyComponent={
           <View style={styles.flex}>
-            {messagesLoading ? (
+            {loading ? (
               <LoadingIndicator listType='message' />
             ) : (
               <View style={styles.flex} testID='empty-state'>
@@ -658,11 +652,11 @@ const MessageListWithContext = <
         onScrollEndDrag={() => setHasMoved(false)}
         onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={updateStickyDate.current}
-        ref={(fl) => {
-          flatListRef.current = fl;
+        ref={(ref) => {
+          flatListRef.current = ref;
 
           if (setFlatListRef) {
-            setFlatListRef(fl);
+            setFlatListRef(ref);
           }
         }}
         renderItem={({ index, item }) => renderItem(item, index)}
@@ -673,23 +667,27 @@ const MessageListWithContext = <
         }}
         {...additionalFlatListProps}
       />
-      <View style={styles.stickyHeader}>
-        {StickyHeader ? (
-          <StickyHeader dateString={stickyHeaderDateToRender} />
-        ) : (
-          <DateHeader dateString={stickyHeaderDateToRender} />
-        )}
-      </View>
-      {!disableTypingIndicator && TypingIndicator && (
-        <TypingIndicatorContainer>
-          <TypingIndicator />
-        </TypingIndicatorContainer>
+      {!loading && (
+        <>
+          <View style={styles.stickyHeader}>
+            {StickyHeader ? (
+              <StickyHeader dateString={stickyHeaderDateToRender} />
+            ) : (
+              <DateHeader dateString={stickyHeaderDateToRender} />
+            )}
+          </View>
+          {!disableTypingIndicator && TypingIndicator && (
+            <TypingIndicatorContainer>
+              <TypingIndicator />
+            </TypingIndicatorContainer>
+          )}
+          <MessageNotification
+            onPress={goToNewMessages}
+            showNotification={newMessagesNotification}
+            unreadCount={channel?.countUnread()}
+          />
+        </>
       )}
-      <MessageNotification
-        onPress={goToNewMessages}
-        showNotification={newMessagesNotification}
-        unreadCount={channel?.countUnread()}
-      />
       {!isOnline && (
         <View
           style={[
