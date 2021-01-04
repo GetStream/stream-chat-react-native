@@ -146,7 +146,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
             testID='channel-preview-button'
           >
             <Avatar image={item.user?.image} name={item.user?.name} size={40} />
-            <View style={styles.contentContainer}>
+            <View style={styles.flex}>
               <View style={styles.row}>
                 <Text
                   numberOfLines={1}
