@@ -31,10 +31,6 @@ export type ChannelContextValue<
   error: boolean;
   giphyEnabled: boolean;
   /**
-   * When true, messageList will be scrolled at first unread message, when opened.
-   */
-  initialScrollToFirstUnreadMessage: boolean;
-  /**
    * Returns true if the current user has admin privileges
    */
   isAdmin: boolean;
