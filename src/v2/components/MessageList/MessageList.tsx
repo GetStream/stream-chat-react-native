@@ -542,12 +542,14 @@ const MessageListWithContext = <
 
     if (indexOfParentInViewable > -1) {
       const indexOfParentInMessageList = messageList.findIndex(
-        (m) => m && m.id === messageId,
+        (message) => message?.id === messageId,
       );
-      flatListRef.current &&
+
+      if (flatListRef.current) {
         flatListRef.current.scrollToIndex({
           index: indexOfParentInMessageList - 1,
         });
+      }
 
       setTargetedMessage(messageId);
     } else {
@@ -650,11 +652,11 @@ const MessageListWithContext = <
         onScrollEndDrag={() => setHasMoved(false)}
         onTouchEnd={dismissImagePicker}
         onViewableItemsChanged={updateStickyDate.current}
-        ref={(fl) => {
-          flatListRef.current = fl;
+        ref={(ref) => {
+          flatListRef.current = ref;
 
           if (setFlatListRef) {
-            setFlatListRef(fl);
+            setFlatListRef(ref);
           }
         }}
         renderItem={({ index, item }) => renderItem(item, index)}
@@ -666,25 +668,25 @@ const MessageListWithContext = <
         {...additionalFlatListProps}
       />
       {!loading && (
-        <View style={styles.stickyHeader}>
-          {StickyHeader ? (
-            <StickyHeader dateString={stickyHeaderDateToRender} />
-          ) : (
-            <DateHeader dateString={stickyHeaderDateToRender} />
+        <>
+          <View style={styles.stickyHeader}>
+            {StickyHeader ? (
+              <StickyHeader dateString={stickyHeaderDateToRender} />
+            ) : (
+              <DateHeader dateString={stickyHeaderDateToRender} />
+            )}
+          </View>
+          {!disableTypingIndicator && TypingIndicator && (
+            <TypingIndicatorContainer>
+              <TypingIndicator />
+            </TypingIndicatorContainer>
           )}
-        </View>
-      )}
-      {!loading && !disableTypingIndicator && TypingIndicator && (
-        <TypingIndicatorContainer>
-          <TypingIndicator />
-        </TypingIndicatorContainer>
-      )}
-      {!loading && (
-        <MessageNotification
-          onPress={goToNewMessages}
-          showNotification={newMessagesNotification}
-          unreadCount={channel?.countUnread()}
-        />
+          <MessageNotification
+            onPress={goToNewMessages}
+            showNotification={newMessagesNotification}
+            unreadCount={channel?.countUnread()}
+          />
+        </>
       )}
       {!isOnline && (
         <View
