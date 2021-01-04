@@ -410,6 +410,7 @@ const MessageListWithContext = <
           (isOwner || !userScrolledUp);
 
         if (scrollToBottom && flatListRef.current) {
+          flatListRef.current.scrollToIndex({ index: 0 });
           setNewMessageNotification(false);
           if (!isOwner) {
             markRead();
