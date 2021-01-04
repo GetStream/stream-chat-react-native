@@ -301,7 +301,7 @@ const ChannelPreviewMessengerWithContext = <
             >
               {!!unread && (
                 <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-                  {unread <= 99 ? unread : '99+'}
+                  {unread}
                 </Text>
               )}
             </View>
