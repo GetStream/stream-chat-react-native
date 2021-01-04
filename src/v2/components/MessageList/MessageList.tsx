@@ -338,7 +338,6 @@ const MessageListWithContext = <
   const lastMessageListLength = useRef(channel?.state.messages.length);
   const [newMessagesNotification, setNewMessageNotification] = useState(false);
   const messageScrollPosition = useRef(0);
-  const [messagesLoading, setMessagesLoading] = useState(true);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
@@ -374,10 +373,6 @@ const MessageListWithContext = <
       channel.markRead();
     }
   }, [channelExits]);
-
-  useEffect(() => {
-    setMessagesLoading(!!loading);
-  }, [loading]);
 
   const messageListValues = messageList.reduce(
     (acc, cur, index) =>
@@ -415,7 +410,6 @@ const MessageListWithContext = <
           (isOwner || !userScrolledUp);
 
         if (scrollToBottom && flatListRef.current) {
-          flatListRef.current.scrollToIndex({ index: 0 });
           setNewMessageNotification(false);
           if (!isOwner) {
             markRead();
@@ -536,9 +530,6 @@ const MessageListWithContext = <
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
     }
-    if (flatListRef.current) {
-      flatListRef.current.scrollToIndex({ index: 0 });
-    }
     setNewMessageNotification(false);
     if (!threadList) {
       markRead();
@@ -628,7 +619,7 @@ const MessageListWithContext = <
         keyExtractor={keyExtractor}
         ListEmptyComponent={
           <View style={styles.flex}>
-            {messagesLoading ? (
+            {loading ? (
               <LoadingIndicator listType='message' />
             ) : (
               <View style={styles.flex} testID='empty-state'>
@@ -673,23 +664,27 @@ const MessageListWithContext = <
         }}
         {...additionalFlatListProps}
       />
-      <View style={styles.stickyHeader}>
-        {StickyHeader ? (
-          <StickyHeader dateString={stickyHeaderDateToRender} />
-        ) : (
-          <DateHeader dateString={stickyHeaderDateToRender} />
-        )}
-      </View>
-      {!disableTypingIndicator && TypingIndicator && (
+      {!loading && (
+        <View style={styles.stickyHeader}>
+          {StickyHeader ? (
+            <StickyHeader dateString={stickyHeaderDateToRender} />
+          ) : (
+            <DateHeader dateString={stickyHeaderDateToRender} />
+          )}
+        </View>
+      )}
+      {!loading && !disableTypingIndicator && TypingIndicator && (
         <TypingIndicatorContainer>
           <TypingIndicator />
         </TypingIndicatorContainer>
       )}
-      <MessageNotification
-        onPress={goToNewMessages}
-        showNotification={newMessagesNotification}
-        unreadCount={channel?.countUnread()}
-      />
+      {!loading && (
+        <MessageNotification
+          onPress={goToNewMessages}
+          showNotification={newMessagesNotification}
+          unreadCount={channel?.countUnread()}
+        />
+      )}
       {!isOnline && (
         <View
           style={[
