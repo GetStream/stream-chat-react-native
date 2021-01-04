@@ -33,13 +33,11 @@ import type {
 
 const defaultMarkdownStyles: MarkdownStyle = {
   inlineCode: {
-    backgroundColor: '#F2F2F2', // TODO: figure out a way use theme color 'white_smoke'
-    borderColor: '#DBDBDB', // TODO: figure out a way use theme color 'grey_gainsboro'
-    color: '#FF3742',
     fontSize: 13,
     padding: 3,
     paddingHorizontal: 5,
   },
+  // unfortunately marginVertical doesn't override the defaults for these within the 3rd party lib
   paragraph: {
     marginBottom: 8,
     marginTop: 8,
