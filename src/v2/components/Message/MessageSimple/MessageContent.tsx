@@ -295,15 +295,16 @@ export const MessageContentWithContext = <
           style={[
             styles.containerInner,
             {
-              backgroundColor: onlyEmojis
-                ? transparent
-                : otherAttachments.length
-                ? otherAttachments[0].type === 'giphy'
+              backgroundColor:
+                onlyEmojis && !message.quoted_message
                   ? transparent
-                  : blue_alice
-                : alignment === 'left' || error
-                ? transparent
-                : grey_gainsboro,
+                  : otherAttachments.length
+                  ? otherAttachments[0].type === 'giphy'
+                    ? transparent
+                    : blue_alice
+                  : alignment === 'left' || error
+                  ? transparent
+                  : grey_gainsboro,
               borderBottomLeftRadius:
                 groupStyle === 'left_bottom' || groupStyle === 'left_single'
                   ? borderRadiusS
@@ -314,7 +315,9 @@ export const MessageContentWithContext = <
                   : borderRadiusL,
               borderColor: grey_whisper,
             },
-            onlyEmojis || otherAttachments.length ? { borderWidth: 0 } : {},
+            (onlyEmojis && !message.quoted_message) || otherAttachments.length
+              ? { borderWidth: 0 }
+              : {},
             containerInner,
           ]}
           testID='message-content-wrapper'

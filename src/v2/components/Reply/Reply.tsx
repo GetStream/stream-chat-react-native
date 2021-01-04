@@ -19,6 +19,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment as AttachmentType } from 'stream-chat';
 
@@ -151,6 +152,11 @@ export const ReplyWithContext = <
       lastAttachment.thumb_url ||
       lastAttachment.og_scrape_url);
 
+  const onlyEmojis =
+    !lastAttachment &&
+    !!quotedMessage.text &&
+    emojiRegex.test(quotedMessage.text);
+
   return (
     <View style={[styles.container, container, stylesProp.container]}>
       <MessageAvatar
@@ -221,6 +227,7 @@ export const ReplyWithContext = <
               ? lastAttachment?.title || ''
               : '',
           }}
+          onlyEmojis={onlyEmojis}
           styles={{
             textContainer: [
               {
