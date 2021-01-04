@@ -190,7 +190,9 @@ export type MessagesContextValue<
    * UI component for MessageSystem
    * Defaults to: [MessageSystem](https://getstream.github.io/stream-chat-react-native/#messagesystem)
    */
-  MessageSystem: React.ComponentType<MessageSystemProps>;
+  MessageSystem: React.ComponentType<
+    MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx)

@@ -6,6 +6,26 @@ import type { UserResponse } from 'stream-chat';
 
 import type { LocalUserType } from '../../types';
 
+const styles = StyleSheet.create({
+  tagContainer: {
+    borderRadius: 12,
+    flexDirection: 'row',
+    marginRight: 8,
+    marginVertical: 8,
+  },
+  tagImage: {
+    borderRadius: 12,
+    height: 24,
+    width: 24,
+  },
+  tagText: {
+    alignSelf: 'center',
+    fontSize: 14,
+    paddingLeft: 7,
+    paddingRight: 12,
+  },
+});
+
 type SelectedUserTagProps = {
   index: number;
   onPress: () => void;
@@ -21,7 +41,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
 }) => {
   const {
     theme: {
-      colors: { black, white_smoke },
+      colors: { black, grey_gainsboro },
     },
   } = useTheme();
 
@@ -30,7 +50,7 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
       disabled={disabled}
       key={`${tag}-${index}`}
       onPress={onPress}
-      style={[styles.tagContainer, { backgroundColor: white_smoke }]}
+      style={[styles.tagContainer, { backgroundColor: grey_gainsboro }]}
     >
       <Image
         source={{
@@ -52,23 +72,3 @@ export const SelectedUserTag: React.FC<SelectedUserTagProps> = ({
     </TouchableOpacity>
   );
 };
-
-/* eslint-disable sort-keys */
-const styles = StyleSheet.create({
-  tagContainer: {
-    flexDirection: 'row',
-    margin: 4,
-    borderRadius: 20,
-  },
-  tagImage: {
-    height: 25,
-    width: 25,
-    borderRadius: 20,
-  },
-  tagText: {
-    paddingLeft: 7,
-    paddingRight: 12,
-    fontSize: 14,
-    alignSelf: 'center',
-  },
-});

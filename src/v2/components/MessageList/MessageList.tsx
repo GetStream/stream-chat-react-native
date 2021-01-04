@@ -379,7 +379,11 @@ const MessageListWithContext = <
     setMessagesLoading(!!loading);
   }, [loading]);
 
-  const messageListLength = messageList.length;
+  const messageListValues = messageList.reduce(
+    (acc, cur, index) =>
+      `${index === 0 || index === messageList.length - 1 ? cur.id : ''}${acc}`,
+    '',
+  );
   useEffect(() => {
     const currentLastMessage = getLastReceivedMessage(messageList);
     if (currentLastMessage && channel) {
@@ -422,12 +426,12 @@ const MessageListWithContext = <
         lastMessageListLength.current = channel?.state.messages.length;
       }
     }
-  }, [messageListLength]);
+  }, [messageListValues]);
 
   useEffect(() => {
     // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
     setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
-  }, [messageListLength]);
+  }, [messageListValues]);
 
   const isUnreadMessage = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,

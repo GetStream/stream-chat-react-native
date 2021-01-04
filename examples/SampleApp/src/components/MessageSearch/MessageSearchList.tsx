@@ -2,13 +2,14 @@ import React from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { Avatar, useTheme } from 'stream-chat-react-native/v2';
+import { Avatar, useTheme, vw } from 'stream-chat-react-native/v2';
 
 import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 
@@ -22,6 +23,44 @@ import type {
   LocalReactionType,
   LocalUserType,
 } from '../../types';
+
+const styles = StyleSheet.create({
+  contentContainer: { flexGrow: 1 },
+  date: {
+    fontSize: 12,
+    marginLeft: 2,
+    textAlign: 'right',
+  },
+  detailsText: { fontSize: 12 },
+  flex: { flex: 1 },
+  indicatorContainer: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+  },
+  itemContainer: {
+    borderBottomWidth: 1,
+    flex: 1,
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+  },
+  message: {
+    flexShrink: 1,
+    fontSize: 12,
+  },
+  row: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 8,
+  },
+  title: { fontSize: 14, fontWeight: '700' },
+  titleContainer: {
+    maxWidth: vw(80) - 16 - 40,
+  },
+});
 
 export type MessageSearchListProps = {
   EmptySearchIndicator: React.ComponentType;
@@ -59,13 +98,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
 
   if (loading && !refreshing && (!messages || messages.length === 0)) {
     return (
-      <View
-        style={{
-          alignItems: 'center',
-          height: '100%',
-          justifyContent: 'center',
-        }}
-      >
+      <View style={styles.indicatorContainer}>
         <ActivityIndicator size='small' />
       </View>
     );
@@ -94,81 +127,61 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
         </View>
       )}
       <FlatList
-        contentContainerStyle={{ flexGrow: 1 }}
-        data={messages}
+        contentContainerStyle={styles.contentContainer}
+        // TODO: Remove the following filter once we have two way scroll functionality on threads.
+        data={messages ? messages.filter(({ parent_id }) => !parent_id) : []}
         ListEmptyComponent={EmptySearchIndicator}
         onEndReached={loadMore}
         onRefresh={refreshList}
         refreshing={refreshing}
-        renderItem={({ item }) => {
-          // TODO: Remove the following if condition once we have two way scroll functionality on threads.
-          if (item.parent_id) return null;
-
-          return (
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('ChannelScreen', {
-                  channelId: item.channel?.id,
-                  messageId: item.id,
-                });
-              }}
-              style={{
-                borderBottomColor: border,
-                borderBottomWidth: 1,
-                flexDirection: 'row',
-                padding: 12,
-              }}
-            >
-              <View
-                style={{ flexDirection: 'row', flexGrow: 1, flexShrink: 1 }}
-              >
-                <Avatar
-                  image={item.user?.image}
-                  name={item.user?.name}
-                  size={40}
-                />
-                <View
-                  style={{
-                    flexGrow: 1,
-                    flexShrink: 1,
-                    justifyContent: 'center',
-                    marginLeft: 10,
-                    marginRight: 20,
-                  }}
-                >
-                  <Text numberOfLines={1} style={{ color: black }}>
-                    <Text style={{ fontWeight: '700' }}>
-                      {item.user?.name}{' '}
-                    </Text>
-                    {!!item.channel?.name && (
-                      <Text>
-                        in
-                        <Text style={{ fontWeight: '700' }}>
-                          {' '}
-                          {item.channel?.name}
-                        </Text>
-                      </Text>
-                    )}
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      color: grey,
-                      flexWrap: 'nowrap',
-                      fontSize: 12,
-                      fontWeight: '400',
-                    }}
-                  >
-                    {item.text}
-                  </Text>
-                </View>
-              </View>
-              <View style={{ justifyContent: 'center' }}>
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('ChannelScreen', {
+                channelId: item.channel?.id,
+                messageId: item.id,
+              });
+            }}
+            style={[styles.itemContainer, { borderBottomColor: border }]}
+            testID='channel-preview-button'
+          >
+            <Avatar image={item.user?.image} name={item.user?.name} size={40} />
+            <View style={styles.contentContainer}>
+              <View style={styles.row}>
                 <Text
-                  style={{
-                    color: grey,
-                    fontSize: 12,
-                  }}
+                  numberOfLines={1}
+                  style={[styles.titleContainer, { color: black }]}
+                >
+                  <Text style={styles.title}>{`${item.user?.name} `}</Text>
+                  {!!item.channel?.name && (
+                    <Text style={styles.detailsText}>
+                      in
+                      <Text style={styles.title}>
+                        {` ${item.channel?.name}`}
+                      </Text>
+                    </Text>
+                  )}
+                </Text>
+              </View>
+              <View style={styles.row}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    styles.message,
+                    {
+                      color: grey,
+                    },
+                  ]}
+                >
+                  {item.text}
+                </Text>
+                <Text
+                  style={[
+                    styles.date,
+                    {
+                      color: grey,
+                    },
+                  ]}
                 >
                   {dayjs(item.created_at).calendar(undefined, {
                     lastDay: 'DD/MM', // The day before ( Yesterday at 2:30 AM )
@@ -178,10 +191,10 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
                   })}
                 </Text>
               </View>
-            </TouchableOpacity>
-          );
-        }}
-        style={{ flex: 1 }}
+            </View>
+          </TouchableOpacity>
+        )}
+        style={styles.flex}
       />
     </>
   );

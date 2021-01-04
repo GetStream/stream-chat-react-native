@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ForwardedRef, useEffect, useState } from 'react';
 import { ActionSheetCustom as ActionSheet } from 'react-native-actionsheet';
 
 import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
@@ -144,132 +144,143 @@ export type MessageActionSheetProps<
   threadList?: boolean;
 };
 
-export const MessageActionSheet = React.forwardRef(
-  (props: MessageActionSheetProps, actionSheetRef) => {
-    const {
-      actionSheetStyles,
-      canDeleteMessage,
-      canEditMessage,
-      handleDelete,
-      handleEdit,
-      messageActions = Object.keys(MESSAGE_ACTIONS),
-      openReactionPicker,
-      openThread,
-      reactionsEnabled,
-      repliesEnabled,
-      setActionSheetVisible,
-      threadList,
-    } = props;
+const MessageActionSheetForwarded = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageActionSheetProps<At, Ch, Co, Ev, Me, Re, Us>,
+  actionSheetRef: ForwardedRef<ActionSheet>,
+) => {
+  const {
+    actionSheetStyles,
+    canDeleteMessage,
+    canEditMessage,
+    handleDelete,
+    handleEdit,
+    messageActions = Object.keys(MESSAGE_ACTIONS),
+    openReactionPicker,
+    openThread,
+    reactionsEnabled,
+    repliesEnabled,
+    setActionSheetVisible,
+    threadList,
+  } = props;
 
-    const { t } = useTranslationContext();
-    const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
+  const { t } = useTranslationContext();
+  const [options, setOptions] = useState([{ id: 'cancel', title: 'Cancel' }]);
 
-    useEffect(() => {
-      const newOptions: {
-        id: string;
-        title: string;
-      }[] = [];
+  useEffect(() => {
+    const newOptions: {
+      id: string;
+      title: string;
+    }[] = [];
 
-      if (Array.isArray(messageActions)) {
-        if (
-          reactionsEnabled &&
-          messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
-        ) {
-          newOptions.splice(1, 0, {
-            id: MESSAGE_ACTIONS.reactions,
-            title: t('Add Reaction'),
-          });
-        }
-
-        if (
-          repliesEnabled &&
-          messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
-          !threadList
-        ) {
-          newOptions.splice(1, 0, {
-            id: MESSAGE_ACTIONS.reply,
-            title: t('Reply'),
-          });
-        }
-
-        if (
-          messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
-          canEditMessage?.()
-        ) {
-          newOptions.splice(1, 0, {
-            id: MESSAGE_ACTIONS.edit,
-            title: t('Edit Message'),
-          });
-        }
-
-        if (
-          messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
-          canDeleteMessage?.()
-        ) {
-          newOptions.splice(1, 0, {
-            id: MESSAGE_ACTIONS.delete,
-            title: t('Delete Message'),
-          });
-        }
+    if (Array.isArray(messageActions)) {
+      if (
+        reactionsEnabled &&
+        messageActions.indexOf(MESSAGE_ACTIONS.reactions) > -1
+      ) {
+        newOptions.splice(1, 0, {
+          id: MESSAGE_ACTIONS.reactions,
+          title: t('Add Reaction'),
+        });
       }
 
-      setOptions((prevOptions) => [...prevOptions, ...newOptions]);
-    }, []);
-
-    const onActionPress = async (action: string) => {
-      switch (action) {
-        case MESSAGE_ACTIONS.edit:
-          handleEdit();
-          break;
-        case MESSAGE_ACTIONS.delete:
-          await handleDelete();
-          break;
-        case MESSAGE_ACTIONS.reply:
-          openThread();
-          break;
-        case MESSAGE_ACTIONS.reactions:
-          openReactionPicker();
-          break;
-        default:
-          break;
+      if (
+        repliesEnabled &&
+        messageActions.indexOf(MESSAGE_ACTIONS.reply) > -1 &&
+        !threadList
+      ) {
+        newOptions.splice(1, 0, {
+          id: MESSAGE_ACTIONS.reply,
+          title: t('Reply'),
+        });
       }
-      setActionSheetVisible(false);
-    };
 
-    return (
-      <ActionSheet
-        cancelButtonIndex={0}
-        destructiveButtonIndex={0}
-        onPress={(index) => onActionPress(options[index].id)}
-        options={options.map((option, i) => {
-          if (i === 0) {
-            return (
-              <ActionSheetCancelButtonContainer testID='cancel-button'>
-                <ActionSheetCancelButtonText>
-                  {t('Cancel')}
-                </ActionSheetCancelButtonText>
-              </ActionSheetCancelButtonContainer>
-            );
-          }
+      if (
+        messageActions.indexOf(MESSAGE_ACTIONS.edit) > -1 &&
+        canEditMessage?.()
+      ) {
+        newOptions.splice(1, 0, {
+          id: MESSAGE_ACTIONS.edit,
+          title: t('Edit Message'),
+        });
+      }
+
+      if (
+        messageActions.indexOf(MESSAGE_ACTIONS.delete) > -1 &&
+        canDeleteMessage?.()
+      ) {
+        newOptions.splice(1, 0, {
+          id: MESSAGE_ACTIONS.delete,
+          title: t('Delete Message'),
+        });
+      }
+    }
+
+    setOptions((prevOptions) => [...prevOptions, ...newOptions]);
+  }, []);
+
+  const onActionPress = async (action: string) => {
+    switch (action) {
+      case MESSAGE_ACTIONS.edit:
+        handleEdit();
+        break;
+      case MESSAGE_ACTIONS.delete:
+        await handleDelete();
+        break;
+      case MESSAGE_ACTIONS.reply:
+        openThread();
+        break;
+      case MESSAGE_ACTIONS.reactions:
+        openReactionPicker();
+        break;
+      default:
+        break;
+    }
+    setActionSheetVisible(false);
+  };
+
+  return (
+    <ActionSheet
+      cancelButtonIndex={0}
+      destructiveButtonIndex={0}
+      onPress={(index) => onActionPress(options[index].id)}
+      options={options.map((option, i) => {
+        if (i === 0) {
           return (
-            <ActionSheetButtonContainer
-              key={option.title}
-              testID={`action-sheet-item-${option.title}`}
-            >
-              <ActionSheetButtonText>{option.title}</ActionSheetButtonText>
-            </ActionSheetButtonContainer>
+            <ActionSheetCancelButtonContainer testID='cancel-button'>
+              <ActionSheetCancelButtonText>
+                {t('Cancel')}
+              </ActionSheetCancelButtonText>
+            </ActionSheetCancelButtonContainer>
           );
-        })}
-        ref={actionSheetRef as React.MutableRefObject<ActionSheet>}
-        styles={actionSheetStyles}
-        title={
-          <ActionSheetTitleContainer testID='action-sheet-container'>
-            <ActionSheetTitleText>{t('Choose an action')}</ActionSheetTitleText>
-          </ActionSheetTitleContainer>
         }
-      />
-    );
-  },
-);
+        return (
+          <ActionSheetButtonContainer
+            key={option.title}
+            testID={`action-sheet-item-${option.title}`}
+          >
+            <ActionSheetButtonText>{option.title}</ActionSheetButtonText>
+          </ActionSheetButtonContainer>
+        );
+      })}
+      ref={actionSheetRef}
+      styles={actionSheetStyles}
+      title={
+        <ActionSheetTitleContainer testID='action-sheet-container'>
+          <ActionSheetTitleText>{t('Choose an action')}</ActionSheetTitleText>
+        </ActionSheetTitleContainer>
+      }
+    />
+  );
+};
 
-MessageActionSheet.displayName = 'messageActionSheet';
+export const MessageActionSheet = React.forwardRef(
+  MessageActionSheetForwarded,
+) as typeof MessageActionSheetForwarded;

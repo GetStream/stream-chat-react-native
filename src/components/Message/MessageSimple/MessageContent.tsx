@@ -497,7 +497,7 @@ export const MessageContent = <
           </MetaContainer>
         )}
         {actionSheetVisible && enableLongPress && (
-          <ActionSheet
+          <ActionSheet<At, Ch, Co, Ev, Me, Re, Us>
             actionSheetStyles={actionSheetStyles}
             canDeleteMessage={canDeleteMessage}
             canEditMessage={canEditMessage}

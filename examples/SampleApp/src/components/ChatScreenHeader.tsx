@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
   CompositeNavigationProp,
   useNavigation,
@@ -20,80 +20,92 @@ import type {
   StackNavigatorParamList,
 } from '../types';
 
+const styles = StyleSheet.create({
+  avatar: {
+    borderRadius: 20,
+    height: 40,
+    width: 40,
+  },
+  networkDownContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  networkDownText: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginLeft: 13,
+  },
+});
+
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
 
-export const NetworkDownIndicator = () => {
+export const NetworkDownIndicator: React.FC = () => {
   const {
     theme: {
       colors: { black },
     },
   } = useTheme();
+
   return (
-    <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+    <View style={styles.networkDownContainer}>
       <Spinner />
       <Text
-        style={{
-          color: black,
-          fontSize: 16,
-          fontWeight: '700',
-          marginLeft: 13,
-        }}
+        style={[
+          styles.networkDownText,
+          {
+            color: black,
+          },
+        ]}
       >
-        Search for network
+        Searching for network
       </Text>
     </View>
   );
 };
 
-export const ChatScreenHeader = ({ title = 'Stream Chat' }) => {
-  const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
-  const { chatClient } = useContext(AppContext);
-
-  const { isOnline } = useChatContext();
-
+export const ChatScreenHeader: React.FC<{ title?: string }> = ({
+  title = 'Stream Chat',
+}) => {
   const {
     theme: {
       colors: { accent_blue },
     },
   } = useTheme();
+  const navigation = useNavigation<ChatScreenHeaderNavigationProp>();
+  const { chatClient } = useContext(AppContext);
+  const { isOnline } = useChatContext();
 
   return (
-    <>
-      <ScreenHeader
-        LeftContent={() => (
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Image
-              source={{
-                uri: chatClient?.user?.image,
-              }}
-              style={{
-                borderRadius: 20,
-                height: 40,
-                width: 40,
-              }}
-            />
-          </TouchableOpacity>
-        )}
-        RightContent={() => (
-          <RoundButton
-            onPress={() => {
-              navigation.navigate('NewDirectMessagingScreen');
+    <ScreenHeader
+      LeftContent={() => (
+        <TouchableOpacity onPress={navigation.openDrawer}>
+          <Image
+            source={{
+              uri: chatClient?.user?.image,
             }}
-          >
-            <NewDirectMessageIcon
-              active
-              color={accent_blue}
-              height={25}
-              width={25}
-            />
-          </RoundButton>
-        )}
-        Title={isOnline ? null : NetworkDownIndicator}
-        titleText={title}
-      />
-    </>
+            style={styles.avatar}
+          />
+        </TouchableOpacity>
+      )}
+      RightContent={() => (
+        <RoundButton
+          onPress={() => {
+            navigation.navigate('NewDirectMessagingScreen');
+          }}
+        >
+          <NewDirectMessageIcon
+            active
+            color={accent_blue}
+            height={25}
+            width={25}
+          />
+        </RoundButton>
+      )}
+      Title={isOnline ? undefined : NetworkDownIndicator}
+      titleText={title}
+    />
   );
 };

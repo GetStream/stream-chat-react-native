@@ -3,23 +3,46 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'stream-chat-react-native/v2';
 
+import { UnreadCountBadge } from './UnreadCountBadge';
+
 import { ChatsTab } from '../icons/ChatsTab';
 import { MentionsTab } from '../icons/MentionsTab';
 
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { UnreadCountBadge } from './UnreadCountBadge';
 
-export const BottomTabs: React.FC<BottomTabBarProps> = ({
-  navigation,
-  state,
-}) => {
+const styles = StyleSheet.create({
+  notification: {
+    left: 25, // size of icon
+    position: 'absolute',
+  },
+  tabContainer: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: 8,
+  },
+  tabListContainer: {
+    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
+    borderTopWidth: 1,
+    flexDirection: 'row',
+  },
+  tabTitle: {
+    fontSize: 12,
+    marginTop: 7,
+    textAlign: 'center',
+  },
+});
+
+export const BottomTabs: React.FC<BottomTabBarProps> = (props) => {
+  const { navigation, state } = props;
   const {
     theme: {
       colors: { black, grey, white },
     },
   } = useTheme();
   const { bottom } = useSafeAreaInsets();
-  const getTitle = (key: string) => {
+
+  const getTab = (key: string) => {
     switch (key) {
       case 'ChatScreen':
         return {
@@ -38,18 +61,19 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
         return null;
     }
   };
+
   return (
     <View
       style={[
+        styles.tabListContainer,
         {
           backgroundColor: white,
           paddingBottom: bottom,
         },
-        styles.tabListContainer,
       ]}
     >
       {state.routes.map((route, index) => {
-        const tab = getTitle(route.name);
+        const tab = getTab(route.name);
 
         if (!tab) return null;
 
@@ -70,14 +94,7 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
             <View>
               {isFocused ? tab.iconActive : tab.icon}
               {tab.notification && (
-                <View
-                  style={{
-                    left: 25, // size of icon
-                    position: 'absolute',
-                  }}
-                >
-                  {tab.notification}
-                </View>
+                <View style={styles.notification}>{tab.notification}</View>
               )}
             </View>
             <Text
@@ -96,22 +113,3 @@ export const BottomTabs: React.FC<BottomTabBarProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  tabContainer: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 10,
-  },
-  tabListContainer: {
-    borderTopColor: 'rgba(0, 0, 0, 0.0677)',
-    borderTopWidth: 1,
-    flexDirection: 'row',
-  },
-  tabTitle: {
-    fontSize: 12,
-    marginTop: 7,
-    textAlign: 'center',
-  },
-});

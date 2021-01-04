@@ -10,7 +10,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
 } from '../types';
 
@@ -21,7 +21,7 @@ export const usePaginatedAttachments = (
     LocalCommandType,
     LocalEventType,
     LocalMessageType,
-    LocalResponseType,
+    LocalReactionType,
     LocalUserType
   >,
   attachmentType: string,
@@ -37,7 +37,7 @@ export const usePaginatedAttachments = (
       LocalChannelType,
       LocalCommandType,
       LocalMessageType,
-      LocalResponseType,
+      LocalReactionType,
       LocalUserType
     >[]
   >([]);

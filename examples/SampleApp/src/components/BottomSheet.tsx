@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
+import { Keyboard, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -19,39 +19,48 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   KeyboardCompatibleView,
   useTheme,
   vh,
-  vw,
 } from 'stream-chat-react-native/v2';
 
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 
+const styles = StyleSheet.create({
+  animatedContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  container: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingHorizontal: 16,
+  },
+});
+
 export type BottomSheetProps = {
   dismissHandler: () => void;
   overlayOpacity: Animated.SharedValue<number>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: Record<string, any>;
   visible: boolean;
+  containerStyle?: StyleProp<ViewStyle>;
   type?: string;
 };
 
 const screenHeight = vh(100);
-const halfScreenHeight = vh(50);
-const width = vw(100) - 60;
 
 export const BottomSheet = (props: BottomSheetProps) => {
-  const { dismissHandler, overlayOpacity, params, type, visible } = props;
-  const insets = useSafeAreaInsets();
-
-  const offsetY = useSharedValue(0);
-  const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
-  const viewHeight = useSharedValue(0);
-
-  const showScreen = useSharedValue(0);
+  const {
+    containerStyle,
+    dismissHandler,
+    overlayOpacity,
+    params,
+    type,
+    visible,
+  } = props;
 
   const {
     theme: {
@@ -59,12 +68,16 @@ export const BottomSheet = (props: BottomSheetProps) => {
     },
   } = useTheme();
 
+  const offsetY = useSharedValue(0);
+  const showScreen = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const viewHeight = useSharedValue(0);
+
   const fadeScreen = (show: boolean) => {
     'worklet';
     if (show) {
       offsetY.value = 0;
       translateY.value = 0;
-      scale.value = 1;
     }
     showScreen.value = show
       ? withSpring(1, {
@@ -101,21 +114,15 @@ export const BottomSheet = (props: BottomSheetProps) => {
       translateY.value = offsetY.value + evt.translationY;
       overlayOpacity.value = interpolate(
         translateY.value,
-        [0, halfScreenHeight],
+        [0, viewHeight.value / 2],
         [1, 0.75],
-        Extrapolate.CLAMP,
-      );
-      scale.value = interpolate(
-        translateY.value,
-        [0, halfScreenHeight],
-        [1, 0.85],
         Extrapolate.CLAMP,
       );
     },
     onFinish: (evt) => {
       const finalYPosition = evt.translationY + evt.velocityY * 0.1;
 
-      if (finalYPosition > halfScreenHeight && translateY.value > 0) {
+      if (finalYPosition > viewHeight.value / 2 && translateY.value > 0) {
         cancelAnimation(translateY);
         overlayOpacity.value = withTiming(
           0,
@@ -138,7 +145,6 @@ export const BottomSheet = (props: BottomSheetProps) => {
               });
       } else {
         translateY.value = withTiming(0);
-        scale.value = withTiming(1);
         overlayOpacity.value = withTiming(1);
       }
     },
@@ -151,10 +157,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
   const panStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: translateY.value,
-      },
-      {
-        scale: scale.value,
+        translateY: translateY.value > 0 ? translateY.value : 0,
       },
     ],
   }));
@@ -168,13 +171,11 @@ export const BottomSheet = (props: BottomSheetProps) => {
           [viewHeight.value / 2, 0],
         ),
       },
-      {
-        scale: showScreen.value,
-      },
     ],
   }));
 
   if (!visible) return null;
+
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
@@ -186,7 +187,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
         minDist={10}
         onGestureEvent={onPan}
       >
-        <Animated.View style={[StyleSheet.absoluteFillObject]}>
+        <Animated.View style={StyleSheet.absoluteFillObject}>
           <TapGestureHandler
             maxDist={32}
             onHandlerStateChange={({ nativeEvent: { state } }) => {
@@ -195,49 +196,45 @@ export const BottomSheet = (props: BottomSheetProps) => {
               }
             }}
           >
-            <Animated.View
-              style={[
-                panStyle,
-                {
-                  flexGrow: 1,
-                  flexShrink: 1,
-                  justifyContent: 'flex-end',
-                },
-              ]}
-            >
+            <Animated.View style={[styles.animatedContainer, panStyle]}>
               <KeyboardCompatibleView keyboardVerticalOffset={10}>
-                <Animated.View
-                  onLayout={({
-                    nativeEvent: {
-                      layout: { height },
-                    },
-                  }) => {
-                    viewHeight.value = height;
-                  }}
-                  style={[
-                    styles.container,
-                    { backgroundColor: white },
-                    showScreenStyle,
-                  ]}
-                >
-                  {type === 'addMembers' && (
-                    <AddMemberBottomSheet
-                      channel={params.channel}
-                      dismissHandler={dismissHandler}
-                    />
-                  )}
-                  {type === 'confirmation' && (
-                    <ConfirmationBottomSheet
-                      {...params}
-                      cancelText={params.cancelText}
-                      confirmText={params.confirmText}
-                      dismissHandler={dismissHandler}
-                      onConfirm={params.onConfirm}
-                      subtext={params.subtext}
-                      title={params.title}
-                    />
-                  )}
-                </Animated.View>
+                <TapGestureHandler>
+                  <Animated.View
+                    onLayout={({
+                      nativeEvent: {
+                        layout: { height },
+                      },
+                    }) => {
+                      viewHeight.value = height;
+                    }}
+                    style={[
+                      styles.container,
+                      showScreenStyle,
+                      {
+                        backgroundColor: white,
+                      },
+                      containerStyle,
+                    ]}
+                  >
+                    {type === 'addMembers' && (
+                      <AddMemberBottomSheet
+                        channel={params.channel}
+                        dismissHandler={dismissHandler}
+                      />
+                    )}
+                    {type === 'confirmation' && (
+                      <ConfirmationBottomSheet
+                        {...params}
+                        cancelText={params.cancelText}
+                        confirmText={params.confirmText}
+                        dismissHandler={dismissHandler}
+                        onConfirm={params.onConfirm}
+                        subtext={params.subtext}
+                        title={params.title}
+                      />
+                    )}
+                  </Animated.View>
+                </TapGestureHandler>
               </KeyboardCompatibleView>
             </Animated.View>
           </TapGestureHandler>
@@ -246,12 +243,3 @@ export const BottomSheet = (props: BottomSheetProps) => {
     </Animated.View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    borderRadius: 16,
-    flexDirection: 'column',
-    paddingHorizontal: 16,
-    width: '100%',
-  },
-});

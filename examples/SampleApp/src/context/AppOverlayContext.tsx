@@ -111,6 +111,11 @@ export const AppOverlayProvider = ({ children }: PropsWithChildren<any>) => {
         />
       </Animated.View>
       <BottomSheet
+        containerStyle={
+          bottomSheetType === 'addMembers'
+            ? { borderRadius: 16, marginHorizontal: 8 }
+            : undefined
+        }
         dismissHandler={closeBottomSheet}
         overlayOpacity={overlayOpacity}
         params={bottomSheetProps}

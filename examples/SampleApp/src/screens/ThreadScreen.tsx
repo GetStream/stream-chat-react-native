@@ -18,7 +18,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
@@ -59,7 +59,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
         LocalCommandType,
         LocalEventType,
         LocalMessageType,
-        LocalResponseType,
+        LocalReactionType,
         LocalUserType
       >
         channel={channel}
@@ -79,7 +79,7 @@ export const ThreadScreen: React.FC<ThreadScreenProps> = ({
             LocalCommandType,
             LocalEventType,
             LocalMessageType,
-            LocalResponseType,
+            LocalReactionType,
             LocalUserType
           > />
         </View>
