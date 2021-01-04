@@ -36,7 +36,6 @@ export const UnreadCountBadge: React.FC = () => {
     setCount(unreadCount);
     const listener = chatClient?.on((e) => {
       if (e.total_unread_count) {
-        // @ts-expect-error
         setCount(e.total_unread_count);
       }
     });

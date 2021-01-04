@@ -139,6 +139,7 @@
         "@typescript-eslint/explicit-module-boundary-types": 0,
         "@typescript-eslint/no-empty-interface": 0,
         "@typescript-eslint/ban-ts-comment": 0,
+        "@typescript-eslint/no-unused-vars": 1,
         "@typescript-eslint/no-var-requires": 0,
         "better-styled-components/sort-declarations-alphabetically": 1,
         "react-hooks/exhaustive-deps": 0,
