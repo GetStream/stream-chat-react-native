@@ -166,7 +166,6 @@ export type ChannelPropsWithContext<
     | 'EmptyStateIndicator'
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
-    | 'initialScrollToFirstUnreadMessage'
     | 'LoadingIndicator'
     | 'StickyHeader'
   >
@@ -268,6 +267,10 @@ export type ChannelPropsWithContext<
         StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
       >[0],
     ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
+    /**
+     * When true, messageList will be scrolled at first unread message, when opened.
+     */
+    initialScrollToFirstUnreadMessage?: boolean;
     keyboardBehavior?: KeyboardAvoidingViewProps['behavior'];
     /**
      * Custom wrapper component that handles height adjustment of Channel component when keyboard is opened or dismissed
@@ -1206,7 +1209,6 @@ export const ChannelWithContext = <
       !!(channel?.getConfig?.()?.commands || [])?.some(
         (command) => command.name === 'giphy',
       ),
-    initialScrollToFirstUnreadMessage,
     isAdmin,
     isModerator,
     isOwner,
