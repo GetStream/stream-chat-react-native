@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -13,7 +13,6 @@ import Dayjs from 'dayjs';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   DateHeader,
-  MessageType,
   Photo,
   useImageGalleryContext,
   useOverlayContext,
@@ -79,7 +78,7 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     params: { channel },
   },
 }) => {
-  const { setImage, setImages } = useImageGalleryContext<
+  const { images, setImage, setImages } = useImageGalleryContext<
     LocalAttachmentType,
     LocalChannelType,
     LocalCommandType,
@@ -99,6 +98,8 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     },
   } = useTheme();
 
+  const channelImages = useRef(images);
+
   const [stickyHeaderDate, setStickyHeaderDate] = useState(
     Dayjs(messages?.[0]?.created_at).format('MMM YYYY'),
   );
@@ -117,7 +118,13 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
           Dayjs(created_at).format('MMM YYYY') !== stickyHeaderDateRef.current
         ) {
           stickyHeaderDateRef.current = Dayjs(created_at).format('MMM YYYY');
-          setStickyHeaderDate(Dayjs(created_at).format('MMM YYYY'));
+          const isCurrentYear =
+            new Date(created_at).getFullYear() === new Date().getFullYear();
+          setStickyHeaderDate(
+            isCurrentYear
+              ? Dayjs(created_at).format('MMM')
+              : Dayjs(created_at).format('MMM YYYY'),
+          );
         }
       }
     },
@@ -149,6 +156,39 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
     return [...acc, ...attachmentPhotos];
   }, []);
 
+  const messagesWithImages = messages
+    .map((message) => ({ ...message, groupStyles: [], readBy: false }))
+    .filter((message) => {
+      if (!message.deleted_at && message.attachments) {
+        return message.attachments.some(
+          (attachment) =>
+            attachment.type === 'image' &&
+            !attachment.title_link &&
+            !attachment.og_scrape_url &&
+            (attachment.image_url || attachment.thumb_url),
+        );
+      }
+      return false;
+    });
+
+  /**
+   * This is for the useEffect to run again in the case that a message
+   * gets edited with more or the same number of images
+   */
+  const imageString = messagesWithImages
+    .map((message) =>
+      (message.attachments as Attachment<LocalAttachmentType>[])
+        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+        .join(),
+    )
+    .join();
+
+  const numberOfMessagesWithImages = messagesWithImages.length;
+  useEffect(() => {
+    setImages(messagesWithImages);
+    return () => setImages(channelImages.current);
+  }, [imageString, numberOfMessagesWithImages]);
+
   return (
     <SafeAreaView style={[styles.flex, { backgroundColor: white }]}>
       <ScreenHeader inSafeArea titleText='Photos and Videos' />
@@ -165,17 +205,6 @@ export const ChannelImagesScreen: React.FC<ChannelImagesScreenProps> = ({
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => {
-                setImages(
-                  messages as MessageType<
-                    LocalAttachmentType,
-                    LocalChannelType,
-                    LocalCommandType,
-                    LocalEventType,
-                    LocalMessageType,
-                    LocalReactionType,
-                    LocalUserType
-                  >[],
-                );
                 setImage({
                   messageId: item.messageId,
                   url: item.uri,
