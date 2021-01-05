@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 
+import { getDisplayName } from '../utils/getDisplayName';
+
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
-import { getDisplayName } from '../utils/getDisplayName';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
@@ -34,6 +35,7 @@ export type OverlayContextValue = {
     >
   >;
   style?: DeepPartial<Theme>;
+  Wildcard?: React.ComponentType<{ visible: boolean }>;
 };
 
 export const OverlayContext = React.createContext<OverlayContextValue>(
