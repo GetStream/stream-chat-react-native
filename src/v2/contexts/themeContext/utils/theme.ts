@@ -393,6 +393,7 @@ export type Theme = {
       messageUser: TextStyle;
       metaContainer: ViewStyle;
       metaText: TextStyle;
+      replyContainer: ViewStyle;
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
       };
@@ -871,6 +872,7 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
+      replyContainer: {},
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
       },

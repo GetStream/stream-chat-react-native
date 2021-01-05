@@ -38,6 +38,7 @@ import { Attachment } from '../Attachment/Attachment';
 import { FileAttachmentGroup } from '../Attachment/FileAttachmentGroup';
 import { Gallery } from '../Attachment/Gallery';
 import { MessageAvatar } from '../Message/MessageSimple/MessageAvatar';
+import { Reply, ReplyProps } from '../Reply/Reply';
 
 import {
   MessageOverlayContextValue,
@@ -49,7 +50,7 @@ import {
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { vh } from '../../utils/utils';
+import { vh, vw } from '../../utils/utils';
 
 import type { ReactionResponse } from 'stream-chat';
 
@@ -82,6 +83,11 @@ const styles = StyleSheet.create({
   },
   overlayPadding: {
     padding: 8,
+  },
+  replyContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 8,
+    paddingTop: 8,
   },
   row: { flexDirection: 'row' },
   scrollView: { overflow: Platform.OS === 'ios' ? 'visible' : 'scroll' },
@@ -151,6 +157,7 @@ const MessageOverlayWithContext = <
         content: {
           container: { borderRadiusL, borderRadiusS },
           containerInner,
+          replyContainer,
         },
       },
     },
@@ -388,15 +395,16 @@ const MessageOverlayWithContext = <
                           style={[
                             styles.containerInner,
                             {
-                              backgroundColor: onlyEmojis
-                                ? transparent
-                                : otherAttachments?.length
-                                ? otherAttachments[0].type === 'giphy'
+                              backgroundColor:
+                                onlyEmojis && !message.quoted_message
                                   ? transparent
-                                  : blue_alice
-                                : alignment === 'left'
-                                ? white_smoke
-                                : grey_gainsboro,
+                                  : otherAttachments?.length
+                                  ? otherAttachments[0].type === 'giphy'
+                                    ? transparent
+                                    : blue_alice
+                                  : alignment === 'left'
+                                  ? white_smoke
+                                  : grey_gainsboro,
                               borderBottomLeftRadius:
                                 groupStyle === 'left_bottom' ||
                                 groupStyle === 'left_single'
@@ -409,12 +417,35 @@ const MessageOverlayWithContext = <
                                   : borderRadiusL,
                               borderColor: grey_whisper,
                             },
-                            onlyEmojis || otherAttachments?.length
+                            (onlyEmojis && !message.quoted_message) ||
+                            otherAttachments?.length
                               ? { borderWidth: 0 }
                               : {},
                             containerInner,
                           ]}
                         >
+                          {message.quoted_message && (
+                            <View
+                              style={[styles.replyContainer, replyContainer]}
+                            >
+                              <Reply<At, Ch, Co, Ev, Me, Re, Us>
+                                quotedMessage={
+                                  message.quoted_message as ReplyProps<
+                                    At,
+                                    Ch,
+                                    Co,
+                                    Ev,
+                                    Me,
+                                    Re,
+                                    Us
+                                  >['quotedMessage']
+                                }
+                                styles={{
+                                  messageContainer: { maxWidth: vw(60) },
+                                }}
+                              />
+                            </View>
+                          )}
                           {messageContentOrder?.map(
                             (messageContentType, messageContentOrderIndex) => {
                               switch (messageContentType) {

@@ -184,6 +184,7 @@ export const MessageContentWithContext = <
           messageUser,
           metaContainer,
           metaText,
+          replyContainer,
         },
         reactionList: { radius, reactionSize },
       },
@@ -323,7 +324,7 @@ export const MessageContentWithContext = <
           testID='message-content-wrapper'
         >
           {message.quoted_message && (
-            <View style={[styles.replyContainer]}>
+            <View style={[styles.replyContainer, replyContainer]}>
               <Reply styles={{ messageContainer: { maxWidth: vw(60) } }} />
             </View>
           )}
