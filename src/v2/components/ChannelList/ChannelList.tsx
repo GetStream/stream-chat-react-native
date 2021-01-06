@@ -204,6 +204,7 @@ export const ChannelList = <
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold = 2,
     lockChannelOrder = false,
+    maxUnreadCount = 255,
     numberOfSkeletons = 6,
     onAddedToChannel,
     onChannelDeleted,
@@ -306,6 +307,7 @@ export const ChannelList = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
+    maxUnreadCount,
     numberOfSkeletons,
     onSelect,
     Preview,
