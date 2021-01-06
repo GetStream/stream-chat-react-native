@@ -16,7 +16,6 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
-  interpolateColor,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
