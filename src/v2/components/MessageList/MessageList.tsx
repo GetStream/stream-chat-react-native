@@ -299,19 +299,12 @@ const MessageListWithContext = <
 
   const {
     theme: {
-      colors: {
-        accent_blue,
-        bg_gradient_end,
-        grey,
-        targetedMessageBackground,
-        white_snow,
-      },
+      colors: { accent_blue, grey, white_snow },
       messageList: {
         container,
         errorNotification,
         errorNotificationText,
         listContainer,
-        targetedMessageUnderlay,
       },
     },
   } = useTheme();
@@ -445,53 +438,41 @@ const MessageListWithContext = <
     const lastMessage = messageList?.[index + 1];
 
     const showUnreadUnderlay =
-      isUnreadMessage(message, lastRead) && newMessagesNotification;
+      !!isUnreadMessage(message, lastRead) && newMessagesNotification;
     const insertInlineUnreadIndicator =
       showUnreadUnderlay && !isUnreadMessage(lastMessage, lastRead);
 
     if (message.type === 'system') {
       return (
         <>
-          <View style={styles.messagePadding}>
-            <MessageSystem message={message} />
-          </View>
+          <MessageSystem message={message} style={styles.messagePadding} />
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
     }
 
     if (message.type !== 'message.read') {
-      const additionalStyles = [];
-
-      if (showUnreadUnderlay) {
-        additionalStyles.push({ backgroundColor: bg_gradient_end });
-      }
-
-      // Targeted message styling should take priority over unread styles.
-      if (targetedMessage === message.id) {
-        additionalStyles.push({ backgroundColor: targetedMessageBackground });
-        additionalStyles.push(targetedMessageUnderlay);
-      }
-
       return (
         <>
-          <View style={[styles.messagePadding, ...additionalStyles]}>
-            <Message
-              goToMessage={goToMessage}
-              groupStyles={message.groupStyles as GroupType[]}
-              lastReceivedId={
-                lastReceivedId === message.id ? lastReceivedId : undefined
-              }
-              message={message}
-              onThreadSelect={onThreadSelect}
-              threadList={threadList}
-            />
-          </View>
+          <Message
+            goToMessage={goToMessage}
+            groupStyles={message.groupStyles as GroupType[]}
+            lastReceivedId={
+              lastReceivedId === message.id ? lastReceivedId : undefined
+            }
+            message={message}
+            onThreadSelect={onThreadSelect}
+            showUnreadUnderlay={showUnreadUnderlay}
+            style={styles.messagePadding}
+            targetedMessage={targetedMessage === message.id}
+            threadList={threadList}
+          />
           {/* Adding indicator below the messages, since the list is inverted */}
           {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
         </>
       );
     }
+
     return null;
   };
 

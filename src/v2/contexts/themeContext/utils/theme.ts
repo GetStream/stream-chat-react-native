@@ -330,7 +330,6 @@ export type Theme = {
       text: TextStyle;
       textContainer: ViewStyle;
     };
-    targetedMessageUnderlay: ViewStyle;
     typingIndicatorContainer: ViewStyle;
   };
   messageSimple: {
@@ -454,6 +453,7 @@ export type Theme = {
       statusContainer: ViewStyle;
       timeIcon: IconProps;
     };
+    targetedMessageUnderlay: ViewStyle;
   };
   overlay: {
     padding: number;
@@ -779,7 +779,6 @@ export const defaultTheme: Theme = {
       text: {},
       textContainer: {},
     },
-    targetedMessageUnderlay: {},
     typingIndicatorContainer: {},
   },
   messageSimple: {
@@ -942,6 +941,7 @@ export const defaultTheme: Theme = {
         width: DEFAULT_STATUS_ICON_SIZE,
       },
     },
+    targetedMessageUnderlay: {},
   },
   overlay: {
     padding: 8,

@@ -5,6 +5,8 @@ import {
   Image,
   Keyboard,
   Platform,
+  StyleProp,
+  StyleSheet,
   ViewStyle,
 } from 'react-native';
 import {
@@ -13,6 +15,7 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   cancelAnimation,
+  interpolateColor,
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedStyle,
@@ -229,6 +232,9 @@ export type MessagePropsWithContext<
      * @param message A message object to open the thread upon.
      */
     onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+    showUnreadUnderlay?: boolean;
+    style?: StyleProp<ViewStyle>;
+    targetedMessage?: boolean;
   };
 
 /**
@@ -281,17 +287,27 @@ const MessageWithContext = <
     setQuotedMessageState,
     showAvatar,
     showMessageStatus,
+    showUnreadUnderlay,
+    style,
     supportedReactions,
     t,
+    targetedMessage,
     threadList = false,
     updateMessage,
   } = props;
 
   const {
     theme: {
-      colors: { accent_blue, accent_red, grey },
+      colors: {
+        accent_blue,
+        accent_red,
+        bg_gradient_end,
+        grey,
+        targetedMessageBackground,
+      },
       messageSimple: {
         gallery: { halfSize, size },
+        targetedMessageUnderlay,
       },
     },
   } = useTheme();
@@ -308,6 +324,19 @@ const MessageWithContext = <
     }),
     [],
   );
+  const targetedOpacity = useSharedValue(0);
+  const targetedStyle = useAnimatedStyle<ViewStyle>(
+    () => ({
+      opacity: targetedOpacity.value,
+    }),
+    [],
+  );
+
+  useEffect(() => {
+    targetedOpacity.value = withTiming(targetedMessage ? 1 : 0, {
+      duration: 1000,
+    });
+  }, [targetedMessage]);
 
   const actionsEnabled =
     message.type === 'regular' && message.status === 'received';
@@ -745,7 +774,23 @@ const MessageWithContext = <
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
     >
-      <Animated.View style={scaleStyle}>
+      <Animated.View
+        style={[
+          style,
+          {
+            backgroundColor: showUnreadUnderlay ? bg_gradient_end : undefined,
+          },
+          scaleStyle,
+        ]}
+      >
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFillObject,
+            targetedMessageUnderlay,
+            { backgroundColor: targetedMessageBackground },
+            targetedStyle,
+          ]}
+        />
         <MessageProvider value={messageContext}>
           <MessageSimple />
         </MessageProvider>
@@ -770,13 +815,17 @@ const areEqual = <
     channel: prevChannel,
     lastReceivedId: prevLastReceivedId,
     message: prevMessage,
+    showUnreadUnderlay: prevShowUnreadUnderlay,
     t: prevT,
+    targetedMessage: prevTargetedMessage,
   } = prevProps;
   const {
     channel: nextChannel,
     lastReceivedId: nextLastReceivedId,
     message: nextMessage,
+    showUnreadUnderlay: nextShowUnreadUnderlay,
     t: nextT,
+    targetedMessage: nextTargetedMessage,
   } = nextProps;
 
   const repliesEqual = prevMessage.reply_count === nextMessage.reply_count;
@@ -836,8 +885,15 @@ const areEqual = <
     prevChannel.state.mutedUsers.length === nextChannel.state.mutedUsers.length;
   if (!mutedUserSame) return false;
 
+  const showUnreadUnderlayEqual =
+    prevShowUnreadUnderlay === nextShowUnreadUnderlay;
+  if (!showUnreadUnderlayEqual) return false;
+
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
+
+  const targetedMessageEqual = prevTargetedMessage === nextTargetedMessage;
+  if (!targetedMessageEqual) return false;
 
   return true;
 };

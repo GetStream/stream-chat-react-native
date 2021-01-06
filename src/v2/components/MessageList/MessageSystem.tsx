@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import {
@@ -61,6 +61,7 @@ export type MessageSystemProps<
    * @returns string
    */
   formatDate?: (date: TDateTimeParserInput) => string;
+  style?: StyleProp<ViewStyle>;
 };
 
 /**
@@ -79,7 +80,7 @@ export const MessageSystem = <
 >(
   props: MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { formatDate, message } = props;
+  const { formatDate, message, style } = props;
 
   const {
     theme: {
@@ -101,7 +102,7 @@ export const MessageSystem = <
       : parsedDate;
 
   return (
-    <View style={[styles.container, container]} testID='message-system'>
+    <View style={[styles.container, style, container]} testID='message-system'>
       <View style={[styles.line, { backgroundColor: grey_whisper }, line]} />
       <View style={[styles.textContainer, textContainer]}>
         <Text style={[styles.text, { color: grey }, text]}>
