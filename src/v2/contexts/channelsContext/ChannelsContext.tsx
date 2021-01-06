@@ -123,6 +123,10 @@ export type ChannelsContextValue<
     | ((queryType?: string, retryCount?: number) => Promise<void>)
     | undefined;
   /**
+   * Max number to display within notification badge. Default: 255 and it cannot be higher than that for now due to backend limitations
+   */
+  maxUnreadCount: number;
+  /**
    * Number of skeletons that should show when loading. Default: 6
    */
   numberOfSkeletons: number;

@@ -16,6 +16,7 @@ import type { Streami18n } from '../../utils/Streami18n';
 export type BlurType = 'light' | 'dark' | undefined;
 
 export type Overlay =
+  | 'alert'
   | 'channelInfo'
   | 'gallery'
   | 'message'

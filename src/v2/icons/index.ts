@@ -41,6 +41,7 @@ export * from './MailOpen';
 export * from './MD';
 export * from './MenuPointHorizontal';
 export * from './MenuPointVertical';
+export * from './MessageFlag';
 export * from './MessageIcon';
 export * from './Mute';
 export * from './Notification';

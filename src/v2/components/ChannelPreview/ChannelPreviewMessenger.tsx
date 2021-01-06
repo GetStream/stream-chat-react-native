@@ -129,7 +129,10 @@ export type ChannelPreviewMessengerPropsWithContext<
   'setData'
 > &
   Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
-  Pick<ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onSelect'> &
+  Pick<
+    ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'maxUnreadCount' | 'onSelect'
+  > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
     /** Latest message on a channel, formatted for preview */
@@ -175,6 +178,7 @@ const ChannelPreviewMessengerWithContext = <
     client,
     formatLatestMessageDate,
     latestMessagePreview,
+    maxUnreadCount,
     onSelect,
     renderRightActions,
     setData,
@@ -301,7 +305,7 @@ const ChannelPreviewMessengerWithContext = <
             >
               {!!unread && (
                 <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-                  {unread}
+                  {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
                 </Text>
               )}
             </View>
@@ -386,13 +390,21 @@ export const ChannelPreviewMessenger = <
     Re,
     Us
   >();
-  const { onSelect } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { maxUnreadCount, onSelect } = useChannelsContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
 
   return (
     <ChannelPreviewMessengerWithContext
-      {...{ client, onSelect, setData, setOverlay }}
+      {...{ client, maxUnreadCount, onSelect, setData, setOverlay }}
       {...props}
     />
   );
