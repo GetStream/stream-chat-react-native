@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  Alert,
   Clipboard,
   GestureResponderEvent,
   Image,
@@ -65,14 +66,17 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import { Copy } from '../../icons/Copy';
-import { CurveLineLeftUp } from '../../icons/CurveLineLeftUp';
-import { Delete } from '../../icons/Delete';
-import { Edit } from '../../icons/Edit';
-import { Mute } from '../../icons/Mute';
-import { SendUp } from '../../icons/SendUp';
-import { ThreadReply } from '../../icons/ThreadReply';
-import { UserDelete } from '../../icons/UserDelete';
+import {
+  Copy,
+  CurveLineLeftUp,
+  Delete,
+  Edit,
+  MessageFlag,
+  Mute,
+  SendUp,
+  ThreadReply,
+  UserDelete,
+} from '../../icons';
 import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
 
@@ -528,11 +532,26 @@ const MessageWithContext = <
     };
 
     const deleteMessage = {
-      action: async () => {
-        setOverlay('none');
+      action: () => {
+        setOverlay('alert');
         if (message.id) {
-          const data = await client.deleteMessage(message.id);
-          updateMessage(data.message);
+          Alert.alert(
+            t('Delete Message'),
+            t('Are you sure you want to permanently delete this message?'),
+            [
+              { onPress: () => setOverlay('none'), text: t('Cancel') },
+              {
+                onPress: async () => {
+                  setOverlay('none');
+                  const data = await client.deleteMessage(message.id);
+                  updateMessage(data.message);
+                },
+                style: 'destructive',
+                text: t('Delete'),
+              },
+            ],
+            { cancelable: false },
+          );
         }
       },
       icon: <Delete pathFill={accent_red} />,
@@ -547,6 +566,55 @@ const MessageWithContext = <
       },
       icon: <Edit pathFill={grey} />,
       title: t('Edit Message'),
+    };
+
+    const flagMessage = {
+      action: () => {
+        setOverlay('alert');
+        if (message.id) {
+          Alert.alert(
+            t('Flag Message'),
+            t(
+              'Do you want to send a copy of this message to a moderator for further investigation?',
+            ),
+            [
+              { onPress: () => setOverlay('none'), text: t('Cancel') },
+              {
+                onPress: async () => {
+                  try {
+                    await client.flagMessage(message.id);
+                    Alert.alert(
+                      t('Message flagged'),
+                      t('The message has been reported to a moderator.'),
+                      [
+                        {
+                          onPress: () => setOverlay('none'),
+                          text: t('Dismiss'),
+                        },
+                      ],
+                    );
+                  } catch (err) {
+                    Alert.alert(
+                      t('Something went wrong'),
+                      t("The operation couldn't be completed."),
+                      [
+                        {
+                          onPress: () => setOverlay('none'),
+                          text: t('Dismiss'),
+                        },
+                      ],
+                    );
+                  }
+                },
+                text: t('Flag'),
+              },
+            ],
+            { cancelable: false },
+          );
+        }
+      },
+      icon: <MessageFlag pathFill={grey} />,
+      title: t('Flag Message'),
     };
 
     const handleReaction = !error
@@ -578,8 +646,9 @@ const MessageWithContext = <
         }
       : undefined;
 
-    const isMuted = (channel?.state.mutedUsers || []).some(
-      (user) => user.id === message.user?.id,
+    const isMuted = (client.mutedUsers || []).some(
+      (mute) =>
+        mute.user.id === client.userID && mute.target.id === message.user?.id,
     );
     const muteUser = {
       action: async () => {
@@ -605,6 +674,18 @@ const MessageWithContext = <
       title: t('Reply'),
     };
 
+    const resend = {
+      action: async () => {
+        setOverlay('none');
+        await retrySendMessage({
+          ...message,
+          updated_at: undefined,
+        } as MessageResponse<At, Ch, Co, Me, Re, Us>);
+      },
+      icon: <SendUp pathFill={accent_blue} />,
+      title: t('Resend'),
+    };
+
     const threadReply = {
       action: () => {
         setOverlay('none');
@@ -625,37 +706,38 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: error
-        ? messageActionsProp || [
-            {
-              action: async () => {
-                setOverlay('none');
-                await retrySendMessage({
-                  ...message,
-                  updated_at: undefined,
-                } as MessageResponse<At, Ch, Co, Me, Re, Us>);
-              },
-              icon: <SendUp pathFill={accent_blue} />,
-              title: t('Resend'),
-            },
-            editMessage,
-            deleteMessage,
-          ]
+        ? messageActionsProp || [resend, editMessage, deleteMessage]
         : messageReactions
         ? undefined
         : messageActionsProp || canModifyMessage
         ? isThreadMessage
           ? message.text
-            ? [editMessage, copyMessage, deleteMessage]
-            : [editMessage, deleteMessage]
+            ? [editMessage, copyMessage, flagMessage, deleteMessage]
+            : [editMessage, flagMessage, deleteMessage]
           : message.text
-          ? [reply, threadReply, editMessage, copyMessage, deleteMessage]
-          : [reply, threadReply, editMessage, deleteMessage]
+          ? [
+              reply,
+              threadReply,
+              editMessage,
+              copyMessage,
+              flagMessage,
+              deleteMessage,
+            ]
+          : [reply, threadReply, editMessage, flagMessage, deleteMessage]
         : isThreadMessage
         ? message.text
-          ? [copyMessage, muteUser, blockUser, deleteMessage]
-          : [muteUser, blockUser, deleteMessage]
+          ? [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
+          : [muteUser, blockUser, flagMessage, deleteMessage]
         : message.text
-        ? [reply, threadReply, copyMessage, muteUser, blockUser, deleteMessage]
+        ? [
+            reply,
+            threadReply,
+            copyMessage,
+            muteUser,
+            flagMessage,
+            blockUser,
+            deleteMessage,
+          ]
         : [reply, threadReply, muteUser, blockUser, deleteMessage],
       messageContentOrder,
       messageReactionTitle:
