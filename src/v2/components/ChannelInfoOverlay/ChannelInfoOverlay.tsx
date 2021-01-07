@@ -178,7 +178,6 @@ const ChannelInfoOverlayWithContext = <
   } = useTheme();
 
   const offsetY = useSharedValue(0);
-  const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
   const viewHeight = useSharedValue(0);
 
@@ -188,7 +187,6 @@ const ChannelInfoOverlayWithContext = <
     if (show) {
       offsetY.value = 0;
       translateY.value = 0;
-      scale.value = 1;
     }
     showScreen.value = show
       ? withSpring(1, {
@@ -229,12 +227,6 @@ const ChannelInfoOverlayWithContext = <
         [1, 0.75],
         Extrapolate.CLAMP,
       );
-      scale.value = interpolate(
-        translateY.value,
-        [0, halfScreenHeight],
-        [1, 0.85],
-        Extrapolate.CLAMP,
-      );
     },
     onFinish: (evt) => {
       const finalYPosition = evt.translationY + evt.velocityY * 0.1;
@@ -262,7 +254,6 @@ const ChannelInfoOverlayWithContext = <
               });
       } else {
         translateY.value = withTiming(0);
-        scale.value = withTiming(1);
         overlayOpacity.value = withTiming(1);
       }
     },
@@ -275,10 +266,7 @@ const ChannelInfoOverlayWithContext = <
   const panStyle = useAnimatedStyle<ViewStyle>(() => ({
     transform: [
       {
-        translateY: translateY.value,
-      },
-      {
-        scale: scale.value,
+        translateY: translateY.value > 0 ? translateY.value : 0,
       },
     ],
   }));
@@ -291,9 +279,6 @@ const ChannelInfoOverlayWithContext = <
           [0, 1],
           [viewHeight.value / 2, 0],
         ),
-      },
-      {
-        scale: showScreen.value,
       },
     ],
   }));

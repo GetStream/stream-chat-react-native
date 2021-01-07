@@ -231,6 +231,8 @@ const ChannelPreviewMessengerWithContext = <
 
   return (
     <Swipeable
+      overshootLeft={false}
+      overshootRight={false}
       renderRightActions={(progress, drag) =>
         renderRightActions ? (
           renderRightActions(progress, drag)
