@@ -12,7 +12,8 @@ import {
 import { useTheme } from 'stream-chat-react-native/v2';
 
 import { AppContext } from '../context/AppContext';
-import { AppOverlayContext } from '../context/AppOverlayContext';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { Contacts } from '../icons/Contacts';
 import { Delete } from '../icons/Delete';
 import { File } from '../icons/File';
@@ -153,7 +154,8 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
     },
   } = useTheme();
   const { chatClient } = useContext(AppContext);
-  const { openBottomSheet } = useContext(AppOverlayContext);
+  const { setOverlay } = useAppOverlayContext();
+  const { setData } = useBottomSheetOverlayContext();
 
   const member = Object.values(channel.state.members).find(
     (m) => m.user?.id !== chatClient?.user?.id,
@@ -175,15 +177,13 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
    */
   const openDeleteConversationConfirmationSheet = () => {
     if (!chatClient?.user?.id) return;
-    openBottomSheet({
-      params: {
-        confirmText: 'DELETE',
-        onConfirm: deleteConversation,
-        subtext: 'Are you sure you want to delete this conversation?',
-        title: 'Delete Conversation',
-      },
-      type: 'confirmation',
+    setData({
+      confirmText: 'DELETE',
+      onConfirm: deleteConversation,
+      subtext: 'Are you sure you want to delete this conversation?',
+      title: 'Delete Conversation',
     });
+    setOverlay('confirmation');
   };
 
   /**
@@ -191,6 +191,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
    */
   const deleteConversation = async () => {
     await channel.delete();
+    setOverlay('none');
     navigation.reset({
       index: 0,
       routes: [

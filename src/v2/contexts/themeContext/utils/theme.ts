@@ -103,26 +103,6 @@ export type Theme = {
   channel: {
     selectChannel: TextStyle;
   };
-  channelInfoOverlay: {
-    avatarPresenceIndicator: CircleProps;
-    avatarPresenceIndicatorStyle: ViewStyle;
-    avatarSize: number;
-    channelName: TextStyle;
-    channelStatus: TextStyle;
-    container: ViewStyle;
-    containerInner: ViewStyle;
-    deleteRow: ViewStyle;
-    deleteText: TextStyle;
-    detailsContainer: ViewStyle;
-    flatList: ViewStyle;
-    flatListContent: ViewStyle;
-    leaveGroupRow: ViewStyle;
-    leaveGroupText: TextStyle;
-    row: ViewStyle;
-    rowInner: ViewStyle;
-    userItemContainer: ViewStyle;
-    userName: TextStyle;
-  };
   channelListFooterLoadingIndicator: {
     container: ViewStyle;
   };
@@ -148,13 +128,10 @@ export type Theme = {
     container: ViewStyle;
     contentContainer: ViewStyle;
     date: TextStyle;
-    leftSwipeableButton: ViewStyle;
     message: TextStyle & {
       fontWeight: TextStyle['fontWeight'];
     };
-    rightSwipeableButton: ViewStyle;
     row: ViewStyle;
-    swipeableContainer: ViewStyle;
     title: TextStyle;
     unreadContainer: ViewStyle;
     unreadText: TextStyle;
@@ -534,31 +511,6 @@ export const defaultTheme: Theme = {
   channel: {
     selectChannel: {},
   },
-  channelInfoOverlay: {
-    avatarPresenceIndicator: { cx: 6, cy: 6, r: 6 },
-    avatarPresenceIndicatorStyle: {
-      right: 4,
-      top: 1,
-    },
-    avatarSize: 64,
-    channelName: {},
-    channelStatus: {},
-    container: {},
-    containerInner: {},
-    deleteRow: {
-      borderBottomWidth: 1,
-    },
-    deleteText: {},
-    detailsContainer: {},
-    flatList: {},
-    flatListContent: {},
-    leaveGroupRow: {},
-    leaveGroupText: {},
-    row: {},
-    rowInner: {},
-    userItemContainer: {},
-    userName: {},
-  },
   channelListFooterLoadingIndicator: {
     container: {},
   },
@@ -594,13 +546,10 @@ export const defaultTheme: Theme = {
     container: {},
     contentContainer: {},
     date: {},
-    leftSwipeableButton: {},
     message: {
       fontWeight: '400',
     },
-    rightSwipeableButton: {},
     row: {},
-    swipeableContainer: {},
     title: {},
     unreadContainer: {},
     unreadText: {},

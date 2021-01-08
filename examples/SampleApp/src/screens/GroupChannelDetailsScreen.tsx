@@ -20,7 +20,8 @@ import {
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
-import { AppOverlayContext } from '../context/AppOverlayContext';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import { AddUser } from '../icons/AddUser';
 import { Check } from '../icons/Check';
@@ -160,7 +161,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const { openBottomSheet } = useContext(AppOverlayContext);
+  const { setOverlay: setAppOverlay } = useAppOverlayContext();
+  const { setData } = useBottomSheetOverlayContext();
   const navigation = useNavigation();
   const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
   const {
@@ -209,14 +211,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const openLeaveGroupConfirmationSheet = () => {
     if (chatClient?.user?.id) {
-      openBottomSheet({
-        params: {
-          onConfirm: leaveGroup,
-          subtext: 'Are you sure you want to leave this group?',
-          title: 'Leave Group',
-        },
-        type: 'confirmation',
+      setData({
+        confirmText: 'LEAVE',
+        onConfirm: leaveGroup,
+        subtext: `Are you sure you want to leave the group ${groupName}?`,
+        title: 'Leave group',
       });
+      setAppOverlay('confirmation');
     }
   };
 
@@ -225,12 +226,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const openAddMembersSheet = () => {
     if (chatClient?.user?.id) {
-      openBottomSheet({
-        params: {
-          channel,
-        },
-        type: 'addMembers',
+      setData({
+        channel,
       });
+      setAppOverlay('addMembers');
     }
   };
 
@@ -243,6 +242,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     }
 
     setBlurType(undefined);
+    setAppOverlay('none');
     setOverlay('none');
     setWildcard(undefined);
 

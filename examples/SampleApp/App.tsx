@@ -18,7 +18,7 @@ import {
 } from 'stream-chat-react-native/v2';
 
 import { AppContext } from './src/context/AppContext';
-import { AppOverlayProvider } from './src/context/AppOverlayContext';
+import { AppOverlayProvider } from './src/context/AppOverlayProvider';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
@@ -45,7 +45,7 @@ import type {
   LocalCommandType,
   LocalEventType,
   LocalMessageType,
-  LocalResponseType,
+  LocalReactionType,
   LocalUserType,
   StackNavigatorParamList,
   UserSelectorParamList,
@@ -106,7 +106,7 @@ const DrawerNavigator: React.FC<{
     LocalCommandType,
     LocalEventType,
     LocalMessageType,
-    LocalResponseType,
+    LocalReactionType,
     LocalUserType
   >;
 }> = ({ chatClient }) => {
@@ -120,7 +120,7 @@ const DrawerNavigator: React.FC<{
       LocalCommandType,
       LocalEventType,
       LocalMessageType,
-      LocalResponseType,
+      LocalReactionType,
       LocalUserType
     >
       bottomInset={bottom}
@@ -132,7 +132,7 @@ const DrawerNavigator: React.FC<{
         LocalCommandType,
         LocalEventType,
         LocalMessageType,
-        LocalResponseType,
+        LocalReactionType,
         LocalUserType
       >
         client={chatClient}

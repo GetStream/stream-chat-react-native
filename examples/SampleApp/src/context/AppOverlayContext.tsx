@@ -1,129 +1,24 @@
-import React, { PropsWithChildren, useState } from 'react';
-import { BlurView } from '@react-native-community/blur';
-import { StyleSheet, useWindowDimensions, ViewStyle } from 'react-native';
-import Animated, {
-  cancelAnimation,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-
-import { BottomSheet } from '../components/BottomSheet';
-
-import type { Channel } from 'stream-chat';
-
-import {
-  LocalAttachmentType,
-  LocalChannelType,
-  LocalCommandType,
-  LocalEventType,
-  LocalMessageType,
-  LocalReactionType,
-  LocalUserType,
-} from '../types';
+import React, { useContext } from 'react';
 
 export type BlurType = 'light' | 'dark' | undefined;
-type BottomSheetType = 'confirmation' | 'addMembers';
-type BottomSheetConfig =
-  | undefined
-  | {
-      params:
-        | {
-            onConfirm: () => void;
-            title: string;
-            cancelText?: string;
-            confirmText?: string;
-            dismissHandler?: () => void;
-            subtext?: string;
-          }
-        | {
-            channel: Channel<
-              LocalAttachmentType,
-              LocalChannelType,
-              LocalCommandType,
-              LocalEventType,
-              LocalMessageType,
-              LocalReactionType,
-              LocalUserType
-            >;
-          };
-      type: 'confirmation' | 'addMembers';
-    };
+
+export type Overlay =
+  | 'addMembers'
+  | 'alert'
+  | 'channelInfo'
+  | 'confirmation'
+  | 'none';
 
 export type AppOverlayContextValue = {
-  closeBottomSheet: () => void;
-  openBottomSheet: (config: BottomSheetConfig) => void;
+  overlay: Overlay;
+  setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
 };
-export const AppOverlayContext = React.createContext<AppOverlayContextValue>({
-  closeBottomSheet: () => null,
-  openBottomSheet: () => null,
-});
+export const AppOverlayContext = React.createContext<AppOverlayContextValue>(
+  {} as AppOverlayContextValue,
+);
 
-export const AppOverlayProvider = ({ children }: PropsWithChildren<any>) => {
-  const [bottomSheetProps, setBottomSheetProps] = useState({});
-  const [bottomSheetType, setBottomSheetType] = useState<
-    BottomSheetType | undefined
-  >(undefined);
-  const [blurType, setBlurType] = useState<BlurType>();
-  const { height, width } = useWindowDimensions();
-  const overlayOpacity = useSharedValue(0);
-
-  const openBottomSheet = (config?: BottomSheetConfig) => {
-    if (!config) return null;
-
-    setBottomSheetType(config.type);
-    setBottomSheetProps({ ...config.params });
-    setBlurType('dark');
-    overlayOpacity.value = withTiming(1);
-  };
-
-  const closeBottomSheet = () => {
-    cancelAnimation(overlayOpacity);
-    overlayOpacity.value = withTiming(0);
-
-    setBlurType(undefined);
-    setBottomSheetProps({});
-    setBottomSheetType(undefined);
-  };
-
-  const overlayStyle = useAnimatedStyle<ViewStyle>(
-    () => ({
-      opacity: overlayOpacity.value,
-    }),
-    [],
-  );
-
-  return (
-    <AppOverlayContext.Provider
-      value={{
-        closeBottomSheet,
-        openBottomSheet,
-      }}
-    >
-      {children}
-      <Animated.View
-        pointerEvents={!bottomSheetType ? 'none' : 'auto'}
-        style={[StyleSheet.absoluteFill, overlayStyle]}
-      >
-        <BlurView
-          blurType={blurType}
-          style={[StyleSheet.absoluteFill, { height, width }]}
-        />
-      </Animated.View>
-      <BottomSheet
-        containerStyle={
-          bottomSheetType === 'addMembers'
-            ? { borderRadius: 16, marginHorizontal: 8 }
-            : undefined
-        }
-        dismissHandler={closeBottomSheet}
-        overlayOpacity={overlayOpacity}
-        params={bottomSheetProps}
-        type={bottomSheetType}
-        visible={
-          bottomSheetType === 'addMembers' || bottomSheetType === 'confirmation'
-        }
-      />
-    </AppOverlayContext.Provider>
-  );
+export type AppOverlayProviderProps = {
+  value?: Partial<AppOverlayContextValue>;
 };
+
+export const useAppOverlayContext = () => useContext(AppOverlayContext);

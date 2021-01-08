@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Keyboard, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Keyboard, StyleSheet, ViewStyle } from 'react-native';
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -28,7 +28,11 @@ import {
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';
 
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
+
 const styles = StyleSheet.create({
+  addMembers: { borderRadius: 16, marginHorizontal: 8 },
   animatedContainer: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -40,27 +44,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export type BottomSheetProps = {
-  dismissHandler: () => void;
+export type BottomSheetOverlayProps = {
   overlayOpacity: Animated.SharedValue<number>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  params: Record<string, any>;
   visible: boolean;
-  containerStyle?: StyleProp<ViewStyle>;
-  type?: string;
 };
 
 const screenHeight = vh(100);
 
-export const BottomSheet = (props: BottomSheetProps) => {
-  const {
-    containerStyle,
-    dismissHandler,
-    overlayOpacity,
-    params,
-    type,
-    visible,
-  } = props;
+export const BottomSheetOverlay = (props: BottomSheetOverlayProps) => {
+  const { overlayOpacity, visible } = props;
+
+  const { overlay, setOverlay } = useAppOverlayContext();
+
+  const { reset } = useBottomSheetOverlayContext();
 
   const {
     theme: {
@@ -96,7 +92,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
           },
           () => {
             if (!show) {
-              runOnJS(dismissHandler)();
+              runOnJS(reset)();
             }
           },
         );
@@ -131,7 +127,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
             easing: Easing.out(Easing.ease),
           },
           () => {
-            runOnJS(dismissHandler)();
+            runOnJS(setOverlay)('none');
           },
         );
         translateY.value =
@@ -192,7 +188,7 @@ export const BottomSheet = (props: BottomSheetProps) => {
             maxDist={32}
             onHandlerStateChange={({ nativeEvent: { state } }) => {
               if (state === State.END) {
-                dismissHandler();
+                setOverlay('none');
               }
             }}
           >
@@ -213,26 +209,11 @@ export const BottomSheet = (props: BottomSheetProps) => {
                       {
                         backgroundColor: white,
                       },
-                      containerStyle,
+                      overlay === 'addMembers' ? styles.addMembers : undefined,
                     ]}
                   >
-                    {type === 'addMembers' && (
-                      <AddMemberBottomSheet
-                        channel={params.channel}
-                        dismissHandler={dismissHandler}
-                      />
-                    )}
-                    {type === 'confirmation' && (
-                      <ConfirmationBottomSheet
-                        {...params}
-                        cancelText={params.cancelText}
-                        confirmText={params.confirmText}
-                        dismissHandler={dismissHandler}
-                        onConfirm={params.onConfirm}
-                        subtext={params.subtext}
-                        title={params.title}
-                      />
-                    )}
+                    {overlay === 'addMembers' && <AddMemberBottomSheet />}
+                    {overlay === 'confirmation' && <ConfirmationBottomSheet />}
                   </Animated.View>
                 </TapGestureHandler>
               </KeyboardCompatibleView>
