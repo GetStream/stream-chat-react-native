@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Image,
   ImageStyle,
+  PixelRatio,
   StyleProp,
   StyleSheet,
   View,
@@ -13,6 +14,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
+const streamCDN = 'stream-io-cdn.com';
 
 const styles = StyleSheet.create({
   container: {
@@ -105,10 +107,15 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
               !imageProp ||
               imageProp.includes(randomImageBaseUrl) ||
               imageProp.includes(randomSvgBaseUrl)
-                ? `${randomImageBaseUrl}${
-                    name ? `?name=${getInitials(name)}&size=${size}` : ''
-                  }`
-                : imageProp,
+                ? imageProp?.includes(streamCDN)
+                  ? imageProp
+                  : `${randomImageBaseUrl}${
+                      name ? `?name=${getInitials(name)}&size=${size}` : ''
+                    }`
+                : imageProp.replace(
+                    'h=%2A',
+                    `h=${PixelRatio.getPixelSizeForLayoutSize(size)}`,
+                  ),
           }}
           style={[
             image,

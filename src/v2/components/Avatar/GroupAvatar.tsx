@@ -1,10 +1,18 @@
 import React, { useState } from 'react';
-import { Image, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import {
+  Image,
+  PixelRatio,
+  StyleProp,
+  StyleSheet,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 const randomImageBaseUrl = 'https://getstream.io/random_png/';
 const randomSvgBaseUrl = 'https://getstream.io/random_svg/';
+const streamCDN = 'stream-io-cdn.com';
 
 const styles = StyleSheet.create({
   container: {
@@ -62,7 +70,7 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
   const avatarImages = imagesOrNames
     .slice(0, 4)
     .reduce((returnArray, currentImage, index) => {
-      const url = currentImage.includes('http')
+      const url = currentImage.startsWith('http')
         ? currentImage
         : `${randomImageBaseUrl}${
             names
@@ -71,10 +79,19 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
                 }`
               : ''
           }`;
-      Image.prefetch(url).catch(() => {
-        // do nothing, not a big deal that prefetch failed
-      });
       if (imagesOrNames.length <= 2) {
+        Image.prefetch(
+          imageError
+            ? url
+            : url.replace(
+                'h=%2A',
+                `h=${PixelRatio.getPixelSizeForLayoutSize(
+                  imagesOrNames.length <= 2 ? size : size / 2,
+                )}`,
+              ),
+        ).catch(() => {
+          // do nothing, not a big deal that prefetch failed
+        });
         returnArray[0] = [
           ...(returnArray[0] || []),
           {
@@ -85,6 +102,16 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
           },
         ];
       } else {
+        Image.prefetch(
+          imageError
+            ? url
+            : url.replace(
+                'h=%2A',
+                `h=${PixelRatio.getPixelSizeForLayoutSize(size / 2)}`,
+              ),
+        ).catch(() => {
+          // do nothing, not a big deal that prefetch failed
+        });
         if (index < 2) {
           returnArray[0] = [
             ...(returnArray[0] || []),
@@ -138,10 +165,17 @@ export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
               source={{
                 uri:
                   imageError || url.includes(randomSvgBaseUrl)
-                    ? `${randomImageBaseUrl}${
-                        name ? `?name=${getInitials(name)}&size=${height}` : ''
-                      }`
-                    : url,
+                    ? url.includes(streamCDN)
+                      ? url
+                      : `${randomImageBaseUrl}${
+                          name
+                            ? `?name=${getInitials(name)}&size=${height}`
+                            : ''
+                        }`
+                    : url.replace(
+                        'h=%2A',
+                        `h=${PixelRatio.getPixelSizeForLayoutSize(height)}`,
+                      ),
               }}
               style={[
                 image,
