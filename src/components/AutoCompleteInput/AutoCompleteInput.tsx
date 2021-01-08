@@ -98,7 +98,7 @@ export const AutoCompleteInput = <
 
   useEffect(() => {
     handleChange(value, true);
-  }, [handleChange, value]);
+  }, [value]);
 
   const startTracking = (trigger: Trigger) => {
     isTrackingStarted.current = true;
