@@ -1,14 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { Delete, UserMinus, useTheme } from 'stream-chat-react-native/v2';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import {
   isAddMemberBottomSheetData,
   useBottomSheetOverlayContext,
 } from '../context/BottomSheetOverlayContext';
-import { Delete } from '../icons/Delete';
 
 const styles = StyleSheet.create({
   actionButtonLeft: {
@@ -79,7 +78,11 @@ export const ConfirmationBottomSheet: React.FC = () => {
       ]}
     >
       <View style={styles.description}>
-        <Delete fill={accent_red} height={24} width={24} />
+        {confirmText === 'LEAVE' ? (
+          <UserMinus pathFill={grey} />
+        ) : (
+          <Delete pathFill={accent_red} />
+        )}
         <Text style={[styles.title, { color: black }]}>{title}</Text>
         <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
       </View>

@@ -21,8 +21,10 @@ import {
 
 import { BottomSheetOverlay } from '../components/BottomSheetOverlay';
 import { ChannelInfoOverlay } from '../components/ChannelInfoOverlay';
+import { UserInfoOverlay } from '../components/UserInfoOverlay';
 import { BottomSheetOverlayProvider } from '../context/BottomSheetOverlayContext';
 import { ChannelInfoOverlayProvider } from '../context/ChannelInfoOverlayContext';
+import { UserInfoOverlayProvider } from '../context/UserInfoOverlayContext';
 
 export const AppOverlayProvider: React.FC<{
   value?: Partial<AppOverlayContextValue>;
@@ -79,24 +81,30 @@ export const AppOverlayProvider: React.FC<{
     <AppOverlayContext.Provider value={overlayContext}>
       <BottomSheetOverlayProvider>
         <ChannelInfoOverlayProvider>
-          {children}
-          <Animated.View
-            pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-            style={[StyleSheet.absoluteFill, overlayStyle]}
-          >
-            <BlurView
-              blurType={blurType}
-              style={[StyleSheet.absoluteFill, { height, width }]}
+          <UserInfoOverlayProvider>
+            {children}
+            <Animated.View
+              pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+              style={[StyleSheet.absoluteFill, overlayStyle]}
+            >
+              <BlurView
+                blurType={blurType}
+                style={[StyleSheet.absoluteFill, { height, width }]}
+              />
+            </Animated.View>
+            <UserInfoOverlay
+              overlayOpacity={overlayOpacity}
+              visible={overlay === 'userInfo'}
             />
-          </Animated.View>
-          <ChannelInfoOverlay
-            overlayOpacity={overlayOpacity}
-            visible={overlay === 'channelInfo'}
-          />
-          <BottomSheetOverlay
-            overlayOpacity={overlayOpacity}
-            visible={overlay === 'addMembers' || overlay === 'confirmation'}
-          />
+            <ChannelInfoOverlay
+              overlayOpacity={overlayOpacity}
+              visible={overlay === 'channelInfo'}
+            />
+            <BottomSheetOverlay
+              overlayOpacity={overlayOpacity}
+              visible={overlay === 'addMembers' || overlay === 'confirmation'}
+            />
+          </UserInfoOverlayProvider>
         </ChannelInfoOverlayProvider>
       </BottomSheetOverlayProvider>
     </AppOverlayContext.Provider>

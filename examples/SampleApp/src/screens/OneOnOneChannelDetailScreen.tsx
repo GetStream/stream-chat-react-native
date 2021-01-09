@@ -158,18 +158,21 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
   const { setData } = useBottomSheetOverlayContext();
 
   const member = Object.values(channel.state.members).find(
-    (m) => m.user?.id !== chatClient?.user?.id,
+    (channelMember) => channelMember.user?.id !== chatClient?.user?.id,
   );
 
   const user = member?.user;
   const [muted, setMuted] = useState(
     chatClient?.mutedUsers &&
-      chatClient?.mutedUsers?.findIndex((m) => m.target.id === user?.id) > -1,
+      chatClient?.mutedUsers?.findIndex(
+        (mutedUser) => mutedUser.target.id === user?.id,
+      ) > -1,
   );
   const [notificationsEnabled, setNotificationsEnabled] = useState(
     chatClient?.mutedChannels &&
-      chatClient.mutedChannels.findIndex((m) => m.channel?.id === channel.id) >
-        -1,
+      chatClient.mutedChannels.findIndex(
+        (mutedChannel) => mutedChannel.channel?.id === channel.id,
+      ) > -1,
   );
 
   /**

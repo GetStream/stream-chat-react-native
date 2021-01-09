@@ -7,7 +7,8 @@ export type Overlay =
   | 'alert'
   | 'channelInfo'
   | 'confirmation'
-  | 'none';
+  | 'none'
+  | 'userInfo';
 
 export type AppOverlayContextValue = {
   overlay: Overlay;
