@@ -1,5 +1,15 @@
 # Changelog
 
+
+## [2.1.2] 2020-12-09
+
+- Fixed infinite re-rendering issue on mentions suggestion box [5fd521a](https://github.com/GetStream/stream-chat-react-native/commit/5fd521a075170004fe551dd3ffbac111256274fe)
+
+## [2.1.1] 2020-12-21
+
+- Fixed broken mentions autocomplete feature for channels with more than 100 members. #457
+- Added a new prop autocompleteSuggestionsLimit on MessageInput - Max number of suggestions to display in list. Defaults to 10.
+
 ## [2.1.0] 2020-12-07
 
 ### Dependency changes
