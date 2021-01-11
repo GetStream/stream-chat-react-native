@@ -73,7 +73,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
 }) => {
   const {
     theme: {
-      colors: { accent_red, black, grey, grey_whisper },
+      colors: { accent_red, black, grey, white_smoke },
     },
   } = useTheme();
   return (
@@ -81,7 +81,7 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
       style={[
         styles.labelTextContainer,
         {
-          backgroundColor: grey_whisper,
+          backgroundColor: white_smoke,
           paddingVertical: !!value || !!error ? 16 : 8,
         },
       ]}
