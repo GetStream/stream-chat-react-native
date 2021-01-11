@@ -26,8 +26,12 @@ const styles = StyleSheet.create({
   },
   inputBox: {
     flex: 1,
-    marginLeft: 16,
-    padding: 0,
+    fontSize: 14,
+    includeFontPadding: false, // for android vertical text centering
+    padding: 0, // removal of default text input padding on android
+    paddingHorizontal: 16,
+    paddingTop: 0, // removal of iOS top padding for weird centering
+    textAlignVertical: 'center', // for android vertical text centering
   },
   inputBoxContainer: {
     alignItems: 'center',
@@ -148,7 +152,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
           renderItem={({ item: user }) => (
             <UserGridItem
               onPress={() => {
-                toggleUser?.(user);
+                toggleUser(user);
               }}
               user={user}
             />

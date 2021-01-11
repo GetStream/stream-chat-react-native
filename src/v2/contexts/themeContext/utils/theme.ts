@@ -501,7 +501,7 @@ export const defaultTheme: Theme = {
       width: 32,
     },
     presenceIndicator: {
-      cx: 8,
+      cx: 6,
       cy: 4,
       r: 4,
       strokeWidth: 2,

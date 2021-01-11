@@ -229,7 +229,7 @@ const ChannelPreviewMessengerWithContext = <
               preview.text ? (
                 <Text
                   key={`${preview.text}_${index}`}
-                  style={[{ color: black }, preview.bold ? styles.bold : {}]}
+                  style={[{ color: grey }, preview.bold ? styles.bold : {}]}
                 >
                   {preview.text}
                 </Text>
@@ -240,7 +240,7 @@ const ChannelPreviewMessengerWithContext = <
             {status === 2 ? (
               <CheckAll pathFill={accent_blue} {...checkAllIcon} />
             ) : status === 1 ? (
-              <Check {...checkIcon} />
+              <Check pathFill={grey} {...checkIcon} />
             ) : null}
             <Text style={[styles.date, { color: grey }, date]}>
               {formatLatestMessageDate && latestMessageDate
