@@ -1,10 +1,14 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
@@ -26,11 +30,31 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     flexDirection: 'row',
-    padding: 5,
+    marginTop: 8,
+  },
+  curveContainer: {
+    flexDirection: 'row',
+  },
+  leftMessageRepliesCurve: {
+    borderBottomLeftRadius: 16,
+    borderRightColor: 'transparent',
+  },
+  messageRepliesCurve: {
+    borderTopColor: 'transparent',
+    borderTopWidth: 0,
+    borderWidth: 1,
+    height: 16,
+    width: 16,
   },
   messageRepliesText: {
     fontSize: 12,
     fontWeight: '700',
+    paddingBottom: 5,
+    paddingLeft: 8,
+  },
+  rightMessageRepliesCurve: {
+    borderBottomRightRadius: 16,
+    borderLeftColor: 'transparent',
   },
 });
 
@@ -44,8 +68,12 @@ export type MessageRepliesPropsWithContext<
   Us extends UnknownType = DefaultUserType
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'message' | 'onOpenThread' | 'threadList'
+  'alignment' | 'message' | 'onOpenThread' | 'threadList'
 > &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'MessageRepliesAvatars'
+  > &
   Pick<TranslationContextValue, 't'>;
 
 const MessageRepliesWithContext = <
@@ -59,39 +87,75 @@ const MessageRepliesWithContext = <
 >(
   props: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, onOpenThread, t, threadList } = props;
+  const {
+    alignment,
+    message,
+    MessageRepliesAvatars,
+    onOpenThread,
+    t,
+    threadList,
+  } = props;
 
   const {
     theme: {
-      colors: { accent_blue },
+      colors: { accent_blue, grey_whisper },
       messageSimple: {
-        replies: { container, messageRepliesText },
+        replies: { container, leftCurve, messageRepliesText, rightCurve },
       },
     },
   } = useTheme();
+
   if (threadList || !message.reply_count) return null;
 
   return (
-    <TouchableOpacity
-      onLongPress={() => null}
-      onPress={onOpenThread}
-      style={[styles.container, container]}
-      testID='message-replies'
-    >
-      <Text
-        style={[
-          styles.messageRepliesText,
-          { color: accent_blue },
-          messageRepliesText,
-        ]}
+    <View style={styles.curveContainer}>
+      {alignment === 'left' && (
+        <>
+          <View
+            style={[
+              { borderColor: grey_whisper },
+              styles.messageRepliesCurve,
+              styles.leftMessageRepliesCurve,
+              leftCurve,
+            ]}
+          />
+          <MessageRepliesAvatars alignment={alignment} message={message} />
+        </>
+      )}
+      <TouchableOpacity
+        onLongPress={() => null}
+        onPress={onOpenThread}
+        style={[styles.container, container]}
+        testID='message-replies'
       >
-        {message.reply_count === 1
-          ? t('1 Thread Reply')
-          : t('{{ replyCount }} Thread Replies', {
-              replyCount: message.reply_count,
-            })}
-      </Text>
-    </TouchableOpacity>
+        <Text
+          style={[
+            styles.messageRepliesText,
+            { color: accent_blue },
+            messageRepliesText,
+          ]}
+        >
+          {message.reply_count === 1
+            ? t('1 Thread Reply')
+            : t('{{ replyCount }} Thread Replies', {
+                replyCount: message.reply_count,
+              })}
+        </Text>
+      </TouchableOpacity>
+      {alignment === 'right' && (
+        <>
+          <MessageRepliesAvatars alignment={alignment} message={message} />
+          <View
+            style={[
+              { borderColor: grey_whisper },
+              styles.messageRepliesCurve,
+              styles.rightMessageRepliesCurve,
+              rightCurve,
+            ]}
+          />
+        </>
+      )}
+    </View>
   );
 };
 
@@ -157,7 +221,16 @@ export const MessageReplies = <
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, onOpenThread, threadList } = useMessageContext<
+  const { alignment, message, onOpenThread, threadList } = useMessageContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
+  const { MessageRepliesAvatars } = useMessagesContext<
     At,
     Ch,
     Co,
@@ -170,7 +243,14 @@ export const MessageReplies = <
 
   return (
     <MemoizedMessageReplies
-      {...{ message, onOpenThread, t, threadList }}
+      {...{
+        alignment,
+        message,
+        MessageRepliesAvatars,
+        onOpenThread,
+        t,
+        threadList,
+      }}
       {...props}
     />
   );

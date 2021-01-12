@@ -327,7 +327,7 @@ export const Reply = <
     MessageAvatar = MessageAvatarDefault,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { quotedMessage } = useMessageInputContext<
+  const { editing, quotedMessage } = useMessageInputContext<
     At,
     Ch,
     Co,
@@ -336,6 +336,18 @@ export const Reply = <
     Re,
     Us
   >();
+
+  const quotedEditingMessage = (typeof editing !== 'boolean'
+    ? editing?.quoted_message || false
+    : false) as MessageInputContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['quotedMessage'];
 
   const { t } = useTranslationContext();
 
@@ -354,7 +366,7 @@ export const Reply = <
               Re,
               Us
             >['quotedMessage'])
-          : quotedMessage,
+          : quotedMessage || quotedEditingMessage,
         t,
       }}
       {...props}

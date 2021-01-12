@@ -507,7 +507,8 @@ export const MessageInputWithContext = <
                   inputBoxContainer,
                 ]}
               >
-                {quotedMessage && (
+                {((typeof editing !== 'boolean' && editing?.quoted_message) ||
+                  quotedMessage) && (
                   <View style={[styles.replyContainer, replyContainer]}>
                     <Reply />
                   </View>

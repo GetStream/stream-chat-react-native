@@ -57,6 +57,11 @@ const styles = StyleSheet.create({
   leftAlignItems: {
     alignItems: 'flex-start',
   },
+  replyBorder: {
+    borderLeftWidth: 1,
+    bottom: 0,
+    position: 'absolute',
+  },
   replyContainer: {
     flexDirection: 'row',
     paddingHorizontal: 8,
@@ -96,6 +101,7 @@ export type MessageContentPropsWithContext<
     | 'otherAttachments'
     | 'preventPress'
     | 'showMessageStatus'
+    | 'threadList'
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
@@ -158,6 +164,7 @@ export const MessageContentWithContext = <
     showMessageStatus,
     t,
     tDateTimeParser,
+    threadList,
   } = props;
 
   const {
@@ -184,6 +191,7 @@ export const MessageContentWithContext = <
           messageUser,
           metaContainer,
           metaText,
+          replyBorder,
           replyContainer,
         },
         reactionList: { radius, reactionSize },
@@ -272,6 +280,8 @@ export const MessageContentWithContext = <
 
   const groupStyle = `${alignment}_${groupStyles[0].toLowerCase()}`;
 
+  const hasThreadReplies = !!message?.reply_count;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -307,11 +317,15 @@ export const MessageContentWithContext = <
                   ? transparent
                   : grey_gainsboro,
               borderBottomLeftRadius:
-                groupStyle === 'left_bottom' || groupStyle === 'left_single'
+                (groupStyle === 'left_bottom' ||
+                  groupStyle === 'left_single') &&
+                (!hasThreadReplies || threadList)
                   ? borderRadiusS
                   : borderRadiusL,
               borderBottomRightRadius:
-                groupStyle === 'right_bottom' || groupStyle === 'right_single'
+                (groupStyle === 'right_bottom' ||
+                  groupStyle === 'right_single') &&
+                (!hasThreadReplies || threadList)
                   ? borderRadiusS
                   : borderRadiusL,
               borderColor: grey_whisper,
@@ -364,6 +378,20 @@ export const MessageContentWithContext = <
             },
           )}
         </View>
+        {hasThreadReplies && !threadList && repliesEnabled && (
+          <View
+            style={[
+              styles.replyBorder,
+              {
+                borderColor: grey_whisper,
+                height: borderRadiusL,
+                left: alignment === 'left' ? 0 : undefined,
+                right: alignment === 'right' ? 0 : undefined,
+              },
+              replyBorder,
+            ]}
+          />
+        )}
         {error && (
           <View style={StyleSheet.absoluteFill}>
             <View style={errorIconContainer}>
@@ -574,6 +602,7 @@ export const MessageContent = <
     otherAttachments,
     preventPress,
     showMessageStatus,
+    threadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps,
@@ -620,6 +649,7 @@ export const MessageContent = <
         showMessageStatus,
         t,
         tDateTimeParser,
+        threadList,
       }}
       {...props}
     />

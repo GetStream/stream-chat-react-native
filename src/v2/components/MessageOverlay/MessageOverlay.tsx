@@ -141,6 +141,7 @@ const MessageOverlayWithContext = <
     overlayOpacity,
     reset,
     setOverlay,
+    threadList,
     visible,
   } = props;
 
@@ -309,6 +310,8 @@ const MessageOverlayWithContext = <
     groupStyles?.[0] || 'bottom'
   ).toLowerCase()}`;
 
+  const hasThreadReplies = !!message?.reply_count;
+
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
@@ -406,13 +409,15 @@ const MessageOverlayWithContext = <
                                   ? white_smoke
                                   : grey_gainsboro,
                               borderBottomLeftRadius:
-                                groupStyle === 'left_bottom' ||
-                                groupStyle === 'left_single'
+                                (groupStyle === 'left_bottom' ||
+                                  groupStyle === 'left_single') &&
+                                (!hasThreadReplies || threadList)
                                   ? borderRadiusS
                                   : borderRadiusL,
                               borderBottomRightRadius:
-                                groupStyle === 'right_bottom' ||
-                                groupStyle === 'right_single'
+                                (groupStyle === 'right_bottom' ||
+                                  groupStyle === 'right_single') &&
+                                (!hasThreadReplies || threadList)
                                   ? borderRadiusS
                                   : borderRadiusL,
                               borderColor: grey_whisper,
@@ -479,11 +484,13 @@ const MessageOverlayWithContext = <
                                     <Gallery<At, Ch, Co, Ev, Me, Re, Us>
                                       alignment={alignment}
                                       groupStyles={groupStyles}
+                                      hasThreadReplies={!!message?.reply_count}
                                       images={images}
                                       key={`gallery_${messageContentOrderIndex}`}
                                       messageId={message.id}
                                       messageText={message.text}
                                       preventPress
+                                      threadList={threadList}
                                     />
                                   );
                                 case 'text':
@@ -652,6 +659,7 @@ export const MessageOverlay = <
     overlayOpacity,
     reset: propReset,
     setOverlay: propSetOverlay,
+    threadList: propThreadList,
     visible,
   } = props;
 
@@ -681,6 +689,7 @@ export const MessageOverlay = <
     messageReactionTitle: contextMessageReactionTitle,
     onlyEmojis: contextOnlyEmojis,
     otherAttachments: contextOtherAttachments,
+    threadList: contextThreadList,
   } = data || {};
 
   const alignment = propAlignment || contextAlignment;
@@ -699,6 +708,7 @@ export const MessageOverlay = <
   const overlay = propOverlay || contextOverlay;
   const reset = propReset || contextReset;
   const setOverlay = propSetOverlay || contextSetOverlay;
+  const threadList = propThreadList || contextThreadList;
 
   return (
     <MemoizedMessageOverlay
@@ -718,6 +728,7 @@ export const MessageOverlay = <
         overlayOpacity,
         reset,
         setOverlay,
+        threadList,
         visible,
       }}
     />

@@ -610,6 +610,7 @@ export const MessageInputProvider = <
         ...value.editing,
         attachments,
         mentioned_users: mentionedUsers,
+        quoted_message: undefined,
         text: prevText,
       } as Parameters<
         StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']
@@ -716,6 +717,7 @@ export const MessageInputProvider = <
       if (!isEditingBoolean(value.editing)) {
         await client.updateMessage({
           ...value.editing,
+          quoted_message: undefined,
           text: giphyEnabled && giphyActive ? `/giphy ${text}` : text,
         } as Parameters<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>[0]);
       }

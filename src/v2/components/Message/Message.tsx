@@ -773,6 +773,7 @@ const MessageWithContext = <
       onlyEmojis,
       otherAttachments: attachments.other,
       supportedReactions,
+      threadList,
     });
 
     setOverlay('message');

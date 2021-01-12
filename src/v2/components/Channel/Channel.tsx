@@ -48,6 +48,7 @@ import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
+import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
@@ -205,6 +206,7 @@ export type ChannelPropsWithContext<
       | 'MessageList'
       | 'MessageNotification'
       | 'MessageReplies'
+      | 'MessageRepliesAvatars'
       | 'MessageSimple'
       | 'MessageStatus'
       | 'MessageSystem'
@@ -374,6 +376,7 @@ export const ChannelWithContext = <
     MessageList = MessageListDefault,
     MessageNotification = MessageNotificationDefault,
     MessageReplies = MessageRepliesDefault,
+    MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
@@ -1294,6 +1297,7 @@ export const ChannelWithContext = <
     MessageList,
     MessageNotification,
     MessageReplies,
+    MessageRepliesAvatars,
     messages,
     MessageSimple,
     MessageStatus,

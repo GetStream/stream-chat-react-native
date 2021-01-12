@@ -21,6 +21,7 @@ import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
+import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
@@ -170,6 +171,13 @@ export type MessagesContextValue<
    */
   MessageReplies: React.ComponentType<
     MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * UI Component for MessageRepliesAvatars
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageRepliesAvatars.tsx)
+   */
+  MessageRepliesAvatars: React.ComponentType<
+    MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   /**

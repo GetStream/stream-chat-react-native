@@ -98,13 +98,14 @@ export type GalleryPropsWithContext<
 > = Pick<ImageGalleryContextValue, 'setImage'> &
   Pick<
     MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'alignment' | 'groupStyles' | 'images' | 'onLongPress'
+    'alignment' | 'groupStyles' | 'images' | 'onLongPress' | 'threadList'
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
   > &
   Pick<OverlayContextValue, 'setBlurType' | 'setOverlay'> & {
+    hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
     preventPress?: boolean;
@@ -125,6 +126,7 @@ const GalleryWithContext = <
     additionalTouchableProps,
     alignment,
     groupStyles,
+    hasThreadReplies,
     images,
     messageId,
     messageText,
@@ -133,6 +135,7 @@ const GalleryWithContext = <
     setBlurType,
     setImage,
     setOverlay,
+    threadList,
   } = props;
 
   const {
@@ -249,8 +252,9 @@ const GalleryWithContext = <
                           colIndex === 0 &&
                           rowIndex === 1)) &&
                       !messageText &&
-                      groupStyle !== 'left_bottom' &&
-                      groupStyle !== 'left_single'
+                      ((groupStyle !== 'left_bottom' &&
+                        groupStyle !== 'left_single') ||
+                        (hasThreadReplies && !threadList))
                         ? 14
                         : 0,
                     borderBottomRightRadius:
@@ -258,8 +262,9 @@ const GalleryWithContext = <
                         (colIndex === 1 &&
                           (images.length === 2 || rowIndex === 1))) &&
                       !messageText &&
-                      groupStyle !== 'right_bottom' &&
-                      groupStyle !== 'right_single'
+                      ((groupStyle !== 'right_bottom' &&
+                        groupStyle !== 'right_single') ||
+                        (hasThreadReplies && !threadList))
                         ? 14
                         : 0,
                     borderTopLeftRadius:
@@ -311,11 +316,13 @@ const areEqual = <
 ) => {
   const {
     groupStyles: prevGroupStyles,
+    hasThreadReplies: prevHasThreadReplies,
     images: prevImages,
     messageText: prevMessageText,
   } = prevProps;
   const {
     groupStyles: nextGroupStyles,
+    hasThreadReplies: nextHasThreadReplies,
     images: nextImages,
     messageText: nextMessageText,
   } = nextProps;
@@ -327,6 +334,9 @@ const areEqual = <
     prevGroupStyles.length === nextGroupStyles.length &&
     prevGroupStyles[0] === nextGroupStyles[0];
   if (!groupStylesEqual) return false;
+
+  const hasThreadRepliesEqual = prevHasThreadReplies === nextHasThreadReplies;
+  if (!hasThreadRepliesEqual) return false;
 
   const imagesEqual =
     prevImages.length === nextImages.length &&
@@ -375,6 +385,7 @@ export const Gallery = <
     additionalTouchableProps: propAdditionalTouchableProps,
     alignment: propAlignment,
     groupStyles: propGroupStyles,
+    hasThreadReplies,
     images: propImages,
     messageId,
     messageText,
@@ -383,6 +394,7 @@ export const Gallery = <
     setBlurType: propSetBlurType,
     setImage: propSetImage,
     setOverlay: propSetOverlay,
+    threadList: propThreadList,
   } = props;
 
   const { setImage: contextSetImage } = useImageGalleryContext();
@@ -392,6 +404,7 @@ export const Gallery = <
     images: contextImages,
     message,
     onLongPress: contextOnLongPress,
+    threadList: contextThreadList,
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
@@ -413,6 +426,7 @@ export const Gallery = <
   const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
+  const threadList = propThreadList || contextThreadList;
 
   return (
     <MemoizedGallery
@@ -420,6 +434,7 @@ export const Gallery = <
         additionalTouchableProps,
         alignment,
         groupStyles,
+        hasThreadReplies: hasThreadReplies || !!message?.reply_count,
         images,
         messageId: messageId || message?.id,
         messageText: messageText || message?.text,
@@ -428,6 +443,7 @@ export const Gallery = <
         setBlurType,
         setImage,
         setOverlay,
+        threadList,
       }}
     />
   );
