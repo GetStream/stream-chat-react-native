@@ -44,6 +44,7 @@ export type StackNavigatorParamList = {
       LocalUserType
     >;
   };
+  ChannelListScreen: undefined;
   ChannelScreen: {
     channel?: Channel<
       LocalAttachmentType,

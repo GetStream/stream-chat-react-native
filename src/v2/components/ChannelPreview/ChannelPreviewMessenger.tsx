@@ -1,7 +1,6 @@
 import React from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
-import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
 import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
@@ -11,23 +10,11 @@ import { Avatar } from '../Avatar/Avatar';
 import { GroupAvatar } from '../Avatar/GroupAvatar';
 
 import {
-  ChannelInfoOverlayContextValue,
-  useChannelInfoOverlayContext,
-} from '../../contexts/channelInfoOverlayContext/ChannelInfoOverlayContext';
-import {
   ChannelsContextValue,
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
-import {
-  ChatContextValue,
-  useChatContext,
-} from '../../contexts/chatContext/ChatContext';
-import {
-  OverlayContextValue,
-  useOverlayContext,
-} from '../../contexts/overlayContext/OverlayContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Check, CheckAll, Delete, MenuPointHorizontal } from '../../icons';
+import { Check, CheckAll } from '../../icons';
 import { vw } from '../../utils/utils';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -62,11 +49,6 @@ const styles = StyleSheet.create({
   flexRow: {
     flexDirection: 'row',
   },
-  leftSwipeableButton: {
-    paddingLeft: 20,
-    paddingRight: 10,
-    paddingVertical: 20,
-  },
   message: {
     flexShrink: 1,
     fontSize: 12,
@@ -78,11 +60,6 @@ const styles = StyleSheet.create({
     top: 0,
     width: 12,
   },
-  rightSwipeableButton: {
-    paddingLeft: 10,
-    paddingRight: 20,
-    paddingVertical: 20,
-  },
   row: {
     alignItems: 'center',
     flex: 1,
@@ -92,10 +69,6 @@ const styles = StyleSheet.create({
   },
   skeletonContainer: {
     flex: 1,
-    flexDirection: 'row',
-  },
-  swipeableContainer: {
-    alignItems: 'center',
     flexDirection: 'row',
   },
   title: { fontSize: 14, fontWeight: '700' },
@@ -124,17 +97,11 @@ export type ChannelPreviewMessengerPropsWithContext<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Pick<
-  ChannelInfoOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-  'setData'
-> &
-  Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
+> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
   Pick<
     ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'maxUnreadCount' | 'onSelect'
-  > &
-  Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Pick<OverlayContextValue, 'setOverlay'> & {
+  > & {
     /** Latest message on a channel, formatted for preview */
     latestMessagePreview: LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>;
     /**
@@ -147,17 +114,6 @@ export type ChannelPreviewMessengerPropsWithContext<
      * default formatted date. This default logic is part of ChannelPreview component.
      */
     formatLatestMessageDate?: (date: Date) => string;
-    /**
-     * This map describes the values to use as inputRange for extra interpolation: AnimatedValue: [startValue, endValue]
-     * progressAnimatedValue: [0, 1] dragAnimatedValue: [0, -]
-     * To support rtl flexbox layouts use flexDirection styling.
-     */
-    renderRightActions?:
-      | ((
-          progressAnimatedValue: Animated.AnimatedInterpolation,
-          dragAnimatedValue: Animated.AnimatedInterpolation,
-        ) => React.ReactNode)
-      | undefined;
     /** Number of unread messages on the channel */
     unread?: number;
   };
@@ -175,14 +131,10 @@ const ChannelPreviewMessengerWithContext = <
 ) => {
   const {
     channel,
-    client,
     formatLatestMessageDate,
     latestMessagePreview,
     maxUnreadCount,
     onSelect,
-    renderRightActions,
-    setData,
-    setOverlay,
     unread,
   } = props;
 
@@ -194,24 +146,13 @@ const ChannelPreviewMessengerWithContext = <
         container,
         contentContainer,
         date,
-        leftSwipeableButton,
         message,
-        rightSwipeableButton,
         row,
-        swipeableContainer,
         title,
         unreadContainer,
         unreadText,
       },
-      colors: {
-        accent_blue,
-        accent_red,
-        black,
-        border,
-        grey,
-        white_smoke,
-        white_snow,
-      },
+      colors: { accent_blue, accent_red, black, border, grey, white_snow },
     },
   } = useTheme();
 
@@ -230,120 +171,86 @@ const ChannelPreviewMessengerWithContext = <
   const status = latestMessagePreview.status;
 
   return (
-    <Swipeable
-      overshootLeft={false}
-      overshootRight={false}
-      renderRightActions={(progress, drag) =>
-        renderRightActions ? (
-          renderRightActions(progress, drag)
-        ) : (
+    <TouchableOpacity
+      onPress={() => {
+        if (onSelect) {
+          onSelect(channel);
+        }
+      }}
+      style={[
+        styles.container,
+        { backgroundColor: white_snow, borderBottomColor: border },
+        container,
+      ]}
+      testID='channel-preview-button'
+    >
+      {displayAvatar.images ? (
+        <GroupAvatar
+          images={displayAvatar.images}
+          names={displayAvatar.names}
+          size={40}
+        />
+      ) : (
+        <Avatar
+          image={displayAvatar.image}
+          name={displayAvatar.name}
+          online={displayPresence}
+          size={40}
+        />
+      )}
+      <View style={[styles.contentContainer, contentContainer]}>
+        <View style={[styles.row, row]}>
+          <Text
+            numberOfLines={1}
+            style={[styles.title, { color: black }, title]}
+          >
+            {displayName}
+          </Text>
           <View
             style={[
-              styles.swipeableContainer,
-              { backgroundColor: white_smoke },
-              swipeableContainer,
+              styles.unreadContainer,
+              { backgroundColor: accent_red },
+              unreadContainer,
             ]}
           >
-            <RectButton
-              onPress={() => {
-                setData({ channel, clientId: client.userID });
-                setOverlay('channelInfo');
-              }}
-              style={[styles.leftSwipeableButton, leftSwipeableButton]}
-            >
-              <MenuPointHorizontal />
-            </RectButton>
-            <RectButton
-              onPress={() => channel.delete()}
-              style={[styles.rightSwipeableButton, rightSwipeableButton]}
-            >
-              <Delete pathFill={accent_red} />
-            </RectButton>
-          </View>
-        )
-      }
-    >
-      <TouchableOpacity
-        onPress={() => {
-          if (onSelect) {
-            onSelect(channel);
-          }
-        }}
-        style={[
-          styles.container,
-          { backgroundColor: white_snow, borderBottomColor: border },
-          container,
-        ]}
-        testID='channel-preview-button'
-      >
-        {displayAvatar.images ? (
-          <GroupAvatar
-            images={displayAvatar.images}
-            names={displayAvatar.names}
-            size={40}
-          />
-        ) : (
-          <Avatar
-            image={displayAvatar.image}
-            name={displayAvatar.name}
-            online={displayPresence}
-            size={40}
-          />
-        )}
-        <View style={[styles.contentContainer, contentContainer]}>
-          <View style={[styles.row, row]}>
-            <Text
-              numberOfLines={1}
-              style={[styles.title, { color: black }, title]}
-            >
-              {displayName}
-            </Text>
-            <View
-              style={[
-                styles.unreadContainer,
-                { backgroundColor: accent_red },
-                unreadContainer,
-              ]}
-            >
-              {!!unread && (
-                <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-                  {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
-                </Text>
-              )}
-            </View>
-          </View>
-          <View style={[styles.row, row]}>
-            <Text
-              numberOfLines={1}
-              style={[styles.message, { color: grey }, message]}
-            >
-              {latestMessagePreview.previews.map((preview, index) =>
-                preview.text ? (
-                  <Text
-                    key={`${preview.text}_${index}`}
-                    style={[{ color: black }, preview.bold ? styles.bold : {}]}
-                  >
-                    {preview.text}
-                  </Text>
-                ) : null,
-              )}
-            </Text>
-            <View style={styles.flexRow}>
-              {status === 2 ? (
-                <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-              ) : status === 1 ? (
-                <Check {...checkIcon} />
-              ) : null}
-              <Text style={[styles.date, { color: grey }, date]}>
-                {formatLatestMessageDate && latestMessageDate
-                  ? formatLatestMessageDate(latestMessageDate)
-                  : latestMessagePreview.created_at}
+            {!!unread && (
+              <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
+                {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
               </Text>
-            </View>
+            )}
           </View>
         </View>
-      </TouchableOpacity>
-    </Swipeable>
+        <View style={[styles.row, row]}>
+          <Text
+            numberOfLines={1}
+            style={[styles.message, { color: grey }, message]}
+          >
+            {latestMessagePreview.previews.map((preview, index) =>
+              preview.text ? (
+                <Text
+                  key={`${preview.text}_${index}`}
+                  style={[{ color: grey }, preview.bold ? styles.bold : {}]}
+                >
+                  {preview.text}
+                </Text>
+              ) : null,
+            )}
+          </Text>
+          <View style={styles.flexRow}>
+            {status === 2 ? (
+              <CheckAll pathFill={accent_blue} {...checkAllIcon} />
+            ) : status === 1 ? (
+              <Check pathFill={grey} {...checkIcon} />
+            ) : null}
+            <Text style={[styles.date, { color: grey }, date]}>
+              {formatLatestMessageDate && latestMessageDate
+                ? formatLatestMessageDate(latestMessageDate)
+                : latestMessagePreview.created_at}
+            </Text>
+          </View>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -383,15 +290,6 @@ export const ChannelPreviewMessenger = <
 >(
   props: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { setData } = useChannelInfoOverlayContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
   const { maxUnreadCount, onSelect } = useChannelsContext<
     At,
     Ch,
@@ -401,12 +299,10 @@ export const ChannelPreviewMessenger = <
     Re,
     Us
   >();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { setOverlay } = useOverlayContext();
 
   return (
     <ChannelPreviewMessengerWithContext
-      {...{ client, maxUnreadCount, onSelect, setData, setOverlay }}
+      {...{ maxUnreadCount, onSelect }}
       {...props}
     />
   );

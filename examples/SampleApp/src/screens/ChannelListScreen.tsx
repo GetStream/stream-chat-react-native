@@ -14,6 +14,7 @@ import {
   useTheme,
 } from 'stream-chat-react-native/v2';
 
+import { ChannelPreview } from '../components/ChannelPreview';
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';
 import { AppContext } from '../context/AppContext';
@@ -217,6 +218,7 @@ export const ChannelListScreen: React.FC = () => {
                 });
               }}
               options={options}
+              Preview={ChannelPreview}
               sort={sort}
             />
           </View>

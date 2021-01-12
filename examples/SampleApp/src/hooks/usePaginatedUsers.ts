@@ -154,25 +154,24 @@ export const usePaginatedUsers = () => {
     fetchUsers();
   }, []);
 
-  /* eslint-disable sort-keys */
   return {
     clearText: () => {
       setSearchText('');
       fetchUsers('');
     },
+    initialResults,
     loading,
     loadMore,
-    searchText,
-    setSearchText,
-    results,
-    setResults,
-    selectedUsers,
-    setSelectedUsers,
-    selectedUserIds,
-    initialResults,
-    setInitialResults,
-    toggleUser,
     onChangeSearchText,
     onFocusInput,
+    results,
+    searchText,
+    selectedUserIds,
+    selectedUsers,
+    setInitialResults,
+    setResults,
+    setSearchText,
+    setSelectedUsers,
+    toggleUser,
   };
 };

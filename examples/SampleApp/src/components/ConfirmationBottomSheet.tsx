@@ -1,9 +1,13 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { Delete, UserMinus, useTheme } from 'stream-chat-react-native/v2';
 
-import { Delete } from '../icons/Delete';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import {
+  isAddMemberBottomSheetData,
+  useBottomSheetOverlayContext,
+} from '../context/BottomSheetOverlayContext';
 
 const styles = StyleSheet.create({
   actionButtonLeft: {
@@ -36,26 +40,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ConfirmationBottomSheetProps = {
-  dismissHandler: () => void;
-  onConfirm: () => void;
-  subtext: string;
-  title: string;
-  cancelText?: string;
-  confirmText?: string;
-};
-
-export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
-  props,
-) => {
-  const {
-    cancelText = 'CANCEL',
-    confirmText = 'CONFIRM',
-    dismissHandler,
-    onConfirm,
-    subtext,
-    title,
-  } = props;
+export const ConfirmationBottomSheet: React.FC = () => {
+  const { setOverlay } = useAppOverlayContext();
+  const { data: contextData, reset } = useBottomSheetOverlayContext();
+  const data =
+    contextData && !isAddMemberBottomSheetData(contextData)
+      ? contextData
+      : undefined;
 
   const {
     theme: {
@@ -63,6 +54,18 @@ export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
     },
   } = useTheme();
   const inset = useSafeAreaInsets();
+
+  if (!data) {
+    return null;
+  }
+
+  const {
+    cancelText = 'CANCEL',
+    confirmText = 'CONFIRM',
+    onConfirm,
+    subtext,
+    title,
+  } = data;
 
   return (
     <View
@@ -75,7 +78,11 @@ export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
       ]}
     >
       <View style={styles.description}>
-        <Delete fill={accent_red} height={24} width={24} />
+        {confirmText === 'LEAVE' ? (
+          <UserMinus pathFill={grey} />
+        ) : (
+          <Delete pathFill={accent_red} />
+        )}
         <Text style={[styles.title, { color: black }]}>{title}</Text>
         <Text style={[styles.subtext, { color: black }]}>{subtext}</Text>
       </View>
@@ -88,7 +95,10 @@ export const ConfirmationBottomSheet: React.FC<ConfirmationBottomSheetProps> = (
         ]}
       >
         <TouchableOpacity
-          onPress={dismissHandler}
+          onPress={() => {
+            setOverlay('none');
+            reset();
+          }}
           style={styles.actionButtonLeft}
         >
           <Text style={{ color: grey }}>{cancelText}</Text>

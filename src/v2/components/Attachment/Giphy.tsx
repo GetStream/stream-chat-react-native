@@ -45,6 +45,8 @@ const styles = StyleSheet.create({
     width: 256,
   },
   giphy: {
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     height: 140,
   },
   giphyContainer: {
@@ -139,7 +141,7 @@ const GiphyWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, black, border, grey, white },
+      colors: { accent_blue, black, border, grey, overlay_dark, white },
       messageSimple: {
         giphy: {
           cancel,
@@ -182,7 +184,7 @@ const GiphyWithContext = <
           <View
             style={[
               styles.giphyContainer,
-              { backgroundColor: grey },
+              { backgroundColor: overlay_dark },
               giphyContainer,
             ]}
           >
@@ -267,7 +269,13 @@ const GiphyWithContext = <
           style={[styles.giphy, giphy]}
         />
         <View style={[styles.giphyMask, giphyMask]}>
-          <View style={[styles.giphyContainer, giphyContainer]}>
+          <View
+            style={[
+              styles.giphyContainer,
+              { backgroundColor: overlay_dark },
+              giphyContainer,
+            ]}
+          >
             <Lightning height={16} pathFill={white} width={16} />
             <Text style={[styles.giphyText, { color: white }, giphyText]}>
               {type?.toUpperCase()}

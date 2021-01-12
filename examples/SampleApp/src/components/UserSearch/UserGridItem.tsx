@@ -30,7 +30,19 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
         onPress={onPress}
         style={styles.selectedUserItem}
       >
-        <Avatar image={user.image} size={64} />
+        <Avatar
+          image={user.image}
+          online={user.online}
+          presenceIndicator={{ cx: 7, cy: 7, r: 5 }}
+          presenceIndicatorContainerStyle={{
+            bottom: 0,
+            height: 14,
+            right: 8,
+            top: undefined,
+            width: 14,
+          }}
+          size={64}
+        />
         {removeButton && (
           <View
             style={[

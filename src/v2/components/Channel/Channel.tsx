@@ -457,7 +457,7 @@ export const ChannelWithContext = <
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
 
-  const channelExists = !!channel;
+  const channelId = channel?.id || '';
   useEffect(() => {
     if (channel) {
       if (messageId) {
@@ -479,7 +479,7 @@ export const ChannelWithContext = <
       loadMoreFinishedDebounced.cancel();
       loadMoreThreadFinishedDebounced.cancel();
     };
-  }, [channelExists, messageId]);
+  }, [channelId, messageId]);
 
   const threadPropsExists = !!threadProps;
   useEffect(() => {

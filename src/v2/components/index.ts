@@ -35,8 +35,6 @@ export * from './Channel/hooks/useCreateMessagesContext';
 export * from './Channel/hooks/useCreateThreadContext';
 export * from './Channel/hooks/useTargetedMessage';
 
-export * from './ChannelInfoOverlay/ChannelInfoOverlay';
-
 export * from './ChannelList/ChannelList';
 export * from './ChannelList/ChannelListFooterLoadingIndicator';
 export * from './ChannelList/ChannelListHeaderErrorIndicator';

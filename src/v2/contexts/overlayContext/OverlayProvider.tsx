@@ -14,7 +14,6 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { AttachmentPickerProvider } from '../attachmentPickerContext/AttachmentPickerContext';
-import { ChannelInfoOverlayProvider } from '../channelInfoOverlayContext/ChannelInfoOverlayContext';
 import { ImageGalleryProvider } from '../imageGalleryContext/ImageGalleryContext';
 import { MessageOverlayProvider } from '../messageOverlayContext/MessageOverlayContext';
 import { ThemeProvider } from '../themeContext/ThemeContext';
@@ -31,7 +30,6 @@ import { CameraSelectorIcon as DefaultCameraSelectorIcon } from '../../component
 import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/AttachmentPicker/components/FileSelectorIcon';
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
-import { ChannelInfoOverlay } from '../../components/ChannelInfoOverlay/ChannelInfoOverlay';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
 import { BlurView } from '../../native';
@@ -200,49 +198,43 @@ export const OverlayProvider = <
   return (
     <TranslationProvider value={translators}>
       <OverlayContext.Provider value={overlayContext}>
-        <ChannelInfoOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-          <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
-            <AttachmentPickerProvider value={attachmentPickerContext}>
-              <ImageGalleryProvider>
-                {children}
-                <ThemeProvider style={overlayContext.style}>
-                  <Animated.View
-                    pointerEvents={overlay === 'none' ? 'none' : 'auto'}
-                    style={[StyleSheet.absoluteFill, overlayStyle]}
-                  >
-                    <BlurView
-                      blurType={blurType}
-                      style={[StyleSheet.absoluteFill, { height, width }]}
-                    />
-                  </Animated.View>
-                  {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
-                  <ChannelInfoOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                    overlayOpacity={overlayOpacity}
-                    visible={overlay === 'channelInfo'}
+        <MessageOverlayProvider<At, Ch, Co, Ev, Me, Re, Us>>
+          <AttachmentPickerProvider value={attachmentPickerContext}>
+            <ImageGalleryProvider>
+              {children}
+              <ThemeProvider style={overlayContext.style}>
+                <Animated.View
+                  pointerEvents={overlay === 'none' ? 'none' : 'auto'}
+                  style={[StyleSheet.absoluteFill, overlayStyle]}
+                >
+                  <BlurView
+                    blurType={blurType}
+                    style={[StyleSheet.absoluteFill, { height, width }]}
                   />
-                  <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
-                    overlayOpacity={overlayOpacity}
-                    visible={overlay === 'message'}
-                  />
-                  <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
-                    imageGalleryCustomComponents={imageGalleryCustomComponents}
-                    imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
-                    imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
-                    numberOfImageGalleryGridColumns={
-                      numberOfImageGalleryGridColumns
-                    }
-                    overlayOpacity={overlayOpacity}
-                    visible={overlay === 'gallery'}
-                  />
-                  <AttachmentPicker
-                    ref={bottomSheetRef}
-                    {...attachmentPickerProps}
-                  />
-                </ThemeProvider>
-              </ImageGalleryProvider>
-            </AttachmentPickerProvider>
-          </MessageOverlayProvider>
-        </ChannelInfoOverlayProvider>
+                </Animated.View>
+                {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
+                <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  overlayOpacity={overlayOpacity}
+                  visible={overlay === 'message'}
+                />
+                <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>
+                  imageGalleryCustomComponents={imageGalleryCustomComponents}
+                  imageGalleryGridHandleHeight={imageGalleryGridHandleHeight}
+                  imageGalleryGridSnapPoints={imageGalleryGridSnapPoints}
+                  numberOfImageGalleryGridColumns={
+                    numberOfImageGalleryGridColumns
+                  }
+                  overlayOpacity={overlayOpacity}
+                  visible={overlay === 'gallery'}
+                />
+                <AttachmentPicker
+                  ref={bottomSheetRef}
+                  {...attachmentPickerProps}
+                />
+              </ThemeProvider>
+            </ImageGalleryProvider>
+          </AttachmentPickerProvider>
+        </MessageOverlayProvider>
       </OverlayContext.Provider>
     </TranslationProvider>
   );

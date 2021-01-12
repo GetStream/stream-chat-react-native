@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Image,
   ImageProps,
+  PixelRatio,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -57,7 +58,10 @@ const GalleryImage: React.FC<
         uri: uri.includes('&h=%2A')
           ? error
             ? uri
-            : uri.replace('h=%2A', `h=${height}`)
+            : uri.replace(
+                'h=%2A',
+                `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
+              )
           : uri,
       }}
     />

@@ -5,6 +5,7 @@ import {
   GestureResponderEvent,
   Image,
   Keyboard,
+  PixelRatio,
   Platform,
   StyleProp,
   StyleSheet,
@@ -111,7 +112,12 @@ const prefetchImage = ({
   url: string;
 }) => {
   if (url.includes('&h=%2A')) {
-    Image.prefetch(url.replace('h=%2A', `h=${height}`))
+    Image.prefetch(
+      url.replace(
+        'h=%2A',
+        `h=${PixelRatio.getPixelSizeForLayoutSize(Number(height))}`,
+      ),
+    )
       .catch(() => Image.prefetch(url))
       .catch(() => {
         // do nothing, not a big deal that prefetch failed

@@ -212,7 +212,7 @@ export const ChannelScreen: React.FC<ChannelScreenProps> = ({
     };
 
     initChannel();
-  }, []);
+  }, [channelId]);
 
   useFocusEffect(() => {
     setSelectedThread(undefined);

@@ -20,7 +20,9 @@ import {
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';
-import { AppOverlayContext } from '../context/AppOverlayContext';
+import { useAppOverlayContext } from '../context/AppOverlayContext';
+import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';
+import { useUserInfoOverlayContext } from '../context/UserInfoOverlayContext';
 import { useChannelMembersStatus } from '../hooks/useChannelMembersStatus';
 import { AddUser } from '../icons/AddUser';
 import { Check } from '../icons/Check';
@@ -33,6 +35,7 @@ import { Picture } from '../icons/Picture';
 import { RemoveUser } from '../icons/RemoveUser';
 import { getUserActivityStatus } from '../utils/getUserActivityStatus';
 
+import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Channel } from 'stream-chat';
 
 import type {
@@ -136,6 +139,12 @@ type GroupChannelDetailsRouteProp = RouteProp<
 type GroupChannelDetailsProps = {
   route: GroupChannelDetailsRouteProp;
 };
+
+type GroupChannelDetailsScreenNavigationProp = StackNavigationProp<
+  StackNavigatorParamList,
+  'GroupChannelDetailsScreen'
+>;
+
 const Spacer = () => {
   const {
     theme: {
@@ -160,8 +169,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   },
 }) => {
   const { chatClient } = useContext(AppContext);
-  const { openBottomSheet } = useContext(AppOverlayContext);
-  const navigation = useNavigation();
+  const { setOverlay: setAppOverlay } = useAppOverlayContext();
+  const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
+  const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
+  const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
   const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
   const {
     theme: {
@@ -209,14 +220,13 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const openLeaveGroupConfirmationSheet = () => {
     if (chatClient?.user?.id) {
-      openBottomSheet({
-        params: {
-          onConfirm: leaveGroup,
-          subtext: 'Are you sure you want to leave this group?',
-          title: 'Leave Group',
-        },
-        type: 'confirmation',
+      setBottomSheetOverlayData({
+        confirmText: 'LEAVE',
+        onConfirm: leaveGroup,
+        subtext: `Are you sure you want to leave the group ${groupName || ''}?`,
+        title: 'Leave group',
       });
+      setAppOverlay('confirmation');
     }
   };
 
@@ -225,12 +235,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
    */
   const openAddMembersSheet = () => {
     if (chatClient?.user?.id) {
-      openBottomSheet({
-        params: {
-          channel,
-        },
-        type: 'addMembers',
+      setBottomSheetOverlayData({
+        channel,
       });
+      setAppOverlay('addMembers');
     }
   };
 
@@ -243,6 +251,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     }
 
     setBlurType(undefined);
+    setAppOverlay('none');
     setOverlay('none');
     setWildcard(undefined);
 
@@ -272,12 +281,22 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         keyboardShouldPersistTaps='always'
         style={{ backgroundColor: white }}
       >
-        {members.map((m) => {
-          if (!m.user?.id) return null;
+        {members.map((member) => {
+          if (!member.user?.id) return null;
 
           return (
-            <View
-              key={m.user.id}
+            <TouchableOpacity
+              key={member.user.id}
+              onPress={() => {
+                if (member.user?.id !== chatClient?.user?.id) {
+                  setUserInfoOverlayData({
+                    channel,
+                    member,
+                    navigation,
+                  });
+                  setAppOverlay('userInfo');
+                }
+              }}
               style={[
                 styles.memberContainer,
                 {
@@ -286,20 +305,24 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
               ]}
             >
               <View style={styles.memberRow}>
-                <Avatar image={m?.user?.image} name={m.user?.name} size={40} />
+                <Avatar
+                  image={member.user?.image}
+                  name={member.user?.name}
+                  size={40}
+                />
                 <View style={styles.memberDetails}>
                   <Text style={[{ color: black }, styles.memberName]}>
-                    {m.user?.name}
+                    {member.user?.name}
                   </Text>
                   <Text style={{ color: grey }}>
-                    {getUserActivityStatus(m.user)}
+                    {getUserActivityStatus(member.user)}
                   </Text>
                 </View>
               </View>
               <Text style={{ color: grey }}>
-                {channel.data?.created_by_id === m.user?.id ? 'owner' : ''}
+                {channel.data?.created_by_id === member.user?.id ? 'owner' : ''}
               </Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
         {allMembers.length !== members.length && (
