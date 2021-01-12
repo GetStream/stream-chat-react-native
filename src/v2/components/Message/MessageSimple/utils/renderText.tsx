@@ -194,6 +194,8 @@ export const renderText = <
 
   const customRules = {
     link: { react },
+    // we have no react rendering support for reflinks
+    reflink: { match: () => null },
     ...(mentionedUsers
       ? {
           mentions: {

@@ -1,12 +1,49 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Avatar, useTheme } from 'stream-chat-react-native/v2';
-
-import { Close } from '../../icons/Close';
+import { Avatar, Close, useTheme } from 'stream-chat-react-native/v2';
 
 import type { UserResponse } from 'stream-chat';
 
 import type { LocalUserType } from '../../types';
+
+const presenceIndicator = { cx: 7, cy: 7, r: 5 };
+
+const styles = StyleSheet.create({
+  presenceIndicatorContainer: {
+    bottom: 0,
+    height: 14,
+    right: 8,
+    top: undefined,
+    width: 14,
+  },
+  selectedUserItem: {
+    paddingBottom: 8,
+  },
+  selectedUserItemContainer: {
+    alignItems: 'center',
+    flexDirection: 'column',
+    padding: 8,
+    width: 80,
+  },
+  selectedUserItemName: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  selectedUserRemoveIcon: {
+    alignItems: 'center',
+    borderRadius: 12,
+    height: 24,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    width: 24,
+  },
+  selectedUsersContainer: {
+    flexDirection: 'row',
+  },
+});
 
 export type UserGridItemProps = {
   onPress: () => void;
@@ -33,14 +70,8 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
         <Avatar
           image={user.image}
           online={user.online}
-          presenceIndicator={{ cx: 7, cy: 7, r: 5 }}
-          presenceIndicatorContainerStyle={{
-            bottom: 0,
-            height: 14,
-            right: 8,
-            top: undefined,
-            width: 14,
-          }}
+          presenceIndicator={presenceIndicator}
+          presenceIndicatorContainerStyle={styles.presenceIndicatorContainer}
           size={64}
         />
         {removeButton && (
@@ -52,49 +83,16 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
               },
             ]}
           >
-            <Close height={24} width={24} />
+            <Close />
           </View>
         )}
       </TouchableOpacity>
       <Text
         numberOfLines={2}
-        style={[{ color: black }, styles.selectedUserItemName]}
+        style={[styles.selectedUserItemName, { color: black }]}
       >
         {user.name}
       </Text>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  selectedUserItem: {
-    margin: 8,
-  },
-  selectedUserItemContainer: {
-    alignItems: 'center',
-    flexDirection: 'column',
-    padding: 8,
-    width: 80,
-  },
-  selectedUserItemName: {
-    flexWrap: 'wrap',
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  selectedUserRemoveIcon: {
-    alignItems: 'center',
-    borderRadius: 15,
-    height: 24,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: -2,
-    top: -2,
-    width: 24,
-  },
-  selectedUsersContainer: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-});
