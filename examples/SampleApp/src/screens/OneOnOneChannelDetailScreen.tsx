@@ -242,7 +242,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
                 },
               ]}
             >
-              {getUserActivityStatus(user)}
+              {user?.online ? 'Online' : getUserActivityStatus(user)}
             </Text>
           </View>
           <View
