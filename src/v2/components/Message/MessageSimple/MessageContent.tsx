@@ -282,6 +282,9 @@ export const MessageContentWithContext = <
 
   const hasThreadReplies = !!message?.reply_count;
 
+  const noBorder =
+    (onlyEmojis && !message.quoted_message) || !!otherAttachments.length;
+
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -302,6 +305,20 @@ export const MessageContentWithContext = <
     >
       {MessageHeader && <MessageHeader testID='message-header' />}
       <View onLayout={onLayout}>
+        {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
+          <View
+            style={[
+              styles.replyBorder,
+              {
+                borderColor: grey_whisper,
+                height: borderRadiusL,
+                left: alignment === 'left' ? 0 : undefined,
+                right: alignment === 'right' ? 0 : undefined,
+              },
+              replyBorder,
+            ]}
+          />
+        )}
         <View
           style={[
             styles.containerInner,
@@ -330,9 +347,7 @@ export const MessageContentWithContext = <
                   : borderRadiusL,
               borderColor: grey_whisper,
             },
-            (onlyEmojis && !message.quoted_message) || otherAttachments.length
-              ? { borderWidth: 0 }
-              : {},
+            noBorder ? { borderWidth: 0 } : {},
             containerInner,
           ]}
           testID='message-content-wrapper'
@@ -378,20 +393,6 @@ export const MessageContentWithContext = <
             },
           )}
         </View>
-        {hasThreadReplies && !threadList && repliesEnabled && (
-          <View
-            style={[
-              styles.replyBorder,
-              {
-                borderColor: grey_whisper,
-                height: borderRadiusL,
-                left: alignment === 'left' ? 0 : undefined,
-                right: alignment === 'right' ? 0 : undefined,
-              },
-              replyBorder,
-            ]}
-          />
-        )}
         {error && (
           <View style={StyleSheet.absoluteFill}>
             <View style={errorIconContainer}>
@@ -400,7 +401,7 @@ export const MessageContentWithContext = <
           </View>
         )}
       </View>
-      {repliesEnabled && <MessageReplies />}
+      {repliesEnabled && <MessageReplies noBorder={noBorder} />}
       {MessageFooter && <MessageFooter testID='message-footer' />}
       {!MessageFooter && lastGroupMessage && (
         <View style={metaContainer} testID='message-status-time'>

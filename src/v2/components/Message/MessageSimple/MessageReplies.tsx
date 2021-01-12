@@ -74,7 +74,7 @@ export type MessageRepliesPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'MessageRepliesAvatars'
   > &
-  Pick<TranslationContextValue, 't'>;
+  Pick<TranslationContextValue, 't'> & { noBorder?: boolean };
 
 const MessageRepliesWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -91,6 +91,7 @@ const MessageRepliesWithContext = <
     alignment,
     message,
     MessageRepliesAvatars,
+    noBorder,
     onOpenThread,
     t,
     threadList,
@@ -111,14 +112,16 @@ const MessageRepliesWithContext = <
     <View style={styles.curveContainer}>
       {alignment === 'left' && (
         <>
-          <View
-            style={[
-              { borderColor: grey_whisper },
-              styles.messageRepliesCurve,
-              styles.leftMessageRepliesCurve,
-              leftCurve,
-            ]}
-          />
+          {!noBorder && (
+            <View
+              style={[
+                { borderColor: grey_whisper },
+                styles.messageRepliesCurve,
+                styles.leftMessageRepliesCurve,
+                leftCurve,
+              ]}
+            />
+          )}
           <MessageRepliesAvatars alignment={alignment} message={message} />
         </>
       )}
@@ -145,14 +148,16 @@ const MessageRepliesWithContext = <
       {alignment === 'right' && (
         <>
           <MessageRepliesAvatars alignment={alignment} message={message} />
-          <View
-            style={[
-              { borderColor: grey_whisper },
-              styles.messageRepliesCurve,
-              styles.rightMessageRepliesCurve,
-              rightCurve,
-            ]}
-          />
+          {!noBorder && (
+            <View
+              style={[
+                { borderColor: grey_whisper },
+                styles.messageRepliesCurve,
+                styles.rightMessageRepliesCurve,
+                rightCurve,
+              ]}
+            />
+          )}
         </>
       )}
     </View>
@@ -173,11 +178,13 @@ const areEqual = <
 ) => {
   const {
     message: prevMessage,
+    noBorder: prevNoBorder,
     t: prevT,
     threadList: prevThreadList,
   } = prevProps;
   const {
     message: nextMessage,
+    noBorder: nextNoBorder,
     t: nextT,
     threadList: nextThreadList,
   } = nextProps;
@@ -188,6 +195,9 @@ const areEqual = <
   const messageReplyCountEqual =
     prevMessage.reply_count === nextMessage.reply_count;
   if (!messageReplyCountEqual) return false;
+
+  const noBorderEqual = prevNoBorder === nextNoBorder;
+  if (!noBorderEqual) return false;
 
   const tEqual = prevT === nextT;
   if (!tEqual) return false;
