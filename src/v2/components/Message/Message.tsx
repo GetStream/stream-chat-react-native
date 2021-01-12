@@ -165,6 +165,7 @@ export type MessagePropsWithContext<
     | 'MessageSimple'
     | 'removeMessage'
     | 'reactionsEnabled'
+    | 'repliesEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
     | 'setQuotedMessageState'
@@ -289,6 +290,7 @@ const MessageWithContext = <
     preventPress,
     reactionsEnabled,
     removeMessage,
+    repliesEnabled,
     retrySendMessage,
     setData,
     setEditingState,
@@ -736,7 +738,7 @@ const MessageWithContext = <
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
-      handleReaction,
+      handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
       messageActions: error
@@ -749,30 +751,38 @@ const MessageWithContext = <
             ? [editMessage, copyMessage, flagMessage, deleteMessage]
             : [editMessage, flagMessage, deleteMessage]
           : message.text
-          ? [
-              reply,
-              threadReply,
-              editMessage,
-              copyMessage,
-              flagMessage,
-              deleteMessage,
-            ]
-          : [reply, threadReply, editMessage, flagMessage, deleteMessage]
+          ? repliesEnabled
+            ? [
+                reply,
+                threadReply,
+                editMessage,
+                copyMessage,
+                flagMessage,
+                deleteMessage,
+              ]
+            : [editMessage, copyMessage, flagMessage, deleteMessage]
+          : repliesEnabled
+          ? [reply, threadReply, editMessage, flagMessage, deleteMessage]
+          : [editMessage, flagMessage, deleteMessage]
         : isThreadMessage
         ? message.text
           ? [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
           : [muteUser, blockUser, flagMessage, deleteMessage]
         : message.text
-        ? [
-            reply,
-            threadReply,
-            copyMessage,
-            muteUser,
-            flagMessage,
-            blockUser,
-            deleteMessage,
-          ]
-        : [reply, threadReply, muteUser, blockUser, deleteMessage],
+        ? repliesEnabled
+          ? [
+              reply,
+              threadReply,
+              copyMessage,
+              muteUser,
+              flagMessage,
+              blockUser,
+              deleteMessage,
+            ]
+          : [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
+        : repliesEnabled
+        ? [reply, threadReply, muteUser, blockUser, deleteMessage]
+        : [muteUser, blockUser, deleteMessage],
       messageContentOrder,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
@@ -1044,6 +1054,7 @@ export const Message = <
     MessageSimple,
     reactionsEnabled,
     removeMessage,
+    repliesEnabled,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -1071,6 +1082,7 @@ export const Message = <
         openThread,
         reactionsEnabled,
         removeMessage,
+        repliesEnabled,
         retrySendMessage,
         setData,
         setEditingState,
