@@ -37,6 +37,7 @@ export const useCreateInputMessageInputContext = <
   ImageUploadPreview,
   initialValue,
   Input,
+  maxMessageLength,
   maxNumberOfFiles,
   MoreOptionsButton,
   numberOfLines,
@@ -48,6 +49,7 @@ export const useCreateInputMessageInputContext = <
   setInputRef,
   ShowThreadMessageInChannelButton,
   UploadProgressIndicator,
+  uploadsEnabled,
 }: InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const editingExists = !!editing;
   const quotedMessageId = quotedMessage
@@ -82,6 +84,7 @@ export const useCreateInputMessageInputContext = <
       ImageUploadPreview,
       initialValue,
       Input,
+      maxMessageLength,
       maxNumberOfFiles,
       MoreOptionsButton,
       numberOfLines,
@@ -93,8 +96,16 @@ export const useCreateInputMessageInputContext = <
       setInputRef,
       ShowThreadMessageInChannelButton,
       UploadProgressIndicator,
+      uploadsEnabled,
     }),
-    [compressImageQuality, editingExists, initialValue, quotedMessageId],
+    [
+      compressImageQuality,
+      editingExists,
+      initialValue,
+      maxMessageLength,
+      quotedMessageId,
+      uploadsEnabled,
+    ],
   );
 
   return inputMessageInputContext;

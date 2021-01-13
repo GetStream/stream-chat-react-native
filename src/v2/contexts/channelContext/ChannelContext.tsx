@@ -17,6 +17,10 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+export type ChannelConfig = {
+  typingEventsEnabled?: boolean;
+};
+
 export type ChannelContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -70,7 +74,7 @@ export type ChannelContextValue<
   StickyHeader?: React.ComponentType<{ dateString: string }>;
   targetedMessage?: string;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
-};
+} & ChannelConfig;
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 

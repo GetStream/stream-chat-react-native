@@ -46,8 +46,9 @@ import type {
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
-export type ActionProps = {
+export type MessagesConfig = {
   reactionsEnabled?: boolean;
+  readEventsEnabled?: boolean;
   repliesEnabled?: boolean;
 };
 
@@ -75,7 +76,7 @@ export type MessagesContextValue<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = ActionProps & {
+> = MessagesConfig & {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
