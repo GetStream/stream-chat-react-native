@@ -5,6 +5,10 @@ import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
@@ -46,7 +50,8 @@ export type MessageStatusPropsWithContext<
 > = Pick<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'message' | 'threadList'
->;
+> &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'readEventsEnabled'>;
 
 const MessageStatusWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -59,7 +64,7 @@ const MessageStatusWithContext = <
 >(
   props: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message, threadList } = props;
+  const { message, readEventsEnabled, threadList } = props;
 
   const {
     theme: {
@@ -84,7 +89,7 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (message.readBy && !threadList) {
+  if (message.readBy && !threadList && readEventsEnabled !== false) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
@@ -126,11 +131,23 @@ const areEqual = <
   prevProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   nextProps: MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { message: prevMessage, threadList: prevThreadList } = prevProps;
-  const { message: nextMessage, threadList: nextThreadList } = nextProps;
+  const {
+    message: prevMessage,
+    readEventsEnabled: prevReadEventsEnabled,
+    threadList: prevThreadList,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    readEventsEnabled: nextReadEventsEnabled,
+    threadList: nextThreadList,
+  } = nextProps;
 
   const threadListEqual = prevThreadList === nextThreadList;
   if (!threadListEqual) return false;
+
+  const readEventsEnabledEqual =
+    prevReadEventsEnabled === nextReadEventsEnabled;
+  if (!readEventsEnabledEqual) return false;
 
   const messageEqual =
     prevMessage.status === nextMessage.status &&
@@ -167,6 +184,15 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
+  const { readEventsEnabled } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { message, threadList } = useMessageContext<
     At,
     Ch,
@@ -177,7 +203,12 @@ export const MessageStatus = <
     Us
   >();
 
-  return <MemoizedMessageStatus {...{ message, threadList }} {...props} />;
+  return (
+    <MemoizedMessageStatus
+      {...{ message, readEventsEnabled, threadList }}
+      {...props}
+    />
+  );
 };
 
 MessageStatus.displayName = 'MessageStatus{messageSimple{status}}';

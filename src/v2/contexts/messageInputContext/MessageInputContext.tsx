@@ -83,6 +83,11 @@ export type ImageUpload = {
   url?: string;
 };
 
+export type InputConfig = {
+  maxMessageLength?: number;
+  uploadsEnabled?: boolean;
+};
+
 export type LocalMessageInputContext<
   At extends UnknownType = DefaultAttachmentType,
   Co extends string = DefaultCommandType,
@@ -340,7 +345,7 @@ export type InputMessageInputContextValue<
    * ref for input setter function
    */
   setInputRef?: (ref: TextInput | null) => void;
-};
+} & InputConfig;
 
 export type MessageInputContextValue<
   At extends UnknownType = DefaultAttachmentType,
@@ -397,10 +402,9 @@ export const MessageInputProvider = <
     };
   }>({});
   const [giphyActive, setGiphyActive] = useState(false);
-  const [
-    sendThreadMessageInChannel,
-    setSendThreadMessageInChannel,
-  ] = useState<boolean>(false);
+  const [sendThreadMessageInChannel, setSendThreadMessageInChannel] = useState(
+    false,
+  );
 
   const {
     fileUploads,

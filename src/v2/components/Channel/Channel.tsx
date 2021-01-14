@@ -70,6 +70,7 @@ import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
+  ChannelConfig,
   ChannelContextValue,
   ChannelProvider,
 } from '../../contexts/channelContext/ChannelContext';
@@ -78,11 +79,12 @@ import {
   useChatContext,
 } from '../../contexts/chatContext/ChatContext';
 import {
+  InputConfig,
   InputMessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
-  ActionProps,
+  MessagesConfig,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -748,19 +750,38 @@ export const ChannelWithContext = <
   };
 
   /**
+   * Channel configs for use in disabling local functionality
+   */
+  const messagesConfig = {
+    reactionsEnabled: true,
+    readEventsEnabled: true,
+    repliesEnabled: true,
+  } as MessagesConfig;
+  const channelConfig = {
+    typingEventsEnabled: true,
+  } as ChannelConfig;
+  const inputConfig = {
+    maxMessageLength: undefined,
+    uploadsEnabled: true,
+  } as InputConfig;
+  if (typeof channel?.getConfig === 'function') {
+    const maxMessageLength = channel.getConfig()?.max_message_length;
+    const reactions = channel.getConfig()?.reactions;
+    const readEvents = channel.getConfig()?.read_events;
+    const replies = channel.getConfig()?.replies;
+    const typingEvents = channel.getConfig()?.typing_events;
+    const uploads = channel.getConfig()?.uploads;
+    channelConfig.typingEventsEnabled = typingEvents;
+    inputConfig.maxMessageLength = maxMessageLength;
+    inputConfig.uploadsEnabled = uploads;
+    messagesConfig.reactionsEnabled = reactions;
+    messagesConfig.readEventsEnabled = readEvents;
+    messagesConfig.repliesEnabled = replies;
+  }
+
+  /**
    * MESSAGE METHODS
    */
-
-  const actionProps = {
-    reactionsEnabled: true,
-    repliesEnabled: true,
-  } as ActionProps;
-  if (typeof channel?.getConfig === 'function') {
-    const reactions = channel.getConfig()?.reactions;
-    const replies = channel.getConfig()?.replies;
-    actionProps.reactionsEnabled = reactions;
-    actionProps.repliesEnabled = replies;
-  }
 
   const updateMessage: MessagesContextValue<
     At,
@@ -1202,6 +1223,7 @@ export const ChannelWithContext = <
   };
 
   const channelContext = useCreateChannelContext({
+    ...channelConfig,
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
@@ -1233,6 +1255,7 @@ export const ChannelWithContext = <
   });
 
   const messageInputContext = useCreateInputMessageInputContext({
+    ...inputConfig,
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
@@ -1263,7 +1286,7 @@ export const ChannelWithContext = <
   });
 
   const messagesContext = useCreateMessagesContext({
-    ...actionProps,
+    ...messagesConfig,
     additionalTouchableProps,
     Attachment,
     AttachmentActions,

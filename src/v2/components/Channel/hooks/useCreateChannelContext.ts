@@ -43,6 +43,7 @@ export const useCreateChannelContext = <
   StickyHeader,
   targetedMessage,
   typing,
+  typingEventsEnabled,
   watcherCount,
   watchers,
 }: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
@@ -94,6 +95,7 @@ export const useCreateChannelContext = <
       StickyHeader,
       targetedMessage,
       typing,
+      typingEventsEnabled,
       watcherCount,
       watchers,
     }),
@@ -108,6 +110,7 @@ export const useCreateChannelContext = <
       readUsersLastReads,
       targetedMessage,
       typing,
+      typingEventsEnabled,
       watcherCount,
     ],
   );

@@ -155,6 +155,7 @@ type MessageInputPropsWithContext<
     | 'ShowThreadMessageInChannelButton'
     | 'removeImage'
     | 'uploadNewImage'
+    | 'uploadsEnabled'
   > &
   Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'Reply'> &
   Pick<
@@ -219,6 +220,7 @@ export const MessageInputWithContext = <
     t,
     threadList,
     uploadNewImage,
+    uploadsEnabled,
     watchers,
   } = props;
 
@@ -473,16 +475,17 @@ export const MessageInputWithContext = <
                     />
                   ) : (
                     <>
-                      {(hasImagePicker || hasFilePicker) && (
-                        <View
-                          style={[
-                            styles.attachButtonContainer,
-                            attachButtonContainer,
-                          ]}
-                        >
-                          <AttachButton handleOnPress={handleOnPress} />
-                        </View>
-                      )}
+                      {(hasImagePicker || hasFilePicker) &&
+                        uploadsEnabled !== false && (
+                          <View
+                            style={[
+                              styles.attachButtonContainer,
+                              attachButtonContainer,
+                            ]}
+                          >
+                            <AttachButton handleOnPress={handleOnPress} />
+                          </View>
+                        )}
                       <View style={[commandsButtonContainer]}>
                         <CommandsButton
                           handleOnPress={() => {
@@ -792,6 +795,7 @@ export const MessageInput = <
     showMoreOptions,
     ShowThreadMessageInChannelButton,
     uploadNewImage,
+    uploadsEnabled,
   } = useMessageInputContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const { Reply } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -848,6 +852,7 @@ export const MessageInput = <
         suggestionsTitle,
         t,
         uploadNewImage,
+        uploadsEnabled,
         watchers,
       }}
       {...props}
