@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   FlatListProps,
@@ -99,7 +105,6 @@ const styles = StyleSheet.create({
 });
 
 const limitForUnreadScrolledUp = 4;
-
 const keyExtractor = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -151,12 +156,13 @@ type MessageListPropsWithContext<
     | 'DateHeader'
     | 'disableTypingIndicator'
     | 'FlatList'
+    | 'initialScrollToFirstUnreadMessage'
     | 'InlineUnreadIndicator'
     | 'loadingMoreRecent'
     | 'loadMore'
     | 'loadMoreRecent'
     | 'Message'
-    | 'MessageNotification'
+    | 'ScrollToBottomButton'
     | 'MessageSystem'
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
@@ -264,6 +270,7 @@ const MessageListWithContext = <
     FlatList,
     FooterComponent,
     HeaderComponent,
+    initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     inverted = true,
     isOnline,
@@ -276,12 +283,12 @@ const MessageListWithContext = <
     loadMoreThread,
     markRead,
     Message,
-    MessageNotification,
     MessageSystem,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
     reloadChannel,
+    ScrollToBottomButton,
     selectedPicker,
     setFlatListRef,
     setImages,
@@ -322,23 +329,60 @@ const MessageListWithContext = <
   const flatListRef = useRef<FlatListType<
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
-  const yOffset = useRef(0);
+  const initialScrollSet = useRef<boolean>(false);
+  const isGestureScroll = useRef<boolean>(true);
 
   const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
     getLastReceivedMessage(messageList)?.id,
   );
-  const lastMessageListLength = useRef(channel?.state.messages.length);
-  const [newMessagesNotification, setNewMessageNotification] = useState(false);
-  const messageScrollPosition = useRef(0);
+  const [
+    scrollToBottomButtonVisible,
+    setScrollToBottomButtonVisible,
+  ] = useState(false);
 
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
 
+  // We need topMessage and channelLastRead values to set the initial scroll position.
+  // Amd so these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
+  const topMessage = useRef(messageList[messageList.length - 1]);
+  const channelLastRead = useRef(channel?.lastRead());
+
   const viewableMessages = useRef<string[]>([]);
-  const updateStickyDate = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      viewableMessages.current = viewableItems.map((v) => v.item.id);
+
+  const isUnreadMessage = useCallback(
+    (
+      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+      lastRead: ReturnType<
+        StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']
+      >,
+    ) =>
+      message &&
+      lastRead &&
+      message.created_at &&
+      lastRead < message.created_at,
+    [],
+  );
+
+  const setInitialScrollIfNeeded = useCallback(() => {
+    if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) return;
+    if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
+      flatListRef.current?.scrollToEnd();
+      setTimeout(() => {
+        initialScrollSet.current = true;
+      }, 500);
+    } else {
+      initialScrollSet.current = true;
+    }
+  }, []);
+
+  const updateViewableMessages = useCallback((viewableItems: ViewToken[]) => {
+    viewableMessages.current = viewableItems.map((v) => v.item.id);
+  }, []);
+
+  const updateStickyHeaderDateIfNeeded = useCallback(
+    (viewableItems: ViewToken[]) => {
       if (viewableItems?.length) {
         const lastItem = viewableItems.pop();
 
@@ -353,79 +397,72 @@ const MessageListWithContext = <
         }
       }
     },
+    [],
+  );
+
+  // FlatList doesn't accept changeable function for onViewableItemsChanged prop.
+  // Thus useRef.
+  const onViewableItemsChanged = useRef(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      updateViewableMessages(viewableItems);
+      updateStickyHeaderDateIfNeeded(viewableItems);
+      setInitialScrollIfNeeded();
+    },
   );
 
   useEffect(() => {
-    setNewMessageNotification(false);
+    setScrollToBottomButtonVisible(false);
   }, [disabled]);
-
-  const channelExits = !!channel;
 
   useEffect(() => {
     if (channel && channel.countUnread() <= limitForUnreadScrolledUp) {
       channel.markRead();
     }
-  }, [channelExits]);
+  }, [messageList.length]);
 
-  const messageListValues = messageList.reduce(
-    (acc, cur, index) =>
-      `${index === 0 || index === messageList.length - 1 ? cur.id : ''}${acc}`,
-    '',
-  );
   useEffect(() => {
-    const currentLastMessage = getLastReceivedMessage(messageList);
-    if (currentLastMessage && channel) {
-      const currentLastReceivedId = currentLastMessage.id;
-      const currentMessageListLength = channel?.state.messages.length;
-      if (currentLastReceivedId) {
-        const hasNewMessage =
-          lastMessageListLength.current &&
-          lastReceivedId !== currentLastReceivedId &&
-          currentMessageListLength - lastMessageListLength.current === 1;
-        const userScrolledUp = yOffset.current > 0;
-        const isOwner =
-          currentLastMessage &&
-          client &&
-          currentLastMessage.user?.id === client.userID;
-
-        if (hasNewMessage && (!isOwner || userScrolledUp)) {
-          setNewMessageNotification(true);
-        }
-
-        if (!channel?.state.isUpToDate) {
-          setNewMessageNotification(true);
-        }
-
-        // always scroll down when it's your own message that you added..
-        const scrollToBottom =
-          channel?.state.isUpToDate &&
-          hasNewMessage &&
-          (isOwner || !userScrolledUp);
-
-        if (scrollToBottom && flatListRef.current) {
-          flatListRef.current.scrollToIndex({ index: 0 });
-          setNewMessageNotification(false);
-          if (!isOwner) {
-            markRead();
-          }
-        }
-
-        setLastReceivedId(currentLastReceivedId);
-        lastMessageListLength.current = channel?.state.messages.length;
+    // Scroll to bottom only if:
+    // 1. Channel has received a new message AND
+    // 2. Message was sent by me (current logged in user)
+    const scrollToBottomIfNeeded = () => {
+      if (!client || !channel) {
+        return;
       }
+
+      const lastReceivedMessage = getLastReceivedMessage(messageList);
+
+      const hasNewMessage = lastReceivedId !== lastReceivedMessage?.id;
+      const isMyMessage = lastReceivedMessage?.user?.id === client.userID;
+
+      setLastReceivedId(lastReceivedMessage?.id);
+
+      // Scroll down when it's your own message that you added..
+      if (hasNewMessage && isMyMessage) {
+        flatListRef?.current?.scrollToIndex({ index: 0 });
+        setScrollToBottomButtonVisible(false);
+      }
+    };
+
+    // If channel is not upto date, then always display scrollToBottom button.
+    if (!channel?.state.isUpToDate) {
+      setScrollToBottomButtonVisible(true);
+    } else {
+      scrollToBottomIfNeeded();
     }
-  }, [messageListValues]);
+
+    // channelLastRead and topMessage are only used for setting initial scroll.
+    // So lets not set it if `initialScrollToFirstUnreadMessage` prop is false.
+    // OR if the scroll is already set.
+    if (initialScrollToFirstUnreadMessage && !initialScrollSet.current) {
+      channelLastRead.current = channel?.lastRead();
+      topMessage.current = messageList[messageList.length - 1];
+    }
+  }, [messageList.length]);
 
   useEffect(() => {
     // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
     setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
-  }, [messageListValues]);
-
-  const isUnreadMessage = (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    lastRead: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
-  ) =>
-    message && lastRead && message.created_at && lastRead < message.created_at;
+  }, [messageList.length]);
 
   const renderItem = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -438,7 +475,7 @@ const MessageListWithContext = <
     const lastMessage = messageList?.[index + 1];
 
     const showUnreadUnderlay =
-      !!isUnreadMessage(message, lastRead) && newMessagesNotification;
+      !!isUnreadMessage(message, lastRead) && scrollToBottomButtonVisible;
     const insertInlineUnreadIndicator =
       showUnreadUnderlay && !isUnreadMessage(lastMessage, lastRead);
 
@@ -476,33 +513,43 @@ const MessageListWithContext = <
     return null;
   };
 
-  const loadMoreRecentMessages = () => {
-    if (!channel?.state.isUpToDate) {
-      loadMoreRecent();
-    }
-  };
-
+  // Following if condition covers following cases:
+  // 1. If I scroll up -> show scrollToBottom button.
+  // 2. If I scroll to bottom of screen
+  //    |-> hide justToBottom button.
+  //    |-> if channel is unread, call markRead().
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
+    if (!channel || !initialScrollSet.current) {
+      return;
+    }
+
     const y = event.nativeEvent.contentOffset.y;
-    const removeNewMessageNotification = y <= 10 && channel?.state.isUpToDate;
-    if (
+    const isScrollAtBottom = y <= 30;
+    const showScrollToBottomBtn = !(
+      isScrollAtBottom && channel?.state.isUpToDate
+    );
+    const loadMoreRecentResults =
+      isScrollAtBottom && !channel?.state.isUpToDate;
+    const shouldMarkRead =
       !threadList &&
-      removeNewMessageNotification &&
-      channel &&
-      channel.countUnread() > 0
-    ) {
+      isScrollAtBottom &&
+      channel?.state.isUpToDate &&
+      channel.countUnread() > 0;
+
+    if (shouldMarkRead) {
       markRead();
     }
 
-    if (y <= 30) {
-      messageScrollPosition.current = messageList.length;
-      loadMoreRecentMessages();
+    if (loadMoreRecentResults) {
+      loadMoreRecent();
     }
 
-    yOffset.current = y;
-    if (removeNewMessageNotification) {
-      setNewMessageNotification(false);
+    if (showScrollToBottomBtn) {
+      setScrollToBottomButtonVisible(true);
+    } else {
+      setScrollToBottomButtonVisible(false);
     }
+
     if (onListScroll) {
       onListScroll(event);
     }
@@ -511,8 +558,14 @@ const MessageListWithContext = <
   const goToNewMessages = async () => {
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
+    } else {
+      isGestureScroll.current = true;
+      flatListRef.current?.scrollToIndex({
+        index: 0,
+      });
     }
-    setNewMessageNotification(false);
+
+    setScrollToBottomButtonVisible(false);
     if (!threadList) {
       markRead();
     }
@@ -538,30 +591,41 @@ const MessageListWithContext = <
     }
   };
 
-  const messagesWithImages = messageList.filter((message) => {
-    if (!message.deleted_at && message.attachments) {
-      return message.attachments.some(
-        (attachment) =>
-          attachment.type === 'image' &&
-          !attachment.title_link &&
-          !attachment.og_scrape_url &&
-          (attachment.image_url || attachment.thumb_url),
-      );
-    }
-    return false;
-  });
+  const messagesWithImages = useMemo(
+    () =>
+      messageList.filter((message) => {
+        if (!message.deleted_at && message.attachments) {
+          return message.attachments.some(
+            (attachment) =>
+              attachment.type === 'image' &&
+              !attachment.title_link &&
+              !attachment.og_scrape_url &&
+              (attachment.image_url || attachment.thumb_url),
+          );
+        }
+        return false;
+      }),
+    [messageList.length],
+  );
 
   /**
    * This is for the useEffect to run again in the case that a message
    * gets edited with more or the same number of images
    */
-  const imageString = messagesWithImages
-    .map((message) =>
-      (message.attachments as Attachment<At>[])
-        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+  const imageString = useMemo(
+    () =>
+      messagesWithImages
+        .map((message) =>
+          (message.attachments as Attachment<At>[])
+            .map(
+              (attachment) =>
+                attachment.image_url || attachment.thumb_url || '',
+            )
+            .join(),
+        )
         .join(),
-    )
-    .join();
+    [messagesWithImages],
+  );
 
   const numberOfMessagesWithImages = messagesWithImages.length;
   const threadExists = !!thread;
@@ -571,23 +635,32 @@ const MessageListWithContext = <
     }
   }, [imageString, numberOfMessagesWithImages, threadExists, threadList]);
 
-  const stickyHeaderFormatDate =
-    stickyHeaderDate.getFullYear() === new Date().getFullYear()
-      ? 'MMM D'
-      : 'MMM D, YYYY';
-  const tStickyHeaderDate = tDateTimeParser(stickyHeaderDate);
-  const stickyHeaderDateToRender = isDayOrMoment(tStickyHeaderDate)
-    ? tStickyHeaderDate.format(stickyHeaderFormatDate)
-    : new Date(tStickyHeaderDate).toDateString();
+  const stickyHeaderFormatDate = useMemo(
+    () =>
+      stickyHeaderDate.getFullYear() === new Date().getFullYear()
+        ? 'MMM D'
+        : 'MMM D, YYYY',
+    [stickyHeaderDate],
+  );
+  const tStickyHeaderDate = useMemo(() => tDateTimeParser(stickyHeaderDate), [
+    stickyHeaderDate,
+  ]);
+  const stickyHeaderDateToRender = useMemo(
+    () =>
+      isDayOrMoment(tStickyHeaderDate)
+        ? tStickyHeaderDate.format(stickyHeaderFormatDate)
+        : new Date(tStickyHeaderDate).toDateString(),
+    [tStickyHeaderDate],
+  );
 
-  if (!FlatList) return null;
-
-  const dismissImagePicker = () => {
+  const dismissImagePicker = useCallback(() => {
     if (!hasMoved && selectedPicker) {
       setSelectedPicker(undefined);
       closePicker();
     }
-  };
+  }, [hasMoved, selectedPicker]);
+
+  if (!FlatList) return null;
 
   return (
     <View
@@ -632,7 +705,7 @@ const MessageListWithContext = <
         onScrollBeginDrag={() => setHasMoved(true)}
         onScrollEndDrag={() => setHasMoved(false)}
         onTouchEnd={dismissImagePicker}
-        onViewableItemsChanged={updateStickyDate.current}
+        onViewableItemsChanged={onViewableItemsChanged.current}
         ref={(ref) => {
           flatListRef.current = ref;
 
@@ -662,9 +735,9 @@ const MessageListWithContext = <
               <TypingIndicator />
             </TypingIndicatorContainer>
           )}
-          <MessageNotification
+          <ScrollToBottomButton
             onPress={goToNewMessages}
-            showNotification={newMessagesNotification}
+            showNotification={scrollToBottomButtonVisible}
             unreadCount={channel?.countUnread()}
           />
         </>
@@ -732,13 +805,14 @@ export const MessageList = <
     DateHeader,
     disableTypingIndicator,
     FlatList,
+    initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     loadingMoreRecent,
     loadMore,
     loadMoreRecent,
     Message,
-    MessageNotification,
     MessageSystem,
+    ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -764,6 +838,7 @@ export const MessageList = <
         disableTypingIndicator,
         EmptyStateIndicator,
         FlatList,
+        initialScrollToFirstUnreadMessage,
         InlineUnreadIndicator,
         isOnline,
         loadChannelAtMessage,
@@ -775,9 +850,9 @@ export const MessageList = <
         loadMoreThread,
         markRead,
         Message,
-        MessageNotification,
         MessageSystem,
         reloadChannel,
+        ScrollToBottomButton,
         selectedPicker,
         setImages,
         setSelectedPicker,

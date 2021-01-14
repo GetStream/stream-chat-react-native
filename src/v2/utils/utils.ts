@@ -31,6 +31,9 @@ import type {
   UnknownType,
 } from '../types/types';
 
+// GLOBAL SERVER SIDE LIMITS
+export const GLOBAL_UNREAD_COUNT_LIMIT = 255;
+
 export type ReactionData = {
   Icon: React.FC<IconProps>;
   type: string;

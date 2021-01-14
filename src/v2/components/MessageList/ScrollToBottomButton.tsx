@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export type MessageNotificationProps = {
+export type ScrollToBottomButtonProps = {
   /** onPress handler */
   onPress: (event: GestureResponderEvent) => void;
   /** If we should show the notification or not */
@@ -61,9 +61,9 @@ export type MessageNotificationProps = {
 };
 
 /**
- * @example ./MessageNotification.md
+ * @example ./ScrollToBottomButton.md
  */
-export const MessageNotification: React.FC<MessageNotificationProps> = (
+export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
   props,
 ) => {
   const { onPress, showNotification = true, unreadCount } = props;
@@ -72,7 +72,7 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
     theme: {
       colors: { accent_blue, black, white },
       messageList: {
-        messageNotification: {
+        ScrollToBottomButton: {
           container,
           touchable,
           unreadCountNotificationContainer,
@@ -121,5 +121,5 @@ export const MessageNotification: React.FC<MessageNotificationProps> = (
   );
 };
 
-MessageNotification.displayName =
-  'MessageNotification{messageList{messageNotification}}';
+ScrollToBottomButton.displayName =
+  'ScrollToBottomButton{messageList{ScrollToBottomButton}}';

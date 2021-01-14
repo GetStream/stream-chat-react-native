@@ -293,19 +293,19 @@ export type Theme = {
       text: TextStyle;
     };
     listContainer: ViewStyle;
-    messageNotification: {
-      container: ViewStyle;
-      touchable: ViewStyle;
-      unreadCountNotificationContainer: ViewStyle;
-      unreadCountNotificationText: TextStyle;
-      wrapper: ViewStyle;
-    };
     messageSystem: {
       container: ViewStyle;
       dateText: TextStyle;
       line: ViewStyle;
       text: TextStyle;
       textContainer: ViewStyle;
+    };
+    ScrollToBottomButton: {
+      container: ViewStyle;
+      touchable: ViewStyle;
+      unreadCountNotificationContainer: ViewStyle;
+      unreadCountNotificationText: TextStyle;
+      wrapper: ViewStyle;
     };
     typingIndicatorContainer: ViewStyle;
   };
@@ -714,19 +714,19 @@ export const defaultTheme: Theme = {
       text: {},
     },
     listContainer: {},
-    messageNotification: {
-      container: {},
-      touchable: {},
-      unreadCountNotificationContainer: {},
-      unreadCountNotificationText: {},
-      wrapper: {},
-    },
     messageSystem: {
       container: {},
       dateText: {},
       line: {},
       text: {},
       textContainer: {},
+    },
+    ScrollToBottomButton: {
+      container: {},
+      touchable: {},
+      unreadCountNotificationContainer: {},
+      unreadCountNotificationText: {},
+      wrapper: {},
     },
     typingIndicatorContainer: {},
   },

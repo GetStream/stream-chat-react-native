@@ -52,6 +52,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { GLOBAL_UNREAD_COUNT_LIMIT } from '../../utils/utils';
 
 export type ChannelListProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -204,7 +205,7 @@ export const ChannelList = <
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold = 2,
     lockChannelOrder = false,
-    maxUnreadCount = 255,
+    maxUnreadCount = GLOBAL_UNREAD_COUNT_LIMIT,
     numberOfSkeletons = 6,
     onAddedToChannel,
     onChannelDeleted,

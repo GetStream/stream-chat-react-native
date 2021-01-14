@@ -6,7 +6,7 @@ import {
   waitFor,
 } from '@testing-library/react-native';
 
-import { MessageNotification } from '../MessageNotification';
+import { ScrollToBottomButton } from '../ScrollToBottomButton';
 
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
@@ -14,14 +14,14 @@ import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
 
-describe('MessageNotification', () => {
+describe('ScrollToBottomButton', () => {
   it('should render nothing if showNotification is false', async () => {
     const i18nInstance = new Streami18n();
     const translators = await i18nInstance.getTranslators();
     const { queryByTestId } = render(
       <ThemeProvider>
         <TranslationProvider value={translators}>
-          <MessageNotification onPress={() => null} showNotification={false} />
+          <ScrollToBottomButton onPress={() => null} showNotification={false} />
         </TranslationProvider>
       </ThemeProvider>,
     );
@@ -37,7 +37,7 @@ describe('MessageNotification', () => {
     const { queryByTestId } = render(
       <ThemeProvider>
         <TranslationProvider value={translators}>
-          <MessageNotification onPress={() => null} showNotification={true} />
+          <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
     );
@@ -54,7 +54,7 @@ describe('MessageNotification', () => {
     const { getByTestId } = render(
       <ThemeProvider>
         <TranslationProvider value={translators}>
-          <MessageNotification onPress={onPress} showNotification={true} />
+          <ScrollToBottomButton onPress={onPress} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
     );
@@ -69,7 +69,7 @@ describe('MessageNotification', () => {
     const { getByText } = render(
       <ThemeProvider>
         <TranslationProvider value={{ ...translators, t }}>
-          <MessageNotification
+          <ScrollToBottomButton
             onPress={() => null}
             showNotification={true}
             t={t}
@@ -89,7 +89,7 @@ describe('MessageNotification', () => {
     const { toJSON } = render(
       <ThemeProvider>
         <TranslationProvider value={translators}>
-          <MessageNotification onPress={() => null} showNotification={true} />
+          <ScrollToBottomButton onPress={() => null} showNotification={true} />
         </TranslationProvider>
       </ThemeProvider>,
     );

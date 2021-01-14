@@ -191,7 +191,7 @@ describe('MessageList', () => {
     });
   });
 
-  it('should render MessageNotification when new message is received and user has scroll up in list, then remove MessageNotification on scroll down', async () => {
+  it('should render ScrollToBottomButton when new message is received and user has scroll up in list, then remove ScrollToBottomButton on scroll down', async () => {
     const user1 = generateUser();
     const user2 = generateUser();
     const messages = new Array(50).fill(generateMessage({ user: user1 }));

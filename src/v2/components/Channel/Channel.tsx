@@ -10,8 +10,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import debounce from 'lodash/debounce';
-import throttle from 'lodash/throttle';
 import Immutable from 'seamless-immutable';
 import {
   ChannelState,
@@ -62,7 +60,7 @@ import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../Me
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
-import { MessageNotification as MessageNotificationDefault } from '../MessageList/MessageNotification';
+import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
@@ -119,15 +117,22 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { generateRandomId, ReactionData } from '../../utils/utils';
+import {
+  generateRandomId,
+  GLOBAL_UNREAD_COUNT_LIMIT,
+  ReactionData,
+} from '../../utils/utils';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
+
+import { heavyThrottle, lightThrottle } from './utils/throttle';
+import { heavyDebounce } from './utils/debounce';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
 
 const limitForUnreadScrolledUp = 4;
-
+const limitUnreadMessagesOnLoad = 2;
 export const reactionData: ReactionData[] = [
   {
     Icon: LoveReaction,
@@ -203,7 +208,7 @@ export type ChannelPropsWithContext<
       | 'MessageFooter'
       | 'MessageHeader'
       | 'MessageList'
-      | 'MessageNotification'
+      | 'ScrollToBottomButton'
       | 'MessageReplies'
       | 'MessageSimple'
       | 'MessageStatus'
@@ -372,7 +377,7 @@ export const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList = MessageListDefault,
-    MessageNotification = MessageNotificationDefault,
+    ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
@@ -461,7 +466,7 @@ export const ChannelWithContext = <
         loadChannelAtMessage({ messageId });
       } else if (
         initialScrollToFirstUnreadMessage &&
-        channel.countUnread() > 0
+        channel.countUnread() > limitForUnreadScrolledUp
       ) {
         loadChannelAtFirstUnreadMessage();
       } else {
@@ -472,9 +477,9 @@ export const ChannelWithContext = <
     return () => {
       client.off('connection.recovered', handleEvent);
       channel?.off?.(handleEvent);
-      handleEventStateThrottled.cancel();
-      loadMoreFinishedDebounced.cancel();
-      loadMoreThreadFinishedDebounced.cancel();
+      copyChannelState.cancel();
+      loadMoreFinished.cancel();
+      loadMoreThreadFinished.cancel();
     };
   }, [channelId, messageId]);
 
@@ -495,7 +500,6 @@ export const ChannelWithContext = <
   /**
    * CHANNEL CONSTS
    */
-
   const isAdmin =
     client?.user?.role === 'admin' ||
     channel?.state.membership.role === 'admin';
@@ -518,7 +522,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['markRead'] = () => {
+  >['markRead'] = lightThrottle(() => {
     if (channel?.disconnected || !channel?.getConfig?.()?.read_events) {
       return;
     }
@@ -528,14 +532,9 @@ export const ChannelWithContext = <
     } else {
       logChatPromiseExecution(channel.markRead(), 'mark read');
     }
-  };
-
-  const markReadThrottled = throttle(markRead, 500, {
-    leading: true,
-    trailing: true,
   });
 
-  const copyChannelState = () => {
+  const copyChannelState = lightThrottle(() => {
     setLoading(false);
     if (channel) {
       setMembers(channel.state.members);
@@ -545,11 +544,6 @@ export const ChannelWithContext = <
       setWatcherCount(channel.state.watcher_count);
       setWatchers(channel.state.watchers);
     }
-  };
-
-  const handleEventStateThrottled = throttle(copyChannelState, 500, {
-    leading: true,
-    trailing: true,
   });
 
   const handleEvent: EventHandler<At, Ch, Co, Ev, Me, Re, Us> = (event) => {
@@ -566,7 +560,7 @@ export const ChannelWithContext = <
     }
 
     if (channel) {
-      handleEventStateThrottled();
+      copyChannelState();
     }
   };
 
@@ -593,24 +587,77 @@ export const ChannelWithContext = <
     }
   };
 
+  /**
+   * Loads channel at first unread channel.
+   */
   const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
 
-    if (
-      channel.countUnread() <= limitForUnreadScrolledUp ||
-      !channel.state.isUpToDate
-    ) {
-      return loadChannel();
-    }
-
+    channel.state.clearMessages();
     channel.state.setIsUpToDate(false);
 
-    return channelQueryCall(() =>
-      query(
-        Math.max(channel.countUnread() - limitForUnreadScrolledUp / 2, 0),
-        30,
-      ),
-    );
+    return channelQueryCall(async () => {
+      // Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
+      // Thus we need to handle these two cases separately.
+      if (channel.countUnread() < GLOBAL_UNREAD_COUNT_LIMIT) {
+        // We want to ensure that first unread message appears in the first window frame, when messagelist loads.
+        // If we assume that we have a exact count of unread messages, then first unread message is at offset = channel.countUnread().
+        // So we will query 2 messages after (and including) first unread message, and 30 messages before first unread
+        // message. So 2nd message in list is the first unread message. We can safely assume that 2nd message in list
+        // will be visible to user when list loads.
+        const offset = channel.countUnread() - limitUnreadMessagesOnLoad;
+        await query(offset, 30);
+
+        // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
+        // are enough to fill the screen), then we need to fetch some more messages on recent side.
+        if (
+          channel.state.messages.length <= limitForUnreadScrolledUp &&
+          !channel.state.isUpToDate
+        ) {
+          const mostRecentMessage =
+            channel.state.messages[channel.state.messages.length - 1];
+          await queryAfterMessage(mostRecentMessage.id, 5);
+        }
+      } else {
+        // If the unread count is 255, then we don't have exact unread count anymore, to determine the offset for querying messages.
+        // In this case we are going to query messages using date params instead of offset-limit e.g., created_at_before_or_equal
+        // So we query 30 messages before the last time user read the channel - channel.lastRead()
+        await channel.query({
+          messages: {
+            created_at_before_or_equal: channel.lastRead(),
+            limit: 30,
+          },
+        });
+
+        // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
+        // are enough to fill the screen), then we need to fetch some more messages on recent side.
+        if (
+          channel.state.messages.length <= limitUnreadMessagesOnLoad &&
+          !channel.state.isUpToDate
+        ) {
+          if (channel.state.messages.length > 0) {
+            const mostRecentMessage =
+              channel.state.messages[channel.state.messages.length - 1];
+            await queryAfterMessage(mostRecentMessage.id, 5);
+          } else {
+            // If we didn't get any messages, which means first unread message is the first ever message in channel.
+            // So simply fetch some messages after the lastRead datetime.
+            // We are keeping the limit as 10 here, as opposed to 30 in cases above. The reason being, we want the list
+            // to be scrolled upto first unread message. So in this case we will need the scroll to start at top of the list.
+            // React native provides a prop `initialScrollIndex` on FlatList, but it doesn't really work well
+            // especially for dynamic sized content. So when the list loads, we are just going to manually scroll
+            // to top of the list - flRef.current.scrollToEnd(). This autoscroll behaviour is not great in general, but its less
+            // bad for scrolling up 10 messages than scrolling up 30 messages.
+            await channel.query({
+              messages: {
+                created_at_after: channel.lastRead(),
+                limit: 10,
+              },
+            });
+          }
+        }
+      }
+    });
   };
 
   /**
@@ -747,7 +794,6 @@ export const ChannelWithContext = <
   /**
    * MESSAGE METHODS
    */
-
   const actionProps = {
     reactionsEnabled: true,
     repliesEnabled: true,
@@ -919,40 +965,28 @@ export const ChannelWithContext = <
     await sendMessageRequest(message);
   };
 
-  const loadMoreFinished = (
-    updatedHasMore: boolean,
-    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-  ) => {
-    setLoadingMore(false);
-    setHasMore(updatedHasMore);
-    setMessages(newMessages);
-  };
-
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreFinishedDebounced = debounce(loadMoreFinished, 2000, {
-    leading: true,
-    trailing: true,
-  });
-
-  const loadMoreRecentFinished = (
-    newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
-  ) => {
-    setLoadingMoreRecent(false);
-    setMessages(newMessages);
-  };
-
-  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreRecentFinishedDebounced = debounce(
-    loadMoreRecentFinished,
-    2000,
-    {
-      leading: true,
-      trailing: true,
+  const loadMoreFinished = heavyDebounce(
+    (
+      updatedHasMore: boolean,
+      newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'],
+    ) => {
+      setLoadingMore(false);
+      setHasMore(updatedHasMore);
+      setMessages(newMessages);
     },
   );
 
-  const loadMore = async () => {
-    if (loadingMore || hasMore === false) return;
+  const loadMore: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMore'] = heavyThrottle(async () => {
+    if (loadingMoreRecent || loadingMore || hasMore === false) return;
     setLoadingMore(true);
 
     if (!messages.length) {
@@ -975,15 +1009,23 @@ export const ChannelWithContext = <
         });
 
         const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinishedDebounced(updatedHasMore, channel.state.messages);
+        loadMoreFinished(updatedHasMore, channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
       return setLoadingMore(false);
     }
-  };
+  });
 
-  const loadMoreRecent = async () => {
+  const loadMoreRecent: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['loadMoreRecent'] = heavyThrottle(async () => {
     if (loadingMoreRecent || channel?.state.isUpToDate) {
       return;
     }
@@ -1002,40 +1044,23 @@ export const ChannelWithContext = <
     const recentId = recentMessage && recentMessage.id;
     try {
       if (channel) {
-        await queryAfterMessage(recentId, 20);
+        await queryAfterMessage(recentId);
 
-        loadMoreRecentFinishedDebounced(channel.state.messages);
+        loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
       return setLoadingMoreRecent(false);
     }
-  };
+  });
 
-  const loadMoreThrottled: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['loadMore'] = throttle(loadMore, 2000, {
-    leading: true,
-    trailing: true,
-  });
-  const loadMoreRecentThrottled: MessagesContextValue<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >['loadMoreRecent'] = throttle(loadMoreRecent, 2000, {
-    leading: true,
-    trailing: true,
-  });
+  // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
+  const loadMoreRecentFinished = heavyDebounce(
+    (newMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages']) => {
+      setLoadingMoreRecent(false);
+      setMessages(newMessages);
+    },
+  );
 
   const editMessage: InputMessageInputContextValue<
     At,
@@ -1141,30 +1166,23 @@ export const ChannelWithContext = <
     setThreadMessages(Immutable([]));
   }, [setThread, setThreadMessages]);
 
-  const loadMoreThreadFinished = (
-    newThreadHasMore: boolean,
-    updatedThreadMessages: ChannelState<
-      At,
-      Ch,
-      Co,
-      Ev,
-      Me,
-      Re,
-      Us
-    >['threads'][string],
-  ) => {
-    setThreadHasMore(newThreadHasMore);
-    setThreadLoadingMore(false);
-    setThreadMessages(updatedThreadMessages);
-  };
-
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds
-  const loadMoreThreadFinishedDebounced = debounce(
-    loadMoreThreadFinished,
-    2000,
-    {
-      leading: true,
-      trailing: true,
+  const loadMoreThreadFinished = heavyDebounce(
+    (
+      newThreadHasMore: boolean,
+      updatedThreadMessages: ChannelState<
+        At,
+        Ch,
+        Co,
+        Ev,
+        Me,
+        Re,
+        Us
+      >['threads'][string],
+    ) => {
+      setThreadHasMore(newThreadHasMore);
+      setThreadLoadingMore(false);
+      setThreadMessages(updatedThreadMessages);
     },
   );
 
@@ -1194,7 +1212,7 @@ export const ChannelWithContext = <
 
       const updatedHasMore = queryResponse.messages.length === limit;
       const updatedThreadMessages = channel.state.threads[parentID] || [];
-      loadMoreThreadFinishedDebounced(updatedHasMore, updatedThreadMessages);
+      loadMoreThreadFinished(updatedHasMore, updatedThreadMessages);
     }
   };
 
@@ -1216,7 +1234,7 @@ export const ChannelWithContext = <
     loadChannelAtMessage,
     loading,
     LoadingIndicator,
-    markRead: markReadThrottled,
+    markRead,
     members,
     read,
     reloadChannel,
@@ -1279,11 +1297,12 @@ export const ChannelWithContext = <
     Gallery,
     Giphy,
     hasMore,
+    initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
     loadingMore,
     loadingMoreRecent,
-    loadMore: loadMoreThrottled,
-    loadMoreRecent: loadMoreRecentThrottled,
+    loadMore,
+    loadMoreRecent,
     markdownRules,
     Message,
     MessageAvatar,
@@ -1292,7 +1311,6 @@ export const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList,
-    MessageNotification,
     MessageReplies,
     messages,
     MessageSimple,
@@ -1303,6 +1321,7 @@ export const ChannelWithContext = <
     removeMessage,
     Reply,
     retrySendMessage,
+    ScrollToBottomButton,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
@@ -1335,7 +1354,7 @@ export const ChannelWithContext = <
         error={error}
         listType='message'
         retry={() => {
-          loadMoreThrottled();
+          loadMore();
         }}
       />
     );
