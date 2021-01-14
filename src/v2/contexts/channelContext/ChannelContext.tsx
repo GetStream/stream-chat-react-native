@@ -18,6 +18,7 @@ import type {
 } from '../../types/types';
 
 export type ChannelConfig = {
+  readEventsEnabled?: boolean;
   typingEventsEnabled?: boolean;
 };
 

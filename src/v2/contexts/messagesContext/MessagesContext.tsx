@@ -48,7 +48,6 @@ import type { ReactionData } from '../../utils/utils';
 
 export type MessagesConfig = {
   reactionsEnabled?: boolean;
-  readEventsEnabled?: boolean;
   repliesEnabled?: boolean;
 };
 

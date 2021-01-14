@@ -754,10 +754,10 @@ export const ChannelWithContext = <
    */
   const messagesConfig = {
     reactionsEnabled: true,
-    readEventsEnabled: true,
     repliesEnabled: true,
   } as MessagesConfig;
   const channelConfig = {
+    readEventsEnabled: true,
     typingEventsEnabled: true,
   } as ChannelConfig;
   const inputConfig = {
@@ -771,11 +771,11 @@ export const ChannelWithContext = <
     const replies = channel.getConfig()?.replies;
     const typingEvents = channel.getConfig()?.typing_events;
     const uploads = channel.getConfig()?.uploads;
+    channelConfig.readEventsEnabled = readEvents;
     channelConfig.typingEventsEnabled = typingEvents;
     inputConfig.maxMessageLength = maxMessageLength;
     inputConfig.uploadsEnabled = uploads;
     messagesConfig.reactionsEnabled = reactions;
-    messagesConfig.readEventsEnabled = readEvents;
     messagesConfig.repliesEnabled = replies;
   }
 

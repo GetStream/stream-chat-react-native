@@ -2,13 +2,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
+  ChannelContextValue,
+  useChannelContext,
+} from '../../../contexts/channelContext/ChannelContext';
+import {
   MessageContextValue,
   useMessageContext,
 } from '../../../contexts/messageContext/MessageContext';
-import {
-  MessagesContextValue,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { Check } from '../../../icons/Check';
 import { CheckAll } from '../../../icons/CheckAll';
@@ -51,7 +51,7 @@ export type MessageStatusPropsWithContext<
   MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'message' | 'threadList'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'readEventsEnabled'>;
+  Pick<ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'readEventsEnabled'>;
 
 const MessageStatusWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -184,15 +184,7 @@ export const MessageStatus = <
 >(
   props: MessageStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { readEventsEnabled } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const { readEventsEnabled } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { message, threadList } = useMessageContext<
     At,
     Ch,
