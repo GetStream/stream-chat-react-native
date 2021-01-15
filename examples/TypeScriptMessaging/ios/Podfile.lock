@@ -242,7 +242,7 @@ PODS:
     - React
   - react-native-document-picker (4.2.0):
     - React-Core
-  - react-native-netinfo (5.9.9):
+  - react-native-netinfo (5.9.10):
     - React-Core
   - react-native-safe-area-context (3.1.9):
     - React-Core
@@ -554,7 +554,7 @@ SPEC CHECKSUMS:
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-cameraroll: 60ba0068826eab1c8d43146191bafd4363ea58a7
   react-native-document-picker: 44ecae7103090b6789cca010f06f5205fd1cb66e
-  react-native-netinfo: 0212ce8604e88edf686f1481b925b17a42a52449
+  react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
   React-RCTAnimation: 1bde3ecc0c104c55df246eda516e0deb03c4e49b
