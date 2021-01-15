@@ -161,7 +161,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
               />
             </View>
           )}
-          style={styles.flatList}
+          style={selectedUsers.length ? styles.flatList : {}}
         />
       </View>
       <UserSearchResults />
