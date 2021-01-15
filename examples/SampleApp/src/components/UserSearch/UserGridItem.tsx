@@ -16,18 +16,13 @@ const styles = StyleSheet.create({
     top: undefined,
     width: 14,
   },
-  selectedUserItem: {
-    paddingBottom: 8,
-  },
   selectedUserItemContainer: {
     alignItems: 'center',
-    flexDirection: 'column',
-    padding: 8,
-    width: 80,
   },
   selectedUserItemName: {
     fontSize: 12,
     fontWeight: '600',
+    paddingTop: 8,
     textAlign: 'center',
   },
   selectedUserRemoveIcon: {
@@ -40,9 +35,6 @@ const styles = StyleSheet.create({
     top: 0,
     width: 24,
   },
-  selectedUsersContainer: {
-    flexDirection: 'row',
-  },
 });
 
 export type UserGridItemProps = {
@@ -50,6 +42,7 @@ export type UserGridItemProps = {
   user: UserResponse<LocalUserType>;
   removeButton?: boolean;
 };
+
 export const UserGridItem: React.FC<UserGridItemProps> = ({
   onPress,
   removeButton = true,
@@ -61,38 +54,36 @@ export const UserGridItem: React.FC<UserGridItemProps> = ({
     },
   } = useTheme();
   return (
-    <View style={styles.selectedUserItemContainer}>
-      <TouchableOpacity
-        key={user.id}
-        onPress={onPress}
-        style={styles.selectedUserItem}
-      >
-        <Avatar
-          image={user.image}
-          online={user.online}
-          presenceIndicator={presenceIndicator}
-          presenceIndicatorContainerStyle={styles.presenceIndicatorContainer}
-          size={64}
-        />
-        {removeButton && (
-          <View
-            style={[
-              styles.selectedUserRemoveIcon,
-              {
-                backgroundColor: white_snow,
-              },
-            ]}
-          >
-            <Close />
-          </View>
-        )}
-      </TouchableOpacity>
+    <TouchableOpacity
+      key={user.id}
+      onPress={onPress}
+      style={styles.selectedUserItemContainer}
+    >
+      <Avatar
+        image={user.image}
+        online={user.online}
+        presenceIndicator={presenceIndicator}
+        presenceIndicatorContainerStyle={styles.presenceIndicatorContainer}
+        size={64}
+      />
+      {removeButton && (
+        <View
+          style={[
+            styles.selectedUserRemoveIcon,
+            {
+              backgroundColor: white_snow,
+            },
+          ]}
+        >
+          <Close />
+        </View>
+      )}
       <Text
         numberOfLines={2}
         style={[styles.selectedUserItemName, { color: black }]}
       >
         {user.name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 };

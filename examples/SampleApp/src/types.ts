@@ -72,9 +72,7 @@ export type StackNavigatorParamList = {
   };
   NewDirectMessagingScreen: undefined;
   NewGroupChannelAddMemberScreen: undefined;
-  NewGroupChannelAssignNameScreen: {
-    selectedUsers: UserResponse<LocalUserType>[];
-  };
+  NewGroupChannelAssignNameScreen: undefined;
   OneOnOneChannelDetailScreen: {
     channel: Channel<
       LocalAttachmentType,
