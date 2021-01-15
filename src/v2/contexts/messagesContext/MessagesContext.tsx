@@ -292,6 +292,9 @@ export type MessagesContextValue<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  onDoubleTapMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

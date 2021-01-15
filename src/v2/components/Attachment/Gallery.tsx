@@ -222,7 +222,7 @@ const GalleryWithContext = <
           {column.map(({ height, url }, rowIndex) => (
             <TouchableOpacity
               activeOpacity={0.8}
-              key={`gallery-item-${url}/${images.length}`}
+              key={`gallery-item-${url}/${rowIndex}/${images.length}`}
               onLongPress={onLongPress}
               onPress={() => {
                 if (!preventPress) {

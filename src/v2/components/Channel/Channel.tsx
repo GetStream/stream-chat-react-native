@@ -213,6 +213,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'onDoubleTapMessage'
       | 'ReactionList'
       | 'Reply'
       | 'supportedReactions'
@@ -386,6 +387,7 @@ export const ChannelWithContext = <
     MoreOptionsButton = MoreOptionsButtonDefault,
     numberOfLines = 5,
     onChangeText,
+    onDoubleTapMessage,
     openSuggestions,
     ReactionList = ReactionListDefault,
     Reply = ReplyDefault,
@@ -1326,6 +1328,7 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    onDoubleTapMessage,
     ReactionList,
     removeMessage,
     Reply,
