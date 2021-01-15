@@ -19,6 +19,7 @@ import {
 
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';
+import { UserSearchProvider } from './src/context/UserSearchContext';
 import { useChatClient } from './src/hooks/useChatClient';
 import { useStreamChatTheme } from './src/hooks/useStreamChatTheme';
 import { AdvancedUserSelectorScreen } from './src/screens/AdvancedUserSelectorScreen';
@@ -138,18 +139,20 @@ const DrawerNavigator: React.FC<{
         client={chatClient}
       >
         <AppOverlayProvider>
-          <Drawer.Navigator
-            drawerContent={(props) => <MenuDrawer {...props} />}
-            drawerStyle={{
-              width: 300,
-            }}
-          >
-            <Drawer.Screen
-              component={HomeScreen}
-              name='HomeScreen'
-              options={{ headerShown: false }}
-            />
-          </Drawer.Navigator>
+          <UserSearchProvider>
+            <Drawer.Navigator
+              drawerContent={(props) => <MenuDrawer {...props} />}
+              drawerStyle={{
+                width: 300,
+              }}
+            >
+              <Drawer.Screen
+                component={HomeScreen}
+                name='HomeScreen'
+                options={{ headerShown: false }}
+              />
+            </Drawer.Navigator>
+          </UserSearchProvider>
         </AppOverlayProvider>
       </Chat>
     </OverlayProvider>

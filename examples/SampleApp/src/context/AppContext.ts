@@ -1,8 +1,8 @@
 import React from 'react';
-import { Channel as ChannelType, StreamChat } from 'stream-chat';
-import { ThreadContextValue } from 'stream-chat-react-native/v2';
 
-import {
+import type { StreamChat } from 'stream-chat';
+
+import type {
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
@@ -14,17 +14,6 @@ import {
 } from '../types';
 
 type AppContextType = {
-  // channel:
-  //   | ChannelType<
-  //       LocalAttachmentType,
-  //       LocalChannelType,
-  //       LocalCommandType,
-  //       LocalEventType,
-  //       LocalMessageType,
-  //       LocalReactionType,
-  //       LocalUserType
-  //     >
-  //   | undefined;
   chatClient: StreamChat<
     LocalAttachmentType,
     LocalChannelType,
@@ -37,45 +26,6 @@ type AppContextType = {
   loginUser: (config: LoginConfig) => void;
   logout: () => void;
   switchUser: (userId?: string) => void;
-  // setChannel: React.Dispatch<
-  //   React.SetStateAction<
-  //     | ChannelType<
-  //         LocalAttachmentType,
-  //         LocalChannelType,
-  //         LocalCommandType,
-  //         LocalEventType,
-  //         LocalMessageType,
-  //         LocalReactionType,
-  //         LocalUserType
-  //       >
-  //     | undefined
-  //   >
-  // >;
-  // setThread: React.Dispatch<
-  //   React.SetStateAction<
-  //     | ThreadContextValue<
-  //         LocalAttachmentType,
-  //         LocalChannelType,
-  //         LocalCommandType,
-  //         LocalEventType,
-  //         LocalMessageType,
-  //         LocalReactionType,
-  //         LocalUserType
-  //       >['thread']
-  //     | undefined
-  //   >
-  // >;
-  // thread:
-  //   | ThreadContextValue<
-  //       LocalAttachmentType,
-  //       LocalChannelType,
-  //       LocalCommandType,
-  //       LocalEventType,
-  //       LocalMessageType,
-  //       LocalReactionType,
-  //       LocalUserType
-  //     >['thread']
-  //   | undefined;
 };
 
 export const AppContext = React.createContext({} as AppContextType);

@@ -7,56 +7,121 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Dayjs from 'dayjs';
-import { Avatar, useTheme } from 'stream-chat-react-native/v2';
+import dayjs from 'dayjs';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import {
+  Avatar,
+  CheckSend,
+  Close,
+  useTheme,
+  vw,
+} from 'stream-chat-react-native/v2';
 
-import { CheckSend } from '../../icons/CheckSend';
-import { EmptySearchState } from '../../icons/EmptySearchState';
+import { useUserSearchContext } from '../../context/UserSearchContext';
 
 import type { UserResponse } from 'stream-chat';
 
 import type { LocalUserType } from '../../types';
 import { Search } from '../../icons/Search';
 
+const styles = StyleSheet.create({
+  absolute: { position: 'absolute' },
+  emptyResultIndicator: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 28,
+  },
+  emptyResultIndicatorText: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 28,
+  },
+  flex: { flex: 1 },
+  gradient: {
+    height: 24,
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+  },
+  matches: { fontSize: 12 },
+  searchResultContainer: {
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    flexDirection: 'row',
+    paddingLeft: 8,
+    paddingRight: 16,
+    paddingVertical: 12,
+  },
+  searchResultUserDetails: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  searchResultUserLastOnline: { fontSize: 12 },
+  searchResultUserName: { fontSize: 14, fontWeight: '700' },
+  sectionHeader: {
+    fontSize: 14.5,
+    fontWeight: '700',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+});
+
 type UserSearchResultsProps = {
-  results: UserResponse[];
-  selectedUserIds: string[];
-  toggleSelectedUser: (user: UserResponse<LocalUserType>) => void;
   groupedAlphabetically?: boolean;
-  loading?: boolean;
-  loadMore?: () => void;
-  searchText?: string;
+  removeOnPressOnly?: boolean;
+  results?: UserResponse<LocalUserType>[];
   showOnlineStatus?: boolean;
+  toggleSelectedUser?: (user: UserResponse<LocalUserType>) => void;
 };
 
 export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   groupedAlphabetically = true,
-  loading = false,
-  loadMore = () => null,
-  results,
-  searchText,
-  selectedUserIds,
+  removeOnPressOnly = false,
+  results: resultsProp,
   showOnlineStatus = true,
   toggleSelectedUser,
 }) => {
-  const [sections, setSections] = useState([]);
+  const {
+    loading,
+    loadMore,
+    results: resultsContext,
+    searchText,
+    selectedUserIds,
+    toggleUser,
+  } = useUserSearchContext();
+  const [sections, setSections] = useState<
+    Array<{
+      data: UserResponse<LocalUserType>[];
+      title: string;
+    }>
+  >([]);
   const {
     theme: {
-      colors: { black, border, grey, grey_gainsboro, white_smoke, white_snow },
+      colors: {
+        accent_blue,
+        bg_gradient_end,
+        bg_gradient_start,
+        black,
+        border,
+        grey,
+        grey_gainsboro,
+        white_smoke,
+        white_snow,
+      },
     },
   } = useTheme();
 
+  const results = resultsProp || resultsContext;
+  const resultsLength = results.length;
   useEffect(() => {
-    const newSections: Record<
-      string,
-      {
-        data: UserResponse[];
+    const newSections: {
+      [key: string]: {
+        data: UserResponse<LocalUserType>[];
         title: string;
-      }
-    > = {};
+      };
+    } = {};
 
     results.forEach((user) => {
-      const initial = user.name?.toLowerCase().slice(0, 1);
+      const initial = user.name?.slice(0, 1).toUpperCase();
 
       if (!initial) return;
 
@@ -69,23 +134,46 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
         newSections[initial].data.push(user);
       }
     });
-    // @ts-ignore
     setSections(Object.values(newSections));
-  }, [results]);
+  }, [resultsLength]);
 
   return (
-    <View style={{ backgroundColor: white_snow, flexGrow: 1, flexShrink: 1 }}>
+    <View style={[styles.flex, { backgroundColor: white_snow }]}>
       {groupedAlphabetically && sections.length > 0 && (
-        <View
-          style={{
-            padding: 5,
-            paddingLeft: 8,
-          }}
-        >
+        <View style={styles.gradient}>
+          <Svg height={24} style={styles.absolute} width={vw(100)}>
+            <Rect
+              fill='url(#gradient)'
+              height={24}
+              width={vw(100)}
+              x={0}
+              y={0}
+            />
+            <Defs>
+              <LinearGradient
+                gradientUnits='userSpaceOnUse'
+                id='gradient'
+                x1={0}
+                x2={0}
+                y1={0}
+                y2={24}
+              >
+                <Stop
+                  offset={1}
+                  stopColor={bg_gradient_start}
+                  stopOpacity={1}
+                />
+                <Stop offset={0} stopColor={bg_gradient_end} stopOpacity={1} />
+              </LinearGradient>
+            </Defs>
+          </Svg>
           <Text
-            style={{
-              color: black,
-            }}
+            style={[
+              styles.matches,
+              {
+                color: grey,
+              },
+            ]}
           >
             {searchText ? `Matches for "${searchText}"` : 'On the platform'}
           </Text>
@@ -94,7 +182,7 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
       {loading && (!results || results.length === 0) && searchText === '' ? (
         <ActivityIndicator size='small' />
       ) : (
-        <SectionList<UserResponse<LocalUserType>>
+        <SectionList
           keyboardDismissMode='interactive'
           keyboardShouldPersistTaps='handled'
           ListEmptyComponent={() => (
@@ -105,21 +193,22 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               </Text>
             </View>
           )}
-          onEndReached={() => {
-            loadMore();
-          }}
+          onEndReached={loadMore}
           renderItem={({ item }) => (
             <TouchableOpacity
               key={item.id}
               onPress={() => {
-                // TODO: Add logic for checking for duplicates
-                toggleSelectedUser(item);
+                if (toggleSelectedUser) {
+                  toggleSelectedUser(item);
+                } else {
+                  toggleUser(item);
+                }
               }}
               style={[
                 styles.searchResultContainer,
                 {
+                  backgroundColor: white_snow,
                   borderBottomColor: border,
-                  borderBottomWidth: 1,
                 },
               ]}
             >
@@ -144,14 +233,18 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
                       },
                     ]}
                   >
-                    Last online {Dayjs(item.last_active).calendar()}
+                    Last online {dayjs(item.last_active).calendar()}
                   </Text>
                 )}
               </View>
               {selectedUserIds.indexOf(item.id) > -1 && (
-                <View>
-                  <CheckSend height={24} width={24} />
-                </View>
+                <>
+                  {removeOnPressOnly ? (
+                    <Close pathFill={black} />
+                  ) : (
+                    <CheckSend pathFill={accent_blue} />
+                  )}
+                </>
               )}
             </TouchableOpacity>
           )}
@@ -163,13 +256,15 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
             return (
               <Text
                 key={title}
-                style={{
-                  backgroundColor: white_smoke,
-                  color: grey,
-                  padding: 6,
-                }}
+                style={[
+                  styles.sectionHeader,
+                  {
+                    backgroundColor: white_smoke,
+                    color: grey,
+                  },
+                ]}
               >
-                {title.toUpperCase()}
+                {title}
               </Text>
             );
           }}
@@ -180,52 +275,3 @@ export const UserSearchResults: React.FC<UserSearchResultsProps> = ({
     </View>
   );
 };
-
-/* eslint-disable sort-keys */
-const styles = StyleSheet.create({
-  searchContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    borderBottomWidth: 1,
-  },
-  searchContainerLabel: {
-    fontSize: 15,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingTop: 4,
-  },
-  inputBoxContainer: {
-    flexDirection: 'row',
-    margin: 4,
-    width: '100%',
-  },
-  inputBox: {
-    flex: 1,
-    marginRight: 2,
-  },
-  searchResultContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    padding: 8,
-    paddingTop: 13,
-    paddingBottom: 13,
-  },
-  searchResultUserDetails: {
-    paddingLeft: 8,
-    flexGrow: 1,
-    flexShrink: 1,
-  },
-  searchResultUserName: { fontSize: 14 },
-  searchResultUserLastOnline: { fontSize: 12.5 },
-  emptyResultIndicator: {
-    marginTop: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyResultIndicatorText: {
-    marginTop: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});

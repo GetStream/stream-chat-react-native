@@ -655,9 +655,9 @@ const MessageListWithContext = <
           <View style={styles.stickyHeader}>
             {StickyHeader ? (
               <StickyHeader dateString={stickyHeaderDateToRender} />
-            ) : (
+            ) : messageList.length ? (
               <DateHeader dateString={stickyHeaderDateToRender} />
-            )}
+            ) : null}
           </View>
           {!disableTypingIndicator &&
             TypingIndicator &&
