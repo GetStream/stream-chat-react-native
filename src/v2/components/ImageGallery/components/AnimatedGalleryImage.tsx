@@ -2,13 +2,16 @@ import React from 'react';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
-import { vw } from '../../../utils/utils';
+import { vh, vw } from '../../../utils/utils';
 
 import type { ImageStyle, StyleProp } from 'react-native';
 
+const screenHeight = vh(100);
+const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
 
 type Props = {
+  index: number;
   offsetScale: Animated.SharedValue<number>;
   photo: { uri: string };
   previous: boolean;
@@ -23,6 +26,7 @@ type Props = {
 export const AnimatedGalleryImage: React.FC<Props> = React.memo(
   (props) => {
     const {
+      index,
       offsetScale,
       photo,
       previous,
@@ -47,18 +51,26 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
         transform: [
           {
             translateX: selected
-              ? translateX.value
+              ? translateX.value - halfScreenWidth * 7 - index * screenWidth * 7
               : scale.value < 1 || scale.value !== offsetScale.value
-              ? 0
+              ? -halfScreenWidth * 7 - index * screenWidth * 7
               : previous
-              ? translateX.value - halfScreenWidth * (scale.value - 1)
-              : translateX.value + halfScreenWidth * (scale.value - 1),
+              ? translateX.value -
+                halfScreenWidth * (scale.value - 1) -
+                halfScreenWidth * 7 -
+                index * screenWidth * 7
+              : translateX.value +
+                halfScreenWidth * (scale.value - 1) -
+                halfScreenWidth * 7 -
+                index * screenWidth * 7,
           },
           {
-            translateY: selected ? translateY.value : 0,
+            translateY: selected
+              ? translateY.value - screenHeight * 3.5
+              : -screenHeight * 3.5,
           },
           {
-            scale: selected ? scale.value : 1,
+            scale: selected ? scale.value / 8 : 1 / 8,
           },
           { scaleX: -1 },
         ],
@@ -82,7 +94,19 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
         style={[
           style,
           AnimatedGalleryImageStyle,
-          { transform: [{ scaleX: -1 }] },
+          {
+            transform: [
+              { scaleX: -1 },
+              { translateY: -screenHeight * 3.5 },
+              {
+                translateX:
+                  -translateX.value +
+                  halfScreenWidth * 7 +
+                  index * screenWidth * 7,
+              },
+              { scale: 1 / 8 },
+            ],
+          },
         ]}
       />
     );
