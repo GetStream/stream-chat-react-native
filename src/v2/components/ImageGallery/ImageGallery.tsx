@@ -1153,6 +1153,7 @@ export const ImageGallery = <
                       >
                         {photos.map((photo, i) => (
                           <AnimatedGalleryImage
+                            index={i}
                             key={`${photo.uri}-${i}`}
                             offsetScale={offsetScale}
                             photo={photo}
@@ -1161,9 +1162,9 @@ export const ImageGallery = <
                             selected={selectedIndex === i}
                             shouldRender={Math.abs(selectedIndex - i) < 4}
                             style={{
-                              height: screenHeight,
+                              height: screenHeight * 8,
                               marginRight: MARGIN,
-                              width: screenWidth,
+                              width: screenWidth * 8,
                             }}
                             translateX={translateX}
                             translateY={translateY}
