@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { AtMentions, useTheme } from 'stream-chat-react-native/v2';
 
@@ -9,6 +9,7 @@ import { usePaginatedSearchedMessages } from '../hooks/usePaginatedSearchedMessa
 import type { StackNavigationProp } from '@react-navigation/stack';
 
 import type { BottomTabNavigatorParamList } from '../types';
+import { AppContext } from '../context/AppContext';
 
 const styles = StyleSheet.create({
   container: {
@@ -55,13 +56,23 @@ export const MentionsScreen: React.FC<MentionsScreenProps> = () => {
       colors: { white_snow },
     },
   } = useTheme();
+  const { chatClient } = useContext(AppContext);
+  const messageFilters = useMemo(
+    () => ({
+      'mentioned_users.id': {
+        $contains: chatClient?.user?.id || '',
+      },
+    }),
+    [chatClient],
+  );
+
   const {
     loading,
     loadMore,
     messages,
     refreshing,
     refreshList,
-  } = usePaginatedSearchedMessages('Unsatiable');
+  } = usePaginatedSearchedMessages(messageFilters);
 
   return (
     <View
