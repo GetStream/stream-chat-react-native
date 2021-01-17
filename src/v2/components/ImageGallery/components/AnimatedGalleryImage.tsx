@@ -116,7 +116,8 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
       prevProps.selected === nextProps.selected &&
       prevProps.shouldRender === nextProps.shouldRender &&
       prevProps.photo.uri === nextProps.photo.uri &&
-      prevProps.previous === nextProps.previous
+      prevProps.previous === nextProps.previous &&
+      prevProps.index === nextProps.index
     ) {
       return true;
     }
