@@ -194,17 +194,24 @@ const getLatestMessageReadStatus = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
   message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
+  readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
-  if (currentUserId !== message.user?.id) return 0;
+  if (currentUserId !== message.user?.id || readEvents === false) return 0;
 
   const readList = channel.state.read.asMutable();
   if (currentUserId) {
     delete readList[currentUserId];
   }
 
+  const messageUpdatedAt = message.updated_at
+    ? typeof message.updated_at === 'string'
+      ? new Date(message.updated_at)
+      : message.updated_at
+    : undefined;
+
   return Object.values(readList).some(
-    ({ last_read }) => message.updated_at && message.updated_at < last_read,
+    ({ last_read }) => messageUpdatedAt && messageUpdatedAt < last_read,
   )
     ? 2
     : 1;
@@ -218,15 +225,25 @@ const getLatestMessagePreview = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
->(
-  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  t: (key: string) => string,
-  tDateTimeParser: TDateTimeParser,
+>(params: {
+  channel: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+  readEvents: boolean;
+  t: (key: string) => string;
+  tDateTimeParser: TDateTimeParser;
   lastMessage?:
     | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    | MessageResponse<At, Ch, Co, Me, Re, Us>,
-) => {
+    | MessageResponse<At, Ch, Co, Me, Re, Us>;
+}) => {
+  const {
+    channel,
+    client,
+    lastMessage,
+    readEvents,
+    t,
+    tDateTimeParser,
+  } = params;
+
   const messages = channel.state.messages;
 
   if (!messages.length && !lastMessage) {
@@ -248,7 +265,7 @@ const getLatestMessagePreview = <
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
     messageObject: message,
     previews: getLatestMessageDisplayText(channel, client, message, t),
-    status: getLatestMessageReadStatus(channel, client, message),
+    status: getLatestMessageReadStatus(channel, client, message, readEvents),
   };
 };
 
@@ -277,11 +294,14 @@ export const useLatestMessagePreview = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t, tDateTimeParser } = useTranslationContext();
 
+  const channelConfigExists = typeof channel?.getConfig === 'function';
+
   const messages = channel.state.messages;
   const message = messages[messages.length - 1];
 
   const lastMessageId = lastMessage?.id || message?.id;
 
+  const [readEvents, setReadEvents] = useState(true);
   const [latestMessagePreview, setLatestMessagePreview] = useState<
     LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>
   >({
@@ -296,18 +316,35 @@ export const useLatestMessagePreview = <
     status: 0,
   });
 
+  const readStatus = getLatestMessageReadStatus(
+    channel,
+    client,
+    lastMessage || message,
+    readEvents,
+  );
+
+  useEffect(() => {
+    if (channelConfigExists) {
+      const read_events = channel.getConfig()?.read_events;
+      if (typeof read_events === 'boolean') {
+        setReadEvents(read_events);
+      }
+    }
+  }, [channelConfigExists]);
+
   useEffect(
     () =>
       setLatestMessagePreview(
-        getLatestMessagePreview(
+        getLatestMessagePreview({
           channel,
           client,
+          lastMessage,
+          readEvents,
           t,
           tDateTimeParser,
-          lastMessage,
-        ),
+        }),
       ),
-    [forceUpdate, lastMessageId],
+    [forceUpdate, lastMessageId, readEvents, readStatus],
   );
 
   return latestMessagePreview;

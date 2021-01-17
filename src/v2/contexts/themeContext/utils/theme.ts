@@ -369,6 +369,7 @@ export type Theme = {
       messageUser: TextStyle;
       metaContainer: ViewStyle;
       metaText: TextStyle;
+      replyBorder: ViewStyle;
       replyContainer: ViewStyle;
       textContainer: ViewStyle & {
         onlyEmojiMarkdown: MarkdownStyle;
@@ -420,8 +421,16 @@ export type Theme = {
       strokeSize: number;
     };
     replies: {
+      avatar: ViewStyle;
+      avatarContainerMultiple: ViewStyle;
+      avatarContainerSingle: ViewStyle;
       container: ViewStyle;
+      leftAvatarsContainer: ViewStyle;
+      leftCurve: ViewStyle;
       messageRepliesText: TextStyle;
+      rightAvatarsContainer: ViewStyle;
+      rightCurve: ViewStyle;
+      avatarSize?: number;
     };
     status: {
       checkAllIcon: IconProps;
@@ -820,6 +829,7 @@ export const defaultTheme: Theme = {
       metaText: {
         fontSize: 12,
       },
+      replyBorder: {},
       replyContainer: {},
       textContainer: {
         onlyEmojiMarkdown: { text: { fontSize: 50 } },
@@ -871,8 +881,15 @@ export const defaultTheme: Theme = {
       strokeSize: 1, // not recommended to change this
     },
     replies: {
+      avatar: {},
+      avatarContainerMultiple: {},
+      avatarContainerSingle: {},
       container: {},
+      leftAvatarsContainer: {},
+      leftCurve: {},
       messageRepliesText: {},
+      rightAvatarsContainer: {},
+      rightCurve: {},
     },
     status: {
       checkAllIcon: {

@@ -98,8 +98,13 @@ export const renderText = <
     ...markdownStyles,
   };
 
+  const customRules = {
+    // we have no react rendering support for reflinks
+    reflink: { match: () => null },
+  };
+
   return (
-    <Markdown rules={markdownRules} styles={styles}>
+    <Markdown rules={{ ...customRules, ...markdownRules }} styles={styles}>
       {newText}
     </Markdown>
   );

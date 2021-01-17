@@ -79,6 +79,7 @@ type AutoCompleteInputPropsWithContext<
     MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     | 'additionalTextInputProps'
     | 'giphyActive'
+    | 'maxMessageLength'
     | 'numberOfLines'
     | 'onChange'
     | 'setGiphyActive'
@@ -119,6 +120,7 @@ const AutoCompleteInputWithContext = <
     closeSuggestions,
     giphyActive,
     giphyEnabled,
+    maxMessageLength,
     numberOfLines,
     onChange,
     openSuggestions,
@@ -408,6 +410,7 @@ const AutoCompleteInputWithContext = <
 
   return (
     <TextInput
+      maxLength={maxMessageLength}
       multiline
       onChangeText={(newText) => {
         if (giphyEnabled && newText.startsWith('/giphy ')) {
@@ -498,6 +501,7 @@ export const AutoCompleteInput = <
   const {
     additionalTextInputProps,
     giphyActive,
+    maxMessageLength,
     numberOfLines,
     onChange,
     setGiphyActive,
@@ -520,6 +524,7 @@ export const AutoCompleteInput = <
         closeSuggestions,
         giphyActive,
         giphyEnabled,
+        maxMessageLength,
         numberOfLines,
         onChange,
         openSuggestions,

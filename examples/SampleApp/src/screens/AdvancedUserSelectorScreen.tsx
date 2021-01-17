@@ -115,7 +115,10 @@ export const LabeledTextInput: React.FC<LabeledTextInputProps> = ({
         placeholder={label}
         placeholderTextColor={grey}
         returnKeyType='next'
-        style={[styles.input, { color: black }]}
+        style={[
+          styles.input,
+          { color: black, fontWeight: value ? undefined : '500' }, // design team wanted placeholder fontWeight of 500
+        ]}
         value={value}
       />
     </View>

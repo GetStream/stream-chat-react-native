@@ -6,15 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { ArrowRight, Search, useTheme } from 'stream-chat-react-native/v2';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { UserGridItem } from '../components/UserSearch/UserGridItem';
 import { UserSearchResults } from '../components/UserSearch/UserSearchResults';
 import { AppContext } from '../context/AppContext';
-import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
-import { RightArrow } from '../icons/RightArrow';
-import { Search } from '../icons/Search';
+import { useUserSearchContext } from '../context/UserSearchContext';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 
@@ -24,6 +22,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  flatList: { paddingBottom: 16 },
   inputBox: {
     flex: 1,
     fontSize: 14,
@@ -38,13 +37,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     flexDirection: 'row',
-    height: 36,
-    margin: 8,
+    marginHorizontal: 8,
+    marginTop: 8,
     paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   navigationButton: {
-    padding: 15,
+    paddingRight: 8,
   },
+  userGridItemContainer: { marginHorizontal: 8, width: 64 },
 });
 
 type RightArrowButtonProps = {
@@ -55,17 +56,19 @@ type RightArrowButtonProps = {
 const RightArrowButton: React.FC<RightArrowButtonProps> = (props) => {
   const { disabled, onPress } = props;
 
+  const {
+    theme: {
+      colors: { accent_blue },
+    },
+  } = useTheme();
+
   return (
     <TouchableOpacity
       disabled={disabled}
       onPress={onPress}
       style={styles.navigationButton}
     >
-      {!disabled ? (
-        <RightArrow height={24} width={24} />
-      ) : (
-        <View style={{ height: 24, width: 24 }} />
-      )}
+      <ArrowRight pathFill={disabled ? 'transparent' : accent_blue} />
     </TouchableOpacity>
   );
 };
@@ -82,30 +85,26 @@ type Props = {
 export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
   navigation,
 }) => {
+  const { chatClient } = useContext(AppContext);
+
   const {
     theme: {
       colors: { black, border, grey, white },
     },
   } = useTheme();
-  const { chatClient } = useContext(AppContext);
+
   const {
-    loading: loadingResults,
-    loadMore,
     onChangeSearchText,
     onFocusInput,
-    results,
+    removeUser,
+    reset,
     searchText,
-    selectedUserIds,
     selectedUsers,
-    toggleUser,
-  } = usePaginatedUsers();
+  } = useUserSearchContext();
 
   const onRightArrowPress = () => {
     if (selectedUsers.length === 0) return;
-
-    navigation.navigate('NewGroupChannelAssignNameScreen', {
-      selectedUsers,
-    });
+    navigation.navigate('NewGroupChannelAssignNameScreen');
   };
 
   if (!chatClient) return null;
@@ -113,6 +112,7 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <ScreenHeader
+        onBack={reset}
         RightContent={() => (
           <RightArrowButton
             disabled={selectedUsers.length === 0}
@@ -128,10 +128,11 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
             {
               backgroundColor: white,
               borderColor: border,
+              marginBottom: selectedUsers.length === 0 ? 8 : 16,
             },
           ]}
         >
-          <Search height={24} width={24} />
+          <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
@@ -149,28 +150,21 @@ export const NewGroupChannelAddMemberScreen: React.FC<Props> = ({
         <FlatList
           data={selectedUsers}
           horizontal
-          renderItem={({ item: user }) => (
-            <UserGridItem
-              onPress={() => {
-                toggleUser(user);
-              }}
-              user={user}
-            />
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          renderItem={({ index, item: user }) => (
+            <View style={styles.userGridItemContainer}>
+              <UserGridItem
+                onPress={() => {
+                  removeUser(index);
+                }}
+                user={user}
+              />
+            </View>
           )}
+          style={selectedUsers.length ? styles.flatList : {}}
         />
       </View>
-      {results.length >= 0 && (
-        <UserSearchResults
-          loading={loadingResults}
-          loadMore={loadMore}
-          results={results}
-          searchText={searchText}
-          selectedUserIds={selectedUserIds}
-          toggleSelectedUser={(user) => {
-            toggleUser(user);
-          }}
-        />
-      )}
+      <UserSearchResults />
     </View>
   );
 };

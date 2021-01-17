@@ -181,7 +181,6 @@ const ThreadWithContext = <
     <View style={styles.threadHeaderContainer}>
       <View style={styles.messagePadding}>
         <Message
-          alignment='left'
           groupStyles={['single']}
           message={thread}
           preventPress

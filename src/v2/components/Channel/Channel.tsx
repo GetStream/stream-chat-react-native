@@ -46,6 +46,7 @@ import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
+import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
 import { MessageStatus as MessageStatusDefault } from '../Message/MessageSimple/MessageStatus';
 import { ReactionList as ReactionListDefault } from '../Message/MessageSimple/ReactionList';
@@ -67,6 +68,7 @@ import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
+  ChannelConfig,
   ChannelContextValue,
   ChannelProvider,
 } from '../../contexts/channelContext/ChannelContext';
@@ -75,11 +77,12 @@ import {
   useChatContext,
 } from '../../contexts/chatContext/ChatContext';
 import {
+  InputConfig,
   InputMessageInputContextValue,
   MessageInputProvider,
 } from '../../contexts/messageInputContext/MessageInputContext';
 import {
-  ActionProps,
+  MessagesConfig,
   MessagesContextValue,
   MessagesProvider,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -210,10 +213,12 @@ export type ChannelPropsWithContext<
       | 'MessageList'
       | 'ScrollToBottomButton'
       | 'MessageReplies'
+      | 'MessageRepliesAvatars'
       | 'MessageSimple'
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'onDoubleTapMessage'
       | 'ReactionList'
       | 'Reply'
       | 'supportedReactions'
@@ -379,6 +384,7 @@ export const ChannelWithContext = <
     MessageList = MessageListDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
+    MessageRepliesAvatars = MessageRepliesAvatarsDefault,
     MessageSimple = MessageSimpleDefault,
     MessageStatus = MessageStatusDefault,
     MessageSystem = MessageSystemDefault,
@@ -386,6 +392,7 @@ export const ChannelWithContext = <
     MoreOptionsButton = MoreOptionsButtonDefault,
     numberOfLines = 5,
     onChangeText,
+    onDoubleTapMessage,
     openSuggestions,
     ReactionList = ReactionListDefault,
     Reply = ReplyDefault,
@@ -792,18 +799,38 @@ export const ChannelWithContext = <
   };
 
   /**
-   * MESSAGE METHODS
+   * Channel configs for use in disabling local functionality
    */
-  const actionProps = {
+  const messagesConfig = {
     reactionsEnabled: true,
     repliesEnabled: true,
-  } as ActionProps;
+  } as MessagesConfig;
+  const channelConfig = {
+    readEventsEnabled: true,
+    typingEventsEnabled: true,
+  } as ChannelConfig;
+  const inputConfig = {
+    maxMessageLength: undefined,
+    uploadsEnabled: true,
+  } as InputConfig;
   if (typeof channel?.getConfig === 'function') {
+    const maxMessageLength = channel.getConfig()?.max_message_length;
     const reactions = channel.getConfig()?.reactions;
+    const readEvents = channel.getConfig()?.read_events;
     const replies = channel.getConfig()?.replies;
-    actionProps.reactionsEnabled = reactions;
-    actionProps.repliesEnabled = replies;
+    const typingEvents = channel.getConfig()?.typing_events;
+    const uploads = channel.getConfig()?.uploads;
+    channelConfig.readEventsEnabled = readEvents;
+    channelConfig.typingEventsEnabled = typingEvents;
+    inputConfig.maxMessageLength = maxMessageLength;
+    inputConfig.uploadsEnabled = uploads;
+    messagesConfig.reactionsEnabled = reactions;
+    messagesConfig.repliesEnabled = replies;
   }
+
+  /**
+   * MESSAGE METHODS
+   */
 
   const updateMessage: MessagesContextValue<
     At,
@@ -1217,6 +1244,7 @@ export const ChannelWithContext = <
   };
 
   const channelContext = useCreateChannelContext({
+    ...channelConfig,
     channel,
     disabled: !!channel?.data?.frozen && disableIfFrozenChannel,
     EmptyStateIndicator,
@@ -1248,6 +1276,7 @@ export const ChannelWithContext = <
   });
 
   const messageInputContext = useCreateInputMessageInputContext({
+    ...inputConfig,
     additionalTextInputProps,
     AttachButton,
     clearEditingState,
@@ -1278,7 +1307,7 @@ export const ChannelWithContext = <
   });
 
   const messagesContext = useCreateMessagesContext({
-    ...actionProps,
+    ...messagesConfig,
     additionalTouchableProps,
     Attachment,
     AttachmentActions,
@@ -1312,11 +1341,13 @@ export const ChannelWithContext = <
     MessageHeader,
     MessageList,
     MessageReplies,
+    MessageRepliesAvatars,
     messages,
     MessageSimple,
     MessageStatus,
     MessageSystem,
     MessageText,
+    onDoubleTapMessage,
     ReactionList,
     removeMessage,
     Reply,

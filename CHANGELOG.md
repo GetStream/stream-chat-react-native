@@ -28,6 +28,15 @@
   - Removed css string notation for styles on theme
   - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
 
+## [2.1.2] 2021-01-09
+
+- Fixed infinite re-rendering issue on mentions suggestion box [5fd521a](https://github.com/GetStream/stream-chat-react-native/commit/5fd521a075170004fe551dd3ffbac111256274fe)
+
+## [2.1.1] 2020-12-21
+
+- Fixed broken mentions autocomplete feature for channels with more than 100 members. #457
+- Added a new prop autocompleteSuggestionsLimit on MessageInput - Max number of suggestions to display in list. Defaults to 10.
+
 ## [2.1.0] 2020-12-07
 
 ### Dependency changes

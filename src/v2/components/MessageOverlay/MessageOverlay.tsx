@@ -105,10 +105,7 @@ export type MessageOverlayPropsWithContext<
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 > = Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'reset'> &
-  Omit<
-    MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-    'handleReaction' | 'supportedReactions'
-  > &
+  Omit<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'overlay' | 'setOverlay'> & {
     overlayOpacity: Animated.SharedValue<number>;
     visible?: boolean;
@@ -130,6 +127,7 @@ const MessageOverlayWithContext = <
     clientId,
     files,
     groupStyles,
+    handleReaction,
     images,
     message,
     messageActions,
@@ -141,6 +139,7 @@ const MessageOverlayWithContext = <
     overlayOpacity,
     reset,
     setOverlay,
+    threadList,
     visible,
   } = props;
 
@@ -309,6 +308,8 @@ const MessageOverlayWithContext = <
     groupStyles?.[0] || 'bottom'
   ).toLowerCase()}`;
 
+  const hasThreadReplies = !!message?.reply_count;
+
   return (
     <Animated.View
       pointerEvents={visible ? 'auto' : 'none'}
@@ -355,17 +356,19 @@ const MessageOverlayWithContext = <
                           : styles.alignEnd,
                       ]}
                     >
-                      <OverlayReactionList<At, Ch, Co, Ev, Me, Re, Us>
-                        messageLayout={messageLayout}
-                        ownReactionTypes={
-                          (message?.own_reactions as ReactionResponse<
-                            Re,
-                            Us
-                          >[])?.map((reaction) => reaction.type) || []
-                        }
-                        reactionListHeight={reactionListHeight}
-                        showScreen={showScreen}
-                      />
+                      {handleReaction ? (
+                        <OverlayReactionList<At, Ch, Co, Ev, Me, Re, Us>
+                          messageLayout={messageLayout}
+                          ownReactionTypes={
+                            (message?.own_reactions as ReactionResponse<
+                              Re,
+                              Us
+                            >[])?.map((reaction) => reaction.type) || []
+                          }
+                          reactionListHeight={reactionListHeight}
+                          showScreen={showScreen}
+                        />
+                      ) : null}
                       <Animated.View
                         onLayout={({
                           nativeEvent: {
@@ -406,13 +409,15 @@ const MessageOverlayWithContext = <
                                   ? white_smoke
                                   : grey_gainsboro,
                               borderBottomLeftRadius:
-                                groupStyle === 'left_bottom' ||
-                                groupStyle === 'left_single'
+                                (groupStyle === 'left_bottom' ||
+                                  groupStyle === 'left_single') &&
+                                (!hasThreadReplies || threadList)
                                   ? borderRadiusS
                                   : borderRadiusL,
                               borderBottomRightRadius:
-                                groupStyle === 'right_bottom' ||
-                                groupStyle === 'right_single'
+                                (groupStyle === 'right_bottom' ||
+                                  groupStyle === 'right_single') &&
+                                (!hasThreadReplies || threadList)
                                   ? borderRadiusS
                                   : borderRadiusL,
                               borderColor: grey_whisper,
@@ -479,11 +484,13 @@ const MessageOverlayWithContext = <
                                     <Gallery<At, Ch, Co, Ev, Me, Re, Us>
                                       alignment={alignment}
                                       groupStyles={groupStyles}
+                                      hasThreadReplies={!!message?.reply_count}
                                       images={images}
                                       key={`gallery_${messageContentOrderIndex}`}
                                       messageId={message.id}
                                       messageText={message.text}
                                       preventPress
+                                      threadList={threadList}
                                     />
                                   );
                                 case 'text':
@@ -636,26 +643,7 @@ export const MessageOverlay = <
 >(
   props: MessageOverlayProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    alignment: propAlignment,
-    clientId: propClientId,
-    files: propFiles,
-    groupStyles: propGroupStyles,
-    images: propImages,
-    message: propMessage,
-    messageActions: propMessageActions,
-    messageContentOrder: propMessageContentOrder,
-    messageReactionTitle: propMessageReactionTitle,
-    onlyEmojis: propOnlyEmojis,
-    otherAttachments: propOtherAttachments,
-    overlay: propOverlay,
-    overlayOpacity,
-    reset: propReset,
-    setOverlay: propSetOverlay,
-    visible,
-  } = props;
-
-  const { data, reset: contextReset } = useMessageOverlayContext<
+  const { data, reset } = useMessageOverlayContext<
     At,
     Ch,
     Co,
@@ -664,62 +652,13 @@ export const MessageOverlay = <
     Re,
     Us
   >();
-  const {
-    overlay: contextOverlay,
-    setOverlay: contextSetOverlay,
-  } = useOverlayContext();
-
-  const {
-    alignment: contextAlignment,
-    clientId: contextClientId,
-    files: contextFiles,
-    groupStyles: contextGroupStyles,
-    images: contextImages,
-    message: contextMessage,
-    messageActions: contextMessageActions,
-    messageContentOrder: contextMessageContentOrder,
-    messageReactionTitle: contextMessageReactionTitle,
-    onlyEmojis: contextOnlyEmojis,
-    otherAttachments: contextOtherAttachments,
-  } = data || {};
-
-  const alignment = propAlignment || contextAlignment;
-  const clientId = propClientId || contextClientId;
-  const files = propFiles || contextFiles;
-  const groupStyles = propGroupStyles || contextGroupStyles;
-  const images = propImages || contextImages;
-  const message = propMessage || contextMessage;
-  const messageActions = propMessageActions || contextMessageActions;
-  const messageContentOrder =
-    propMessageContentOrder || contextMessageContentOrder;
-  const messageReactionTitle =
-    propMessageReactionTitle || contextMessageReactionTitle;
-  const onlyEmojis = propOnlyEmojis || contextOnlyEmojis;
-  const otherAttachments = propOtherAttachments || contextOtherAttachments;
-  const overlay = propOverlay || contextOverlay;
-  const reset = propReset || contextReset;
-  const setOverlay = propSetOverlay || contextSetOverlay;
+  const { overlay, setOverlay } = useOverlayContext();
 
   return (
     <MemoizedMessageOverlay
-      {...{
-        alignment,
-        clientId,
-        files,
-        groupStyles,
-        images,
-        message,
-        messageActions,
-        messageContentOrder,
-        messageReactionTitle,
-        onlyEmojis,
-        otherAttachments,
-        overlay,
-        overlayOpacity,
-        reset,
-        setOverlay,
-        visible,
-      }}
+      {...(data || {})}
+      {...{ overlay, reset, setOverlay }}
+      {...props}
     />
   );
 };

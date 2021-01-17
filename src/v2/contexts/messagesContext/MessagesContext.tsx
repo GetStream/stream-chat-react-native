@@ -21,6 +21,7 @@ import type { MessageProps } from '../../components/Message/Message';
 import type { MessageAvatarProps } from '../../components/Message/MessageSimple/MessageAvatar';
 import type { MessageContentProps } from '../../components/Message/MessageSimple/MessageContent';
 import type { MessageRepliesProps } from '../../components/Message/MessageSimple/MessageReplies';
+import type { MessageRepliesAvatarsProps } from '../../components/Message/MessageSimple/MessageRepliesAvatars';
 import type { MessageStatusProps } from '../../components/Message/MessageSimple/MessageStatus';
 import type { MessageSimpleProps } from '../../components/Message/MessageSimple/MessageSimple';
 import type { MessageTextProps } from '../../components/Message/MessageSimple/MessageTextContainer';
@@ -45,7 +46,7 @@ import type {
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
-export type ActionProps = {
+export type MessagesConfig = {
   reactionsEnabled?: boolean;
   repliesEnabled?: boolean;
 };
@@ -74,7 +75,7 @@ export type MessagesContextValue<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = ActionProps & {
+> = MessagesConfig & {
   /**
    * UI component for Attachment.
    * Defaults to: [Attachment](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Attachment.tsx)
@@ -166,6 +167,13 @@ export type MessagesContextValue<
    */
   MessageReplies: React.ComponentType<
     MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * UI Component for MessageRepliesAvatars
+   * Defaults to: [MessageRepliesAvatars](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageRepliesAvatars.tsx)
+   */
+  MessageRepliesAvatars: React.ComponentType<
+    MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   messages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messages'];
   /**
@@ -285,6 +293,9 @@ export type MessagesContextValue<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  onDoubleTapMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => void;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

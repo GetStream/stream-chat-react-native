@@ -31,6 +31,7 @@ export const useCreateThreadContext = <
   threadMessages,
 }: ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const threadId = thread?.id;
+  const threadReplyCount = thread?.reply_count;
   const threadMessagesUpdated = threadMessages
     .map(
       ({ deleted_at, latest_reactions, reply_count, status, updated_at }) =>
@@ -65,6 +66,7 @@ export const useCreateThreadContext = <
       threadId,
       threadLoadingMore,
       threadMessagesUpdated,
+      threadReplyCount,
     ],
   );
 

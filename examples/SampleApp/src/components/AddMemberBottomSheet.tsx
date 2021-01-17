@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { CircleClose, Search, useTheme } from 'stream-chat-react-native/v2';
 
 import { UserSearchResultsGrid } from './UserSearch/UserSearchResultsGrid';
 
@@ -18,8 +18,6 @@ import {
   useBottomSheetOverlayContext,
 } from '../context/BottomSheetOverlayContext';
 import { usePaginatedUsers } from '../hooks/usePaginatedUsers';
-import { CircleClose } from '../icons/CircleClose';
-import { Search } from '../icons/Search';
 
 import type { UserResponse } from 'stream-chat';
 
@@ -47,14 +45,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     flexDirection: 'row',
-    marginTop: 16,
+    marginRight: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
   },
   inputRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    width: '100%',
+    padding: 16,
   },
   text: {
     marginLeft: 10,
@@ -132,7 +130,7 @@ export const AddMemberBottomSheet: React.FC = () => {
             },
           ]}
         >
-          <Search height={24} width={24} />
+          <Search pathFill={black} />
           <TextInput
             onChangeText={onChangeSearchText}
             onFocus={onFocusInput}
@@ -147,12 +145,8 @@ export const AddMemberBottomSheet: React.FC = () => {
             value={searchText}
           />
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            clearText();
-          }}
-        >
-          <CircleClose height={24} width={24} />
+        <TouchableOpacity onPress={clearText}>
+          <CircleClose pathFill={grey} />
         </TouchableOpacity>
       </View>
       <View style={styles.flex}>

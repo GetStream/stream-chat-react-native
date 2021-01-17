@@ -31,7 +31,7 @@ import type {
 
 const styles = StyleSheet.create({
   backButton: {
-    padding: 10,
+    paddingVertical: 8,
   },
   backButtonUnreadCount: {
     left: 25,
@@ -45,8 +45,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     alignItems: 'center',
     flexDirection: 'row',
-    paddingBottom: 10,
-    paddingHorizontal: 10,
+    padding: 8,
   },
   leftContainer: {
     width: 70,
@@ -72,13 +71,22 @@ type ScreenHeaderNavigationProp = CompositeNavigationProp<
   StackNavigationProp<StackNavigatorParamList>
 >;
 
-export const BackButton: React.FC<{ showUnreadCountBadge?: boolean }> = ({
-  showUnreadCountBadge,
-}) => {
+export const BackButton: React.FC<{
+  onBack?: () => void;
+  showUnreadCountBadge?: boolean;
+}> = ({ onBack, showUnreadCountBadge }) => {
   const navigation = useNavigation<ScreenHeaderNavigationProp>();
 
   return (
-    <TouchableOpacity onPress={navigation.goBack} style={styles.backButton}>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.goBack();
+        if (onBack) {
+          onBack();
+        }
+      }}
+      style={styles.backButton}
+    >
       <GoBack />
       {!!showUnreadCountBadge && (
         <View style={styles.backButtonUnreadCount}>
@@ -93,6 +101,7 @@ type ScreenHeaderProps = {
   titleText: string;
   inSafeArea?: boolean;
   LeftContent?: React.ElementType;
+  onBack?: () => void;
   RightContent?: React.ElementType;
   showUnreadCountBadge?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -107,6 +116,7 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
   const {
     inSafeArea,
     LeftContent,
+    onBack,
     RightContent = () => <View style={{ height: 24, width: 24 }} />,
     showUnreadCountBadge,
     style,
@@ -155,7 +165,10 @@ export const ScreenHeader: React.FC<ScreenHeaderProps> = (props) => {
           {LeftContent ? (
             <LeftContent />
           ) : (
-            <BackButton showUnreadCountBadge={showUnreadCountBadge} />
+            <BackButton
+              onBack={onBack}
+              showUnreadCountBadge={showUnreadCountBadge}
+            />
           )}
         </View>
         <View style={styles.centerContainer}>

@@ -52,6 +52,7 @@ export type MessageOverlayData<
   onlyEmojis?: boolean;
   otherAttachments?: Attachment<At>[];
   supportedReactions?: ReactionData[];
+  threadList?: boolean;
 };
 
 export type MessageOverlayContextValue<

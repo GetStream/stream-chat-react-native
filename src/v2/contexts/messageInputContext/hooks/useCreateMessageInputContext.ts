@@ -48,6 +48,7 @@ export const useCreateMessageInputContext = <
   Input,
   inputBoxRef,
   isValidMessage,
+  maxMessageLength,
   maxNumberOfFiles,
   mentionedUsers,
   MoreOptionsButton,
@@ -90,6 +91,7 @@ export const useCreateMessageInputContext = <
   uploadNewFile,
   uploadNewImage,
   UploadProgressIndicator,
+  uploadsEnabled,
 }: MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'thread'>) => {
   const editingExists = !!editing;
@@ -137,6 +139,7 @@ export const useCreateMessageInputContext = <
       Input,
       inputBoxRef,
       isValidMessage,
+      maxMessageLength,
       maxNumberOfFiles,
       mentionedUsers,
       MoreOptionsButton,
@@ -178,6 +181,7 @@ export const useCreateMessageInputContext = <
       uploadNewFile,
       uploadNewImage,
       UploadProgressIndicator,
+      uploadsEnabled,
     }),
     [
       sendThreadMessageInChannel,
@@ -185,11 +189,13 @@ export const useCreateMessageInputContext = <
       fileUploadsValue,
       giphyActive,
       imageUploadsValue,
+      maxMessageLength,
       mentionedUsersLength,
       quotedMessageId,
       showMoreOptions,
       text,
       threadId,
+      uploadsEnabled,
     ],
   );
 

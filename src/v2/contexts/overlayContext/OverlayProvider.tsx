@@ -95,6 +95,10 @@ export const OverlayProvider = <
     openPicker = (ref) => {
       if (ref.current) {
         ref.current.snapTo(0);
+      } else {
+        console.warn(
+          'bottom and top insets must be set for the image picker to work correctly',
+        );
       }
     },
     value,

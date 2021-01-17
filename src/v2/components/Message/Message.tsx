@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Alert,
   Clipboard,
@@ -163,8 +163,10 @@ export type MessagePropsWithContext<
     | 'dismissKeyboardOnMessageTouch'
     | 'messageContentOrder'
     | 'MessageSimple'
+    | 'onDoubleTapMessage'
     | 'removeMessage'
     | 'reactionsEnabled'
+    | 'repliesEnabled'
     | 'retrySendMessage'
     | 'setEditingState'
     | 'setQuotedMessageState'
@@ -282,6 +284,7 @@ const MessageWithContext = <
     messageActions: messageActionsProp,
     messageContentOrder: messageContentOrderProp,
     MessageSimple,
+    onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
     onPress: onPressProp,
     onThreadSelect,
@@ -289,6 +292,7 @@ const MessageWithContext = <
     preventPress,
     reactionsEnabled,
     removeMessage,
+    repliesEnabled,
     retrySendMessage,
     setData,
     setEditingState,
@@ -321,6 +325,7 @@ const MessageWithContext = <
     },
   } = useTheme();
 
+  const doubleTapRef = useRef<TapGestureHandler>(null);
   const pressActive = useSharedValue(false);
   const scale = useSharedValue(1);
   const scaleStyle = useAnimatedStyle<ViewStyle>(
@@ -390,6 +395,9 @@ const MessageWithContext = <
     if (error) {
       showMessageOverlay(false, true);
     } else if (goToMessage && quotedMessage) {
+      pressActive.value = false;
+      cancelAnimation(scale);
+      scale.value = withTiming(1, { duration: 100 });
       goToMessage(quotedMessage.id);
     }
   };
@@ -736,7 +744,7 @@ const MessageWithContext = <
       clientId: client.userID,
       files: attachments.files,
       groupStyles,
-      handleReaction,
+      handleReaction: reactionsEnabled ? handleReaction : undefined,
       images: attachments.images,
       message,
       messageActions: error
@@ -749,36 +757,45 @@ const MessageWithContext = <
             ? [editMessage, copyMessage, flagMessage, deleteMessage]
             : [editMessage, flagMessage, deleteMessage]
           : message.text
-          ? [
-              reply,
-              threadReply,
-              editMessage,
-              copyMessage,
-              flagMessage,
-              deleteMessage,
-            ]
-          : [reply, threadReply, editMessage, flagMessage, deleteMessage]
+          ? repliesEnabled
+            ? [
+                reply,
+                threadReply,
+                editMessage,
+                copyMessage,
+                flagMessage,
+                deleteMessage,
+              ]
+            : [editMessage, copyMessage, flagMessage, deleteMessage]
+          : repliesEnabled
+          ? [reply, threadReply, editMessage, flagMessage, deleteMessage]
+          : [editMessage, flagMessage, deleteMessage]
         : isThreadMessage
         ? message.text
           ? [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
           : [muteUser, blockUser, flagMessage, deleteMessage]
         : message.text
-        ? [
-            reply,
-            threadReply,
-            copyMessage,
-            muteUser,
-            flagMessage,
-            blockUser,
-            deleteMessage,
-          ]
-        : [reply, threadReply, muteUser, blockUser, deleteMessage],
+        ? repliesEnabled
+          ? [
+              reply,
+              threadReply,
+              copyMessage,
+              muteUser,
+              flagMessage,
+              blockUser,
+              deleteMessage,
+            ]
+          : [copyMessage, muteUser, flagMessage, blockUser, deleteMessage]
+        : repliesEnabled
+        ? [reply, threadReply, muteUser, blockUser, deleteMessage]
+        : [muteUser, blockUser, deleteMessage],
       messageContentOrder,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
       onlyEmojis,
       otherAttachments: attachments.other,
       supportedReactions,
+      threadList,
     });
 
     setOverlay('message');
@@ -790,6 +807,12 @@ const MessageWithContext = <
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
+
+  const onDoubleTapMessage = () => {
+    if (onDoubleTapMessageProp) {
+      onDoubleTapMessageProp(message);
+    }
+  };
 
   const messageContext = useCreateMessageContext({
     actionsEnabled,
@@ -855,32 +878,55 @@ const MessageWithContext = <
     [onLongPressMessage],
   );
 
+  const onDoubleTap = useAnimatedGestureHandler<TapGestureHandlerGestureEvent>(
+    {
+      onActive: () => {
+        pressActive.value = false;
+        cancelAnimation(scale);
+        scale.value = withTiming(1, { duration: 100 });
+        runOnJS(onDoubleTapMessage)();
+      },
+    },
+    [onDoubleTapMessage],
+  );
+
   return message.deleted_at || messageContentOrder.length ? (
     <TapGestureHandler
       enabled={animatedLongPress}
       maxDurationMs={3000}
       onGestureEvent={animatedLongPress ? onLongPressTouchable : undefined}
+      waitFor={doubleTapRef}
     >
-      <Animated.View
-        style={[
-          style,
-          {
-            backgroundColor: showUnreadUnderlay ? bg_gradient_start : undefined,
-          },
-          scaleStyle,
-        ]}
-      >
-        <Animated.View
-          style={[
-            StyleSheet.absoluteFillObject,
-            targetedMessageUnderlay,
-            { backgroundColor: targetedMessageBackground },
-            targetedStyle,
-          ]}
-        />
-        <MessageProvider value={messageContext}>
-          <MessageSimple />
-        </MessageProvider>
+      <Animated.View>
+        <TapGestureHandler
+          numberOfTaps={2}
+          onGestureEvent={onDoubleTap}
+          ref={doubleTapRef}
+        >
+          <Animated.View
+            style={[
+              style,
+              {
+                backgroundColor: showUnreadUnderlay
+                  ? bg_gradient_start
+                  : undefined,
+              },
+              scaleStyle,
+            ]}
+          >
+            <Animated.View
+              style={[
+                StyleSheet.absoluteFillObject,
+                targetedMessageUnderlay,
+                { backgroundColor: targetedMessageBackground },
+                targetedStyle,
+              ]}
+            />
+            <MessageProvider value={messageContext}>
+              <MessageSimple />
+            </MessageProvider>
+          </Animated.View>
+        </TapGestureHandler>
       </Animated.View>
     </TapGestureHandler>
   ) : null;
@@ -1041,8 +1087,10 @@ export const Message = <
     dismissKeyboardOnMessageTouch,
     messageContentOrder,
     MessageSimple,
+    onDoubleTapMessage,
     reactionsEnabled,
     removeMessage,
+    repliesEnabled,
     retrySendMessage,
     setEditingState,
     setQuotedMessageState,
@@ -1067,9 +1115,11 @@ export const Message = <
         isOwner,
         messageContentOrder,
         MessageSimple,
+        onDoubleTapMessage,
         openThread,
         reactionsEnabled,
         removeMessage,
+        repliesEnabled,
         retrySendMessage,
         setData,
         setEditingState,
