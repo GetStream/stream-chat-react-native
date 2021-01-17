@@ -9,6 +9,7 @@ import type { ImageStyle, StyleProp } from 'react-native';
 const screenHeight = vh(100);
 const screenWidth = vw(100);
 const halfScreenWidth = vw(50);
+const oneEight = 1 / 8;
 
 type Props = {
   index: number;
@@ -46,37 +47,36 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
      * image as it is scaled. If the scale is less than one they stay in
      * place as to not come into the screen when the image shrinks.
      */
-    const AnimatedGalleryImageStyle = useAnimatedStyle<ImageStyle>(
-      () => ({
+    const AnimatedGalleryImageStyle = useAnimatedStyle<ImageStyle>(() => {
+      const xScaleOffset = -7 * screenWidth * (0.5 + index);
+      const yScaleOffset = -screenHeight * 3.5;
+      return {
         transform: [
           {
             translateX: selected
-              ? translateX.value - halfScreenWidth * 7 - index * screenWidth * 7
+              ? translateX.value + xScaleOffset
               : scale.value < 1 || scale.value !== offsetScale.value
-              ? -halfScreenWidth * 7 - index * screenWidth * 7
+              ? xScaleOffset
               : previous
               ? translateX.value -
-                halfScreenWidth * (scale.value - 1) -
-                halfScreenWidth * 7 -
-                index * screenWidth * 7
+                halfScreenWidth * (scale.value - 1) +
+                xScaleOffset
               : translateX.value +
-                halfScreenWidth * (scale.value - 1) -
-                halfScreenWidth * 7 -
-                index * screenWidth * 7,
+                halfScreenWidth * (scale.value - 1) +
+                xScaleOffset,
           },
           {
             translateY: selected
-              ? translateY.value - screenHeight * 3.5
-              : -screenHeight * 3.5,
+              ? translateY.value + yScaleOffset
+              : yScaleOffset,
           },
           {
-            scale: selected ? scale.value / 8 : 1 / 8,
+            scale: selected ? scale.value / 8 : oneEight,
           },
           { scaleX: -1 },
         ],
-      }),
-      [previous, selected],
-    );
+      };
+    }, [previous, selected]);
 
     /**
      * An empty view is rendered for images not close to the currently
@@ -84,7 +84,7 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
      * load on memory.
      */
     if (!shouldRender) {
-      return <View style={style} />;
+      return <View style={[style, { transform: [{ scale: oneEight }] }]} />;
     }
 
     return (
@@ -99,12 +99,9 @@ export const AnimatedGalleryImage: React.FC<Props> = React.memo(
               { scaleX: -1 },
               { translateY: -screenHeight * 3.5 },
               {
-                translateX:
-                  -translateX.value +
-                  halfScreenWidth * 7 +
-                  index * screenWidth * 7,
+                translateX: -translateX.value + 7 * screenWidth * (0.5 + index),
               },
-              { scale: 1 / 8 },
+              { scale: oneEight },
             ],
           },
         ]}
