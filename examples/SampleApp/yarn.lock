@@ -1234,6 +1234,12 @@
   version "5.15.0"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-5.15.0.tgz#fbec78a0b4c6e2f29e13a7cf7a86e83279fb5213"
   integrity sha512-JesS2jRn6CC7ITzGaulZBVq7Z1EhFzT/9vXSFodJ1wDtprDJHLSjvPLuPcSw1dx9/1DRXj4iCeCBTIlDpNWJeA==
+  dependencies:
+    "@react-navigation/routers" "^5.7.0"
+    escape-string-regexp "^4.0.0"
+    nanoid "^3.1.15"
+    query-string "^6.13.6"
+    react-is "^16.13.0"
 
 "@react-navigation/drawer@5.11.4":
   version "5.11.4"
@@ -3409,9 +3415,9 @@ fast-diff@^1.1.2:
   integrity sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==
 
 fast-glob@^3.1.1:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.4.tgz#d20aefbf99579383e7f3cc66529158c9b98554d3"
-  integrity sha512-kr/Oo6PX51265qeuCYsyGypiO5uJFgBS0jksyG7FUeCyQzNwYnzrNIMR1NXfkZXsMYXYLRAHgISHBz8gQcxKHQ==
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/fast-glob/-/fast-glob-3.2.5.tgz#7939af2a656de79a4f1901903ee8adcaa7cb9661"
+  integrity sha512-2DtFcgT68wiTTiwZ2hNdJfcHNke9XOfnwmBRWXhmeKM8rF0TGwmC/Qto3S7RoZKp5cilZbxzO5iTNTQsJ+EeDg==
   dependencies:
     "@nodelib/fs.stat" "^2.0.2"
     "@nodelib/fs.walk" "^1.2.3"
@@ -5660,9 +5666,9 @@ mime@1.6.0:
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
 mime@^2.4.1:
-  version "2.4.7"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.7.tgz#962aed9be0ed19c91fd7dc2ece5d7f4e89a90d74"
-  integrity sha512-dhNd1uA2u397uQk3Nv5LM4lm93WYDUXFn3Fu291FJerns4jyTudqhIWe4W04YLy7Uk1tm1Ore04NpjRvQp/NPA==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.5.0.tgz#2b4af934401779806ee98026bb42e8c1ae1876b1"
+  integrity sha512-ft3WayFSFUVBuJj7BMLKAQcSlItKtfjsKDDsii3rqFDAZ7t11zRe8ASw/GlmivGwVUYtwkQrxiGGpL6gFvB0ag==
 
 mimic-fn@^1.0.0:
   version "1.2.0"
