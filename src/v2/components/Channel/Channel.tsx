@@ -859,8 +859,8 @@ export const ChannelWithContext = <
     parent_id,
     text,
     ...extraFields
-  }: Partial<StreamMessage<At, Me, Us>>) =>
-    (({
+  }: Partial<StreamMessage<At, Me, Us>>) => {
+    const preview = ({
       __html: text,
       attachments,
       created_at: new Date(),
@@ -880,7 +880,17 @@ export const ChannelWithContext = <
         ...client.user,
       },
       ...extraFields,
-    } as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>);
+    } as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>;
+
+    if (preview.quoted_message_id) {
+      const quotedMessage = messages.find(
+        (m) => m.id === preview.quoted_message_id,
+      );
+
+      preview.quoted_message = quotedMessage;
+    }
+    return preview;
+  };
 
   const sendMessageRequest = async (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
@@ -896,6 +906,8 @@ export const ChannelWithContext = <
       id,
       mentioned_users,
       parent_id,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      quoted_message,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       reactions,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
