@@ -120,11 +120,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import {
-  generateRandomId,
-  GLOBAL_UNREAD_COUNT_LIMIT,
-  ReactionData,
-} from '../../utils/utils';
+import { generateRandomId, ReactionData, uiConfig } from '../../utils/utils';
 import { useTargetedMessage } from './hooks/useTargetedMessage';
 
 import { heavyThrottle, lightThrottle } from './utils/throttle';
@@ -134,8 +130,6 @@ const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
 });
 
-const limitForUnreadScrolledUp = 4;
-const limitUnreadMessagesOnLoad = 2;
 export const reactionData: ReactionData[] = [
   {
     Icon: LoveReaction,
@@ -473,7 +467,7 @@ export const ChannelWithContext = <
         loadChannelAtMessage({ messageId });
       } else if (
         initialScrollToFirstUnreadMessage &&
-        channel.countUnread() > limitForUnreadScrolledUp
+        channel.countUnread() > uiConfig.scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
       } else {
@@ -606,19 +600,21 @@ export const ChannelWithContext = <
     return channelQueryCall(async () => {
       // Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
       // Thus we need to handle these two cases separately.
-      if (channel.countUnread() < GLOBAL_UNREAD_COUNT_LIMIT) {
+      if (channel.countUnread() < uiConfig.globalUnreadCountLimit) {
         // We want to ensure that first unread message appears in the first window frame, when messagelist loads.
         // If we assume that we have a exact count of unread messages, then first unread message is at offset = channel.countUnread().
         // So we will query 2 messages after (and including) first unread message, and 30 messages before first unread
         // message. So 2nd message in list is the first unread message. We can safely assume that 2nd message in list
         // will be visible to user when list loads.
-        const offset = channel.countUnread() - limitUnreadMessagesOnLoad;
+        const offset =
+          channel.countUnread() - uiConfig.unreadMessagesOnInitialLoadLimit;
         await query(offset, 30);
 
         // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
         // are enough to fill the screen), then we need to fetch some more messages on recent side.
         if (
-          channel.state.messages.length <= limitForUnreadScrolledUp &&
+          channel.state.messages.length <=
+            uiConfig.scrollToFirstUnreadThreshold &&
           !channel.state.isUpToDate
         ) {
           const mostRecentMessage =
@@ -639,7 +635,8 @@ export const ChannelWithContext = <
         // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
         // are enough to fill the screen), then we need to fetch some more messages on recent side.
         if (
-          channel.state.messages.length <= limitUnreadMessagesOnLoad &&
+          channel.state.messages.length <=
+            uiConfig.unreadMessagesOnInitialLoadLimit &&
           !channel.state.isUpToDate
         ) {
           if (channel.state.messages.length > 0) {

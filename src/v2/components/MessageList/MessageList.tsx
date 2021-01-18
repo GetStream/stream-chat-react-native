@@ -64,6 +64,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { uiConfig } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -104,7 +105,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const limitForUnreadScrolledUp = 4;
 const keyExtractor = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -422,10 +422,13 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (channel && channel.countUnread() <= limitForUnreadScrolledUp) {
+    if (
+      channel &&
+      channel.countUnread() <= uiConfig.scrollToFirstUnreadThreshold
+    ) {
       channel.markRead();
     }
-  }, [messageList.length]);
+  }, []);
 
   useEffect(() => {
     // Scroll to bottom only if:
@@ -531,10 +534,9 @@ const MessageListWithContext = <
     }
 
     const y = event.nativeEvent.contentOffset.y;
-    const isScrollAtBottom = y <= 30;
-    const showScrollToBottomBtn = !(
-      isScrollAtBottom && channel?.state.isUpToDate
-    );
+    const isScrollAtBottom = y <= uiConfig.scrollToBottomBtnVisibilityThreshold;
+    const showScrollToBottomBtn =
+      !isScrollAtBottom || !channel?.state.isUpToDate;
     const loadMoreRecentResults =
       isScrollAtBottom && !channel?.state.isUpToDate;
     const shouldMarkRead =
