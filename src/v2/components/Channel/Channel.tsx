@@ -887,7 +887,10 @@ export const ChannelWithContext = <
         (m) => m.id === preview.quoted_message_id,
       );
 
-      preview.quoted_message = quotedMessage;
+      preview.quoted_message = quotedMessage as Omit<
+        MessageResponse<At, Ch, Co, Me, Re, Us>,
+        'quoted_message'
+      >;
     }
     return preview;
   };
