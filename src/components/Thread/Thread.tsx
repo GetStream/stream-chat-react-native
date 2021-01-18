@@ -40,6 +40,7 @@ import type {
 } from '../../types/types';
 
 const styles = StyleSheet.create({
+  absolute: { position: 'absolute' },
   messagePadding: {
     paddingHorizontal: 8,
   },
@@ -190,7 +191,7 @@ const ThreadWithContext = <
       <View style={[styles.newThread, newThread]}>
         <Svg
           height={newThread.height ?? 24}
-          style={{ position: 'absolute' }}
+          style={styles.absolute}
           width={vw(100)}
         >
           <Rect
