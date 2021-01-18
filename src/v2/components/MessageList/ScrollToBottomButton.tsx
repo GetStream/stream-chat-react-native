@@ -72,7 +72,7 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
     theme: {
       colors: { accent_blue, black, white },
       messageList: {
-        ScrollToBottomButton: {
+        scrollToBottomButton: {
           container,
           touchable,
           unreadCountNotificationContainer,
@@ -122,4 +122,4 @@ export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
 };
 
 ScrollToBottomButton.displayName =
-  'ScrollToBottomButton{messageList{ScrollToBottomButton}}';
+  'ScrollToBottomButton{messageList{scrollToBottomButton}}';

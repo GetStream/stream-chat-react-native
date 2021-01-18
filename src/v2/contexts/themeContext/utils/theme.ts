@@ -300,7 +300,7 @@ export type Theme = {
       text: TextStyle;
       textContainer: ViewStyle;
     };
-    ScrollToBottomButton: {
+    scrollToBottomButton: {
       container: ViewStyle;
       touchable: ViewStyle;
       unreadCountNotificationContainer: ViewStyle;
@@ -730,7 +730,7 @@ export const defaultTheme: Theme = {
       text: {},
       textContainer: {},
     },
-    ScrollToBottomButton: {
+    scrollToBottomButton: {
       container: {},
       touchable: {},
       unreadCountNotificationContainer: {},
