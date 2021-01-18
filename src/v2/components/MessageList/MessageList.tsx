@@ -367,6 +367,9 @@ const MessageListWithContext = <
     [],
   );
 
+  // If the top message in the list is unread, then we should scroll to top of the list.
+  // This is to handle the case when entire message list is unread.
+  // This scroll get set only on load, and never again.
   const setInitialScrollIfNeeded = useCallback(() => {
     if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) return;
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
@@ -379,6 +382,8 @@ const MessageListWithContext = <
     }
   }, []);
 
+  // We keep track of viewableItems, to implement scrollToMessage functionality.
+  // We can use scrollToIndex only if the message is within viewable limits.
   const updateViewableMessages = useCallback((viewableItems: ViewToken[]) => {
     viewableMessages.current = viewableItems.map((v) => v.item.id);
   }, []);
