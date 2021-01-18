@@ -631,7 +631,7 @@ export const ChannelWithContext = <
         // So we query 30 messages before the last time user read the channel - channel.lastRead()
         await channel.query({
           messages: {
-            created_at_before_or_equal: channel.lastRead(),
+            created_at_before_or_equal: channel.lastRead() || new Date(0),
             limit: 30,
           },
         });
@@ -657,7 +657,7 @@ export const ChannelWithContext = <
             // bad for scrolling up 10 messages than scrolling up 30 messages.
             await channel.query({
               messages: {
-                created_at_after: channel.lastRead(),
+                created_at_after: channel.lastRead() || new Date(0),
                 limit: 10,
               },
             });
