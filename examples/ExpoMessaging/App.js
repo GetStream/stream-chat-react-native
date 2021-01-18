@@ -23,7 +23,7 @@ import {
   Streami18n,
   Thread,
   useAttachmentPickerContext,
-} from 'stream-chat-expo/v2';
+} from 'stream-chat-expo';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 

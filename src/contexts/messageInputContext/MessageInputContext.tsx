@@ -329,7 +329,7 @@ export type InputMessageInputContextValue<
   initialValue?: string;
   /**
    * Custom UI component for AutoCompleteInput.
-   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/v2/contexts/messageInputContext/MessageInputContext.tsx)
+   * Has access to all of [MessageInputContext](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/messageInputContext/MessageInputContext.tsx)
    */
   Input?: React.ComponentType<
     Omit<MessageInputProps<At, Ch, Co, Ev, Me, Re, Us>, 'Input'> & {

@@ -10,7 +10,7 @@ import {
   MenuPointHorizontal,
   useChatContext,
   useTheme,
-} from 'stream-chat-react-native/v2';
+} from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useChannelInfoOverlayContext } from '../context/ChannelInfoOverlayContext';

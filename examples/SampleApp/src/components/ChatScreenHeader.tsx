@@ -4,7 +4,7 @@ import {
   CompositeNavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { Spinner, useChatContext, useTheme } from 'stream-chat-react-native/v2';
+import { Spinner, useChatContext, useTheme } from 'stream-chat-react-native';
 
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';

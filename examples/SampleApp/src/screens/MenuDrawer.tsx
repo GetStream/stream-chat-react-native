@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Edit, Group, User, useTheme } from 'stream-chat-react-native/v2';
+import { Edit, Group, User, useTheme } from 'stream-chat-react-native';
 
 import { AppContext } from '../context/AppContext';
 

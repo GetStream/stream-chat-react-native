@@ -2,21 +2,26 @@ import React, { PropsWithChildren, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import Dayjs from 'dayjs';
 
+import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
-import { useStreami18n } from './hooks/useStreami18n';
 
 import { ChatProvider } from '../../contexts/chatContext/ChatContext';
-import { ThemeProvider } from '../../contexts/themeContext/ThemeContext';
+import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
+import {
+  DeepPartial,
+  ThemeProvider,
+} from '../../contexts/themeContext/ThemeContext';
 import {
   TranslationContextValue,
   TranslationProvider,
 } from '../../contexts/translationContext/TranslationContext';
+import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../package.json';
 
 import type { Channel, StreamChat } from 'stream-chat';
 
-import type { ThemeType } from '../../contexts/themeContext/utils/replaceCssShorthand';
+import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Streami18n } from '../../utils/Streami18n';
 import type {
   DefaultAttachmentType,
@@ -93,7 +98,69 @@ export type ChatProps<
    */
   i18nInstance?: Streami18n;
   logger?: (message?: string) => void;
-  style?: ThemeType;
+  style?: DeepPartial<Theme>;
+};
+
+const ChatWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
+) => {
+  const { children, client, i18nInstance, logger = () => null, style } = props;
+
+  const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
+  const [translators, setTranslators] = useState<TranslationContextValue>({
+    t: (key: string) => key,
+    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
+  });
+
+  // Setup translators
+  const loadingTranslators = useStreami18n({ i18nInstance, setTranslators });
+
+  // Setup connection event listeners
+  const { connectionRecovering, isOnline } = useIsOnline<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >(client);
+
+  useEffect(() => {
+    if (client.setUserAgent) {
+      client.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
+    }
+  }, []);
+
+  const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
+    setChannel(newChannel);
+
+  const chatContext = useCreateChatContext({
+    channel,
+    client,
+    connectionRecovering,
+    isOnline,
+    logger,
+    setActiveChannel,
+  });
+
+  if (loadingTranslators) return null;
+
+  return (
+    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
+      <TranslationProvider value={translators}>
+        <ThemeProvider style={style}>{children}</ThemeProvider>
+      </TranslationProvider>
+    </ChatProvider>
+  );
 };
 
 /**
@@ -131,52 +198,7 @@ export const Chat = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, logger = () => null, style } = props;
+  const { style } = useOverlayContext();
 
-  const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
-  const [translators, setTranslators] = useState<TranslationContextValue>({
-    t: (key: string) => key,
-    tDateTimeParser: (input?: string | number | Date) => Dayjs(input),
-  });
-
-  // Setup translators
-  useStreami18n({ i18nInstance, setTranslators });
-
-  // Setup connection event listeners
-  const { connectionRecovering, isOnline } = useIsOnline<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >(client);
-
-  useEffect(() => {
-    client?.setUserAgent(`stream-chat-react-native-${Platform.OS}-${version}`);
-    client.recoverStateOnReconnect = false;
-  }, []);
-
-  const setActiveChannel = (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) =>
-    setChannel(newChannel);
-
-  if (!translators.t) return null;
-
-  const chatContext = {
-    channel,
-    client,
-    connectionRecovering,
-    isOnline,
-    logger,
-    setActiveChannel,
-  };
-
-  return (
-    <ChatProvider<At, Ch, Co, Ev, Me, Re, Us> value={chatContext}>
-      <TranslationProvider value={translators}>
-        <ThemeProvider style={style}>{children}</ThemeProvider>
-      </TranslationProvider>
-    </ChatProvider>
-  );
+  return <ChatWithContext {...{ style }} {...props} />;
 };

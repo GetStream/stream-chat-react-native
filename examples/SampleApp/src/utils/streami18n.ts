@@ -1,4 +1,4 @@
-import { Streami18n } from 'stream-chat-react-native/v2';
+import { Streami18n } from 'stream-chat-react-native';
 
 /**
  * Start playing with streami18n instance here:

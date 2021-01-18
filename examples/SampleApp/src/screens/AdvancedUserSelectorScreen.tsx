@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { KeyboardCompatibleView, useTheme } from 'stream-chat-react-native/v2';
+import { KeyboardCompatibleView, useTheme } from 'stream-chat-react-native';
 
 import { ScreenHeader } from '../components/ScreenHeader';
 import { AppContext } from '../context/AppContext';

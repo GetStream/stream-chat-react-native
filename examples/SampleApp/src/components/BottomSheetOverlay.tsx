@@ -19,11 +19,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
-import {
-  KeyboardCompatibleView,
-  useTheme,
-  vh,
-} from 'stream-chat-react-native/v2';
+import { KeyboardCompatibleView, useTheme, vh } from 'stream-chat-react-native';
 
 import { AddMemberBottomSheet } from './AddMemberBottomSheet';
 import { ConfirmationBottomSheet } from './ConfirmationBottomSheet';

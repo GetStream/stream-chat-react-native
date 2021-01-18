@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { Path, PathProps, SvgProps } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 export type IconProps = Partial<SvgProps> &
   Omit<RootPathProps, 'd'> & {

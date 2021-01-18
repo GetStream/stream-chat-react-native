@@ -1,12 +1,20 @@
 import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
-import { styled } from '../../../styles/styledComponents';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
+import {
+  TranslationContextValue,
+  useTranslationContext,
+} from '../../../contexts/translationContext/TranslationContext';
 
-import type { ImageRequireSource } from 'react-native';
-
-import type { Message } from '../../../components/MessageList/utils/insertDates';
-import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -18,27 +26,190 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const iconPath: ImageRequireSource = require('../../../images/icons/icon_path.png');
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  curveContainer: {
+    flexDirection: 'row',
+  },
+  leftMessageRepliesCurve: {
+    borderBottomLeftRadius: 16,
+    borderRightColor: 'transparent',
+  },
+  messageRepliesCurve: {
+    borderTopColor: 'transparent',
+    borderTopWidth: 0,
+    borderWidth: 1,
+    height: 16,
+    width: 16,
+  },
+  messageRepliesText: {
+    fontSize: 12,
+    fontWeight: '700',
+    paddingBottom: 5,
+    paddingLeft: 8,
+  },
+  rightMessageRepliesCurve: {
+    borderBottomRightRadius: 16,
+    borderLeftColor: 'transparent',
+  },
+});
 
-const Container = styled.TouchableOpacity`
-  align-items: center;
-  flex-direction: row;
-  padding: 5px;
-  ${({ theme }) => theme.message.replies.container.css}
-`;
+export type MessageRepliesPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'message' | 'onLongPress' | 'onOpenThread' | 'threadList'
+> &
+  Pick<
+    MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    'MessageRepliesAvatars'
+  > &
+  Pick<TranslationContextValue, 't'> & { noBorder?: boolean };
 
-const MessageRepliesImage = styled.Image<{ alignment: Alignment }>`
-  transform: ${({ alignment }) =>
-    alignment === 'left' ? 'rotateY(0deg)' : 'rotateY(180deg)'};
-  ${({ theme }) => theme.message.replies.image.css}
-`;
+const MessageRepliesWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    alignment,
+    message,
+    MessageRepliesAvatars,
+    noBorder,
+    onLongPress,
+    onOpenThread,
+    t,
+    threadList,
+  } = props;
 
-const MessageRepliesText = styled.Text`
-  color: ${({ theme }) => theme.colors.primary};
-  font-size: 12px;
-  font-weight: 700;
-  ${({ theme }) => theme.message.replies.messageRepliesText.css}
-`;
+  const {
+    theme: {
+      colors: { accent_blue, grey_whisper },
+      messageSimple: {
+        replies: { container, leftCurve, messageRepliesText, rightCurve },
+      },
+    },
+  } = useTheme();
+
+  if (threadList || !message.reply_count) return null;
+
+  return (
+    <View style={styles.curveContainer}>
+      {alignment === 'left' && (
+        <>
+          {!noBorder && (
+            <View
+              style={[
+                { borderColor: grey_whisper },
+                styles.messageRepliesCurve,
+                styles.leftMessageRepliesCurve,
+                leftCurve,
+              ]}
+            />
+          )}
+          <MessageRepliesAvatars alignment={alignment} message={message} />
+        </>
+      )}
+      <TouchableOpacity
+        onLongPress={onLongPress}
+        onPress={onOpenThread}
+        style={[styles.container, container]}
+        testID='message-replies'
+      >
+        <Text
+          style={[
+            styles.messageRepliesText,
+            { color: accent_blue },
+            messageRepliesText,
+          ]}
+        >
+          {message.reply_count === 1
+            ? t('1 Thread Reply')
+            : t('{{ replyCount }} Thread Replies', {
+                replyCount: message.reply_count,
+              })}
+        </Text>
+      </TouchableOpacity>
+      {alignment === 'right' && (
+        <>
+          <MessageRepliesAvatars alignment={alignment} message={message} />
+          {!noBorder && (
+            <View
+              style={[
+                { borderColor: grey_whisper },
+                styles.messageRepliesCurve,
+                styles.rightMessageRepliesCurve,
+                rightCurve,
+              ]}
+            />
+          )}
+        </>
+      )}
+    </View>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    message: prevMessage,
+    noBorder: prevNoBorder,
+    t: prevT,
+    threadList: prevThreadList,
+  } = prevProps;
+  const {
+    message: nextMessage,
+    noBorder: nextNoBorder,
+    t: nextT,
+    threadList: nextThreadList,
+  } = nextProps;
+
+  const threadListEqual = prevThreadList === nextThreadList;
+  if (!threadListEqual) return false;
+
+  const messageReplyCountEqual =
+    prevMessage.reply_count === nextMessage.reply_count;
+  if (!messageReplyCountEqual) return false;
+
+  const noBorderEqual = prevNoBorder === nextNoBorder;
+  if (!noBorderEqual) return false;
+
+  const tEqual = prevT === nextT;
+  if (!tEqual) return false;
+
+  return true;
+};
+
+const MemoizedMessageReplies = React.memo(
+  MessageRepliesWithContext,
+  areEqual,
+) as typeof MessageRepliesWithContext;
 
 export type MessageRepliesProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -48,24 +219,7 @@ export type MessageRepliesProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * Position of the message, either 'right' or 'left'
-   */
-  alignment: Alignment;
-  /**
-   * Whether or not the current message is part of a thread
-   */
-  isThreadList: boolean;
-  /**
-   * Current [message object](https://getstream.io/chat/docs/#message_format)
-   */
-  message: Message<At, Ch, Co, Ev, Me, Re, Us>;
-  /**
-   * Handler to open a thread on a message
-   */
-  openThread: () => void;
-};
+> = Partial<MessageRepliesPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageReplies = <
   At extends UnknownType = DefaultAttachmentType,
@@ -78,31 +232,38 @@ export const MessageReplies = <
 >(
   props: MessageRepliesProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, isThreadList, message, openThread } = props;
+  const {
+    alignment,
+    message,
+    onLongPress,
+    onOpenThread,
+    threadList,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { MessageRepliesAvatars } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { t } = useTranslationContext();
-  if (isThreadList || !message.reply_count) return null;
 
   return (
-    <Container onPress={openThread} testID='message-replies'>
-      {alignment === 'left' && (
-        <MessageRepliesImage
-          alignment={alignment}
-          source={iconPath}
-          testID='message-replies-left'
-        />
-      )}
-      <MessageRepliesText>
-        {message.reply_count === 1
-          ? t('1 reply')
-          : t('{{ replyCount }} replies', { replyCount: message.reply_count })}
-      </MessageRepliesText>
-      {alignment === 'right' && (
-        <MessageRepliesImage
-          alignment={alignment}
-          source={iconPath}
-          testID='message-replies-right'
-        />
-      )}
-    </Container>
+    <MemoizedMessageReplies
+      {...{
+        alignment,
+        message,
+        MessageRepliesAvatars,
+        onLongPress,
+        onOpenThread,
+        t,
+        threadList,
+      }}
+      {...props}
+    />
   );
 };
+
+MessageReplies.displayName = 'MessageReplies{messageSimple{replies}}';

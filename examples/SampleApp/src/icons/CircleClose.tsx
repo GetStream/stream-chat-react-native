@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { G, Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 

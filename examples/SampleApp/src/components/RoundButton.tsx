@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 const styles = StyleSheet.create({
   container: {

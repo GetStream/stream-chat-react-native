@@ -1,6 +1,6 @@
 import React, { useContext, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { AtMentions, useTheme } from 'stream-chat-react-native/v2';
+import { AtMentions, useTheme } from 'stream-chat-react-native';
 
 import { ChatScreenHeader } from '../components/ChatScreenHeader';
 import { MessageSearchList } from '../components/MessageSearch/MessageSearchList';

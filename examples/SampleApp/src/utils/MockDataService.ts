@@ -1,5 +1,6 @@
-import { Attachment } from 'stream-chat';
-import { generateRandomId } from 'stream-chat-react-native/v2';
+import { generateRandomId } from 'stream-chat-react-native';
+
+import type { Attachment } from 'stream-chat';
 
 const messageSearchByFileAttachmentType = () => {
   const attachments: Attachment[] = [

@@ -1,12 +1,14 @@
 import React from 'react';
+import { View } from 'react-native';
 
-import { Avatar } from '../../Avatar/Avatar';
+import { Avatar, AvatarProps } from '../../Avatar/Avatar';
 
-import { styled } from '../../../styles/styledComponents';
+import {
+  MessageContextValue,
+  useMessageContext,
+} from '../../../contexts/messageContext/MessageContext';
+import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type { ForwardedMessageProps } from './MessageContent';
-
-import type { Alignment } from '../../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -18,17 +20,99 @@ import type {
   UnknownType,
 } from '../../../types/types';
 
-const Container = styled.View<{ alignment: Alignment }>`
-  margin-left: ${({ alignment }) => (alignment === 'right' ? 8 : 0)}px;
-  margin-right: ${({ alignment }) => (alignment === 'left' ? 8 : 0)}px;
-  ${({ theme }) => theme.message.avatarWrapper.container.css}
-`;
+export type MessageAvatarPropsWithContext<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+> = Pick<
+  MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+  'alignment' | 'lastGroupMessage' | 'message' | 'showAvatar'
+> &
+  Partial<Pick<AvatarProps, 'size'>>;
 
-const Spacer = styled.View`
-  height: 28px;
-  width: 32px;
-  ${({ theme }) => theme.message.avatarWrapper.spacer.css}
-`;
+const MessageAvatarWithContext = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends DefaultUserType = DefaultUserType
+>(
+  props: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { alignment, lastGroupMessage, message, showAvatar, size } = props;
+  const {
+    theme: {
+      avatar: { BASE_AVATAR_SIZE },
+      messageSimple: {
+        avatarWrapper: { container, leftAlign, rightAlign, spacer },
+      },
+    },
+  } = useTheme();
+
+  const visible =
+    typeof showAvatar === 'boolean' ? showAvatar : lastGroupMessage;
+
+  return (
+    <View
+      style={[alignment === 'left' ? leftAlign : rightAlign, container]}
+      testID='message-avatar'
+    >
+      {visible ? (
+        <Avatar
+          image={message.user?.image}
+          name={message.user?.name || message.user?.id}
+          size={size || BASE_AVATAR_SIZE}
+        />
+      ) : (
+        <View style={spacer} testID='spacer' />
+      )}
+    </View>
+  );
+};
+
+const areEqual = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  prevProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  nextProps: MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const {
+    lastGroupMessage: prevLastGroupMessage,
+    message: prevMessage,
+  } = prevProps;
+  const {
+    lastGroupMessage: nextLastGroupMessage,
+    message: nextMessage,
+  } = nextProps;
+
+  const lastGroupMessageEqual = prevLastGroupMessage === nextLastGroupMessage;
+  if (!lastGroupMessageEqual) return false;
+
+  const userEqual =
+    prevMessage.user?.image === nextMessage.user?.image &&
+    prevMessage.user?.name === nextMessage.user?.name &&
+    prevMessage.user?.id === nextMessage.user?.id;
+  if (!userEqual) return false;
+
+  return true;
+};
+
+const MemoizedMessageAvatar = React.memo(
+  MessageAvatarWithContext,
+  areEqual,
+) as typeof MessageAvatarWithContext;
 
 export type MessageAvatarProps<
   At extends UnknownType = DefaultAttachmentType,
@@ -38,9 +122,7 @@ export type MessageAvatarProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = ForwardedMessageProps<At, Ch, Co, Ev, Me, Re, Us> & {
-  showAvatar?: boolean;
-};
+> = Partial<MessageAvatarPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
 
 export const MessageAvatar = <
   At extends UnknownType = DefaultAttachmentType,
@@ -53,23 +135,24 @@ export const MessageAvatar = <
 >(
   props: MessageAvatarProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { alignment, groupStyles, message, showAvatar } = props;
-
-  const visible =
-    typeof showAvatar === 'boolean'
-      ? showAvatar
-      : groupStyles[0] === 'single' || groupStyles[0] === 'bottom';
+  const {
+    alignment,
+    lastGroupMessage,
+    message,
+    showAvatar,
+  } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
-    <Container alignment={alignment} testID='message-avatar'>
-      {visible ? (
-        <Avatar
-          image={message.user?.image}
-          name={message.user?.name || message.user?.id}
-        />
-      ) : (
-        <Spacer testID='spacer' />
-      )}
-    </Container>
+    <MemoizedMessageAvatar
+      {...{
+        alignment,
+        lastGroupMessage,
+        message,
+        showAvatar,
+      }}
+      {...props}
+    />
   );
 };
+
+MessageAvatar.displayName = 'MessageAvatar{messageSimple{avatarWrapper}}';

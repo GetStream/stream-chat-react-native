@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 import type { UserResponse } from 'stream-chat';
 

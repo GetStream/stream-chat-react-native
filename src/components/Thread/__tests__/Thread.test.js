@@ -10,6 +10,8 @@ import { Chat } from '../../Chat/Chat';
 import { ChannelContext } from '../../../contexts/channelContext/ChannelContext';
 import { ThreadContext } from '../../../contexts/threadContext/ThreadContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { Streami18n } from '../../../utils/Streami18n';
+
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import { generateChannel } from '../../../mock-builders/generator/channel';
@@ -20,7 +22,6 @@ import {
 } from '../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
 
 const StreamReactNativeNamespace = '9b244ee4-7d69-4d7b-ae23-cf89e9f7b035';
 

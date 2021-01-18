@@ -16,6 +16,7 @@ import {
   ChatContext,
   ChatProvider,
 } from '../../../contexts/chatContext/ChatContext';
+
 import { getOrCreateChannelApi } from '../../../mock-builders/api/getOrCreateChannel';
 import { useMockedApis } from '../../../mock-builders/api/useMockedApis';
 import dispatchMessageNewEvent from '../../../mock-builders/event/messageNew';

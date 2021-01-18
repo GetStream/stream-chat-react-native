@@ -1,12 +1,10 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { v4 as uuidv4 } from 'uuid';
 
 import { Attachment } from '../Attachment';
 import { AttachmentActions } from '../AttachmentActions';
 
 import { ThemeProvider } from '../../../contexts/themeContext/ThemeContext';
-
 import {
   generateAttachmentAction,
   generateAudioAttachment,
@@ -129,7 +127,9 @@ describe('Attachment', () => {
   it('should render "Card" if attachment type is not recognized', async () => {
     const { getByTestId } = render(
       getAttachmentComponent({
-        attachment: generateCardAttachment({ type: uuidv4() }),
+        attachment: generateCardAttachment({
+          type: Date.now().toString(),
+        }),
       }),
     );
     await waitFor(() => {

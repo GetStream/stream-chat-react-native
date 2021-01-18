@@ -15,7 +15,7 @@ import {
   Close,
   useTheme,
   vw,
-} from 'stream-chat-react-native/v2';
+} from 'stream-chat-react-native';
 
 import { useUserSearchContext } from '../../context/UserSearchContext';
 

@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { Channel, ChannelState, Event } from 'stream-chat';
+import type { Channel, ChannelState } from 'stream-chat';
 
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -17,6 +17,11 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+export type ChannelConfig = {
+  readEventsEnabled?: boolean;
+  typingEventsEnabled?: boolean;
+};
+
 export type ChannelContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -27,21 +32,50 @@ export type ChannelContextValue<
   Us extends UnknownType = DefaultUserType
 > = {
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
+  enforceUniqueReaction: boolean;
   error: boolean;
-  eventHistory: { [key: string]: Event<At, Ch, Co, Ev, Me, Re, Us>[] };
+  giphyEnabled: boolean;
+  /**
+   * Returns true if the current user has admin privileges
+   */
+  isAdmin: boolean;
+  /**
+   * Returns true if the current user is a moderator
+   */
+  isModerator: boolean;
+  /**
+   * Returns true if the current user is a owner
+   */
+  isOwner: boolean;
+  loadChannelAtMessage: ({
+    after,
+    before,
+    messageId,
+  }: {
+    after?: number;
+    before?: number;
+    messageId?: string;
+  }) => Promise<void>;
   loading: boolean;
+  /**
+   * Custom loading indicator to override the Stream default
+   */
   LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: () => void;
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
+  reloadChannel: () => Promise<void>;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setTargetedMessage: (messageId: string) => void;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   lastRead?: Date;
+  StickyHeader?: React.ComponentType<{ dateString: string }>;
+  targetedMessage?: string;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
-};
+} & ChannelConfig;
 
 export const ChannelContext = React.createContext({} as ChannelContextValue);
 

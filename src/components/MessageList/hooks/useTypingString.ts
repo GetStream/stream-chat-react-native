@@ -40,28 +40,17 @@ export const useTypingString = <
   });
 
   if (nonSelfUsers.length === 1) {
-    return t('{{ user }} is typing...', { user: nonSelfUsers[0] });
+    return t('{{ user }} is typing', { user: nonSelfUsers[0] });
   }
 
-  if (nonSelfUsers.length === 2) {
+  if (nonSelfUsers.length > 1) {
     /**
-     * Joins the two names without commas
+     * Joins the multiple names with number after first name
      * example: "Dan and Neil"
      */
-    return t('{{ firstUser }} and {{ secondUser }} are typing...', {
+    return t('{{ firstUser }} and {{ nonSelfUserLength }} more are typing', {
       firstUser: nonSelfUsers[0],
-      secondUser: nonSelfUsers[1],
-    });
-  }
-
-  if (nonSelfUsers.length > 2) {
-    /**
-     * Joins all names with commas, the final one gets ", and" (oxford comma!)
-     * example: "Dan, Neil, and Vir"
-     */
-    return t('{{ commaSeparatedUsers }} and {{ lastUser }} are typing...', {
-      commaSeparatedUsers: nonSelfUsers.slice(0, -1).join(', '),
-      lastUser: nonSelfUsers.slice(-1),
+      nonSelfUserLength: nonSelfUsers.length - 1,
     });
   }
 

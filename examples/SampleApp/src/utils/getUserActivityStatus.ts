@@ -1,8 +1,10 @@
 import Dayjs from 'dayjs';
-import { UserResponse } from 'stream-chat';
-import { LocalUserType } from '../types';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { Immutable } from 'seamless-immutable';
+
+import { LocalUserType } from '../types';
+
+import type { Immutable } from 'seamless-immutable';
+import type { UserResponse } from 'stream-chat';
 
 Dayjs.extend(relativeTime);
 

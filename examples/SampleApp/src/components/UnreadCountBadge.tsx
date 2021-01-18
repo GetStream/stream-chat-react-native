@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { isOwnUser } from 'stream-chat';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 import { AppContext } from '../context/AppContext';
 

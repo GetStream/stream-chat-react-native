@@ -2,56 +2,50 @@ import React from 'react';
 import {
   ActivityIndicator,
   GestureResponderEvent,
-  Image,
-  ImageRequireSource,
+  StyleSheet,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Refresh } from '../../icons';
 import { ProgressIndicatorTypes } from '../../utils/utils';
 
-const iconReload: ImageRequireSource = require('../../images/reload1.png');
-
-const ActivityIndicatorContainer = styled.View`
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
-
-const Container = styled.View`
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0);
-  height: 100%;
-  justify-content: center;
-  position: absolute;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.container.css};
-`;
-
-const Overlay = styled.View`
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.3);
-  height: 100%;
-  justify-content: center;
-  opacity: 0;
-  position: absolute;
-  width: 100%;
-  ${({ theme }) => theme.messageInput.uploadProgressIndicator.overlay.css};
-`;
-
-const RetryButtonContainer = styled.TouchableOpacity`
-  align-items: center;
-  bottom: 0;
-  justify-content: center;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
+const styles = StyleSheet.create({
+  activityIndicatorContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  container: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    position: 'absolute',
+    width: '100%',
+  },
+  overlay: {
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'center',
+    opacity: 0,
+    position: 'absolute',
+    width: '100%',
+  },
+  retryButtonContainer: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+});
 
 export type UploadProgressIndicatorProps = {
   /** Action triggered when clicked indicator */
@@ -67,31 +61,51 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
 ) => {
   const { action, active, children, type } = props;
 
+  const {
+    theme: {
+      colors: { overlay: overlayColor, white_smoke },
+      messageInput: {
+        uploadProgressIndicator: { container, overlay },
+      },
+    },
+  } = useTheme();
+
   return !active ? (
     <View testID='inactive-upload-progress-indicator'>{children}</View>
   ) : (
     <View testID='active-upload-progress-indicator'>
       {children}
-      <Overlay />
-      <Container>
+      <View
+        style={[styles.overlay, { backgroundColor: overlayColor }, overlay]}
+      />
+      <View
+        style={[styles.container, { backgroundColor: overlayColor }, container]}
+      >
         {type === ProgressIndicatorTypes.IN_PROGRESS && (
-          <ActivityIndicatorContainer>
+          <View style={styles.activityIndicatorContainer}>
             <ActivityIndicator
-              color='grey'
+              color={white_smoke}
               testID='upload-progress-indicator'
             />
-          </ActivityIndicatorContainer>
+          </View>
         )}
         {type === ProgressIndicatorTypes.RETRY && (
-          <RetryButtonContainer onPress={action}>
-            <Image
-              source={iconReload}
-              style={{ height: 18, width: 18 }}
+          <TouchableOpacity
+            onPress={action}
+            style={styles.retryButtonContainer}
+          >
+            <Refresh
+              height={18}
+              pathFill={white_smoke}
               testID='retry-upload-progress-indicator'
+              width={18}
             />
-          </RetryButtonContainer>
+          </TouchableOpacity>
         )}
-      </Container>
+      </View>
     </View>
   );
 };
+
+UploadProgressIndicator.displayName =
+  'UploadProgressIndicator{messageInput{uploadProgressIndicator}}';

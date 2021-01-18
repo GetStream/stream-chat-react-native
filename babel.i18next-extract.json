@@ -17,7 +17,6 @@
         "discardOldKeys": true
       }
     ],
-    "@babel/transform-runtime",
-    "babel-plugin-styled-components"
+    "@babel/transform-runtime"
   ]
 }
