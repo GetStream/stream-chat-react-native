@@ -6,11 +6,9 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
     Array [
       Object {
         "height": 70,
-        "paddingBottom": 10,
-        "paddingLeft": 10,
-        "paddingRight": 10,
-        "paddingTop": 10,
+        "padding": 10,
       },
+      Object {},
     ]
   }
 >
@@ -89,6 +87,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -109,6 +108,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -117,13 +117,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -132,28 +133,27 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
               <View
                 style={
-                  Array [
-                    Object {
-                      "alignItems": "center",
-                      "bottom": 0,
-                      "justifyContent": "center",
-                      "left": 0,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
-                    },
-                  ]
+                  Object {
+                    "alignItems": "center",
+                    "bottom": 0,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
                 }
               >
                 <ActivityIndicator
@@ -180,7 +180,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -205,6 +205,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -231,6 +232,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -251,6 +253,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -269,7 +272,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -294,6 +297,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -320,6 +324,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -340,6 +345,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -348,13 +354,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -363,12 +370,13 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
@@ -427,7 +435,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -452,6 +460,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with 1 uploading, 1
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -469,11 +478,9 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
     Array [
       Object {
         "height": 70,
-        "paddingBottom": 10,
-        "paddingLeft": 10,
-        "paddingRight": 10,
-        "paddingTop": 10,
+        "padding": 10,
       },
+      Object {},
     ]
   }
 >
@@ -552,6 +559,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -572,6 +580,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -580,13 +589,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -595,12 +605,13 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
@@ -659,7 +670,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -684,6 +695,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -710,6 +722,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -730,6 +743,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -738,13 +752,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -753,12 +768,13 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
@@ -817,7 +833,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -842,6 +858,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -868,6 +885,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -888,6 +906,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -896,13 +915,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -911,12 +931,13 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
@@ -975,7 +996,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1000,6 +1021,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all failed ima
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1017,11 +1039,9 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
     Array [
       Object {
         "height": 70,
-        "paddingBottom": 10,
-        "paddingLeft": 10,
-        "paddingRight": 10,
-        "paddingTop": 10,
+        "padding": 10,
       },
+      Object {},
     ]
   }
 >
@@ -1100,6 +1120,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1120,6 +1141,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1138,7 +1160,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1163,6 +1185,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1189,6 +1212,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1209,6 +1233,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1227,7 +1252,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1252,6 +1277,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1278,6 +1304,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1298,6 +1325,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1316,7 +1344,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1341,6 +1369,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploaded i
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1358,11 +1387,9 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
     Array [
       Object {
         "height": 70,
-        "paddingBottom": 10,
-        "paddingLeft": 10,
-        "paddingRight": 10,
-        "paddingTop": 10,
+        "padding": 10,
       },
+      Object {},
     ]
   }
 >
@@ -1441,6 +1468,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1461,6 +1489,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1469,13 +1498,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -1484,28 +1514,27 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
               <View
                 style={
-                  Array [
-                    Object {
-                      "alignItems": "center",
-                      "bottom": 0,
-                      "justifyContent": "center",
-                      "left": 0,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
-                    },
-                  ]
+                  Object {
+                    "alignItems": "center",
+                    "bottom": 0,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
                 }
               >
                 <ActivityIndicator
@@ -1532,7 +1561,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1557,6 +1586,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1583,6 +1613,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1603,6 +1634,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1611,13 +1643,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -1626,28 +1659,27 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
               <View
                 style={
-                  Array [
-                    Object {
-                      "alignItems": "center",
-                      "bottom": 0,
-                      "justifyContent": "center",
-                      "left": 0,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
-                    },
-                  ]
+                  Object {
+                    "alignItems": "center",
+                    "bottom": 0,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
                 }
               >
                 <ActivityIndicator
@@ -1674,7 +1706,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1699,6 +1731,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1725,6 +1758,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 "height": 50,
                 "marginLeft": 5,
               },
+              Object {},
             ]
           }
         >
@@ -1745,6 +1779,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 50,
                     "width": 50,
                   },
+                  Object {},
                 ]
               }
             />
@@ -1753,13 +1788,14 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(0, 0, 0, 0.3)",
+                    "backgroundColor": "#0000004D",
                     "height": "100%",
                     "justifyContent": "center",
                     "opacity": 0,
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             />
@@ -1768,28 +1804,27 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                 Array [
                   Object {
                     "alignItems": "center",
-                    "backgroundColor": "rgba(255, 255, 255, 0)",
+                    "backgroundColor": "#FFFFFF00",
                     "height": "100%",
                     "justifyContent": "center",
                     "position": "absolute",
                     "width": "100%",
                   },
+                  Object {},
                 ]
               }
             >
               <View
                 style={
-                  Array [
-                    Object {
-                      "alignItems": "center",
-                      "bottom": 0,
-                      "justifyContent": "center",
-                      "left": 0,
-                      "position": "absolute",
-                      "right": 0,
-                      "top": 0,
-                    },
-                  ]
+                  Object {
+                    "alignItems": "center",
+                    "bottom": 0,
+                    "justifyContent": "center",
+                    "left": 0,
+                    "position": "absolute",
+                    "right": 0,
+                    "top": 0,
+                  }
                 }
               >
                 <ActivityIndicator
@@ -1816,7 +1851,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
             style={
               Object {
                 "alignItems": "center",
-                "backgroundColor": "#fff",
+                "backgroundColor": "#FFFFFF",
                 "borderRadius": 20,
                 "height": 20,
                 "justifyContent": "center",
@@ -1841,6 +1876,7 @@ exports[`ImageUploadPreview should render ImageUploadPreview with all uploading 
                     "height": 10,
                     "width": 10,
                   },
+                  Object {},
                 ]
               }
             />

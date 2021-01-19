@@ -1,18 +1,31 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { Spinner } from '../Spinner/Spinner';
 
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
-const Container = styled.View`
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  ${({ theme }) => theme.channelListFooterLoadingIndicator.container.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+});
 
-export const ChannelListFooterLoadingIndicator: React.FC = () => (
-  <Container>
-    <Spinner />
-  </Container>
-);
+export const ChannelListFooterLoadingIndicator: React.FC = () => {
+  const {
+    theme: {
+      channelListFooterLoadingIndicator: { container },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <Spinner />
+    </View>
+  );
+};
+
+ChannelListFooterLoadingIndicator.displayName =
+  'ChannelListFooterLoadingIndicator{channelListFooterLoadingIndicator}';

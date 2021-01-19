@@ -33,8 +33,7 @@
         "discardOldKeys": true
       }
     ],
-    "module-resolver",
-    "babel-plugin-styled-components"
+    "module-resolver"
   ],
   "presets": ["@babel/env", "module:metro-react-native-babel-preset"]
 }

@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useContext, useState } from 'react';
 
-import type { ChannelContextValue } from 'stream-chat-react-native/v2';
+import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type {
   LocalAttachmentType,

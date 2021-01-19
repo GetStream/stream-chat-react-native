@@ -25,8 +25,6 @@ const actions = [
 ```
 
 ```js
-import { css } from 'styled-components';
-
 import { AttachmentActions } from './AttachmentActions';
 
 function actionHandler(action) {
@@ -48,9 +46,7 @@ const actions = [
   style={{
     button: { primaryBackgroundColor: 'black' },
     buttonText: {
-      css: css`
-        font-size: ${(props) => (props.buttonStyle === 'primary' ? 60 : 30)}px;
-      `,
+      fontSize: 30,
     },
   }}
 />;

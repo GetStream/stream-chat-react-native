@@ -154,11 +154,11 @@ const sections = [
         name: 'withMessagesContext',
       },
       {
-        content: 'src/v2/contexts/overlayContext/OverlayContext.md',
+        content: 'src/contexts/overlayContext/OverlayContext.md',
         name: 'OverlayContext',
       },
       {
-        content: 'src/v2/contexts/overlayContext/withOverlayContext.md',
+        content: 'src/contexts/overlayContext/withOverlayContext.md',
         name: 'withOverlayContext',
       },
       {
@@ -259,15 +259,6 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
-        'styled-components/native':
-          'styled-components/native/dist/styled-components.native.cjs.js',
-        'styled-components':
-          'styled-components/native/dist/styled-components.native.cjs.js',
-        // Looks ugly in docs, better to just not show it for now
-        'react-native-actionsheet': path.join(
-          __dirname,
-          'src/styleguideComponents/ReactNativeActionSheet.tsx',
-        ),
       },
       extensions: ['.web.js', '.js', '.ts', '.tsx'],
     },
@@ -287,11 +278,7 @@ module.exports = {
           ],
           options: {
             comments: true,
-            plugins: [
-              'module-resolver',
-              'react-native-web',
-              'babel-plugin-styled-components',
-            ],
+            plugins: ['module-resolver', 'react-native-web'],
             presets: [
               'module:metro-react-native-babel-preset',
               '@babel/preset-typescript',

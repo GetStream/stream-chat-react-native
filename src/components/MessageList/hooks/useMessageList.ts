@@ -1,17 +1,18 @@
 import { getGroupStyles } from '../utils/getGroupStyles';
 import { getReadStates } from '../utils/getReadStates';
-import {
-  insertDates,
-  InsertDatesResponse,
-  isDateSeparator,
-} from '../utils/insertDates';
 
+import { useChatContext } from '../../../contexts/chatContext/ChatContext';
 import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../contexts/channelContext/ChannelContext';
-import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
+import {
+  MessageWithDates,
+  useMessagesContext,
+} from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
+
+import type { ChannelState } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -23,12 +24,54 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
+import type SeamlessImmutable from 'seamless-immutable';
 
 export type UseMessageListParams = {
   inverted?: boolean;
   noGroupByUser?: boolean;
   threadList?: boolean;
 };
+
+export type MessageType<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> =
+  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  | MessageWithDates<At, Ch, Co, Me, Re, Us>;
+
+export type ImmutableMessages<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> =
+  | MessageType<At, Ch, Co, Ev, Me, Re, Us>[]
+  | SeamlessImmutable.ImmutableArray<MessageType<At, Ch, Co, Ev, Me, Re, Us>>;
+
+export const isImmutableMessageArray = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  messages: ImmutableMessages<At, Ch, Co, Ev, Me, Re, Us>,
+): messages is SeamlessImmutable.ImmutableArray<
+  ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+> =>
+  (messages as SeamlessImmutable.ImmutableArray<
+    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  >).asMutable !== undefined;
 
 export const useMessageList = <
   At extends UnknownType = DefaultAttachmentType,
@@ -40,8 +83,9 @@ export const useMessageList = <
   Us extends UnknownType = DefaultUserType
 >(
   params: UseMessageListParams,
-): InsertDatesResponse<At, Ch, Co, Ev, Me, Re, Us> => {
+) => {
   const { inverted, noGroupByUser, threadList } = params;
+  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { read } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { messages } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { threadMessages } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
@@ -50,29 +94,26 @@ export const useMessageList = <
   const readList:
     | ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
     | undefined = threadList ? undefined : read;
-
-  const messagesWithDates = insertDates<At, Ch, Co, Ev, Me, Re, Us>(
-    messageList,
-  );
   const messageGroupStyles = getGroupStyles<At, Ch, Co, Ev, Me, Re, Us>({
-    messagesWithDates,
+    messages: messageList,
     noGroupByUser,
   });
+
   const readData = getReadStates<At, Ch, Co, Ev, Me, Re, Us>(
-    messagesWithDates,
+    client.userID,
+    messageList,
     readList,
   );
+  const messagesWithStylesAndRead = messageList
+    .asMutable()
+    .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)
+    .map((msg) => ({
+      ...msg,
+      groupStyles: messageGroupStyles[msg.id] || [],
+      readBy: msg.id ? readData[msg.id] || false : false,
+    }));
 
-  const messagesWithDatesList = messagesWithDates.map((msg) => ({
-    ...msg,
-    groupStyles:
-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
-        ? messageGroupStyles[msg.id] || []
-        : [],
-    readBy:
-      !isDateSeparator<At, Ch, Co, Ev, Me, Re, Us>(msg) && msg.id
-        ? readData[msg.id] || []
-        : [],
-  }));
-  return inverted ? messagesWithDatesList.reverse() : messagesWithDatesList;
+  return (inverted
+    ? messagesWithStylesAndRead.reverse()
+    : messagesWithStylesAndRead) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 };

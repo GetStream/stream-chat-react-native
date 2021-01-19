@@ -17,16 +17,12 @@ exports[`MessageReplies should render message replies 1`] = `
       "alignItems": "center",
       "flexDirection": "row",
       "opacity": 1,
-      "paddingBottom": 5,
-      "paddingLeft": 5,
-      "paddingRight": 5,
-      "paddingTop": 5,
+      "padding": 5,
     }
   }
   testID="message-replies"
 >
   <Image
-    alignment="left"
     source={
       Object {
         "testUri": "../../../src/images/icons/icon_path.png",
@@ -41,6 +37,7 @@ exports[`MessageReplies should render message replies 1`] = `
             },
           ],
         },
+        Object {},
       ]
     }
     testID="message-replies-left"
@@ -49,10 +46,13 @@ exports[`MessageReplies should render message replies 1`] = `
     style={
       Array [
         Object {
-          "color": "#006cff",
           "fontSize": 12,
           "fontWeight": "700",
         },
+        Object {
+          "color": "#006cff",
+        },
+        Object {},
       ]
     }
   >

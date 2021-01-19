@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { vw } from 'stream-chat-react-native/v2';
+import { vw } from 'stream-chat-react-native';
 
 import { UserGridItem } from './UserGridItem';
 

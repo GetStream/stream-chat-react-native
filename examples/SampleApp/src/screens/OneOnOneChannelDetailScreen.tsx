@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 import { AppContext } from '../context/AppContext';
 import { useAppOverlayContext } from '../context/AppOverlayContext';

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { ChannelContextValue } from 'stream-chat-react-native/v2';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ChannelState } from 'stream-chat';
+import type { ChannelContextValue } from 'stream-chat-react-native';
 
 import type {
   LocalAttachmentType,

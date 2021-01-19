@@ -17,7 +17,7 @@ import {
   User,
   UserAdd,
   useTheme,
-} from 'stream-chat-react-native/v2';
+} from 'stream-chat-react-native';
 
 import { RoundButton } from '../components/RoundButton';
 import { ScreenHeader } from '../components/ScreenHeader';

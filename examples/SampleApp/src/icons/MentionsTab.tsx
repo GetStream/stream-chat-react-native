@@ -1,10 +1,14 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { useTheme } from 'stream-chat-react-native/v2';
+import { useTheme } from 'stream-chat-react-native';
 
 import { IconProps } from '../utils/base';
 
-export const MentionsTab: React.FC<IconProps> = ({ active, height = 24, width = 24 }) => {
+export const MentionsTab: React.FC<IconProps> = ({
+  active,
+  height = 24,
+  width = 24,
+}) => {
   const {
     theme: {
       colors: { black, grey },

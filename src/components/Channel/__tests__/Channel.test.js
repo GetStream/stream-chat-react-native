@@ -207,9 +207,9 @@ describe('Channel', () => {
 
     renderComponent(
       { channel },
-      ({ loadMore }) => {
+      ({ loadMoreEarlier }) => {
         useMockedApis(chatClient, [queryChannelWithNewMessages(newMessages)]);
-        loadMore(limit);
+        loadMoreEarlier(limit);
       },
       MessagesContext,
     );

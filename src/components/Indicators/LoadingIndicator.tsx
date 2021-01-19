@@ -1,29 +1,44 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Spinner } from '../Spinner/Spinner';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
 
-const Container = styled.View`
-  align-items: center;
-  height: 100%;
-  justify-content: center;
-  ${({ theme }) => theme.loadingIndicator.container.css};
-`;
-const LoadingText = styled.Text`
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 20px;
-  ${({ theme }) => theme.loadingIndicator.loadingText.css};
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginTop: 20,
+  },
+});
 
-const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => (
-  <Container>
-    <Spinner />
-    <LoadingText testID='loading'>{text}</LoadingText>
-  </Container>
-);
+const LoadingIndicatorWrapper: React.FC<{ text: string }> = ({ text }) => {
+  const {
+    theme: {
+      colors: { black },
+      loadingIndicator: { container, loadingText },
+    },
+  } = useTheme();
+
+  return (
+    <View style={[styles.container, container]}>
+      <Spinner />
+      <Text
+        style={[styles.loadingText, { color: black }, loadingText]}
+        testID='loading'
+      >
+        {text}
+      </Text>
+    </View>
+  );
+};
 
 export type LoadingProps = {
   listType?: 'channel' | 'message' | 'default';
@@ -53,3 +68,5 @@ export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
       return <LoadingIndicatorWrapper text={t('Loading...')} />;
   }
 };
+
+LoadingIndicator.displayName = 'LoadingIndicator{loadingIndicator}';

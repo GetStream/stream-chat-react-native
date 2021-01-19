@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import dayjs from 'dayjs';
-import { Avatar, useTheme, vw } from 'stream-chat-react-native/v2';
+import { Avatar, useTheme, vw } from 'stream-chat-react-native';
 
 import { MESSAGE_SEARCH_LIMIT } from '../../hooks/usePaginatedSearchedMessages';
 

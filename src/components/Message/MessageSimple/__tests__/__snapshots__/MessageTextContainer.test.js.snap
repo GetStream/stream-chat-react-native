@@ -2,26 +2,29 @@
 
 exports[`MessageTextContainer should render message text container 1`] = `
 <View
-  groupStyle="undefinedBottom"
   style={
     Array [
       Object {
-        "alignSelf": "flex-end",
-        "backgroundColor": "#EBEBEB",
-        "borderBottomLeftRadius": 16,
-        "borderBottomRightRadius": 16,
-        "borderColor": "transparent",
-        "borderTopLeftRadius": 16,
-        "borderTopRightRadius": 16,
-        "borderWidth": 0,
         "marginTop": 2,
         "paddingHorizontal": 8,
         "paddingVertical": 5,
       },
+      Object {
+        "alignSelf": "flex-end",
+        "borderColor": "transparent",
+        "borderWidth": 0,
+      },
+      Object {
+        "backgroundColor": "#EBEBEB",
+        "borderBottomLeftRadius": 16,
+        "borderBottomRightRadius": 16,
+        "borderTopLeftRadius": 16,
+        "borderTopRightRadius": 16,
+      },
+      Object {},
     ]
   }
   testID="message-text-container"
-  type="regular"
 >
   <View
     style={

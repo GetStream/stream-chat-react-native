@@ -37,7 +37,7 @@ import {
   useTheme,
   vh,
   vw,
-} from 'stream-chat-react-native/v2';
+} from 'stream-chat-react-native';
 
 import { useAppOverlayContext } from '../context/AppOverlayContext';
 import { useBottomSheetOverlayContext } from '../context/BottomSheetOverlayContext';

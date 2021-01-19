@@ -11,11 +11,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import {
-  Chat,
-  OverlayProvider,
-  ThemeProvider,
-} from 'stream-chat-react-native/v2';
+import { Chat, OverlayProvider, ThemeProvider } from 'stream-chat-react-native';
 
 import { AppContext } from './src/context/AppContext';
 import { AppOverlayProvider } from './src/context/AppOverlayProvider';

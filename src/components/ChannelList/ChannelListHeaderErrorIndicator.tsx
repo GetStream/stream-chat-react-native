@@ -1,26 +1,27 @@
 import React from 'react';
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
 
-import type { GestureResponderEvent } from 'react-native';
-
-const Container = styled.TouchableOpacity`
-  align-items: center;
-  background-color: #fae6e8;
-  justify-content: center;
-  padding: 3px;
-  width: 100%;
-  ${({ theme }) => theme.channelListHeaderErrorIndicator.container.css}
-`;
-
-const ErrorText = styled.Text`
-  color: red;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 3px;
-  ${({ theme }) => theme.channelListHeaderErrorIndicator.errorText.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 3,
+    width: '100%',
+  },
+  errorText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    padding: 3,
+  },
+});
 
 export type HeaderErrorProps = {
   onPress?: (event: GestureResponderEvent) => void;
@@ -29,13 +30,28 @@ export type HeaderErrorProps = {
 export const ChannelListHeaderErrorIndicator: React.FC<HeaderErrorProps> = ({
   onPress = () => null,
 }) => {
+  const {
+    theme: {
+      channelListHeaderErrorIndicator: { container, errorText },
+      colors: { accent_red, grey },
+    },
+  } = useTheme();
   const { t } = useTranslationContext();
 
   return (
-    <Container onPress={onPress}>
-      <ErrorText testID='channel-loading-error'>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.container, { backgroundColor: `${grey}E6` }, container]}
+    >
+      <Text
+        style={[styles.errorText, { color: accent_red }, errorText]}
+        testID='channel-loading-error'
+      >
         {t('Error while loading, please reload/refresh')}
-      </ErrorText>
-    </Container>
+      </Text>
+    </TouchableOpacity>
   );
 };
+
+ChannelListHeaderErrorIndicator.displayName =
+  'ChannelListHeaderErrorIndicator{channelListHeaderErrorIndicator}';

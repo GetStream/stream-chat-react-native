@@ -8,12 +8,13 @@ import { Chat } from '../../Chat/Chat';
 
 import { ChannelProvider } from '../../../contexts/channelContext/ChannelContext';
 import { TranslationProvider } from '../../../contexts/translationContext/TranslationContext';
+import { Streami18n } from '../../../utils/Streami18n';
+
 import {
   generateStaticUser,
   generateUser,
 } from '../../../mock-builders/generator/user';
 import { getTestClientWithUser } from '../../../mock-builders/mock';
-import { Streami18n } from '../../../utils/Streami18n';
 
 afterEach(cleanup);
 

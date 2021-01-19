@@ -2,13 +2,13 @@
 
 exports[`MessageAvatar should render message avatar 1`] = `
 <View
-  alignment="left"
   style={
     Array [
       Object {
         "marginLeft": 0,
         "marginRight": 8,
       },
+      Object {},
     ]
   }
   testID="message-avatar"
@@ -19,6 +19,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
         Object {
           "alignItems": "center",
         },
+        Object {},
       ]
     }
   >
@@ -26,7 +27,6 @@ exports[`MessageAvatar should render message avatar 1`] = `
       accessibilityLabel="initials"
       onError={[Function]}
       resizeMethod="resize"
-      size={32}
       source={
         Object {
           "uri": "https://images-na.ssl-images-amazon.com/images/I/51t29lLkg8L._AC_SL1000_.jpg",
@@ -39,6 +39,7 @@ exports[`MessageAvatar should render message avatar 1`] = `
             "height": 32,
             "width": 32,
           },
+          Object {},
         ]
       }
       testID="avatar-image"

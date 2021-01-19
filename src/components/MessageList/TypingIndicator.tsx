@@ -1,14 +1,11 @@
 import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { useTypingString } from './hooks/useTypingString';
 
-import { AvatarProps, Avatar as DefaultAvatar } from '../Avatar/Avatar';
+import { LoadingDots } from '../Indicators/LoadingDots';
 
-import { useChannelContext } from '../../contexts/channelContext/ChannelContext';
-import { useChatContext } from '../../contexts/chatContext/ChatContext';
-import { styled } from '../../styles/styledComponents';
-
-import type { Event, UserResponse } from 'stream-chat';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import type {
   DefaultAttachmentType,
@@ -21,26 +18,20 @@ import type {
   UnknownType,
 } from '../../types/types';
 
-const Container = styled.View`
-  align-items: flex-end;
-  flex-direction: row;
-  justify-content: flex-start;
-  ${({ theme }) => theme.typingIndicator.container.css};
-`;
-
-const TypingText = styled.Text`
-  color: ${({ theme }) => theme.typingIndicator.text.color};
-  font-size: ${({ theme }) => theme.typingIndicator.text.fontSize}px;
-  margin-left: 10px;
-  ${({ theme }) => theme.typingIndicator.text.css};
-`;
-
-export type TypingIndicatorProps = {
-  /**
-   * Defaults to and accepts same props as: [Avatar](https://getstream.github.io/stream-chat-react-native/#avatar)
-   */
-  Avatar?: React.ComponentType<AvatarProps>;
-};
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    height: 24,
+    justifyContent: 'flex-start',
+  },
+  loadingDots: {
+    marginLeft: 8,
+  },
+  typingText: {
+    marginLeft: 8,
+  },
+});
 
 export const TypingIndicator = <
   At extends UnknownType = DefaultAttachmentType,
@@ -50,31 +41,30 @@ export const TypingIndicator = <
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
->({
-  Avatar = DefaultAvatar,
-}: TypingIndicatorProps) => {
-  const { typing } = useChannelContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
+>() => {
+  const {
+    theme: {
+      colors: { grey, white_snow },
+      typingIndicator: { container, text },
+    },
+  } = useTheme();
   const typingString = useTypingString<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const typingUsers = Object.values(typing);
-
   return (
-    <Container testID='typing-indicator'>
-      {(typingUsers.filter(
-        ({ user }) => !!user && user.id !== client?.user?.id,
-      ) as Array<
-        Event<At, Ch, Co, Ev, Me, Re, Us> & { user: UserResponse<Us> }
-      >).map(({ user }, idx) => (
-        <Avatar
-          image={user.image}
-          key={`${user.id}${idx}`}
-          name={user.name || user.id}
-          size={20}
-          testID={`typing-avatar-${idx}`}
-        />
-      ))}
-      <TypingText>{typingString}</TypingText>
-    </Container>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: `${white_snow}E6` },
+        container,
+      ]}
+      testID='typing-indicator'
+    >
+      <LoadingDots style={styles.loadingDots} />
+      <Text style={[styles.typingText, { color: grey }, text]}>
+        {typingString}
+      </Text>
+    </View>
   );
 };
+
+TypingIndicator.displayName = 'TypingIndicator{typingIndicator}';

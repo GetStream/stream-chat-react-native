@@ -1,15 +1,15 @@
 import React from 'react';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import { ThemeProvider } from 'styled-components/native';
 
 import { MessageAvatar } from '../MessageAvatar';
 
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
-import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);
 
@@ -27,7 +27,7 @@ describe('MessageAvatar', () => {
       rerender,
       toJSON,
     } = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageAvatar
           alignment='right'
           groupStyles={['bottom']}
@@ -43,7 +43,7 @@ describe('MessageAvatar', () => {
     });
 
     rerender(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageAvatar alignment='right' groupStyles={[]} message={message} />
       </ThemeProvider>,
     );
@@ -59,7 +59,7 @@ describe('MessageAvatar', () => {
     });
 
     rerender(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageAvatar
           alignment='left'
           groupStyles={['single']}

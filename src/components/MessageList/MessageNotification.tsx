@@ -1,67 +1,125 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, GestureResponderEvent } from 'react-native';
+import React from 'react';
+import {
+  GestureResponderEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
-import { styled } from '../../styles/styledComponents';
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Down } from '../../icons';
 
-const Container = styled.TouchableOpacity`
-  align-items: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  border-radius: 13px;
-  height: 27px;
-  justify-content: center;
-  transform: translateY(9px);
-  width: 112px;
-  z-index: 10;
-  ${({ theme }) => theme.messageList.messageNotification.container.css}
-`;
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    borderRadius: 20,
+    elevation: 5,
+    height: 40,
+    justifyContent: 'center',
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    width: 40,
+  },
+  touchable: {
+    bottom: 20,
+    position: 'absolute',
+    right: 20,
+  },
+  unreadCountNotificationContainer: {
+    alignItems: 'center',
+    borderRadius: 10,
+    height: 20,
+    justifyContent: 'center',
+    minWidth: 20,
+    paddingHorizontal: 4,
+    position: 'absolute',
+    top: 0,
+  },
+  unreadCountNotificationText: {
+    fontSize: 11,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
+  wrapper: {
+    alignItems: 'center',
+    height: 50,
+    justifyContent: 'flex-end',
+  },
+});
 
-const MessageNotificationText = styled.Text`
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
-  ${({ theme }) => theme.messageList.messageNotification.text.css}
-`;
-
-export type MessageNotificationProps = {
+export type ScrollToBottomButtonProps = {
   /** onPress handler */
   onPress: (event: GestureResponderEvent) => void;
   /** If we should show the notification or not */
   showNotification?: boolean;
+  unreadCount?: number;
 };
 
 /**
- * @example ./MessageNotification.md
+ * @example ./ScrollToBottomButton.md
  */
-export const MessageNotification: React.FC<MessageNotificationProps> = (
+export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
   props,
 ) => {
-  const { onPress, showNotification = true } = props;
+  const { onPress, showNotification = true, unreadCount } = props;
 
-  const { t } = useTranslationContext();
+  const {
+    theme: {
+      colors: { accent_blue, black, white },
+      messageList: {
+        scrollToBottomButton: {
+          container,
+          touchable,
+          unreadCountNotificationContainer,
+          unreadCountNotificationText,
+          wrapper,
+        },
+      },
+    },
+  } = useTheme();
 
-  const opacity = useRef(new Animated.Value(0)).current;
+  if (!showNotification) return null;
 
-  useEffect(() => {
-    Animated.timing(opacity, {
-      duration: 500,
-      toValue: showNotification ? 1 : 0,
-      useNativeDriver: true,
-    }).start();
-  }, [showNotification]);
-
-  return showNotification ? (
-    <Animated.View
-      style={{
-        bottom: 0,
-        opacity,
-        position: 'absolute',
-      }}
-      testID='message-notification'
-    >
-      <Container onPress={onPress}>
-        <MessageNotificationText>{t('New Messages')}</MessageNotificationText>
-      </Container>
-    </Animated.View>
-  ) : null;
+  return (
+    <TouchableOpacity onPress={onPress} style={[styles.touchable, touchable]}>
+      <View style={[styles.wrapper, wrapper]}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: white, shadowColor: black },
+            container,
+          ]}
+        >
+          <Down />
+        </View>
+        {!!unreadCount && (
+          <View
+            style={[
+              styles.unreadCountNotificationContainer,
+              { backgroundColor: accent_blue },
+              unreadCountNotificationContainer,
+            ]}
+          >
+            <Text
+              style={[
+                styles.unreadCountNotificationText,
+                { color: white },
+                unreadCountNotificationText,
+              ]}
+            >
+              {unreadCount}
+            </Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
 };
+
+ScrollToBottomButton.displayName =
+  'ScrollToBottomButton{messageList{scrollToBottomButton}}';

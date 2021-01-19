@@ -1,16 +1,16 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { cleanup, render, waitFor } from '@testing-library/react-native';
-import { ThemeProvider } from 'styled-components/native';
 
 import { MessageTextContainer } from '../MessageTextContainer';
 
+import { ThemeProvider } from '../../../../contexts/themeContext/ThemeContext';
+import { defaultTheme } from '../../../../contexts/themeContext/utils/theme';
 import {
   generateMessage,
   generateStaticMessage,
 } from '../../../../mock-builders/generator/message';
 import { generateStaticUser } from '../../../../mock-builders/generator/user';
-import { defaultTheme } from '../../../../styles/themeConstants';
 
 afterEach(cleanup);
 
@@ -21,7 +21,7 @@ describe('MessageTextContainer', () => {
       user: { ...staticUser, image: undefined },
     });
     const { getByTestId, getByText, rerender, toJSON } = render(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageTextContainer
           alignment='right'
           groupStyles={['top']}
@@ -36,7 +36,7 @@ describe('MessageTextContainer', () => {
     });
 
     rerender(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageTextContainer
           alignment='right'
           groupStyles={['top']}
@@ -59,7 +59,7 @@ describe('MessageTextContainer', () => {
     });
 
     rerender(
-      <ThemeProvider theme={defaultTheme}>
+      <ThemeProvider style={defaultTheme}>
         <MessageTextContainer message={staticMessage} />
       </ThemeProvider>,
     );

@@ -19,15 +19,17 @@ exports[`MessageInput should render MessageInput 1`] = `
     }
   >
     <View
-      imageUploads={Array []}
       style={
         Array [
           Object {
-            "backgroundColor": "rgba(0, 0, 0, 0.05)",
+            "backgroundColor": "#0000000D",
             "borderRadius": 10,
             "marginHorizontal": 10,
+          },
+          Object {
             "paddingTop": 0,
           },
+          Object {},
         ]
       }
     >
@@ -106,6 +108,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                       "paddingHorizontal": 20,
                       "width": "100%",
                     },
+                    Object {},
                   ]
                 }
               >
@@ -115,6 +118,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                       Object {
                         "fontWeight": "bold",
                       },
+                      Object {},
                     ]
                   }
                 >
@@ -133,13 +137,10 @@ exports[`MessageInput should render MessageInput 1`] = `
                   onStartShouldSetResponder={[Function]}
                   style={
                     Object {
-                      "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                      "backgroundColor": "#0000000D",
                       "borderRadius": 5,
                       "opacity": 1,
-                      "paddingBottom": 5,
-                      "paddingLeft": 5,
-                      "paddingRight": 5,
-                      "paddingTop": 5,
+                      "padding": 5,
                     }
                   }
                   testID="icon-square"
@@ -151,10 +152,13 @@ exports[`MessageInput should render MessageInput 1`] = `
                       }
                     }
                     style={
-                      Object {
-                        "height": 15,
-                        "width": 15,
-                      }
+                      Array [
+                        Object {
+                          "height": 15,
+                          "width": 15,
+                        },
+                        Object {},
+                      ]
                     }
                   />
                 </View>
@@ -197,6 +201,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                           "paddingLeft": 20,
                           "width": "100%",
                         },
+                        Object {},
                       ]
                     }
                     testID="upload-photo-item"
@@ -205,13 +210,11 @@ exports[`MessageInput should render MessageInput 1`] = `
                       style={
                         Array [
                           Object {
-                            "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                            "backgroundColor": "#0000000D",
                             "borderRadius": 5,
-                            "paddingBottom": 5,
-                            "paddingLeft": 5,
-                            "paddingRight": 5,
-                            "paddingTop": 5,
+                            "padding": 5,
                           },
+                          Object {},
                         ]
                       }
                       testID="icon-square"
@@ -223,19 +226,18 @@ exports[`MessageInput should render MessageInput 1`] = `
                           }
                         }
                         style={
-                          Object {
-                            "height": 15,
-                            "width": 15,
-                          }
+                          Array [
+                            Object {
+                              "height": 15,
+                              "width": 15,
+                            },
+                            Object {},
+                          ]
                         }
                       />
                     </View>
                     <Text
-                      style={
-                        Array [
-                          Object {},
-                        ]
-                      }
+                      style={Object {}}
                     >
                       Upload a photo
                     </Text>
@@ -274,6 +276,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                           "paddingLeft": 20,
                           "width": "100%",
                         },
+                        Object {},
                       ]
                     }
                     testID="upload-file-item"
@@ -282,13 +285,11 @@ exports[`MessageInput should render MessageInput 1`] = `
                       style={
                         Array [
                           Object {
-                            "backgroundColor": "rgba(0, 0, 0, 0.05)",
+                            "backgroundColor": "#0000000D",
                             "borderRadius": 5,
-                            "paddingBottom": 5,
-                            "paddingLeft": 5,
-                            "paddingRight": 5,
-                            "paddingTop": 5,
+                            "padding": 5,
                           },
+                          Object {},
                         ]
                       }
                       testID="icon-square"
@@ -300,19 +301,18 @@ exports[`MessageInput should render MessageInput 1`] = `
                           }
                         }
                         style={
-                          Object {
-                            "height": 15,
-                            "width": 15,
-                          }
+                          Array [
+                            Object {
+                              "height": 15,
+                              "width": 15,
+                            },
+                            Object {},
+                          ]
                         }
                       />
                     </View>
                     <Text
-                      style={
-                        Array [
-                          Object {},
-                        ]
-                      }
+                      style={Object {}}
                     >
                       Upload a file
                     </Text>
@@ -329,13 +329,11 @@ exports[`MessageInput should render MessageInput 1`] = `
             Object {
               "alignItems": "center",
               "flexDirection": "row",
-              "marginBottom": 10,
-              "marginLeft": 10,
-              "marginRight": 10,
-              "marginTop": 10,
+              "margin": 10,
               "minHeight": 46,
               "paddingHorizontal": 10,
             },
+            Object {},
           ]
         }
       >
@@ -370,6 +368,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                   "height": 15,
                   "width": 15,
                 },
+                Object {},
               ]
             }
           />
@@ -384,15 +383,11 @@ exports[`MessageInput should render MessageInput 1`] = `
           style={
             Array [
               Object {
-                "flexBasis": 0,
-                "flexGrow": 1,
-                "flexShrink": 1,
-                "marginBottom": -5,
-                "marginLeft": -5,
-                "marginRight": -5,
-                "marginTop": -5,
+                "flex": 1,
+                "margin": -5,
                 "maxHeight": 60,
               },
+              Object {},
             ]
           }
           testID="auto-complete-text-input"
@@ -430,6 +425,7 @@ exports[`MessageInput should render MessageInput 1`] = `
                   "height": 15,
                   "width": 15,
                 },
+                Object {},
               ]
             }
           />

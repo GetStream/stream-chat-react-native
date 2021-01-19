@@ -27,7 +27,7 @@ import {
   Thread,
   ThreadContextValue,
   useAttachmentPickerContext,
-} from 'stream-chat-react-native/v2';
+} from 'stream-chat-react-native';
 
 import { useStreamChatTheme } from './useStreamChatTheme';
 

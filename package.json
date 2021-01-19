@@ -28,8 +28,8 @@
     "eslint": "eslint '**/*.{js,md,ts,jsx,tsx}' --max-warnings 0",
     "analyze": "yarn build -- --stats && webpack-bundle-analyzer build/bundle-stats.json",
     "validate-translations": "node bin/validate-translations.js",
-    "lint": "prettier --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint 'src/**/*.{js,ts,tsx}' && yarn run validate-translations",
-    "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint --fix 'src/**/*.{js,ts,tsx}'",
+    "lint": "prettier --list-different 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && yarn run validate-translations",
+    "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' .eslintrc.json .prettierrc .babelrc && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0",
     "prepare": "yarn run build",
     "prepare-distribution": "cd examples/SampleApp && npm version patch && react-native-version && git add ./ && git commit -m 'Bump build version' --no-verify"
   },
@@ -57,38 +57,6 @@
       "pre-commit": "dotgit/hooks/pre-commit-format.sh && dotgit/hooks/pre-commit-reject-binaries.py"
     }
   },
-  "stylelint": {
-    "processors": [
-      "stylelint-processor-styled-components"
-    ],
-    "extends": [
-      "stylelint-config-recommended",
-      "stylelint-config-styled-components"
-    ],
-    "rules": {
-      "property-no-unknown": [
-        true,
-        {
-          "ignoreProperties": [
-            "include-font-padding",
-            "shadow-color",
-            "shadow-opacity",
-            "shadow-offset",
-            "shadow-radius",
-            "padding-horizontal",
-            "padding-vertical",
-            "margin-vertical",
-            "margin-horizontal",
-            "tint-color",
-            "aspect-ratio",
-            "elevation",
-            "resize-mode",
-            "text-align-vertical"
-          ]
-        }
-      ]
-    }
-  },
   "dependencies": {
     "@babel/runtime": "7.12.5",
     "@gorhom/bottom-sheet": "3.0.0-alpha.0",
@@ -102,12 +70,9 @@
     "mime-types": "2.1.28",
     "path": "0.12.7",
     "react-art": "^16.8.6",
-    "react-native-actionsheet": "2.4.2",
-    "react-native-image-zoom-viewer": "3.0.1",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "~2.11.2",
-    "styled-components": "5.2.1"
+    "stream-chat": "~2.11.3"
   },
   "peerDependencies": {
     "react": "^16.8.6",
@@ -133,35 +98,30 @@
     "@testing-library/react-native": "7.1.0",
     "@types/eslint": "7.2.6",
     "@types/jest": "26.0.20",
-    "@types/lodash": "4.14.167",
+    "@types/lodash": "4.14.168",
     "@types/mime-types": "2.1.0",
     "@types/react": "16.9.56",
     "@types/react-native": "0.63.45",
-    "@types/react-native-actionsheet": "2.4.2",
     "@types/react-test-renderer": "16.9.3",
-    "@types/styled-components": "5.1.5",
-    "@typescript-eslint/eslint-plugin": "4.13.0",
-    "@typescript-eslint/parser": "4.13.0",
+    "@typescript-eslint/eslint-plugin": "4.14.0",
+    "@typescript-eslint/parser": "4.14.0",
     "babel-eslint": "10.1.0",
     "babel-jest": "26.6.3",
     "babel-loader": "8.2.2",
     "babel-plugin-i18next-extract": "0.8.2",
     "babel-plugin-module-resolver": "4.1.0",
     "babel-plugin-react-native-web": "0.14.10",
-    "babel-plugin-styled-components": "1.12.0",
-    "eslint": "7.17.0",
+    "eslint": "7.18.0",
     "eslint-config-prettier": "7.1.0",
     "eslint-plugin-babel": "5.3.1",
-    "eslint-plugin-better-styled-components": "1.1.2",
     "eslint-plugin-jest": "24.1.3",
     "eslint-plugin-markdown": "1.0.2",
     "eslint-plugin-prettier": "3.3.1",
     "eslint-plugin-react": "7.22.0",
     "eslint-plugin-sort-destructure-keys": "1.3.5",
     "eslint-plugin-typescript-sort-keys": "1.5.0",
-    "husky": "4.3.7",
+    "husky": "4.3.8",
     "jest": "26.6.3",
-    "mockdate": "3.0.2",
     "moment": "2.29.1",
     "prettier": "2.2.1",
     "react": "16.13.1",
@@ -175,15 +135,8 @@
     "react-native-web": "0.14.10",
     "react-styleguidist": "11.1.5",
     "react-test-renderer": "16.13.1",
-    "stylelint": "13.8.0",
-    "stylelint-config-standard": "20.0.0",
-    "stylelint-config-styled-components": "0.1.1",
-    "stylelint-processor-styled-components": "1.10.0",
     "typescript": "4.1.3",
     "uuid": "8.3.2",
     "webpack": "4.44.2"
-  },
-  "resolutions": {
-    "styled-components": "5.2.0"
   }
 }

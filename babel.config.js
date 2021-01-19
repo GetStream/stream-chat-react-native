@@ -26,7 +26,6 @@ module.exports = (api) => {
           },
         ],
         'module-resolver',
-        'babel-plugin-styled-components',
       ],
       presets: [
         '@babel/env',
@@ -72,7 +71,6 @@ module.exports = (api) => {
         },
       ],
       'module-resolver',
-      'babel-plugin-styled-components',
     ],
     presets: [
       '@babel/env',
