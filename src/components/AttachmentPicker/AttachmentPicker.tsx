@@ -194,9 +194,13 @@ export const AttachmentPicker = React.forwardRef(
             after: endCursor,
             first: numberOfAttachmentImagesToLoadPerCall ?? 60,
           });
+          if (endCursor) {
+            setPhotos([...photos, ...results.assets]);
+          } else {
+            setPhotos(results.assets);
+          }
           setEndCursor(results.endCursor);
           setHasNextPage(results.hasNextPage || false);
-          setPhotos([...photos, ...results.assets]);
         } catch (error) {
           console.log(error);
           setPhotoError(true);
@@ -243,11 +247,15 @@ export const AttachmentPicker = React.forwardRef(
     useEffect(() => {
       if (currentIndex < 0) {
         setSelectedPicker(undefined);
+        if (!loadingPhotos) {
+          setEndCursor(undefined);
+          setHasNextPage(true);
+        }
       }
     }, [currentIndex]);
 
     useEffect(() => {
-      if (photos.length === 0 && currentIndex > -1) {
+      if (endCursor === undefined && currentIndex > -1) {
         setPhotoError(false);
         getMorePhotos();
       }

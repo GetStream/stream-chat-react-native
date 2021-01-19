@@ -36,7 +36,11 @@ registerNativeHandlers({
           throw new Error('getPhotos Error');
         }
       }
-      const results = await MediaLibrary.getAssetsAsync({ after, first });
+      const results = await MediaLibrary.getAssetsAsync({
+        after,
+        first,
+        mediaType: [MediaLibrary.MediaType.photo],
+      });
       const assets = results.assets.map((asset) => asset.uri);
       const hasNextPage = results.hasNextPage;
       const endCursor = results.endCursor;

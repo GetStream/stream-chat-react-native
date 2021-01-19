@@ -50,7 +50,11 @@ registerNativeHandlers({
           }
         }
       }
-      const results = await CameraRoll.getPhotos({ after, first });
+      const results = await CameraRoll.getPhotos({
+        after,
+        assetType: 'Photos',
+        first,
+      });
       const assets = results.edges.map((edge) => edge.node.image.uri);
       const hasNextPage = results.page_info.has_next_page;
       const endCursor = results.page_info.end_cursor;
