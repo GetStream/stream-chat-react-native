@@ -65,6 +65,7 @@ export type ChannelContextValue<
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void>;
+  scrollToFirstUnreadThreshold: number;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
