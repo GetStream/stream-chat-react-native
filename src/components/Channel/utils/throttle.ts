@@ -1,20 +1,21 @@
+import type { ThrottleSettings } from 'lodash';
 import throttle from 'lodash/throttle';
 
-export const heavyThrottle = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  callback: (...params: any) => void,
-  ms = 2000,
-  option = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const heavyThrottle = <T extends (...args: any) => any>(
+  callback: T,
+  ms = 500,
+  option: ThrottleSettings = {
     leading: true,
     trailing: true,
   },
 ) => throttle(callback, ms, option);
 
-export const lightThrottle = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  callback: (...params: any) => void,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const lightThrottle = <T extends (...args: any) => any>(
+  callback: T,
   ms = 500,
-  option = {
+  option: ThrottleSettings = {
     leading: true,
     trailing: true,
   },

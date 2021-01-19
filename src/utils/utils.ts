@@ -32,7 +32,7 @@ import type {
 } from '../types/types';
 
 export const uiConfig = {
-  // E.g., Once unread count exceeds 255, disp[lay unread count as 255+ instead of actual count.
+  // E.g., Once unread count exceeds 255, display unread count as 255+ instead of actual count.
   // Also 255 is the limit per Stream chat channel for unread count.
   globalUnreadCountLimit: 255,
 

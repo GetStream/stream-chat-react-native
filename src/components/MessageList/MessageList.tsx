@@ -340,7 +340,7 @@ const MessageListWithContext = <
   const stickyHeaderDateRef = useRef(new Date());
 
   // We need topMessage and channelLastRead values to set the initial scroll position.
-  // Amd so these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
+  // So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
   const topMessage = useRef(messageList[messageList.length - 1]);
   const channelLastRead = useRef(channel?.lastRead());
 
