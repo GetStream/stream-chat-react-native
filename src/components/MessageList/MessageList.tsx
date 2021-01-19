@@ -326,7 +326,6 @@ const MessageListWithContext = <
     MessageType<At, Ch, Co, Ev, Me, Re, Us>
   > | null>(null);
   const initialScrollSet = useRef<boolean>(false);
-  const isGestureScroll = useRef<boolean>(true);
 
   const [hasMoved, setHasMoved] = useState(false);
   const [lastReceivedId, setLastReceivedId] = useState(
@@ -437,7 +436,7 @@ const MessageListWithContext = <
     };
 
     // If channel is not upto date, then always display scrollToBottom button.
-    if (!channel?.state.isUpToDate) {
+    if (!channel?.state.isUpToDate && !scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
     } else {
       scrollToBottomIfNeeded();
@@ -536,9 +535,9 @@ const MessageListWithContext = <
       loadMoreRecent();
     }
 
-    if (showScrollToBottomBtn) {
+    if (showScrollToBottomBtn && !scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
-    } else {
+    } else if (!showScrollToBottomBtn && scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(false);
     }
 
@@ -551,7 +550,6 @@ const MessageListWithContext = <
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
     } else {
-      isGestureScroll.current = true;
       flatListRef.current?.scrollToIndex({
         index: 0,
       });
