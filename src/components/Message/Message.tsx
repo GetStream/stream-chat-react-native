@@ -314,7 +314,7 @@ const MessageWithContext = <
       colors: {
         accent_blue,
         accent_red,
-        bg_gradient_end,
+        bg_gradient_start,
         grey,
         targetedMessageBackground,
       },
@@ -908,7 +908,7 @@ const MessageWithContext = <
               style,
               {
                 backgroundColor: showUnreadUnderlay
-                  ? bg_gradient_end
+                  ? bg_gradient_start
                   : undefined,
               },
               scaleStyle,

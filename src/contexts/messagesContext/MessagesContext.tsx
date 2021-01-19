@@ -29,7 +29,7 @@ import type { MarkdownRules } from '../../components/Message/MessageSimple/utils
 import type { DateHeaderProps } from '../../components/MessageList/DateHeader';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { MessageListProps } from '../../components/MessageList/MessageList';
-import type { MessageNotificationProps } from '../../components/MessageList/MessageNotification';
+import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
@@ -131,6 +131,7 @@ export type MessagesContextValue<
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
+  initialScrollToFirstUnreadMessage: boolean;
   /**
    * UI component for InlineUnreadIndicator
    * Defaults to: [InlineUnreadIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/InlineUnreadIndicator.tsx)
@@ -160,11 +161,6 @@ export type MessagesContextValue<
   MessageList: React.ComponentType<
     MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  /**
-   * UI component for MessageNotification
-   * Defaults to: [MessageNotification](https://getstream.github.io/stream-chat-react-native/#messagenotification)
-   */
-  MessageNotification: React.ComponentType<MessageNotificationProps>;
   /**
    * UI component for MessageReplies
    * Defaults to: [MessageReplies](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageSimple/MessageReplies.tsx)
@@ -217,6 +213,11 @@ export type MessagesContextValue<
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
+  /**
+   * UI component for ScrollToBottomButton
+   * Defaults to: [ScrollToBottomButton](https://getstream.github.io/stream-chat-react-native/#ScrollToBottomButton)
+   */
+  ScrollToBottomButton: React.ComponentType<ScrollToBottomButtonProps>;
   setEditingState: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   setQuotedMessageState: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,

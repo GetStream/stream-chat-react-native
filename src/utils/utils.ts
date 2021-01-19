@@ -31,6 +31,26 @@ import type {
   UnknownType,
 } from '../types/types';
 
+export const uiConfig = {
+  // E.g., Once unread count exceeds 255, display unread count as 255+ instead of actual count.
+  // Also 255 is the limit per Stream chat channel for unread count.
+  globalUnreadCountLimit: 255,
+
+  // Following two constants are quite fragile, and have been carefully set.
+  // For now we are going to keep them as constants, instead of allowing them
+  // through props. Depending on demand, we will introduce support for configuring
+  // these through props.
+
+  // Show scrollToBottom button once scroll position goes beyond 300.
+  scrollToBottomBtnVisibilityThreshold: 300,
+  // If count of unread messages is less than 4, then no need to scroll to first unread message,
+  // since first unread message will be in visible frame anyways.
+  scrollToFirstUnreadThreshold: 4,
+  // Number of unread messages to show in first frame, when channel loads at first
+  // unread messsage. Only applicable if unread count > scrollToFirstUnreadThreshold.
+  unreadMessagesOnInitialLoadLimit: 2,
+};
+
 export type ReactionData = {
   Icon: React.FC<IconProps>;
   type: string;

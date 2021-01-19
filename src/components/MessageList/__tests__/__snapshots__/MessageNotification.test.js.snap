@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MessageNotification should render the message notification and match snapshot 1`] = `
+exports[`ScrollToBottomButton should render the message notification and match snapshot 1`] = `
 <View
   style={
     Object {

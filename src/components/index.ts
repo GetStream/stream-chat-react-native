@@ -108,7 +108,7 @@ export * from './MessageList/hooks/useMessageList';
 export * from './MessageList/hooks/useTypingString';
 export * from './MessageList/InlineUnreadIndicator';
 export * from './MessageList/MessageList';
-export * from './MessageList/MessageNotification';
+export * from './MessageList/ScrollToBottomButton';
 export * from './MessageList/MessageSystem';
 export * from './MessageList/TypingIndicator';
 export * from './MessageList/TypingIndicatorContainer';
