@@ -72,7 +72,7 @@
     "react-art": "^16.8.6",
     "react-native-markdown-package": "1.8.1",
     "seamless-immutable": "7.1.4",
-    "stream-chat": "~2.11.3"
+    "stream-chat": "2.11.3"
   },
   "peerDependencies": {
     "react": "^16.8.6",
