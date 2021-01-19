@@ -10,7 +10,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import Immutable from 'seamless-immutable';
 import {
   ChannelState,
   Channel as ChannelType,
@@ -426,7 +425,7 @@ export const ChannelWithContext = <
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-  >(Immutable([]));
+  >([]);
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
@@ -444,10 +443,7 @@ export const ChannelWithContext = <
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
-  >(
-    (threadProps?.id && channel?.state?.threads?.[threadProps.id]) ||
-      Immutable([]),
-  );
+  >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
   >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']);
@@ -489,9 +485,7 @@ export const ChannelWithContext = <
     if (threadProps) {
       setThread(threadProps);
       if (channel && threadProps?.id) {
-        setThreadMessages(
-          channel.state.threads?.[threadProps.id] || Immutable([]),
-        );
+        setThreadMessages(channel.state.threads?.[threadProps.id] || []);
       }
     } else {
       setThread(null);
@@ -556,7 +550,7 @@ export const ChannelWithContext = <
     }
 
     if (channel && thread && event.message?.id === thread.id) {
-      const updatedThread = channel.state.messageToImmutable(event.message);
+      const updatedThread = channel.state.formatMessage(event.message);
       setThread(updatedThread);
     }
 
@@ -881,13 +875,17 @@ export const ChannelWithContext = <
 
     if (preview.quoted_message_id) {
       const quotedMessage = messages.find(
-        (m) => m.id === preview.quoted_message_id,
+        (message) => message.id === preview.quoted_message_id,
       );
 
-      preview.quoted_message = quotedMessage as Omit<
-        MessageResponse<At, Ch, Co, Me, Re, Us>,
-        'quoted_message'
-      >;
+      preview.quoted_message = quotedMessage as MessageResponse<
+        At,
+        Ch,
+        Co,
+        Me,
+        Re,
+        Us
+      >['quoted_message'];
     }
     return preview;
   };
@@ -1186,8 +1184,8 @@ export const ChannelWithContext = <
     Us
   >['openThread'] = (message) => {
     const newThreadMessages = message?.id
-      ? channel?.state?.threads[message.id] || Immutable([])
-      : Immutable([]);
+      ? channel?.state?.threads[message.id] || []
+      : [];
     setThread(message);
     setThreadMessages(newThreadMessages);
   };
@@ -1202,7 +1200,7 @@ export const ChannelWithContext = <
     Us
   >['closeThread'] = useCallback(() => {
     setThread(null);
-    setThreadMessages(Immutable([]));
+    setThreadMessages([]);
   }, [setThread, setThreadMessages]);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds

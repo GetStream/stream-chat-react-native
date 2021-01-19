@@ -52,9 +52,7 @@ export const useCreateMessageContext = <
     .map(({ own, type }) => `${own}${type}`)
     .join();
   const latestReactions = message.latest_reactions
-    ? Array.isArray(message.latest_reactions)
-      ? message.latest_reactions
-      : Array.from(message.latest_reactions.values())
+    ? message.latest_reactions
     : undefined;
   const messageValue = `${
     latestReactions ? latestReactions.map(({ type }) => type).join() : ''

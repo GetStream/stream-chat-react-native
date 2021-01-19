@@ -1,5 +1,3 @@
-import type { ImmutableDate } from 'seamless-immutable';
-
 import type { MessageType } from '../hooks/useMessageList';
 
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
@@ -31,7 +29,7 @@ export const getReadStates = <
     | ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages'],
   read?: ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read'],
 ) => {
-  const readData = messages.asMutable().reduce((acc, cur) => {
+  const readData = messages.reduce((acc, cur) => {
     if (cur.id) {
       acc[cur.id] = false;
     }
@@ -39,11 +37,10 @@ export const getReadStates = <
   }, {} as { [key: string]: boolean | number });
 
   const filteredMessagesReversed = messages
-    .asMutable()
     .filter((msg) => msg.updated_at)
     .reverse() as Array<
     MessageType<At, Ch, Co, Ev, Me, Re, Us> & {
-      updated_at: string | ImmutableDate;
+      updated_at: string | Date;
     }
   >;
 
@@ -51,11 +48,10 @@ export const getReadStates = <
     /**
      * Channel read state is stored by user and we only care about users who aren't the client
      */
-    const readList = read?.asMutable ? read.asMutable() : read;
     if (clientUserId) {
-      delete readList[clientUserId];
+      delete read[clientUserId];
     }
-    const members = Object.values(readList);
+    const members = Object.values(read);
 
     /**
      * Array is in reverse order so newest message is at 0,
@@ -86,7 +82,7 @@ export const getReadStates = <
              * if this is a direct message the length will be 1
              * as we already deleted the current user from the object
              */
-            if (Object.keys(readList).length === 1) {
+            if (Object.keys(read).length === 1) {
               readData[message.id] = true;
             } else {
               const currentMessageReadData = readData[message.id];

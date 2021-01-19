@@ -7,7 +7,6 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import type { Immutable } from 'seamless-immutable';
 import type {
   Channel,
   ChannelState,
@@ -35,10 +34,7 @@ type LatestMessage<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > =
-  | Immutable<
-      ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-    >
-  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
   | MessageResponse<At, Ch, Co, Me, Re, Us>;
 
 export type LatestMessagePreview<
@@ -160,13 +156,7 @@ const getLatestMessageDisplayDate = <
   message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
   tDateTimeParser: TDateTimeParser,
 ) => {
-  const parserOutput = tDateTimeParser(
-    message.created_at
-      ? typeof message.created_at === 'string'
-        ? message.created_at
-        : message.created_at.asMutable()
-      : undefined,
-  );
+  const parserOutput = tDateTimeParser(message.created_at);
   if (isDayOrMoment(parserOutput)) {
     if (parserOutput.isSame(new Date(), 'day')) {
       return parserOutput.format('LT');
@@ -199,7 +189,7 @@ const getLatestMessageReadStatus = <
   const currentUserId = client.userID;
   if (currentUserId !== message.user?.id || readEvents === false) return 0;
 
-  const readList = channel.state.read.asMutable();
+  const readList = channel.state.read;
   if (currentUserId) {
     delete readList[currentUserId];
   }
@@ -232,7 +222,7 @@ const getLatestMessagePreview = <
   t: (key: string) => string;
   tDateTimeParser: TDateTimeParser;
   lastMessage?:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>;
 }) => {
   const {
@@ -288,7 +278,7 @@ export const useLatestMessagePreview = <
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   forceUpdate: number,
   lastMessage?:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>,
 ) => {
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();

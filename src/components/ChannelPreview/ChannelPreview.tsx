@@ -63,13 +63,9 @@ const ChannelPreviewWithContext = <
   const { channel, client, Preview } = props;
 
   const [lastMessage, setLastMessage] = useState<
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageResponse<At, Ch, Co, Me, Re, Us>
-  >(
-    channel.state.messages[channel.state.messages.length - 1] as ReturnType<
-      ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']
-    >,
-  );
+  >(channel.state.messages[channel.state.messages.length - 1]);
   const [forceUpdate, setForceUpdate] = useState(0);
   const [unread, setUnread] = useState(channel.countUnread());
 

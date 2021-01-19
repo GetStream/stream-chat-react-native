@@ -49,7 +49,7 @@ export const useUserPresence = <
           if (!event.user?.id || !channel.state.members[event.user.id]) {
             return channel;
           }
-          channel.state.members.setIn([event.user.id, 'user'], event.user);
+          channel.state.members[event.user.id].user = event.user;
           return channel;
         });
 

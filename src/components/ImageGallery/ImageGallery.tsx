@@ -54,7 +54,6 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
-import type SeamlessImmutable from 'seamless-immutable';
 import type { Attachment, UserResponse } from 'stream-chat';
 import type {
   DefaultAttachmentType,
@@ -109,12 +108,9 @@ const styles = StyleSheet.create({
 export type Photo<Us extends UnknownType = DefaultUserType> = {
   id: string;
   uri: string;
-  created_at?: string | SeamlessImmutable.ImmutableDate;
+  created_at?: string | Date;
   messageId?: string;
-  user?:
-    | UserResponse<Us>
-    | SeamlessImmutable.Immutable<UserResponse<Us>>
-    | null;
+  user?: UserResponse<Us> | null;
   user_id?: string;
 };
 

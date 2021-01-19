@@ -378,13 +378,13 @@ const MessageListWithContext = <
       const lastItem = viewableItems.pop();
 
       if (
-        lastItem?.item?.created_at?.asMutable &&
+        lastItem?.item?.created_at &&
         !lastItem.item.deleted_at &&
-        lastItem.item.created_at.asMutable().toDateString() !==
+        lastItem.item.created_at.toDateString() !==
           stickyHeaderDateRef.current.toDateString()
       ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at.asMutable();
-        setStickyHeaderDate(lastItem.item.created_at.asMutable() as Date);
+        stickyHeaderDateRef.current = lastItem.item.created_at;
+        setStickyHeaderDate(lastItem.item.created_at as Date);
       }
     }
   };

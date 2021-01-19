@@ -163,11 +163,7 @@ const ChannelPreviewMessengerWithContext = <
   );
   const displayPresence = useChannelPreviewDisplayPresence(channel);
   const created_at = latestMessagePreview.messageObject?.created_at;
-  const latestMessageDate = created_at
-    ? typeof created_at === 'string'
-      ? new Date(created_at)
-      : created_at.asMutable()
-    : new Date();
+  const latestMessageDate = created_at ? new Date(created_at) : new Date();
   const status = latestMessagePreview.status;
 
   return (
