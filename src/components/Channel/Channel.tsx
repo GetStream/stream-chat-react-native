@@ -1105,25 +1105,27 @@ export const ChannelWithContext = <
     setLoadingMoreRecent(true);
 
     if (!messages.length) {
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
 
     const recentMessage = messages && messages[messages.length - 1];
 
     if (recentMessage && recentMessage.status !== 'received') {
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
 
     const recentId = recentMessage && recentMessage.id;
     try {
       if (channel) {
         await queryAfterMessage(recentId);
-
         loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
   });
 
