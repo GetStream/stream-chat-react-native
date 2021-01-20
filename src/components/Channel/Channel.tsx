@@ -429,13 +429,13 @@ export const ChannelWithContext = <
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+  >({});
   const [quotedMessage, setQuotedMessage] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
+  >({});
   const [thread, setThread] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']
   >(threadProps || null);
@@ -446,13 +446,13 @@ export const ChannelWithContext = <
   >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']);
+  >({});
   const [watcherCount, setWatcherCount] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
   >();
   const [watchers, setWatchers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
+  >({});
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
 
@@ -532,12 +532,12 @@ export const ChannelWithContext = <
   const copyChannelState = lightThrottle(() => {
     setLoading(false);
     if (channel) {
-      setMembers(channel.state.members);
-      setMessages(channel.state.messages);
-      setRead(channel.state.read);
-      setTyping(channel.state.typing);
+      setMembers({ ...channel.state.members });
+      setMessages([...channel.state.messages]);
+      setRead({ ...channel.state.read });
+      setTyping({ ...channel.state.typing });
       setWatcherCount(channel.state.watcher_count);
-      setWatchers(channel.state.watchers);
+      setWatchers({ ...channel.state.watchers });
     }
   });
 
