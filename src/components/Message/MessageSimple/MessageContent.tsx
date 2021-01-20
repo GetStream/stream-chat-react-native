@@ -339,7 +339,7 @@ export const MessageContent = <
       if (typeof message.created_at === 'string') {
         return formatter(message.created_at);
       } else {
-        return formatter(message.created_at.asMutable());
+        return formatter(message.created_at && message.created_at.asMutable && message.created_at.asMutable());
       }
     }
 
