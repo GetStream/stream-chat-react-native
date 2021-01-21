@@ -173,7 +173,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
   const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
-  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
+  const { setBlurType, setOverlay } = useOverlayContext();
   const {
     theme: {
       colors: {
@@ -257,7 +257,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     setBlurType(undefined);
     setAppOverlay('none');
     setOverlay('none');
-    setWildcard(undefined);
 
     navigation.reset({
       index: 0,

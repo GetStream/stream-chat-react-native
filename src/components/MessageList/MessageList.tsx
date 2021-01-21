@@ -459,7 +459,7 @@ const MessageListWithContext = <
     // If channel is not upto date, then always display scrollToBottom button.
     if (!channel?.state.isUpToDate && !scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
-    } else {
+    } else if (channel?.state.isUpToDate) {
       scrollToBottomIfNeeded();
     }
 
@@ -546,7 +546,7 @@ const MessageListWithContext = <
     const showScrollToBottomButton =
       !isScrollAtBottom || !channel?.state.isUpToDate;
     const loadMoreRecentResults =
-      isScrollAtBottom && !channel?.state.isUpToDate;
+      !loadingMoreRecent && isScrollAtBottom && !channel?.state.isUpToDate;
     const shouldMarkRead =
       !threadList &&
       isScrollAtBottom &&
