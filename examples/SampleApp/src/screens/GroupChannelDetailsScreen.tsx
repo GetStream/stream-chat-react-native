@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -173,7 +173,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   const { setData: setBottomSheetOverlayData } = useBottomSheetOverlayContext();
   const { setData: setUserInfoOverlayData } = useUserInfoOverlayContext();
   const navigation = useNavigation<GroupChannelDetailsScreenNavigationProp>();
-  const { setBlurType, setOverlay, setWildcard } = useOverlayContext();
+  const { setBlurType, setOverlay } = useOverlayContext();
   const {
     theme: {
       colors: {
@@ -215,6 +215,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
   if (!channel) return null;
 
+  useEffect(() => {
+    setMembers(allMembers.slice(0, 3));
+  }, [allMembers.length])
+
   /**
    * Opens confirmation sheet for leaving the group
    */
@@ -253,7 +257,6 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     setBlurType(undefined);
     setAppOverlay('none');
     setOverlay('none');
-    setWildcard(undefined);
 
     navigation.reset({
       index: 0,

@@ -43,8 +43,8 @@ const sections = [
     components: [
       'src/components/MessageList/DateSeparator.tsx',
       'src/components/MessageList/MessageList.tsx',
-      'src/components/MessageList/MessageNotification.tsx',
       'src/components/MessageList/MessageSystem.tsx',
+      'src/components/MessageList/ScrollToBottomButton.tsx',
       'src/components/MessageList/TypingIndicator.tsx',
       'src/components/MessageList/TypingIndicatorContainer.tsx',
     ],
