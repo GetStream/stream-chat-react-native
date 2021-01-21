@@ -26,6 +26,9 @@ import { useCreateChannelContext } from './hooks/useCreateChannelContext';
 import { useCreateInputMessageInputContext } from './hooks/useCreateInputMessageInputContext';
 import { useCreateMessagesContext } from './hooks/useCreateMessagesContext';
 import { useCreateThreadContext } from './hooks/useCreateThreadContext';
+import { useTargetedMessage } from './hooks/useTargetedMessage';
+import { heavyDebounce } from './utils/debounce';
+import { heavyThrottle, lightThrottle } from './utils/throttle';
 
 import { Attachment as AttachmentDefault } from '../Attachment/Attachment';
 import { AttachmentActions as AttachmentActionsDefault } from '../Attachment/AttachmentActions';
@@ -61,8 +64,8 @@ import { UploadProgressIndicator as UploadProgressIndicatorDefault } from '../Me
 import { DateHeader as DateHeaderDefault } from '../MessageList/DateHeader';
 import { InlineUnreadIndicator as InlineUnreadIndicatorDefault } from '../MessageList/InlineUnreadIndicator';
 import { MessageList as MessageListDefault } from '../MessageList/MessageList';
-import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSystem';
+import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
 import { Reply as ReplyDefault } from '../Reply/Reply';
@@ -107,6 +110,7 @@ import {
   WutReaction,
 } from '../../icons';
 import { FlatList as FlatListDefault } from '../../native';
+import { generateRandomId, ReactionData } from '../../utils/utils';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 
@@ -120,11 +124,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { generateRandomId, ReactionData, uiConfig } from '../../utils/utils';
-import { useTargetedMessage } from './hooks/useTargetedMessage';
-
-import { heavyThrottle, lightThrottle } from './utils/throttle';
-import { heavyDebounce } from './utils/debounce';
 
 const styles = StyleSheet.create({
   selectChannel: { fontWeight: 'bold', padding: 16 },
@@ -152,6 +151,18 @@ export const reactionData: ReactionData[] = [
     type: 'wow',
   },
 ];
+
+/**
+ * If count of unread messages is less than 4, then no need to scroll to first unread message,
+ * since first unread message will be in visible frame anyways.
+ */
+const scrollToFirstUnreadThreshold = 4;
+
+/**
+ * Number of unread messages to show in first frame, when channel loads at first
+ * unread message. Only applicable if unread count > scrollToFirstUnreadThreshold.
+ */
+const unreadMessagesOnInitialLoadLimit = 2;
 
 export type ChannelPropsWithContext<
   At extends UnknownType = DefaultAttachmentType,
@@ -272,6 +283,11 @@ export type ChannelPropsWithContext<
       >[0],
     ) => ReturnType<StreamChat<At, Ch, Co, Ev, Me, Re, Us>['updateMessage']>;
     /**
+     * E.g. Once unread count exceeds 255, display unread count as 255+ instead of actual count.
+     * Also 255 is the limit per Stream chat channel for unread count.
+     */
+    globalUnreadCountLimit?: number;
+    /**
      * When true, messageList will be scrolled at first unread message, when opened.
      */
     initialScrollToFirstUnreadMessage?: boolean;
@@ -354,6 +370,7 @@ export const ChannelWithContext = <
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
+    globalUnreadCountLimit = 255,
     hasFilePicker = true,
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
@@ -467,7 +484,7 @@ export const ChannelWithContext = <
         loadChannelAtMessage({ messageId });
       } else if (
         initialScrollToFirstUnreadMessage &&
-        channel.countUnread() > uiConfig.scrollToFirstUnreadThreshold
+        channel.countUnread() > scrollToFirstUnreadThreshold
       ) {
         loadChannelAtFirstUnreadMessage();
       } else {
@@ -499,7 +516,7 @@ export const ChannelWithContext = <
   }, [threadPropsExists]);
 
   /**
-   * CHANNEL CONSTS
+   * CHANNEL CONSTANTS
    */
   const isAdmin =
     client?.user?.role === 'admin' ||
@@ -593,28 +610,35 @@ export const ChannelWithContext = <
    */
   const loadChannelAtFirstUnreadMessage = () => {
     if (!channel) return;
+    const unreadCount = channel.countUnread();
+    if (unreadCount <= scrollToFirstUnreadThreshold) return;
 
     channel.state.clearMessages();
     channel.state.setIsUpToDate(false);
 
     return channelQueryCall(async () => {
-      // Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
-      // Thus we need to handle these two cases separately.
-      if (channel.countUnread() < uiConfig.globalUnreadCountLimit) {
-        // We want to ensure that first unread message appears in the first window frame, when messagelist loads.
-        // If we assume that we have a exact count of unread messages, then first unread message is at offset = channel.countUnread().
-        // So we will query 2 messages after (and including) first unread message, and 30 messages before first unread
-        // message. So 2nd message in list is the first unread message. We can safely assume that 2nd message in list
-        // will be visible to user when list loads.
-        const offset =
-          channel.countUnread() - uiConfig.unreadMessagesOnInitialLoadLimit;
+      /**
+       * Stream only keeps unread count of channel upto 255. So once the count of unread messages reaches 255, we stop counting.
+       * Thus we need to handle these two cases separately.
+       */
+      if (unreadCount < globalUnreadCountLimit) {
+        /**
+         * We want to ensure that first unread message appears in the first window frame, when message list loads.
+         * If we assume that we have a exact count of unread messages, then first unread message is at offset = channel.countUnread().
+         * So we will query 2 messages after (and including) first unread message, and 30 messages before first unread
+         * message. So 2nd message in list is the first unread message. We can safely assume that 2nd message in list
+         * will be visible to user when list loads.
+         */
+        const offset = unreadCount - unreadMessagesOnInitialLoadLimit;
         await query(offset, 30);
 
-        // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
-        // are enough to fill the screen), then we need to fetch some more messages on recent side.
+        /**
+         * If the number of messages are not enough to fill the screen (we are making an assumption here that on overage 4 messages
+         * are enough to fill the screen), then we need to fetch some more messages on recent side.
+         */
         if (
-          channel.state.messages.length <=
-            uiConfig.scrollToFirstUnreadThreshold &&
+          channel.state.messages.length &&
+          channel.state.messages.length <= scrollToFirstUnreadThreshold &&
           !channel.state.isUpToDate
         ) {
           const mostRecentMessage =
@@ -622,9 +646,11 @@ export const ChannelWithContext = <
           await queryAfterMessage(mostRecentMessage.id, 5);
         }
       } else {
-        // If the unread count is 255, then we don't have exact unread count anymore, to determine the offset for querying messages.
-        // In this case we are going to query messages using date params instead of offset-limit e.g., created_at_before_or_equal
-        // So we query 30 messages before the last time user read the channel - channel.lastRead()
+        /**
+         * If the unread count is 255, then we don't have exact unread count anymore, to determine the offset for querying messages.
+         * In this case we are going to query messages using date params instead of offset-limit e.g., created_at_before_or_equal
+         * So we query 30 messages before the last time user read the channel - channel.lastRead()
+         */
         await channel.query({
           messages: {
             created_at_before_or_equal: channel.lastRead() || new Date(0),
@@ -632,11 +658,12 @@ export const ChannelWithContext = <
           },
         });
 
-        // If the number of messages are not enough to fill the screen (we are making an asssumption here that on overage 4 messages
-        // are enough to fill the screen), then we need to fetch some more messages on recent side.
+        /**
+         * If the number of messages are not enough to fill the screen (we are making an assumption here that on overage 4 messages
+         * are enough to fill the screen), then we need to fetch some more messages on recent side.
+         */
         if (
-          channel.state.messages.length <=
-            uiConfig.unreadMessagesOnInitialLoadLimit &&
+          channel.state.messages.length <= unreadMessagesOnInitialLoadLimit &&
           !channel.state.isUpToDate
         ) {
           if (channel.state.messages.length > 0) {
@@ -644,14 +671,16 @@ export const ChannelWithContext = <
               channel.state.messages[channel.state.messages.length - 1];
             await queryAfterMessage(mostRecentMessage.id, 5);
           } else {
-            // If we didn't get any messages, which means first unread message is the first ever message in channel.
-            // So simply fetch some messages after the lastRead datetime.
-            // We are keeping the limit as 10 here, as opposed to 30 in cases above. The reason being, we want the list
-            // to be scrolled upto first unread message. So in this case we will need the scroll to start at top of the list.
-            // React native provides a prop `initialScrollIndex` on FlatList, but it doesn't really work well
-            // especially for dynamic sized content. So when the list loads, we are just going to manually scroll
-            // to top of the list - flRef.current.scrollToEnd(). This autoscroll behaviour is not great in general, but its less
-            // bad for scrolling up 10 messages than scrolling up 30 messages.
+            /**
+             * If we didn't get any messages, which means first unread message is the first ever message in channel.
+             * So simply fetch some messages after the lastRead datetime.
+             * We are keeping the limit as 10 here, as opposed to 30 in cases above. The reason being, we want the list
+             * to be scrolled upto first unread message. So in this case we will need the scroll to start at top of the list.
+             * React native provides a prop `initialScrollIndex` on FlatList, but it doesn't really work well
+             * especially for dynamic sized content. So when the list loads, we are just going to manually scroll
+             * to top of the list - flRef.current.scrollToEnd(). This autoscroll behavior is not great in general, but its less
+             * bad for scrolling up 10 messages than scrolling up 30 messages.
+             */
             await channel.query({
               messages: {
                 created_at_after: channel.lastRead() || new Date(0),
@@ -880,9 +909,14 @@ export const ChannelWithContext = <
       ...extraFields,
     } as unknown) as MessageResponse<At, Ch, Co, Me, Re, Us>;
 
+    /**
+     * This is added to the message for local rendering prior to the message
+     * being returned from the backend, it is removed when the message is sent
+     * as quoted_message is a reserved field.
+     */
     if (preview.quoted_message_id) {
       const quotedMessage = messages.find(
-        (m) => m.id === preview.quoted_message_id,
+        (message) => message.id === preview.quoted_message_id,
       );
 
       preview.quoted_message = quotedMessage as Omit<
@@ -1072,25 +1106,27 @@ export const ChannelWithContext = <
     setLoadingMoreRecent(true);
 
     if (!messages.length) {
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
 
     const recentMessage = messages && messages[messages.length - 1];
 
     if (recentMessage && recentMessage.status !== 'received') {
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
 
     const recentId = recentMessage && recentMessage.id;
     try {
       if (channel) {
         await queryAfterMessage(recentId);
-
         loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
-      return setLoadingMoreRecent(false);
+      setLoadingMoreRecent(false);
+      return;
     }
   });
 
@@ -1279,6 +1315,7 @@ export const ChannelWithContext = <
     members,
     read,
     reloadChannel,
+    scrollToFirstUnreadThreshold,
     setLastRead,
     setTargetedMessage,
     StickyHeader,

@@ -126,9 +126,6 @@ export const OverlayProvider = <
   });
   const [blurType, setBlurType] = useState<BlurType>();
   const [overlay, setOverlay] = useState(value?.overlay || 'none');
-  const [Wildcard, setWildcard] = useState<
-    React.ComponentType<{ visible: boolean }> | undefined
-  >(value?.Wildcard);
 
   const overlayOpacity = useSharedValue(0);
   const { height, width } = useWindowDimensions();
@@ -192,9 +189,7 @@ export const OverlayProvider = <
     overlay,
     setBlurType,
     setOverlay,
-    setWildcard,
     style: value?.style,
-    Wildcard,
   };
 
   if (loadingTranslators) return null;
@@ -216,7 +211,6 @@ export const OverlayProvider = <
                     style={[StyleSheet.absoluteFill, { height, width }]}
                   />
                 </Animated.View>
-                {Wildcard && <Wildcard visible={overlay === 'wildcard'} />}
                 <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
                   overlayOpacity={overlayOpacity}
                   visible={overlay === 'message'}

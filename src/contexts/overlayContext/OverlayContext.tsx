@@ -15,22 +15,13 @@ import type { Streami18n } from '../../utils/Streami18n';
 
 export type BlurType = 'light' | 'dark' | undefined;
 
-export type Overlay = 'alert' | 'gallery' | 'message' | 'none' | 'wildcard';
+export type Overlay = 'alert' | 'gallery' | 'message' | 'none';
 
 export type OverlayContextValue = {
   overlay: Overlay;
   setBlurType: React.Dispatch<React.SetStateAction<BlurType>>;
   setOverlay: React.Dispatch<React.SetStateAction<Overlay>>;
-  setWildcard: React.Dispatch<
-    React.SetStateAction<
-      | React.ComponentType<{
-          visible: boolean;
-        }>
-      | undefined
-    >
-  >;
   style?: DeepPartial<Theme>;
-  Wildcard?: React.ComponentType<{ visible: boolean }>;
 };
 
 export const OverlayContext = React.createContext<OverlayContextValue>(

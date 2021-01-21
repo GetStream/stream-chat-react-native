@@ -58,7 +58,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { uiConfig } from '../../utils/utils';
 
 const styles = StyleSheet.create({
   activityIndicatorContainer: {
@@ -139,6 +138,7 @@ type MessageListPropsWithContext<
     | 'LoadingIndicator'
     | 'markRead'
     | 'reloadChannel'
+    | 'scrollToFirstUnreadThreshold'
     | 'setTargetedMessage'
     | 'StickyHeader'
     | 'targetedMessage'
@@ -284,6 +284,7 @@ const MessageListWithContext = <
     onThreadSelect,
     reloadChannel,
     ScrollToBottomButton,
+    scrollToFirstUnreadThreshold,
     selectedPicker,
     setFlatListRef,
     setImages,
@@ -317,6 +318,7 @@ const MessageListWithContext = <
     noGroupByUser,
     threadList,
   });
+  const messageListLength = messageList.length;
 
   const [autoscrollToTopThreshold, setAutoscrollToTopThreshold] = useState(
     channel?.state.isUpToDate ? 10 : undefined,
@@ -339,28 +341,36 @@ const MessageListWithContext = <
   const [stickyHeaderDate, setStickyHeaderDate] = useState<Date>(new Date());
   const stickyHeaderDateRef = useRef(new Date());
 
-  // We need topMessage and channelLastRead values to set the initial scroll position.
-  // So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
-  const topMessage = useRef(messageList[messageList.length - 1]);
+  /**
+   * We need topMessage and channelLastRead values to set the initial scroll position.
+   * So these values only get used if `initialScrollToFirstUnreadMessage` prop is true.
+   */
+  const topMessage = useRef<
+    MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined
+  >(messageList[messageListLength - 1] || undefined);
   const channelLastRead = useRef(channel?.lastRead());
 
   const viewableMessages = useRef<string[]>([]);
 
   const isUnreadMessage = (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us> | undefined,
     lastRead: ReturnType<StreamChannel<At, Ch, Co, Ev, Me, Re, Us>['lastRead']>,
   ) =>
     message && lastRead && message.created_at && lastRead < message.created_at;
 
-  // If the top message in the list is unread, then we should scroll to top of the list.
-  // This is to handle the case when entire message list is unread.
-  // This scroll get set only on load, and never again.
+  /**
+   * If the top message in the list is unread, then we should scroll to top of the list.
+   * This is to handle the case when entire message list is unread.
+   * This scroll get set only on load, and never again.
+   */
   const setInitialScrollIfNeeded = () => {
     // If the feature is disabled or initial scroll position is already set.
     if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) return;
 
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
-      flatListRef.current?.scrollToEnd();
+      if (flatListRef.current) {
+        flatListRef.current.scrollToEnd();
+      }
       setTimeout(() => {
         initialScrollSet.current = true;
       }, 500);
@@ -369,14 +379,18 @@ const MessageListWithContext = <
     }
   };
 
-  // We keep track of viewableItems, to implement scrollToMessage functionality.
-  // We can use scrollToIndex only if the message is within viewable limits.
+  /**
+   * We keep track of viewableItems, to implement scrollToMessage functionality.
+   * We can use scrollToIndex only if the message is within viewable limits.
+   */
   const updateViewableMessages = (viewableItems: ViewToken[]) => {
-    viewableMessages.current = viewableItems.map((v) => v.item.id);
+    viewableMessages.current = viewableItems.map(
+      (viewableItem) => viewableItem.item.id,
+    );
   };
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
-    if (viewableItems?.length) {
+    if (viewableItems.length) {
       const lastItem = viewableItems.pop();
 
       if (
@@ -391,12 +405,16 @@ const MessageListWithContext = <
     }
   };
 
-  // FlatList doesn't accept changeable function for onViewableItemsChanged prop.
-  // Thus useRef.
+  /**
+   * FlatList doesn't accept changeable function for onViewableItemsChanged prop.
+   * Thus useRef.
+   */
   const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      updateViewableMessages(viewableItems);
-      updateStickyHeaderDateIfNeeded(viewableItems);
+    ({ viewableItems }: { viewableItems: ViewToken[] | undefined }) => {
+      if (viewableItems) {
+        updateViewableMessages(viewableItems);
+        updateStickyHeaderDateIfNeeded(viewableItems);
+      }
       setInitialScrollIfNeeded();
     },
   );
@@ -406,18 +424,17 @@ const MessageListWithContext = <
   }, [disabled]);
 
   useEffect(() => {
-    if (
-      channel &&
-      channel.countUnread() <= uiConfig.scrollToFirstUnreadThreshold
-    ) {
+    if (channel && channel.countUnread() <= scrollToFirstUnreadThreshold) {
       channel.markRead();
     }
   }, []);
 
   useEffect(() => {
-    // Scroll to bottom only if:
-    // 1. Channel has received a new message AND
-    // 2. Message was sent by me (current logged in user)
+    /**
+     * Scroll to bottom only if:
+     * 1. Channel has received a new message AND
+     * 2. Message was sent by me (current logged in user)
+     */
     const scrollToBottomIfNeeded = () => {
       if (!client || !channel) {
         return;
@@ -432,7 +449,9 @@ const MessageListWithContext = <
 
       // Scroll down when it's your own message that you added..
       if (hasNewMessage && isMyMessage) {
-        flatListRef?.current?.scrollToIndex({ index: 0 });
+        if (flatListRef.current) {
+          flatListRef.current.scrollToIndex({ index: 0 });
+        }
         setScrollToBottomButtonVisible(false);
       }
     };
@@ -440,23 +459,25 @@ const MessageListWithContext = <
     // If channel is not upto date, then always display scrollToBottom button.
     if (!channel?.state.isUpToDate && !scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
-    } else {
+    } else if (channel?.state.isUpToDate) {
       scrollToBottomIfNeeded();
     }
 
-    // channelLastRead and topMessage are only used for setting initial scroll.
-    // So lets not set it if `initialScrollToFirstUnreadMessage` prop is false.
-    // OR if the scroll is already set.
+    /**
+     * channelLastRead and topMessage are only used for setting initial scroll.
+     * So lets not set it if `initialScrollToFirstUnreadMessage` prop is false.
+     * OR if the scroll is already set.
+     */
     if (initialScrollToFirstUnreadMessage && !initialScrollSet.current) {
       channelLastRead.current = channel?.lastRead();
-      topMessage.current = messageList[messageList.length - 1];
+      topMessage.current = messageList[messageListLength - 1];
     }
-  }, [messageList.length]);
+  }, [messageListLength]);
 
   useEffect(() => {
     // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
     setAutoscrollToTopThreshold(channel?.state.isUpToDate ? 10 : undefined);
-  }, [messageList.length]);
+  }, [messageListLength]);
 
   const renderItem = (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
@@ -507,22 +528,25 @@ const MessageListWithContext = <
     return null;
   };
 
-  // Following if condition covers following cases:
-  // 1. If I scroll up -> show scrollToBottom button.
-  // 2. If I scroll to bottom of screen
-  //    |-> hide justToBottom button.
-  //    |-> if channel is unread, call markRead().
+  /**
+   * Following if condition covers following cases:
+   * 1. If I scroll up -> show scrollToBottom button.
+   * 2. If I scroll to bottom of screen
+   *    |-> hide scrollToBottom button.
+   *    |-> if channel is unread, call markRead().
+   */
   const handleScroll: ScrollViewProps['onScroll'] = (event) => {
     if (!channel || !initialScrollSet.current) {
       return;
     }
 
     const y = event.nativeEvent.contentOffset.y;
-    const isScrollAtBottom = y <= uiConfig.scrollToBottomBtnVisibilityThreshold;
-    const showScrollToBottomBtn =
+    // Show scrollToBottom button once scroll position goes beyond 300.
+    const isScrollAtBottom = y <= 300;
+    const showScrollToBottomButton =
       !isScrollAtBottom || !channel?.state.isUpToDate;
     const loadMoreRecentResults =
-      isScrollAtBottom && !channel?.state.isUpToDate;
+      !loadingMoreRecent && isScrollAtBottom && !channel?.state.isUpToDate;
     const shouldMarkRead =
       !threadList &&
       isScrollAtBottom &&
@@ -537,9 +561,9 @@ const MessageListWithContext = <
       loadMoreRecent();
     }
 
-    if (showScrollToBottomBtn && !scrollToBottomButtonVisible) {
+    if (showScrollToBottomButton && !scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(true);
-    } else if (!showScrollToBottomBtn && scrollToBottomButtonVisible) {
+    } else if (!showScrollToBottomButton && scrollToBottomButtonVisible) {
       setScrollToBottomButtonVisible(false);
     }
 
@@ -551,8 +575,8 @@ const MessageListWithContext = <
   const goToNewMessages = async () => {
     if (!channel?.state.isUpToDate) {
       await reloadChannel();
-    } else {
-      flatListRef.current?.scrollToIndex({
+    } else if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({
         index: 0,
       });
     }
@@ -698,7 +722,7 @@ const MessageListWithContext = <
           <View style={styles.stickyHeader}>
             {StickyHeader ? (
               <StickyHeader dateString={stickyHeaderDateToRender} />
-            ) : messageList.length ? (
+            ) : messageListLength ? (
               <DateHeader dateString={stickyHeaderDateToRender} />
             ) : null}
           </View>
@@ -769,6 +793,7 @@ export const MessageList = <
     LoadingIndicator,
     markRead,
     reloadChannel,
+    scrollToFirstUnreadThreshold,
     setTargetedMessage,
     StickyHeader,
     targetedMessage,
@@ -828,6 +853,7 @@ export const MessageList = <
         MessageSystem,
         reloadChannel,
         ScrollToBottomButton,
+        scrollToFirstUnreadThreshold,
         selectedPicker,
         setImages,
         setSelectedPicker,

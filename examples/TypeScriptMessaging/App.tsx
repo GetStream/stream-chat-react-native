@@ -144,7 +144,7 @@ const ChannelScreen: React.FC<ChannelScreenProps> = ({ navigation }) => {
               onThreadSelect={(thread) => {
                 setThread(thread);
                 if (channel?.id) {
-                  navigation.navigate('Thread', { channelId: channel.id });
+                  navigation.navigate('Thread');
                 }
               }}
             />
@@ -160,11 +160,8 @@ type ThreadScreenProps = {
   route: RouteProp<ThreadRoute, 'Thread'>;
 };
 
-const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
-  const { setThread, thread } = useContext(AppContext);
-  const [channel] = useState(
-    chatClient.channel('messaging', route.params.channelId),
-  );
+const ThreadScreen: React.FC<ThreadScreenProps> = () => {
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   return (
@@ -201,7 +198,7 @@ const ThreadScreen: React.FC<ThreadScreenProps> = ({ route }) => {
 
 type ChannelRoute = { Channel: undefined };
 type ChannelListRoute = { ChannelList: undefined };
-type ThreadRoute = { Thread: { channelId: string } };
+type ThreadRoute = { Thread: undefined };
 type NavigationParamsList = ChannelRoute & ChannelListRoute & ThreadRoute;
 
 const Stack = createStackNavigator<NavigationParamsList>();
