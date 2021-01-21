@@ -139,6 +139,8 @@ const repoDir = PATH.dirname(PATH.dirname(__dirname));
 
 const moduleBlacklist = [
   new RegExp(repoDir + '/examples/ExpoMessaging/.*'),
+  new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/node_modules/.*'),
+  new RegExp(PATH.dirname(repoDir) + '/flat-list-mvcp/Example/.*'),
   new RegExp(repoDir + '/examples/NativeMessaging/.*'),
   new RegExp(repoDir + '/examples/TypeScriptMessaging/.*'),
   //   new RegExp(repoDir + '/native-example/(.*)'),
@@ -156,6 +158,7 @@ const moduleBlacklist = [
 if (alternateRoots && alternateRoots.length)
   console.log('Found alternate project roots: ', alternateRoots);
 
+  console.log(moduleBlacklist);
 module.exports = {
   resolver: {
     blacklistRE: blacklist(moduleBlacklist),

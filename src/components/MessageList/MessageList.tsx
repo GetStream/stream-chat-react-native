@@ -321,7 +321,7 @@ const MessageListWithContext = <
   const messageListLength = messageList.length;
 
   const [autoscrollToTopThreshold, setAutoscrollToTopThreshold] = useState(
-    !channel?.state.isUpToDate ? -1000 : 10,
+    channel?.state.isUpToDate ? 10 : undefined,
   );
 
   const flatListRef = useRef<FlatListType<
@@ -364,7 +364,9 @@ const MessageListWithContext = <
    * This scroll get set only on load, and never again.
    */
   const setInitialScrollIfNeeded = () => {
+    // If the feature is disabled or initial scroll position is already set.
     if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) return;
+
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
       if (flatListRef.current) {
         flatListRef.current.scrollToEnd();
@@ -474,7 +476,7 @@ const MessageListWithContext = <
 
   useEffect(() => {
     // Lets wait so that list gets rendered, before we update autoscrollToTopThreshold,
-    setAutoscrollToTopThreshold(!channel?.state.isUpToDate ? -1000 : 10);
+    setAutoscrollToTopThreshold(channel?.state.isUpToDate ? 10 : undefined);
   }, [messageListLength]);
 
   const renderItem = (

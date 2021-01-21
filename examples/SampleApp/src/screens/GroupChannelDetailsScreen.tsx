@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -214,6 +214,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
   >(channel, 30);
 
   if (!channel) return null;
+
+  useEffect(() => {
+    setMembers(allMembers.slice(0, 3));
+  }, [allMembers.length])
 
   /**
    * Opens confirmation sheet for leaving the group
