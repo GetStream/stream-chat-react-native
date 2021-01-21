@@ -1,6 +1,6 @@
 {
   "name": "SampleApp",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "private": true,
   "scripts": {
     "android": "npx react-native run-android",
