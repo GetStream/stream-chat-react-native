@@ -679,7 +679,7 @@ export const ChannelWithContext = <
     Me,
     Re,
     Us
-  >['loadChannelAtMessage'] = ({ after = 2, before = 10, messageId }) =>
+  >['loadChannelAtMessage'] = ({ after = 2, before = 30, messageId }) =>
     channelQueryCall(async () => {
       await queryAtMessage({ after, before, messageId });
 
@@ -690,7 +690,8 @@ export const ChannelWithContext = <
 
   const loadChannel = () =>
     channelQueryCall(() => {
-      if (!channel?.initialized) {
+      if (!channel?.initialized || !channel.state.isUpToDate) {
+        channel?.state.clearMessages();
         return channel?.watch();
       }
 
@@ -758,7 +759,7 @@ export const ChannelWithContext = <
    * @param messageId Targeted message id
    * @param limit Number of messages to load
    */
-  const queryBeforeMessage = async (messageId: string, limit = 20) => {
+  const queryBeforeMessage = async (messageId: string, limit = 5) => {
     if (!channel) return;
 
     await channel.query({
@@ -778,7 +779,7 @@ export const ChannelWithContext = <
    * @param messageId Targeted message id
    * @param limit Number of messages to load.
    */
-  const queryAfterMessage = async (messageId: string, limit = 20) => {
+  const queryAfterMessage = async (messageId: string, limit = 5) => {
     if (!channel) return;
     const state = await channel.query({
       messages: {
