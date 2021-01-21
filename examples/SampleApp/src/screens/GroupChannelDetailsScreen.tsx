@@ -190,10 +190,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
   const textInputRef = useRef<TextInput>(null);
   const [muted, setMuted] = useState(
-    chatClient?.mutedChannels &&
-      chatClient?.mutedChannels?.findIndex(
-        (mute) => mute.channel?.id === channel?.id,
-      ) !== -1,
+    chatClient?.mutedChannels.some((mute) => mute.channel?.id === channel?.id),
   );
   const [groupName, setGroupName] = useState(channel.data?.name);
   const allMembers = Object.values(channel.state.members);
@@ -215,9 +212,10 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
 
   if (!channel) return null;
 
+  const allMembersLength = allMembers.length;
   useEffect(() => {
     setMembers(allMembers.slice(0, 3));
-  }, [allMembers.length])
+  }, [allMembersLength]);
 
   /**
    * Opens confirmation sheet for leaving the group
@@ -328,7 +326,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
             </TouchableOpacity>
           );
         })}
-        {allMembers.length !== members.length && (
+        {allMembersLength !== members.length && (
           <TouchableOpacity
             onPress={() => {
               setMembers(Object.values(channel.state.members));
@@ -349,7 +347,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 },
               ]}
             >
-              {`${allMembers.length - members.length} more`}
+              {`${allMembersLength - members.length} more`}
             </Text>
           </TouchableOpacity>
         )}

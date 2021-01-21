@@ -95,7 +95,7 @@ const ChannelScreen = ({ navigation }) => {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread);
-                navigation.navigate('Thread', { channelId: channel.id });
+                navigation.navigate('Thread');
               }}
             />
             <MessageInput />
@@ -106,11 +106,8 @@ const ChannelScreen = ({ navigation }) => {
   );
 };
 
-const ThreadScreen = ({ route }) => {
-  const { setThread, thread } = useContext(AppContext);
-  const [channel] = useState(
-    chatClient.channel('messaging', route.params.channelId),
-  );
+const ThreadScreen = () => {
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   return (
