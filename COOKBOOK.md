@@ -50,7 +50,10 @@ Stream Chat React Native is set up for parity on Expo, expo requires a different
 
 ### Hello Stream Chat - 3.x
 
-Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts screen, components, or the entire app must be wrapped in Stream Chat Context components. The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
+Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts screen, components, or the entire app must be wrapped in Stream Chat Context components.
+
+#### OverlayProvider
+The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
 Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well, assuming [`React Navigation`](https://reactnavigation.org/) is being used your highest level navigation stack should be wrapped in the provider:
 
@@ -84,9 +87,44 @@ Because these views must exist above all others `OverlayProvider` should wrap yo
 </NavigationContainer>
 ```
 
-The `OverlayProvider` can be used with no props provided, and there are a plethora of props for customizing the components in the overlay, but three core props that will you will likely want ot use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`, it provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. `i18nInstance` is the instance of Streami18n you have for translations. `bottomInset` is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+The `OverlayProvider` can be used with no props provided, and there are a plethora of props for customizing the components in the overlay three core props that will you will likely want ot use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`, it provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. `i18nInstance` is the instance of Streami18n you have for translations. **`bottomInset`** is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened. In the example shown the bottom safe are is and is not taken into account and the resulting UI difference is obvious. This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
 
-<div style='display:flex;justify-content:space-between;'>
-  <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
-  <img src="./screenshots/cookbook/AttachmentPickerWithoutInset.png"  width="200"/>
+```typescript
+const streami18n = new Streami18n({ language: 'en' });
+const { bottom } = useSafeAreaInsets();
+const theme = useStreamChatTheme();
+
+<OverlayProvider
+  bottomInset={bottom}
+  i18nInstance={streami18n}
+  value={{ style: theme }}
+>
+```
+
+<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
+    With bottomInset
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/>
+    Without bottomInset
+  </div>
+</div>
+
+Additionally a `topInset` must be set to ensure that when the picker is completely open it is opened to the desired height. This can be done via props, but can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be set to 0 to cover the entire screen, or the safe area top inset if desired. In the example it is being set using the `useHeaderHeight` hook from [React Navigation](https://reactnavigation.org/).
+
+**IMPORTANT:** The current implementation of the scrolling bottom-sheet in which the image picker resides does not re-evaluate heights after the `topInset` is set. So only set this to one value.
+
+```typescript
+  const headerHeight = useHeaderHeight();
+  const { setTopInset } = useAttachmentPickerContext();
+
+  useEffect(() => {
+    setTopInset(headerHeight);
+  }, [headerHeight]);
+```
+
+<div style='display:flex;justify-content:center;margin-bottom:32px;margin-top:8px;'>
+  <img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/>
 </div>
