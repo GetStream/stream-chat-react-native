@@ -52,8 +52,74 @@ Stream Chat React Native is set up for parity on Expo, expo requires a different
 
 Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts screen, components, or the entire app must be wrapped in Stream Chat Context components.
 
+#### Theme
+
+The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. To accurately create a theme we suggestion utilizing our exported types to create your own theme. We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys that can modify the styling.
+
+```typescript
+file: {
+  container: ViewStyle;
+  details: ViewStyle;
+  fileSize: TextStyle;
+  icon: IconProps;
+  title: TextStyle;
+};
+```
+
+Modifying the theme for this component is done by adding custom styles at the desired keys.
+
+```typescript
+import type { DeepPartial, Theme } from 'stream-chat-react-native';
+
+const theme: DeepPartial<Theme> = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+      icon: {
+        height: 16,
+        width: 16,
+      },
+    },
+  },
+};
+```
+
+<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/DisplayNameTheme.png' width="200"/>
+    Display Name in Inspector
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="200"/>
+    Non-Themed Component
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="200"/>
+    Themed Component
+  </div>
+</div>
+
+**NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
+
 #### OverlayProvider
 The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
+
+<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/MessageOverlay.png' width="200"/>
+    Message Interaction
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/ImageViewer.png' width="200"/>
+    Image Viewer
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
+    Attachment Picker
+  </div>
+</div>
 
 Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well, assuming [`React Navigation`](https://reactnavigation.org/) is being used your highest level navigation stack should be wrapped in the provider:
 
@@ -101,17 +167,6 @@ const theme = useStreamChatTheme();
 >
 ```
 
-<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
-    With bottomInset
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/>
-    Without bottomInset
-  </div>
-</div>
-
 Additionally a `topInset` must be set to ensure that when the picker is completely open it is opened to the desired height. This can be done via props, but can also be set via the `setTopInset` function provided by the `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be set to 0 to cover the entire screen, or the safe area top inset if desired. In the example it is being set using the `useHeaderHeight` hook from [React Navigation](https://reactnavigation.org/).
 
 **IMPORTANT:** The current implementation of the scrolling bottom-sheet in which the image picker resides does not re-evaluate heights after the `topInset` is set. So only set this to one value.
@@ -125,6 +180,34 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
   }, [headerHeight]);
 ```
 
-<div style='display:flex;justify-content:center;margin-bottom:32px;margin-top:8px;'>
-  <img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/>
+<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
+    With bottomInset
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/>
+    Without bottomInset
+  </div>
+   <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/>
+    With topInset
+  </div>
+</div>
+
+**NOTE:** As mentioned there are many modifications that can be performed to the UI. Custom styling via the theme gives you the ability to shape the look of the application as a whole and/or implement dark mode. But additionally the majority of the UI can be modified or replaced via [`Stream Chat`](https://getstream.io/chat/) settings or props. It is trivial to replace or modify most UI elements.
+
+<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="200"/>
+    No Reactions or Replies
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/ModifiedImageViewer.png' width="200"/>
+    Custom Header and Footer
+  </div>
+  <div style='display:flex;flex-direction:column;align-items:center;'>
+    <img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="200"/>
+    Custom Grid Layout
+  </div>
 </div>
