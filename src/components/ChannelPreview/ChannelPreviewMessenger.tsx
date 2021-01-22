@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { ChannelAvatar } from './ChannelAvatar';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
 
 import {
@@ -25,7 +26,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { ChannelAvatar } from './ChannelAvatar';
 
 const styles = StyleSheet.create({
   bold: { fontWeight: 'bold' },
