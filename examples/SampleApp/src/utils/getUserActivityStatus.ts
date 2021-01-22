@@ -14,7 +14,7 @@ export const getUserActivityStatus = (
   if (!user) return '';
 
   if (user.online) {
-    return `Online for ${Dayjs(user?.last_active).toNow(true)}`;
+    return `Online`;
   }
 
   if (Dayjs(user.last_active).isBefore(Dayjs())) {

@@ -311,6 +311,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
                 <Avatar
                   image={member.user?.image}
                   name={member.user?.name}
+                  online={member.user?.online}
                   size={40}
                 />
                 <View style={styles.memberDetails}>

@@ -123,7 +123,6 @@ export const Avatar: React.FC<AvatarProps> = (props) => {
               ? {
                   borderRadius: size / 2,
                   height: size,
-                  resizeMode: 'contain',
                   width: size,
                 }
               : {},

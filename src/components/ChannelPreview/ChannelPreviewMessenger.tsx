@@ -2,12 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { useChannelPreviewDisplayAvatar } from './hooks/useChannelPreviewDisplayAvatar';
-import { useChannelPreviewDisplayPresence } from './hooks/useChannelPreviewDisplayPresence';
 import { useChannelPreviewDisplayName } from './hooks/useChannelPreviewDisplayName';
-
-import { Avatar } from '../Avatar/Avatar';
-import { GroupAvatar } from '../Avatar/GroupAvatar';
 
 import {
   ChannelsContextValue,
@@ -30,6 +25,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { ChannelAvatar } from './ChannelAvatar';
 
 const styles = StyleSheet.create({
   bold: { fontWeight: 'bold' },
@@ -156,12 +152,10 @@ const ChannelPreviewMessengerWithContext = <
     },
   } = useTheme();
 
-  const displayAvatar = useChannelPreviewDisplayAvatar(channel);
   const displayName = useChannelPreviewDisplayName(
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
-  const displayPresence = useChannelPreviewDisplayPresence(channel);
   const created_at = latestMessagePreview.messageObject?.created_at;
   const latestMessageDate = created_at
     ? typeof created_at === 'string'
@@ -184,20 +178,7 @@ const ChannelPreviewMessengerWithContext = <
       ]}
       testID='channel-preview-button'
     >
-      {displayAvatar.images ? (
-        <GroupAvatar
-          images={displayAvatar.images}
-          names={displayAvatar.names}
-          size={40}
-        />
-      ) : (
-        <Avatar
-          image={displayAvatar.image}
-          name={displayAvatar.name}
-          online={displayPresence}
-          size={40}
-        />
-      )}
+      <ChannelAvatar channel={channel} />
       <View style={[styles.contentContainer, contentContainer]}>
         <View style={[styles.row, row]}>
           <Text

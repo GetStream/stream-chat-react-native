@@ -4,7 +4,7 @@ import {
   CompositeNavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { Spinner, useChatContext, useTheme } from 'stream-chat-react-native';
+import { useChatContext, useTheme } from 'stream-chat-react-native';
 
 import { RoundButton } from './RoundButton';
 import { ScreenHeader } from './ScreenHeader';
@@ -19,6 +19,7 @@ import type {
   DrawerNavigatorParamList,
   StackNavigatorParamList,
 } from '../types';
+import { NetworkDownIndicator } from './NetworkDownIndicator';
 
 const styles = StyleSheet.create({
   avatar: {
@@ -26,45 +27,12 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
   },
-  networkDownContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  networkDownText: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginLeft: 13,
-  },
 });
 
 type ChatScreenHeaderNavigationProp = CompositeNavigationProp<
   DrawerNavigationProp<DrawerNavigatorParamList>,
   StackNavigationProp<StackNavigatorParamList>
 >;
-
-export const NetworkDownIndicator: React.FC = () => {
-  const {
-    theme: {
-      colors: { black },
-    },
-  } = useTheme();
-
-  return (
-    <View style={styles.networkDownContainer}>
-      <Spinner />
-      <Text
-        style={[
-          styles.networkDownText,
-          {
-            color: black,
-          },
-        ]}
-      >
-        Searching for network
-      </Text>
-    </View>
-  );
-};
 
 export const ChatScreenHeader: React.FC<{ title?: string }> = ({
   title = 'Stream Chat',
@@ -104,7 +72,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({
           />
         </RoundButton>
       )}
-      Title={isOnline ? undefined : NetworkDownIndicator}
+      Title={isOnline ? undefined : () => <NetworkDownIndicator titleSize={'large'} />}
       titleText={title}
     />
   );
