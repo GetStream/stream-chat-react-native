@@ -1,8 +1,11 @@
 import React from 'react';
+import { Linking, Text } from 'react-native';
 // @ts-expect-error
 import Markdown from '@stream-io/react-native-simple-markdown';
 import anchorme from 'anchorme';
 import truncate from 'lodash/truncate';
+
+import type { ReactNodeOutput } from 'simple-markdown';
 
 import type { MarkdownStyle } from '../../../../styles/themeConstants';
 import type { Message } from '../../../MessageList/utils/insertDates';
@@ -98,8 +101,33 @@ export const renderText = <
     ...markdownStyles,
   };
 
+  const onLink = (url: string) =>
+    Linking.canOpenURL(url).then(
+      (canOpenUrl) => canOpenUrl && Linking.openURL(url),
+    );
+
+  const react: ReactNodeOutput = (node, output, { ...state }) => {
+    state.withinText = true;
+    state.stylesToApply = node.target.match(/@/) ? styles.mailTo : styles.link;
+    return React.createElement(
+      Text,
+      {
+        key: state.key,
+        onPress: () => onLink(node.target),
+        style: state.stylesToApply,
+      },
+      output(node.content, state),
+    );
+  };
+
+  const customRules = {
+    link: { react },
+    // we have no react rendering support for reflinks
+    reflink: { match: () => null },
+  };
+
   return (
-    <Markdown rules={markdownRules} styles={styles}>
+    <Markdown rules={{ ...customRules, ...markdownRules }} styles={styles}>
       {newText}
     </Markdown>
   );
