@@ -101,6 +101,7 @@ export const OverlayProvider = <
         );
       }
     },
+    topInset,
     value,
   } = props;
 
@@ -176,6 +177,7 @@ export const OverlayProvider = <
     FileSelectorIcon,
     ImageSelectorIcon,
     openPicker: () => openPicker(bottomSheetRef),
+    topInset,
   };
 
   const overlayStyle = useAnimatedStyle<ViewStyle>(

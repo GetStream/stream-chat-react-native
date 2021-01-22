@@ -40,6 +40,7 @@ export type OverlayProviderProps<
       | 'CameraSelectorIcon'
       | 'FileSelectorIcon'
       | 'ImageSelectorIcon'
+      | 'topInset'
     >
   > &
   ImageGalleryCustomComponents<Us> & {

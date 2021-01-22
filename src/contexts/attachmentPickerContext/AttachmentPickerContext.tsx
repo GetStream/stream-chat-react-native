@@ -1,4 +1,9 @@
-import React, { PropsWithChildren, useContext, useState } from 'react';
+import React, {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
@@ -17,10 +22,11 @@ export type AttachmentPickerContextValue = {
   maxNumberOfFiles: number;
   openPicker: () => void;
   selectedImages: string[];
+  setBottomInset: React.Dispatch<React.SetStateAction<number | undefined>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
   setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
-  setTopInset: React.Dispatch<React.SetStateAction<number>>;
+  setTopInset: React.Dispatch<React.SetStateAction<number | undefined>>;
   attachmentPickerBottomSheetHeight?: number;
   attachmentSelectionBarHeight?: number;
   bottomInset?: number;
@@ -46,23 +52,40 @@ export const AttachmentPickerProvider = ({
     | 'FileSelectorIcon'
     | 'ImageSelectorIcon'
     | 'openPicker'
+    | 'topInset'
   >;
 }>) => {
+  const bottomInsetValue = value?.bottomInset;
+  const topInsetValue = value?.topInset;
+
+  const [bottomInset, setBottomInset] = useState<number | undefined>(
+    bottomInsetValue,
+  );
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
-  const [topInset, setTopInset] = useState<number>();
+  const [topInset, setTopInset] = useState<number | undefined>(value?.topInset);
+
+  useEffect(() => {
+    setBottomInset(bottomInsetValue);
+  }, [bottomInsetValue]);
+
+  useEffect(() => {
+    setTopInset(topInsetValue);
+  }, [topInsetValue]);
 
   const combinedValue = {
     maxNumberOfFiles,
     selectedImages,
     selectedPicker,
+    setBottomInset,
     setMaxNumberOfFiles,
     setSelectedImages,
     setSelectedPicker,
     setTopInset,
-    topInset,
     ...value,
+    bottomInset,
+    topInset,
   };
 
   return (
