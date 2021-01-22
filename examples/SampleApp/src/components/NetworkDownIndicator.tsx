@@ -11,6 +11,10 @@ const styles = StyleSheet.create({
   networkDownText: {
     marginLeft: 10,
   },
+  networkDownTextLarge: {
+    fontSize: 16,
+    fontWeight: '700',
+  }
 });
 
 export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = ({ titleSize = 'small' }) => {
@@ -29,10 +33,7 @@ export const NetworkDownIndicator: React.FC<{ titleSize: 'small' | 'large' }> = 
             {
               color: black,
             },
-            titleSize === 'large' ? {
-                fontSize: 16,
-                fontWeight: '700',
-            } : {}
+            titleSize === 'large' ? styles.networkDownTextLarge : {}
           ]}
         >
           Searching for Network

@@ -19,12 +19,21 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+export type ChannelAvatarProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
+
 /**
  * This UI component displays an avatar for a particular channel.
  *
  * @example ./ChannelAvatar.md
  */
-
 export const ChannelAvatar = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -60,15 +69,3 @@ export const ChannelAvatar = <
     />
   );
 };
-
-export type ChannelAvatarProps<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
-
-ChannelAvatar.displayName = 'ChannelAvatar{channelPreview}';

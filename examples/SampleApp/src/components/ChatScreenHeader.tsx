@@ -72,7 +72,7 @@ export const ChatScreenHeader: React.FC<{ title?: string }> = ({
           />
         </RoundButton>
       )}
-      Title={isOnline ? undefined : () => <NetworkDownIndicator titleSize={'large'} />}
+      Title={isOnline ? undefined : () => <NetworkDownIndicator titleSize='large' />}
       titleText={title}
     />
   );

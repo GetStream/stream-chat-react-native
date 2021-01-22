@@ -54,9 +54,9 @@ export * from './ChannelList/hooks/useCreateChannelsContext';
 export * from './ChannelList/hooks/usePaginatedChannels';
 export * from './ChannelList/Skeleton';
 
+export * from './ChannelPreview/ChannelAvatar';
 export * from './ChannelPreview/ChannelPreview';
 export * from './ChannelPreview/ChannelPreviewMessenger';
-export * from './ChannelPreview/ChannelAvatar';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayAvatar';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayName';
 export * from './ChannelPreview/hooks/useChannelPreviewDisplayPresence';
