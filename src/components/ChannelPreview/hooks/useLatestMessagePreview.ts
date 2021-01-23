@@ -197,7 +197,7 @@ const getLatestMessageReadStatus = <
   readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
-  if (currentUserId !== message.user?.id || readEvents === false) return 0;
+  if (currentUserId !== message?.user?.id || readEvents === false) return 0;
 
   const readList = channel.state.read.asMutable();
   if (currentUserId) {
@@ -253,7 +253,7 @@ const getLatestMessagePreview = <
       previews: [
         {
           bold: false,
-          text: '',
+          text: t('Nothing yet...'),
         },
       ],
       status: 0,
