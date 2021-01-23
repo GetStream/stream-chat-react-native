@@ -244,7 +244,7 @@ const getLatestMessagePreview = <
       previews: [
         {
           bold: false,
-          text: '',
+          text: t('Nothing yet...'),
         },
       ],
       status: 0,

@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     fontSize: 14,
+    fontWeight: '500',
     marginLeft: 16,
   },
   userName: {

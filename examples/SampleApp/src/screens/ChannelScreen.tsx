@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Avatar,
   Channel,
+  ChannelAvatar,
   getChannelPreviewDisplayAvatar,
   GroupAvatar,
   MessageInput,
@@ -44,13 +45,10 @@ import type {
   LocalUserType,
   StackNavigatorParamList,
 } from '../types';
+import { NetworkDownIndicator } from '../components/NetworkDownIndicator';
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  networkDownIndicatorContainer: { alignItems: 'center', flexDirection: 'row' },
-  searchingForNetworkText: {
-    paddingLeft: 8,
-  },
 });
 
 export type ChannelScreenNavigationProp = StackNavigationProp<
@@ -78,31 +76,6 @@ export type ChannelHeaderProps = {
   >;
 };
 
-export const NetworkDownIndicator = () => {
-  const {
-    theme: {
-      colors: { grey },
-    },
-  } = useTheme();
-  return (
-    <View style={styles.networkDownIndicatorContainer}>
-      <Spinner />
-      <Text
-        style={
-          (styles.searchingForNetworkText,
-          [
-            {
-              color: grey,
-            },
-          ])
-        }
-      >
-        Searching for network
-      </Text>
-    </View>
-  );
-};
-
 const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const membersStatus = useChannelMembersStatus(channel);
   const displayName = useChannelPreviewDisplayName(channel, 30);
@@ -112,8 +85,6 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
   const typing = useTypingString();
 
   if (!channel || !chatClient) return null;
-
-  const displayAvatar = getChannelPreviewDisplayAvatar(channel, chatClient);
 
   const isOneOnOneConversation =
     channel &&
@@ -136,19 +107,7 @@ const ChannelHeader: React.FC<ChannelHeaderProps> = ({ channel }) => {
             }
           }}
         >
-          {displayAvatar.images ? (
-            <GroupAvatar
-              images={displayAvatar.images}
-              names={displayAvatar.names}
-              size={40}
-            />
-          ) : (
-            <Avatar
-              image={displayAvatar.image}
-              name={displayAvatar.name}
-              size={40}
-            />
-          )}
+          <ChannelAvatar channel={channel} />
         </TouchableOpacity>
       )}
       showUnreadCountBadge
