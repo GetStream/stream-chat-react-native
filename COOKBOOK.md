@@ -54,7 +54,7 @@ Stream Chat components make extensive use of React Context to maintain state and
 
 #### Theme
 
-The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. To accurately create a theme we suggestion utilizing our exported types to create your own theme. We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys that can modify the styling.
+The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. To accurately create a theme we suggestion utilizing our exported types to create your own theme. We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys that can modify the styling.
 
 ```typescript
 file: {
