@@ -130,6 +130,7 @@ export const MessageSearchList: React.FC<MessageSearchListProps> = ({
         // TODO: Remove the following filter once we have two way scroll functionality on threads.
         data={messages ? messages.filter(({ parent_id }) => !parent_id) : []}
         ListEmptyComponent={EmptySearchIndicator}
+        keyboardDismissMode={'on-drag'}
         onEndReached={loadMore}
         onRefresh={refreshList}
         refreshing={refreshing}
