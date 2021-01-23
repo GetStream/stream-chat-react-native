@@ -12,6 +12,7 @@ target 'SampleApp' do
     inherit! :complete
     # Pods for testing
   end
+  pod 'Firebase/Crashlytics'
   pod 'Firebase/Analytics'
   pod 'Firebase/AppDistribution'
 
