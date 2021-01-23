@@ -88,9 +88,9 @@ const theme: DeepPartial<Theme> = {
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/DisplayNameTheme.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/DisplayNameTheme.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -107,9 +107,9 @@ The highest level of these components is the `OverlayProvider`. The `OverlayProv
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/MessageOverlay.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ImageViewer.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MessageOverlay.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ImageViewer.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -180,9 +180,9 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -196,9 +196,9 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedImageViewer.png' width="200"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedImageViewer.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
