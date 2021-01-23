@@ -37,6 +37,7 @@ import { CircleClose, CurveLineLeftUp, Edit, Lightning } from '../../icons';
 
 import type { UserResponse } from 'stream-chat';
 
+import type { Asset } from '../../native';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -287,19 +288,19 @@ export const MessageInputWithContext = <
       const imagesToUpload = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
           (imageUpload) =>
-            imageUpload.file.uri === selectedImage ||
-            imageUpload.url === selectedImage,
+            imageUpload.file.uri === selectedImage.uri ||
+            imageUpload.url === selectedImage.uri,
         );
         return !uploadedImage;
       });
-      imagesToUpload.forEach((image) => uploadNewImage({ uri: image }));
+      imagesToUpload.forEach((image) => uploadNewImage(image));
     } else if (selectedImagesLength < imageUploadsLength) {
       const imagesToRemove = imageUploads.filter(
         (imageUpload) =>
           !selectedImages.find(
             (selectedImage) =>
-              selectedImage === imageUpload.file.uri ||
-              selectedImage === imageUpload.url,
+              selectedImage.uri === imageUpload.file.uri ||
+              selectedImage.uri === imageUpload.url,
           ),
       );
       imagesToRemove.forEach((image) => removeImage(image.id));
@@ -311,8 +312,8 @@ export const MessageInputWithContext = <
       const updatedSelectedImages = selectedImages.filter((selectedImage) => {
         const uploadedImage = imageUploads.find(
           (imageUpload) =>
-            imageUpload.file.uri === selectedImage ||
-            imageUpload.url === selectedImage,
+            imageUpload.file.uri === selectedImage.uri ||
+            imageUpload.url === selectedImage.uri,
         );
         return uploadedImage;
       });
@@ -320,8 +321,13 @@ export const MessageInputWithContext = <
     } else if (imageUploadsLength > selectedImagesLength) {
       setSelectedImages(
         imageUploads
-          .map((imageUpload) => imageUpload.url)
-          .filter(Boolean) as string[],
+          .map((imageUpload) => ({
+            height: imageUpload.file.height,
+            source: imageUpload.file.source,
+            uri: imageUpload.url,
+            width: imageUpload.file.width,
+          }))
+          .filter(Boolean) as Asset[],
       );
     }
   }, [imageUploadsLength]);

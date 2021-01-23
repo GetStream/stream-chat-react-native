@@ -15,7 +15,7 @@ import BottomSheet, {
 
 import { useAttachmentPickerContext } from '../../contexts/attachmentPickerContext/AttachmentPickerContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { getPhotos } from '../../native';
+import { Asset, getPhotos } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
 import type { AttachmentPickerErrorProps } from './components/AttachmentPickerError';
@@ -86,31 +86,33 @@ const renderImage = ({
   item,
 }: {
   item: {
+    asset: Asset;
     ImageOverlaySelectedComponent: React.ComponentType;
     maxNumberOfFiles: number;
     selected: boolean;
-    setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>;
-    uri: string;
+    setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
     numberOfAttachmentPickerImageColumns?: number;
   };
 }) => {
   const {
+    asset,
     ImageOverlaySelectedComponent,
     maxNumberOfFiles,
     numberOfAttachmentPickerImageColumns,
     selected,
     setSelectedImages,
-    uri,
   } = item;
   const onPress = () => {
     if (selected) {
-      setSelectedImages((images) => images.filter((image) => image !== uri));
+      setSelectedImages((images) =>
+        images.filter((image) => image.uri !== asset.uri),
+      );
     } else {
       setSelectedImages((images) => {
         if (images.length >= maxNumberOfFiles) {
           return images;
         }
-        return [...images, uri];
+        return [...images, asset];
       });
     }
   };
@@ -123,7 +125,7 @@ const renderImage = ({
       }
       onPress={onPress}
       selected={selected}
-      uri={uri}
+      uri={asset.uri}
     />
   );
 };
@@ -177,7 +179,7 @@ export const AttachmentPicker = React.forwardRef(
     const [photoError, setPhotoError] = useState(false);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
-    const [photos, setPhotos] = useState<string[]>([]);
+    const [photos, setPhotos] = useState<Asset[]>([]);
 
     const hideAttachmentPicker = () => {
       setSelectedPicker(undefined);
@@ -261,13 +263,13 @@ export const AttachmentPicker = React.forwardRef(
       }
     }, [currentIndex]);
 
-    const selectedPhotos = photos.map((photo) => ({
+    const selectedPhotos = photos.map((asset) => ({
+      asset,
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      selected: selectedImages.includes(photo),
+      selected: selectedImages.includes(asset),
       setSelectedImages,
-      uri: photo,
     }));
 
     /**
@@ -303,7 +305,7 @@ export const AttachmentPicker = React.forwardRef(
               { opacity: photoError ? 0 : 1 },
             ]}
             data={selectedPhotos}
-            keyExtractor={(item) => item.uri}
+            keyExtractor={(item) => item.asset.uri}
             numColumns={numberOfAttachmentPickerImageColumns ?? 3}
             onEndReached={getMorePhotos}
             renderItem={renderImage}

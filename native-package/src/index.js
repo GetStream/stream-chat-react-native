@@ -8,6 +8,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import ImagePicker from 'react-native-image-crop-picker';
+import ImageResizer from 'react-native-image-resizer';
 import RNShare from 'react-native-share';
 import { registerNativeHandlers } from 'stream-chat-react-native-core';
 
@@ -16,6 +17,25 @@ registerNativeHandlers({
   BlurView: ({ blurAmount = 10, blurType = 'dark', style }) => (
     <RNBlurView blurAmount={blurAmount} blurType={blurType} style={style} />
   ),
+  compressImage: async ({ compressImageQuality = 1, height, uri, width }) => {
+    try {
+      const { uri: compressedUri } = await ImageResizer.createResizedImage(
+        uri,
+        height,
+        width,
+        'JPEG',
+        Math.min(Math.max(0, compressImageQuality), 1) * 100,
+        0,
+        undefined,
+        false,
+        'cover',
+      );
+      return compressedUri;
+    } catch (error) {
+      console.log(error);
+      return uri;
+    }
+  },
   deleteFile: async ({ uri }) => {
     try {
       await RNFS.unlink(uri);
@@ -54,8 +74,12 @@ registerNativeHandlers({
         after,
         assetType: 'Photos',
         first,
+        include: ['imageSize'],
       });
-      const assets = results.edges.map((edge) => edge.node.image.uri);
+      const assets = results.edges.map((edge) => ({
+        ...edge.node.image,
+        source: 'picker',
+      }));
       const hasNextPage = results.page_info.has_next_page;
       const endCursor = results.page_info.end_cursor;
       return { assets, endCursor, hasNextPage };
@@ -169,12 +193,17 @@ registerNativeHandlers({
       throw new Error('Sharing failed...');
     }
   },
-  takePhoto: async () => {
-    const photo = await ImagePicker.openCamera({});
+  takePhoto: async ({
+    compressImageQuality = Platform.OS === 'ios' ? 0.8 : 1,
+  }) => {
+    const photo = await ImagePicker.openCamera({
+      compressImageQuality: Math.min(Math.max(0, compressImageQuality), 1),
+    });
     if (photo.height && photo.width && photo.path) {
       return {
         cancelled: false,
         height: photo.height,
+        source: 'camera',
         uri: photo.path,
         width: photo.width,
       };
