@@ -86,40 +86,38 @@ const theme: DeepPartial<Theme> = {
 };
 ```
 
-<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/DisplayNameTheme.png' width="200"/>
-    Display Name in Inspector
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="200"/>
-    Non-Themed Component
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="200"/>
-    Themed Component
-  </div>
-</div>
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/DisplayNameTheme.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="200"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Display Name in Inspector</td>
+    <td align='center'>Non-Themed Component</td>
+    <td align='center'>Themed Component</td>
+  </tr>
+</table>
 
 **NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
 
 #### OverlayProvider
 The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
-<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/MessageOverlay.png' width="200"/>
-    Message Interaction
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/ImageViewer.png' width="200"/>
-    Image Viewer
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
-    Attachment Picker
-  </div>
-</div>
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/MessageOverlay.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ImageViewer.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Message Interaction</td>
+    <td align='center'>Image Viewer</td>
+    <td align='center'>Attachment Picker</td>
+  </tr>
+</table>
 
 Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well, assuming [`React Navigation`](https://reactnavigation.org/) is being used your highest level navigation stack should be wrapped in the provider:
 
@@ -180,34 +178,32 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
   }, [headerHeight]);
 ```
 
-<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/>
-    With bottomInset
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/>
-    Without bottomInset
-  </div>
-   <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/>
-    With topInset
-  </div>
-</div>
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="200"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>With bottomInset</td>
+    <td align='center'>Without bottomInset</td>
+    <td align='center'>With topInset</td>
+  </tr>
+</table>
 
 **NOTE:** As mentioned there are many modifications that can be performed to the UI. Custom styling via the theme gives you the ability to shape the look of the application as a whole and/or implement dark mode. But additionally the majority of the UI can be modified or replaced via [`Stream Chat`](https://getstream.io/chat/) settings or props. It is trivial to replace or modify most UI elements.
 
-<div style='display:flex;justify-content:space-between;margin-bottom:32px;margin-top:8px;'>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="200"/>
-    No Reactions or Replies
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/ModifiedImageViewer.png' width="200"/>
-    Custom Header and Footer
-  </div>
-  <div style='display:flex;flex-direction:column;align-items:center;'>
-    <img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="200"/>
-    Custom Grid Layout
-  </div>
-</div>
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedImageViewer.png' width="200"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="200"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>No Reactions or Replies</td>
+    <td align='center'>Custom Header and Footer</td>
+    <td align='center'>Custom Grid Layout</td>
+  </tr>
+</table>
