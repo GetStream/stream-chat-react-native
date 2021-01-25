@@ -835,12 +835,13 @@ export const ChannelWithContext = <
     uploadsEnabled: true,
   } as InputConfig;
   if (typeof channel?.getConfig === 'function') {
-    const maxMessageLength = channel.getConfig()?.max_message_length;
-    const reactions = channel.getConfig()?.reactions;
-    const readEvents = channel.getConfig()?.read_events;
-    const replies = channel.getConfig()?.replies;
-    const typingEvents = channel.getConfig()?.typing_events;
-    const uploads = channel.getConfig()?.uploads;
+    const clientChannelConfig = channel.getConfig();
+    const maxMessageLength = clientChannelConfig?.max_message_length;
+    const reactions = clientChannelConfig?.reactions;
+    const readEvents = clientChannelConfig?.read_events;
+    const replies = clientChannelConfig?.replies;
+    const typingEvents = clientChannelConfig?.typing_events;
+    const uploads = clientChannelConfig?.uploads;
     channelConfig.readEventsEnabled = readEvents;
     channelConfig.typingEventsEnabled = typingEvents;
     inputConfig.maxMessageLength = maxMessageLength;
