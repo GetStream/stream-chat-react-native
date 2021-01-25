@@ -52,8 +52,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { vh, vw } from '../../utils/utils';
 
-import type { ReactionResponse } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -360,10 +358,9 @@ const MessageOverlayWithContext = <
                         <OverlayReactionList<At, Ch, Co, Ev, Me, Re, Us>
                           messageLayout={messageLayout}
                           ownReactionTypes={
-                            (message?.own_reactions as ReactionResponse<
-                              Re,
-                              Us
-                            >[])?.map((reaction) => reaction.type) || []
+                            message?.own_reactions?.map(
+                              (reaction) => reaction.type,
+                            ) || []
                           }
                           reactionListHeight={reactionListHeight}
                           showScreen={showScreen}
@@ -526,19 +523,18 @@ const MessageOverlayWithContext = <
                       message.latest_reactions.length > 0 ? (
                         <OverlayReactions
                           alignment={alignment}
-                          reactions={(message.latest_reactions as ReactionResponse<
-                            Re,
-                            Us
-                          >[]).map((reaction) => ({
-                            alignment:
-                              clientId && clientId === reaction.user?.id
-                                ? 'right'
-                                : 'left',
-                            image: reaction?.user?.image,
-                            name:
-                              reaction?.user?.name || reaction.user_id || '',
-                            type: reaction.type,
-                          }))}
+                          reactions={message.latest_reactions.map(
+                            (reaction) => ({
+                              alignment:
+                                clientId && clientId === reaction.user?.id
+                                  ? 'right'
+                                  : 'left',
+                              image: reaction?.user?.image,
+                              name:
+                                reaction?.user?.name || reaction.user_id || '',
+                              type: reaction.type,
+                            }),
+                          )}
                           showScreen={showScreen}
                           title={messageReactionTitle}
                         />

@@ -35,8 +35,8 @@ export const useChannelMembersStatus = (
       memberCount === 2 && channel.id?.indexOf('!members-') === 0;
 
     if (isOneOnOneConversation) {
-      const result = Object.values(channel.state.members).find(
-        (m) => m.user?.id !== chatClient?.user?.id,
+      const result = Object.values({ ...channel.state.members }).find(
+        (member) => member.user?.id !== chatClient?.user?.id,
       );
 
       return (newStatus = getUserActivityStatus(result?.user));

@@ -54,7 +54,7 @@ import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { triggerHaptic } from '../../native';
 import { vh, vw } from '../../utils/utils';
 
-import type { Attachment, UserResponse } from 'stream-chat';
+import type { UserResponse } from 'stream-chat';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -331,7 +331,7 @@ export const ImageGallery = <
    */
   const photos = images.reduce((acc: Photo<Us>[], cur) => {
     const attachmentImages =
-      (cur.attachments as Attachment<At>[])?.filter(
+      cur.attachments?.filter(
         (attachment) =>
           attachment.type === 'image' &&
           !attachment.title_link &&
@@ -345,7 +345,7 @@ export const ImageGallery = <
         attachmentImage.image_url || attachmentImage.thumb_url
       }`,
       messageId: cur.id,
-      uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
+      uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
       user: cur.user,
       user_id: cur.user_id,
     }));

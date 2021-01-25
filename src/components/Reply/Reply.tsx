@@ -21,8 +21,6 @@ import {
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 import { emojiRegex } from '../../utils/utils';
 
-import type { Attachment as AttachmentType } from 'stream-chat';
-
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -126,9 +124,7 @@ export const ReplyWithContext = <
 
   if (typeof quotedMessage === 'boolean') return null;
 
-  const lastAttachment =
-    quotedMessage.attachments &&
-    (quotedMessage.attachments.slice(-1)[0] as AttachmentType<At>);
+  const lastAttachment = quotedMessage.attachments?.slice(-1)[0];
 
   const messageType = lastAttachment
     ? lastAttachment.type === 'file' || lastAttachment.type === 'audio'

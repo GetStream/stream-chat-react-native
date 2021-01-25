@@ -759,7 +759,7 @@ export const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
-    setMessages(channel.state.messages);
+    setMessages([...channel.state.messages]);
     if (!messageId) {
       await channel.query({
         messages: {
@@ -866,11 +866,11 @@ export const ChannelWithContext = <
       channel.state.addMessageSorted(updatedMessage, true);
       if (thread && updatedMessage.parent_id) {
         extraState.threadMessages =
-          channel.state.threads[updatedMessage.parent_id] || [];
+          { ...channel.state.threads }[updatedMessage.parent_id] || [];
         setThreadMessages(extraState.threadMessages);
       }
 
-      setMessages(channel.state.messages);
+      setMessages([...channel.state.messages]);
     }
   };
 
@@ -1081,7 +1081,7 @@ export const ChannelWithContext = <
         });
 
         const updatedHasMore = queryResponse.messages.length === limit;
-        loadMoreFinished(updatedHasMore, channel.state.messages);
+        loadMoreFinished(updatedHasMore, [...channel.state.messages]);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -1114,7 +1114,7 @@ export const ChannelWithContext = <
     try {
       if (channel) {
         await queryAfterMessage(recentMessage.id);
-        loadMoreRecentFinished(channel.state.messages);
+        loadMoreRecentFinished([...channel.state.messages]);
       }
     } catch (err) {
       console.warn('Message pagination request failed with error', err);
@@ -1199,7 +1199,7 @@ export const ChannelWithContext = <
   >['removeMessage'] = (message) => {
     if (channel) {
       channel.state.removeMessage(message);
-      setMessages(channel.state.messages);
+      setMessages([...channel.state.messages]);
     }
   };
 

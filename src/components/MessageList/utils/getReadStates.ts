@@ -1,5 +1,3 @@
-import type { MessageType } from '../hooks/useMessageList';
-
 import type { ChannelContextValue } from '../../../contexts/channelContext/ChannelContext';
 import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
@@ -38,11 +36,7 @@ export const getReadStates = <
 
   const filteredMessagesReversed = messages
     .filter((msg) => msg.updated_at)
-    .reverse() as Array<
-    MessageType<At, Ch, Co, Ev, Me, Re, Us> & {
-      updated_at: string | Date;
-    }
-  >;
+    .reverse();
 
   if (read) {
     /**

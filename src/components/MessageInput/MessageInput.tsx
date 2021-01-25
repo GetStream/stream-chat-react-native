@@ -356,9 +356,11 @@ export const MessageInputWithContext = <
   const getMembers = () => {
     const result: UserResponse<Us>[] = [];
     if (members && Object.values(members).length) {
-      Object.values(members).forEach((member) =>
-        result.push(member.user as UserResponse<Us>),
-      );
+      Object.values(members).forEach((member) => {
+        if (member.user) {
+          result.push(member.user);
+        }
+      });
     }
 
     return result;
@@ -371,7 +373,7 @@ export const MessageInputWithContext = <
     const uniqueUsers: { [key: string]: UserResponse<Us> } = {};
     for (const user of users) {
       if (user && !uniqueUsers[user.id]) {
-        uniqueUsers[user.id] = user as UserResponse<Us>;
+        uniqueUsers[user.id] = user;
       }
     }
     const usersArray = Object.values(uniqueUsers);
@@ -382,7 +384,7 @@ export const MessageInputWithContext = <
   const getWatchers = () => {
     const result: UserResponse<Us>[] = [];
     if (watchers && Object.values(watchers).length) {
-      result.push(...(Object.values(watchers) as UserResponse<Us>[]));
+      result.push(...Object.values(watchers));
     }
 
     return result;

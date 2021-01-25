@@ -46,7 +46,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Attachment, Channel as StreamChannel } from 'stream-chat';
+import type { Channel as StreamChannel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -400,7 +400,7 @@ const MessageListWithContext = <
           stickyHeaderDateRef.current.toDateString()
       ) {
         stickyHeaderDateRef.current = lastItem.item.created_at;
-        setStickyHeaderDate(lastItem.item.created_at as Date);
+        setStickyHeaderDate(lastItem.item.created_at);
       }
     }
   };
@@ -626,8 +626,10 @@ const MessageListWithContext = <
    */
   const imageString = messagesWithImages
     .map((message) =>
-      (message.attachments as Attachment<At>[])
-        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+      message.attachments
+        ?.map(
+          (attachment) => attachment.image_url || attachment.thumb_url || '',
+        )
         .join(),
     )
     .join();

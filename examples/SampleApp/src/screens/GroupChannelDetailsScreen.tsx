@@ -193,9 +193,9 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     chatClient?.mutedChannels.some((mute) => mute.channel?.id === channel?.id),
   );
   const [groupName, setGroupName] = useState(channel.data?.name);
-  const allMembers = Object.values(channel.state.members);
+  const allMembers = Object.values({ ...channel.state.members });
   const [members, setMembers] = useState(
-    Object.values(channel.state.members).slice(0, 3),
+    Object.values({ ...channel.state.members }).slice(0, 3),
   );
   const [textInputFocused, setTextInputFocused] = useState(false);
 
@@ -330,7 +330,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         {allMembersLength !== members.length && (
           <TouchableOpacity
             onPress={() => {
-              setMembers(Object.values(channel.state.members));
+              setMembers(Object.values({ ...channel.state.members }));
             }}
             style={[
               styles.loadMoreButton,
