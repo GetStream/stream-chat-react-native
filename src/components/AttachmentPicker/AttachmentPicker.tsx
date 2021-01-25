@@ -268,7 +268,7 @@ export const AttachmentPicker = React.forwardRef(
       ImageOverlaySelectedComponent,
       maxNumberOfFiles,
       numberOfAttachmentPickerImageColumns,
-      selected: selectedImages.includes(asset),
+      selected: selectedImages.some((image) => image.uri === asset.uri),
       setSelectedImages,
     }));
 
