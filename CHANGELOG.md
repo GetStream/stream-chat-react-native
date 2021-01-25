@@ -6,6 +6,9 @@
   - BlurView using one of these
     - Expo: [expo-blur](https://docs.expo.io/versions/latest/sdk/blur-view/#installation)
     - React Native: [@react-native-community/blur](https://github.com/Kureev/react-native-blur#installation)
+  - Image Compression using one of these
+    - Expo: [expo-image-manipulator](https://docs.expo.io/versions/latest/sdk/imagemanipulator/#installation)
+    - React Native: [react-native-image-resizer](https://github.com/bamlab/react-native-image-resizer#setup)
   - FileSystem using one of these
     - Expo: [expo-file-system](https://docs.expo.io/versions/latest/sdk/filesystem/#installation)
     - React Native: [react-native-fs](https://github.com/itinance/react-native-fs/)

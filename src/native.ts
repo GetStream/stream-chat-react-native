@@ -18,9 +18,28 @@ type BlurView = React.ComponentType<{
 }>;
 export let BlurView: BlurView = fail;
 
+type CompressImage = ({
+  compressImageQuality,
+  height,
+  uri,
+  width,
+}: {
+  compressImageQuality: number;
+  height: number;
+  uri: string;
+  width: number;
+}) => Promise<string> | never;
+export let compressImage: CompressImage = fail;
+
 type DeleteFile = ({ uri }: { uri: string }) => Promise<boolean> | never;
 export let deleteFile: DeleteFile = fail;
 
+export type Asset = {
+  height: number;
+  source: 'camera' | 'picker';
+  uri: string;
+  width: number;
+};
 type GetPhotos = ({
   after,
   first,
@@ -28,7 +47,11 @@ type GetPhotos = ({
   first: number;
   after?: string;
 }) =>
-  | Promise<{ assets: string[]; endCursor: string; hasNextPage: boolean }>
+  | Promise<{
+      assets: Array<Omit<Asset, 'source'> & { source: 'picker' }>;
+      endCursor: string;
+      hasNextPage: boolean;
+    }>
   | never;
 export let getPhotos: GetPhotos = fail;
 
@@ -78,29 +101,30 @@ type ShareImage = (options: ShareOptions) => Promise<boolean> | never;
 export let shareImage: ShareImage = fail;
 
 type Photo =
-  | {
+  | (Omit<Asset, 'source'> & {
       cancelled: false;
-      height: number;
-      uri: string;
-      width: number;
-    }
+      source: 'camera';
+    })
   | { cancelled: true };
-type TakePhoto = () => Promise<Photo> | never;
+type TakePhoto = (options: {
+  compressImageQuality?: number;
+}) => Promise<Photo> | never;
 export let takePhoto: TakePhoto = fail;
 
 type HapticFeedbackMethod =
-  | 'selection'
+  | 'impactHeavy'
   | 'impactLight'
   | 'impactMedium'
-  | 'impactHeavy'
+  | 'notificationError'
   | 'notificationSuccess'
   | 'notificationWarning'
-  | 'notificationError';
+  | 'selection';
 type TriggerHaptic = (method: HapticFeedbackMethod) => void | never;
 export let triggerHaptic: TriggerHaptic = fail;
 
 type Handlers = {
   BlurView?: BlurView;
+  compressImage?: CompressImage;
   deleteFile?: DeleteFile;
   FlatList?: typeof DefaultFlatList;
   getPhotos?: GetPhotos;
@@ -115,6 +139,10 @@ type Handlers = {
 export const registerNativeHandlers = (handlers: Handlers) => {
   if (handlers.BlurView) {
     BlurView = handlers.BlurView;
+  }
+
+  if (handlers.compressImage) {
+    compressImage = handlers.compressImage;
   }
 
   if (handlers.deleteFile) {

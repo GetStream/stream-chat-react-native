@@ -30,7 +30,12 @@ export const AttachmentSelectionBar: React.FC = () => {
     setSelectedPicker,
   } = useAttachmentPickerContext();
 
-  const { hasFilePicker, imageUploads, pickFile } = useMessageInputContext();
+  const {
+    compressImageQuality,
+    hasFilePicker,
+    imageUploads,
+    pickFile,
+  } = useMessageInputContext();
 
   const {
     theme: {
@@ -56,9 +61,9 @@ export const AttachmentSelectionBar: React.FC = () => {
   const takeAndUploadImage = async () => {
     setSelectedPicker(undefined);
     closePicker();
-    const photo = await takePhoto();
+    const photo = await takePhoto({ compressImageQuality });
     if (!photo.cancelled) {
-      setSelectedImages((images) => [...images, photo.uri]);
+      setSelectedImages((images) => [...images, photo]);
     }
   };
 

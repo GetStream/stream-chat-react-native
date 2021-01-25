@@ -37,7 +37,7 @@ import {
   TriggerSettings,
 } from '../../utils/utils';
 
-import { pickDocument } from '../../native';
+import { Asset, compressImage, pickDocument } from '../../native';
 
 import type { TextInput, TextInputProps } from 'react-native';
 
@@ -74,9 +74,8 @@ export type FileUpload = {
 };
 
 export type ImageUpload = {
-  file: {
+  file: Partial<Asset> & {
     name?: string;
-    uri?: string;
   };
   id: string;
   state: string;
@@ -209,7 +208,7 @@ export type LocalMessageInputContext<
     type?: string;
     uri?: string;
   }) => Promise<void>;
-  uploadNewImage: (image: { uri?: string }) => Promise<void>;
+  uploadNewImage: (image: Partial<Asset>) => Promise<void>;
 };
 
 export type InputMessageInputContextValue<
@@ -801,45 +800,68 @@ export const MessageInputProvider = <
 
     let response = {} as SendFileAPIResponse;
 
-    const filename = (file.name || file.uri || '').replace(
-      /^(file:\/\/|content:\/\/)/,
-      '',
-    );
+    const uri = file.name || file.uri || '';
+    /**
+     * We skip compression if:
+     * - the file is from the camera as that should already be compressed
+     * - the file has not height/width value to maintain for compression
+     * - the compressImageQuality number is not present or is 1 (meaning no compression)
+     */
+    const compressedUri = await (file.source === 'camera' ||
+    !file.height ||
+    !file.width ||
+    typeof value.compressImageQuality !== 'number' ||
+    value.compressImageQuality === 1
+      ? uri
+      : compressImage({
+          compressImageQuality: value.compressImageQuality,
+          height: file.height,
+          uri,
+          width: file.width,
+        }));
+
+    const filename = uri.replace(/^(file:\/\/|content:\/\/)/, '');
     const contentType = lookup(filename) || 'multipart/form-data';
 
     try {
       if (value.doImageUploadRequest) {
         response = await value.doImageUploadRequest(file, channel);
-      } else if (file.uri && channel) {
+      } else if (compressedUri && channel) {
         if (value.sendImageAsync) {
-          channel.sendImage(file.uri, undefined, contentType).then((res) => {
-            if (asyncIds.includes(id)) {
-              // Evaluates to true if user hit send before image successfully uploaded
-              setAsyncUploads((prevAsyncUploads) => {
-                prevAsyncUploads[id] = {
-                  ...prevAsyncUploads[id],
-                  state: FileState.UPLOADED,
-                  url: res.file,
-                };
-                return prevAsyncUploads;
-              });
-            } else {
-              setImageUploads((prevImageUploads) =>
-                prevImageUploads.map((imageUpload) => {
-                  if (imageUpload.id === id) {
-                    return {
-                      ...imageUpload,
-                      state: FileState.UPLOADED,
-                      url: res.file,
-                    };
-                  }
-                  return imageUpload;
-                }),
-              );
-            }
-          });
+          channel
+            .sendImage(compressedUri, undefined, contentType)
+            .then((res) => {
+              if (asyncIds.includes(id)) {
+                // Evaluates to true if user hit send before image successfully uploaded
+                setAsyncUploads((prevAsyncUploads) => {
+                  prevAsyncUploads[id] = {
+                    ...prevAsyncUploads[id],
+                    state: FileState.UPLOADED,
+                    url: res.file,
+                  };
+                  return prevAsyncUploads;
+                });
+              } else {
+                setImageUploads((prevImageUploads) =>
+                  prevImageUploads.map((imageUpload) => {
+                    if (imageUpload.id === id) {
+                      return {
+                        ...imageUpload,
+                        state: FileState.UPLOADED,
+                        url: res.file,
+                      };
+                    }
+                    return imageUpload;
+                  }),
+                );
+              }
+            });
         } else {
-          response = await channel.sendImage(file.uri, undefined, contentType);
+          response = await channel.sendImage(
+            compressedUri,
+            undefined,
+            contentType,
+          );
         }
       }
 
@@ -899,7 +921,7 @@ export const MessageInputProvider = <
     uploadFile({ newFile });
   };
 
-  const uploadNewImage = async (image: { uri?: string }) => {
+  const uploadNewImage = async (image: Partial<Asset>) => {
     const id = generateRandomId();
     const newImage = {
       file: image,
