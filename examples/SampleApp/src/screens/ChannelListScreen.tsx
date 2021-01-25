@@ -203,6 +203,7 @@ export const ChannelListScreen: React.FC = () => {
               LocalUserType
             >
               additionalFlatListProps={{
+                keyboardDismissMode: 'on-drag',
                 getItemLayout: (_, index) => ({
                   index,
                   length: 65,
