@@ -45,25 +45,15 @@ export type LatestMessagePreview<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> =
-  | {
-      created_at: string;
-      messageObject: undefined;
-      previews: {
-        bold: boolean;
-        text: string;
-      }[];
-      status: number;
-    }
-  | {
-      created_at: string | number | Date;
-      messageObject: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>;
-      previews: {
-        bold: boolean;
-        text: string;
-      }[];
-      status: number;
-    };
+> = {
+  created_at: string | number | Date;
+  messageObject: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined;
+  previews: {
+    bold: boolean;
+    text: string;
+  }[];
+  status: number;
+};
 
 const getLatestMessageDisplayText = <
   At extends UnknownType = DefaultAttachmentType,
@@ -76,7 +66,7 @@ const getLatestMessageDisplayText = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
   t: (key: string) => string,
 ) => {
   if (!message) return [{ bold: false, text: t('Nothing yet...') }];
@@ -153,10 +143,10 @@ const getLatestMessageDisplayDate = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
   tDateTimeParser: TDateTimeParser,
 ) => {
-  const parserOutput = tDateTimeParser(message.created_at);
+  const parserOutput = tDateTimeParser(message?.created_at);
   if (isDayOrMoment(parserOutput)) {
     if (parserOutput.isSame(new Date(), 'day')) {
       return parserOutput.format('LT');
@@ -183,11 +173,12 @@ const getLatestMessageReadStatus = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>,
-  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us>,
+  message: LatestMessage<At, Ch, Co, Ev, Me, Re, Us> | undefined,
   readEvents: boolean,
 ) => {
   const currentUserId = client.userID;
-  if (currentUserId !== message.user?.id || readEvents === false) return 0;
+  if (!message || currentUserId !== message.user?.id || readEvents === false)
+    return 0;
 
   const readList = channel.state.read;
   if (currentUserId) {
@@ -243,13 +234,14 @@ const getLatestMessagePreview = <
       previews: [
         {
           bold: false,
-          text: '',
+          text: t('Nothing yet...'),
         },
       ],
       status: 0,
     };
   }
-  const message = lastMessage || messages[messages.length - 1];
+  const message =
+    lastMessage || messages.length ? messages[messages.length - 1] : undefined;
 
   return {
     created_at: getLatestMessageDisplayDate(message, tDateTimeParser),
@@ -287,7 +279,7 @@ export const useLatestMessagePreview = <
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
   const messages = channel.state.messages;
-  const message = messages[messages.length - 1];
+  const message = messages.length ? messages[messages.length - 1] : undefined;
 
   const lastMessageId = lastMessage?.id || message?.id;
 
