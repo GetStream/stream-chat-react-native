@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 import 'react-native-gesture-handler';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { LogBox, SafeAreaView, useColorScheme, View } from 'react-native';
 import {
   DarkTheme,
@@ -57,11 +57,14 @@ const streami18n = new Streami18n({
 
 const ChannelListScreen = ({ navigation }) => {
   const { setChannel } = useContext(AppContext);
+
+  const memoizedFilters = useMemo(() => filters, []);
+
   return (
     <Chat client={chatClient} i18nInstance={streami18n}>
       <View style={{ height: '100%' }}>
         <ChannelList
-          filters={filters}
+          filters={memoizedFilters}
           onSelect={(channel) => {
             setChannel(channel);
             navigation.navigate('Channel');
