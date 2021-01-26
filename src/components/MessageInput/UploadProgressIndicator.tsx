@@ -2,9 +2,11 @@ import React from 'react';
 import {
   ActivityIndicator,
   GestureResponderEvent,
+  StyleProp,
   StyleSheet,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from 'react-native';
 
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
@@ -27,6 +29,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     width: '100%',
+  },
+  overflowHidden: {
+    overflow: 'hidden',
   },
   overlay: {
     alignItems: 'center',
@@ -52,6 +57,8 @@ export type UploadProgressIndicatorProps = {
   action?: (event: GestureResponderEvent) => void;
   /** Boolean status of upload progress */
   active?: boolean;
+  /** style */
+  style?: StyleProp<ViewStyle>;
   /** Type of active indicator */
   type?: 'in_progress' | 'retry';
 };
@@ -59,7 +66,7 @@ export type UploadProgressIndicatorProps = {
 export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
   props,
 ) => {
-  const { action, active, children, type } = props;
+  const { action, active, children, style, type } = props;
 
   const {
     theme: {
@@ -71,9 +78,17 @@ export const UploadProgressIndicator: React.FC<UploadProgressIndicatorProps> = (
   } = useTheme();
 
   return !active ? (
-    <View testID='inactive-upload-progress-indicator'>{children}</View>
+    <View
+      style={[styles.overflowHidden, style]}
+      testID='inactive-upload-progress-indicator'
+    >
+      {children}
+    </View>
   ) : (
-    <View testID='active-upload-progress-indicator'>
+    <View
+      style={[styles.overflowHidden, style]}
+      testID='active-upload-progress-indicator'
+    >
       {children}
       <View
         style={[styles.overlay, { backgroundColor: overlayColor }, overlay]}
