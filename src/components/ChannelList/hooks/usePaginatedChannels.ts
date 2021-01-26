@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { MAX_QUERY_CHANNELS_LIMIT } from '../utils';
 
@@ -67,7 +67,7 @@ export const usePaginatedChannels = <
     queryType = '',
     retryCount = 0,
   ): Promise<void> => {
-    if (loadingChannels || loadingNextPage || refreshing) return;
+    if (!client || loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
       setLoadingChannels(true);
@@ -134,11 +134,25 @@ export const usePaginatedChannels = <
 
   const reloadList = () => queryChannels('reload');
 
+  /**
+   * Equality check using stringified filters ensure that we don't make un-necessary queryChannels api calls
+   * for the scenario:
+   *
+   * <ChannelList
+   *    filters={{
+   *      members: { $in: ['vishal'] }
+   *    }}
+   *    ...
+   * />
+   *
+   * Here we have passed filters as inline object, which means on every re-render of
+   * parent component, ChannelList will receive new object reference (even though value is same), which
+   * in return will trigger useEffect. To avoid this, we can add a value check.
+   */
+  const filterStr = useMemo(() => JSON.stringify(filters), [filters]);
   useEffect(() => {
-    if (client) {
-      reloadList();
-    }
-  }, [filters]);
+    reloadList();
+  }, [filterStr]);
 
   return {
     channels,
