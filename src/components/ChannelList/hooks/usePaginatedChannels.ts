@@ -63,11 +63,13 @@ export const usePaginatedChannels = <
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
+  const previousFiltersRef = useRef<ChannelFilters<Ch, Co, Us> | null>(null);
+
   const queryChannels = async (
     queryType = '',
     retryCount = 0,
   ): Promise<void> => {
-    if (loadingChannels || loadingNextPage || refreshing) return;
+    if (!client || loadingChannels || loadingNextPage || refreshing) return;
 
     if (queryType === 'reload') {
       setLoadingChannels(true);
@@ -132,7 +134,28 @@ export const usePaginatedChannels = <
   const reloadList = () => queryChannels('reload');
 
   useEffect(() => {
-    if (client) {
+    /**
+     * Following check ensures we don't make un-necessary queryChannels api calls
+     * for the scenario:
+     *
+     * <ChannelList
+     *    filters={{
+     *      members: { $in: ['vishal'] }
+     *    }}
+     *    ...
+     * />
+     *
+     * Here we have passed filters as inline object, which means on every re-render of
+     * parent component, ChannelList will receive new object reference (even though value is same), which
+     * in return will trigger useEffect. To avoid this, we can add a value check.
+     *
+     * We are not using deepEqual or _.isEqual for performance reason. We can safely assume
+     * that order or keys stays the same.
+     */
+    if (
+      JSON.stringify(previousFiltersRef.current) !== JSON.stringify(filters)
+    ) {
+      previousFiltersRef.current = filters;
       reloadList();
     }
   }, [filters]);
