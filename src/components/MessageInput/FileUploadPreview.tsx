@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
     height: FILE_PREVIEW_HEIGHT,
     justifyContent: 'space-between',
     marginBottom: 8,
-    marginLeft: 8,
     padding: 8,
   },
   fileContentContainer: { flexDirection: 'row' },
@@ -66,6 +65,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   flatList: { marginBottom: 12, maxHeight: FILE_PREVIEW_HEIGHT * 2.5 + 16 },
+  overlay: {
+    borderRadius: 12,
+    marginLeft: 8,
+    marginRight: 8,
+  },
 });
 
 type FileUploadPreviewPropsWithContext<
@@ -114,13 +118,15 @@ const FileUploadPreviewWithContext = <
       },
     },
   } = useTheme();
-
   const renderItem = ({ index, item }: { index: number; item: FileUpload }) => (
     <UploadProgressIndicator
       action={() => {
         uploadFile({ newFile: item });
       }}
-      active={item.state !== FileState.UPLOADED}
+      active={
+        item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED
+      }
+      style={styles.overlay}
       type={
         item.state === FileState.UPLOADING
           ? ProgressIndicatorTypes.IN_PROGRESS

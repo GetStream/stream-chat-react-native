@@ -114,7 +114,10 @@ const ImageUploadPreviewWithContext = <
         action={() => {
           uploadImage({ newImage: item });
         }}
-        active={item.state !== FileState.UPLOADED}
+        active={
+          item.state !== FileState.UPLOADED && item.state !== FileState.FINISHED
+        }
+        style={styles.upload}
         type={
           item.state === FileState.UPLOADING
             ? ProgressIndicatorTypes.IN_PROGRESS
