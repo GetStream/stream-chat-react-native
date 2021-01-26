@@ -508,10 +508,17 @@
     "@babel/helper-create-regexp-features-plugin" "^7.10.4"
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/runtime@7.11.2", "@babel/runtime@^7.10.1", "@babel/runtime@^7.11.2", "@babel/runtime@^7.8.4":
+"@babel/runtime@7.11.2", "@babel/runtime@^7.10.1", "@babel/runtime@^7.8.4":
   version "7.11.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.11.2.tgz#f549c13c754cc40b87644b9fa9f09a6a95fe0736"
   integrity sha512-TeWkU52so0mPtDcaCTxNBI/IHiz0pZgr8VEFqXFtZWpYD08ZB6FaSwVAS8MKRQAP3bYKiVjwysOJgMFY28o6Tw==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
+"@babel/runtime@^7.12.1":
+  version "7.12.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
+  integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
   dependencies:
     regenerator-runtime "^0.13.4"
 
@@ -613,11 +620,6 @@
   resolved "https://registry.yarnpkg.com/@types/seamless-immutable/-/seamless-immutable-7.1.13.tgz#dc8d645914086300e49410c72f6e5fae902fdbc5"
   integrity sha512-kvgsr2sI8NBtxgR+YZNgSk0S+isAtS77TKtITUCGcNHlwYERrvgv6DbLER4TbvUK4/Qclm8C9jXzHqegpV2Ikg==
 
-"@types/uuid@^8.3.0":
-  version "8.3.0"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.0.tgz#215c231dff736d5ba92410e6d602050cce7e273f"
-  integrity sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ==
-
 "@types/ws@^7.2.7":
   version "7.2.7"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.2.7.tgz#362ad1a1d62721bdb725e72c8cccf357078cf5a3"
@@ -667,10 +669,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-axios@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
-  integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+axios@^0.21.0:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
 
@@ -1428,10 +1430,10 @@ source-map@^0.5.0:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
   integrity sha1-igOdLRAh0i0eoUyA2OpGi6LvP8w=
 
-stream-chat-react-native-core@v2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.0.2.tgz#b7761d190039a6b93eb2e0107e4f72a79e51791a"
-  integrity sha512-NEb4wlZv66I7XF+HofotEraqYVNBrYnR8Hq0u4Giz4mU8qkofoTSp35NwwuXeALBR485jPPYM3F20Fg4CjV3aA==
+stream-chat-react-native-core@v2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.1.2.tgz#abd7930ecbe7f5e2ec5290d775f025716ec5200b"
+  integrity sha512-RcJg8aZmtIP876Rwdgn8umUeJMDEQiUSpeuhXYJS7GLLXueJk6nYyU4OvmieCwyrLE4ahkIWpitMMvBOzVTqgA==
   dependencies:
     "@babel/runtime" "7.11.2"
     "@stream-io/react-native-simple-markdown" "1.2.1"
@@ -1447,27 +1449,25 @@ stream-chat-react-native-core@v2.0.2:
     react-native-actionsheet "2.4.2"
     react-native-image-zoom-viewer "3.0.1"
     seamless-immutable "7.1.4"
-    stream-chat "2.7.0"
+    stream-chat "2.9.0"
     styled-components "5.2.0"
     uuid "8.3.1"
 
-stream-chat@2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.7.0.tgz#a1f9fe1474d270cee9e0e118953d7dcbbadd90ba"
-  integrity sha512-JRhw5JyIrS9bKVhLzEu57BxXTExMlxCJu0YXdMryJh9Wnl0XOzzjwCwYqZIFWFWH52RGyovQ+8VxkRzURStowg==
+stream-chat@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.0.tgz#3f0a593ae7dea9f1e2ecf406c72c8d0c60705be4"
+  integrity sha512-Se2lpquvfh1oK6c+M73esYvN3eTtTqKdrMMUCzKz7deMWXOlqYdNtweW/a9raU90QUcOSp756JEXYQ5zSsND5A==
   dependencies:
-    "@babel/runtime" "^7.11.2"
+    "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"
     "@types/seamless-immutable" "7.1.13"
-    "@types/uuid" "^8.3.0"
     "@types/ws" "^7.2.7"
-    axios "^0.20.0"
+    axios "^0.21.0"
     base64-js "^1.3.1"
     form-data "^3.0.0"
     isomorphic-ws "^4.0.1"
     jsonwebtoken "^8.5.1"
     seamless-immutable "^7.1.4"
-    uuid "^8.3.1"
     ws "^7.3.1"
 
 string.prototype.trimend@^1.0.1:
@@ -1556,7 +1556,7 @@ util@^0.10.3:
   dependencies:
     inherits "2.0.3"
 
-uuid@8.3.1, uuid@^8.3.1:
+uuid@8.3.1:
   version "8.3.1"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.1.tgz#2ba2e6ca000da60fce5a196954ab241131e05a31"
   integrity sha512-FOmRr+FmWEIG8uhZv6C2bTgEVXsHk08kE7mPlrBbEe+c3r9pjceVPgupIfNIhc4yx55H69OXANrUaSuu9eInKg==

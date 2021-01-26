@@ -679,6 +679,13 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@babel/runtime@^7.12.1":
+  version "7.12.5"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
+  integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
+  dependencies:
+    regenerator-runtime "^0.13.4"
+
 "@babel/template@^7.0.0", "@babel/template@^7.10.4", "@babel/template@^7.3.3":
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.10.4.tgz#3251996c4200ebc71d1a8fc405fba940f36ba278"
@@ -1913,6 +1920,13 @@ axios@^0.20.0:
   version "0.20.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
   integrity sha512-ANA4rr2BDcmmAQLOKft2fufrtuvlqR+cXNNinUmvfeSNCOF98PZL+7M/v1zIdGo7OLjEA9J2gXJL+j4zGsl0bA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
+axios@^0.21.0:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
   dependencies:
     follow-redirects "^1.10.0"
 
@@ -7126,10 +7140,10 @@ stream-buffers@~2.2.0:
   resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-2.2.0.tgz#91d5f5130d1cef96dcfa7f726945188741d09ee4"
   integrity sha1-kdX1Ew0c75bc+n9yaUUYh0HQnuQ=
 
-stream-chat-react-native-core@v2.0.0-beta.1:
-  version "2.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.0.0-beta.1.tgz#98ebe3660c75fcc53b3778a72041859b0648bfcd"
-  integrity sha512-sL1v5TXCT2M5CQalLCxNiP/ZezFGeawEcZiRb7kCBMaNKoWHjVeH/vUWdA3zput4SBHBjo7evWMJmjiCyZUdgA==
+stream-chat-react-native-core@v2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/stream-chat-react-native-core/-/stream-chat-react-native-core-2.1.2.tgz#abd7930ecbe7f5e2ec5290d775f025716ec5200b"
+  integrity sha512-RcJg8aZmtIP876Rwdgn8umUeJMDEQiUSpeuhXYJS7GLLXueJk6nYyU4OvmieCwyrLE4ahkIWpitMMvBOzVTqgA==
   dependencies:
     "@babel/runtime" "7.11.2"
     "@stream-io/react-native-simple-markdown" "1.2.1"
@@ -7145,7 +7159,7 @@ stream-chat-react-native-core@v2.0.0-beta.1:
     react-native-actionsheet "2.4.2"
     react-native-image-zoom-viewer "3.0.1"
     seamless-immutable "7.1.4"
-    stream-chat "2.6.0"
+    stream-chat "2.9.0"
     styled-components "5.2.0"
     uuid "8.3.1"
 
@@ -7170,6 +7184,23 @@ stream-chat@2.6.0:
     jsonwebtoken "^8.5.1"
     seamless-immutable "^7.1.4"
     uuid "^8.3.1"
+    ws "^7.3.1"
+
+stream-chat@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.0.tgz#3f0a593ae7dea9f1e2ecf406c72c8d0c60705be4"
+  integrity sha512-Se2lpquvfh1oK6c+M73esYvN3eTtTqKdrMMUCzKz7deMWXOlqYdNtweW/a9raU90QUcOSp756JEXYQ5zSsND5A==
+  dependencies:
+    "@babel/runtime" "^7.12.1"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/seamless-immutable" "7.1.13"
+    "@types/ws" "^7.2.7"
+    axios "^0.21.0"
+    base64-js "^1.3.1"
+    form-data "^3.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    seamless-immutable "^7.1.4"
     ws "^7.3.1"
 
 strict-uri-encode@^2.0.0:
