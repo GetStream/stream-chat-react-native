@@ -349,7 +349,7 @@ export const ImageGallery = <
         attachmentImage.image_url || attachmentImage.thumb_url
       }`,
       messageId: cur.id,
-      uri: attachmentImage.image_url || (attachmentImage.thumb_url as string),
+      uri: attachmentImage.image_url || attachmentImage.thumb_url || '',
       user: cur.user,
       user_id: cur.user_id,
     }));

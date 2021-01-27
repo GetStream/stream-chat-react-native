@@ -76,26 +76,29 @@ export const useMessageDetailsForState = <
         ? message.attachments
         : [];
 
-      for (const attach of attachments) {
-        if (attach.type === 'file') {
+      for (const attachment of attachments) {
+        if (attachment.type === 'file') {
           const id = generateRandomId();
           newFileUploads.push({
             file: {
-              name: attach.title || '',
-              size: attach.file_size,
-              type: attach.mime_type,
+              name: attachment.title || '',
+              size: attachment.file_size,
+              type: attachment.mime_type,
             },
             id,
             state: 'finished',
-            url: attach.asset_url,
+            url: attachment.asset_url,
           });
-        } else if (attach.type === 'image') {
+        } else if (attachment.type === 'image') {
           const id = generateRandomId();
           newImageUploads.push({
-            file: { name: attach.fallback },
+            file: { name: attachment.fallback },
             id,
             state: 'finished',
-            url: attach.image_url,
+            url:
+              attachment.image_url ||
+              attachment.asset_url ||
+              attachment.thumb_url,
           });
         }
       }

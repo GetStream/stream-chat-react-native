@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
 
 import { Audio } from '../../icons/Audio';
