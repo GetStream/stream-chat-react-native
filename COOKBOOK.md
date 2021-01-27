@@ -21,12 +21,13 @@ Stream Chat has a number of peer dependencies that are required to take advantag
 - [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler)
 - [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback)
 - [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
+- [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer)
 - [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated)
 - [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context)
 - [`react-native-share`](https://github.com/react-native-share/react-native-share)
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
 
-`yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-reanimated react-native-safe-area-context react-native-share react-native-svg`
+`yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg`
 
 For iOS on a Mac install the pods `npx pod-install ios`.
 
@@ -46,7 +47,7 @@ AppRegistry.registerComponent(appName, () => App);
 
 Stream Chat React Native is set up for parity on Expo, expo requires a different set of dependencies, in your project directory run:
 
-`expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-picker expo-media-library expo-permissions expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg`
+`expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-permissions expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg`
 
 ### Hello Stream Chat - 3.x
 
@@ -103,6 +104,7 @@ const theme: DeepPartial<Theme> = {
 **NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
 
 #### OverlayProvider
+
 The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
 <table>
@@ -151,13 +153,14 @@ Because these views must exist above all others `OverlayProvider` should wrap yo
 </NavigationContainer>
 ```
 
-The `OverlayProvider` can be used with no props provided, and there are a plethora of props for customizing the components in the overlay three core props that will you will likely want ot use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`, it provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. `i18nInstance` is the instance of Streami18n you have for translations. **`bottomInset`** is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened. In the example shown the bottom safe are is and is not taken into account and the resulting UI difference is obvious. This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+The `OverlayProvider` can be used with no props provided, and there are a plethora of props for customizing the components in the overlay three core props that will you will likely want ot use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`, it provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. The `ThemeProvider` inherits from parent contexts and thus the theme will also be provided to the child components used later, such as `Chat` and `Channel`; and can therefore be used as the main theming entry point. `i18nInstance` is the instance of Streami18n you have for translations. **`bottomInset`** is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened. In the example shown the bottom safe are is and is not taken into account and the resulting UI difference is obvious. This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
 
 ```typescript
 const streami18n = new Streami18n({ language: 'en' });
 const { bottom } = useSafeAreaInsets();
 const theme = useStreamChatTheme();
-
+```
+```typescript
 <OverlayProvider
   bottomInset={bottom}
   i18nInstance={streami18n}
@@ -170,12 +173,12 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
 **IMPORTANT:** The current implementation of the scrolling bottom-sheet in which the image picker resides does not re-evaluate heights after the `topInset` is set. So only set this to one value.
 
 ```typescript
-  const headerHeight = useHeaderHeight();
-  const { setTopInset } = useAttachmentPickerContext();
+const headerHeight = useHeaderHeight();
+const { setTopInset } = useAttachmentPickerContext();
 
-  useEffect(() => {
-    setTopInset(headerHeight);
-  }, [headerHeight]);
+useEffect(() => {
+  setTopInset(headerHeight);
+}, [headerHeight]);
 ```
 
 <table>
@@ -192,6 +195,8 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
   </tr>
 </table>
 
+The `OverlayProvider` contains five providers to which you can add customizations and retrieve data using the appropriate hooks: `TranslationProvider`, `OverlayContext.Prover`, `MessageOverlayProvider`, `AttachmentPickerProvider`, and `ImageGalleryProvider`
+
 **NOTE:** As mentioned there are many modifications that can be performed to the UI. Custom styling via the theme gives you the ability to shape the look of the application as a whole and/or implement dark mode. But additionally the majority of the UI can be modified or replaced via [`Stream Chat`](https://getstream.io/chat/) settings or props. It is trivial to replace or modify most UI elements.
 
 <table>
@@ -205,5 +210,92 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
     <td align='center'>No Reactions or Replies</td>
     <td align='center'>Custom Header and Footer</td>
     <td align='center'>Custom Grid Layout</td>
+  </tr>
+</table>
+
+#### Chat
+
+`Chat` is the next level down of context component from `OverlyProvider` that is required for `stream-chat-react-native` to function as designed. You can choose to wrap your entire application in `Chat` similar to what is required for the `OverlayProvider` or you can implement `Chat` at the screen level. `Chat` takes two important props, `client` and `i18nInstance`. The `client` should be an instance of StreamChat from [`stream-chat`](https://github.com/GetStream/stream-chat-js) configured for your app, and `i18nInstance` should be an instance of `Streami18n` from `stream-chat-react-native` configured for the desired language. `Chat` can also accept a `style` prop with the theme, this can be used to overwrite styles inherited from `OverlayProvider`. If you are using TypeScript you should add the appropriate generics to your instantiation of `StreamChat`, follow the documentation for [`stream-chat`](https://github.com/GetStream/stream-chat-js) to ensure proper setup.
+
+```typescript
+import { StreamChat } from 'stream-chat';
+import { Streami18n } from 'stream-chat-react-native';
+
+const streami18n = new Streami18n({ language: 'en' });
+const chatClient = new StreamChat<
+  AttachmentType,
+  ChannelType,
+  CommandType,
+  EventType,
+  MessageType,
+  ResponseType,
+  UserType
+>('key');
+```
+```typescript
+<Chat client={chatClient} i18nInstance={streami18n}>
+```
+
+#### Channel
+
+When creating a chat screen it is required that `Channel` wrap the `stream-chat-react-native` components being used. `Channel` provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
+
+Three key props to `Channel` are `channel`, `keyboardVerticalOffset`, and `thread`. `channel` is a `StreamChat` channel. It can be created via `const channel = client.channel('type', 'id')` or is available as a callback on the `ChannelList` component via the prop `onSelect`. `keyboardVerticalOffset` is needed for adjusting the keyboard compatible view and should be the spacing above the `Channel` component, e.g. if you have a header it should be the header height. `thread` is a message object in the context of which a thread is occurring, i.e. the parent message of a thread. This can be set to any message, but is easily accessible on the `MessageList` component using the prop `onThreadSelect`. `Channel` also keeps an internal thread state which can be manipulated `openThread` and `closeThread` using the `ThreadContext` if you would prefer not to use your own state of the thread.
+
+```typescript
+const channel = client.channel('type', 'id');
+const headerHeight = useHeaderHeight();
+const { thread } = useContext(AppContext);
+```
+```typescript
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+>
+```
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/MissingKeyboardVerticalOffset.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MissingChannel.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Missing keyboardVerticalOffset</td>
+    <td align='center'>Missing channel</td>
+    <td align='center'>Missing Thread</td>
+  </tr>
+</table>
+
+`Channel` contains five providers to which you can add customizations and retrieve data using the appropriate hooks. They are `ChannelProvider`, `MessagesProvider`, `ThreadProvider`, `SuggestionsProvider`, and `MessageInputProvider`. These are all contained within a `KeyboardCompatibleView` then ensures the encompassed views respect the keyboard layout.
+
+The type definition for `Channel` provide a full overview of the customizations available. A small sample of what is possible is can be seen in modifying `hasFilePicker`, `messageContentOrder`, and `supportedReactions`.
+
+**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`.
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/FilePicker.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MessageContentOrder.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>hasFilePicker={true} (default)</td>
+    <td align='center'>messageContentOrder={['gallery', 'files', 'text', 'attachments']}</td>
+    <td align='center'>Missing Thread</td>
+  </tr>
+    <tr>
+    <td align='center'><img src='./screenshots/cookbook/NoFilePicker.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MessageContentOrderChanged.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>hasFilePicker={false}</td>
+    <td align='center'>messageContentOrder={['text', 'gallery', 'files', 'attachments']}</td>
+    <td align='center'>Missing Thread</td>
   </tr>
 </table>
