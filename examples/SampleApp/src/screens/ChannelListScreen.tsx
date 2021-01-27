@@ -99,14 +99,15 @@ export const ChannelListScreen: React.FC = () => {
     reset,
   } = usePaginatedSearchedMessages(searchQuery);
 
+  const chatClientUserId = chatClient?.user?.id;
   const filters = useMemo(
     () => ({
       ...baseFilters,
       members: {
-        $in: [chatClient?.user?.id || ''],
+        $in: [chatClientUserId || ''],
       },
     }),
-    [chatClient],
+    [chatClientUserId],
   );
 
   const EmptySearchIndicator = () => (
@@ -203,6 +204,7 @@ export const ChannelListScreen: React.FC = () => {
               LocalUserType
             >
               additionalFlatListProps={{
+                keyboardDismissMode: 'on-drag',
                 getItemLayout: (_, index) => ({
                   index,
                   length: 65,

@@ -2,7 +2,7 @@
 .PHONY: example-build example-deps
 
 EXAMPLES_PATH = examples
-EXAMPLES = ExpoMessaging NativeMessaging
+EXAMPLES = ExpoMessaging NativeMessaging SampleApp TypeScriptMessaging
 EXAMPLES_APPS = $(addprefix $(EXAMPLES_PATH)/,$(EXAMPLES))
 EXAMPLES_APPS_DEPS = $(addsuffix /node_modules/installed_dependencies,$(EXAMPLES_APPS))
 
@@ -17,7 +17,7 @@ CHAT_DEPS = ../client/package.json
 example-deps: $(EXAMPLES_APPS_DEPS)
 
 $(EXAMPLES_APPS_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) $(WRAPPER_PACKAGES_DEPS)
-	cd $* && yarn install
+	cd $* && yarn install && npx pod-install
 	touch $@
 
 $(WRAPPER_PACKAGES_DEPS): %/node_modules/installed_dependencies: %/yarn.lock %/package.json $(SOURCES) node_modules/installed_dependencies

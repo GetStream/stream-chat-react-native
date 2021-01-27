@@ -1,5 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { LogBox, SafeAreaView, useColorScheme, View } from 'react-native';
 import {
   DarkTheme,
@@ -56,11 +56,14 @@ const streami18n = new Streami18n({
 
 const ChannelListScreen = ({ navigation }) => {
   const { setChannel } = useContext(AppContext);
+
+  const memoizedFilters = useMemo(() => filters, []);
+
   return (
     <Chat client={chatClient} i18nInstance={streami18n}>
       <View style={{ height: '100%' }}>
         <ChannelList
-          filters={filters}
+          filters={memoizedFilters}
           onSelect={(channel) => {
             setChannel(channel);
             navigation.navigate('Channel');
@@ -94,7 +97,7 @@ const ChannelScreen = ({ navigation }) => {
             <MessageList
               onThreadSelect={(thread) => {
                 setThread(thread);
-                navigation.navigate('Thread', { channelId: channel.id });
+                navigation.navigate('Thread');
               }}
             />
             <MessageInput />
@@ -105,11 +108,8 @@ const ChannelScreen = ({ navigation }) => {
   );
 };
 
-const ThreadScreen = ({ route }) => {
-  const { setThread, thread } = useContext(AppContext);
-  const [channel] = useState(
-    chatClient.channel('messaging', route.params.channelId),
-  );
+const ThreadScreen = () => {
+  const { channel, setThread, thread } = useContext(AppContext);
   const headerHeight = useHeaderHeight();
 
   return (

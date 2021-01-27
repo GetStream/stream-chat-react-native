@@ -138,7 +138,7 @@ export const AdvancedUserSelectorScreen: React.FC = () => {
   const [apiKeyError, setApiKeyError] = useState(false);
   const [userId, setUserId] = useState('');
   const [userIdError, setUserIdError] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState();
   const [userToken, setUserToken] = useState('');
   const [userTokenError, setUserTokenError] = useState(false);
 

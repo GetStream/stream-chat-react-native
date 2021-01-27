@@ -5,6 +5,7 @@ import { BlurView as ExpoBlurView } from 'expo-blur';
 import * as DocumentPicker from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
@@ -16,6 +17,14 @@ registerNativeHandlers({
   BlurView: ({ blurAmount = 100, blurType = 'dark', style }) => (
     <ExpoBlurView intensity={blurAmount} style={style} tint={blurType} />
   ),
+  compressImage: async ({ compressImageQuality = 1, uri }) => {
+    const { uri: compressedUri } = await ImageManipulator.manipulateAsync(
+      uri,
+      [],
+      { compress: Math.min(Math.max(0, compressImageQuality), 1) },
+    );
+    return compressedUri;
+  },
   deleteFile: async ({ uri }) => {
     try {
       await FileSystem.deleteAsync(uri, { idempotent: true });
@@ -41,7 +50,12 @@ registerNativeHandlers({
         first,
         mediaType: [MediaLibrary.MediaType.photo],
       });
-      const assets = results.assets.map((asset) => asset.uri);
+      const assets = results.assets.map((asset) => ({
+        height: asset.height,
+        source: 'picker',
+        uri: asset.uri,
+        width: asset.width,
+      }));
       const hasNextPage = results.hasNextPage;
       const endCursor = results.endCursor;
       return { assets, endCursor, hasNextPage };
@@ -122,15 +136,18 @@ registerNativeHandlers({
       throw new Error('Sharing failed or cancelled...');
     }
   },
-  takePhoto: async () => {
+  takePhoto: async ({ compressImageQuality = 1 }) => {
     try {
       const { status } = ImagePicker.getCameraPermissionsAsync();
       if (status === 'granted') {
-        const photo = await ImagePicker.launchCameraAsync();
+        const photo = await ImagePicker.launchCameraAsync({
+          quality: Math.min(Math.max(0, compressImageQuality), 1),
+        });
         if (photo.height && photo.width && photo.uri) {
           return {
             cancelled: false,
             height: photo.height,
+            source: 'camera',
             uri: photo.uri,
             width: photo.width,
           };

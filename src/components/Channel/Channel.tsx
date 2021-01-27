@@ -223,6 +223,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'myMessageTheme'
       | 'onDoubleTapMessage'
       | 'ReactionList'
       | 'Reply'
@@ -393,6 +394,7 @@ export const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList = MessageListDefault,
+    myMessageTheme,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -1100,27 +1102,22 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMoreRecent'] = heavyThrottle(async () => {
-    if (loadingMoreRecent || channel?.state.isUpToDate) {
+    if (loadingMoreRecent || channel?.state.isUpToDate || !messages.length) {
       return;
     }
+
     setLoadingMoreRecent(true);
 
-    if (!messages.length) {
+    const recentMessage = messages[messages.length - 1];
+
+    if (recentMessage?.status !== 'received') {
       setLoadingMoreRecent(false);
       return;
     }
 
-    const recentMessage = messages && messages[messages.length - 1];
-
-    if (recentMessage && recentMessage.status !== 'received') {
-      setLoadingMoreRecent(false);
-      return;
-    }
-
-    const recentId = recentMessage && recentMessage.id;
     try {
       if (channel) {
-        await queryAfterMessage(recentId);
+        await queryAfterMessage(recentMessage.id);
         loadMoreRecentFinished(channel.state.messages);
       }
     } catch (err) {
@@ -1397,6 +1394,7 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    myMessageTheme,
     onDoubleTapMessage,
     ReactionList,
     removeMessage,

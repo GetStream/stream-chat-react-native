@@ -7,6 +7,7 @@ import React, {
 
 import { getDisplayName } from '../utils/getDisplayName';
 
+import type { Asset } from '../../native';
 import type { UnknownType } from '../../types/types';
 
 export type AttachmentPickerIconProps = {
@@ -21,10 +22,10 @@ export type AttachmentPickerContextValue = {
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   maxNumberOfFiles: number;
   openPicker: () => void;
-  selectedImages: string[];
+  selectedImages: Asset[];
   setBottomInset: React.Dispatch<React.SetStateAction<number | undefined>>;
   setMaxNumberOfFiles: React.Dispatch<React.SetStateAction<number>>;
-  setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedImages: React.Dispatch<React.SetStateAction<Asset[]>>;
   setSelectedPicker: React.Dispatch<React.SetStateAction<'images' | undefined>>;
   setTopInset: React.Dispatch<React.SetStateAction<number | undefined>>;
   attachmentPickerBottomSheetHeight?: number;
@@ -62,7 +63,7 @@ export const AttachmentPickerProvider = ({
     bottomInsetValue,
   );
   const [maxNumberOfFiles, setMaxNumberOfFiles] = useState(10);
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedImages, setSelectedImages] = useState<Asset[]>([]);
   const [selectedPicker, setSelectedPicker] = useState<'images'>();
   const [topInset, setTopInset] = useState<number | undefined>(value?.topInset);
 
