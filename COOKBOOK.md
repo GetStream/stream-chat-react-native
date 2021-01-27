@@ -273,7 +273,7 @@ const { thread } = useContext(AppContext);
 
 The type definition for `Channel` provide a full overview of the customizations available. A small sample of what is possible is can be seen in modifying `hasFilePicker`, `messageContentOrder`, and `supportedReactions`.
 
-**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`.
+**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`, or more appropriately in this case by using a .
 
 <table>
   <tr>
