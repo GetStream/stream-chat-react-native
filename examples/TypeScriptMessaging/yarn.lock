@@ -1907,6 +1907,13 @@ axios@^0.21.0:
   dependencies:
     follow-redirects "^1.10.0"
 
+axios@^0.21.0:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 babel-eslint@^10.1.0:
   version "10.1.0"
   resolved "https://registry.yarnpkg.com/babel-eslint/-/babel-eslint-10.1.0.tgz#6968e568a910b78fb3779cdd8b6ac2f479943232"
@@ -7218,6 +7225,23 @@ stream-chat@2.11.3:
   version "2.11.3"
   resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.11.3.tgz#ac5c045863f88eb331a61754c69eb2e34540acbd"
   integrity sha512-T6WvY1G5SJJkVFwpzPP/AoWmJ1hxvPg9VfDgY0/04KCv5j45cfrcvnmbkSoCV+KFJspb+BkB5ynj7UopinQJ5A==
+  dependencies:
+    "@babel/runtime" "^7.12.1"
+    "@types/jsonwebtoken" "^8.5.0"
+    "@types/seamless-immutable" "7.1.13"
+    "@types/ws" "^7.2.7"
+    axios "^0.21.0"
+    base64-js "^1.3.1"
+    form-data "^3.0.0"
+    isomorphic-ws "^4.0.1"
+    jsonwebtoken "^8.5.1"
+    seamless-immutable "^7.1.4"
+    ws "^7.3.1"
+
+stream-chat@2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.9.0.tgz#3f0a593ae7dea9f1e2ecf406c72c8d0c60705be4"
+  integrity sha512-Se2lpquvfh1oK6c+M73esYvN3eTtTqKdrMMUCzKz7deMWXOlqYdNtweW/a9raU90QUcOSp756JEXYQ5zSsND5A==
   dependencies:
     "@babel/runtime" "^7.12.1"
     "@types/jsonwebtoken" "^8.5.0"
