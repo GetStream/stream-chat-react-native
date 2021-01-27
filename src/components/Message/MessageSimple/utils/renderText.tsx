@@ -14,6 +14,7 @@ import {
 } from 'simple-markdown';
 
 import type { MessageType } from '../../../MessageList/hooks/useMessageList';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -24,7 +25,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../../types/types';
-
 import type { MessageContextValue } from '../../../../contexts/messageContext/MessageContext';
 import type {
   Colors,
