@@ -45,9 +45,7 @@ export const useChatClient = () => {
     const randomSeed = getRandomInt(1, 50);
     const user = {
       id: config.userId,
-      image:
-        config.userImage ||
-        `https://randomuser.me/api/portraits/thumb/men/${randomSeed}.jpg`,
+      image: config.userImage,
       name: config.userName,
     };
 
@@ -67,7 +65,7 @@ export const useChatClient = () => {
           apiKey: 'q95x9hkbyd6p',
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
-          userName: USERS[userId].name || '',
+          userName: USERS[userId].name,
           userToken: USER_TOKENS[userId],
         });
       } else {
