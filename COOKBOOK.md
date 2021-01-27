@@ -273,29 +273,29 @@ const { thread } = useContext(AppContext);
 
 The type definition for `Channel` provide a full overview of the customizations available. A small sample of what is possible is can be seen in modifying `hasFilePicker`, `messageContentOrder`, and `supportedReactions`.
 
-**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`, or more appropriately in this case by using a .
+**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`, or more appropriately in this case by using `myMessageTheme` which will apply a theme to only the current users messages.
 
 <table>
   <tr>
     <td align='center'><img src='./screenshots/cookbook/FilePicker.png' width="300"/></td>
     <td align='center'><img src='./screenshots/cookbook/MessageContentOrder.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/SupportedReactions.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
     <td align='center'>hasFilePicker={true} (default)</td>
-    <td align='center'>messageContentOrder={['gallery', 'files', 'text', 'attachments']}</td>
-    <td align='center'>Missing Thread</td>
+    <td align='center'>messageContentOrder={['gallery', 'files', 'text', 'attachments']} (default)</td>
+    <td align='center'>supportedReactions={reactionData} (default)</td>
   </tr>
     <tr>
     <td align='center'><img src='./screenshots/cookbook/NoFilePicker.png' width="300"/></td>
     <td align='center'><img src='./screenshots/cookbook/MessageContentOrderChanged.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/SupportedReactionsChanged.png' width="300"/></td>
   </tr>
   <tr></tr>
   <tr>
     <td align='center'>hasFilePicker={false}</td>
     <td align='center'>messageContentOrder={['text', 'gallery', 'files', 'attachments']}</td>
-    <td align='center'>Missing Thread</td>
+    <td align='center'>supportedReactions={reactionData.slice(0, 3)}</td>
   </tr>
 </table>
