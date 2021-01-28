@@ -223,6 +223,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'myMessageTheme'
       | 'onDoubleTapMessage'
       | 'ReactionList'
       | 'Reply'
@@ -393,6 +394,7 @@ export const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList = MessageListDefault,
+    myMessageTheme,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -1392,6 +1394,7 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    myMessageTheme,
     onDoubleTapMessage,
     ReactionList,
     removeMessage,

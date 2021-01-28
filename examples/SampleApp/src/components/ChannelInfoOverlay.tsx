@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
   },
   channelStatus: {
     fontSize: 12,
-    fontWeight: 'bold',
   },
   container: {
     flex: 1,
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   row: { alignItems: 'center', borderTopWidth: 1, flexDirection: 'row' },
-  rowInner: { padding: 16 },
+  rowInner: { paddingLeft: 16, paddingRight: 10, paddingVertical: 20 },
   rowText: {
     fontSize: 14,
     fontWeight: '700',

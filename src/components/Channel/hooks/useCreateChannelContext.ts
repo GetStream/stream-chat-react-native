@@ -65,6 +65,8 @@ export const useCreateChannelContext = <
     )
     .join();
 
+  const typingValue = Object.keys(typing).join();
+
   const channelContext: ChannelContextValue<
     At,
     Ch,
@@ -114,8 +116,8 @@ export const useCreateChannelContext = <
       readUsersLength,
       readUsersLastReads,
       targetedMessage,
-      typing,
       typingEventsEnabled,
+      typingValue,
       watcherCount,
     ],
   );

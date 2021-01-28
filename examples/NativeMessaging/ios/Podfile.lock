@@ -354,7 +354,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (2.16.1):
+  - RNScreens (2.17.1):
     - React-Core
   - RNShare (5.1.0):
     - React-Core
@@ -578,7 +578,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: b9c929bfff7dedc9c89ab1875f1c6151023358d9
-  RNScreens: 45c457af3d2ee9e08fc01e70da87e653d46b1198
+  RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
   RNShare: fed99fd743f80ca255903c1da46fc9a6430efab6
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe

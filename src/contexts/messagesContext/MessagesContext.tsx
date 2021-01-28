@@ -7,6 +7,8 @@ import type { DebouncedFunc } from 'lodash';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
+import type { DeepPartial } from '../themeContext/ThemeContext';
+import type { Theme } from '../themeContext/utils/theme';
 import type { TDateTimeParserInput } from '../translationContext/TranslationContext';
 
 import type { AttachmentProps } from '../../components/Attachment/Attachment';
@@ -293,6 +295,10 @@ export type MessagesContextValue<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /**
+   * Theme provided only to messages that are the current users
+   */
+  myMessageTheme?: DeepPartial<Theme>;
   onDoubleTapMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
