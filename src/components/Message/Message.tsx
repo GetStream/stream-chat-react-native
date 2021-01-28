@@ -171,6 +171,7 @@ export type MessagePropsWithContext<
   Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
+    messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -277,6 +278,7 @@ const MessageWithContext = <
     message,
     messageActions: messageActionsProp,
     messageContentOrder: messageContentOrderProp,
+    messagesContext,
     MessageSimple,
     onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
@@ -778,12 +780,11 @@ const MessageWithContext = <
         : repliesEnabled
         ? [reply, threadReply, muteUser, blockUser, deleteMessage]
         : [muteUser, blockUser, deleteMessage],
-      messageContentOrder,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
+      messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
-      supportedReactions,
       threadList,
     });
 
@@ -1072,51 +1073,28 @@ export const Message = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    dismissKeyboardOnMessageTouch,
-    messageContentOrder,
-    MessageSimple,
-    onDoubleTapMessage,
-    reactionsEnabled,
-    removeMessage,
-    repliesEnabled,
-    retrySendMessage,
-    setEditingState,
-    setQuotedMessageState,
-    supportedReactions,
-    updateMessage,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
   return (
     <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
+      {...messagesContext}
       {...{
         channel,
         client,
         disabled,
         dismissKeyboard,
-        dismissKeyboardOnMessageTouch,
         enforceUniqueReaction,
         isAdmin,
         isModerator,
         isOwner,
-        messageContentOrder,
-        MessageSimple,
-        onDoubleTapMessage,
+        messagesContext,
         openThread,
-        reactionsEnabled,
-        removeMessage,
-        repliesEnabled,
-        retrySendMessage,
         setData,
-        setEditingState,
         setOverlay,
-        setQuotedMessageState,
-        supportedReactions,
         t,
-        updateMessage,
       }}
       {...props}
     />

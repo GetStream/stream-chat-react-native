@@ -39,7 +39,10 @@ import {
   ThreadContextValue,
   useThreadContext,
 } from '../../contexts/threadContext/ThreadContext';
-import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import {
+  ThemeProvider,
+  useTheme,
+} from '../../contexts/themeContext/ThemeContext';
 import {
   isDayOrMoment,
   TranslationContextValue,
@@ -159,6 +162,7 @@ type MessageListPropsWithContext<
     | 'Message'
     | 'ScrollToBottomButton'
     | 'MessageSystem'
+    | 'myMessageTheme'
     | 'TypingIndicator'
     | 'TypingIndicatorContainer'
   > &
@@ -279,6 +283,7 @@ const MessageListWithContext = <
     markRead,
     Message,
     MessageSystem,
+    myMessageTheme,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
@@ -479,10 +484,13 @@ const MessageListWithContext = <
     setAutoscrollToTopThreshold(channel?.state.isUpToDate ? 10 : undefined);
   }, [messageListLength]);
 
-  const renderItem = (
-    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    index: number,
-  ) => {
+  const renderItem = ({
+    index,
+    item: message,
+  }: {
+    index: number;
+    item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+  }) => {
     if (!channel) return null;
 
     const lastRead = channel?.lastRead();
@@ -504,6 +512,31 @@ const MessageListWithContext = <
     }
 
     if (message.type !== 'message.read') {
+      const wrapMessageInTheme =
+        client.userID === message.user?.id && !!myMessageTheme;
+      if (wrapMessageInTheme) {
+        return (
+          <>
+            <ThemeProvider style={myMessageTheme}>
+              <Message
+                goToMessage={goToMessage}
+                groupStyles={message.groupStyles as GroupType[]}
+                lastReceivedId={
+                  lastReceivedId === message.id ? lastReceivedId : undefined
+                }
+                message={message}
+                onThreadSelect={onThreadSelect}
+                showUnreadUnderlay={showUnreadUnderlay}
+                style={styles.messagePadding}
+                targetedMessage={targetedMessage === message.id}
+                threadList={threadList}
+              />
+            </ThemeProvider>
+            {/* Adding indicator below the messages, since the list is inverted */}
+            {insertInlineUnreadIndicator && <InlineUnreadIndicator />}
+          </>
+        );
+      }
       return (
         <>
           <Message
@@ -711,7 +744,7 @@ const MessageListWithContext = <
             setFlatListRef(ref);
           }
         }}
-        renderItem={({ index, item }) => renderItem(item, index)}
+        renderItem={renderItem}
         style={[styles.listContainer, listContainer]}
         testID='message-flat-list'
         viewabilityConfig={{
@@ -814,6 +847,7 @@ export const MessageList = <
     loadMoreRecent,
     Message,
     MessageSystem,
+    myMessageTheme,
     ScrollToBottomButton,
     TypingIndicator,
     TypingIndicatorContainer,
@@ -853,6 +887,7 @@ export const MessageList = <
         markRead,
         Message,
         MessageSystem,
+        myMessageTheme,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,

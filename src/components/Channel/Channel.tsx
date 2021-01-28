@@ -222,6 +222,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'myMessageTheme'
       | 'onDoubleTapMessage'
       | 'ReactionList'
       | 'Reply'
@@ -392,6 +393,7 @@ export const ChannelWithContext = <
     MessageFooter,
     MessageHeader,
     MessageList = MessageListDefault,
+    myMessageTheme,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -1099,7 +1101,12 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMoreRecent'] = heavyThrottle(async () => {
-    if (loadingMoreRecent || channel?.state.isUpToDate || !messages.length) {
+    if (
+      loadingMore ||
+      loadingMoreRecent ||
+      channel?.state.isUpToDate ||
+      !messages.length
+    ) {
       return;
     }
 
@@ -1391,6 +1398,7 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    myMessageTheme,
     onDoubleTapMessage,
     ReactionList,
     removeMessage,

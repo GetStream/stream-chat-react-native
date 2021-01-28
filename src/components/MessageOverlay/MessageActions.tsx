@@ -259,11 +259,7 @@ export const MessageActions = <
 ) => {
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
 
-  const { alignment, messageActions: contextMessageActions } = data || {};
-
-  const messageActions = props.messageActions || contextMessageActions;
-
-  if (!messageActions?.length) return null;
+  const { alignment, messageActions } = data || {};
 
   return (
     <MemoizedMessageActions {...{ alignment, messageActions }} {...props} />

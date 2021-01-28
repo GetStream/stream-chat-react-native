@@ -31,7 +31,7 @@ export const useChatClient = () => {
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
-    const client = new StreamChat<
+    const client = StreamChat.getInstance<
       LocalAttachmentType,
       LocalChannelType,
       LocalCommandType,
@@ -45,9 +45,7 @@ export const useChatClient = () => {
     const randomSeed = getRandomInt(1, 50);
     const user = {
       id: config.userId,
-      image:
-        config.userImage ||
-        `https://randomuser.me/api/portraits/thumb/men/${randomSeed}.jpg`,
+      image: config.userImage,
       name: config.userName,
     };
 
@@ -64,10 +62,10 @@ export const useChatClient = () => {
     try {
       if (userId) {
         await loginUser({
-          apiKey: 'q95x9hkbyd6p',
+          apiKey: 'yjrt5yxw77ev',
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
-          userName: USERS[userId].name || '',
+          userName: USERS[userId].name,
           userToken: USER_TOKENS[userId],
         });
       } else {

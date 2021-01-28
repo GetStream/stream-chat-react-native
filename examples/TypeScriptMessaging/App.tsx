@@ -41,7 +41,7 @@ type LocalMessageType = Record<string, unknown>;
 type LocalResponseType = Record<string, unknown>;
 type LocalUserType = Record<string, unknown>;
 
-const chatClient = new StreamChat<
+const chatClient = StreamChat.getInstance<
   LocalAttachmentType,
   LocalChannelType,
   LocalCommandType,
