@@ -516,7 +516,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.12.1"
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/runtime@7.12.5", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.1", "@babel/runtime@^7.8.4":
+"@babel/runtime@7.12.5", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.8.4":
   version "7.12.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
   integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
@@ -600,7 +600,7 @@
   resolved "https://registry.yarnpkg.com/@types/seamless-immutable/-/seamless-immutable-7.1.13.tgz#dc8d645914086300e49410c72f6e5fae902fdbc5"
   integrity sha512-kvgsr2sI8NBtxgR+YZNgSk0S+isAtS77TKtITUCGcNHlwYERrvgv6DbLER4TbvUK4/Qclm8C9jXzHqegpV2Ikg==
 
-"@types/ws@^7.2.7":
+"@types/ws@^7.4.0":
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/@types/ws/-/ws-7.4.0.tgz#499690ea08736e05a8186113dac37769ab251a0e"
   integrity sha512-Y29uQ3Uy+58bZrFLhX36hcI3Np37nqWE7ky5tjiDoy1GDZnIwVxS0CgF+s+1bXMzjKBFy+fqaRfb708iNzdinw==
@@ -649,7 +649,7 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
 
-axios@^0.21.0:
+axios@^0.21.1:
   version "0.21.1"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
   integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
@@ -663,7 +663,7 @@ babel-plugin-dynamic-import-node@^2.3.3:
   dependencies:
     object.assign "^4.1.0"
 
-base64-js@^1.3.1:
+base64-js@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
   integrity sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==
@@ -848,10 +848,10 @@ has@^1.0.3:
   dependencies:
     function-bind "^1.1.1"
 
-i18next@19.8.4:
-  version "19.8.4"
-  resolved "https://registry.yarnpkg.com/i18next/-/i18next-19.8.4.tgz#447718f2a26319b8debdbcc6fbc1a9761be7316b"
-  integrity sha512-FfVPNWv+felJObeZ6DSXZkj9QM1Ivvh7NcFCgA8XPtJWHz0iXVa9BUy+QY8EPrCLE+vWgDfV/sc96BgXVo6HAA==
+i18next@19.8.5:
+  version "19.8.5"
+  resolved "https://registry.yarnpkg.com/i18next/-/i18next-19.8.5.tgz#8275c98ab98faffa348de2c34c2fd80ffeadb999"
+  integrity sha512-mDuH/mvnNXZmvqxl3akSZuJtbX7ou7M66kzfXQTfRngTZ9cAjktlx4yVzA+gS9VPZp51eZOQAGfEDbFcnyvliw==
   dependencies:
     "@babel/runtime" "^7.12.0"
 
@@ -998,10 +998,10 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-metro-react-native-babel-preset@0.64.0:
-  version "0.64.0"
-  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.64.0.tgz#76861408681dfda3c1d962eb31a8994918c976f8"
-  integrity sha512-HcZ0RWQRuJfpPiaHyFQJzcym+/dDIVUPwUAXWoub/C4GkGu+mPjp8vqK6g0FxokCnnI2TK0gZTza2IDfiNNscQ==
+metro-react-native-babel-preset@0.65.0:
+  version "0.65.0"
+  resolved "https://registry.yarnpkg.com/metro-react-native-babel-preset/-/metro-react-native-babel-preset-0.65.0.tgz#1b9a1b3932bb80670f2319be2f9cca7770bd2411"
+  integrity sha512-mgs+Z5atqlxm4/+k7KZo38smLThUzcUm6fRMzwtBQBJFr757tw2gEykjXKMOP1gKjoDVd8KDoU6EAgNtX9l05w==
   dependencies:
     "@babel/core" "^7.0.0"
     "@babel/plugin-proposal-class-properties" "^7.0.0"
@@ -1278,22 +1278,22 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@2.11.3:
-  version "2.11.3"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.11.3.tgz#ac5c045863f88eb331a61754c69eb2e34540acbd"
-  integrity sha512-T6WvY1G5SJJkVFwpzPP/AoWmJ1hxvPg9VfDgY0/04KCv5j45cfrcvnmbkSoCV+KFJspb+BkB5ynj7UopinQJ5A==
+stream-chat@2.12.0:
+  version "2.12.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-2.12.0.tgz#c188f9f92d7290df1004e386c7e2338c4633b99a"
+  integrity sha512-FT6kNlN0WpeVmduWF7YHsbclY9dUDm2Ge0BcRFb284miCQ6w7C3xp7PZWHjM/+ormEuFZwERVaxuAkWN1+yOsQ==
   dependencies:
-    "@babel/runtime" "^7.12.1"
+    "@babel/runtime" "^7.12.5"
     "@types/jsonwebtoken" "^8.5.0"
     "@types/seamless-immutable" "7.1.13"
-    "@types/ws" "^7.2.7"
-    axios "^0.21.0"
-    base64-js "^1.3.1"
+    "@types/ws" "^7.4.0"
+    axios "^0.21.1"
+    base64-js "^1.5.1"
     form-data "^3.0.0"
     isomorphic-ws "^4.0.1"
     jsonwebtoken "^8.5.1"
     seamless-immutable "^7.1.4"
-    ws "^7.3.1"
+    ws "^7.4.2"
 
 supports-color@^5.3.0:
   version "5.5.0"
@@ -1349,7 +1349,7 @@ util@^0.10.3:
   dependencies:
     inherits "2.0.3"
 
-ws@^7.3.1:
+ws@^7.4.2:
   version "7.4.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
   integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==

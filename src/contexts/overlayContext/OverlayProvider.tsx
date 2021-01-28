@@ -31,7 +31,10 @@ import { FileSelectorIcon as DefaultFileSelectorIcon } from '../../components/At
 import { ImageOverlaySelectedComponent as DefaultImageOverlaySelectedComponent } from '../../components/AttachmentPicker/components/ImageOverlaySelectedComponent';
 import { ImageSelectorIcon as DefaultImageSelectorIcon } from '../../components/AttachmentPicker/components/ImageSelectorIcon';
 import { ImageGallery } from '../../components/ImageGallery/ImageGallery';
+import { MessageActions as DefaultMessageActions } from '../../components/MessageOverlay/MessageActions';
 import { MessageOverlay } from '../../components/MessageOverlay/MessageOverlay';
+import { OverlayReactionList as DefaultOverlayReactionList } from '../../components/MessageOverlay/OverlayReactionList';
+import { OverlayReactions as DefaultOverlayReactions } from '../../components/MessageOverlay/OverlayReactions';
 import { BlurView } from '../../native';
 import { useStreami18n } from '../../utils/useStreami18n';
 
@@ -63,7 +66,7 @@ export const OverlayProvider = <
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 >(
-  props: PropsWithChildren<OverlayProviderProps<Us>>,
+  props: PropsWithChildren<OverlayProviderProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
   const {
     AttachmentPickerBottomSheetHandle = DefaultAttachmentPickerBottomSheetHandle,
@@ -89,6 +92,7 @@ export const OverlayProvider = <
     imageGalleryGridSnapPoints,
     ImageOverlaySelectedComponent = DefaultImageOverlaySelectedComponent,
     ImageSelectorIcon = DefaultImageSelectorIcon,
+    MessageActions = DefaultMessageActions,
     numberOfAttachmentImagesToLoadPerCall,
     numberOfAttachmentPickerImageColumns,
     numberOfImageGalleryGridColumns,
@@ -101,6 +105,8 @@ export const OverlayProvider = <
         );
       }
     },
+    OverlayReactionList = DefaultOverlayReactionList,
+    OverlayReactions = DefaultOverlayReactions,
     value,
   } = props;
 
@@ -212,7 +218,10 @@ export const OverlayProvider = <
                   />
                 </Animated.View>
                 <MessageOverlay<At, Ch, Co, Ev, Me, Re, Us>
+                  MessageActions={MessageActions}
                   overlayOpacity={overlayOpacity}
+                  OverlayReactionList={OverlayReactionList}
+                  OverlayReactions={OverlayReactions}
                   visible={overlay === 'message'}
                 />
                 <ImageGallery<At, Ch, Co, Ev, Me, Re, Us>

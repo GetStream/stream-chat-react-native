@@ -58,6 +58,11 @@
 # React Native SVG
 -keep public class com.horcrux.svg.** {*;}
 
+# crashlytics
+-keepattributes *Annotation*
+-keepattributes SourceFile,LineNumberTable
+-keep public class * extends java.lang.Exception
+
 # hermes
 -keep class com.facebook.hermes.unicode.** { *; }
 -keep class com.facebook.jni.** { *; }

@@ -24,6 +24,10 @@ import {
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import {
+  MessagesContextValue,
+  useMessagesContext,
+} from '../../contexts/messagesContext/MessagesContext';
+import {
   OverlayContextValue,
   useOverlayContext,
 } from '../../contexts/overlayContext/OverlayContext';
@@ -264,8 +268,9 @@ export type OverlayReactionListPropsWithContext<
   Us extends DefaultUserType = DefaultUserType
 > = Pick<
   MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>,
-  'handleReaction' | 'supportedReactions' | 'alignment'
+  'alignment' | 'handleReaction' | 'messagesContext'
 > &
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'supportedReactions'> &
   Pick<OverlayContextValue, 'setOverlay'> & {
     messageLayout: Animated.SharedValue<{
       x: number;
@@ -486,7 +491,16 @@ export type OverlayReactionListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
+> = Omit<
+  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  'setOverlay' | 'supportedReactions'
+> &
+  Partial<
+    Pick<
+      OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+      'setOverlay' | 'supportedReactions'
+    >
+  >;
 
 /**
  * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
@@ -500,39 +514,25 @@ export const OverlayReactionList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >(
-  props: Omit<
-    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
-    'setOverlay'
-  >,
+  props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const {
-    fill,
-    handleReaction: propHandleReaction,
-    messageLayout,
-    ownReactionTypes,
-    reactionListHeight,
-    showScreen,
-    supportedReactions: propSupportedReactions,
-  } = props;
-
   const { data } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const { supportedReactions } = useMessagesContext<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >();
   const { setOverlay } = useOverlayContext();
-  const handleReaction = propHandleReaction || data?.handleReaction;
-  const supportedReactions = propSupportedReactions || data?.supportedReactions;
 
   return (
     <MemoizedOverlayReactionList
-      {...{
-        alignment: data?.alignment,
-        fill,
-        handleReaction,
-        messageLayout,
-        ownReactionTypes,
-        reactionListHeight,
-        setOverlay,
-        showScreen,
-        supportedReactions,
-      }}
+      {...(data || {})}
+      {...{ setOverlay, supportedReactions }}
+      {...props}
     />
   );
 };
