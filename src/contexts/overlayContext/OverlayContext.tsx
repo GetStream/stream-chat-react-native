@@ -5,12 +5,22 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 import type { AttachmentPickerContextValue } from '../attachmentPickerContext/AttachmentPickerContext';
+import type { MessageOverlayContextValue } from '../messageOverlayContext/MessageOverlayContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
 
 import type { AttachmentPickerProps } from '../../components/AttachmentPicker/AttachmentPicker';
 import type { ImageGalleryCustomComponents } from '../../components/ImageGallery/ImageGallery';
-import type { DefaultUserType, UnknownType } from '../../types/types';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 import type { Streami18n } from '../../utils/Streami18n';
 
 export type BlurType = 'light' | 'dark' | undefined;
@@ -29,6 +39,12 @@ export const OverlayContext = React.createContext<OverlayContextValue>(
 );
 
 export type OverlayProviderProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Partial<AttachmentPickerProps> &
   Partial<
@@ -42,7 +58,13 @@ export type OverlayProviderProps<
       | 'ImageSelectorIcon'
     >
   > &
-  ImageGalleryCustomComponents<Us> & {
+  ImageGalleryCustomComponents<Us> &
+  Partial<
+    Pick<
+      MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      'MessageActions' | 'OverlayReactionList' | 'OverlayReactions'
+    >
+  > & {
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
