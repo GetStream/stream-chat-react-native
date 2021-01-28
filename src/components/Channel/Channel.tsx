@@ -1102,7 +1102,12 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMoreRecent'] = heavyThrottle(async () => {
-    if (loadingMoreRecent || channel?.state.isUpToDate || !messages.length) {
+    if (
+      loadingMore ||
+      loadingMoreRecent ||
+      channel?.state.isUpToDate ||
+      !messages.length
+    ) {
       return;
     }
 
