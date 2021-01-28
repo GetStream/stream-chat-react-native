@@ -28,10 +28,10 @@ function mockClient(client) {
   return client;
 }
 
-export const getTestClient = () => mockClient(new StreamChat(apiKey));
+export const getTestClient = () => mockClient(StreamChat.getInstance(apiKey));
 
 export const getTestClientWithUser = async (user) => {
-  const client = mockClient(new StreamChat(apiKey));
+  const client = mockClient(StreamChat.getInstance(apiKey));
   await setUser(client, user);
   client.wsPromise = Promise.resolve();
   return client;
