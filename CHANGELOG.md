@@ -1,6 +1,15 @@
 # Changelog
 
+## [2.1.4] 2021-01-29
 
+Fixed broken re-send message functionality, upon failure [b3c028f](https://github.com/GetStream/stream-chat-react-native/commit/b3c028f7bb91d00286717564764cb0fcf42b75b3)
+
+## [2.1.3] 2021-01-26
+
+- Fix markdown on message
+  - fixes [#498](https://github.com/GetStream/stream-chat-react-native/issues/498)
+  - commit [d4713aa](https://github.com/GetStream/stream-chat-react-native/commit/d4713aa32515df8c4726860508661645ade13598)
+- Fixes issue with un-necessary queryChannels api call, when filters are provided as inline object [9f4528b](https://github.com/GetStream/stream-chat-react-native/commit/9f4528b0035cbcc5898f5da88109e703413b2f4f)
 ## [2.1.2] 2021-01-09
 
 - Fixed infinite re-rendering issue on mentions suggestion box [5fd521a](https://github.com/GetStream/stream-chat-react-native/commit/5fd521a075170004fe551dd3ffbac111256274fe)
