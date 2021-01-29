@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   unreadCountNotificationContainer: {
     alignItems: 'center',
     borderRadius: 10,
+    elevation: 6,
     height: 20,
     justifyContent: 'center',
     minWidth: 20,

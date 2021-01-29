@@ -1,10 +1,24 @@
 # Stream Chat React Native - 3.x
 
-## Getting Started
+What follows is the most important aspects of Stream Chat React Native. It should cover enough to integrate the out of the box Stream Chat in an application and give the basic knowledge of the library so that you may utilize, modify, and extend the functionality as you see fit.]
 
-What follows is the most important aspects of Stream Chat React Native. It should cover enough to integrate the out of the box Stream Chat in an application and give the basic knowledge of the library so that you may utilize, modify, and extend the functionality as you see fit.
+## Appendix
 
-### Installation
+- [Installation](##Installation)
+  - [Installing dependencies for Expo](###Installing-dependencies-for-Expo)
+- [Components](##Components)
+  - [theme](###theme)
+  - [OverlayProvider](###OverlayProvider)
+  - [Chat](###Chat)
+  - [Channel](###Channel)
+  - [MessageList](###MessageList)
+  - [MessageInput](###MessageInput)
+- [Putting it all together](##Putting-it-all-together)
+- [FAQ](##FAQ)
+  - [How to customize message component](###How-to-customize-message-component)
+  - [Message bubble with custom text styles & fonts](###Message-bubble-with-custom-text-styles-&-fonts)
+
+## Installation
 
 Install the required packages in your React Native project:
 
@@ -43,17 +57,17 @@ import { name as appName } from './app.json';
 AppRegistry.registerComponent(appName, () => App);
 ```
 
-#### Installing dependencies for Expo
+### Installing dependencies for Expo
 
 Stream Chat React Native is set up for parity on Expo, expo requires a different set of dependencies, in your project directory run:
 
 `expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-permissions expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg`
 
-### Hello Stream Chat - 3.x
+## Components
 
 Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts screen, components, or the entire app must be wrapped in Stream Chat Context components.
 
-#### Theme
+### theme
 
 The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. To accurately create a theme we suggestion utilizing our exported types to create your own theme. We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys that can modify the styling.
 
@@ -103,7 +117,7 @@ const theme: DeepPartial<Theme> = {
 
 **NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
 
-#### OverlayProvider
+### OverlayProvider
 
 The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
 
@@ -197,7 +211,7 @@ useEffect(() => {
 
 The `OverlayProvider` contains five providers to which you can add customizations and retrieve data using the appropriate hooks: `TranslationProvider`, `OverlayContext.Prover`, `MessageOverlayProvider`, `AttachmentPickerProvider`, and `ImageGalleryProvider`
 
-**NOTE:** As mentioned there are many modifications that can be performed to the UI. Custom styling via the theme gives you the ability to shape the look of the application as a whole and/or implement dark mode. But additionally the majority of the UI can be modified or replaced via [`Stream Chat`](https://getstream.io/chat/) settings or props. It is trivial to replace or modify most UI elements.
+**NOTE:** As mentioned there are many modifications that can be performed to the UI. Custom styling via the theme gives you the ability to shape the look of the application as a whole and/or implement dark mode. But additionally the majority of the UI can be modified or replaced via [`Stream Chat settings`](https://getstream.io/chat/) or props. It is trivial to replace or modify most UI elements.
 
 <table>
   <tr>
@@ -213,7 +227,7 @@ The `OverlayProvider` contains five providers to which you can add customization
   </tr>
 </table>
 
-#### Chat
+### Chat
 
 `Chat` is the next level down of context component from `OverlyProvider` that is required for `stream-chat-react-native` to function as designed. You can choose to wrap your entire application in `Chat` similar to what is required for the `OverlayProvider` or you can implement `Chat` at the screen level. `Chat` takes two important props, `client` and `i18nInstance`. The `client` should be an instance of StreamChat from [`stream-chat`](https://github.com/GetStream/stream-chat-js) configured for your app, and `i18nInstance` should be an instance of `Streami18n` from `stream-chat-react-native` configured for the desired language. `Chat` can also accept a `style` prop with the theme, this can be used to overwrite styles inherited from `OverlayProvider`. If you are using TypeScript you should add the appropriate generics to your instantiation of `StreamChat`, follow the documentation for [`stream-chat`](https://github.com/GetStream/stream-chat-js) to ensure proper setup.
 
@@ -222,7 +236,7 @@ import { StreamChat } from 'stream-chat';
 import { Streami18n } from 'stream-chat-react-native';
 
 const streami18n = new Streami18n({ language: 'en' });
-const chatClient = new StreamChat<
+const chatClient = StreamChat.getInstance<
   AttachmentType,
   ChannelType,
   CommandType,
@@ -236,7 +250,7 @@ const chatClient = new StreamChat<
 <Chat client={chatClient} i18nInstance={streami18n}>
 ```
 
-#### Channel
+### Channel
 
 When creating a chat screen it is required that `Channel` wrap the `stream-chat-react-native` components being used. `Channel` provides multiple contexts to the enclosed components and allows for modification of many of the enclosed components via props that are then kept in context.
 
@@ -273,7 +287,7 @@ const { thread } = useContext(AppContext);
 
 The type definition for `Channel` provide a full overview of the customizations available. A small sample of what is possible is can be seen in modifying `hasFilePicker`, `messageContentOrder`, and `supportedReactions`.
 
-**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corder does not a have a radius. This can be altered using the `theme`, or more appropriately in this case by using `myMessageTheme` which will apply a theme to only the current users messages.
+**NOTE:** When `messageContentOrder` is changed the default styling no longer matches the design as the bottom inner corner does not a have a radius. This can be altered using the `theme`, or more appropriately in this case to both `theme` and `myMessageTheme`. `myMessageTheme` will apply a theme to only the current users messages and thus allow for differing styles on sent and received messages.
 
 <table>
   <tr>
@@ -287,7 +301,8 @@ The type definition for `Channel` provide a full overview of the customizations 
     <td align='center'>messageContentOrder={['gallery', 'files', 'text', 'attachments']} (default)</td>
     <td align='center'>supportedReactions={reactionData} (default)</td>
   </tr>
-    <tr>
+  <tr></tr>
+  <tr>
     <td align='center'><img src='./screenshots/cookbook/NoFilePicker.png' width="300"/></td>
     <td align='center'><img src='./screenshots/cookbook/MessageContentOrderChanged.png' width="300"/></td>
     <td align='center'><img src='./screenshots/cookbook/SupportedReactionsChanged.png' width="300"/></td>
@@ -299,3 +314,156 @@ The type definition for `Channel` provide a full overview of the customizations 
     <td align='center'>supportedReactions={reactionData.slice(0, 3)}</td>
   </tr>
 </table>
+
+### MessageList
+
+`MessageList` is the next component that is necessary for rendering a chat interface. It does not require any props as it uses the surrounding contexts.
+
+```typescript
+<MessageList<
+  AttachmentType,
+  ChannelType,
+  CommandType,
+  EventType,
+  MessageType,
+  ResponseType,
+  UserType
+  >
+/>
+```
+
+Similar to the other components props are available for modification of the UI, although most modifications are provided via the `Channel` component some are provided through the `MessageList`, such as `additionalFlatListProps` to pass props directly to the flat list, `onListScroll` to access the scroll handler, and `setFlatListRef` to directly access the [FlatList ref](https://reactnative.dev/docs/flatlist).
+
+If you choose to track thread state locally the thread when selected can be accessed via a callback provided to the prop `onThreadSelect`, in this case proper typing can be added via generics.
+
+```typescript
+<MessageList<
+  AttachmentType,
+  ChannelType,
+  CommandType,
+  EventType,
+  MessageType,
+  ResponseType,
+  UserType
+>
+  onThreadSelect={(thread) => {
+    setThread(thread);
+    navigation.navigate('Thread');
+  }}
+/>
+```
+
+### MessageInput
+
+The final component necessary to create a fully functioning Chat screen is `MessageInput`. Similar to `MessageList` this component can be used without any props as it utilizes the surrounding contexts for functionality. The majority of `MessageInput` customizations are set at the `Channel` level. But one prop that should be local is `threadList` which is a `boolean` indicating whether or not the current `MessageList` is a thread.
+
+```typescript
+<MessageInput />
+```
+
+**Note:** You can also utilize the `Thread` component which is already setup with both a `MessageList` and `MessageInput` component when creating a thread screen. A key prop on `Thread` is `onThreadDismount` as it can be used to set a locally tracked thread state to `null | undefined`.
+
+## Putting it all together
+
+It takes very few components to put together a fully functioning Chat screen in practice:
+
+```typescript
+<OverlayProvider
+  bottomInset={bottom}
+  i18nInstance={streami18n}
+>
+  <Chat client={chatClient} i18nInstance={streami18n}>
+    <Channel
+      channel={channel}
+      keyboardVerticalOffset={headerHeight}
+    >
+      <View style={{ flex: 1 }}>
+        <MessageList />
+        <MessageInput />
+      </View>
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+Once an you have Chat up and running there are tons of customization possibilities and the TypeScript intellisense is a great asset in customizing the UI and functionality to your needs. Check out the [examples](./examples) for implementations of these components in apps you can build locally.
+
+## FAQ
+
+### How to customize message component
+
+The [`Message`](./src/components/Message/Message.tsx) component has many underlying components that can be modified and/or styled using the props and theme provided to contexts in `Channel`. But if you would like to replace the component completely you can do so via the `Message` prop on `Channel`. Using the [Message Component](./src/components/Message/Message.tsx) as an example can be helpful to understand what props and hooks provide different information to the component. It is also suggested you optimize the component for rendering using memoization as is the standard suggested practice for `FlatList` items.
+
+```typescript
+<OverlayProvider
+  bottomInset={bottom}
+  i18nInstance={streami18n}
+>
+  <Chat client={chatClient} i18nInstance={streami18n}>
+    <Channel
+      channel={channel}
+      keyboardVerticalOffset={headerHeight}
+      Message={CustomMessageComponent}
+    >
+      <View style={{ flex: 1 }}>
+        <MessageList />
+        <MessageInput />
+      </View>
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+### Message bubble with custom text styles & fonts
+
+We use `react-native-simple-markdown` library internally in `Message` component, to render markdown content of the text. Thus styling text in the `Message` component requires a slightly different approach than styling just a single standard `Text` component in React Native.
+
+In the theme there are multiple text types such as replies and emoji-only messages that have the associated type `MarkdownStyle`, for the main message text this falls in `messageSimple -> content -> markdown` within `theme`. To modify the style of the markdown text styles can be provided for each of the markdown sub-components that are applied based on text parsing.
+
+```typescript
+export type MarkdownStyle = Partial<{
+  autolink: TextStyle;
+  blockQuoteBar: ViewStyle;
+  blockQuoteSection: ViewStyle;
+  blockQuoteSectionBar: ViewStyle;
+  blockQuoteText: TextStyle | ViewStyle;
+  br: TextStyle;
+  codeBlock: TextStyle;
+  del: TextStyle;
+  em: TextStyle;
+  heading: TextStyle;
+  heading1: TextStyle;
+  heading2: TextStyle;
+  heading3: TextStyle;
+  heading4: TextStyle;
+  heading5: TextStyle;
+  heading6: TextStyle;
+  hr: ViewStyle;
+  image: ImageStyle;
+  inlineCode: TextStyle;
+  list: ViewStyle;
+  listItem: ViewStyle;
+  listItemBullet: TextStyle;
+  listItemNumber: TextStyle;
+  listItemText: TextStyle;
+  listRow: ViewStyle;
+  mailTo: TextStyle;
+  mentions: TextStyle;
+  newline: TextStyle;
+  noMargin: TextStyle;
+  paragraph: TextStyle;
+  paragraphCenter: TextStyle;
+  paragraphWithImage: ViewStyle;
+  strong: TextStyle;
+  sublist: ViewStyle;
+  table: ViewStyle;
+  tableHeader: ViewStyle;
+  tableHeaderCell: TextStyle;
+  tableRow: ViewStyle;
+  tableRowCell: ViewStyle;
+  tableRowLast: ViewStyle;
+  text: TextStyle;
+  u: TextStyle;
+  view: ViewStyle;
+}>;
+```
