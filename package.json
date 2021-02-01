@@ -70,7 +70,7 @@
     "path": "0.12.7",
     "react-art": "^16.8.6",
     "react-native-markdown-package": "1.8.1",
-    "stream-chat": "link:../stream-chat-js"
+    "stream-chat": "3.0.0-beta.0"
   },
   "peerDependencies": {
     "react": "^16.8.6",
