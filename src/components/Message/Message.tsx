@@ -1148,6 +1148,7 @@ export const Message = <
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     dismissKeyboardOnMessageTouch,
+    forceAlign,
     messageContentOrder,
     MessageSimple,
     onDoubleTapMessage,
@@ -1175,6 +1176,7 @@ export const Message = <
         dismissKeyboard,
         dismissKeyboardOnMessageTouch,
         enforceUniqueReaction,
+        forceAlign,
         isAdmin,
         isModerator,
         isOwner,

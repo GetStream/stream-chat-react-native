@@ -1,6 +1,6 @@
 # Stream Chat React Native - 3.x
 
-What follows is the most important aspects of Stream Chat React Native. It should cover enough to integrate the out of the box Stream Chat in an application and give the basic knowledge of the library so that you may utilize, modify, and extend the functionality as you see fit.]
+What follows is the most important aspects of Stream Chat React Native. It should cover enough to integrate the out of the box Stream Chat in an application and give the basic knowledge of the library so that you may utilize, modify, and extend the functionality as you see fit.
 
 ## Appendix
 
@@ -19,6 +19,7 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
   - [Message bubble with custom text styles & fonts](###Message-bubble-with-custom-text-styles-&-fonts)
   - [Message with custom reactions](###Message-with-custom-reactions)
   - [Instagram style double-tap reaction](###Instagram-style-double-tap-reaction)
+  - [Slack style messages all on the left side](###Slack-style-messages-all-on-the-left-side)
 
 ## Installation
 
@@ -585,5 +586,20 @@ const onLongPressMessage = () => {
   }
   onPressInMessage={handleDoubleTap}
   onLongPressMessage={onLongPressMessage}
+>
+```
+
+### Slack style messages all on the left side
+
+By default, received messages are shown on left side of the `MessageList` and sent messages are shown on right side of the `MessageList`.
+
+You can change this at the `Message` level via the prop `forceAlign` or set the alignment for the entire `Channel` using the same `forceAlign` prop.
+
+```typescript
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+  forceAlign={'left'}
 >
 ```

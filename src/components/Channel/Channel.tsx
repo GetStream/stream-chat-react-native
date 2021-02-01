@@ -205,6 +205,7 @@ export type ChannelPropsWithContext<
       | 'FileAttachment'
       | 'FileAttachmentGroup'
       | 'FlatList'
+      | 'forceAlign'
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
@@ -371,6 +372,7 @@ export const ChannelWithContext = <
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
     FlatList = FlatListDefault,
+    forceAlign,
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
@@ -1376,6 +1378,7 @@ export const ChannelWithContext = <
     FileAttachment,
     FileAttachmentGroup,
     FlatList,
+    forceAlign,
     formatDate,
     Gallery,
     Giphy,

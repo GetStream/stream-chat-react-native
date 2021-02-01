@@ -9,6 +9,7 @@ import type {
 import type { DebouncedFunc } from 'lodash';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
+import type { Alignment } from '../messageContext/MessageContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -287,6 +288,7 @@ export type MessagesContextValue<
    */
   CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   disableTypingIndicator?: boolean;
+  forceAlign?: Alignment | boolean;
   /**
    * Optional function to custom format the message date
    */
