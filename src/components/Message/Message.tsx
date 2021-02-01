@@ -164,6 +164,8 @@ export type MessagePropsWithContext<
     | 'messageContentOrder'
     | 'MessageSimple'
     | 'onDoubleTapMessage'
+    | 'onLongPressMessage'
+    | 'OverlayReactionList'
     | 'removeMessage'
     | 'reactionsEnabled'
     | 'repliesEnabled'
@@ -276,6 +278,7 @@ const MessageWithContext = <
     forceAlign = false,
     goToMessage,
     groupStyles = ['bottom'],
+    handleReaction: handleReactionProp,
     isAdmin,
     isModerator,
     isOwner,
@@ -286,9 +289,11 @@ const MessageWithContext = <
     MessageSimple,
     onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
+    onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
     onThreadSelect,
     openThread,
+    OverlayReactionList,
     preventPress,
     reactionsEnabled,
     removeMessage,
@@ -454,6 +459,16 @@ const MessageWithContext = <
           images: [] as Attachment<At>[],
           other: [] as Attachment<At>[],
         };
+
+  /**
+   * Check if any actions to prevent long press
+   */
+  const hasAttachmentActions =
+    !message.deleted_at &&
+    Array.isArray(message.attachments) &&
+    message.attachments.some(
+      (attachment) => attachment.actions && attachment.actions.length,
+    );
 
   // prefetch images for Gallery component rendering
   const attachmentImageLength = attachments.images.length;
@@ -660,32 +675,34 @@ const MessageWithContext = <
     };
 
     const handleReaction = !error
-      ? async (reactionType: string) => {
-          const messageId = message.id;
-          const ownReaction = !!reactions.find(
-            (reaction) => reaction.own && reaction.type === reactionType,
-          );
+      ? handleReactionProp
+        ? handleReactionProp
+        : async (reactionType: string) => {
+            const messageId = message.id;
+            const ownReaction = !!reactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
 
-          // Change reaction in local state, make API call in background, revert to old message if fails
-          try {
-            if (channel && messageId) {
-              if (ownReaction) {
-                await channel.deleteReaction(messageId, reactionType);
-              } else {
-                await channel.sendReaction(
-                  messageId,
-                  {
-                    type: reactionType,
-                  } as Reaction<Re, Us>,
-                  undefined,
-                  enforceUniqueReaction,
-                );
+            // Change reaction in local state, make API call in background, revert to old message if fails
+            try {
+              if (channel && messageId) {
+                if (ownReaction) {
+                  await channel.deleteReaction(messageId, reactionType);
+                } else {
+                  await channel.sendReaction(
+                    messageId,
+                    {
+                      type: reactionType,
+                    } as Reaction<Re, Us>,
+                    undefined,
+                    enforceUniqueReaction,
+                  );
+                }
               }
+            } catch (err) {
+              console.log(err);
             }
-          } catch (err) {
-            console.log(err);
           }
-        }
       : undefined;
 
     const isMuted = (client.mutedUsers || []).some(
@@ -794,6 +811,7 @@ const MessageWithContext = <
         !error && messageReactions ? t('Message Reactions') : undefined,
       onlyEmojis,
       otherAttachments: attachments.other,
+      OverlayReactionList,
       supportedReactions,
       threadList,
     });
@@ -802,15 +820,49 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    onLongPressProp && !disabled
+    disabled || hasAttachmentActions
+      ? () => null
+      : onLongPressProp
       ? (event?: GestureResponderEvent) => onLongPressProp(message, event)
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
 
+  const handleReactionDoubleTap =
+    message.type !== 'error' && message.status !== 'failed'
+      ? handleReactionProp
+        ? handleReactionProp
+        : async (reactionType: string) => {
+            const messageId = message.id;
+            const ownReaction = !!reactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
+
+            // Change reaction in local state, make API call in background, revert to old message if fails
+            try {
+              if (channel && messageId) {
+                if (ownReaction) {
+                  await channel.deleteReaction(messageId, reactionType);
+                } else {
+                  await channel.sendReaction(
+                    messageId,
+                    {
+                      type: reactionType,
+                    } as Reaction<Re, Us>,
+                    undefined,
+                    enforceUniqueReaction,
+                  );
+                }
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          }
+      : undefined;
+
   const onDoubleTapMessage = () => {
     if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp(message);
+      onDoubleTapMessageProp(message, handleReactionDoubleTap);
     }
   };
 
@@ -831,7 +883,18 @@ const MessageWithContext = <
     lastReceivedId,
     message,
     messageContentOrder,
-    onLongPress: animatedLongPress ? () => null : onLongPressMessage,
+    onLongPress: animatedLongPress
+      ? (event) => {
+          if (onLongPressMessageProp) {
+            onLongPressMessageProp(event);
+          }
+        }
+      : (event) => {
+          if (onLongPressMessageProp) {
+            onLongPressMessageProp(event);
+          }
+          onLongPressMessage(event);
+        },
     onlyEmojis,
     onOpenThread,
     onPress: onPressProp
@@ -1088,6 +1151,8 @@ export const Message = <
     messageContentOrder,
     MessageSimple,
     onDoubleTapMessage,
+    onLongPressMessage,
+    OverlayReactionList,
     reactionsEnabled,
     removeMessage,
     repliesEnabled,
@@ -1116,7 +1181,9 @@ export const Message = <
         messageContentOrder,
         MessageSimple,
         onDoubleTapMessage,
+        onLongPressMessage,
         openThread,
+        OverlayReactionList,
         reactionsEnabled,
         removeMessage,
         repliesEnabled,

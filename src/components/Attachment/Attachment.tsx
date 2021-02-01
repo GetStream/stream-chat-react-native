@@ -10,6 +10,7 @@ import {
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
 
+import type { GestureResponderEvent } from 'react-native';
 import type { Attachment as AttachmentType } from 'stream-chat';
 
 import type {
@@ -46,6 +47,13 @@ export type AttachmentPropsWithContext<
    * The attachment to render
    */
   attachment: AttachmentType<At>;
+  /**
+   * onPress override for all attachments
+   */
+  onPressIn?: (
+    event: GestureResponderEvent,
+    defaultOnPress?: () => void,
+  ) => void;
 };
 
 const AttachmentWithContext = <
@@ -66,26 +74,27 @@ const AttachmentWithContext = <
     FileAttachment,
     Gallery,
     Giphy,
+    onPressIn,
     UrlPreview,
   } = props;
 
   const hasAttachmentActions = !!attachment.actions?.length;
 
   if (attachment.type === 'giphy' || attachment.type === 'imgur') {
-    return <Giphy attachment={attachment} />;
+    return <Giphy attachment={attachment} onPressIn={onPressIn} />;
   }
 
   if (
     (attachment.title_link || attachment.og_scrape_url) &&
     (attachment.image_url || attachment.thumb_url)
   ) {
-    return <UrlPreview {...attachment} />;
+    return <UrlPreview onPressIn={onPressIn} {...attachment} />;
   }
 
   if (attachment.type === 'image') {
     return (
       <>
-        <Gallery images={[attachment]} />
+        <Gallery images={[attachment]} onPressIn={onPressIn} />
         {hasAttachmentActions && (
           <AttachmentActions
             key={`key-actions-${attachment.id}`}
@@ -107,14 +116,14 @@ const AttachmentWithContext = <
   ) {
     return (
       // TODO: Put in video component
-      <Card {...attachment} />
+      <Card onPressIn={onPressIn} {...attachment} />
     );
   }
 
   if (hasAttachmentActions) {
     return (
       <>
-        <Card {...attachment} />
+        <Card onPressIn={onPressIn} {...attachment} />
         <AttachmentActions
           key={`key-actions-${attachment.id}`}
           {...attachment}
@@ -122,7 +131,7 @@ const AttachmentWithContext = <
       </>
     );
   } else {
-    return <Card {...attachment} />;
+    return <Card onPressIn={onPressIn} {...attachment} />;
   }
 };
 
@@ -173,7 +182,15 @@ export type AttachmentProps<
     | 'UrlPreview'
   >
 > &
-  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'>;
+  Pick<AttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>, 'attachment'> & {
+    /**
+     * onPress override for all attachments
+     */
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+  };
 
 /**
  * Attachment - The message attachment
@@ -198,6 +215,7 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
+    onPressIn: PropOnPressIn,
     UrlPreview: PropUrlPreview,
   } = props;
 
@@ -207,6 +225,7 @@ export const Attachment = <
     FileAttachment: ContextFileAttachment,
     Gallery: ContextGallery,
     Giphy: ContextGiphy,
+    onPressInMessage,
     UrlPreview: ContextUrlPreview,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -223,6 +242,7 @@ export const Attachment = <
     PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
+  const onPressIn = PropOnPressIn || onPressInMessage;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
 
   return (
@@ -234,6 +254,7 @@ export const Attachment = <
         FileAttachment,
         Gallery,
         Giphy,
+        onPressIn,
         UrlPreview,
       }}
     />

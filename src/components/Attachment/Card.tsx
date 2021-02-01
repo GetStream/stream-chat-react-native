@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  GestureResponderEvent,
   Image,
   ImageStyle,
   Linking,
@@ -100,6 +101,10 @@ export type CardPropsWithContext<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
   > & {
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
     styles?: Partial<{
       authorName: StyleProp<TextStyle>;
       authorNameContainer: StyleProp<ViewStyle>;
@@ -134,6 +139,7 @@ const CardWithContext = <
     image_url,
     og_scrape_url,
     onLongPress,
+    onPressIn,
     styles: stylesProp = {},
     text,
     thumb_url,
@@ -161,10 +167,21 @@ const CardWithContext = <
 
   const uri = image_url || thumb_url;
 
+  const defaultOnPress = () => goToURL(og_scrape_url || uri);
+
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
-      onPress={() => goToURL(og_scrape_url || uri)}
+      onPress={() => {
+        if (!onPressIn) {
+          defaultOnPress();
+        }
+      }}
+      onPressIn={(event) => {
+        if (onPressIn) {
+          onPressIn(event, defaultOnPress);
+        }
+      }}
       style={[styles.container, container, stylesProp.container]}
       testID='card-attachment'
       {...additionalTouchableProps}
@@ -286,7 +303,12 @@ export type CardProps<
         MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
         'additionalTouchableProps' | 'CardCover' | 'CardFooter' | 'CardHeader'
       >
-  >;
+  > & {
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+  };
 
 /**
  * UI component for card in attachments.
@@ -310,6 +332,7 @@ export const Card = <
     CardCover,
     CardFooter,
     CardHeader,
+    onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -320,6 +343,7 @@ export const Card = <
         CardFooter,
         CardHeader,
         onLongPress,
+        onPressIn,
       }}
       {...props}
     />

@@ -2,7 +2,10 @@ import React, { PropsWithChildren, useContext } from 'react';
 
 import { getDisplayName } from '../utils/getDisplayName';
 
-import type { TouchableOpacityProps } from 'react-native';
+import type {
+  GestureResponderEvent,
+  TouchableOpacityProps,
+} from 'react-native';
 import type { DebouncedFunc } from 'lodash';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
@@ -33,6 +36,7 @@ import type { MessageType } from '../../components/MessageList/hooks/useMessageL
 import type { MessageListProps } from '../../components/MessageList/MessageList';
 import type { ScrollToBottomButtonProps } from '../../components/MessageList/ScrollToBottomButton';
 import type { MessageSystemProps } from '../../components/MessageList/MessageSystem';
+import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { ReactionListProps } from '../../components/Message/MessageSimple/ReactionList';
 import type { ReplyProps } from '../../components/Reply/Reply';
 import type { FlatList } from '../../native';
@@ -200,6 +204,12 @@ export type MessagesContextValue<
     MessageSystemProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
+   * UI component for OverlayReactionList
+   */
+  OverlayReactionList: React.ComponentType<
+    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
    * UI component for ReactionList
    * Defaults to: [ReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Reaction/ReactionList.tsx)
    */
@@ -299,8 +309,24 @@ export type MessagesContextValue<
    * Theme provided only to messages that are the current users
    */
   myMessageTheme?: DeepPartial<Theme>;
+  /**
+   * Double tap message for gesture handler components
+   */
   onDoubleTapMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+    handleReactionDoubleTap?: (reactionType: string) => Promise<void>,
+  ) => void;
+  /**
+   * onLongPressMessage should be used to cancel onPressInMessage timers
+   * if required
+   */
+  onLongPressMessage?: (event?: GestureResponderEvent) => void;
+  /**
+   * Override for press on message attachments
+   */
+  onPressInMessage?: (
+    event: GestureResponderEvent,
+    defaultOnPress?: () => void,
   ) => void;
 };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  GestureResponderEvent,
   Image,
   ImageProps,
   PixelRatio,
@@ -112,6 +113,10 @@ export type GalleryPropsWithContext<
     hasThreadReplies?: boolean;
     messageId?: string;
     messageText?: string;
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
     preventPress?: boolean;
   };
 
@@ -135,6 +140,7 @@ const GalleryWithContext = <
     messageId,
     messageText,
     onLongPress,
+    onPressIn,
     preventPress,
     setBlurType,
     setImage,
@@ -219,87 +225,100 @@ const GalleryWithContext = <
             galleryItemColumn,
           ]}
         >
-          {column.map(({ height, url }, rowIndex) => (
-            <TouchableOpacity
-              activeOpacity={0.8}
-              key={`gallery-item-${url}/${rowIndex}/${images.length}`}
-              onLongPress={onLongPress}
-              onPress={() => {
-                if (!preventPress) {
-                  setImage({ messageId, url });
-                  setBlurType(blurType);
-                  setOverlay('gallery');
-                }
-              }}
-              style={[
-                styles.imageContainer,
-                {
-                  height,
-                },
-                imageContainer,
-              ]}
-              testID='image-multiple'
-              {...additionalTouchableProps}
-            >
-              <MemoizedGalleryImage
-                height={height}
-                resizeMode='cover'
+          {column.map(({ height, url }, rowIndex) => {
+            const defaultOnPress = () => {
+              setImage({ messageId, url });
+              setBlurType(blurType);
+              setOverlay('gallery');
+            };
+
+            return (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                key={`gallery-item-${url}/${rowIndex}/${images.length}`}
+                onLongPress={onLongPress}
+                onPress={() => {
+                  if (!onPressIn && !preventPress) {
+                    defaultOnPress();
+                  }
+                }}
+                onPressIn={(event) => {
+                  if (onPressIn && !preventPress) {
+                    onPressIn(event, defaultOnPress);
+                  }
+                }}
                 style={[
-                  styles.flex,
+                  styles.imageContainer,
                   {
-                    borderBottomLeftRadius:
-                      (images.length === 1 ||
+                    height,
+                  },
+                  imageContainer,
+                ]}
+                testID='image-multiple'
+                {...additionalTouchableProps}
+              >
+                <MemoizedGalleryImage
+                  height={height}
+                  resizeMode='cover'
+                  style={[
+                    styles.flex,
+                    {
+                      borderBottomLeftRadius:
+                        (images.length === 1 ||
+                          (images.length === 3 &&
+                            colIndex === 0 &&
+                            rowIndex === 0) ||
+                          (images.length === 4 &&
+                            colIndex === 0 &&
+                            rowIndex === 1)) &&
+                        !messageText &&
+                        ((groupStyle !== 'left_bottom' &&
+                          groupStyle !== 'left_single') ||
+                          (hasThreadReplies && !threadList))
+                          ? 14
+                          : 0,
+                      borderBottomRightRadius:
+                        (images.length === 1 ||
+                          (colIndex === 1 &&
+                            (images.length === 2 || rowIndex === 1))) &&
+                        !messageText &&
+                        ((groupStyle !== 'right_bottom' &&
+                          groupStyle !== 'right_single') ||
+                          (hasThreadReplies && !threadList))
+                          ? 14
+                          : 0,
+                      borderTopLeftRadius:
+                        colIndex === 0 && rowIndex === 0 ? 14 : 0,
+                      borderTopRightRadius:
+                        ((colIndex === 1 || images.length === 1) &&
+                          rowIndex === 0) ||
                         (images.length === 3 &&
                           colIndex === 0 &&
-                          rowIndex === 0) ||
-                        (images.length === 4 &&
-                          colIndex === 0 &&
-                          rowIndex === 1)) &&
-                      !messageText &&
-                      ((groupStyle !== 'left_bottom' &&
-                        groupStyle !== 'left_single') ||
-                        (hasThreadReplies && !threadList))
-                        ? 14
-                        : 0,
-                    borderBottomRightRadius:
-                      (images.length === 1 ||
-                        (colIndex === 1 &&
-                          (images.length === 2 || rowIndex === 1))) &&
-                      !messageText &&
-                      ((groupStyle !== 'right_bottom' &&
-                        groupStyle !== 'right_single') ||
-                        (hasThreadReplies && !threadList))
-                        ? 14
-                        : 0,
-                    borderTopLeftRadius:
-                      colIndex === 0 && rowIndex === 0 ? 14 : 0,
-                    borderTopRightRadius:
-                      ((colIndex === 1 || images.length === 1) &&
-                        rowIndex === 0) ||
-                      (images.length === 3 && colIndex === 0 && rowIndex === 1)
-                        ? 14
-                        : 0,
-                  },
-                  image,
-                ]}
-                uri={url}
-              />
-              {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
-                <View
-                  style={[
-                    StyleSheet.absoluteFillObject,
-                    styles.moreImagesContainer,
-                    { backgroundColor: overlay },
-                    moreImagesContainer,
+                          rowIndex === 1)
+                          ? 14
+                          : 0,
+                    },
+                    image,
                   ]}
-                >
-                  <Text style={[styles.moreImagesText, moreImagesText]}>
-                    {`+${images.length - 3}`}
-                  </Text>
-                </View>
-              ) : null}
-            </TouchableOpacity>
-          ))}
+                  uri={url}
+                />
+                {colIndex === 1 && rowIndex === 1 && images.length > 3 ? (
+                  <View
+                    style={[
+                      StyleSheet.absoluteFillObject,
+                      styles.moreImagesContainer,
+                      { backgroundColor: overlay },
+                      moreImagesContainer,
+                    ]}
+                  >
+                    <Text style={[styles.moreImagesText, moreImagesText]}>
+                      {`+${images.length - 3}`}
+                    </Text>
+                  </View>
+                ) : null}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       ))}
     </View>
@@ -394,6 +413,7 @@ export const Gallery = <
     messageId,
     messageText,
     onLongPress: propOnLongPress,
+    onPressIn: propOnPressIn,
     preventPress,
     setBlurType: propSetBlurType,
     setImage: propSetImage,
@@ -412,6 +432,7 @@ export const Gallery = <
   } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     additionalTouchableProps: contextAdditionalTouchableProps,
+    onPressInMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
     setBlurType: contextSetBlurType,
@@ -427,6 +448,7 @@ export const Gallery = <
   const alignment = propAlignment || contextAlignment;
   const groupStyles = propGroupStyles || contextGroupStyles;
   const onLongPress = propOnLongPress || contextOnLongPress;
+  const onPressIn = propOnPressIn || onPressInMessage;
   const setBlurType = propSetBlurType || contextSetBlurType;
   const setImage = propSetImage || contextSetImage;
   const setOverlay = propSetOverlay || contextSetOverlay;
@@ -443,6 +465,7 @@ export const Gallery = <
         messageId: messageId || message?.id,
         messageText: messageText || message?.text,
         onLongPress,
+        onPressIn,
         preventPress,
         setBlurType,
         setImage,

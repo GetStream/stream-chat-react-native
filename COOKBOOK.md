@@ -17,6 +17,8 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
 - [FAQ](##FAQ)
   - [How to customize message component](###How-to-customize-message-component)
   - [Message bubble with custom text styles & fonts](###Message-bubble-with-custom-text-styles-&-fonts)
+  - [Message with custom reactions](###Message-with-custom-reactions)
+  - [Instagram style double-tap reaction](###Instagram-style-double-tap-reaction)
 
 ## Installation
 
@@ -466,4 +468,122 @@ export type MarkdownStyle = Partial<{
   u: TextStyle;
   view: ViewStyle;
 }>;
+```
+
+### Message with custom reactions
+
+To add custom reactions you need to use the `supportedReactions` prop on `Channel`. `supportedReactions` is an array of `ReactionData`. The default `supportedReactions` array contains 5 reactions.
+
+```typescript
+export const reactionData: ReactionData[] = [
+  {
+    Icon: LoveReaction,
+    type: 'love',
+  },
+  {
+    Icon: ThumbsUpReaction,
+    type: 'like',
+  },
+  {
+    Icon: ThumbsDownReaction,
+    type: 'sad',
+  },
+  {
+    Icon: LOLReaction,
+    type: 'haha',
+  },
+  {
+    Icon: WutReaction,
+    type: 'wow',
+  },
+];
+```
+
+To create your own reaction you need both a `type` and `Icon`. The `Icon` is a component with `IconProps` it is suggested you take advantage of [`react-native-svg`](https://github.com/react-native-svg/react-native-svg) for scaling purposes. It is suggested you look at the default icons for examples of how to create your own that is able to properly use the theme and sizing that are provided via props. Using exported type from `stream-chat-react-native` a custom reaction can be created and added.
+
+```typescript
+export const StreamReaction: React.FC<IconProps> = (props) => (
+  <RootSvg height={21} width={42} {...props} viewBox='0 0 42 21'>
+    <RootPath
+      d='M26.1491984,6.42806971 L38.9522984,5.52046971 C39.7973984,5.46056971 40.3294984,6.41296971 39.8353984,7.10116971 L30.8790984,19.5763697 C30.6912984,19.8379697 30.3888984,19.9931697 30.0667984,19.9931697 L9.98229842,19.9931697 C9.66069842,19.9931697 9.35869842,19.8384697 9.17069842,19.5773697 L0.190598415,7.10216971 C-0.304701585,6.41406971 0.227398415,5.46036971 1.07319842,5.52046971 L13.8372984,6.42816971 L19.2889984,0.333269706 C19.6884984,-0.113330294 20.3884984,-0.110730294 20.7846984,0.338969706 L26.1491984,6.42806971 Z M28.8303984,18.0152734 L20.5212984,14.9099734 L20.5212984,18.0152734 L28.8303984,18.0152734 Z M19.5212984,18.0152734 L19.5212984,14.9099734 L11.2121984,18.0152734 L19.5212984,18.0152734 Z M18.5624984,14.1681697 L10.0729984,17.3371697 L3.82739842,8.65556971 L18.5624984,14.1681697 Z M21.4627984,14.1681697 L29.9522984,17.3371697 L36.1978984,8.65556971 L21.4627984,14.1681697 Z M19.5292984,13.4435697 L19.5292984,2.99476971 L12.5878984,10.8305697 L19.5292984,13.4435697 Z M20.5212984,13.4435697 L20.5212984,2.99606971 L27.4627984,10.8305697 L20.5212984,13.4435697 Z M10.5522984,10.1082697 L12.1493984,8.31366971 L4.34669842,7.75446971 L10.5522984,10.1082697 Z M29.4148984,10.1082697 L27.8178984,8.31366971 L35.6205984,7.75446971 L29.4148984,10.1082697 Z'
+      {...props}
+    />
+  </RootSvg>
+);
+
+const newReactionData = [...reactionData, { type: 'stream', Icon: StreamReaction }];
+```
+
+Both the resulting reaction picker and reaction result can then utilize this additional option.
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/StandardReactions.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedReactions.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/ModifiedReaction.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Standard Reactions</td>
+    <td align='center'>Modified Reactions</td>
+    <td align='center'>Modified Reaction</td>
+  </tr>
+</table>
+
+### Instagram style double-tap reaction
+
+`stream-chat-react-native` uses a combination of `react-native-gesture-handler` and standard `react-native` touchables to provide animations to the UI. Because of this there are conditions in which multiple interactions are taking place at once.
+
+**e.g.** If you press on a message it begins to depress and after a long hold will present the context menu for the message, but release sooner and if you are pressing on an image the image viewer will appear.
+
+Therefore to allow for something like double-tap reactions three props are required, `onPressInMessage`, `onLongPressMessage`, and `onDoubleTapMessage`. The first is used to prevent the `onPress` of inner `react-native` touchable components from firing while waiting for the double press to be evaluated by `react-native-gesture-handler`. Using a timeout the original `onPress` can be called if a second press has not ocurred in the expected time for the double tap to fire.
+
+To prevent this event from firing when a long press occurs `onLongPressMessage` should be set to a function that cancels the timeout.
+
+The `onDoubleTapMessage` prop can then be used to add a reaction as it is a function that is provided the message for which it is double tapped, this uses `react-native-gesture-handler` to track double taps. For convenience as this is a common design pattern the function is also is passed the `handleReactionDoubleTap` function if defined (this is `undefined` when there is an error message or the `status` of the message is `failed`), this function can be passed a `string` of the reaction `type` to add or remove a reaction.
+
+To complete the Instagram feel setting the `OverlayReactionList` component to an empty component and limiting the `supportedReactions` as shown allows only 1 type of reaction and limits the UI to double-tap only to add or remove it.
+
+```typescript
+const lastTap = React.useRef<number | null>(null);
+const timeOut = React.useRef<NodeJS.Timeout | null>(null);
+const handleDoubleTap = (
+  _: GestureResponderEvent,
+  defaultTap?: () => void,
+) => {
+  const now = Date.now();
+  if (lastTap.current && now - lastTap.current < 500) {
+    if (timeOut.current) {
+      clearTimeout(timeOut.current);
+    }
+  } else {
+    lastTap.current = now;
+    timeOut.current = setTimeout(() => {
+      if (defaultTap) {
+        defaultTap();
+      }
+    }, 500);
+  }
+};
+
+const onLongPressMessage = () => {
+  if (timeOut.current) {
+    clearTimeout(timeOut.current);
+  }
+};
+
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+  supportedReactions={[{ type: 'stream', Icon: StreamReaction }]}
+  OverlayReactionList={() => null}
+  onDoubleTapMessage={(_message, handleReactionDoubleTap) =>
+    if (handleReactionDoubleTap) {
+      handleReactionDoubleTap('stream')
+    }
+  }
+  onPressInMessage={handleDoubleTap}
+  onLongPressMessage={onLongPressMessage}
+>
 ```

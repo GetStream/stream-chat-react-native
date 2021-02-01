@@ -240,7 +240,7 @@ export const ReactionButton = <
     >
       <Animated.View
         style={[
-          index !== reactionData.length - 1 ? styles.notLastReaction : {},
+          index !== numberOfReactions - 1 ? styles.notLastReaction : {},
           reaction,
           iconStyle,
         ]}
@@ -486,7 +486,10 @@ export type OverlayReactionListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
-> = OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>;
+> = Omit<
+  OverlayReactionListPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
+  'setOverlay'
+>;
 
 /**
  * OverlayReactionList - A high level component which implements all the logic required for a message overlay reaction list
@@ -500,10 +503,7 @@ export const OverlayReactionList = <
   Re extends UnknownType = DefaultReactionType,
   Us extends DefaultUserType = DefaultUserType
 >(
-  props: Omit<
-    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
-    'setOverlay'
-  >,
+  props: OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
     fill,

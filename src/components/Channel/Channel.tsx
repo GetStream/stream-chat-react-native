@@ -68,6 +68,7 @@ import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSys
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
+import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
@@ -225,6 +226,9 @@ export type ChannelPropsWithContext<
       | 'MessageText'
       | 'myMessageTheme'
       | 'onDoubleTapMessage'
+      | 'onLongPressMessage'
+      | 'onPressInMessage'
+      | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
       | 'supportedReactions'
@@ -406,7 +410,10 @@ export const ChannelWithContext = <
     numberOfLines = 5,
     onChangeText,
     onDoubleTapMessage,
+    onLongPressMessage,
+    onPressInMessage,
     openSuggestions,
+    OverlayReactionList = OverlayReactionListDefault,
     ReactionList = ReactionListDefault,
     Reply = ReplyDefault,
     SendButton = SendButtonDefault,
@@ -1396,6 +1403,9 @@ export const ChannelWithContext = <
     MessageText,
     myMessageTheme,
     onDoubleTapMessage,
+    onLongPressMessage,
+    onPressInMessage,
+    OverlayReactionList,
     ReactionList,
     removeMessage,
     Reply,
