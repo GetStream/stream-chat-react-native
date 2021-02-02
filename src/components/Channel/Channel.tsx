@@ -48,6 +48,7 @@ import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../Keyb
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
+import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
@@ -397,7 +398,7 @@ export const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
-    MessageFooter,
+    MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
     myMessageTheme,

@@ -2,7 +2,6 @@ import React from 'react';
 import {
   LayoutChangeEvent,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -30,7 +29,7 @@ import {
   useTranslationContext,
 } from '../../../contexts/translationContext/TranslationContext';
 
-import { Error, Eye } from '../../../icons';
+import { Error } from '../../../icons';
 import { vw } from '../../../utils/utils';
 
 import type {
@@ -164,7 +163,6 @@ export const MessageContentWithContext = <
     Reply,
     setMessageContentWidth,
     showMessageStatus,
-    t,
     tDateTimeParser,
     threadList,
   } = props;
@@ -184,15 +182,10 @@ export const MessageContentWithContext = <
           container: { borderRadiusL, borderRadiusS, ...container },
           containerInner,
           deletedContainer,
-          deletedMetaText,
           deletedText,
           errorContainer,
           errorIcon,
           errorIconContainer,
-          eyeIcon,
-          messageUser,
-          metaContainer,
-          metaText,
           replyBorder,
           replyContainer,
         },
@@ -244,36 +237,17 @@ export const MessageContentWithContext = <
           markdownStyles={merge({ em: { color: grey } }, deletedText)}
           message={{ ...message, text: '_Message deleted_' }}
         />
-        {MessageFooter ? (
-          <MessageFooter testID='message-footer' />
-        ) : (
-          <View style={metaContainer} testID='message-status-time'>
-            <Eye pathFill={grey} {...eyeIcon} />
-            <Text
-              style={[
-                {
-                  color: grey,
-                  textAlign: alignment,
-                },
-                metaText,
-                deletedMetaText,
-              ]}
-            >
-              {t('Only visible to you')}
-            </Text>
-            <Text
-              style={[
-                {
-                  color: grey,
-                  textAlign: alignment,
-                },
-                metaText,
-              ]}
-            >
-              {getDateText(formatDate)}
-            </Text>
-          </View>
-        )}
+        <MessageFooter
+          alignment={alignment}
+          formattedDate={getDateText(formatDate)}
+          isDeleted
+          members={members}
+          message={message}
+          MessageStatus={MessageStatus}
+          otherAttachments={otherAttachments}
+          showMessageStatus={showMessageStatus}
+          testID='message-footer'
+        />
       </View>
     );
   }
@@ -305,7 +279,20 @@ export const MessageContentWithContext = <
         container,
       ]}
     >
-      {MessageHeader && <MessageHeader testID='message-header' />}
+      {MessageHeader && (
+        <MessageHeader
+          alignment={alignment}
+          formattedDate={getDateText(formatDate)}
+          isDeleted={!!message.deleted_at}
+          lastGroupMessage={lastGroupMessage}
+          members={members}
+          message={message}
+          MessageStatus={MessageStatus}
+          otherAttachments={otherAttachments}
+          showMessageStatus={showMessageStatus}
+          testID='message-header'
+        />
+      )}
       <View onLayout={onLayout}>
         {hasThreadReplies && !threadList && repliesEnabled && !noBorder && (
           <View
@@ -407,39 +394,17 @@ export const MessageContentWithContext = <
         )}
       </View>
       {repliesEnabled && <MessageReplies noBorder={noBorder} />}
-      {MessageFooter && <MessageFooter testID='message-footer' />}
-      {!MessageFooter && lastGroupMessage && (
-        <View style={metaContainer} testID='message-status-time'>
-          {otherAttachments.length && otherAttachments[0].actions ? (
-            <>
-              <Eye {...eyeIcon} />
-              <Text
-                style={[
-                  {
-                    color: grey,
-                    textAlign: alignment,
-                  },
-                  metaText,
-                  deletedMetaText,
-                ]}
-              >
-                {t('Only visible to you')}
-              </Text>
-            </>
-          ) : null}
-          {Object.keys(members).length > 2 &&
-          alignment === 'left' &&
-          message.user?.name ? (
-            <Text style={[{ color: grey }, messageUser]}>
-              {message.user.name}
-            </Text>
-          ) : null}
-          {showMessageStatus && <MessageStatus />}
-          <Text style={[{ color: grey, textAlign: alignment }, metaText]}>
-            {getDateText(formatDate)}
-          </Text>
-        </View>
-      )}
+      <MessageFooter
+        alignment={alignment}
+        formattedDate={getDateText(formatDate)}
+        lastGroupMessage={lastGroupMessage}
+        members={members}
+        message={message}
+        MessageStatus={MessageStatus}
+        otherAttachments={otherAttachments}
+        showMessageStatus={showMessageStatus}
+        testID='message-footer'
+      />
     </TouchableOpacity>
   );
 };

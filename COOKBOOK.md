@@ -600,6 +600,52 @@ You can change this at the `Message` level via the prop `forceAlign` or set the 
   channel={channel}
   keyboardVerticalOffset={headerHeight}
   thread={thread}
-  forceAlign={'left'}
+  forceAlign='left'
 >
 ```
+
+### Message bubble with name of sender
+
+In group messaging it's important to show the name of the sender associated message bubble - similar to Slack or WhatsApp. By default this is done in the `MessageFooter` component. This component is fully replaceable via props on `Channel` and is provided a set of props itself that can be used for rendering, `MessageFooterProps`, any additional data for rendering a custom footer can be pulled from contexts such as the `MessageContext` via the `useMessageContext` hook.
+
+If you wanted to move the information about the sender to the top of the message you can provide a `MessageHeader` component to `Channel` which is provided the same props as the footer, `MessageFooterProps`, and again can utilize the contexts as needed.
+
+```typescript
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+  MessageFooter={() => null}
+  MessageHeader={(props) =>
+    props.message?.user?.id !== chatClient.userID ? (
+      <View
+        style={{ flexDirection: 'row' }}
+      >
+        {Object.keys(props.members).length > 2 &&
+          props.message.user?.name ? (
+            <Text style={[{ color: grey, marginRight: 8 }]}>
+              {props.message.user.name}
+            </Text>
+          ) : null}
+        <Text style={[{ color: grey, textAlign: props.alignment }]}>
+          {props.formattedDate}
+        </Text>
+      </View>
+    ) : null
+  }
+>
+```
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/StandardFooter.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/NoFooter.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/HeaderAdded.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Standard Footer</td>
+    <td align='center'>No Footer</td>
+    <td align='center'>Header Added</td>
+  </tr>
+</table>

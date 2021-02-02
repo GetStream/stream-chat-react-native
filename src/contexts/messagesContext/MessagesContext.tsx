@@ -52,6 +52,7 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
+import type { MessageFooterProps } from 'src/components/Message/MessageSimple/MessageFooter';
 
 export type MessagesConfig = {
   reactionsEnabled?: boolean;
@@ -165,6 +166,12 @@ export type MessagesContextValue<
   >;
   /** Order to render the message content */
   messageContentOrder: MessageContentType[];
+  /**
+   * Custom message footer component
+   */
+  MessageFooter: React.ComponentType<
+    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   MessageList: React.ComponentType<
     MessageListProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
@@ -296,13 +303,11 @@ export type MessagesContextValue<
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
   /**
-   * Custom message footer component
-   */
-  MessageFooter?: React.ComponentType<UnknownType & { testID: string }>;
-  /**
    * Custom message header component
    */
-  MessageHeader?: React.ComponentType<UnknownType & { testID: string }>;
+  MessageHeader?: React.ComponentType<
+    MessageFooterProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /** Custom UI component for message text */
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
