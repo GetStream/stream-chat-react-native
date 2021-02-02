@@ -334,8 +334,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
-                              "marginBottom": 8,
-                              "marginTop": 8,
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
@@ -631,8 +631,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
-                              "marginBottom": 8,
-                              "marginTop": 8,
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
@@ -837,8 +837,8 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
-                              "marginBottom": 8,
-                              "marginTop": 8,
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
