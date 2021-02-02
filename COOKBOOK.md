@@ -20,7 +20,8 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
   - [Message with custom reactions](###Message-with-custom-reactions)
   - [Instagram style double-tap reaction](###Instagram-style-double-tap-reaction)
   - [Slack style messages all on the left side](###Slack-style-messages-all-on-the-left-side)
-
+  - [Message bubble with name of sender](###Message-bubble-with-name-of-sender)
+  - [Swipe message left to delete and right to reply](###Swipe-message-left-to-delete-and-right-to-reply)
 ## Installation
 
 Install the required packages in your React Native project:
@@ -647,5 +648,79 @@ If you wanted to move the information about the sender to the top of the message
     <td align='center'>Standard Footer</td>
     <td align='center'>No Footer</td>
     <td align='center'>Header Added</td>
+  </tr>
+</table>
+
+### Swipe message left to delete and right to reply
+
+To add swipe controls to your messages it is suggested that you create a custom `Message` component to replace the default one. An easy solution is to wrap the standard exported message component from `stream-chat-react-native` in a `Swipeable` from `react-native-gesture-handler/Swipeable`. You can then use the functions provided by `Swipeable` to fine tune to functionality to your liking.
+
+You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipeable messages to ensure you only can swipe appropriate messages, **i.e.**  you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
+
+```typescript
+const SwipeableMessage = (
+  props: MessageProps<
+    AttachmentType,
+    ChannelType,
+    CommandType,
+    EventType,
+    MessageType,
+    ResponseType,
+    UserType
+  >,
+) => {
+  return (
+    <Swipeable
+      overshootLeft={false}
+      overshootRight={false}
+      renderRightActions={(progress) => (
+        <Animated.View
+          style={{
+            justifyContent: 'center',
+            opacity: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1],
+            }),
+          }}
+        >
+          <StreamReaction />
+        </Animated.View>
+      )}
+      renderLeftActions={(progress) => (
+        <Animated.View
+          style={{
+            backgroundColor: 'blue',
+            width: 100,
+            transform: [
+              {
+                translateX: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-100, 0],
+                }),
+              },
+            ],
+          }}
+        />
+      )}
+      onSwipeableRightOpen={delete(props.message)}
+      onSwipeableLeftOpen={reply(props.message)}
+    >
+      <Message {...props} />
+    </Swipeable>
+  );
+};
+```
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/SwipingOpacity.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/SwipingOpen.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/SwipingTranslateX.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Swiping partially open (opacity partial)</td>
+    <td align='center'>Swiping all the way open</td>
+    <td align='center'>Swiping using transform -> translateX</td>
   </tr>
 </table>
