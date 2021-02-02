@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0] 2021-02-02
+
+- Switched to `react-native-markdown-package` for markdown of message text [#505](https://github.com/GetStream/stream-chat-react-native/pull/505/files)
+
 ## [2.1.4] 2021-01-29
 
 Fixed broken re-send message functionality, upon failure [b3c028f](https://github.com/GetStream/stream-chat-react-native/commit/b3c028f7bb91d00286717564764cb0fcf42b75b3)
