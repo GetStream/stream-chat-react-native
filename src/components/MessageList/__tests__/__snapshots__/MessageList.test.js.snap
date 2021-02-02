@@ -363,8 +363,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         style={
                           Array [
                             Object {
-                              "minHeight": 1,
-                              "minWidth": 1,
+                              "alignSelf": "stretch",
                             },
                             undefined,
                           ]
@@ -377,17 +376,16 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
-                                  "color": "#222222",
-                                },
-                                undefined,
-                              ]
+                              Object {
+                                "color": "#222222",
+                              }
                             }
                           >
                             Message3
@@ -693,8 +691,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         style={
                           Array [
                             Object {
-                              "minHeight": 1,
-                              "minWidth": 1,
+                              "alignSelf": "stretch",
                             },
                             undefined,
                           ]
@@ -707,17 +704,16 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
-                                  "color": "#222222",
-                                },
-                                undefined,
-                              ]
+                              Object {
+                                "color": "#222222",
+                              }
                             }
                           >
                             Message2
@@ -937,8 +933,7 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                         style={
                           Array [
                             Object {
-                              "minHeight": 1,
-                              "minWidth": 1,
+                              "alignSelf": "stretch",
                             },
                             undefined,
                           ]
@@ -951,17 +946,16 @@ exports[`MessageList should render the message list and match snapshot 1`] = `
                               "flexDirection": "row",
                               "flexWrap": "wrap",
                               "justifyContent": "flex-start",
+                              "marginBottom": 0,
+                              "marginTop": 0,
                             }
                           }
                         >
                           <Text
                             style={
-                              Array [
-                                Object {
-                                  "color": "#222222",
-                                },
-                                undefined,
-                              ]
+                              Object {
+                                "color": "#222222",
+                              }
                             }
                           >
                             Message1

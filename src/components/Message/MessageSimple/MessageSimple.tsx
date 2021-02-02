@@ -17,6 +17,7 @@ import type {
 
 import type { MessageActionSheetProps } from './MessageActionSheet';
 import type { MessageTextProps } from './MessageTextContainer';
+import type { MarkdownRules } from './utils/renderText';
 
 import type { ActionProps, MessageProps } from '../Message';
 
@@ -225,7 +226,7 @@ export type MessageSimpleProps<
     /** Boolean if current message is part of thread */
     isThreadList?: boolean;
     /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-    markdownRules?: UnknownType;
+    markdownRules?: MarkdownRules;
     /**
      * Array of allowed actions on message. e.g. ['edit', 'delete', 'reactions', 'reply']
      * If all the actions need to be disabled, empty array or false should be provided as value of prop.

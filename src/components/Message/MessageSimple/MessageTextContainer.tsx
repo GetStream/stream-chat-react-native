@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 
 import { capitalize } from './utils/capitalize';
-import { renderText } from './utils/renderText';
+import { MarkdownRules, renderText } from './utils/renderText';
 
 import { styled, ThemeContext } from '../../../styles/styledComponents';
 
@@ -121,7 +121,7 @@ export type MessageTextContainerProps<
    */
   openThread: () => void;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
-  markdownRules?: UnknownType;
+  markdownRules?: MarkdownRules;
   /**
    * Custom UI component to display a message in MessageList component
    * Default component (accepts the same props): [MessageSimple](https://getstream.github.io/stream-chat-react-native/#messagesimple)
@@ -133,6 +133,8 @@ export type MessageTextContainerProps<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /** Function specifying interaction of links in rendered text */
+  onLink?: (url: string) => Promise<void>;
 };
 
 export const MessageTextContainer = <
@@ -152,6 +154,7 @@ export const MessageTextContainer = <
     markdownRules = {},
     message,
     MessageText,
+    onLink,
   } = props;
   const theme = useContext(ThemeContext);
 
@@ -181,6 +184,7 @@ export const MessageTextContainer = <
           markdownRules,
           markdownStyles,
           message,
+          onLink,
         })
       )}
     </TextContainer>

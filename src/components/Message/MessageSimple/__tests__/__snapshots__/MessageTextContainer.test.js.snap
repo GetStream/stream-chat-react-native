@@ -27,8 +27,7 @@ exports[`MessageTextContainer should render message text container 1`] = `
     style={
       Array [
         Object {
-          "minHeight": 1,
-          "minWidth": 1,
+          "alignSelf": "stretch",
         },
         undefined,
       ]
@@ -41,17 +40,16 @@ exports[`MessageTextContainer should render message text container 1`] = `
           "flexDirection": "row",
           "flexWrap": "wrap",
           "justifyContent": "flex-start",
+          "marginBottom": 0,
+          "marginTop": 0,
         }
       }
     >
       <Text
         style={
-          Array [
-            Object {
-              "color": "#222222",
-            },
-            undefined,
-          ]
+          Object {
+            "color": "#222222",
+          }
         }
       >
         Hello World
