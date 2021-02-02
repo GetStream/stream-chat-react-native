@@ -953,6 +953,8 @@ export const ChannelWithContext = <
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       type,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      updated_at,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       user,
       ...extraFields
     } = message;

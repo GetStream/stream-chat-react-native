@@ -34,7 +34,6 @@
   "exclude": [
     "./src/components/docs/*",
     "./src/mock-builders",
-    "./src/styleguideComponents",
     "node_modules",
     "babel.config.js",
     "metro.config.js",
