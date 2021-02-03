@@ -256,6 +256,10 @@ module.exports = {
           'styled-components/native/dist/styled-components.native.cjs.js',
         'styled-components':
           'styled-components/native/dist/styled-components.native.cjs.js',
+        'react-native-markdown-package': path.join(
+          __dirname,
+          'src/styleguideComponents/ReactNativeMarkdownPackage.tsx',
+        ),
         // Looks ugly in docs, better to just not show it for now
         'react-native-actionsheet': path.join(
           __dirname,
