@@ -27,6 +27,14 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
   - [Image compression](###Image-compression)
   - [Override or intercept message actions (edit, delete, reaction, reply, etc.)](###Override-or-intercept-message-actions-(edit,-delete,-reaction,-reply,-etc.))
   - [How to change the layout of `MessageInput` component](###How-to-change-the-layout-of-MessageInput-component)
+  - [Disable autocomplete feature on input (mentions and commands)](###Disable-autocomplete-feature-on-input-(mentions-and-commands))
+  - [Push Notifications](###Push-Notifications)
+    - [Setup](####Setup)
+      - [iOS](#####iOS)
+      - [Android](#####Android)
+    - [Requirements](####Requirements)
+    - [Caveats](####Caveats)
+    
 ## Installation
 
 Install the required packages in your React Native project:
@@ -830,3 +838,56 @@ You can modify `MessageInput` in a large variety of ways, the type definitions f
 </table>
 
 **NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
+
+### Disable autocomplete feature on input (mentions and commands)
+
+The auto-complete trigger settings by default include `/`, `@`, and `:` for slash commands, mentions, and emojis respectively. These triggers are created by the exported function `ACITriggerSettings`, which takes `ACITriggerSettingsParams` and returns `TriggerSettings`. You can override this function to remove some or all of the trigger settings via the `autoCompleteTriggerSettings` prop on `Channel`. If you remove the slash commands it is suggested you also remove the commands button using the prop on `Channel` `hasCommands`. You can remove all of the commands by returning an empty object from the function given to `autoCompleteTriggerSettings`.
+
+```typescript
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+  hasCommands={false}
+  autoCompleteTriggerSettings={() => ({})}
+>
+```
+
+### Push Notifications
+
+#### Setup
+
+##### iOS
+
+- https://getstream.io/chat/docs/push_ios/?language=java
+- https://getstream.io/chat/docs/rn_push_initial/?language=java
+- https://getstream.io/chat/docs/rn_push_ios/?language=java
+
+##### Android
+
+- https://getstream.io/chat/docs/push_android/?language=java
+- https://getstream.io/chat/docs/rn_push_initial/?language=java
+- https://getstream.io/chat/docs/rn_push_android/?language=java
+
+#### Requirements
+
+- A user must be a member of channel if they expect a push notification for a message on that channel to be sent.
+
+- We only send a push notification when a user is **NOT** connected to chat, i.e. if a user **does NOT have any active WS (websocket) connection**. A WS connection is established when you call `connectUser` on the instance of `StreamChat`. You must also call `addDevice` with the users device token on the instance of `StreamChat` to provide the token to the server for push.
+
+#### Caveats
+Usually you want to receive push notification when your app is in the background. When your app is closed (not quit) the WS connection stays active for approximately 15-20 seconds; after which the system will break the connection automatically. For these 15-20 seconds you won't receive any push notifications since the WS is still active.
+
+To handle this case you have to manually break the WS connection when your app is closed.
+
+```typescript
+await client.wsConnection.disconnect();
+```
+
+And when app is re-opened (brought to foreground) you need to re-establish the connection.
+
+```typescript
+await client._setupConnection();
+```
+
+You can use [`AppState`](https://reactnative.dev/docs/appstate) from `react-native` to detect whether the app is in the foreground or background on change.
