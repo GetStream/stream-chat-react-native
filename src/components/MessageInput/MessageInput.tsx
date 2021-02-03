@@ -475,7 +475,7 @@ export const MessageInputWithContext = <
             <>
               {!giphyActive && (
                 <View style={[styles.optionsContainer, optionsContainer]}>
-                  {!showMoreOptions ? (
+                  {!showMoreOptions && (hasImagePicker || hasFilePicker) ? (
                     <MoreOptionsButton
                       handleOnPress={() => setShowMoreOptions(true)}
                     />

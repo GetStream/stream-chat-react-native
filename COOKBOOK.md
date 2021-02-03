@@ -8,11 +8,11 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
   - [Installing dependencies for Expo](###Installing-dependencies-for-Expo)
 - [Components](##Components)
   - [theme](###theme)
-  - [OverlayProvider](###OverlayProvider)
-  - [Chat](###Chat)
-  - [Channel](###Channel)
-  - [MessageList](###MessageList)
-  - [MessageInput](###MessageInput)
+  - [`OverlayProvider`](###OverlayProvider)
+  - [`Chat`](###Chat)
+  - [`Channel`](###Channel)
+  - [`MessageList`](###MessageList)
+  - [`MessageInput`](###MessageInput)
 - [Putting it all together](##Putting-it-all-together)
 - [FAQ](##FAQ)
   - [How to customize message component](###How-to-customize-message-component)
@@ -22,6 +22,11 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
   - [Slack style messages all on the left side](###Slack-style-messages-all-on-the-left-side)
   - [Message bubble with name of sender](###Message-bubble-with-name-of-sender)
   - [Swipe message left to delete and right to reply](###Swipe-message-left-to-delete-and-right-to-reply)
+  - [Keyboard](###Keyboard)
+  - [How to modify the underlying `FlatList` of `MessageList` or `ChannelList`](###How-to-modify-the-underlying-FlatList-of-MessageList-or-ChannelList)
+  - [Image compression](###Image-compression)
+  - [Override or intercept message actions (edit, delete, reaction, reply, etc.)](###Override-or-intercept-message-actions-(edit,-delete,-reaction,-reply,-etc.))
+  - [How to change the layout of `MessageInput` component](###How-to-change-the-layout-of-MessageInput-component)
 ## Installation
 
 Install the required packages in your React Native project:
@@ -724,3 +729,104 @@ const SwipeableMessage = (
     <td align='center'>Swiping using transform -> translateX</td>
   </tr>
 </table>
+
+### Keyboard
+
+React Native provides an in built component called `KeyboardAvoidingView`. This component works well for most of the cases where height of the component is 100% relative to screen. If you have a fixed height then it may create some issues (it depends on your use case - and how you use wrappers such as navigation around chat components).
+
+To avoid this issue we built our own component - `KeyboardCompatibleView`. It contains simple logic - when keyboard is opened (which we can know from events of Keyboard module), adjust the height of `Channel` component, and when keyboard is dismissed, again adjust the height of `Channel` component accordingly. `KeyboardCompatibleView` is near identical to `KeyboardAvoidingView` from `react-native`, with some adjustments for app state.
+
+You can provide following props to `Channel` to customize the builtin `KeyboardCompatibleView` behavior. 
+
+```
+keyboardBehavior - 'padding' | 'position' | 'height'
+disableKeyboardCompatibleView - boolean 
+keyboardVerticalOffset  - number
+```
+
+You can pass additional props directly to the component using the `additionalKeyboardAvoidingViewProps`.
+
+You can also replace the `KeyboardCompatibleView` with your own custom component by passing it as a prop to channel.
+
+```typescript
+<Channel
+  KeyboardCompatibleView={CustomizedKeyboardView}
+  ...
+/>
+```
+
+Or disable the `KeyboardCompatibleView` and use the standard `KeyboardAvoidingView` from `react-native`.
+You can disable `KeyboardCompatibleView` by using prop `disableKeyboardCompatibleView` on the `Channel` component.
+
+```typescript
+<Channel
+  disableKeyboardCompatibleView
+  ...
+/>
+```
+
+### How to modify the underlying `FlatList` of `MessageList` or `ChannelList`
+
+You can additional pass [props](https://reactnative.dev/docs/flatlist#props) to the underlying `FlatList` using `additionalFlatListProps` prop.
+
+```typescript
+<ChannelList
+  filters={filters}
+  sort={sort}
+  additionalFlatListProps={{ bounces: true }}
+/>
+```
+
+```typescript
+<MessageList additionalFlatListProps={{ bounces: true }} />
+```
+
+### Image compression
+
+If an image is too big it may cause a delay while uploading to our server. You can elect to compress images prior to upload by adding the `compressImageQuality` prop to `Channel`.
+
+`compressImageQuality` can be a value from `0` to `1`, where 1 is the best quality, i.e. no compression. On iOS, values larger than 0.8 don't decrease the quality a noticeable on most images, while still reducing the file size significantly when compared to the uncompressed version.
+
+### Override or intercept message actions (edit, delete, reaction, reply, etc.)
+
+// TODO:
+
+### How to change the layout of `MessageInput` component
+
+We provide the `MessageInput` container out of the box in a fixed configuration with many customizable features. Similar to other components it accesses most customizations via context, specially the `MessageInputContext` which is instantiated in `Channel`. You can also pass the same props as the context provides directly to the `MessageInput` component to override the context values.
+
+```typescript
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  Message={CustomMessageComponent}
+  Input={() => null}
+>
+  <View style={{ flex: 1 }}>
+    <MessageList />
+    <MessageInput
+      Input={() => <View style={{ height: 40, backgroundColor: 'red' }} />}
+    />
+  </View>
+</Channel>
+```
+
+The code above would render the <span style="color:red">`red View`</span> and not `null` as the props take precedence over the context value.
+
+You can modify `MessageInput` in a large variety of ways, the type definitions for the props give clear insight into all of the options. You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
+
+<table>
+  <tr>
+    <td align='center'><img src='./screenshots/cookbook/SendButton.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/HasPickers.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/NumberOfLines.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Replace SendButton</td>
+    <td align='center'>hasFilePicker & hasImagePicker - false</td>
+    <td align='center'>numberOfLines={2}</td>
+  </tr>
+</table>
+
+**NOTE:** The `additionalTextInputProps` prop of both `Channel` and `MessageInput` is passed the the internal [`TextInput`](https://reactnative.dev/docs/textinput) component from `react-native`. If you want to change the `TextInput` component props directly this can be done using this prop.
