@@ -43,7 +43,7 @@ export type ChannelPreviewProps<
  * This component manages state for the ChannelPreviewMessenger UI component and receives
  * all props from the ChannelListMessenger component.
  */
-const UnMemoizedChannelPreview = <
+export const ChannelPreview = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -112,28 +112,3 @@ const UnMemoizedChannelPreview = <
     />
   );
 };
-
-const areEqual = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  prevProps: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
-  nextProps: ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>,
-) => {
-  const { last_message_at: previousLast } = prevProps.channel.state;
-  const { last_message_at: nextLast } = nextProps.channel.state;
-
-  return (
-    previousLast === nextLast && prevProps.forceUpdate === nextProps.forceUpdate
-  );
-};
-
-export const ChannelPreview = React.memo(
-  UnMemoizedChannelPreview,
-  areEqual,
-) as typeof UnMemoizedChannelPreview;
