@@ -100,7 +100,7 @@ file: {
 
 Modifying the theme for this component is done by adding custom styles at the desired keys.
 
-```typescript
+```tsx
 import type { DeepPartial, Theme } from 'stream-chat-react-native';
 
 const theme: DeepPartial<Theme> = {
@@ -264,7 +264,8 @@ const chatClient = StreamChat.getInstance<
   UserType
 >('key');
 ```
-```typescript
+
+```tsx
 <Chat client={chatClient} i18nInstance={streami18n}>
 ```
 
