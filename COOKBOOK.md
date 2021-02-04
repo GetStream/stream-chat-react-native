@@ -814,14 +814,14 @@ type MessageAction = {
 ```tsx
 <Channel
   channel={channel}
-  keyboardVerticalOffset={headerHeight}
-  thread={thread}
   editMessage={(message) => ({
     action: () => console.log(message.text),
-    title: 'Custom Edit',
     icon: <StreamReaction />,
+    title: 'Custom Edit',
     titleStyle: { color: '#005FFF' },
   })}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
 >
 ```
 
