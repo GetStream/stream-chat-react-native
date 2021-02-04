@@ -260,6 +260,10 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
+        'react-native-markdown-package': path.join(
+          __dirname,
+          'styleguideComponents/ReactNativeMarkdownPackage.tsx',
+        ),
       },
       extensions: ['.web.js', '.js', '.ts', '.tsx'],
     },

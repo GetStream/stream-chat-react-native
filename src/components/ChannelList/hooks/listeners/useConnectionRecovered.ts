@@ -35,7 +35,22 @@ export const useConnectionRecovered = <
       setForceUpdate((count) => count + 1);
     };
 
-    client.on('connection.recovered', handleEvent);
-    return () => client.off('connection.recovered', handleEvent);
+    const { unsubscribe: unsubscribeRecovered } = client.on(
+      'connection.recovered',
+      handleEvent,
+    );
+    const { unsubscribe: unsubscribeChanged } = client.on(
+      'connection.changed',
+      (e) => {
+        if (e.online) {
+          handleEvent();
+        }
+      },
+    );
+
+    return () => {
+      unsubscribeRecovered();
+      unsubscribeChanged();
+    };
   }, []);
 };

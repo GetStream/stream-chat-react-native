@@ -194,7 +194,7 @@ export type TriggerSettings<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
-  '/': {
+  '/'?: {
     component: string | React.ComponentType<Partial<CommandsItemProps<Co>>>;
     dataProvider: (
       query: SuggestionCommand<Co>['name'],
@@ -212,7 +212,7 @@ export type TriggerSettings<
       text: string;
     };
   };
-  ':': {
+  ':'?: {
     component: string | React.ComponentType<Partial<EmojisItemProps>>;
     dataProvider: (
       query: Emoji['name'],
@@ -227,7 +227,7 @@ export type TriggerSettings<
       text: string;
     };
   };
-  '@': {
+  '@'?: {
     callback: (item: SuggestionUser<Us>) => void;
     component: string | React.ComponentType<Partial<MentionsItemProps<Us>>>;
     dataProvider: (

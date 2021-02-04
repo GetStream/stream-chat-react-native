@@ -1,5 +1,12 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  GestureResponderEvent,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {
   MessageContextValue,
@@ -117,7 +124,13 @@ export type GiphyPropsWithContext<
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
     'additionalTouchableProps'
-  > & { attachment: Attachment<At> };
+  > & {
+    attachment: Attachment<At>;
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+  };
 
 const GiphyWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -135,6 +148,7 @@ const GiphyWithContext = <
     attachment,
     handleAction,
     onLongPress,
+    onPressIn,
   } = props;
 
   const { actions, image_url, thumb_url, title, type } = attachment;
@@ -258,6 +272,7 @@ const GiphyWithContext = <
   ) : (
     <TouchableOpacity
       onLongPress={onLongPress}
+      onPressIn={onPressIn}
       style={[styles.container, container]}
       testID='giphy-attachment'
       {...additionalTouchableProps}
@@ -350,7 +365,13 @@ export type GiphyProps<
       MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
       'additionalTouchableProps'
     >
-> & { attachment: Attachment<At> };
+> & {
+  attachment: Attachment<At>;
+  onPressIn?: (
+    event: GestureResponderEvent,
+    defaultOnPress?: () => void,
+  ) => void;
+};
 
 /**
  * UI component for card in attachments.
@@ -377,15 +398,10 @@ export const Giphy = <
     Re,
     Us
   >();
-  const { additionalTouchableProps } = useMessagesContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
+  const {
+    additionalTouchableProps,
+    onPressInMessage: onPressIn,
+  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
     <MemoizedGiphy
@@ -393,6 +409,7 @@ export const Giphy = <
         additionalTouchableProps,
         handleAction,
         onLongPress,
+        onPressIn,
       }}
       {...props}
     />

@@ -157,16 +157,19 @@ const AutoCompleteInputWithContext = <
   }, [text]);
 
   const startTracking = (trigger: Trigger) => {
-    isTrackingStarted.current = true;
-    const { component: Component } = triggerSettings[trigger];
-    openSuggestions(
-      typeof Component === 'string' ? Component : <Component />,
-      trigger === ':' ? (
-        <EmojisHeader title='' />
-      ) : trigger === '/' ? (
-        <CommandsHeader />
-      ) : undefined,
-    );
+    const triggerSetting = triggerSettings[trigger];
+    if (triggerSetting) {
+      isTrackingStarted.current = true;
+      const { component: Component } = triggerSetting;
+      openSuggestions(
+        typeof Component === 'string' ? Component : <Component />,
+        trigger === ':' ? (
+          <EmojisHeader title='' />
+        ) : trigger === '/' ? (
+          <CommandsHeader />
+        ) : undefined,
+      );
+    }
   };
 
   const stopTracking = () => {
@@ -182,51 +185,60 @@ const AutoCompleteInputWithContext = <
     trigger: Trigger;
   }) => {
     if (isMentionTrigger(trigger)) {
-      await triggerSettings[trigger].dataProvider(
-        query as SuggestionUser<Us>['name'],
-        text,
-        (data, queryCallback) => {
-          if (query === queryCallback) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as SuggestionUser<Us>['name'],
+          text,
+          (data, queryCallback) => {
+            if (query === queryCallback) {
+              updateSuggestionsContext({
+                data,
+                onSelect: (item) => onSelectSuggestion({ item, trigger }),
+              });
+            }
+          },
+        );
+      }
+    } else if (isCommandTrigger(trigger)) {
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as SuggestionCommand<Co>['name'],
+          text,
+          (data, queryCallback) => {
+            if (query !== queryCallback) {
+              return;
+            }
+
             updateSuggestionsContext({
               data,
               onSelect: (item) => onSelectSuggestion({ item, trigger }),
             });
-          }
-        },
-      );
-    } else if (isCommandTrigger(trigger)) {
-      await triggerSettings[trigger].dataProvider(
-        query as SuggestionCommand<Co>['name'],
-        text,
-        (data, queryCallback) => {
-          if (query !== queryCallback) {
-            return;
-          }
-
-          updateSuggestionsContext({
-            data,
-            onSelect: (item) => onSelectSuggestion({ item, trigger }),
-          });
-        },
-      );
+          },
+        );
+      }
     } else {
-      await triggerSettings[trigger].dataProvider(
-        query as Emoji['name'],
-        text,
-        (data, queryCallback) => {
-          if (query !== queryCallback) {
-            return;
-          }
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        await triggerSetting.dataProvider(
+          query as Emoji['name'],
+          text,
+          (data, queryCallback) => {
+            if (query !== queryCallback) {
+              return;
+            }
 
-          updateSuggestionsContext(
-            {
-              data,
-              onSelect: (item) => onSelectSuggestion({ item, trigger }),
-            },
-            <EmojisHeader title={query} />,
-          );
-        },
-      );
+            updateSuggestionsContext(
+              {
+                data,
+                onSelect: (item) => onSelectSuggestion({ item, trigger }),
+              },
+              <EmojisHeader title={query} />,
+            );
+          },
+        );
+      }
     }
   };
 
@@ -245,19 +257,28 @@ const AutoCompleteInputWithContext = <
     item: Suggestion<Co, Us>;
     trigger: Trigger;
   }) => {
-    if (!trigger) {
+    if (!trigger || !triggerSettings[trigger]) {
       return;
     }
 
     let newTokenString = '';
     if (isCommandTrigger(trigger) && isSuggestionCommand(item)) {
-      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
+      }
     }
     if (isEmojiTrigger(trigger) && isSuggestionEmoji(item)) {
-      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
+      }
     }
     if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
-      newTokenString = `${triggerSettings[trigger].output(item).text} `;
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        newTokenString = `${triggerSetting.output(item).text} `;
+      }
     }
 
     const textToModify = text.slice(0, selectionEnd.current);
@@ -293,7 +314,10 @@ const AutoCompleteInputWithContext = <
     selectionEnd.current = newCaretPosition || 0;
 
     if (isMentionTrigger(trigger) && isSuggestionUser(item)) {
-      triggerSettings[trigger].callback(item);
+      const triggerSetting = triggerSettings[trigger];
+      if (triggerSetting) {
+        triggerSetting.callback(item);
+      }
     }
   };
 

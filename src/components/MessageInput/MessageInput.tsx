@@ -134,6 +134,7 @@ type MessageInputPropsWithContext<
     | 'FileUploadPreview'
     | 'fileUploads'
     | 'giphyActive'
+    | 'hasCommands'
     | 'hasFilePicker'
     | 'hasImagePicker'
     | 'ImageUploadPreview'
@@ -193,6 +194,7 @@ export const MessageInputWithContext = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    hasCommands,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -477,7 +479,9 @@ export const MessageInputWithContext = <
             <>
               {!giphyActive && (
                 <View style={[styles.optionsContainer, optionsContainer]}>
-                  {!showMoreOptions ? (
+                  {!showMoreOptions &&
+                  (hasImagePicker || hasFilePicker) &&
+                  hasCommands ? (
                     <MoreOptionsButton
                       handleOnPress={() => setShowMoreOptions(true)}
                     />
@@ -487,23 +491,27 @@ export const MessageInputWithContext = <
                         uploadsEnabled !== false && (
                           <View
                             style={[
-                              styles.attachButtonContainer,
+                              hasCommands
+                                ? styles.attachButtonContainer
+                                : undefined,
                               attachButtonContainer,
                             ]}
                           >
                             <AttachButton handleOnPress={handleOnPress} />
                           </View>
                         )}
-                      <View style={[commandsButtonContainer]}>
-                        <CommandsButton
-                          handleOnPress={() => {
-                            appendText('/');
-                            if (inputBoxRef.current) {
-                              inputBoxRef.current.focus();
-                            }
-                          }}
-                        />
-                      </View>
+                      {hasCommands && (
+                        <View style={commandsButtonContainer}>
+                          <CommandsButton
+                            handleOnPress={() => {
+                              appendText('/');
+                              if (inputBoxRef.current) {
+                                inputBoxRef.current.focus();
+                              }
+                            }}
+                          />
+                        </View>
+                      )}
                     </>
                   )}
                 </View>
@@ -781,6 +789,7 @@ export const MessageInput = <
     FileUploadPreview,
     fileUploads,
     giphyActive,
+    hasCommands,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -833,6 +842,7 @@ export const MessageInput = <
         FileUploadPreview,
         fileUploads,
         giphyActive,
+        hasCommands,
         hasFilePicker,
         hasImagePicker,
         ImageUploadPreview,

@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  GestureResponderEvent,
   Linking,
   StyleProp,
   StyleSheet,
@@ -96,6 +97,10 @@ export type FileAttachmentPropsWithContext<
     /** The attachment to render */
     attachment: Attachment<At>;
     attachmentSize?: number;
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
     styles?: Partial<{
       container: StyleProp<ViewStyle>;
       details: StyleProp<ViewStyle>;
@@ -122,6 +127,7 @@ const FileAttachmentWithContext = <
     AttachmentActions,
     AttachmentFileIcon,
     onLongPress,
+    onPressIn,
     styles: stylesProp = {},
   } = props;
 
@@ -134,10 +140,21 @@ const FileAttachmentWithContext = <
     },
   } = useTheme();
 
+  const defaultOnPress = () => goToURL(attachment.asset_url);
+
   return (
     <TouchableOpacity
       onLongPress={onLongPress}
-      onPress={() => goToURL(attachment.asset_url)}
+      onPress={() => {
+        if (!onPressIn) {
+          defaultOnPress();
+        }
+      }}
+      onPressIn={(event) => {
+        if (onPressIn) {
+          onPressIn(event, defaultOnPress);
+        }
+      }}
       testID='file-attachment'
       {...additionalTouchableProps}
     >
@@ -188,7 +205,12 @@ export type FileAttachmentProps<
   Pick<
     FileAttachmentPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
     'attachment'
-  >;
+  > & {
+    onPressIn?: (
+      event: GestureResponderEvent,
+      defaultOnPress?: () => void,
+    ) => void;
+  };
 
 export const FileAttachment = <
   At extends DefaultAttachmentType = DefaultAttachmentType,
@@ -206,6 +228,7 @@ export const FileAttachment = <
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
     AttachmentFileIcon = FileIconDefault,
+    onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -215,6 +238,7 @@ export const FileAttachment = <
         AttachmentActions,
         AttachmentFileIcon,
         onLongPress,
+        onPressIn,
       }}
       {...props}
     />

@@ -30,7 +30,7 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "styleguideComponents"],
   "exclude": [
     "./src/components/docs/*",
     "./src/mock-builders",

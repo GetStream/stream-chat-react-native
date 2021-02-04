@@ -32,6 +32,7 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import {
   ACITriggerSettings,
+  ACITriggerSettingsParams,
   FileState,
   generateRandomId,
   TriggerSettings,
@@ -247,6 +248,8 @@ export type InputMessageInputContextValue<
   FileUploadPreview: React.ComponentType<
     FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /** If commands button should be shown */
+  hasCommands: boolean;
   /** If component should have file picker functionality */
   hasFilePicker: boolean;
   /** If component should have image picker functionality */
@@ -289,6 +292,12 @@ export type InputMessageInputContextValue<
    * @see See https://reactnative.dev/docs/textinput#reference
    */
   additionalTextInputProps?: TextInputProps;
+  /**
+   * Mapping of input triggers to the outputs to be displayed by the AutoCompleteInput
+   */
+  autoCompleteTriggerSettings?: (
+    settings: ACITriggerSettingsParams<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => TriggerSettings<Co, Us>;
   /**
    * Compress image with quality (from 0 to 1, where 1 is best quality).
    * On iOS, values larger than 0.8 don't produce a noticeable quality increase in most images,
@@ -709,10 +718,15 @@ export const MessageInputProvider = <
   };
 
   const triggerSettings = channel
-    ? ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
-        channel,
-        onMentionSelectItem: onSelectItem,
-      })
+    ? value.autoCompleteTriggerSettings
+      ? value.autoCompleteTriggerSettings({
+          channel,
+          onMentionSelectItem: onSelectItem,
+        })
+      : ACITriggerSettings<At, Ch, Co, Ev, Me, Re, Us>({
+          channel,
+          onMentionSelectItem: onSelectItem,
+        })
     : ({} as TriggerSettings<Co, Us>);
 
   const updateMessage = async () => {

@@ -31,6 +31,14 @@
   - Removed dot notation for theming applications
   - Removed css string notation for styles on theme
   - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
+## [2.2.1] 2021-02-03
+
+For push notifications, we usually recommend users to disconnect websocket when app goes to background and reconnect when app comes to foreground. But channel list UI doesn't update properly once the ws is re-connected. This issue has been fixed in this commit [8a35e50](https://github.com/GetStream/stream-chat-react-native/commit/8a35e505fadb059b0a3b48fdc33a3a72021bd158)
+
+## [2.2.0] 2021-02-02
+
+- Switched to `react-native-markdown-package` for markdown of message text [#505](https://github.com/GetStream/stream-chat-react-native/pull/505/files)
+
 ## [2.1.4] 2021-01-29
 
 Fixed broken re-send message functionality, upon failure [b3c028f](https://github.com/GetStream/stream-chat-react-native/commit/b3c028f7bb91d00286717564764cb0fcf42b75b3)
