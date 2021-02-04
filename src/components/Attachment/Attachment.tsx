@@ -242,7 +242,7 @@ export const Attachment = <
     PropFileAttachment || ContextFileAttachment || FileAttachmentDefault;
   const Gallery = PropGallery || ContextGallery || GalleryDefault;
   const Giphy = PropGiphy || ContextGiphy || GiphyDefault;
-  const onPressIn = PropOnPressIn || onPressInMessage;
+  const onPressIn = propOnPressIn || onPressInMessage;
   const UrlPreview = PropUrlPreview || ContextUrlPreview || CardDefault;
 
   return (
