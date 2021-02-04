@@ -1005,6 +1005,8 @@ export const ChannelWithContext = <
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       type,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      updated_at,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       user,
       ...extraFields
     } = message;
@@ -1154,7 +1156,12 @@ export const ChannelWithContext = <
     Re,
     Us
   >['loadMoreRecent'] = heavyThrottle(async () => {
-    if (loadingMoreRecent || channel?.state.isUpToDate || !messages.length) {
+    if (
+      loadingMore ||
+      loadingMoreRecent ||
+      channel?.state.isUpToDate ||
+      !messages.length
+    ) {
       return;
     }
 

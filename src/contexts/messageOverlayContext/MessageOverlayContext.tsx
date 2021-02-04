@@ -5,12 +5,16 @@ import { getDisplayName } from '../utils/getDisplayName';
 import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type { Alignment } from '../messageContext/MessageContext';
 import type {
   GroupType,
-  MessageContentType,
+  MessagesContextValue,
 } from '../messagesContext/MessagesContext';
+
+import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+import type { MessageActionsProps } from '../../components/MessageOverlay/MessageActions';
+import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
+import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -22,7 +26,6 @@ import type {
   UnknownType,
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
-import type { OverlayReactionListProps } from 'src/components';
 
 export type MessageAction = {
   action: () => void;
@@ -48,8 +51,8 @@ export type MessageOverlayData<
   images?: Attachment<At>[];
   message?: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   messageActions?: MessageAction[];
-  messageContentOrder?: MessageContentType[];
   messageReactionTitle?: string;
+  messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   onlyEmojis?: boolean;
   otherAttachments?: Attachment<At>[];
   OverlayReactionList?: React.ComponentType<
@@ -68,6 +71,13 @@ export type MessageOverlayContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  MessageActions: React.ComponentType<
+    MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  OverlayReactionList: React.ComponentType<
+    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  OverlayReactions: React.ComponentType<OverlayReactionsProps>;
   reset: () => void;
   setData: React.Dispatch<
     React.SetStateAction<MessageOverlayData<At, Ch, Co, Ev, Me, Re, Us>>

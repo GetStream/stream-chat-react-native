@@ -84,6 +84,20 @@ const StatusIndicator = <
   return null;
 };
 
+const renderItem = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>({
+  item,
+}: {
+  item: Channel<At, Ch, Co, Ev, Me, Re, Us>;
+}) => <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> channel={item} />;
+
 const ChannelListMessengerWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -134,10 +148,6 @@ const ChannelListMessengerWithContext = <
       setLoading(!!loadingChannels);
     }
   }, [loading, loadingChannels]);
-
-  const renderItem = (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => (
-    <ChannelPreview<At, Ch, Co, Ev, Me, Re, Us> channel={channel} />
-  );
 
   if (error && !refreshing && !loadingChannels && !channels?.length) {
     return (
@@ -190,7 +200,7 @@ const ChannelListMessengerWithContext = <
         refreshControl={
           <RefreshControl onRefresh={refreshList} refreshing={refreshing} />
         }
-        renderItem={({ item }) => renderItem(item)}
+        renderItem={renderItem}
         style={[styles.flatList, { backgroundColor: white_snow }, flatList]}
         testID='channel-list-messenger'
         {...additionalFlatListProps}

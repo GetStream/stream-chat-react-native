@@ -31,7 +31,7 @@ export const useChatClient = () => {
   const [isConnecting, setIsConnecting] = useState(true);
 
   const loginUser = async (config: LoginConfig) => {
-    const client = new StreamChat<
+    const client = StreamChat.getInstance<
       LocalAttachmentType,
       LocalChannelType,
       LocalCommandType,
@@ -62,7 +62,7 @@ export const useChatClient = () => {
     try {
       if (userId) {
         await loginUser({
-          apiKey: 'q95x9hkbyd6p',
+          apiKey: 'yjrt5yxw77ev',
           userId: USERS[userId].id,
           userImage: USERS[userId].image,
           userName: USERS[userId].name,

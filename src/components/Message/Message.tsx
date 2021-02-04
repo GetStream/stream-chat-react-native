@@ -199,6 +199,7 @@ export type MessagePropsWithContext<
   Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
+    messagesContext: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
     /**
      * Whether or not users are able to long press messages.
      */
@@ -300,6 +301,7 @@ const MessageWithContext = <
     message,
     messageActions: messageActionsProp,
     messageContentOrder: messageContentOrderProp,
+    messagesContext,
     MessageSimple,
     muteUser: muteUserProp,
     onDoubleTapMessage: onDoubleTapMessageProp,
@@ -873,9 +875,9 @@ const MessageWithContext = <
         : repliesEnabled
         ? [reply, threadReply, muteUser, blockUser, deleteMessage]
         : [muteUser, blockUser, deleteMessage],
-      messageContentOrder,
       messageReactionTitle:
         !error && messageReactions ? t('Message Reactions') : undefined,
+      messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
       OverlayReactionList,
@@ -1216,97 +1218,28 @@ export const Message = <
   const { client } = useChatContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
-  const {
-    blockUser,
-    copyMessage,
-    deleteMessage,
-    dismissKeyboardOnMessageTouch,
-    editMessage,
-    flagMessage,
-    forceAlign,
-    handleBlock,
-    handleCopy,
-    handleDelete,
-    handleEdit,
-    handleFlag,
-    handleMute,
-    handleReaction,
-    handleReply,
-    handleRetry,
-    handleThreadReply,
-    messageContentOrder,
-    MessageSimple,
-    muteUser,
-    onDoubleTapMessage,
-    onLongPressMessage,
-    OverlayReactionList,
-    reactionsEnabled,
-    removeMessage,
-    repliesEnabled,
-    reply,
-    retry,
-    retrySendMessage,
-    selectReaction,
-    setEditingState,
-    setQuotedMessageState,
-    supportedReactions,
-    threadReply,
-    updateMessage,
-  } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
+  const messagesContext = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
   const { openThread } = useThreadContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { t } = useTranslationContext();
 
   return (
     <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
+      {...messagesContext}
       {...{
-        blockUser,
         channel,
         client,
-        copyMessage,
-        deleteMessage,
         disabled,
         dismissKeyboard,
-        dismissKeyboardOnMessageTouch,
-        editMessage,
         enforceUniqueReaction,
-        flagMessage,
-        forceAlign,
-        handleBlock,
-        handleCopy,
-        handleDelete,
-        handleEdit,
-        handleFlag,
-        handleMute,
-        handleReaction,
-        handleReply,
-        handleRetry,
-        handleThreadReply,
         isAdmin,
         isModerator,
         isOwner,
-        messageContentOrder,
-        MessageSimple,
-        muteUser,
-        onDoubleTapMessage,
-        onLongPressMessage,
+        messagesContext,
         openThread,
-        OverlayReactionList,
-        reactionsEnabled,
-        removeMessage,
-        repliesEnabled,
-        reply,
-        retry,
-        retrySendMessage,
-        selectReaction,
         setData,
-        setEditingState,
         setOverlay,
-        setQuotedMessageState,
-        supportedReactions,
         t,
-        threadReply,
-        updateMessage,
       }}
       {...props}
     />
