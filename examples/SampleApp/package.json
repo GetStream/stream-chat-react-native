@@ -37,11 +37,11 @@
     "stream-chat-react-native": "link:../../native-package"
   },
   "devDependencies": {
-    "@babel/core": "7.12.10",
-    "@babel/runtime": "7.12.5",
+    "@babel/core": "7.12.13",
+    "@babel/runtime": "7.12.13",
     "@react-native-community/eslint-config": "2.0.0",
     "@types/jest": "26.0.20",
-    "@types/react-native": "0.63.46",
+    "@types/react-native": "0.63.48",
     "@types/react-test-renderer": "16.9.3",
     "@typescript-eslint/eslint-plugin": "4.14.2",
     "@typescript-eslint/parser": "4.14.2",

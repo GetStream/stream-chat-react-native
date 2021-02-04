@@ -5,7 +5,6 @@ import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 import { useTranslationContext } from '../../../contexts/translationContext/TranslationContext';
 import { Eye } from '../../../icons';
 
-import type SeamlessImmutable from 'seamless-immutable';
 import type { Attachment, ChannelMemberResponse } from 'stream-chat';
 
 import type { MessageStatusPropsWithContext } from './MessageStatus';
@@ -34,10 +33,10 @@ export type MessageFooterProps<
   Us extends UnknownType = DefaultUserType
 > = {
   alignment: Alignment;
-  formattedDate: string | SeamlessImmutable.ImmutableDate;
-  members: SeamlessImmutable.ImmutableObject<{
-    [key: string]: SeamlessImmutable.ImmutableObject<ChannelMemberResponse<Us>>;
-  }>;
+  formattedDate: string | Date;
+  members: {
+    [key: string]: ChannelMemberResponse<Us>;
+  };
   message: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
   MessageStatus: React.ComponentType<
     Partial<MessageStatusPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>
