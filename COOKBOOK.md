@@ -120,9 +120,9 @@ const theme: DeepPartial<Theme> = {
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/DisplayNameTheme.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/DisplayNameTheme.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png'/></td>
   </tr>
   <tr></tr>
   <tr>
