@@ -592,16 +592,16 @@ const onLongPressMessage = () => {
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
-  thread={thread}
-  supportedReactions={[{ type: 'stream', Icon: StreamReaction }]}
-  OverlayReactionList={() => null}
   onDoubleTapMessage={(_message, handleReactionDoubleTap) =>
     if (handleReactionDoubleTap) {
       handleReactionDoubleTap('stream')
     }
   }
-  onPressInMessage={handleDoubleTap}
   onLongPressMessage={onLongPressMessage}
+  onPressInMessage={handleDoubleTap}
+  OverlayReactionList={() => null}
+  supportedReactions={[{ type: 'stream', Icon: StreamReaction }]}
+  thread={thread}
 >
 ```
 
