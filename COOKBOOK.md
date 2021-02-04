@@ -798,7 +798,7 @@ There are a number of message actions you may want to intercept or override. `Ch
 
 The intercepts will not change the standard functions but will be called during their calls if provided. For actions such as analytics these are good to take advantage of. All of these intercept functions receive the message they are called on, and `handleReaction` additionally receives the reaction type.
 
-You can also override the built in functions for these actions if you so choose. With the exception of `selectReaction` all of the functions are provided the `message` they are called on and must return a `MessageAction` for use in the context menu. `selectReaction` is also provided the `message` but should return an async function that takes a `reactionType`, this is called with the selected reaction type when a reaction is selected in the context menu.
+You can also override the built in functions for these actions if you so choose. With the exception of `selectReaction` all of the functions are provided the `message` they are called on and must return a `MessageAction` for use in the context menu. `selectReaction` is also provided the `message` but should return an async function that takes a `reactionType`. This is called with the selected reaction type when a reaction is selected in the context menu.
 
 ```tsx
 type MessageAction = {
