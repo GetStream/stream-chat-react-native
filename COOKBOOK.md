@@ -614,9 +614,9 @@ You can change this at the `Message` level via the prop `forceAlign` or set the 
 ```tsx
 <Channel
   channel={channel}
+  forceAlign='left'
   keyboardVerticalOffset={headerHeight}
   thread={thread}
-  forceAlign='left'
 >
 ```
 
