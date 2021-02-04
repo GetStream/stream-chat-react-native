@@ -196,20 +196,35 @@ export type ChannelPropsWithContext<
       | 'Attachment'
       | 'AttachmentActions'
       | 'AttachmentFileIcon'
+      | 'blockUser'
       | 'Card'
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
+      | 'copyMessage'
       | 'DateHeader'
+      | 'deleteMessage'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
+      | 'editMessage'
       | 'FileAttachment'
       | 'FileAttachmentGroup'
+      | 'flagMessage'
       | 'FlatList'
       | 'forceAlign'
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
+      | 'handleBlock'
+      | 'handleCopy'
+      | 'handleDelete'
+      | 'handleEdit'
+      | 'handleFlag'
+      | 'handleMute'
+      | 'handleReaction'
+      | 'handleReply'
+      | 'handleRetry'
+      | 'handleThreadReply'
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
@@ -226,6 +241,7 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'muteUser'
       | 'myMessageTheme'
       | 'onDoubleTapMessage'
       | 'onLongPressMessage'
@@ -233,7 +249,11 @@ export type ChannelPropsWithContext<
       | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
+      | 'reply'
+      | 'retry'
+      | 'selectReaction'
       | 'supportedReactions'
+      | 'threadReply'
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
@@ -348,6 +368,7 @@ export const ChannelWithContext = <
     AttachmentActions = AttachmentActionsDefault,
     AttachmentFileIcon = FileIconDefault,
     autoCompleteTriggerSettings,
+    blockUser,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -358,7 +379,9 @@ export const ChannelWithContext = <
     closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
+    copyMessage,
     DateHeader = DateHeaderDefault,
+    deleteMessage,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
@@ -368,11 +391,13 @@ export const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
+    editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
+    flagMessage,
     FlatList = FlatListDefault,
     forceAlign,
     formatDate,
@@ -380,6 +405,16 @@ export const ChannelWithContext = <
     Giphy = GiphyDefault,
     giphyEnabled,
     globalUnreadCountLimit = 255,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
     hasCommands = true,
     hasFilePicker = true,
     hasImagePicker = true,
@@ -403,6 +438,7 @@ export const ChannelWithContext = <
     MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
+    muteUser,
     myMessageTheme,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
@@ -421,6 +457,9 @@ export const ChannelWithContext = <
     OverlayReactionList = OverlayReactionListDefault,
     ReactionList = ReactionListDefault,
     Reply = ReplyDefault,
+    reply,
+    retry,
+    selectReaction,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
     setInputRef,
@@ -429,6 +468,7 @@ export const ChannelWithContext = <
     supportedReactions = reactionData,
     t,
     thread: threadProps,
+    threadReply,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     updateSuggestions,
@@ -1373,20 +1413,35 @@ export const ChannelWithContext = <
     Attachment,
     AttachmentActions,
     AttachmentFileIcon,
+    blockUser,
     Card,
     CardCover,
     CardFooter,
     CardHeader,
+    copyMessage,
     DateHeader,
+    deleteMessage,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
+    editMessage: editMessageProp,
     FileAttachment,
     FileAttachmentGroup,
+    flagMessage,
     FlatList,
     forceAlign,
     formatDate,
     Gallery,
     Giphy,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
     hasMore,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
@@ -1409,6 +1464,7 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    muteUser,
     myMessageTheme,
     onDoubleTapMessage,
     onLongPressMessage,
@@ -1417,11 +1473,15 @@ export const ChannelWithContext = <
     ReactionList,
     removeMessage,
     Reply,
+    reply,
+    retry,
     retrySendMessage,
     ScrollToBottomButton,
+    selectReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
+    threadReply,
     TypingIndicator,
     TypingIndicatorContainer,
     updateMessage,

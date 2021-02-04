@@ -10,6 +10,7 @@ import type { DebouncedFunc } from 'lodash';
 import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
+import type { MessageAction } from '../messageOverlayContext/MessageOverlayContext';
 import type { SuggestionCommand } from '../suggestionsContext/SuggestionsContext';
 import type { DeepPartial } from '../themeContext/ThemeContext';
 import type { Theme } from '../themeContext/utils/theme';
@@ -279,6 +280,10 @@ export type MessagesContextValue<
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
    */
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
+  /** Full override of the block user button in the Message Actions */
+  blockUser?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
   /**
    * Custom UI component to override default cover (between Header and Footer) of Card component.
    * Accepts the same props as Card component.
@@ -294,12 +299,66 @@ export type MessagesContextValue<
    * Accepts the same props as Card component.
    */
   CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /** Full override of the copy message button in the Message Actions */
+  copyMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
+  /** Full override of the delete message button in the Message Actions */
+  deleteMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
   disableTypingIndicator?: boolean;
+  /** Full override of the edit message button in the Message Actions */
+  editMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
+  /** Full override of the flag message button in the Message Actions */
+  flagMessage?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
   forceAlign?: Alignment | boolean;
   /**
    * Optional function to custom format the message date
    */
   formatDate?: (date: TDateTimeParserInput) => string;
+  handleBlock?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when a copy message action is invoked */
+  handleCopy?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when a delete message action is invoked */
+  handleDelete?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when an edit message action is invoked */
+  handleEdit?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /** Handler to access when a flag message action is invoked */
+  handleFlag?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when a mute user action is invoked */
+  handleMute?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to process a reaction */
+  handleReaction?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+    reactionType: string,
+  ) => Promise<void>;
+  /** Handler to access when a reply action is invoked */
+  handleReply?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when a retry action is invoked */
+  handleRetry?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
+  /** Handler to access when a thread reply action is invoked */
+  handleThreadReply?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => Promise<void>;
   /** Object specifying rules defined within simple-markdown https://github.com/Khan/simple-markdown#adding-a-simple-extension */
   markdownRules?: MarkdownRules;
   /**
@@ -312,6 +371,10 @@ export type MessagesContextValue<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /** Full override of the mute user button in the Message Actions */
+  muteUser?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
   /**
    * Theme provided only to messages that are the current users
    */
@@ -335,6 +398,18 @@ export type MessagesContextValue<
     event: GestureResponderEvent,
     defaultOnPress?: () => void,
   ) => void;
+  /** Full override of the reply button in the Message Actions */
+  reply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
+  /** Full override of the resend button in the Message Actions */
+  retry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
+  /** Full override of the reaction function on Message and Message Overlay */
+  selectReaction?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => (reactionType: string) => Promise<void>;
+  /** Full override of the thread reply button in the Message Actions */
+  threadReply?: (
+    message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+  ) => MessageAction;
 };
 
 export const MessagesContext = React.createContext({} as MessagesContextValue);

@@ -160,100 +160,56 @@ export type MessagePropsWithContext<
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'blockUser'
+    | 'copyMessage'
+    | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
+    | 'editMessage'
+    | 'flagMessage'
+    | 'forceAlign'
+    | 'handleBlock'
+    | 'handleCopy'
+    | 'handleDelete'
+    | 'handleEdit'
+    | 'handleFlag'
+    | 'handleMute'
+    | 'handleReaction'
+    | 'handleReply'
+    | 'handleRetry'
+    | 'handleThreadReply'
     | 'messageContentOrder'
     | 'MessageSimple'
+    | 'muteUser'
     | 'onDoubleTapMessage'
     | 'onLongPressMessage'
     | 'OverlayReactionList'
-    | 'removeMessage'
     | 'reactionsEnabled'
+    | 'removeMessage'
     | 'repliesEnabled'
+    | 'reply'
+    | 'retry'
     | 'retrySendMessage'
+    | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
+    | 'threadReply'
     | 'updateMessage'
   > &
   Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
   Pick<OverlayContextValue, 'setOverlay'> &
   Pick<ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'openThread'> &
   Pick<TranslationContextValue, 't'> & {
-    /** Full override of the block user button in the Message Actions */
-    blockUser?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
-    /** Full override of the copy message button in the Message Actions */
-    copyMessage?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
-    /** Full override of the delete message button in the Message Actions */
-    deleteMessage?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
-    /** Full override of the edit message button in the Message Actions */
-    editMessage?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
     /**
      * Whether or not users are able to long press messages.
      */
     enableLongPress?: boolean;
-    /** Full override of the flag message button in the Message Actions */
-    flagMessage?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
-    /**
-     * Force alignment of message to left or right - 'left' | 'right'
-     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
-     * */
-    forceAlign?: Alignment | boolean;
     goToMessage?: (messageId: string) => void;
-    /** Handler to access when a block user action is invoked */
-    handleBlock?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when a copy message action is invoked */
-    handleCopy?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when a delete message action is invoked */
-    handleDelete?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when an edit message action is invoked */
-    handleEdit?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-    /** Handler to access when a flag message action is invoked */
-    handleFlag?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when a mute user action is invoked */
-    handleMute?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to process a reaction */
-    handleReaction?: (reactionType: string) => Promise<void>;
-    /** Handler to access when a reply action is invoked */
-    handleReply?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when a retry action is invoked */
-    handleRetry?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
-    /** Handler to access when a thread reply action is invoked */
-    handleThreadReply?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => Promise<void>;
     /**
      * Array of allowed actions on message
      * If all the actions need to be disabled an empty array should be provided as value of prop
      */
     messageActions?: MessageAction[];
-    /** Full override of the mute user button in the Message Actions */
-    muteUser?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
     /**
      * You can call methods available on the Message
      * component such as handleEdit, handleDelete, handleAction etc.
@@ -290,17 +246,9 @@ export type MessagePropsWithContext<
      * @param message A message object to open the thread upon.
      */
     onThreadSelect?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-    /** Full override of the reply button in the Message Actions */
-    reply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
-    /** Full override of the resend button in the Message Actions */
-    retry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
     showUnreadUnderlay?: boolean;
     style?: StyleProp<ViewStyle>;
     targetedMessage?: boolean;
-    /** Full override of the thread reply button in the Message Actions */
-    threadReply?: (
-      message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
-    ) => MessageAction;
   };
 
 /**
@@ -369,6 +317,7 @@ const MessageWithContext = <
     reply: replyProp,
     retry: retryProp,
     retrySendMessage,
+    selectReaction,
     setData,
     setEditingState,
     setOverlay,
@@ -771,9 +720,12 @@ const MessageWithContext = <
         };
 
     const handleReaction = !error
-      ? handleReactionProp
-        ? handleReactionProp
+      ? selectReaction
+        ? selectReaction(message)
         : async (reactionType: string) => {
+            if (handleReactionProp) {
+              handleReactionProp(message, reactionType);
+            }
             const messageId = message.id;
             const ownReaction = !!reactions.find(
               (reaction) => reaction.own && reaction.type === reactionType,
@@ -946,9 +898,12 @@ const MessageWithContext = <
 
   const handleReactionDoubleTap =
     message.type !== 'error' && message.status !== 'failed'
-      ? handleReactionProp
-        ? handleReactionProp
+      ? selectReaction
+        ? selectReaction(message)
         : async (reactionType: string) => {
+            if (handleReactionProp) {
+              handleReactionProp(message, reactionType);
+            }
             const messageId = message.id;
             const ownReaction = !!reactions.find(
               (reaction) => reaction.own && reaction.type === reactionType,
@@ -1263,20 +1218,40 @@ export const Message = <
   const { dismissKeyboard } = useKeyboardContext();
   const { setData } = useMessageOverlayContext<At, Ch, Co, Ev, Me, Re, Us>();
   const {
+    blockUser,
+    copyMessage,
+    deleteMessage,
     dismissKeyboardOnMessageTouch,
+    editMessage,
+    flagMessage,
     forceAlign,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
     messageContentOrder,
     MessageSimple,
+    muteUser,
     onDoubleTapMessage,
     onLongPressMessage,
     OverlayReactionList,
     reactionsEnabled,
     removeMessage,
     repliesEnabled,
+    reply,
+    retry,
     retrySendMessage,
+    selectReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
+    threadReply,
     updateMessage,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
   const { setOverlay } = useOverlayContext();
@@ -1286,18 +1261,34 @@ export const Message = <
   return (
     <MemoizedMessage<At, Ch, Co, Ev, Me, Re, Us>
       {...{
+        blockUser,
         channel,
         client,
+        copyMessage,
+        deleteMessage,
         disabled,
         dismissKeyboard,
         dismissKeyboardOnMessageTouch,
+        editMessage,
         enforceUniqueReaction,
+        flagMessage,
         forceAlign,
+        handleBlock,
+        handleCopy,
+        handleDelete,
+        handleEdit,
+        handleFlag,
+        handleMute,
+        handleReaction,
+        handleReply,
+        handleRetry,
+        handleThreadReply,
         isAdmin,
         isModerator,
         isOwner,
         messageContentOrder,
         MessageSimple,
+        muteUser,
         onDoubleTapMessage,
         onLongPressMessage,
         openThread,
@@ -1305,13 +1296,17 @@ export const Message = <
         reactionsEnabled,
         removeMessage,
         repliesEnabled,
+        reply,
+        retry,
         retrySendMessage,
+        selectReaction,
         setData,
         setEditingState,
         setOverlay,
         setQuotedMessageState,
         supportedReactions,
         t,
+        threadReply,
         updateMessage,
       }}
       {...props}

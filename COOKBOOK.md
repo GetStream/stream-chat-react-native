@@ -34,7 +34,7 @@ What follows is the most important aspects of Stream Chat React Native. It shoul
       - [Android](#####Android)
     - [Requirements](####Requirements)
     - [Caveats](####Caveats)
-    
+
 ## Installation
 
 Install the required packages in your React Native project:
@@ -64,7 +64,7 @@ For iOS on a Mac install the pods `npx pod-install ios`.
 
 `react-native-gesture-handler` requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
 
-```js
+```tsx
 import 'react-native-gesture-handler';
 import { AppRegistry } from 'react-native';
 
@@ -154,7 +154,7 @@ The highest level of these components is the `OverlayProvider`. The `OverlayProv
 
 Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well, assuming [`React Navigation`](https://reactnavigation.org/) is being used your highest level navigation stack should be wrapped in the provider:
 
-```js
+```tsx
 <NavigationContainer>
   <OverlayProvider>
     <Stack.Navigator>
@@ -166,7 +166,7 @@ Because these views must exist above all others `OverlayProvider` should wrap yo
 
 `stream-chat-react-native` like [`stream-chat-js`](https://github.com/GetStream/stream-chat-js) is written in TypeScript with full support for custom object types via provided generics. These generics are given to components as designated in the [TypeScript language docs](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#generic-type-arguments-in-jsx-elements) but can appear unusual if you have not used them before. The previous code snippet with all 7 possible generics given to the `OverlayProvider` would be written as:
 
-```typescript
+```tsx
 <NavigationContainer>
   <OverlayProvider<
     AttachmentType,
@@ -186,12 +186,13 @@ Because these views must exist above all others `OverlayProvider` should wrap yo
 
 The `OverlayProvider` can be used with no props provided, and there are a plethora of props for customizing the components in the overlay three core props that will you will likely want ot use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`, it provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. The `ThemeProvider` inherits from parent contexts and thus the theme will also be provided to the child components used later, such as `Chat` and `Channel`; and can therefore be used as the main theming entry point. `i18nInstance` is the instance of Streami18n you have for translations. **`bottomInset`** is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened. In the example shown the bottom safe are is and is not taken into account and the resulting UI difference is obvious. This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
 
-```typescript
+```tsx
 const streami18n = new Streami18n({ language: 'en' });
 const { bottom } = useSafeAreaInsets();
 const theme = useStreamChatTheme();
 ```
-```typescript
+
+```tsx
 <OverlayProvider
   bottomInset={bottom}
   i18nInstance={streami18n}
@@ -203,7 +204,7 @@ Additionally a `topInset` must be set to ensure that when the picker is complete
 
 **IMPORTANT:** The current implementation of the scrolling bottom-sheet in which the image picker resides does not re-evaluate heights after the `topInset` is set. So only set this to one value.
 
-```typescript
+```tsx
 const headerHeight = useHeaderHeight();
 const { setTopInset } = useAttachmentPickerContext();
 
@@ -248,7 +249,7 @@ The `OverlayProvider` contains five providers to which you can add customization
 
 `Chat` is the next level down of context component from `OverlyProvider` that is required for `stream-chat-react-native` to function as designed. You can choose to wrap your entire application in `Chat` similar to what is required for the `OverlayProvider` or you can implement `Chat` at the screen level. `Chat` takes two important props, `client` and `i18nInstance`. The `client` should be an instance of StreamChat from [`stream-chat`](https://github.com/GetStream/stream-chat-js) configured for your app, and `i18nInstance` should be an instance of `Streami18n` from `stream-chat-react-native` configured for the desired language. `Chat` can also accept a `style` prop with the theme, this can be used to overwrite styles inherited from `OverlayProvider`. If you are using TypeScript you should add the appropriate generics to your instantiation of `StreamChat`, follow the documentation for [`stream-chat`](https://github.com/GetStream/stream-chat-js) to ensure proper setup.
 
-```typescript
+```tsx
 import { StreamChat } from 'stream-chat';
 import { Streami18n } from 'stream-chat-react-native';
 
@@ -273,12 +274,13 @@ When creating a chat screen it is required that `Channel` wrap the `stream-chat-
 
 Three key props to `Channel` are `channel`, `keyboardVerticalOffset`, and `thread`. `channel` is a `StreamChat` channel. It can be created via `const channel = client.channel('type', 'id')` or is available as a callback on the `ChannelList` component via the prop `onSelect`. `keyboardVerticalOffset` is needed for adjusting the keyboard compatible view and should be the spacing above the `Channel` component, e.g. if you have a header it should be the header height. `thread` is a message object in the context of which a thread is occurring, i.e. the parent message of a thread. This can be set to any message, but is easily accessible on the `MessageList` component using the prop `onThreadSelect`. `Channel` also keeps an internal thread state which can be manipulated `openThread` and `closeThread` using the `ThreadContext` if you would prefer not to use your own state of the thread.
 
-```typescript
+```tsx
 const channel = client.channel('type', 'id');
 const headerHeight = useHeaderHeight();
 const { thread } = useContext(AppContext);
 ```
-```typescript
+
+```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
@@ -336,7 +338,7 @@ The type definition for `Channel` provide a full overview of the customizations 
 
 `MessageList` is the next component that is necessary for rendering a chat interface. It does not require any props as it uses the surrounding contexts.
 
-```typescript
+```tsx
 <MessageList<
   AttachmentType,
   ChannelType,
@@ -353,7 +355,7 @@ Similar to the other components props are available for modification of the UI, 
 
 If you choose to track thread state locally the thread when selected can be accessed via a callback provided to the prop `onThreadSelect`, in this case proper typing can be added via generics.
 
-```typescript
+```tsx
 <MessageList<
   AttachmentType,
   ChannelType,
@@ -374,7 +376,7 @@ If you choose to track thread state locally the thread when selected can be acce
 
 The final component necessary to create a fully functioning Chat screen is `MessageInput`. Similar to `MessageList` this component can be used without any props as it utilizes the surrounding contexts for functionality. The majority of `MessageInput` customizations are set at the `Channel` level. But one prop that should be local is `threadList` which is a `boolean` indicating whether or not the current `MessageList` is a thread.
 
-```typescript
+```tsx
 <MessageInput />
 ```
 
@@ -384,7 +386,7 @@ The final component necessary to create a fully functioning Chat screen is `Mess
 
 It takes very few components to put together a fully functioning Chat screen in practice:
 
-```typescript
+```tsx
 <OverlayProvider
   bottomInset={bottom}
   i18nInstance={streami18n}
@@ -411,7 +413,7 @@ Once an you have Chat up and running there are tons of customization possibiliti
 
 The [`Message`](./src/components/Message/Message.tsx) component has many underlying components that can be modified and/or styled using the props and theme provided to contexts in `Channel`. But if you would like to replace the component completely you can do so via the `Message` prop on `Channel`. Using the [Message Component](./src/components/Message/Message.tsx) as an example can be helpful to understand what props and hooks provide different information to the component. It is also suggested you optimize the component for rendering using memoization as is the standard suggested practice for `FlatList` items.
 
-```typescript
+```tsx
 <OverlayProvider
   bottomInset={bottom}
   i18nInstance={streami18n}
@@ -489,7 +491,7 @@ export type MarkdownStyle = Partial<{
 
 To add custom reactions you need to use the `supportedReactions` prop on `Channel`. `supportedReactions` is an array of `ReactionData`. The default `supportedReactions` array contains 5 reactions.
 
-```typescript
+```tsx
 export const reactionData: ReactionData[] = [
   {
     Icon: LoveReaction,
@@ -516,7 +518,7 @@ export const reactionData: ReactionData[] = [
 
 To create your own reaction you need both a `type` and `Icon`. The `Icon` is a component with `IconProps` it is suggested you take advantage of [`react-native-svg`](https://github.com/react-native-svg/react-native-svg) for scaling purposes. It is suggested you look at the default icons for examples of how to create your own that is able to properly use the theme and sizing that are provided via props. Using exported type from `stream-chat-react-native` a custom reaction can be created and added.
 
-```typescript
+```tsx
 export const StreamReaction: React.FC<IconProps> = (props) => (
   <RootSvg height={21} width={42} {...props} viewBox='0 0 42 21'>
     <RootPath
@@ -559,7 +561,7 @@ The `onDoubleTapMessage` prop can then be used to add a reaction as it is a func
 
 To complete the Instagram feel setting the `OverlayReactionList` component to an empty component and limiting the `supportedReactions` as shown allows only 1 type of reaction and limits the UI to double-tap only to add or remove it.
 
-```typescript
+```tsx
 const lastTap = React.useRef<number | null>(null);
 const timeOut = React.useRef<NodeJS.Timeout | null>(null);
 const handleDoubleTap = (
@@ -609,7 +611,7 @@ By default, received messages are shown on left side of the `MessageList` and se
 
 You can change this at the `Message` level via the prop `forceAlign` or set the alignment for the entire `Channel` using the same `forceAlign` prop.
 
-```typescript
+```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
@@ -624,7 +626,7 @@ In group messaging it's important to show the name of the sender associated mess
 
 If you wanted to move the information about the sender to the top of the message you can provide a `MessageHeader` component to `Channel` which is provided the same props as the footer, `MessageFooterProps`, and again can utilize the contexts as needed.
 
-```typescript
+```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
@@ -670,7 +672,7 @@ To add swipe controls to your messages it is suggested that you create a custom 
 
 You can add reply functionality by calling `setQuotedMessageState`, available from the `useMessagesContext` hook. Or you can delete the message using a combination of `client.deleteMessage` and `updateMessage`, the latter of which is also available from the `useMessagesContext` hook. You can find the internal implementation of these functions in the `Message` component; or you can add any other functionality you like. It is suggested to add custom logic when implementing swipeable messages to ensure you only can swipe appropriate messages, **i.e.**  you can only swipe to delete messages you have the ability to delete and have not yet been deleted. Using `Message` props and contexts this is easily achievable.
 
-```typescript
+```tsx
 const SwipeableMessage = (
   props: MessageProps<
     AttachmentType,
@@ -756,7 +758,7 @@ You can pass additional props directly to the component using the `additionalKey
 
 You can also replace the `KeyboardCompatibleView` with your own custom component by passing it as a prop to channel.
 
-```typescript
+```tsx
 <Channel
   KeyboardCompatibleView={CustomizedKeyboardView}
   ...
@@ -766,7 +768,7 @@ You can also replace the `KeyboardCompatibleView` with your own custom component
 Or disable the `KeyboardCompatibleView` and use the standard `KeyboardAvoidingView` from `react-native`.
 You can disable `KeyboardCompatibleView` by using prop `disableKeyboardCompatibleView` on the `Channel` component.
 
-```typescript
+```tsx
 <Channel
   disableKeyboardCompatibleView
   ...
@@ -777,7 +779,7 @@ You can disable `KeyboardCompatibleView` by using prop `disableKeyboardCompatibl
 
 You can additional pass [props](https://reactnative.dev/docs/flatlist#props) to the underlying `FlatList` using `additionalFlatListProps` prop.
 
-```typescript
+```tsx
 <ChannelList
   filters={filters}
   sort={sort}
@@ -785,7 +787,7 @@ You can additional pass [props](https://reactnative.dev/docs/flatlist#props) to 
 />
 ```
 
-```typescript
+```tsx
 <MessageList additionalFlatListProps={{ bounces: true }} />
 ```
 
@@ -797,13 +799,82 @@ If an image is too big it may cause a delay while uploading to our server. You c
 
 ### Override or intercept message actions (edit, delete, reaction, reply, etc.)
 
-// TODO:
+There are a number of message actions you may want to intercept or override. `Channel` takes as props and passes on to the `MessagesContext` all of these intercepts and overrides.
+
+The intercepts will not change the standard functions but will be called during their calls if provided, for actions such as analytics these are good to take advantage of. All of these intercept functions receive the message they are called on, and `handleReaction` additionally receives the reaction type.
+
+You can also override the built in functions for these actions if you so choose. With the exception of `selectReaction` all of the functions are provided the `message` they are called on and must return a `MessageAction` for use in the context menu. `selectReaction` is also provided the `message` but should return an async function that takes a `reactionType`, this is called with the selected reaction type when a reaction is selected in the context menu.
+
+```tsx
+type MessageAction = {
+  action: () => void;
+  title: string;
+  icon?: React.ReactElement;
+  titleStyle?: StyleProp<TextStyle>;
+};
+```
+
+`MessageAction` is provided to the context menu where when selected `action` is called for the item. `title`, `icon`, and `titleStyle` are used to modify the appearance.
+
+```tsx
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  thread={thread}
+  editMessage={(message) => ({
+    action: () => console.log(message.text),
+    title: 'Custom Edit',
+    icon: <StreamReaction />,
+    titleStyle: { color: '#005FFF' },
+  })}
+>
+```
+
+<table>
+  <tr>
+   <td>
+      <ul>
+        <li>handleBlock</li>
+        <li>handleCopy</li>
+        <li>handleDelete</li>
+        <li>handleEdit</li>
+        <li>handleFlag</li>
+        <li>handleMute</li>
+        <li>handleReaction</li>
+        <li>handleReply</li>
+        <li>handleRetry</li>
+        <li>handleThreadReply</li>
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>blockUser</li>
+        <li>copyMessage</li>
+        <li>deleteMessage</li>
+        <li>editMessage</li>
+        <li>flagMessage</li>
+        <li>muteUser</li>
+        <li>selectReaction</li>
+        <li>reply</li>
+        <li>retry</li>
+        <li>threadReply</li>
+      </ul>
+    </td>
+    <td align='center'><img src='./screenshots/cookbook/CustomEdit.png' width="300"/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Props for intercepting</td>
+    <td align='center'>Props for overriding</td>
+    <td align='center'>editMessage override example</td>
+  </tr>
+</table>
 
 ### How to change the layout of `MessageInput` component
 
 We provide the `MessageInput` container out of the box in a fixed configuration with many customizable features. Similar to other components it accesses most customizations via context, specially the `MessageInputContext` which is instantiated in `Channel`. You can also pass the same props as the context provides directly to the `MessageInput` component to override the context values.
 
-```typescript
+```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
@@ -843,7 +914,7 @@ You can modify `MessageInput` in a large variety of ways, the type definitions f
 
 The auto-complete trigger settings by default include `/`, `@`, and `:` for slash commands, mentions, and emojis respectively. These triggers are created by the exported function `ACITriggerSettings`, which takes `ACITriggerSettingsParams` and returns `TriggerSettings`. You can override this function to remove some or all of the trigger settings via the `autoCompleteTriggerSettings` prop on `Channel`. If you remove the slash commands it is suggested you also remove the commands button using the prop on `Channel` `hasCommands`. You can remove all of the commands by returning an empty object from the function given to `autoCompleteTriggerSettings`.
 
-```typescript
+```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
@@ -880,13 +951,13 @@ Usually you want to receive push notification when your app is in the background
 
 To handle this case you have to manually break the WS connection when your app is closed.
 
-```typescript
+```js
 await client.wsConnection.disconnect();
 ```
 
 And when app is re-opened (brought to foreground) you need to re-establish the connection.
 
-```typescript
+```js
 await client._setupConnection();
 ```
 
