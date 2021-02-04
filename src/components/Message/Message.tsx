@@ -40,7 +40,6 @@ import {
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
 import {
-  Alignment,
   MessageContextValue,
   MessageProvider,
   Reactions,
