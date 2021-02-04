@@ -776,9 +776,9 @@ You can additionally pass [props](https://reactnative.dev/docs/flatlist#props) t
 
 ```tsx
 <ChannelList
+  additionalFlatListProps={{ bounces: true }}
   filters={filters}
   sort={sort}
-  additionalFlatListProps={{ bounces: true }}
 />
 ```
 
