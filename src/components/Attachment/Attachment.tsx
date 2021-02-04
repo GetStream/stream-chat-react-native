@@ -215,7 +215,7 @@ export const Attachment = <
     FileAttachment: PropFileAttachment,
     Gallery: PropGallery,
     Giphy: PropGiphy,
-    onPressIn: PropOnPressIn,
+    onPressIn: propOnPressIn,
     UrlPreview: PropUrlPreview,
   } = props;
 
