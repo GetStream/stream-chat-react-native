@@ -50,10 +50,7 @@ export type AttachmentPropsWithContext<
   /**
    * onPress override for all attachments
    */
-  onPressIn?: (
-    event: GestureResponderEvent,
-    defaultOnPress?: () => void,
-  ) => void;
+  onPressIn?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['onPressInMessage'];
 };
 
 const AttachmentWithContext = <
