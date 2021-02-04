@@ -152,7 +152,7 @@ The highest level of these components is the `OverlayProvider`. The `OverlayProv
   </tr>
 </table>
 
-Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well, assuming [`React Navigation`](https://reactnavigation.org/) is being used your highest level navigation stack should be wrapped in the provider:
+Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well. Assuming [`React Navigation`](https://reactnavigation.org/) is being used, your highest level navigation stack should be wrapped in the provider:
 
 ```tsx
 <NavigationContainer>
