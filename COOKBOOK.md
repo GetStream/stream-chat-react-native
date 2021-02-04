@@ -744,8 +744,8 @@ To avoid this issue we built our own component - `KeyboardCompatibleView`. It co
 You can provide following props to `Channel` to customize the builtin `KeyboardCompatibleView` behavior. 
 
 ```
-keyboardBehavior - 'padding' | 'position' | 'height'
 disableKeyboardCompatibleView - boolean 
+keyboardBehavior - 'padding' | 'position' | 'height'
 keyboardVerticalOffset  - number
 ```
 
