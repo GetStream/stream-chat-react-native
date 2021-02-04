@@ -432,7 +432,7 @@ The [`Message`](./src/components/Message/Message.tsx) component has many underly
 
 We use `react-native-simple-markdown` library internally in the `Message` component to render markdown content of the text. Thus styling text in the `Message` component requires a slightly different approach than styling just a single standard `Text` component in React Native.
 
-In the theme there are multiple text types such as replies and emoji-only messages that have the associated type `MarkdownStyle`, for the main message text this falls in `messageSimple -> content -> markdown` within `theme`. To modify the style of the markdown text styles can be provided for each of the markdown sub-components that are applied based on text parsing.
+In the theme there are multiple text types such as replies and emoji-only messages that have the associated type `MarkdownStyle`, for the main message text this falls in `messageSimple -> content -> markdown` within `theme`. To modify the style of the markdown, text styles can be provided for each of the markdown sub-components that are applied based on text parsing.
 
 ```typescript
 export type MarkdownStyle = Partial<{
