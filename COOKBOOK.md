@@ -887,7 +887,7 @@ We provide the `MessageInput` container out of the box in a fixed configuration 
 
 The code above would render the <span style="color:red">`red View`</span> and not `null` as the props take precedence over the context value.
 
-You can modify `MessageInput` in a large variety of ways, the type definitions for the props give clear insight into all of the options. You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
+You can modify `MessageInput` in a large variety of ways. The type definitions for the props give clear insight into all of the options. You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
 
 <table>
   <tr>
