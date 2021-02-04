@@ -348,7 +348,7 @@ The type definition for `Channel` provide a full overview of the customizations 
 
 Similar to the other components props are available for modification of the UI. Although most modifications are provided via the `Channel` component some are provided through the `MessageList`, such as `additionalFlatListProps` to pass props directly to the flat list, `onListScroll` to access the scroll handler, and `setFlatListRef` to directly access the [FlatList ref](https://reactnative.dev/docs/flatlist).
 
-If you choose to track thread state locally the thread when selected can be accessed via a callback provided to the prop `onThreadSelect`, in this case proper typing can be added via generics.
+If you choose to track thread state locally the thread when selected can be accessed via a callback provided to the prop `onThreadSelect`. In this case proper typing can be added via generics.
 
 ```tsx
 <MessageList<
