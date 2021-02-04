@@ -400,7 +400,7 @@ It takes very few components to put together a fully functioning Chat screen in 
 </OverlayProvider>
 ```
 
-Once an you have Chat up and running there are tons of customization possibilities and the TypeScript intellisense is a great asset in customizing the UI and functionality to your needs. Check out the [examples](./examples) for implementations of these components in apps you can build locally.
+Once you have Chat up and running there are tons of customization possibilities and the TypeScript intellisense is a great asset in customizing the UI and functionality to your needs. Check out the [examples](./examples) for implementations of these components in apps you can build locally.
 
 ## FAQ
 
