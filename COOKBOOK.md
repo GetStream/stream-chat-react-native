@@ -772,7 +772,7 @@ You can disable `KeyboardCompatibleView` by using prop `disableKeyboardCompatibl
 
 ### How to modify the underlying `FlatList` of `MessageList` or `ChannelList`
 
-You can additional pass [props](https://reactnative.dev/docs/flatlist#props) to the underlying `FlatList` using `additionalFlatListProps` prop.
+You can additionally pass [props](https://reactnative.dev/docs/flatlist#props) to the underlying `FlatList` using `additionalFlatListProps` prop.
 
 ```tsx
 <ChannelList
