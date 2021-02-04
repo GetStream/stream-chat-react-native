@@ -82,7 +82,7 @@ Stream Chat React Native is set up for parity on Expo, expo requires a different
 
 ## Components
 
-Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts screen, components, or the entire app must be wrapped in Stream Chat Context components.
+Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts your screens, components, or entire app must be wrapped in the Stream Chat Context components.
 
 ### theme
 
