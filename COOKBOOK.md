@@ -546,7 +546,7 @@ Both the resulting reaction picker and reaction result can then utilize this add
 
 `stream-chat-react-native` uses a combination of `react-native-gesture-handler` and standard `react-native` touchables to provide animations to the UI. Because of this there are conditions in which multiple interactions are taking place at once.
 
-**e.g.** If you press on a message it begins to depress and after a long hold will present the context menu for the message, but release sooner and if you are pressing on an image the image viewer will appear.
+**e.g.** If you press on a message it begins to depress and after a long hold will present the context menu for the message. But release sooner and if you are pressing on an image, the image viewer will appear.
 
 Therefore to allow for something like double-tap reactions three props are required, `onPressInMessage`, `onLongPressMessage`, and `onDoubleTapMessage`. The first is used to prevent the `onPress` of inner `react-native` touchable components from firing while waiting for the double press to be evaluated by `react-native-gesture-handler`. Using a timeout the original `onPress` can be called if a second press has not ocurred in the expected time for the double tap to fire.
 
