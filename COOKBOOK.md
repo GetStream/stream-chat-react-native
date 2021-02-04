@@ -790,7 +790,7 @@ You can additionally pass [props](https://reactnative.dev/docs/flatlist#props) t
 
 If an image is too big it may cause a delay while uploading to our server. You can elect to compress images prior to upload by adding the `compressImageQuality` prop to `Channel`.
 
-`compressImageQuality` can be a value from `0` to `1`, where 1 is the best quality, i.e. no compression. On iOS, values larger than 0.8 don't decrease the quality a noticeable on most images, while still reducing the file size significantly when compared to the uncompressed version.
+`compressImageQuality` can be a value from `0` to `1`, where 1 is the best quality, i.e. no compression. On iOS, values larger than 0.8 don't decrease the quality a noticeable amount on most images, while still reducing the file size significantly when compared to the uncompressed version.
 
 ### Override or intercept message actions (edit, delete, reaction, reply, etc.)
 
