@@ -617,7 +617,7 @@ You can change this at the `Message` level via the prop `forceAlign` or set the 
 
 ### Message bubble with name of sender
 
-In group messaging it's important to show the name of the sender associated message bubble - similar to Slack or WhatsApp. By default this is done in the `MessageFooter` component. This component is fully replaceable via props on `Channel` and is provided a set of props itself that can be used for rendering, `MessageFooterProps`, any additional data for rendering a custom footer can be pulled from contexts such as the `MessageContext` via the `useMessageContext` hook.
+In group messaging it's important to show the name of the sender associated message bubble - similar to Slack or WhatsApp. By default this is done in the `MessageFooter` component. This component is fully replaceable via props on `Channel` and is provided a set of props itself, `MessageFooterProps`, that can be used for rendering. Any additional data for rendering a custom footer can be pulled from contexts such as the `MessageContext` via the `useMessageContext` hook.
 
 If you wanted to move the information about the sender to the top of the message you can provide a `MessageHeader` component to `Channel` which is provided the same props as the footer, `MessageFooterProps`, and again can utilize the contexts as needed.
 
