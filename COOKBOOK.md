@@ -554,7 +554,7 @@ To prevent this event from firing when a long press occurs `onLongPressMessage` 
 
 The `onDoubleTapMessage` prop can then be used to add a reaction as it is a function that is provided the message for which it is double tapped. This uses `react-native-gesture-handler` to track double taps. For convenience, as this is a common design pattern, the function is also is passed the `handleReactionDoubleTap` function. If defined (this is `undefined` when there is an error message or the `status` of the message is `failed`), this function can be passed a `string` of the reaction `type` to add or remove a reaction.
 
-To complete the Instagram feel setting the `OverlayReactionList` component to an empty component and limiting the `supportedReactions` as shown allows only 1 type of reaction and limits the UI to double-tap only to add or remove it.
+To complete the Instagram feel, setting the `OverlayReactionList` component to an empty component and limiting the `supportedReactions` as shown allows only 1 type of reaction and limits the UI to double-tap only to add or remove it.
 
 ```tsx
 const lastTap = React.useRef<number | null>(null);
