@@ -872,9 +872,9 @@ We provide the `MessageInput` container out of the box in a fixed configuration 
 ```tsx
 <Channel
   channel={channel}
+  Input={() => null}
   keyboardVerticalOffset={headerHeight}
   Message={CustomMessageComponent}
-  Input={() => null}
 >
   <View style={{ flex: 1 }}>
     <MessageList />
