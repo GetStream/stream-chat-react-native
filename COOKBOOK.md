@@ -630,8 +630,6 @@ If you wanted to move the information about the sender to the top of the message
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
-  thread={thread}
-  MessageFooter={() => null}
   MessageHeader={(props) =>
     props.message?.user?.id !== chatClient.userID ? (
       <View
@@ -649,6 +647,8 @@ If you wanted to move the information about the sender to the top of the message
       </View>
     ) : null
   }
+  MessageFooter={() => null}
+  thread={thread}
 >
 ```
 
