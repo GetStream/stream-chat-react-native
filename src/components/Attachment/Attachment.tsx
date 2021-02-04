@@ -50,7 +50,15 @@ export type AttachmentPropsWithContext<
   /**
    * onPress override for all attachments
    */
-  onPressIn?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['onPressInMessage'];
+  onPressIn?: MessagesContextValue<
+    At,
+    Ch,
+    Co,
+    Ev,
+    Me,
+    Re,
+    Us
+  >['onPressInMessage'];
 };
 
 const AttachmentWithContext = <
