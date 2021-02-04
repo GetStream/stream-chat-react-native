@@ -190,9 +190,7 @@ The `OverlayProvider` can be used with no props provided, and there are a pletho
 const streami18n = new Streami18n({ language: 'en' });
 const { bottom } = useSafeAreaInsets();
 const theme = useStreamChatTheme();
-```
 
-```tsx
 <OverlayProvider
   bottomInset={bottom}
   i18nInstance={streami18n}
@@ -263,9 +261,7 @@ const chatClient = StreamChat.getInstance<
   ResponseType,
   UserType
 >('key');
-```
 
-```tsx
 <Chat client={chatClient} i18nInstance={streami18n}>
 ```
 
@@ -279,9 +275,7 @@ Three key props to `Channel` are `channel`, `keyboardVerticalOffset`, and `threa
 const channel = client.channel('type', 'id');
 const headerHeight = useHeaderHeight();
 const { thread } = useContext(AppContext);
-```
 
-```tsx
 <Channel
   channel={channel}
   keyboardVerticalOffset={headerHeight}
