@@ -86,6 +86,7 @@ export * from './Message/hooks/useCreateMessageContext';
 export * from './Message/Message';
 export * from './Message/MessageSimple/MessageAvatar';
 export * from './Message/MessageSimple/MessageContent';
+export * from './Message/MessageSimple/MessageFooter';
 export * from './Message/MessageSimple/MessageReplies';
 export * from './Message/MessageSimple/MessageRepliesAvatars';
 export * from './Message/MessageSimple/MessageSimple';

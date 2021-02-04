@@ -48,6 +48,7 @@ import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../Keyb
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
 import { MessageContent as MessageContentDefault } from '../Message/MessageSimple/MessageContent';
+import { MessageFooter as MessageFooterDefault } from '../Message/MessageSimple/MessageFooter';
 import { MessageReplies as MessageRepliesDefault } from '../Message/MessageSimple/MessageReplies';
 import { MessageRepliesAvatars as MessageRepliesAvatarsDefault } from '../Message/MessageSimple/MessageRepliesAvatars';
 import { MessageSimple as MessageSimpleDefault } from '../Message/MessageSimple/MessageSimple';
@@ -68,6 +69,7 @@ import { MessageSystem as MessageSystemDefault } from '../MessageList/MessageSys
 import { ScrollToBottomButton as ScrollToBottomButtonDefault } from '../MessageList/ScrollToBottomButton';
 import { TypingIndicator as TypingIndicatorDefault } from '../MessageList/TypingIndicator';
 import { TypingIndicatorContainer as TypingIndicatorContainerDefault } from '../MessageList/TypingIndicatorContainer';
+import { OverlayReactionList as OverlayReactionListDefault } from '../MessageOverlay/OverlayReactionList';
 import { Reply as ReplyDefault } from '../Reply/Reply';
 
 import {
@@ -194,19 +196,35 @@ export type ChannelPropsWithContext<
       | 'Attachment'
       | 'AttachmentActions'
       | 'AttachmentFileIcon'
+      | 'blockUser'
       | 'Card'
       | 'CardCover'
       | 'CardFooter'
       | 'CardHeader'
+      | 'copyMessage'
       | 'DateHeader'
+      | 'deleteMessage'
       | 'disableTypingIndicator'
       | 'dismissKeyboardOnMessageTouch'
+      | 'editMessage'
       | 'FileAttachment'
       | 'FileAttachmentGroup'
+      | 'flagMessage'
       | 'FlatList'
+      | 'forceAlign'
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
+      | 'handleBlock'
+      | 'handleCopy'
+      | 'handleDelete'
+      | 'handleEdit'
+      | 'handleFlag'
+      | 'handleMute'
+      | 'handleReaction'
+      | 'handleReply'
+      | 'handleRetry'
+      | 'handleThreadReply'
       | 'InlineUnreadIndicator'
       | 'markdownRules'
       | 'Message'
@@ -223,11 +241,19 @@ export type ChannelPropsWithContext<
       | 'MessageStatus'
       | 'MessageSystem'
       | 'MessageText'
+      | 'muteUser'
       | 'myMessageTheme'
       | 'onDoubleTapMessage'
+      | 'onLongPressMessage'
+      | 'onPressInMessage'
+      | 'OverlayReactionList'
       | 'ReactionList'
       | 'Reply'
+      | 'reply'
+      | 'retry'
+      | 'selectReaction'
       | 'supportedReactions'
+      | 'threadReply'
       | 'TypingIndicator'
       | 'TypingIndicatorContainer'
       | 'UrlPreview'
@@ -341,6 +367,8 @@ export const ChannelWithContext = <
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
     AttachmentFileIcon = FileIconDefault,
+    autoCompleteTriggerSettings,
+    blockUser,
     Card = CardDefault,
     CardCover,
     CardFooter,
@@ -351,7 +379,9 @@ export const ChannelWithContext = <
     closeSuggestions,
     CommandsButton = CommandsButtonDefault,
     compressImageQuality,
+    copyMessage,
     DateHeader = DateHeaderDefault,
+    deleteMessage,
     disableIfFrozenChannel = true,
     disableKeyboardCompatibleView = false,
     disableTypingIndicator,
@@ -361,17 +391,31 @@ export const ChannelWithContext = <
     doMarkReadRequest,
     doSendMessageRequest,
     doUpdateMessageRequest,
+    editMessage: editMessageProp,
     EmptyStateIndicator = EmptyStateIndicatorDefault,
     enforceUniqueReaction = false,
     FileAttachment = FileAttachmentDefault,
     FileAttachmentGroup = FileAttachmentGroupDefault,
     FileUploadPreview = FileUploadPreviewDefault,
+    flagMessage,
     FlatList = FlatListDefault,
+    forceAlign,
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
     giphyEnabled,
     globalUnreadCountLimit = 255,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
+    hasCommands = true,
     hasFilePicker = true,
     hasImagePicker = true,
     ImageUploadPreview = ImageUploadPreviewDefault,
@@ -391,9 +435,10 @@ export const ChannelWithContext = <
     MessageAvatar = MessageAvatarDefault,
     MessageContent = MessageContentDefault,
     messageContentOrder = ['gallery', 'files', 'text', 'attachments'],
-    MessageFooter,
+    MessageFooter = MessageFooterDefault,
     MessageHeader,
     MessageList = MessageListDefault,
+    muteUser,
     myMessageTheme,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
@@ -406,9 +451,15 @@ export const ChannelWithContext = <
     numberOfLines = 5,
     onChangeText,
     onDoubleTapMessage,
+    onLongPressMessage,
+    onPressInMessage,
     openSuggestions,
+    OverlayReactionList = OverlayReactionListDefault,
     ReactionList = ReactionListDefault,
     Reply = ReplyDefault,
+    reply,
+    retry,
+    selectReaction,
     SendButton = SendButtonDefault,
     sendImageAsync = false,
     setInputRef,
@@ -417,6 +468,7 @@ export const ChannelWithContext = <
     supportedReactions = reactionData,
     t,
     thread: threadProps,
+    threadReply,
     TypingIndicator = TypingIndicatorDefault,
     TypingIndicatorContainer = TypingIndicatorContainerDefault,
     updateSuggestions,
@@ -1333,6 +1385,7 @@ export const ChannelWithContext = <
     ...inputConfig,
     additionalTextInputProps,
     AttachButton,
+    autoCompleteTriggerSettings,
     clearEditingState,
     clearQuotedMessageState,
     CommandsButton,
@@ -1342,6 +1395,7 @@ export const ChannelWithContext = <
     editing,
     editMessage,
     FileUploadPreview,
+    hasCommands,
     hasFilePicker,
     hasImagePicker,
     ImageUploadPreview,
@@ -1366,19 +1420,35 @@ export const ChannelWithContext = <
     Attachment,
     AttachmentActions,
     AttachmentFileIcon,
+    blockUser,
     Card,
     CardCover,
     CardFooter,
     CardHeader,
+    copyMessage,
     DateHeader,
+    deleteMessage,
     disableTypingIndicator,
     dismissKeyboardOnMessageTouch,
+    editMessage: editMessageProp,
     FileAttachment,
     FileAttachmentGroup,
+    flagMessage,
     FlatList,
+    forceAlign,
     formatDate,
     Gallery,
     Giphy,
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
     hasMore,
     initialScrollToFirstUnreadMessage,
     InlineUnreadIndicator,
@@ -1401,16 +1471,24 @@ export const ChannelWithContext = <
     MessageStatus,
     MessageSystem,
     MessageText,
+    muteUser,
     myMessageTheme,
     onDoubleTapMessage,
+    onLongPressMessage,
+    onPressInMessage,
+    OverlayReactionList,
     ReactionList,
     removeMessage,
     Reply,
+    reply,
+    retry,
     retrySendMessage,
     ScrollToBottomButton,
+    selectReaction,
     setEditingState,
     setQuotedMessageState,
     supportedReactions,
+    threadReply,
     TypingIndicator,
     TypingIndicatorContainer,
     updateMessage,

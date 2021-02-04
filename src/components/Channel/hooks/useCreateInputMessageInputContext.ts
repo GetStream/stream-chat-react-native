@@ -23,6 +23,7 @@ export const useCreateInputMessageInputContext = <
 >({
   additionalTextInputProps,
   AttachButton,
+  autoCompleteTriggerSettings,
   clearEditingState,
   clearQuotedMessageState,
   CommandsButton,
@@ -32,6 +33,7 @@ export const useCreateInputMessageInputContext = <
   editing,
   editMessage,
   FileUploadPreview,
+  hasCommands,
   hasFilePicker,
   hasImagePicker,
   ImageUploadPreview,
@@ -70,6 +72,7 @@ export const useCreateInputMessageInputContext = <
     () => ({
       additionalTextInputProps,
       AttachButton,
+      autoCompleteTriggerSettings,
       clearEditingState,
       clearQuotedMessageState,
       CommandsButton,
@@ -79,6 +82,7 @@ export const useCreateInputMessageInputContext = <
       editing,
       editMessage,
       FileUploadPreview,
+      hasCommands,
       hasFilePicker,
       hasImagePicker,
       ImageUploadPreview,

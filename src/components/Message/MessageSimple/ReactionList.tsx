@@ -177,6 +177,17 @@ const ReactionListWithContext = <
       ? width - screenPadding * 2 - reactionSize * reactions.length - strokeSize
       : x2 - (reactionSize * reactions.length) / 2 - strokeSize;
 
+  const supportedReactionTypes = supportedReactions.map(
+    (supportedReaction) => supportedReaction.type,
+  );
+  const hasSupportedReactions = reactions.some((reaction) =>
+    supportedReactionTypes.includes(reaction.type),
+  );
+
+  if (!hasSupportedReactions) {
+    return null;
+  }
+
   return (
     <TouchableOpacity
       onLongPress={onLongPress}

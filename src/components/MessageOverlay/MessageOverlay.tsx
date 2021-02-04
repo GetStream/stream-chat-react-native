@@ -28,6 +28,8 @@ import {
   TapGestureHandler,
 } from 'react-native-gesture-handler';
 
+import { OverlayReactionList as OverlayReactionListDefault } from './OverlayReactionList';
+
 import { MessageTextContainer } from '../Message/MessageSimple/MessageTextContainer';
 
 import {
@@ -137,7 +139,7 @@ const MessageOverlayWithContext = <
     otherAttachments,
     overlay,
     overlayOpacity,
-    OverlayReactionList,
+    OverlayReactionList = OverlayReactionListDefault,
     OverlayReactions,
     reset,
     setOverlay,

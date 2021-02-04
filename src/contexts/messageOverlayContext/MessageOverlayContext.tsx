@@ -25,6 +25,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import type { ReactionData } from '../../utils/utils';
 
 export type MessageAction = {
   action: () => void;
@@ -54,6 +55,10 @@ export type MessageOverlayData<
   messagesContext?: MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>;
   onlyEmojis?: boolean;
   otherAttachments?: Attachment<At>[];
+  OverlayReactionList?: React.ComponentType<
+    OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  supportedReactions?: ReactionData[];
   threadList?: boolean;
 };
 

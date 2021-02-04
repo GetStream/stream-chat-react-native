@@ -105,6 +105,7 @@ export const OverlayProvider = <
         );
       }
     },
+    topInset,
     OverlayReactionList = DefaultOverlayReactionList,
     OverlayReactions = DefaultOverlayReactions,
     value,
@@ -182,6 +183,7 @@ export const OverlayProvider = <
     FileSelectorIcon,
     ImageSelectorIcon,
     openPicker: () => openPicker(bottomSheetRef),
+    topInset,
   };
 
   const overlayStyle = useAnimatedStyle<ViewStyle>(

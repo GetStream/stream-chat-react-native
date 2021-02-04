@@ -40,7 +40,6 @@ import {
   useKeyboardContext,
 } from '../../contexts/keyboardContext/KeyboardContext';
 import {
-  Alignment,
   MessageContextValue,
   MessageProvider,
   Reactions,
@@ -160,17 +159,40 @@ export type MessagePropsWithContext<
   > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'blockUser'
+    | 'copyMessage'
+    | 'deleteMessage'
     | 'dismissKeyboardOnMessageTouch'
+    | 'editMessage'
+    | 'flagMessage'
+    | 'forceAlign'
+    | 'handleBlock'
+    | 'handleCopy'
+    | 'handleDelete'
+    | 'handleEdit'
+    | 'handleFlag'
+    | 'handleMute'
+    | 'handleReaction'
+    | 'handleReply'
+    | 'handleRetry'
+    | 'handleThreadReply'
     | 'messageContentOrder'
     | 'MessageSimple'
+    | 'muteUser'
     | 'onDoubleTapMessage'
-    | 'removeMessage'
+    | 'onLongPressMessage'
+    | 'OverlayReactionList'
     | 'reactionsEnabled'
+    | 'removeMessage'
     | 'repliesEnabled'
+    | 'reply'
+    | 'retry'
     | 'retrySendMessage'
+    | 'selectReaction'
     | 'setEditingState'
     | 'setQuotedMessageState'
     | 'supportedReactions'
+    | 'threadReply'
     | 'updateMessage'
   > &
   Pick<MessageOverlayContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'setData'> &
@@ -182,27 +204,7 @@ export type MessagePropsWithContext<
      * Whether or not users are able to long press messages.
      */
     enableLongPress?: boolean;
-    /**
-     * Force alignment of message to left or right - 'left' | 'right'
-     * By default, current user's messages will be aligned to right and other user's messages will be aligned to left.
-     * */
-    forceAlign?: Alignment | boolean;
     goToMessage?: (messageId: string) => void;
-    /** Handler to delete a current message */
-    handleDelete?: () => Promise<void>;
-    /**
-     * Handler to edit a current message. This function sets the current message as the `editing` property of channel context.
-     * The `editing` prop is used by the MessageInput component to switch to edit mode.
-     */
-    handleEdit?: () => void;
-    /** Handler to flag the message */
-    handleFlag?: () => Promise<void>;
-    /** Handler to mute the user */
-    handleMute?: () => Promise<void>;
-    /** Handler to process a reaction */
-    handleReaction?: (reactionType: string) => Promise<void>;
-    /** Handler to resend the message */
-    handleRetry?: () => Promise<void>;
     /**
      * Array of allowed actions on message
      * If all the actions need to be disabled an empty array should be provided as value of prop
@@ -267,16 +269,31 @@ const MessageWithContext = <
 ) => {
   const {
     animatedLongPress = Platform.OS === 'ios' && !props.message.deleted_at,
+    blockUser: blockUserProp,
     channel,
     client,
+    copyMessage: copyMessageProp,
+    deleteMessage: deleteMessageProp,
     disabled,
     dismissKeyboard,
     dismissKeyboardOnMessageTouch,
+    editMessage: editMessageProp,
     enableLongPress = true,
     enforceUniqueReaction,
+    flagMessage: flagMessageProp,
     forceAlign = false,
     goToMessage,
     groupStyles = ['bottom'],
+    handleBlock,
+    handleCopy,
+    handleDelete,
+    handleEdit,
+    handleFlag,
+    handleMute,
+    handleReaction: handleReactionProp,
+    handleReply,
+    handleRetry,
+    handleThreadReply,
     isAdmin,
     isModerator,
     isOwner,
@@ -286,16 +303,22 @@ const MessageWithContext = <
     messageContentOrder: messageContentOrderProp,
     messagesContext,
     MessageSimple,
+    muteUser: muteUserProp,
     onDoubleTapMessage: onDoubleTapMessageProp,
     onLongPress: onLongPressProp,
+    onLongPressMessage: onLongPressMessageProp,
     onPress: onPressProp,
     onThreadSelect,
     openThread,
+    OverlayReactionList,
     preventPress,
     reactionsEnabled,
     removeMessage,
     repliesEnabled,
+    reply: replyProp,
+    retry: retryProp,
     retrySendMessage,
+    selectReaction,
     setData,
     setEditingState,
     setOverlay,
@@ -308,6 +331,7 @@ const MessageWithContext = <
     t,
     targetedMessage,
     threadList = false,
+    threadReply: threadReplyProp,
     updateMessage,
   } = props;
 
@@ -457,6 +481,16 @@ const MessageWithContext = <
           other: [] as Attachment<At>[],
         };
 
+  /**
+   * Check if any actions to prevent long press
+   */
+  const hasAttachmentActions =
+    !message.deleted_at &&
+    Array.isArray(message.attachments) &&
+    message.attachments.some(
+      (attachment) => attachment.actions && attachment.actions.length,
+    );
+
   // prefetch images for Gallery component rendering
   const attachmentImageLength = attachments.images.length;
   useEffect(() => {
@@ -550,194 +584,244 @@ const MessageWithContext = <
   ) => {
     await dismissKeyboard();
 
-    const blockUser = {
-      action: () => async () => {
-        setOverlay('none');
-        if (message.user?.id) {
-          if (message.user.banned) {
-            await client.unbanUser(message.user.id);
-          } else {
-            await client.banUser(message.user.id);
-          }
-        }
-      },
-      icon: <UserDelete pathFill={grey} />,
-      title: message.user?.banned ? t('Unblock User') : t('Block User'),
-    };
-
-    const copyMessage = {
-      // using depreciated Clipboard from react-native until expo supports the community version or their own
-      action: () => {
-        setOverlay('none');
-        Clipboard.setString(message.text || '');
-      },
-      icon: <Copy pathFill={grey} />,
-      title: t('Copy Message'),
-    };
-
-    const deleteMessage = {
-      action: () => {
-        setOverlay('alert');
-        if (message.id) {
-          Alert.alert(
-            t('Delete Message'),
-            t('Are you sure you want to permanently delete this message?'),
-            [
-              { onPress: () => setOverlay('none'), text: t('Cancel') },
-              {
-                onPress: async () => {
-                  setOverlay('none');
-                  const data = await client.deleteMessage(message.id);
-                  updateMessage(data.message);
-                },
-                style: 'destructive',
-                text: t('Delete'),
-              },
-            ],
-            { cancelable: false },
-          );
-        }
-      },
-      icon: <Delete pathFill={accent_red} />,
-      title: t('Delete Message'),
-      titleStyle: { color: accent_red },
-    };
-
-    const editMessage = {
-      action: () => {
-        setOverlay('none');
-        setEditingState(message);
-      },
-      icon: <Edit pathFill={grey} />,
-      title: t('Edit Message'),
-    };
-
-    const flagMessage = {
-      action: () => {
-        setOverlay('alert');
-        if (message.id) {
-          Alert.alert(
-            t('Flag Message'),
-            t(
-              'Do you want to send a copy of this message to a moderator for further investigation?',
-            ),
-            [
-              { onPress: () => setOverlay('none'), text: t('Cancel') },
-              {
-                onPress: async () => {
-                  try {
-                    await client.flagMessage(message.id);
-                    Alert.alert(
-                      t('Message flagged'),
-                      t('The message has been reported to a moderator.'),
-                      [
-                        {
-                          onPress: () => setOverlay('none'),
-                          text: t('Dismiss'),
-                        },
-                      ],
-                    );
-                  } catch (err) {
-                    Alert.alert(
-                      t('Something went wrong'),
-                      t("The operation couldn't be completed."),
-                      [
-                        {
-                          onPress: () => setOverlay('none'),
-                          text: t('Dismiss'),
-                        },
-                      ],
-                    );
-                  }
-                },
-                text: t('Flag'),
-              },
-            ],
-            { cancelable: false },
-          );
-        }
-      },
-      icon: <MessageFlag pathFill={grey} />,
-      title: t('Flag Message'),
-    };
-
-    const handleReaction = !error
-      ? async (reactionType: string) => {
-          const messageId = message.id;
-          const ownReaction = !!reactions.find(
-            (reaction) => reaction.own && reaction.type === reactionType,
-          );
-
-          // Change reaction in local state, make API call in background, revert to old message if fails
-          try {
-            if (channel && messageId) {
-              if (ownReaction) {
-                await channel.deleteReaction(messageId, reactionType);
+    const blockUser = blockUserProp
+      ? blockUserProp(message)
+      : {
+          action: () => async () => {
+            setOverlay('none');
+            if (message.user?.id) {
+              if (handleBlock) {
+                handleBlock(message);
+              }
+              if (message.user.banned) {
+                await client.unbanUser(message.user.id);
               } else {
-                await channel.sendReaction(
-                  messageId,
-                  {
-                    type: reactionType,
-                  } as Reaction<Re, Us>,
-                  undefined,
-                  enforceUniqueReaction,
-                );
+                await client.banUser(message.user.id);
               }
             }
-          } catch (err) {
-            console.log(err);
+          },
+          icon: <UserDelete pathFill={grey} />,
+          title: message.user?.banned ? t('Unblock User') : t('Block User'),
+        };
+
+    const copyMessage = copyMessageProp
+      ? copyMessageProp(message)
+      : {
+          // using depreciated Clipboard from react-native until expo supports the community version or their own
+          action: () => {
+            setOverlay('none');
+            if (handleCopy) {
+              handleCopy(message);
+            }
+            Clipboard.setString(message.text || '');
+          },
+          icon: <Copy pathFill={grey} />,
+          title: t('Copy Message'),
+        };
+
+    const deleteMessage = deleteMessageProp
+      ? deleteMessageProp(message)
+      : {
+          action: () => {
+            setOverlay('alert');
+            if (message.id) {
+              Alert.alert(
+                t('Delete Message'),
+                t('Are you sure you want to permanently delete this message?'),
+                [
+                  { onPress: () => setOverlay('none'), text: t('Cancel') },
+                  {
+                    onPress: async () => {
+                      setOverlay('none');
+                      if (handleDelete) {
+                        handleDelete(message);
+                      }
+                      const data = await client.deleteMessage(message.id);
+                      updateMessage(data.message);
+                    },
+                    style: 'destructive',
+                    text: t('Delete'),
+                  },
+                ],
+                { cancelable: false },
+              );
+            }
+          },
+          icon: <Delete pathFill={accent_red} />,
+          title: t('Delete Message'),
+          titleStyle: { color: accent_red },
+        };
+
+    const editMessage = editMessageProp
+      ? editMessageProp(message)
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handleEdit) {
+              handleEdit(message);
+            }
+            setEditingState(message);
+          },
+          icon: <Edit pathFill={grey} />,
+          title: t('Edit Message'),
+        };
+
+    const flagMessage = flagMessageProp
+      ? flagMessageProp(message)
+      : {
+          action: () => {
+            setOverlay('alert');
+            if (message.id) {
+              Alert.alert(
+                t('Flag Message'),
+                t(
+                  'Do you want to send a copy of this message to a moderator for further investigation?',
+                ),
+                [
+                  { onPress: () => setOverlay('none'), text: t('Cancel') },
+                  {
+                    onPress: async () => {
+                      try {
+                        if (handleFlag) {
+                          handleFlag(message);
+                        }
+                        await client.flagMessage(message.id);
+                        Alert.alert(
+                          t('Message flagged'),
+                          t('The message has been reported to a moderator.'),
+                          [
+                            {
+                              onPress: () => setOverlay('none'),
+                              text: t('Dismiss'),
+                            },
+                          ],
+                        );
+                      } catch (err) {
+                        Alert.alert(
+                          t('Something went wrong'),
+                          t("The operation couldn't be completed."),
+                          [
+                            {
+                              onPress: () => setOverlay('none'),
+                              text: t('Dismiss'),
+                            },
+                          ],
+                        );
+                      }
+                    },
+                    text: t('Flag'),
+                  },
+                ],
+                { cancelable: false },
+              );
+            }
+          },
+          icon: <MessageFlag pathFill={grey} />,
+          title: t('Flag Message'),
+        };
+
+    const handleReaction = !error
+      ? selectReaction
+        ? selectReaction(message)
+        : async (reactionType: string) => {
+            if (handleReactionProp) {
+              handleReactionProp(message, reactionType);
+            }
+            const messageId = message.id;
+            const ownReaction = !!reactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
+
+            // Change reaction in local state, make API call in background, revert to old message if fails
+            try {
+              if (channel && messageId) {
+                if (ownReaction) {
+                  await channel.deleteReaction(messageId, reactionType);
+                } else {
+                  await channel.sendReaction(
+                    messageId,
+                    {
+                      type: reactionType,
+                    } as Reaction<Re, Us>,
+                    undefined,
+                    enforceUniqueReaction,
+                  );
+                }
+              }
+            } catch (err) {
+              console.log(err);
+            }
           }
-        }
       : undefined;
 
     const isMuted = (client.mutedUsers || []).some(
       (mute) =>
         mute.user.id === client.userID && mute.target.id === message.user?.id,
     );
-    const muteUser = {
-      action: async () => {
-        setOverlay('none');
-        if (message.user?.id) {
-          if (isMuted) {
-            await client.unmuteUser(message.user.id);
-          } else {
-            await client.muteUser(message.user.id);
-          }
-        }
-      },
-      icon: <Mute pathFill={grey} />,
-      title: isMuted ? t('Unmute User') : t('Mute User'),
-    };
+    const muteUser = muteUserProp
+      ? muteUserProp(message)
+      : {
+          action: async () => {
+            setOverlay('none');
+            if (message.user?.id) {
+              if (handleMute) {
+                handleMute(message);
+              }
+              if (isMuted) {
+                await client.unmuteUser(message.user.id);
+              } else {
+                await client.muteUser(message.user.id);
+              }
+            }
+          },
+          icon: <Mute pathFill={grey} />,
+          title: isMuted ? t('Unmute User') : t('Mute User'),
+        };
 
-    const reply = {
-      action: () => {
-        setOverlay('none');
-        setQuotedMessageState(message);
-      },
-      icon: <CurveLineLeftUp pathFill={grey} />,
-      title: t('Reply'),
-    };
+    const reply = replyProp
+      ? replyProp(message)
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handleReply) {
+              handleReply(message);
+            }
+            setQuotedMessageState(message);
+          },
+          icon: <CurveLineLeftUp pathFill={grey} />,
+          title: t('Reply'),
+        };
 
-    const resend = {
-      action: async () => {
-        setOverlay('none');
-        await retrySendMessage({
-          ...message,
-          updated_at: undefined,
-        } as MessageResponse<At, Ch, Co, Me, Re, Us>);
-      },
-      icon: <SendUp pathFill={accent_blue} />,
-      title: t('Resend'),
-    };
+    const retry = retryProp
+      ? retryProp(message)
+      : {
+          action: async () => {
+            setOverlay('none');
+            if (handleRetry) {
+              handleRetry(message);
+            }
+            await retrySendMessage({
+              ...message,
+              updated_at: undefined,
+            } as MessageResponse<At, Ch, Co, Me, Re, Us>);
+          },
+          icon: <SendUp pathFill={accent_blue} />,
+          title: t('Resend'),
+        };
 
-    const threadReply = {
-      action: () => {
-        setOverlay('none');
-        onOpenThread();
-      },
-      icon: <ThreadReply pathFill={grey} />,
-      title: t('Thread Reply'),
-    };
+    const threadReply = threadReplyProp
+      ? threadReplyProp(message)
+      : {
+          action: () => {
+            setOverlay('none');
+            if (handleThreadReply) {
+              handleThreadReply(message);
+            }
+            onOpenThread();
+          },
+          icon: <ThreadReply pathFill={grey} />,
+          title: t('Thread Reply'),
+        };
 
     const isThreadMessage = threadList || !!message.parent_id;
 
@@ -750,7 +834,7 @@ const MessageWithContext = <
       images: attachments.images,
       message,
       messageActions: error
-        ? messageActionsProp || [resend, editMessage, deleteMessage]
+        ? messageActionsProp || [retry, editMessage, deleteMessage]
         : messageReactions
         ? undefined
         : messageActionsProp || canModifyMessage
@@ -796,6 +880,8 @@ const MessageWithContext = <
       messagesContext: { ...messagesContext, messageContentOrder },
       onlyEmojis,
       otherAttachments: attachments.other,
+      OverlayReactionList,
+      supportedReactions,
       threadList,
     });
 
@@ -803,15 +889,52 @@ const MessageWithContext = <
   };
 
   const onLongPressMessage =
-    onLongPressProp && !disabled
+    disabled || hasAttachmentActions
+      ? () => null
+      : onLongPressProp
       ? (event?: GestureResponderEvent) => onLongPressProp(message, event)
       : enableLongPress
       ? () => showMessageOverlay(false)
       : () => null;
 
+  const handleReactionDoubleTap =
+    message.type !== 'error' && message.status !== 'failed'
+      ? selectReaction
+        ? selectReaction(message)
+        : async (reactionType: string) => {
+            if (handleReactionProp) {
+              handleReactionProp(message, reactionType);
+            }
+            const messageId = message.id;
+            const ownReaction = !!reactions.find(
+              (reaction) => reaction.own && reaction.type === reactionType,
+            );
+
+            // Change reaction in local state, make API call in background, revert to old message if fails
+            try {
+              if (channel && messageId) {
+                if (ownReaction) {
+                  await channel.deleteReaction(messageId, reactionType);
+                } else {
+                  await channel.sendReaction(
+                    messageId,
+                    {
+                      type: reactionType,
+                    } as Reaction<Re, Us>,
+                    undefined,
+                    enforceUniqueReaction,
+                  );
+                }
+              }
+            } catch (err) {
+              console.log(err);
+            }
+          }
+      : undefined;
+
   const onDoubleTapMessage = () => {
     if (onDoubleTapMessageProp) {
-      onDoubleTapMessageProp(message);
+      onDoubleTapMessageProp(message, handleReactionDoubleTap);
     }
   };
 
@@ -832,7 +955,18 @@ const MessageWithContext = <
     lastReceivedId,
     message,
     messageContentOrder,
-    onLongPress: animatedLongPress ? () => null : onLongPressMessage,
+    onLongPress: animatedLongPress
+      ? (event) => {
+          if (onLongPressMessageProp) {
+            onLongPressMessageProp(event);
+          }
+        }
+      : (event) => {
+          if (onLongPressMessageProp) {
+            onLongPressMessageProp(event);
+          }
+          onLongPressMessage(event);
+        },
     onlyEmojis,
     onOpenThread,
     onPress: onPressProp

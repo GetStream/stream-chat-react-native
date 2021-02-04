@@ -244,7 +244,7 @@ export const ReactionButton = <
     >
       <Animated.View
         style={[
-          index !== reactionData.length - 1 ? styles.notLastReaction : {},
+          index !== numberOfReactions - 1 ? styles.notLastReaction : {},
           reaction,
           iconStyle,
         ]}
