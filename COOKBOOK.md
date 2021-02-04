@@ -686,8 +686,26 @@ const SwipeableMessage = (
 ) => {
   return (
     <Swipeable
+      onSwipeableLeftOpen={reply(props.message)}
+      onSwipeableRightOpen={delete(props.message)}
       overshootLeft={false}
       overshootRight={false}
+      renderLeftActions={(progress) => (
+        <Animated.View
+          style={{
+            backgroundColor: 'blue',
+            transform: [
+              {
+                translateX: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [-100, 0],
+                }),
+              },
+            ],
+            width: 100,
+          }}
+        />
+      )}
       renderRightActions={(progress) => (
         <Animated.View
           style={{
@@ -701,24 +719,6 @@ const SwipeableMessage = (
           <StreamReaction />
         </Animated.View>
       )}
-      renderLeftActions={(progress) => (
-        <Animated.View
-          style={{
-            backgroundColor: 'blue',
-            width: 100,
-            transform: [
-              {
-                translateX: progress.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [-100, 0],
-                }),
-              },
-            ],
-          }}
-        />
-      )}
-      onSwipeableRightOpen={delete(props.message)}
-      onSwipeableLeftOpen={reply(props.message)}
     >
       <Message {...props} />
     </Swipeable>
