@@ -140,9 +140,9 @@ The highest level of these components is the `OverlayProvider`. The `OverlayProv
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/MessageOverlay.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ImageViewer.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/MessageOverlay.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ImageViewer.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/AttachmentPickerWithInset.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -184,6 +184,8 @@ Because these views must exist above all others `OverlayProvider` should wrap yo
 </NavigationContainer>
 ```
 
+**NOTE:** For simplicity in the code snippets not all generics that may be needed are shown. In many cases in practice the generics can be inferred from the provided props. But this is not true in all cases and you may need to provide the proper generics explicitly to ensure type safety and that the TypeScript compiler does not throw an error.
+
 The `OverlayProvider` can be used with no props provided but there are a plethora of props for customizing the components in the overlay. Three core props that will you will likely want to use are `bottomInset`, `i18nInstance`, and `value`. `value` is a `Partial` of the `OverlayContextValue`. It provides the theme to the components in the overlay and thus if you are using a custom theme you can provide it to the overlay as `value={{ style: theme }}`. The `ThemeProvider` inherits from parent contexts and thus the theme will also be provided to the child components used later, such as `Chat` and `Channel`; therefore, this can be used as the main theming entry point. `i18nInstance` is the instance of Streami18n you have for translations. **`bottomInset`** is important as it is required to determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened. In the example shown, the bottom safe area is and is not taken into account and the resulting UI difference is obvious. This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
 
 ```tsx
@@ -213,9 +215,9 @@ useEffect(() => {
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithInset.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/AttachmentPickerOpen.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/AttachmentPickerWithInset.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/AttachmentPickerWithoutInset.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/AttachmentPickerOpen.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -231,9 +233,9 @@ The `OverlayProvider` contains five providers to which you can add customization
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedMessageOverlay.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedImageViewer.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedMessageOverlay.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedImageViewer.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedAttachmentPickerOpen.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -285,9 +287,9 @@ const { thread } = useContext(AppContext);
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/MissingKeyboardVerticalOffset.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MissingChannel.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MissingThread.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/MissingKeyboardVerticalOffset.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/MissingChannel.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/MissingThread.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -305,9 +307,9 @@ The type definition for `Channel` provide a full overview of the customizations 
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/FilePicker.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MessageContentOrder.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/SupportedReactions.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/FilePicker.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/MessageContentOrder.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/SupportedReactions.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -317,9 +319,9 @@ The type definition for `Channel` provide a full overview of the customizations 
   </tr>
   <tr></tr>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/NoFilePicker.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/MessageContentOrderChanged.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/SupportedReactionsChanged.png' width="300"/></td>
+    <td align='center'><img src='./screenshots/cookbook/NoFilePicker.png'/></td>
+    <td align='center'><img src='./screenshots/cookbook/MessageContentOrderChanged.png'/></td>
+    <td align='center'><img src='./screenshots/cookbook/SupportedReactionsChanged.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -530,9 +532,9 @@ Both the resulting reaction picker and reaction result can then utilize this add
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/StandardReactions.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedReactions.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/ModifiedReaction.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/StandardReactions.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedReactions.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedReaction.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -649,9 +651,9 @@ If you wanted to move the information about the sender to the top of the message
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/StandardFooter.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/NoFooter.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/HeaderAdded.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/StandardFooter.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/NoFooter.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/HeaderAdded.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -723,9 +725,9 @@ const SwipeableMessage = (
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/SwipingOpacity.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/SwipingOpen.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/SwipingTranslateX.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/SwipingOpacity.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/SwipingOpen.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/SwipingTranslateX.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -827,7 +829,7 @@ type MessageAction = {
 
 <table>
   <tr>
-   <td>
+   <td width="33%">
       <ul>
         <li>handleBlock</li>
         <li>handleCopy</li>
@@ -841,7 +843,7 @@ type MessageAction = {
         <li>handleThreadReply</li>
       </ul>
     </td>
-    <td>
+    <td  width="33%">
       <ul>
         <li>blockUser</li>
         <li>copyMessage</li>
@@ -855,7 +857,7 @@ type MessageAction = {
         <li>threadReply</li>
       </ul>
     </td>
-    <td align='center'><img src='./screenshots/cookbook/CustomEdit.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/CustomEdit.png'/></td>
   </tr>
   <tr></tr>
   <tr>
@@ -885,15 +887,15 @@ We provide the `MessageInput` container out of the box in a fixed configuration 
 </Channel>
 ```
 
-The code above would render the <span style="color:red">`red View`</span> and not `null` as the props take precedence over the context value.
+The code above would render the red `View` and not `null` as the props take precedence over the context value.
 
 You can modify `MessageInput` in a large variety of ways. The type definitions for the props give clear insight into all of the options. You can replace the `Input` wholesale, as above, or create you own `MessageInput` component using the provided hooks to access context.
 
 <table>
   <tr>
-    <td align='center'><img src='./screenshots/cookbook/SendButton.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/HasPickers.png' width="300"/></td>
-    <td align='center'><img src='./screenshots/cookbook/NumberOfLines.png' width="300"/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/SendButton.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/HasPickers.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/NumberOfLines.png'/></td>
   </tr>
   <tr></tr>
   <tr>
