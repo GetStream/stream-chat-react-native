@@ -911,11 +911,11 @@ The auto-complete trigger settings by default include `/`, `@`, and `:` for slas
 
 ```tsx
 <Channel
+  autoCompleteTriggerSettings={() => ({})}
   channel={channel}
+  hasCommands={false}
   keyboardVerticalOffset={headerHeight}
   thread={thread}
-  hasCommands={false}
-  autoCompleteTriggerSettings={() => ({})}
 >
 ```
 
