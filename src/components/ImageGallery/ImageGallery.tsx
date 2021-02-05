@@ -1218,6 +1218,7 @@ export const ImageGallery = <
           closeGridView={closeGridView}
           numberOfImageGalleryGridColumns={numberOfImageGalleryGridColumns}
           photos={photos}
+          resetVisibleValues={resetVisibleValues}
           setImage={setImage}
           {...imageGalleryCustomComponents?.grid}
         />

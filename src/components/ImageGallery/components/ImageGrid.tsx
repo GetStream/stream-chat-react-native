@@ -122,6 +122,7 @@ type Props<
 > = ImageGalleryGridImageComponents<Us> & {
   closeGridView: () => void;
   photos: Photo<Us>[];
+  resetVisibleValues: () => void;
   setImage: React.Dispatch<
     React.SetStateAction<
       | {
@@ -143,6 +144,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
     imageComponent,
     numberOfImageGalleryGridColumns,
     photos,
+    resetVisibleValues,
     setImage,
   } = props;
 
@@ -161,6 +163,7 @@ export const ImageGrid = <Us extends UnknownType = DefaultUserType>(
     imageComponent,
     numberOfImageGalleryGridColumns,
     selectAndClose: () => {
+      resetVisibleValues();
       setImage({ messageId: photo.messageId, url: photo.uri });
       closeGridView();
     },
