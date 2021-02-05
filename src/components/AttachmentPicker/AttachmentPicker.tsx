@@ -188,8 +188,6 @@ export const AttachmentPicker = React.forwardRef(
       }
     };
 
-    console.log('idx', currentIndex);
-
     const getMorePhotos = async () => {
       if (
         hasNextPage &&
