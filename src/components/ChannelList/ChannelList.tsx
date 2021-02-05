@@ -258,6 +258,7 @@ export const ChannelList = <
 
   useChannelTruncated({
     onChannelTruncated,
+    refreshList,
     setChannels,
     setForceUpdate,
   });
@@ -268,6 +269,7 @@ export const ChannelList = <
   });
 
   useConnectionRecovered<At, Ch, Co, Ev, Me, Re, Us>({
+    refreshList,
     setForceUpdate,
   });
 
