@@ -63,6 +63,11 @@ export const usePaginatedChannels = <
   const [offset, setOffset] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
 
+  const clientConnectionID = client.connectionID;
+  useEffect(() => {
+    channels.map((channel) => channel.watch());
+  }, [clientConnectionID]);
+
   const queryChannels = async (
     queryType = '',
     retryCount = 0,
