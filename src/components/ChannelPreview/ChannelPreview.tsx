@@ -75,6 +75,22 @@ const ChannelPreviewWithContext = <
     lastMessage,
   );
 
+  const channelLastMessageString = `${channel.lastMessage()?.id} ${
+    channel.lastMessage()?.updated_at
+  }`;
+  useEffect(() => {
+    const channelLastMessage = channel.lastMessage();
+    if (
+      channelLastMessage &&
+      (channelLastMessage.id !== lastMessage.id ||
+        channelLastMessage.updated_at !== lastMessage.updated_at)
+    ) {
+      setLastMessage(
+        channelLastMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
+      );
+    }
+  }, [channelLastMessageString]);
+
   useEffect(() => {
     const handleEvent = (event: Event<At, Ch, Co, Ev, Me, Re, Us>) => {
       if (event.message) {

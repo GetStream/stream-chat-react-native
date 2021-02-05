@@ -189,7 +189,12 @@ export const AttachmentPicker = React.forwardRef(
     };
 
     const getMorePhotos = async () => {
-      if (hasNextPage && !loadingPhotos && currentIndex > -1) {
+      if (
+        hasNextPage &&
+        !loadingPhotos &&
+        currentIndex > -1 &&
+        selectedPicker === 'images'
+      ) {
         setLoadingPhotos(true);
         try {
           const results = await getPhotos({
@@ -254,10 +259,11 @@ export const AttachmentPicker = React.forwardRef(
           setHasNextPage(true);
         }
       }
-    }, [currentIndex]);
-
-    useEffect(() => {
-      if (endCursor === undefined && currentIndex > -1) {
+      if (
+        selectedPicker === 'images' &&
+        endCursor === undefined &&
+        currentIndex > -1
+      ) {
         setPhotoError(false);
         getMorePhotos();
       }
