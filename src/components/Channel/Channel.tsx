@@ -393,6 +393,11 @@ export const Channel = <
     // The more complex sync logic is done in Chat.js
     // listen to client.connection.recovered and all channel events
     client.on('connection.recovered', handleEvent);
+    client.on('connection.changed', (e) => {
+      if (e.online) {
+        reloadChannel();
+      }
+    });
     channel?.on(handleEvent);
   };
 
@@ -415,6 +420,21 @@ export const Channel = <
     if (!initError) {
       copyChannelState();
       listenToChanges();
+    }
+  };
+
+  const reloadChannel = async () => {
+    setError(false);
+    if (channel && channel.cid) {
+      try {
+        await channel.watch();
+      } catch (err) {
+        setError(err);
+        return;
+      }
+
+      setLastRead(new Date());
+      copyChannelState();
     }
   };
 
