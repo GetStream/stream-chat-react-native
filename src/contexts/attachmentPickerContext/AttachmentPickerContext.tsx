@@ -16,10 +16,28 @@ export type AttachmentPickerIconProps = {
 };
 
 export type AttachmentPickerContextValue = {
+  /**
+   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   *
+   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   */
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
+  /**
+   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   *
+   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  /**
+   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   *
+   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   */
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
+  /**
+   * Limit for maximum files that can be attached per message.
+   */
   maxNumberOfFiles: number;
   openPicker: () => void;
   selectedImages: Asset[];
@@ -30,8 +48,24 @@ export type AttachmentPickerContextValue = {
   setTopInset: React.Dispatch<React.SetStateAction<number | undefined>>;
   attachmentPickerBottomSheetHeight?: number;
   attachmentSelectionBarHeight?: number;
+  /**
+   * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
+   * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
+   *
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider) section in Cookbook
+   * for more details.
+   */
   bottomInset?: number;
   selectedPicker?: 'images';
+  /**
+   * `topInset` must be set to ensure that when the picker is completely open it is opened to the desired height.
+   * This can be done via props, but can also be set via the `setTopInset` function provided by the
+   * `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be
+   * set to 0 to cover the entire screen, or the safe area top inset if desired.
+   *
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider) section in Cookbook
+   * for more details.
+   */
   topInset?: number;
 };
 

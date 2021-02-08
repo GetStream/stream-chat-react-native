@@ -4,10 +4,11 @@ const path = require('path');
 const webpack = require('webpack');
 
 const notBabeledDeps = [
-  'react-native-image-zoom-viewer',
-  'react-native-image-pan-zoom',
-  'react-native-lightbox',
   'react-native-markdown-package',
+  'react-native-reanimated',
+  'react-native-lightbox',
+  '@gorhom/bottom-sheet',
+  'react-native-svg'
 ];
 
 const sections = [
@@ -220,8 +221,14 @@ module.exports = {
     ),
   ],
   styleguideDir: 'docs',
-  assetsDir: 'src/assets',
   sortProps: (props) => props,
+  styles: {
+    StyleGuide: {
+      '@global body': {
+        fontFamily: '-apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans"'
+      }
+    }
+  },
   serverPort: 6068,
   compilerConfig: {
     transforms: {
@@ -239,7 +246,9 @@ module.exports = {
   propsParser: require('react-docgen-typescript').withCustomConfig(
     './tsconfig.json',
     {
-      propFilter: { skipPropsWithoutDoc: true },
+      propFilter: { skipPropsWithoutDoc: false },
+      shouldRemoveUndefinedFromOptional: true,
+      shouldExtractLiteralValuesFromEnum: true
     },
   ).parse,
   styleguideComponents: {
@@ -248,6 +257,7 @@ module.exports = {
       'src/styleguideComponents/PathlineRenderer.tsx',
     ),
     Wrapper: path.join(__dirname, 'src/styleguideComponents/Wrapper.tsx'),
+    PropsRenderer: path.join(__dirname, 'src/styleguideComponents/PropsRenderer.tsx'),
   },
   sections,
   template: {
@@ -260,10 +270,16 @@ module.exports = {
       alias: {
         'react-native': 'react-native-web',
         'react-native-gesture-handler': 'react-native-web',
+        '@gorhom/bottom-sheet': path.join(
+          __dirname,
+          'src/styleguideComponents/BottomSheet.tsx',
+        ),
         'react-native-markdown-package': path.join(
           __dirname,
-          'styleguideComponents/ReactNativeMarkdownPackage.tsx',
+          'src/styleguideComponents/Markdown.tsx',
         ),
+        'react-native-svg': 'react-native-svg/src/ReactNativeSVG.web',
+        'react-native-reanimated': 'react-native-reanimated/src/reanimated2/js-reanimated/index.js',
       },
       extensions: ['.web.js', '.js', '.ts', '.tsx'],
     },

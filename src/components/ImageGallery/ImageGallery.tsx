@@ -121,6 +121,37 @@ export type Photo<Us extends UnknownType = DefaultUserType> = {
 export type ImageGalleryCustomComponents<
   Us extends UnknownType = DefaultUserType
 > = {
+  /**
+   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/3.png).
+   *
+   * - [ImageGalleryFooter](#ImageGalleryFooter)
+   *
+   * - [ImageGrid](#ImageGrid)
+   *
+   * - [ImageGridHandle](#ImageGridHandle)
+   *
+   * - [ImageGalleryHeader](#ImageGalleryHeader)
+   *
+   * e.g.,
+   *
+   * ```js
+   * {
+   *  footer: {
+   *    ShareIcon: CustomShareIconComponent
+   *  },
+   *  grid: {
+   *    avatarComponent: CustomAvatarComponent
+   *  },
+   *  gridHandle: {
+   *    centerComponent: CustomCenterComponent
+   *  },
+   *  header: {
+   *    CloseIcon: CustomCloseButtonComponent
+   *  },
+   * }
+   * ```
+   * @overrideType object
+   */
   imageGalleryCustomComponents?: {
     footer?: ImageGalleryFooterCustomComponentProps<Us>;
     grid?: ImageGalleryGridImageComponents<Us>;

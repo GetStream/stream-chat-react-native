@@ -25,7 +25,9 @@ import type { Photo } from '../ImageGallery';
 
 import type { DefaultUserType, UnknownType } from '../../../types/types';
 
-const ReanimatedSafeAreaView = Animated.createAnimatedComponent(SafeAreaView);
+const ReanimatedSafeAreaView = Animated.createAnimatedComponent
+  ? Animated.createAnimatedComponent(SafeAreaView)
+  : SafeAreaView;
 
 const styles = StyleSheet.create({
   centerContainer: {

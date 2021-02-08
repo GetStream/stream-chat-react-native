@@ -57,6 +57,28 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+/**
+ * - The highest level of these components is the `OverlayProvider`. The `OverlayProvider` allows users to interact with messages on long press above the underlying views, use the full screen image viewer, and use the `AttachmentPicker` as a keyboard-esk view.
+ *  Because these views must exist above all others `OverlayProvider` should wrap your navigation stack as well. Assuming [`React Navigation`](https://reactnavigation.org/) is being used, your highest level navigation stack should be wrapped in the provider:
+ *
+ *    ```js
+ *    <NavigationContainer>
+ *      <OverlayProvider>
+ *        <Stack.Navigator>
+ *          <Stack.Screen />
+ *        </Stack.Navigator>
+ *      </OverlayProvider>
+ *    </NavigationContainer>
+ *    ```
+ *
+ * - Don't forget to check our cookbook section of [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider)
+ *
+ * - You can customize plenty of UI components around attachment picker or image viewer, from OverlayProvider. If you feel lost about what components we are talking about, please check following component pointers:
+ *    - [Attachment picker components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+ *    - [Message overlay components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/2.png)
+ *    - [Image viewer and gallery components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/3.png)
+ * @example ./OverlayProvider.md
+ */
 export const OverlayProvider = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
