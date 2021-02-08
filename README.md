@@ -32,7 +32,7 @@
   - [Native example](#native-example)
   - [Slack clone](#slack-clone)
 - [Docs](#docs)
-- [Keep in mind](#keep-in-mind)
+- [Keep in mind](#-keep-in-mind)
 - [Setup](#setup-setting-up-a-chat-app)
   - [Expo package](#expo-package)
   - [Native package](#native-package)
