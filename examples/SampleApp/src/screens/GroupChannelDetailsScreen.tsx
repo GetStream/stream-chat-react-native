@@ -193,10 +193,8 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     chatClient?.mutedChannels.some((mute) => mute.channel?.id === channel?.id),
   );
   const [groupName, setGroupName] = useState(channel.data?.name);
-  const allMembers = Object.values({ ...channel.state.members });
-  const [members, setMembers] = useState(
-    Object.values({ ...channel.state.members }).slice(0, 3),
-  );
+  const allMembers = Object.values(channel.state.members);
+  const [members, setMembers] = useState(allMembers.slice(0, 3));
   const [textInputFocused, setTextInputFocused] = useState(false);
 
   const membersStatus = useChannelMembersStatus(channel);
@@ -210,12 +208,12 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
     LocalUserType
   >(channel, 30);
 
-  if (!channel) return null;
-
   const allMembersLength = allMembers.length;
   useEffect(() => {
     setMembers(allMembers.slice(0, 3));
   }, [allMembersLength]);
+
+  if (!channel) return null;
 
   /**
    * Opens confirmation sheet for leaving the group
@@ -330,7 +328,7 @@ export const GroupChannelDetailsScreen: React.FC<GroupChannelDetailsProps> = ({
         {allMembersLength !== members.length && (
           <TouchableOpacity
             onPress={() => {
-              setMembers(Object.values({ ...channel.state.members }));
+              setMembers(Object.values(channel.state.members));
             }}
             style={[
               styles.loadMoreButton,

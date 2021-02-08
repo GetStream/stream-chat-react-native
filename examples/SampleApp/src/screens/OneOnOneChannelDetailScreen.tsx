@@ -261,7 +261,7 @@ export const OneOnOneChannelDetailScreen: React.FC<Props> = ({
                 },
               ]}
             >
-              @user
+              @{user.id}
             </Text>
             <Text
               style={[

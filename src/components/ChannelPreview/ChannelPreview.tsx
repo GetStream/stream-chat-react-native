@@ -85,9 +85,7 @@ const ChannelPreviewWithContext = <
       (channelLastMessage.id !== lastMessage.id ||
         channelLastMessage.updated_at !== lastMessage.updated_at)
     ) {
-      setLastMessage(
-        channelLastMessage as MessageResponse<At, Ch, Co, Me, Re, Us>,
-      );
+      setLastMessage(channelLastMessage);
     }
   }, [channelLastMessageString]);
 

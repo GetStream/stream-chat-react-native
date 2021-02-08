@@ -732,8 +732,7 @@ const MessageWithContext = <
                     {
                       type: reactionType,
                     } as Reaction<Re, Us>,
-                    undefined,
-                    enforceUniqueReaction,
+                    { enforce_unique: enforceUniqueReaction },
                   );
                 }
               }
@@ -910,8 +909,7 @@ const MessageWithContext = <
                     {
                       type: reactionType,
                     } as Reaction<Re, Us>,
-                    undefined,
-                    enforceUniqueReaction,
+                    { enforce_unique: enforceUniqueReaction },
                   );
                 }
               }
