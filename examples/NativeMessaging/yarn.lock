@@ -783,14 +783,14 @@
     pirates "^4.0.0"
     source-map-support "^0.5.16"
 
-"@babel/runtime@7.12.13":
+"@babel/runtime@7.12.13", "@babel/runtime@^7.12.13":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.13.tgz#0a21452352b02542db0ffb928ac2d3ca7cb6d66d"
   integrity sha512-8+3UMPBrjFa/6TtKi/7sehPKqfAm4g6K+YQjyyFOLUTxzOngcRZTlAVY8sc2CORJYqdHQY8gRPHmn+qo15rCBw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.0", "@babel/runtime@^7.8.4":
   version "7.12.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
   integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
@@ -6335,10 +6335,10 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.1.tgz#5b3531bd76a645a4c9fb6e693ed36419e3301339"
   integrity sha512-NAnt2iGDXohE5LI7uBnLnqvLQMtzhkiAOLXTmv+qnF9Ky7xAPcX8Up/xWIhxvLVGJvuLiNc4xQLtuqDRzb4fSA==
 
-react-native-document-picker@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-4.3.0.tgz#bac53d066ee3014c9b78b39c0c84dc9b974f0d04"
-  integrity sha512-ygcY0ijlVuhxzdWnhqd917yMUFT9FF0b4CM81LWoY4/bpQYz5PGUdRAdh25kS0VA+cEUYNL2iI7OpHXq00epPA==
+react-native-document-picker@5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-5.0.0.tgz#15c2557edd6c3ebc129b529e52556ec378c99853"
+  integrity sha512-VL1fcYyAx5d9/JlGI3hyuZm3JRGPHAYaU6rKD2Kn3K4b11xB4NdjVvtAiRRFEwDm8BCBKxDoTXRWoGYOhtefyQ==
 
 react-native-fs@2.16.6:
   version "2.16.6"
@@ -6369,10 +6369,10 @@ react-native-image-crop-picker@0.35.3:
   resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.35.3.tgz#cc9ae109ae5ac2d0877a0c5ac51935421a3651d8"
   integrity sha512-JMBmtfdJvxvPNTjSmiqNaBuEAqwwzyYvgvwiOU8ikIE113RD6hPV+wpxGFCqGJPzJF/JO6uEzpDOcFCfHZbmtQ==
 
-react-native-image-resizer@1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.4.2.tgz#8573c0f956eb8a62824999b9dbcec4ebeefb9a75"
-  integrity sha512-owYyKdNnbxtBtNoMjodpUvrSQJ6HM+K/cHTeCyu1GpQwSk5MzGIwOt6Ng84cYLkodKEvLrLknnewTx/pCj4Eeg==
+react-native-image-resizer@1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.4.3.tgz#3663c54e2d14b66880b1a9d325588b2b48949177"
+  integrity sha512-CbLnS7UaXr9KnyT98X5BJZIqK5QTswnTay7VOYTAIrfO047T9F2DQpoZvJOWLsBC77zlp+dKHjiPrZewnR1DYw==
 
 react-native-iphone-x-helper@^1.3.0:
   version "1.3.1"
@@ -7203,12 +7203,12 @@ stream-buffers@~2.2.0:
   version "0.0.0"
   uid ""
 
-stream-chat@3.0.0-beta.0:
-  version "3.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.0.0-beta.0.tgz#1ee82715c053a368abd0cdec5a7e49b6149cdde3"
-  integrity sha512-/HTp9x3LNG5/SAM9MmmQVnfUXBaxB0SaP6THy2nVza5aZ2NoLHaCb0i2MNOYz9MjkWLorLmRu4/Q4opcGnOZJw==
+stream-chat@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.0.0.tgz#470a648b24d3d905ebc67b61805c1c95377dbc7e"
+  integrity sha512-DyTcGm7iBdAftEbCzxu3cT/iDEuUeLL0AosOTeLZU7MCVwSWdlAhyhKSNB06YC7v6FhAatWOn1kwdJJpkBTUVg==
   dependencies:
-    "@babel/runtime" "^7.12.5"
+    "@babel/runtime" "^7.12.13"
     "@types/jsonwebtoken" "^8.5.0"
     "@types/ws" "^7.4.0"
     axios "^0.21.1"
@@ -7216,7 +7216,7 @@ stream-chat@3.0.0-beta.0:
     form-data "^3.0.0"
     isomorphic-ws "^4.0.1"
     jsonwebtoken "^8.5.1"
-    ws "^7.4.2"
+    ws "^7.4.3"
 
 strict-uri-encode@^2.0.0:
   version "2.0.0"
@@ -7928,10 +7928,15 @@ ws@^1.1.0, ws@^1.1.5:
     options ">=0.0.5"
     ultron "1.0.x"
 
-ws@^7, ws@^7.2.3, ws@^7.4.2:
+ws@^7, ws@^7.2.3:
   version "7.4.2"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
   integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==
+
+ws@^7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.3.tgz#1f9643de34a543b8edb124bdcbc457ae55a6e5cd"
+  integrity sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==
 
 xcode@^2.0.0:
   version "2.1.0"

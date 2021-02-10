@@ -516,14 +516,14 @@
     "@babel/helper-create-regexp-features-plugin" "^7.12.1"
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/runtime@7.12.13":
+"@babel/runtime@7.12.13", "@babel/runtime@^7.12.13":
   version "7.12.13"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.13.tgz#0a21452352b02542db0ffb928ac2d3ca7cb6d66d"
   integrity sha512-8+3UMPBrjFa/6TtKi/7sehPKqfAm4g6K+YQjyyFOLUTxzOngcRZTlAVY8sc2CORJYqdHQY8gRPHmn+qo15rCBw==
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.12.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.12.0", "@babel/runtime@^7.8.4":
   version "7.12.5"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.12.5.tgz#410e7e487441e1b360c29be715d870d9b985882e"
   integrity sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
@@ -1275,12 +1275,12 @@ source-map@^0.5.0:
   version "0.0.0"
   uid ""
 
-stream-chat@3.0.0-beta.0:
-  version "3.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.0.0-beta.0.tgz#1ee82715c053a368abd0cdec5a7e49b6149cdde3"
-  integrity sha512-/HTp9x3LNG5/SAM9MmmQVnfUXBaxB0SaP6THy2nVza5aZ2NoLHaCb0i2MNOYz9MjkWLorLmRu4/Q4opcGnOZJw==
+stream-chat@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/stream-chat/-/stream-chat-3.0.0.tgz#470a648b24d3d905ebc67b61805c1c95377dbc7e"
+  integrity sha512-DyTcGm7iBdAftEbCzxu3cT/iDEuUeLL0AosOTeLZU7MCVwSWdlAhyhKSNB06YC7v6FhAatWOn1kwdJJpkBTUVg==
   dependencies:
-    "@babel/runtime" "^7.12.5"
+    "@babel/runtime" "^7.12.13"
     "@types/jsonwebtoken" "^8.5.0"
     "@types/ws" "^7.4.0"
     axios "^0.21.1"
@@ -1288,7 +1288,7 @@ stream-chat@3.0.0-beta.0:
     form-data "^3.0.0"
     isomorphic-ws "^4.0.1"
     jsonwebtoken "^8.5.1"
-    ws "^7.4.2"
+    ws "^7.4.3"
 
 supports-color@^5.3.0:
   version "5.5.0"
@@ -1344,7 +1344,7 @@ util@^0.10.3:
   dependencies:
     inherits "2.0.3"
 
-ws@^7.4.2:
-  version "7.4.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.2.tgz#782100048e54eb36fe9843363ab1c68672b261dd"
-  integrity sha512-T4tewALS3+qsrpGI/8dqNMLIVdq/g/85U98HPMa6F0m6xTbvhXU6RCQLqPH3+SlomNV/LdY6RXEbBpMH6EOJnA==
+ws@^7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.4.3.tgz#1f9643de34a543b8edb124bdcbc457ae55a6e5cd"
+  integrity sha512-hr6vCR76GsossIRsr8OLR9acVVm1jyfEWvhbNjtgPOrfvAlKzvyeg/P6r8RuDjRyrcQoPQT7K0DGEPc7Ae6jzA==

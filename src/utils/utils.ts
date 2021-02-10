@@ -82,7 +82,7 @@ const getMembers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const members = { ...channel.state.members };
+  const members = channel.state.members;
 
   return Object.values(members).length
     ? (Object.values(members).filter((member) => member.user) as Array<
@@ -102,7 +102,7 @@ const getWatchers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const watchers = { ...channel.state.watchers };
+  const watchers = channel.state.watchers;
   return Object.values(watchers).length ? [...Object.values(watchers)] : [];
 };
 

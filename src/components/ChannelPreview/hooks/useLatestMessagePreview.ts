@@ -73,7 +73,7 @@ const getLatestMessageDisplayText = <
   if (message.deleted_at) return [{ bold: false, text: t('Message deleted') }];
   const currentUserId = client.userID;
   const messageOwnerId = message.user?.id;
-  const members = Object.keys({ ...channel.state.members });
+  const members = Object.keys(channel.state.members);
   const owner =
     messageOwnerId === currentUserId
       ? t('You')
@@ -180,7 +180,7 @@ const getLatestMessageReadStatus = <
   if (!message || currentUserId !== message.user?.id || readEvents === false)
     return 0;
 
-  const readList = { ...channel.state.read };
+  const readList = channel.state.read;
   if (currentUserId) {
     delete readList[currentUserId];
   }
@@ -225,7 +225,7 @@ const getLatestMessagePreview = <
     tDateTimeParser,
   } = params;
 
-  const messages = [...channel.state.messages];
+  const messages = channel.state.messages;
 
   if (!messages.length && !lastMessage) {
     return {
@@ -278,10 +278,12 @@ export const useLatestMessagePreview = <
 
   const channelConfigExists = typeof channel?.getConfig === 'function';
 
-  const messages = [...channel.state.messages];
+  const messages = channel.state.messages;
   const message = messages.length ? messages[messages.length - 1] : undefined;
 
-  const lastMessageId = lastMessage?.id || message?.id;
+  const channelLastMessageString = `${lastMessage?.id || message?.id}${
+    lastMessage?.updated_at || message?.updated_at
+  }`;
 
   const [readEvents, setReadEvents] = useState(true);
   const [latestMessagePreview, setLatestMessagePreview] = useState<
@@ -326,7 +328,7 @@ export const useLatestMessagePreview = <
           tDateTimeParser,
         }),
       ),
-    [forceUpdate, lastMessageId, readEvents, readStatus],
+    [channelLastMessageString, forceUpdate, readEvents, readStatus],
   );
 
   return latestMessagePreview;

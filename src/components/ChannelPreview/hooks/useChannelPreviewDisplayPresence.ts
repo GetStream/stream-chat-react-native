@@ -30,7 +30,7 @@ const getChannelPreviewDisplayPresence = <
   const currentUserId = client.userID;
 
   if (currentUserId) {
-    const members = Object.values({ ...channel.state.members });
+    const members = Object.values(channel.state.members);
     const otherMembers = members.filter(
       (member) => member.user?.id !== currentUserId,
     );
