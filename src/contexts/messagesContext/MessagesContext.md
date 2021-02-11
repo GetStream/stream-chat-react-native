@@ -13,7 +13,7 @@ The messages context exposes the following properties:
 - **loadingMore** {boolean} Whether or not the channel is loading more messages
 - **loadMoreEarlier** {function} Loads the next page of messages in the Channel state and updates the `messages` array
 - **Message** {component} UI component for a message, same as `Message` prop of [Channel](#channel) component
-- **messages** {ImmutableArray} List of immutable [message objects](https://getstream.io/chat/docs/#message_format) supplied to the MessageList component
+- **messages** {Array} List of [message objects](https://getstream.io/chat/docs/#message_format) supplied to the MessageList component
 - **removeMessage** {function} Removes a message from the Channel state and updates the `messages` array
 
   **Params:**

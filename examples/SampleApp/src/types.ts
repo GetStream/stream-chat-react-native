@@ -143,6 +143,6 @@ export type LoginConfig = {
   apiKey: string;
   userId: string;
   userImage?: string;
-  userToken: string;
   userName?: string;
+  userToken: string;
 };

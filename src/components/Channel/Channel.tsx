@@ -10,7 +10,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import Immutable from 'seamless-immutable';
 import {
   ChannelState,
   Channel as ChannelType,
@@ -497,17 +496,17 @@ export const ChannelWithContext = <
   const [loadingMoreRecent, setLoadingMoreRecent] = useState(false);
   const [messages, setMessages] = useState<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>['messages']
-  >(Immutable([]));
+  >([]);
 
   const [members, setMembers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['members']);
+  >({});
   const [quotedMessage, setQuotedMessage] = useState<
     boolean | MessageType<At, Ch, Co, Ev, Me, Re, Us>
   >(false);
   const [read, setRead] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['read']);
+  >({});
   const [thread, setThread] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['thread']
   >(threadProps || null);
@@ -515,19 +514,16 @@ export const ChannelWithContext = <
   const [threadLoadingMore, setThreadLoadingMore] = useState(false);
   const [threadMessages, setThreadMessages] = useState<
     ThreadContextValue<At, Ch, Co, Ev, Me, Re, Us>['threadMessages']
-  >(
-    (threadProps?.id && channel?.state?.threads?.[threadProps.id]) ||
-      Immutable([]),
-  );
+  >((threadProps?.id && channel?.state?.threads?.[threadProps.id]) || []);
   const [typing, setTyping] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['typing']);
+  >({});
   const [watcherCount, setWatcherCount] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watcherCount']
   >();
   const [watchers, setWatchers] = useState<
     ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']
-  >({} as ChannelContextValue<At, Ch, Co, Ev, Me, Re, Us>['watchers']);
+  >({});
 
   const { setTargetedMessage, targetedMessage } = useTargetedMessage(messageId);
 
@@ -560,9 +556,7 @@ export const ChannelWithContext = <
     if (threadProps) {
       setThread(threadProps);
       if (channel && threadProps?.id) {
-        setThreadMessages(
-          channel.state.threads?.[threadProps.id] || Immutable([]),
-        );
+        setThreadMessages(channel.state.threads?.[threadProps.id] || []);
       }
     } else {
       setThread(null);
@@ -609,12 +603,12 @@ export const ChannelWithContext = <
   const copyChannelState = lightThrottle(() => {
     setLoading(false);
     if (channel) {
-      setMembers(channel.state.members);
-      setMessages(channel.state.messages);
-      setRead(channel.state.read);
-      setTyping(channel.state.typing);
+      setMembers({ ...channel.state.members });
+      setMessages([...channel.state.messages]);
+      setRead({ ...channel.state.read });
+      setTyping({ ...channel.state.typing });
       setWatcherCount(channel.state.watcher_count);
-      setWatchers(channel.state.watchers);
+      setWatchers({ ...channel.state.watchers });
     }
   });
 
@@ -627,7 +621,7 @@ export const ChannelWithContext = <
     }
 
     if (channel && thread && event.message?.id === thread.id) {
-      const updatedThread = channel.state.messageToImmutable(event.message);
+      const updatedThread = channel.state.formatMessage(event.message);
       setThread(updatedThread);
     }
 
@@ -819,7 +813,7 @@ export const ChannelWithContext = <
     if (!channel) return;
     channel.state.setIsUpToDate(false);
     channel.state.clearMessages();
-    setMessages(channel.state.messages);
+    setMessages([...channel.state.messages]);
     if (!messageId) {
       await channel.query({
         messages: {
@@ -895,12 +889,13 @@ export const ChannelWithContext = <
     uploadsEnabled: true,
   } as InputConfig;
   if (typeof channel?.getConfig === 'function') {
-    const maxMessageLength = channel.getConfig()?.max_message_length;
-    const reactions = channel.getConfig()?.reactions;
-    const readEvents = channel.getConfig()?.read_events;
-    const replies = channel.getConfig()?.replies;
-    const typingEvents = channel.getConfig()?.typing_events;
-    const uploads = channel.getConfig()?.uploads;
+    const clientChannelConfig = channel.getConfig();
+    const maxMessageLength = clientChannelConfig?.max_message_length;
+    const reactions = clientChannelConfig?.reactions;
+    const readEvents = clientChannelConfig?.read_events;
+    const replies = clientChannelConfig?.replies;
+    const typingEvents = clientChannelConfig?.typing_events;
+    const uploads = clientChannelConfig?.uploads;
     channelConfig.readEventsEnabled = readEvents;
     channelConfig.typingEventsEnabled = typingEvents;
     inputConfig.maxMessageLength = maxMessageLength;
@@ -930,7 +925,7 @@ export const ChannelWithContext = <
         setThreadMessages(extraState.threadMessages);
       }
 
-      setMessages(channel.state.messages);
+      setMessages([...channel.state.messages]);
     }
   };
 
@@ -973,10 +968,14 @@ export const ChannelWithContext = <
         (message) => message.id === preview.quoted_message_id,
       );
 
-      preview.quoted_message = quotedMessage as Omit<
-        MessageResponse<At, Ch, Co, Me, Re, Us>,
-        'quoted_message'
-      >;
+      preview.quoted_message = quotedMessage as MessageResponse<
+        At,
+        Ch,
+        Co,
+        Me,
+        Re,
+        Us
+      >['quoted_message'];
     }
     return preview;
   };
@@ -1279,8 +1278,8 @@ export const ChannelWithContext = <
     Us
   >['openThread'] = (message) => {
     const newThreadMessages = message?.id
-      ? channel?.state?.threads[message.id] || Immutable([])
-      : Immutable([]);
+      ? channel?.state?.threads[message.id] || []
+      : [];
     setThread(message);
     setThreadMessages(newThreadMessages);
   };
@@ -1295,7 +1294,7 @@ export const ChannelWithContext = <
     Us
   >['closeThread'] = useCallback(() => {
     setThread(null);
-    setThreadMessages(Immutable([]));
+    setThreadMessages([]);
   }, [setThread, setThreadMessages]);
 
   // hard limit to prevent you from scrolling faster than 1 page per 2 seconds

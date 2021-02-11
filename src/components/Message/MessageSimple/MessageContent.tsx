@@ -198,17 +198,10 @@ export const MessageContentWithContext = <
     if (!message.created_at) return '';
 
     if (formatter) {
-      if (typeof message.created_at === 'string') {
-        return formatter(message.created_at);
-      } else {
-        return formatter(message.created_at.asMutable());
-      }
+      return formatter(message.created_at);
     }
 
-    const parserOutput =
-      typeof message.created_at === 'string'
-        ? tDateTimeParser(message.created_at)
-        : tDateTimeParser(message.created_at.asMutable());
+    const parserOutput = tDateTimeParser(message.created_at);
 
     if (isDayOrMoment(parserOutput)) {
       return parserOutput.format('LT');

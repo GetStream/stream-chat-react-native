@@ -49,7 +49,7 @@ import {
   useTranslationContext,
 } from '../../contexts/translationContext/TranslationContext';
 
-import type { Attachment, Channel as StreamChannel } from 'stream-chat';
+import type { Channel as StreamChannel } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -399,13 +399,13 @@ const MessageListWithContext = <
       const lastItem = viewableItems.pop();
 
       if (
-        lastItem?.item?.created_at?.asMutable &&
+        lastItem?.item?.created_at &&
         !lastItem.item.deleted_at &&
-        lastItem.item.created_at.asMutable().toDateString() !==
+        lastItem.item.created_at.toDateString() !==
           stickyHeaderDateRef.current.toDateString()
       ) {
-        stickyHeaderDateRef.current = lastItem.item.created_at.asMutable();
-        setStickyHeaderDate(lastItem.item.created_at.asMutable() as Date);
+        stickyHeaderDateRef.current = lastItem.item.created_at;
+        setStickyHeaderDate(lastItem.item.created_at);
       }
     }
   };
@@ -659,8 +659,10 @@ const MessageListWithContext = <
    */
   const imageString = messagesWithImages
     .map((message) =>
-      (message.attachments as Attachment<At>[])
-        .map((attachment) => attachment.image_url || attachment.thumb_url || '')
+      message.attachments
+        ?.map(
+          (attachment) => attachment.image_url || attachment.thumb_url || '',
+        )
         .join(),
     )
     .join();

@@ -645,7 +645,7 @@ export const MessageInputProvider = <
             attachments,
             mentioned_users: uniq(mentionedUsers),
             /** Parent message id - in case of thread */
-            parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+            parent_id: thread?.id,
             quoted_message_id:
               typeof value.quotedMessage === 'boolean'
                 ? undefined
@@ -686,7 +686,7 @@ export const MessageInputProvider = <
         value.sendMessage(({
           attachments,
           mentioned_users: [],
-          parent_id: thread?.id as StreamMessage<At, Me, Us>['parent_id'],
+          parent_id: thread?.id,
           quoted_message_id:
             typeof value.quotedMessage === 'boolean'
               ? undefined

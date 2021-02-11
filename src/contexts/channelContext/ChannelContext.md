@@ -8,7 +8,7 @@ The channel context exposes the following properties:
 - **lastRead** {Date} Latest initialization of the channel
 - **loading** {boolean} Whether or not the channel is currently loading
 - **markRead** {function} Marks the current channel as read, runs on channel mount
-- **members** {ImmutableObject} All members of the current channel
+- **members** {object} All members of the current channel
 
 **Example:**
 
@@ -32,8 +32,8 @@ The channel context exposes the following properties:
   }
 }
 ```
-- **read** {ImmutableObject} The read state for each user
-- **typing** {ImmutableObject} Map of user IDs for currently typing users, corresponds to the `typing.start` [event](https://getstream.io/chat/docs/#event_object)
+- **read** {object} The read state for each user
+- **typing** {object} Map of user IDs for currently typing users, corresponds to the `typing.start` [event](https://getstream.io/chat/docs/#event_object)
 
 **Example:**
 
@@ -44,7 +44,7 @@ The channel context exposes the following properties:
 }
 ```
 - **watcher_count** {number} Number of members watching the channel
-- **watchers** {ImmutableObject} Map of user IDs for users currently online and watching the channel
+- **watchers** {object} Map of user IDs for users currently online and watching the channel
 
 **Example:**
 

@@ -240,9 +240,9 @@ PODS:
     - React
   - react-native-cameraroll (4.0.2):
     - React-Core
-  - react-native-document-picker (4.2.0):
+  - react-native-document-picker (5.0.0):
     - React-Core
-  - react-native-image-resizer (1.4.2):
+  - react-native-image-resizer (1.4.3):
     - React-Core
   - react-native-netinfo (5.9.10):
     - React-Core
@@ -314,12 +314,12 @@ PODS:
     - React
   - RNGestureHandler (1.9.0):
     - React-Core
-  - RNImageCropPicker (0.35.2):
+  - RNImageCropPicker (0.35.3):
     - React-Core
     - React-RCTImage
-    - RNImageCropPicker/QBImagePickerController (= 0.35.2)
+    - RNImageCropPicker/QBImagePickerController (= 0.35.3)
     - TOCropViewController
-  - RNImageCropPicker/QBImagePickerController (0.35.2):
+  - RNImageCropPicker/QBImagePickerController (0.35.3):
     - React-Core
     - React-RCTImage
     - TOCropViewController
@@ -356,7 +356,7 @@ PODS:
     - Yoga
   - RNScreens (2.17.1):
     - React-Core
-  - RNShare (5.1.0):
+  - RNShare (5.1.1):
     - React-Core
   - RNSVG (12.1.0):
     - React
@@ -558,8 +558,8 @@ SPEC CHECKSUMS:
   React-jsinspector: 58aef7155bc9a9683f5b60b35eccea8722a4f53a
   react-native-blur: cad4d93b364f91e7b7931b3fa935455487e5c33c
   react-native-cameraroll: 1965db75c851b15e77a22ca0ac78e32af6b571ae
-  react-native-document-picker: 44ecae7103090b6789cca010f06f5205fd1cb66e
-  react-native-image-resizer: 4999a7dff8fc7fed5ed7d7c7dbfa5facbd345861
+  react-native-document-picker: ca0c8769c3848866970dc9164e809c6ea45cb5d6
+  react-native-image-resizer: 5dfbf934fe5788c11ed06ebbcdb6e6fb6beec20c
   react-native-netinfo: 30fb89fa913c342be82a887b56e96be6d71201dd
   react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
   React-RCTActionSheet: 89a0ca9f4a06c1f93c26067af074ccdce0f40336
@@ -575,11 +575,11 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNFS: 2bd9eb49dc82fa9676382f0585b992c424cd59df
   RNGestureHandler: 9b7e605a741412e20e13c512738a31bd1611759b
-  RNImageCropPicker: 9e0bf18cf4184a846fed55747c8e622208b39947
+  RNImageCropPicker: 08ba3a2e2f4f8833d606f01906c371e382c4dea9
   RNReactNativeHapticFeedback: 653a8c126a0f5e88ce15ffe280b3ff37e1fbb285
   RNReanimated: b9c929bfff7dedc9c89ab1875f1c6151023358d9
   RNScreens: b6c9607e6fe47c1b6e2f1910d2acd46dd7ecea3a
-  RNShare: fed99fd743f80ca255903c1da46fc9a6430efab6
+  RNShare: 6779fdd48e6246a8c79276a5b5e74a0f0d61a1ec
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6

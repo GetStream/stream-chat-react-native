@@ -5,8 +5,6 @@ import { Avatar } from '../../Avatar/Avatar';
 
 import { useTheme } from '../../../contexts/themeContext/ThemeContext';
 
-import type { UserResponse } from 'stream-chat';
-
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
@@ -51,7 +49,7 @@ export const MessageRepliesAvatars = <
   Ev extends UnknownType = DefaultEventType,
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
+  Us extends DefaultUserType = DefaultUserType
 >(
   props: MessageRepliesAvatarsProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
@@ -85,7 +83,7 @@ export const MessageRepliesAvatars = <
           : leftAvatarsContainer,
       ]}
     >
-      {(avatars as UserResponse<DefaultUserType>[]).map((user, i) => (
+      {avatars.map((user, i) => (
         <View
           key={user.id}
           style={

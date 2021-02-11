@@ -157,11 +157,7 @@ const ChannelPreviewMessengerWithContext = <
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
   const created_at = latestMessagePreview.messageObject?.created_at;
-  const latestMessageDate = created_at
-    ? typeof created_at === 'string'
-      ? new Date(created_at)
-      : created_at.asMutable()
-    : new Date();
+  const latestMessageDate = created_at ? new Date(created_at) : new Date();
   const status = latestMessagePreview.status;
 
   return (
