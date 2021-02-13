@@ -24,7 +24,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../../types/types';
-import type SeamlessImmutable from 'seamless-immutable';
 
 export type UseMessageListParams = {
   inverted?: boolean;
@@ -41,37 +40,8 @@ export type MessageType<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > =
-  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+  | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
   | MessageWithDates<At, Ch, Co, Me, Re, Us>;
-
-export type ImmutableMessages<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> =
-  | MessageType<At, Ch, Co, Ev, Me, Re, Us>[]
-  | SeamlessImmutable.ImmutableArray<MessageType<At, Ch, Co, Ev, Me, Re, Us>>;
-
-export const isImmutableMessageArray = <
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Ev extends UnknownType = DefaultEventType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
->(
-  messages: ImmutableMessages<At, Ch, Co, Ev, Me, Re, Us>,
-): messages is SeamlessImmutable.ImmutableArray<
-  ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-> =>
-  (messages as SeamlessImmutable.ImmutableArray<
-    ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
-  >).asMutable !== undefined;
 
 export const useMessageList = <
   At extends UnknownType = DefaultAttachmentType,
@@ -105,7 +75,6 @@ export const useMessageList = <
     readList,
   );
   const messagesWithStylesAndRead = messageList
-    .asMutable()
     .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)
     .map((msg) => ({
       ...msg,

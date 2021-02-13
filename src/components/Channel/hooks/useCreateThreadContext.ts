@@ -39,13 +39,7 @@ export const useCreateThreadContext = <
           latest_reactions
             ? latest_reactions.map(({ type }) => type).join()
             : ''
-        }${reply_count}${status}${
-          updated_at
-            ? typeof updated_at === 'string'
-              ? updated_at
-              : updated_at.toISOString()
-            : ''
-        }`,
+        }${reply_count}${status}${updated_at.toISOString()}`,
     )
     .join();
 

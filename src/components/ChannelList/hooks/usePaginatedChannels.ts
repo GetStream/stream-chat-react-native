@@ -104,14 +104,14 @@ export const usePaginatedChannels = <
       setHasNextPage(channelQueryResponse.length >= newOptions.limit);
       setOffset(newChannels.length);
       setError(false);
-    } catch (e) {
+    } catch (err) {
       await wait(2000);
 
       if (retryCount === 3) {
         setLoadingChannels(false);
         setLoadingNextPage(false);
         setRefreshing(false);
-        console.warn(e);
+        console.warn(err);
         return setError(true);
       }
 

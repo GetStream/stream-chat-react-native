@@ -56,13 +56,7 @@ export const useCreateChannelContext = <
   const readUsers = Object.values(read);
   const readUsersLength = readUsers.length;
   const readUsersLastReads = readUsers
-    .map(({ last_read }) =>
-      last_read
-        ? typeof last_read === 'string'
-          ? last_read
-          : last_read.toISOString()
-        : '',
-    )
+    .map(({ last_read }) => last_read.toISOString())
     .join();
 
   const typingValue = Object.keys(typing).join();

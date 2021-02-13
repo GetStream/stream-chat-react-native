@@ -31,7 +31,7 @@ export type ThreadContextValue<
   loadMoreThread: () => Promise<void>;
   openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
   thread:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['messageToImmutable']>
+    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
     | MessageWithDates<At, Ch, Co, Me, Re, Us>
     | null;
   threadHasMore: boolean;

@@ -82,10 +82,9 @@ const getMembers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const members = (channel.state
-    .members as unknown) as ChannelMemberResponse<Us>[];
+  const members = channel.state.members;
 
-  return members && Object.values(members).length
+  return Object.values(members).length
     ? (Object.values(members).filter((member) => member.user) as Array<
         ChannelMemberResponse<Us> & { user: UserResponse<Us> }
       >).map((member) => member.user)
@@ -103,10 +102,8 @@ const getWatchers = <
 >(
   channel: Channel<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const watchers = (channel.state.watchers as unknown) as UserResponse<Us>[];
-  return watchers && Object.values(watchers).length
-    ? [...Object.values(watchers)]
-    : [];
+  const watchers = channel.state.watchers;
+  return Object.values(watchers).length ? [...Object.values(watchers)] : [];
 };
 
 const getMembersAndWatchers = <

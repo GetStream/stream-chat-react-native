@@ -119,13 +119,7 @@ export const ImageGalleryHeader = <Us extends UnknownType = DefaultUserType>(
   const { t, tDateTimeParser } = useTranslationContext();
   const { setBlurType, setOverlay } = useOverlayContext();
 
-  const dateString = photo
-    ? typeof photo.created_at === 'string'
-      ? photo.created_at
-      : photo.created_at?.asMutable()
-    : undefined;
-
-  const parsedDate = tDateTimeParser(dateString);
+  const parsedDate = tDateTimeParser(photo?.created_at);
   const date =
     parsedDate && isDayOrMoment(parsedDate)
       ? parsedDate.calendar()

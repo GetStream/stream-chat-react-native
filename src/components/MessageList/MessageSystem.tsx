@@ -92,7 +92,7 @@ export const MessageSystem = <
   } = useTheme();
   const { tDateTimeParser } = useTranslationContext();
 
-  const createdAt = message.created_at as TDateTimeParserInput | undefined;
+  const createdAt = message.created_at;
   const parsedDate = tDateTimeParser(createdAt);
   const date =
     formatDate && createdAt

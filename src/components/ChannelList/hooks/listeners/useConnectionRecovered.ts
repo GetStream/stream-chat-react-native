@@ -44,8 +44,8 @@ export const useConnectionRecovered = <
     );
     const { unsubscribe: unsubscribeChanged } = client.on(
       'connection.changed',
-      (e) => {
-        if (e.online) {
+      (event) => {
+        if (event.online) {
           handleEvent();
         }
       },

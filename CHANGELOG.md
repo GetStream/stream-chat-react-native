@@ -19,12 +19,13 @@
     - Expo [expo-media-library](https://docs.expo.io/versions/latest/sdk/media-library/#installation)
     - React Native: [react-native-cameraroll](https://github.com/react-native-cameraroll/react-native-cameraroll#getting-started)
   - [react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/#installation)
-  - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values#installation)
-  - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/docs/installation)
+  - [react-native-reanimated v2](https://docs.swmansion.com/react-native-reanimated/docs/installation)
   - [react-native-svg](https://github.com/react-native-svg/react-native-svg#installation)
 
 - Removed peer dependencies for:
   - [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values)
+
+- Removed seamless-immutable
 
 - Removed styled-components:
   - Removed dot notation for theming applications

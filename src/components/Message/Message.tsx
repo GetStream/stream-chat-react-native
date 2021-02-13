@@ -82,13 +82,7 @@ import {
 import { triggerHaptic } from '../../native';
 import { emojiRegex } from '../../utils/utils';
 
-import type {
-  Attachment,
-  MessageResponse,
-  Reaction,
-  ReactionResponse,
-  Message as StreamMessage,
-} from 'stream-chat';
+import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
 
 import type { MessageType } from '../MessageList/hooks/useMessageList';
 
@@ -393,11 +387,7 @@ const MessageWithContext = <
       } else {
         removeMessage({
           id: message.id,
-          parent_id: message.parent_id as StreamMessage<
-            At,
-            Me,
-            Us
-          >['parent_id'],
+          parent_id: message.parent_id,
         });
       }
     }
@@ -562,12 +552,11 @@ const MessageWithContext = <
   const reactions = hasReactions
     ? supportedReactions.reduce((acc, cur) => {
         const reactionType = cur.type;
-        const reactionsOfReactionType = (message.latest_reactions as ReactionResponse<
-          Re,
-          Us
-        >[]).filter((reaction) => reaction.type === reactionType);
+        const reactionsOfReactionType = message.latest_reactions?.filter(
+          (reaction) => reaction.type === reactionType,
+        );
 
-        if (reactionsOfReactionType.length) {
+        if (reactionsOfReactionType?.length) {
           const hasOwnReaction = reactionsOfReactionType.some(
             (reaction) => reaction.user_id === clientId,
           );
@@ -743,8 +732,7 @@ const MessageWithContext = <
                     {
                       type: reactionType,
                     } as Reaction<Re, Us>,
-                    undefined,
-                    enforceUniqueReaction,
+                    { enforce_unique: enforceUniqueReaction },
                   );
                 }
               }
@@ -921,8 +909,7 @@ const MessageWithContext = <
                     {
                       type: reactionType,
                     } as Reaction<Re, Us>,
-                    undefined,
-                    enforceUniqueReaction,
+                    { enforce_unique: enforceUniqueReaction },
                   );
                 }
               }

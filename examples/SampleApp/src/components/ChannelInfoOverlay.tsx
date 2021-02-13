@@ -240,7 +240,7 @@ export const ChannelInfoOverlay = (props: ChannelInfoOverlayProps) => {
     : 0;
   const channelName = channel
     ? channel.data?.name ||
-      Object.values(channel.state.members || {})
+      Object.values(channel.state.members)
         .slice(0)
         .reduce((returnString, currentMember, index, originalArray) => {
           const returnStringLength = returnString.length;
