@@ -6,13 +6,10 @@ import {
   ChannelContextValue,
   useChannelContext,
 } from '../../../contexts/channelContext/ChannelContext';
-import {
-  MessageWithDates,
-  useMessagesContext,
-} from '../../../contexts/messagesContext/MessagesContext';
+import { useMessagesContext } from '../../../contexts/messagesContext/MessagesContext';
 import { useThreadContext } from '../../../contexts/threadContext/ThreadContext';
 
-import type { ChannelState } from 'stream-chat';
+import type { ChannelState, MessageResponse } from 'stream-chat';
 
 import type {
   DefaultAttachmentType,
@@ -31,6 +28,20 @@ export type UseMessageListParams = {
   threadList?: boolean;
 };
 
+export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
+
+export type MessagesWithStylesAndReadBy<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = MessageResponse<At, Ch, Co, Me, Re, Us> & {
+  groupStyles: GroupType[];
+  readBy: boolean | number;
+};
+
 export type MessageType<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -41,7 +52,22 @@ export type MessageType<
   Us extends UnknownType = DefaultUserType
 > =
   | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-  | MessageWithDates<At, Ch, Co, Me, Re, Us>;
+  | MessagesWithStylesAndReadBy<At, Ch, Co, Me, Re, Us>;
+
+// Type guards to check MessageType
+export const isMessagesWithStylesAndReadBy = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
+): message is MessagesWithStylesAndReadBy<At, Ch, Co, Me, Re, Us> =>
+  (message as MessagesWithStylesAndReadBy<At, Ch, Co, Me, Re, Us>).readBy !==
+  undefined;
 
 export const useMessageList = <
   At extends UnknownType = DefaultAttachmentType,
@@ -74,7 +100,7 @@ export const useMessageList = <
     messageList,
     readList,
   );
-  const messagesWithStylesAndRead = messageList
+  const messagesWithStylesAndReadBy = messageList
     .filter((msg) => !msg.deleted_at || msg.user?.id === client.userID)
     .map((msg) => ({
       ...msg,
@@ -83,6 +109,6 @@ export const useMessageList = <
     }));
 
   return (inverted
-    ? messagesWithStylesAndRead.reverse()
-    : messagesWithStylesAndRead) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
+    ? messagesWithStylesAndReadBy.reverse()
+    : messagesWithStylesAndReadBy) as MessageType<At, Ch, Co, Ev, Me, Re, Us>[];
 };

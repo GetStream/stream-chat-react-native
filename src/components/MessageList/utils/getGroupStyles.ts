@@ -1,7 +1,6 @@
-import type {
-  GroupType,
-  MessagesContextValue,
-} from '../../../contexts/messagesContext/MessagesContext';
+import type { GroupType } from '../hooks/useMessageList';
+
+import type { MessagesContextValue } from '../../../contexts/messagesContext/MessagesContext';
 import type { ThreadContextValue } from '../../../contexts/threadContext/ThreadContext';
 import type {
   DefaultAttachmentType,

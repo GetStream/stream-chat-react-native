@@ -4,7 +4,6 @@ import { getDisplayName } from '../utils/getDisplayName';
 
 import type { ChannelState } from 'stream-chat';
 
-import type { MessageWithDates } from '../messagesContext/MessagesContext';
 import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   DefaultAttachmentType,
@@ -30,10 +29,7 @@ export type ThreadContextValue<
   closeThread: () => void;
   loadMoreThread: () => Promise<void>;
   openThread: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => void;
-  thread:
-    | ReturnType<ChannelState<At, Ch, Co, Ev, Me, Re, Us>['formatMessage']>
-    | MessageWithDates<At, Ch, Co, Me, Re, Us>
-    | null;
+  thread: MessageType<At, Ch, Co, Ev, Me, Re, Us> | null;
   threadHasMore: boolean;
   threadLoadingMore: boolean;
   threadMessages: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['threads'][string];

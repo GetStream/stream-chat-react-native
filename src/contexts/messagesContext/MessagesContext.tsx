@@ -60,21 +60,7 @@ export type MessagesConfig = {
   repliesEnabled?: boolean;
 };
 
-export type GroupType = 'bottom' | 'middle' | 'single' | 'top';
-
 export type MessageContentType = 'attachments' | 'files' | 'gallery' | 'text';
-
-export type MessageWithDates<
-  At extends UnknownType = DefaultAttachmentType,
-  Ch extends UnknownType = DefaultChannelType,
-  Co extends string = DefaultCommandType,
-  Me extends UnknownType = DefaultMessageType,
-  Re extends UnknownType = DefaultReactionType,
-  Us extends UnknownType = DefaultUserType
-> = MessageResponse<At, Ch, Co, Me, Re, Us> & {
-  groupStyles: GroupType[];
-  readBy: boolean | number;
-};
 
 export type MessagesContextValue<
   At extends UnknownType = DefaultAttachmentType,
