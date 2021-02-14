@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
+
 import type { MessageContextValue } from '../../../contexts/messageContext/MessageContext';
 import type {
   DefaultAttachmentType,
@@ -54,11 +56,12 @@ export const useCreateMessageContext = <
   const latestReactions = message.latest_reactions
     ? message.latest_reactions
     : undefined;
+  const readBy = isMessagesWithStylesAndReadBy(message) && message.readBy;
   const messageValue = `${
     latestReactions ? latestReactions.map(({ type }) => type).join() : ''
-  }${message.updated_at}${message.deleted_at}${message.readBy}${
-    message.status
-  }${message.type}${message.text}${message.reply_count}`;
+  }${message.updated_at}${message.deleted_at}${readBy}${message.status}${
+    message.type
+  }${message.text}${message.reply_count}`;
 
   const messageContext: MessageContextValue<
     At,

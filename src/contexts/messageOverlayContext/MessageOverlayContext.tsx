@@ -6,12 +6,12 @@ import type { StyleProp, TextStyle } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { Alignment } from '../messageContext/MessageContext';
+import type { MessagesContextValue } from '../messagesContext/MessagesContext';
+
 import type {
   GroupType,
-  MessagesContextValue,
-} from '../messagesContext/MessagesContext';
-
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
+  MessageType,
+} from '../../components/MessageList/hooks/useMessageList';
 import type { MessageActionsProps } from '../../components/MessageOverlay/MessageActions';
 import type { OverlayReactionListProps } from '../../components/MessageOverlay/OverlayReactionList';
 import type { OverlayReactionsProps } from '../../components/MessageOverlay/OverlayReactions';

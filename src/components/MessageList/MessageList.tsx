@@ -11,7 +11,11 @@ import {
   ViewToken,
 } from 'react-native';
 
-import { MessageType, useMessageList } from './hooks/useMessageList';
+import {
+  isMessagesWithStylesAndReadBy,
+  MessageType,
+  useMessageList,
+} from './hooks/useMessageList';
 import { getLastReceivedMessage } from './utils/getLastReceivedMessage';
 
 import {
@@ -31,7 +35,6 @@ import {
   useImageGalleryContext,
 } from '../../contexts/imageGalleryContext/ImageGalleryContext';
 import {
-  GroupType,
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -396,11 +399,14 @@ const MessageListWithContext = <
 
   const updateStickyHeaderDateIfNeeded = (viewableItems: ViewToken[]) => {
     if (viewableItems.length) {
-      const lastItem = viewableItems.pop();
+      const lastItem = viewableItems.pop() as {
+        item: MessageType<At, Ch, Co, Ev, Me, Re, Us>;
+      };
 
       if (
         lastItem?.item?.created_at &&
         !lastItem.item.deleted_at &&
+        typeof lastItem.item.created_at !== 'string' &&
         lastItem.item.created_at.toDateString() !==
           stickyHeaderDateRef.current.toDateString()
       ) {
@@ -520,7 +526,11 @@ const MessageListWithContext = <
             <ThemeProvider style={myMessageTheme}>
               <Message
                 goToMessage={goToMessage}
-                groupStyles={message.groupStyles as GroupType[]}
+                groupStyles={
+                  isMessagesWithStylesAndReadBy(message)
+                    ? message.groupStyles
+                    : []
+                }
                 lastReceivedId={
                   lastReceivedId === message.id ? lastReceivedId : undefined
                 }
@@ -541,7 +551,9 @@ const MessageListWithContext = <
         <>
           <Message
             goToMessage={goToMessage}
-            groupStyles={message.groupStyles as GroupType[]}
+            groupStyles={
+              isMessagesWithStylesAndReadBy(message) ? message.groupStyles : []
+            }
             lastReceivedId={
               lastReceivedId === message.id ? lastReceivedId : undefined
             }

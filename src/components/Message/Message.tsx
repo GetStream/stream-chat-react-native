@@ -50,7 +50,6 @@ import {
   useMessageOverlayContext,
 } from '../../contexts/messageOverlayContext/MessageOverlayContext';
 import {
-  GroupType,
   MessagesContextValue,
   useMessagesContext,
 } from '../../contexts/messagesContext/MessagesContext';
@@ -84,7 +83,11 @@ import { emojiRegex } from '../../utils/utils';
 
 import type { Attachment, MessageResponse, Reaction } from 'stream-chat';
 
-import type { MessageType } from '../MessageList/hooks/useMessageList';
+import {
+  GroupType,
+  isMessagesWithStylesAndReadBy,
+  MessageType,
+} from '../MessageList/hooks/useMessageList';
 
 import type {
   DefaultAttachmentType,
@@ -1096,7 +1099,8 @@ const areEqual = <
 
   const messageEqual =
     prevMessage.deleted_at === nextMessage.deleted_at &&
-    prevMessage.readBy === nextMessage.readBy &&
+    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
+      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy) &&
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
     prevMessage.text === nextMessage.text &&

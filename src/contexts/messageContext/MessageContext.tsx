@@ -6,11 +6,11 @@ import type { GestureResponderEvent } from 'react-native';
 import type { Attachment } from 'stream-chat';
 
 import type { ActionHandler } from '../../components/Attachment/Attachment';
-import type { MessageType } from '../../components/MessageList/hooks/useMessageList';
 import type {
   GroupType,
-  MessageContentType,
-} from '../../contexts/messagesContext/MessagesContext';
+  MessageType,
+} from '../../components/MessageList/hooks/useMessageList';
+import type { MessageContentType } from '../../contexts/messagesContext/MessagesContext';
 import type {
   DefaultAttachmentType,
   DefaultChannelType,

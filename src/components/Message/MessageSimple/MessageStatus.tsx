@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { isMessagesWithStylesAndReadBy } from '../../MessageList/hooks/useMessageList';
+
 import {
   ChannelContextValue,
   useChannelContext,
@@ -89,7 +91,11 @@ const MessageStatusWithContext = <
     );
   }
 
-  if (message.readBy && !threadList && readEventsEnabled !== false) {
+  if (
+    isMessagesWithStylesAndReadBy(message) &&
+    !threadList &&
+    readEventsEnabled !== false
+  ) {
     return (
       <View style={[styles.statusContainer, statusContainer]}>
         {typeof message.readBy === 'number' ? (
@@ -152,7 +158,8 @@ const areEqual = <
   const messageEqual =
     prevMessage.status === nextMessage.status &&
     prevMessage.type === nextMessage.type &&
-    prevMessage.readBy === nextMessage.readBy;
+    (isMessagesWithStylesAndReadBy(prevMessage) && prevMessage.readBy) ===
+      (isMessagesWithStylesAndReadBy(nextMessage) && nextMessage.readBy);
   if (!messageEqual) return false;
 
   return true;
