@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { ChannelAvatar } from './ChannelAvatar';
@@ -10,7 +10,6 @@ import {
   useChannelsContext,
 } from '../../contexts/channelsContext/ChannelsContext';
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
-import { Check, CheckAll } from '../../icons';
 import { vw } from '../../utils/utils';
 
 import type { ChannelPreviewProps } from './ChannelPreview';
@@ -26,9 +25,12 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
+import { ChannelPreviewTitle } from './ChannelPreviewTitle';
+import { ChannelPreviewMessage } from './ChannelPreviewMessage';
+import { ChannelPreviewStatus } from './ChannelPreviewStatus';
+import { ChannelPreviewUnreadCount } from './ChannelPreviewUnreadCount';
 
 const styles = StyleSheet.create({
-  bold: { fontWeight: 'bold' },
   container: {
     borderBottomWidth: 1,
     flex: 1,
@@ -37,25 +39,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   contentContainer: { flex: 1 },
-  date: {
-    fontSize: 12,
-    marginLeft: 2,
-    textAlign: 'right',
-  },
-  flexRow: {
-    flexDirection: 'row',
-  },
-  message: {
-    flexShrink: 1,
-    fontSize: 12,
-  },
-  presenceIndicatorContainer: {
-    height: 12,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    width: 12,
-  },
   row: {
     alignItems: 'center',
     flex: 1,
@@ -63,24 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingLeft: 8,
   },
-  skeletonContainer: {
-    flex: 1,
-    flexDirection: 'row',
-  },
   title: { fontSize: 14, fontWeight: '700' },
-  unreadContainer: {
-    alignItems: 'center',
-    borderRadius: 8,
-    flexShrink: 1,
-    justifyContent: 'center',
-  },
-  unreadText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-  },
 });
 
 const maxWidth = vw(80) - 16 - 40;
@@ -96,7 +62,13 @@ export type ChannelPreviewMessengerPropsWithContext<
 > = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> &
   Pick<
     ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'maxUnreadCount' | 'onSelect'
+    | 'maxUnreadCount'
+    | 'onSelect'
+    | 'PreviewAvatar'
+    | 'PreviewMessage'
+    | 'PreviewStatus'
+    | 'PreviewTitle'
+    | 'PreviewUnreadCount'
   > & {
     /** Latest message on a channel, formatted for preview */
     latestMessagePreview: LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>;
@@ -131,24 +103,18 @@ const ChannelPreviewMessengerWithContext = <
     latestMessagePreview,
     maxUnreadCount,
     onSelect,
+    PreviewAvatar = ChannelAvatar,
+    PreviewMessage = ChannelPreviewMessage,
+    PreviewStatus = ChannelPreviewStatus,
+    PreviewTitle = ChannelPreviewTitle,
+    PreviewUnreadCount = ChannelPreviewUnreadCount,
     unread,
   } = props;
 
   const {
     theme: {
-      channelPreview: {
-        checkAllIcon,
-        checkIcon,
-        container,
-        contentContainer,
-        date,
-        message,
-        row,
-        title,
-        unreadContainer,
-        unreadText,
-      },
-      colors: { accent_blue, accent_red, black, border, grey, white_snow },
+      channelPreview: { container, contentContainer, row, title },
+      colors: { border, white_snow },
     },
   } = useTheme();
 
@@ -156,9 +122,6 @@ const ChannelPreviewMessengerWithContext = <
     channel,
     Math.floor(maxWidth / ((title.fontSize || styles.title.fontSize) / 2)),
   );
-  const created_at = latestMessagePreview.messageObject?.created_at;
-  const latestMessageDate = created_at ? new Date(created_at) : new Date();
-  const status = latestMessagePreview.status;
 
   return (
     <TouchableOpacity
@@ -174,57 +137,18 @@ const ChannelPreviewMessengerWithContext = <
       ]}
       testID='channel-preview-button'
     >
-      <ChannelAvatar channel={channel} />
+      <PreviewAvatar channel={channel} />
       <View style={[styles.contentContainer, contentContainer]}>
         <View style={[styles.row, row]}>
-          <Text
-            numberOfLines={1}
-            style={[styles.title, { color: black }, title]}
-          >
-            {displayName}
-          </Text>
-          <View
-            style={[
-              styles.unreadContainer,
-              { backgroundColor: accent_red },
-              unreadContainer,
-            ]}
-          >
-            {!!unread && (
-              <Text numberOfLines={1} style={[styles.unreadText, unreadText]}>
-                {unread > maxUnreadCount ? `${maxUnreadCount}+` : unread}
-              </Text>
-            )}
-          </View>
+          <PreviewTitle displayName={displayName} />
+          <PreviewUnreadCount maxUnreadCount={maxUnreadCount} unread={unread} />
         </View>
         <View style={[styles.row, row]}>
-          <Text
-            numberOfLines={1}
-            style={[styles.message, { color: grey }, message]}
-          >
-            {latestMessagePreview.previews.map((preview, index) =>
-              preview.text ? (
-                <Text
-                  key={`${preview.text}_${index}`}
-                  style={[{ color: grey }, preview.bold ? styles.bold : {}]}
-                >
-                  {preview.text}
-                </Text>
-              ) : null,
-            )}
-          </Text>
-          <View style={styles.flexRow}>
-            {status === 2 ? (
-              <CheckAll pathFill={accent_blue} {...checkAllIcon} />
-            ) : status === 1 ? (
-              <Check pathFill={grey} {...checkIcon} />
-            ) : null}
-            <Text style={[styles.date, { color: grey }, date]}>
-              {formatLatestMessageDate && latestMessageDate
-                ? formatLatestMessageDate(latestMessageDate)
-                : latestMessagePreview.created_at}
-            </Text>
-          </View>
+          <PreviewMessage latestMessagePreview={latestMessagePreview} />
+          <PreviewStatus
+            formatLatestMessageDate={formatLatestMessageDate}
+            latestMessagePreview={latestMessagePreview}
+          />
         </View>
       </View>
     </TouchableOpacity>
@@ -267,19 +191,26 @@ export const ChannelPreviewMessenger = <
 >(
   props: ChannelPreviewMessengerProps<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { maxUnreadCount, onSelect } = useChannelsContext<
-    At,
-    Ch,
-    Co,
-    Ev,
-    Me,
-    Re,
-    Us
-  >();
-
+  const {
+    maxUnreadCount,
+    onSelect,
+    PreviewAvatar,
+    PreviewMessage,
+    PreviewStatus,
+    PreviewTitle,
+    PreviewUnreadCount,
+  } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
   return (
     <ChannelPreviewMessengerWithContext
-      {...{ maxUnreadCount, onSelect }}
+      {...{
+        maxUnreadCount,
+        onSelect,
+        PreviewAvatar,
+        PreviewMessage,
+        PreviewStatus,
+        PreviewTitle,
+        PreviewUnreadCount,
+      }}
       {...props}
     />
   );

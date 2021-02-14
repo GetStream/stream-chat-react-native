@@ -22,6 +22,12 @@ import type {
   UnknownType,
 } from '../../types/types';
 
+import type { ChannelAvatarProps } from '../../components/ChannelPreview/ChannelAvatar';
+import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
+import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
+import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
+import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
+
 export type ChannelsContextValue<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -185,6 +191,42 @@ export type ChannelsContextValue<
    * @param channel A channel object
    */
   onSelect?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Deafult** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelAvatar.tsx)
+   */
+  PreviewAvatar?: React.ComponentType<
+    ChannelAvatarProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview of latest message on channel.
+   *
+   * **Deafult** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
+   */
+  PreviewMessage?: React.ComponentType<
+    ChannelPreviewMessageProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Deafult** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
+   */
+  PreviewStatus?: React.ComponentType<
+    ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Deafult** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
+   */
+  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps>;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Deafult** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
+   */
+  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);
