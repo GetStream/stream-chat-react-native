@@ -76,6 +76,29 @@ export type ChannelContextValue<
    */
   LoadingIndicator: React.ComponentType<LoadingProps>;
   markRead: () => void;
+  /**
+   *
+   * ```json
+   * {
+   *   "thierry-123": {
+   *     "id": "thierry-123",
+   *     "role": "user",
+   *     "created_at": "2019-04-03T14:42:47.087869Z",
+   *     "updated_at": "2019-04-16T09:20:03.982283Z",
+   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
+   *     "online": true
+   *   },
+   *   "vishal-123": {
+   *     "id": "vishal-123",
+   *     "role": "user",
+   *     "created_at": "2019-05-03T14:42:47.087869Z",
+   *     "updated_at": "2019-05-16T09:20:03.982283Z",
+   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
+   *     "online": false
+   *   }
+   * }
+   * ```
+   */
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void>;
@@ -86,6 +109,29 @@ export type ChannelContextValue<
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
+  /**
+   *
+   * ```json
+   * {
+   *   "thierry-123": {
+   *     "id": "thierry-123",
+   *     "role": "user",
+   *     "created_at": "2019-04-03T14:42:47.087869Z",
+   *     "updated_at": "2019-04-16T09:20:03.982283Z",
+   *     "last_active": "2019-04-16T11:23:51.168113408+02:00",
+   *     "online": true
+   *   },
+   *   "vishal-123": {
+   *     "id": "vishal-123",
+   *     "role": "user",
+   *     "created_at": "2019-05-03T14:42:47.087869Z",
+   *     "updated_at": "2019-05-16T09:20:03.982283Z",
+   *     "last_active": "2019-06-16T11:23:51.168113408+02:00",
+   *     "online": false
+   *   }
+   * }
+   * ```
+   */
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
   /**
    * Instance of channel object from stream-chat package.

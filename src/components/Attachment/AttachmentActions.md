@@ -2,7 +2,7 @@ AttachmentActions renders the attachment action
 
 Style info
 
-```js
+```tsx static
 import { AttachmentActions } from './AttachmentActions';
 
 function actionHandler(action) {
@@ -24,7 +24,7 @@ const actions = [
 />;
 ```
 
-```js
+```tsx static
 import { AttachmentActions } from './AttachmentActions';
 
 function actionHandler(action) {

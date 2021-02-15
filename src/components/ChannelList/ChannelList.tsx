@@ -61,10 +61,36 @@ export type ChannelListProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = Partial<ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>> & {
+> = Partial<
+  Pick<
+    ChannelsContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+    | 'additionalFlatListProps'
+    | 'EmptyStateIndicator'
+    | 'FooterLoadingIndicator'
+    | 'HeaderErrorIndicator'
+    | 'HeaderNetworkDownIndicator'
+    | 'LoadingErrorIndicator'
+    | 'LoadingIndicator'
+    | 'Preview'
+    | 'setFlatListRef'
+    | 'ListHeaderComponent'
+    | 'onSelect'
+    | 'PreviewAvatar'
+    | 'PreviewMessage'
+    | 'PreviewStatus'
+    | 'PreviewTitle'
+    | 'PreviewUnreadCount'
+    | 'loadMoreThreshold'
+    | 'maxUnreadCount'
+    | 'numberOfSkeletons'
+  >
+> & {
   /**
    * Object containing channel query filters
+   *
    * @see See [Channel query documentation](https://getstream.io/chat/docs/query_channels) for a list of available filter fields
+   *
+   * @overrideType object
    * */
   filters?: ChannelFilters<Ch, Co, Us>;
   /**
@@ -82,7 +108,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a user gets added to a channel
    *
-   * @param {Event} event [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event Object](https://getstream.io/chat/docs/event_object) corresponding to `notification.added_to_channel` event
+   *
+   * @overrideType Function
    * */
   onAddedToChannel?: (
     setChannels: React.Dispatch<
@@ -93,7 +122,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets deleted. In absence of this prop, the channel will be removed from the list.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.deleted` event
+   *
+   * @overrideType Function
    * */
   onChannelDeleted?: (
     setChannels: React.Dispatch<
@@ -104,7 +136,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets hidden. In absence of this prop, the channel will be removed from the list.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.hidden` event
+   *
+   * @overrideType Function
    * */
   onChannelHidden?: (
     setChannels: React.Dispatch<
@@ -115,7 +150,10 @@ export type ChannelListProps<
   /**
    * Function to customize behavior when a channel gets truncated
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.truncated` event
+   *
+   * @overrideType Function
    * */
   onChannelTruncated?: (
     setChannels: React.Dispatch<
@@ -126,7 +164,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a channel gets updated
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `channel.updated` event
+   *
+   * @overrideType Function
    * */
   onChannelUpdated?: (
     setChannels: React.Dispatch<
@@ -135,9 +176,13 @@ export type ChannelListProps<
     event: Event<At, Ch, Co, Ev, Me, Re, Us>,
   ) => void;
   /**
-   * Function that overrides default behavior when new message is received on channel not currently being watched
+   * Override the default listener/handler for event `notification.message_new`
+   * This event is received on channel, which is not being watched.
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.message_new` event
+   *
+   * @overrideType Function
    * */
   onMessageNew?: (
     setChannels: React.Dispatch<
@@ -148,7 +193,10 @@ export type ChannelListProps<
   /**
    * Function that overrides default behavior when a user gets removed from a channel
    *
-   * @param {Event} event [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   * @param setChannels Setter for internal state property - `channels`. It's created from useState() hook.
+   * @param event An [Event object](https://getstream.io/chat/docs/event_object) corresponding to `notification.removed_from_channel` event
+   *
+   * @overrideType Function
    * */
   onRemovedFromChannel?: (
     setChannels: React.Dispatch<

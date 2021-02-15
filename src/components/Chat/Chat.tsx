@@ -5,7 +5,10 @@ import Dayjs from 'dayjs';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
-import { ChatProvider } from '../../contexts/chatContext/ChatContext';
+import {
+  ChatContextValue,
+  ChatProvider,
+} from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import {
   DeepPartial,
@@ -19,7 +22,7 @@ import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../package.json';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Streami18n } from '../../utils/Streami18n';
@@ -42,24 +45,7 @@ export type ChatProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /**
-   * The StreamChat client object
-   *
-   * ```js
-   * import { StreamChat } from 'stream-chat';
-   * import { Chat } from 'stream-chat-react-native';
-   *
-   * const client = StreamChat.getInstance('api_key);
-   * await client.connectUser('user_id', 'userToken');
-   *
-   * <Chat client={client}>
-   * </Chat>
-   * ```
-   *
-   * @overrideType StreamChat
-   * */
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
@@ -214,7 +200,6 @@ const ChatWithContext = <
  * - client - client connection
  * - connectionRecovering - whether or not websocket is reconnecting
  * - isOnline - whether or not set user is active
- * - logger - custom logging function
  * - setActiveChannel - function to set the currently active channel
  *
  * The Chat Component takes the following generics in order:

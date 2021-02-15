@@ -8,8 +8,8 @@ There are many types of attachments. By default the components support
 
 Here's an example of an image
 
-```js
-import { Attachment } from './Attachment';
+```tsx static
+import { Attachment } from 'stream-chat-react-native';
 const attachment = {
   thumb_url: 'https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif',
   type: 'image',
@@ -24,8 +24,8 @@ function actionHandler(action) {
 
 Or a video element:
 
-```js
-import { Attachment } from './Attachment';
+```tsx static
+import { Attachment } from 'stream-chat-react-native';
 
 const attachment = {
   asset_url: 'https://www.youtube.com/embed/7LiyXFYaEAY',
@@ -46,8 +46,8 @@ function actionHandler(action) {
 
 Image with more meta information:
 
-```js
-import { Attachment } from './Attachment';
+```tsx static
+import { Attachment } from 'stream-chat-react-native';
 
 const attachment = {
   image_url:
@@ -70,10 +70,10 @@ function actionHandler(action) {
 
 Attachment with actions:
 
-```js
+```tsx static
 import { View } from 'react-native';
 
-import { Attachment } from './Attachment';
+import { Attachment } from 'stream-chat-react-native';
 
 const attachment = {
   actions: [

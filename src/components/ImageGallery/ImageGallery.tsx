@@ -86,34 +86,6 @@ export enum IsSwiping {
   FALSE,
 }
 
-/**
- * Clamping worklet to clamp the scaling
- */
-export const clamp = (
-  value: number,
-  lowerBound: number,
-  upperBound: number,
-) => {
-  'worklet';
-  return Math.min(Math.max(lowerBound, value), upperBound);
-};
-
-const styles = StyleSheet.create({
-  animatedContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-});
-
-export type Photo<Us extends UnknownType = DefaultUserType> = {
-  id: string;
-  uri: string;
-  created_at?: string | Date;
-  messageId?: string;
-  user?: UserResponse<Us> | null;
-  user_id?: string;
-};
-
 export type ImageGalleryCustomComponents<
   Us extends UnknownType = DefaultUserType
 > = {
@@ -1252,6 +1224,34 @@ export const ImageGallery = <
       </BottomSheet>
     </Animated.View>
   );
+};
+
+/**
+ * Clamping worklet to clamp the scaling
+ */
+export const clamp = (
+  value: number,
+  lowerBound: number,
+  upperBound: number,
+) => {
+  'worklet';
+  return Math.min(Math.max(lowerBound, value), upperBound);
+};
+
+const styles = StyleSheet.create({
+  animatedContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+
+export type Photo<Us extends UnknownType = DefaultUserType> = {
+  id: string;
+  uri: string;
+  created_at?: string | Date;
+  messageId?: string;
+  user?: UserResponse<Us> | null;
+  user_id?: string;
 };
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

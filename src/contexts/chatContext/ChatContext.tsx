@@ -24,11 +24,48 @@ export type ChatContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  /**
+   * The StreamChat client object
+   *
+   * ```
+   * import { StreamChat } from 'stream-chat';
+   * import { Chat } from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key);
+   * await client.connectUser('user_id', 'userToken');
+   *
+   * <Chat client={client}>
+   * </Chat>
+   * ```
+   *
+   * @overrideType StreamChat
+   * */
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   connectionRecovering: boolean;
   isOnline: boolean;
-  logger: (message?: string | undefined) => void;
+  /**
+   * @param newChannel Channel to set as active.
+   *
+   * @overrideType Function
+   */
   setActiveChannel: (newChannel?: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * Instance of channel object from stream-chat package.
+   *
+   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
+   *
+   * ```
+   * import { StreamChat, Channel } from 'stream-chat';
+   * import { Chat, Channel} from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key');
+   * await client.connectUser('user_id', 'user_token');
+   * const channel = client.channel('messaging', 'channel_id');
+   * await channel.watch();
+   * ```
+   *
+   * @overrideType Channel
+   */
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
 };
 

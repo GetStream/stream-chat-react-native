@@ -1,7 +1,7 @@
 The default circle style Avatar
 
-```js
-import { Avatar } from './Avatar';
+```tsx static
+import { Avatar } from 'stream-chat-react-native';
 
 const image =
   'https://pbs.twimg.com/profile_images/897621870069112832/dFGq6aiE_400x400.jpg';
@@ -12,8 +12,8 @@ const name = 'uthred';
 
 An example of how the fallback looks
 
-```js
-import { Avatar } from './Avatar';
+```tsx static
+import { Avatar } from 'stream-chat-react-native';
 
 const name = 'username';
 

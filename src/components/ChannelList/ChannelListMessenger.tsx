@@ -46,6 +46,10 @@ export type ChannelListMessengerPropsWithContext<
   | 'maxUnreadCount'
   | 'onSelect'
   | 'Preview'
+  | 'PreviewTitle'
+  | 'PreviewStatus'
+  | 'PreviewAvatar'
+  | 'previewMessage'
 >;
 
 const StatusIndicator = <

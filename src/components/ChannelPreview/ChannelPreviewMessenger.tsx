@@ -70,7 +70,25 @@ export type ChannelPreviewMessengerPropsWithContext<
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
   > & {
-    /** Latest message on a channel, formatted for preview */
+    /**
+     * Latest message on a channel, formatted for preview
+     *
+     * e.g.,
+     *
+     * ```json
+     * {
+     *  created_at: '' ,
+     *  messageObject: { ... },
+     *  previews: {
+     *    bold: true,
+     *    text: 'This is the message preview text'
+     *  },
+     *  status: 0 | 1 | 2 // read states of latest message.
+     * }
+     * ```
+     *
+     * @overrideType object
+     */
     latestMessagePreview: LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>;
     /**
      * Formatter function for date of latest message.

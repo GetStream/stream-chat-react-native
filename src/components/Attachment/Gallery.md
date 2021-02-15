@@ -1,7 +1,5 @@
-```js
-import { Gallery } from './Gallery';
-
-import { Chat } from '../Chat/Chat';
+```tsx static
+import { Gallery } from 'stream-chat-react-native';
 
 const images = [
   { image_url: 'https://i.picsum.photos/id/912/200/300.jpg?blur=5&hmac=Qk9-L9x5NUPVQh1fgIM_HucJtpX2RKOAK1sLTGD-7U4' },
@@ -11,7 +9,6 @@ const images = [
   { image_url: 'https://i.picsum.photos/id/912/200/300.jpg?blur=5&hmac=Qk9-L9x5NUPVQh1fgIM_HucJtpX2RKOAK1sLTGD-7U4' },
   { image_url: 'https://i.picsum.photos/id/912/200/300.jpg?blur=5&hmac=Qk9-L9x5NUPVQh1fgIM_HucJtpX2RKOAK1sLTGD-7U4' },
 ];
-<Chat>
-  <Gallery images={images} />;
-</Chat>
+
+<Gallery images={images} />;
 ```

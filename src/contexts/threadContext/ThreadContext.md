@@ -1,14 +1,34 @@
-The thread context exposes the following properties:
+Please check the `ThreadContexttValue` in [ThreadContextt](), for consumable values.
+Provider for this context exists in `Channel` component. And so, any child component of Channel
+can get access to context as following:
 
-- **closeThread** {function} Closes the currently open thread, should be attached to close button on thread UI
-- **openThread** {function} Executes on press of the replies count button and navigates user into a thread
+- Functional component
 
-  **Params:**
+```tsx static
+import { useThreadContextt } from 'stream-chat-react-native';
 
-  - **message:** Thread parent message
-  - **event:** Native press event
-- **loadMoreThread** {function} Loads the next page of messages in a currently active/open thread
-- **thread** {object} Parent message containing the list of thread messages
-- **threadMessages** {array} Array of messages within a thread
-- **threadLoadingMore** {boolean} Whether or not the thread is currently loading more messages
-- **threadHasMore** {boolean} Whether or not more messages are available in a currently active thread, set to false when the end of pagination is reached
+const SomeChildComponent = () => {
+  const { openThread, threadMessages } = useThreadContextt();
+
+  return (
+    <View />
+  )
+}
+```
+
+- Class component
+
+```tsx static
+import React from 'react';
+import { withThreadContextt } from 'stream-chat-react-native';
+
+class SomeChildComponent extends React.Component {
+  constructor(props) {
+    super(props);
+
+    console.log(props.openThread);
+    console.log(props.threadMessages);
+  }
+
+  // UI Logic
+}

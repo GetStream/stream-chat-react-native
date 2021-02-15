@@ -1,38 +1,23 @@
 Simple default LoadingIndicator
 
-```js
-import { LoadingIndicator } from './LoadingIndicator';
+```tsx static
+import { LoadingIndicator } from 'stream-chat-react-native';
 
-import { Chat } from '../Chat/Chat';
-import { client } from '../docs/data';
-
-<Chat client={client}>
-    <LoadingIndicator />
-</Chat>
+<LoadingIndicator />
 ```
 
 Channel LoadingIndicator
 
-```js
-import { LoadingIndicator } from './LoadingIndicator';
+```tsx static
+import { LoadingIndicator } from 'stream-chat-react-native';
 
-import { Chat } from '../Chat/Chat';
-import { client } from '../docs/data';
-
-<Chat client={client}>
-    <LoadingIndicator listType='channel' />
-</Chat>
+<LoadingIndicator listType='channel' />
 ```
 
 Message LoadingIndicator
 
-```js
-import { LoadingIndicator } from './LoadingIndicator';
+```tsx static
+import { LoadingIndicator } from 'stream-chat-react-native';
 
-import { Chat } from '../Chat/Chat';
-import { client } from '../docs/data';
-
-<Chat client={client}>
-    <LoadingIndicator listType='message' />
-</Chat>
+<LoadingIndicator listType='message' />
 ```
