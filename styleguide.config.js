@@ -13,7 +13,10 @@ const notBabeledDeps = [
 
 const sections = [
   {
-    components: ['src/components/Chat/Chat.tsx'],
+    components: [
+      'src/components/Chat/Chat.tsx',
+      'src/contexts/overlayContext/OverlayProvider.tsx',
+    ],
     exampleMode: 'collapse',
     name: 'Top Level Component',
     usageMode: 'expand',
