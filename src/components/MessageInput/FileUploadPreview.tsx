@@ -84,7 +84,7 @@ type FileUploadPreviewPropsWithContext<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'fileUploads' | 'removeFile' | 'uploadFile'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'AttachmentFileIcon'>;
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'FileAttachmentIcon'>;
 
 const FileUploadPreviewWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -97,7 +97,7 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { AttachmentFileIcon, fileUploads, removeFile, uploadFile } = props;
+  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
@@ -151,7 +151,7 @@ const FileUploadPreviewWithContext = <
         ]}
       >
         <View style={[styles.fileContentContainer, fileContentContainer]}>
-          <AttachmentFileIcon mimeType={item.file.type} />
+          <FileAttachmentIcon mimeType={item.file.type} />
           <View style={[styles.fileTextContainer, fileTextContainer]}>
             <Text
               numberOfLines={1}
@@ -284,7 +284,7 @@ export const FileUploadPreview = <
     Re,
     Us
   >();
-  const { AttachmentFileIcon } = useMessagesContext<
+  const { FileAttachmentIcon } = useMessagesContext<
     At,
     Ch,
     Co,
@@ -296,7 +296,7 @@ export const FileUploadPreview = <
 
   return (
     <MemoizedFileUploadPreview
-      {...{ AttachmentFileIcon, fileUploads, removeFile, uploadFile }}
+      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile }}
       {...props}
     />
   );

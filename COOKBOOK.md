@@ -86,7 +86,9 @@ Stream Chat components make extensive use of React Context to maintain state and
 
 ### theme
 
-The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. To accurately create a theme we suggestion utilizing our exported types to create your own theme. We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys that can modify the styling.
+The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. You can add a theme object on `Chat` component as shown in following code snippet: To accurately create a theme we suggest utilizing our exported types to create your own theme. You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/contexts/themeContext/utils/theme.ts) (check for the line `export type Theme`). We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. 
+
+Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys, that can modify the styling.
 
 ```typescript
 file: {
@@ -116,6 +118,9 @@ const theme: DeepPartial<Theme> = {
     },
   },
 };
+
+<Chat style={theme}>
+</Chat>
 ```
 
 <table>
@@ -408,7 +413,9 @@ Once you have Chat up and running there are tons of customization possibilities 
 
 ### How to customize message component
 
-The [`Message`](./src/components/Message/Message.tsx) component has many underlying components that can be modified and/or styled using the props and theme provided to contexts in `Channel`. But if you would like to replace the component completely you can do so via the `Message` prop on `Channel`. Using the [Message Component](./src/components/Message/Message.tsx) as an example can be helpful to understand what props and hooks provide different information to the component. It is also suggested you optimize the component for rendering using memoization as is the standard suggested practice for `FlatList` items.
+Channel component accepts following props, for which you can provide your own components:
+
+- [Message](./src/components/Message/Message.tsx) - This is a higher order component, that wraps the UI component (MessageSimple) for message bubble. This component provides underlying UI component with all the handlers necessary. Mostly you shouldn't need to use customize this component, unless you want to write your own handlers for message actions, gesture etc. Using the [Message Component](./src/components/Message/Message.tsx) as an example can be helpful to understand what props and hooks provide different information to the component. It is also suggested you optimize the component for rendering using memoization as is the standard suggested practice for `FlatList` items.
 
 ```tsx
 <OverlayProvider
@@ -430,6 +437,58 @@ The [`Message`](./src/components/Message/Message.tsx) component has many underly
 </OverlayProvider>
 ```
 
+- [MessageSimple](./src/components/Message/MessageSimple.tsx) - This is the actual UI component for message bubble. You can still get access to all the handlers defined in [Message](./src/components/Message/Message.tsx) HOC via `useMessageContext`
+
+```tsx
+const CustomMessageUIComponent = () => {
+  /** Custom implementation */
+}
+
+<OverlayProvider
+  bottomInset={bottom}
+  i18nInstance={streami18n}
+>
+  <Chat client={chatClient} i18nInstance={streami18n}>
+    <Channel
+      channel={channel}
+      keyboardVerticalOffset={headerHeight}
+      MessageSimple={CustomMessageUIComponent}
+    >
+      <View style={{ flex: 1 }}>
+        <MessageList />
+        <MessageInput />
+      </View>
+    </Channel>
+  </Chat>
+</OverlayProvider>
+```
+
+
+If you want to customize only a specific part of `MessageSimple` component, you can add your own custom UI components, by providing following props on Channel component:
+
+- MessageHeader
+- MessageFooter
+- MessageAvatar
+- MessageStatus
+- MessageText
+- MessageSystem
+- MessageContent
+- Attachment
+- Giphy
+- Card
+- FileAttachmentGroup
+- FileAttachment
+- Gallery
+- UrlPreview
+
+```tsx
+<Channel
+  channel={channel}
+  keyboardVerticalOffset={headerHeight}
+  MessageAvatar={CustomAvatarComponent}
+  MessageText={CustomTextComponent}
+>
+```
 ### Message bubble with custom text styles & fonts
 
 We use `react-native-simple-markdown` library internally in the `Message` component to render markdown content of the text. Thus styling text in the `Message` component requires a slightly different approach than styling just a single standard `Text` component in React Native.
@@ -606,12 +665,12 @@ const onLongPressMessage = () => {
 
 By default, received messages are shown on left side of the `MessageList` and sent messages are shown on right side of the `MessageList`.
 
-You can change this at the `Message` level via the prop `forceAlign` or set the alignment for the entire `Channel` using the same `forceAlign` prop.
+You can change this at the `Message` level via the prop `forceAlignMessages` or set the alignment for the entire `Channel` using the same `forceAlignMessages` prop.
 
 ```tsx
 <Channel
   channel={channel}
-  forceAlign='left'
+  forceAlignMessages='left'
   keyboardVerticalOffset={headerHeight}
   thread={thread}
 >

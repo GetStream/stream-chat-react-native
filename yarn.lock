@@ -9659,10 +9659,10 @@ react-native-markdown-package@1.8.1:
     react-native-lightbox "^0.7.0"
     simple-markdown "^0.7.1"
 
-react-native-reanimated@2.0.0-rc.2:
-  version "2.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-rc.2.tgz#8ff0210986c5234940d951e384793874802f81aa"
-  integrity sha512-drOPEIMSh+224RTBZJrMasxZBdNodTcQcJKIfH5vMZPYhfSbljxfKTGfn7ZKn7ZYkX+wCPKKhJJPdD5+9Pevyw==
+react-native-reanimated@2.0.0-rc.0:
+  version "2.0.0-rc.0"
+  resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.0.0-rc.0.tgz#7a1b0bfd48e3de9dfa985a524463b6a216531358"
+  integrity sha512-v+SMpeSxQ8kO116B5q3/D6VlFSot4eIRASw0nxxU+6zh9wb4W8shMyQi7/ag/gt246FvjBZOPwxsBS2iTcw8Zg==
   dependencies:
     "@babel/plugin-transform-object-assign" "^7.10.4"
     fbjs "^3.0.0"

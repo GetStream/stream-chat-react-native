@@ -31,9 +31,23 @@ export type ChannelContextValue<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
+  /**
+   * Custom UI component to display empty state when channel has no messages.
+   *
+   * **Default** [EmptyStateIndicator](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/Indicators/EmptyStateIndicator.tsx)
+   */
   EmptyStateIndicator: React.ComponentType<EmptyStateProps>;
+  /**
+   * When set to true, reactions will be limited to 1 per user. If user selects another reaction
+   * then his previous reaction will be removed and replaced with new one.
+   *
+   * This is similar to reaction UX on [iMessage application](https://en.wikipedia.org/wiki/IMessage).
+   */
   enforceUniqueReaction: boolean;
   error: boolean;
+  /**
+   * When set to false, it will disable giphy command on MessageInput component.
+   */
   giphyEnabled: boolean;
   /**
    * Returns true if the current user has admin privileges
@@ -65,15 +79,49 @@ export type ChannelContextValue<
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void>;
+  /**
+   * When true, messagelist will be scrolled to first unread message, when opened.
+   */
   scrollToFirstUnreadThreshold: number;
   setLastRead: React.Dispatch<React.SetStateAction<Date | undefined>>;
   setTargetedMessage: (messageId: string) => void;
   typing: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['typing'];
   watchers: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watchers'];
+  /**
+   * Instance of channel object from stream-chat package.
+   *
+   * Please check the docs around how to create or query channel - https://getstream.io/chat/docs/javascript/creating_channels/?language=javascript
+   *
+   * ```
+   * import { StreamChat, Channel } from 'stream-chat';
+   * import { Chat, Channel} from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key');
+   * await client.connectUser('user_id', 'user_token');
+   * const channel = client.channel('messaging', 'channel_id');
+   * await channel.watch();
+   *
+   * <Chat client={client}>
+   *  <Channel channel={channel}>
+   *  </Channel>
+   * </Chat>
+   * ```
+   *
+   * @overrideType Channel
+   */
   channel?: Channel<At, Ch, Co, Ev, Me, Re, Us>;
   disabled?: boolean;
   lastRead?: Date;
+  /**
+   * Custom UI component for sticky header of channel.
+   *
+   * **Default** [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageList/DateHeader.tsx)
+   */
   StickyHeader?: React.ComponentType<{ dateString: string }>;
+  /**
+   * Id of message, around which Channel/MessageList gets loaded when opened.
+   * You will see a highlighted background for targetted message, when opened.
+   */
   targetedMessage?: string;
   watcherCount?: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['watcher_count'];
 } & ChannelConfig;

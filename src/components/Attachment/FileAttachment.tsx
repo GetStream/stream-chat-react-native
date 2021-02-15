@@ -92,7 +92,7 @@ export type FileAttachmentPropsWithContext<
 > = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'additionalTouchableProps' | 'AttachmentActions' | 'AttachmentFileIcon'
+    'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
   > & {
     /** The attachment to render */
     attachment: Attachment<At>;
@@ -125,7 +125,7 @@ const FileAttachmentWithContext = <
     attachment,
     attachmentSize,
     AttachmentActions,
-    AttachmentFileIcon,
+    FileAttachmentIcon,
     onLongPress,
     onPressIn,
     styles: stylesProp = {},
@@ -166,7 +166,7 @@ const FileAttachmentWithContext = <
           stylesProp.container,
         ]}
       >
-        <AttachmentFileIcon
+        <FileAttachmentIcon
           mimeType={attachment.mime_type}
           size={attachmentSize}
         />
@@ -227,7 +227,7 @@ export const FileAttachment = <
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
-    AttachmentFileIcon = FileIconDefault,
+    FileAttachmentIcon = FileIconDefault,
     onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -236,7 +236,7 @@ export const FileAttachment = <
       {...{
         additionalTouchableProps,
         AttachmentActions,
-        AttachmentFileIcon,
+        FileAttachmentIcon,
         onLongPress,
         onPressIn,
       }}

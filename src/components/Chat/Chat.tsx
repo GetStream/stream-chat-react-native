@@ -43,7 +43,22 @@ export type ChatProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  /** The StreamChat client object */
+  /**
+   * The StreamChat client object
+   *
+   * ```js
+   * import { StreamChat } from 'stream-chat';
+   * import { Chat } from 'stream-chat-react-native';
+   *
+   * const client = StreamChat.getInstance('api_key);
+   * await client.connectUser('user_id', 'userToken');
+   *
+   * <Chat client={client}>
+   * </Chat>
+   * ```
+   *
+   * @overrideType StreamChat
+   * */
   client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
@@ -97,7 +112,34 @@ export type ChatProps<
    * ```
    */
   i18nInstance?: Streami18n;
-  logger?: (message?: string) => void;
+  /**
+   * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/contexts/themeContext/utils/theme.ts)
+   *
+   * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#theme) for details.
+   *
+   * ```
+   * import type { DeepPartial, Theme } from 'stream-chat-react-native';
+   *
+   * const theme: DeepPartial<Theme> = {
+   *   messageSimple: {
+   *     file: {
+   *       container: {
+   *         backgroundColor: 'red',
+   *       },
+   *       icon: {
+   *         height: 16,
+   *         width: 16,
+   *       },
+   *     },
+   *   },
+   * };
+   *
+   * <Chat style={theme}>
+   * </Chat>
+   * ```
+   *
+   * @overrideType object
+   */
   style?: DeepPartial<Theme>;
 };
 
@@ -112,7 +154,7 @@ const ChatWithContext = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, logger = () => null, style } = props;
+  const { children, client, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -148,7 +190,6 @@ const ChatWithContext = <
     client,
     connectionRecovering,
     isOnline,
-    logger,
     setActiveChannel,
   });
 

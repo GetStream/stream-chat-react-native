@@ -1,5 +1,5 @@
 import React from 'react';
-import Arguments from 'react-styleguidist/lib/client/rsg-components/Arguments';
+import Arguments from './ArgumentsRenderer';
 import Argument from 'react-styleguidist/lib/client/rsg-components/Argument';
 import JsDoc from './JsDoc';
 import Markdown from 'react-styleguidist/lib/client/rsg-components/Markdown';
@@ -66,11 +66,11 @@ interface PropsProps {
   props: PropDescriptor[];
 }
 
-const PropsRenderer: React.FunctionComponent<PropsProps> = ({ props }) =>
+const PropsRenderer: React.FC<PropsProps> = ({ props }) =>
   props.map((r) => {
-    console.log(r);
     const isComponentProp = r.name[0].toUpperCase() === r.name[0];
     const customType = r.tags.overrideType;
+
     return (
       <div key={r.name} style={styles.container}>
         <h3>
@@ -79,13 +79,13 @@ const PropsRenderer: React.FunctionComponent<PropsProps> = ({ props }) =>
             id={r.name}
             style={{
               backgroundColor: 'rgba(0, 0, 0, 0.06)',
+              color: '#1c1e21',
+              fontFamily: 'monospace',
+              fontSize: 21,
               fontWeight: 700,
               padding: 5,
               paddingLeft: 10,
               paddingRight: 10,
-              color: '#1c1e21',
-              fontFamily: 'monospace',
-              fontSize: 21,
               textDecoration: 'none',
             }}
           >
@@ -120,26 +120,26 @@ const styles = {
     marginTop: 50,
   },
   table: {
+    border: '1px solid black',
+    borderCollapse: 'collapse',
     width: '100%',
-    border: '1px solid black',
-    borderCollapse: 'collapse',
-  },
-  tr: {},
-  th: {
-    backgroundColor: 'rgba(0, 0, 0, 0.06)',
-    border: '1px solid black',
-    borderCollapse: 'collapse',
-    width: '50%',
-    padding: 10,
-    textAlign: 'center',
   },
   td: {
     border: '1px solid black',
     borderCollapse: 'collapse',
-    width: '50%',
     padding: 10,
     textAlign: 'center',
+    width: '50%',
   },
+  th: {
+    backgroundColor: 'rgba(0, 0, 0, 0.06)',
+    border: '1px solid black',
+    borderCollapse: 'collapse',
+    padding: 10,
+    textAlign: 'center',
+    width: '50%',
+  },
+  tr: {},
 };
 
 export default PropsRenderer;

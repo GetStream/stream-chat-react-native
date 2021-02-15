@@ -62,11 +62,28 @@ export type SuggestionsContextValue<
   Co extends string = DefaultCommandType,
   Us extends UnknownType = DefaultUserType
 > = {
+  /** Override handler for closing suggestions (mentions, command autocomplete etc) */
   closeSuggestions: () => void;
+  /**
+   * Override handler for opening suggestions (mentions, command autocomplete etc)
+   *
+   * @param component {Component|element} UI Component for suggestion item.
+   * @param title {string} Title for suggestions box
+   *
+   * @overrideType Function
+   */
   openSuggestions: (
     component: SuggestionComponentType<Co, Us>,
     title?: React.ReactElement,
   ) => Promise<void>;
+  /**
+   * Override handler for updating suggestions (mentions, command autocomplete etc)
+   *
+   * @param newSuggestions {Component|element} UI Component for suggestion item.
+   * @param newSuggestionsTitle {string} Title for suggestions box
+   *
+   * @overrideType Function
+   */
   updateSuggestions: (
     newSuggestions: Suggestions<Co, Us>,
     newSuggestionsTitle?: React.ReactElement,

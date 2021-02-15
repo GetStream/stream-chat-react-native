@@ -248,11 +248,11 @@ export type InputMessageInputContextValue<
   FileUploadPreview: React.ComponentType<
     FileUploadPreviewProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  /** If commands button should be shown */
+  /** When false, CommandsButton will be hidden */
   hasCommands: boolean;
-  /** If component should have file picker functionality */
+  /** When false, FileSelectorIcon will be hidden */
   hasFilePicker: boolean;
-  /** If component should have image picker functionality */
+  /** When false, ImageSelectorIcon will be hidden */
   hasImagePicker: boolean;
   /**
    * Custom UI component for ImageUploadPreview.
@@ -282,9 +282,18 @@ export type InputMessageInputContextValue<
   SendButton: React.ComponentType<SendButtonProps<At, Ch, Co, Ev, Me, Re, Us>>;
   sendImageAsync: boolean;
   sendMessage: (message: Partial<StreamMessage<At, Me, Us>>) => Promise<void>;
+  /**
+   * Custom UI component to render checkbox with text ("Also send to channel") in Thread's input box.
+   * When ticked, message will also be sent in parent channel.
+   */
   ShowThreadMessageInChannelButton: React.ComponentType<{
     threadList?: boolean;
   }>;
+  /**
+   * Custom UI component to render upload progress indicator on attachment preview.
+   *
+   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageInput/UploadProgressIndicator.tsx)
+   */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
    * Additional props for underlying TextInput component. These props will be forwarded as it is to TextInput component.
@@ -310,6 +319,8 @@ export type InputMessageInputContextValue<
    *
    * @param file    File object - { uri: '', name: '' }
    * @param channel Current channel object
+   *
+   * @overrideType Function
    */
   doDocUploadRequest?: (
     file: {
@@ -325,6 +336,8 @@ export type InputMessageInputContextValue<
    *
    * @param file    File object - { uri: '' }
    * @param channel Current channel object
+   *
+   * @overrideType Function
    */
   doImageUploadRequest?: (
     file: {
@@ -351,6 +364,10 @@ export type InputMessageInputContextValue<
   onChangeText?: (newText: string) => void;
   /**
    * ref for input setter function
+   *
+   * @param ref [Ref object](https://reactjs.org/docs/refs-and-the-dom.html) for underling `TextInput` component.
+   *
+   * @overrideType Function
    */
   setInputRef?: (ref: TextInput | null) => void;
 } & InputConfig;

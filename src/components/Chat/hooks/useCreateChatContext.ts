@@ -25,7 +25,6 @@ export const useCreateChatContext = <
   client,
   connectionRecovering,
   isOnline,
-  logger,
   setActiveChannel,
 }: ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>) => {
   const channelId = channel?.id;
@@ -39,7 +38,6 @@ export const useCreateChatContext = <
       client,
       connectionRecovering,
       isOnline,
-      logger,
       setActiveChannel,
     }),
     [channelId, clientValues, connectionRecovering, isOnline],

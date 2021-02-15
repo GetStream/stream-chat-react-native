@@ -73,7 +73,7 @@ type ReplyPropsWithContext<
 > &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'AttachmentFileIcon' | 'MessageAvatar'
+    'FileAttachmentIcon' | 'MessageAvatar'
   > &
   Pick<TranslationContextValue, 't'> & {
     attachmentSize?: number;
@@ -98,7 +98,7 @@ export const ReplyWithContext = <
   props: ReplyPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
   const {
-    AttachmentFileIcon,
+    FileAttachmentIcon,
     attachmentSize = 40,
     MessageAvatar,
     quotedMessage,
@@ -187,7 +187,7 @@ export const ReplyWithContext = <
                 stylesProp.fileAttachmentContainer,
               ]}
             >
-              <AttachmentFileIcon
+              <FileAttachmentIcon
                 mimeType={lastAttachment.mime_type}
                 size={attachmentSize}
               />
@@ -319,7 +319,7 @@ export const Reply = <
   const { message } = useMessageContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   const {
-    AttachmentFileIcon = FileIconDefault,
+    FileAttachmentIcon = FileIconDefault,
     MessageAvatar = MessageAvatarDefault,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -350,7 +350,7 @@ export const Reply = <
   return (
     <MemoizedReply
       {...{
-        AttachmentFileIcon,
+        FileAttachmentIcon,
         MessageAvatar,
         quotedMessage: message
           ? (message.quoted_message as MessageInputContextValue<

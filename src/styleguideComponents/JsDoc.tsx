@@ -12,13 +12,13 @@ const paragraphs = (array: TagObject[]) =>
   array.map((item) => item.description).join('\n\n');
 
 const fields = {
-  deprecated: (value: TagObject[]) => `**Deprecated:** ${value[0].description}`,
-  see: (value: TagObject[]) => paragraphs(value),
-  link: (value: TagObject[]) => paragraphs(value),
   author: (value: TagObject[]) => `${plural(value, 'Author')}: ${list(value)}`,
-  version: (value: TagObject[]) => `Version: ${value[0].description}`,
   default: (value: TagObject[]) => `**Default**: ${value[0].default}`,
+  deprecated: (value: TagObject[]) => `**Deprecated:** ${value[0].description}`,
+  link: (value: TagObject[]) => paragraphs(value),
+  see: (value: TagObject[]) => paragraphs(value),
   since: (value: TagObject[]) => `Since: ${value[0].description}`,
+  version: (value: TagObject[]) => `Version: ${value[0].description}`,
 };
 
 export function getMarkdown(props: TagProps) {
@@ -39,10 +39,10 @@ export default function JsDoc(props: TagProps) {
 }
 
 JsDoc.propTypes = {
-  deprecated: PropTypes.array,
-  see: PropTypes.array,
-  link: PropTypes.array,
   author: PropTypes.array,
-  version: PropTypes.array,
+  deprecated: PropTypes.array,
+  link: PropTypes.array,
+  see: PropTypes.array,
   since: PropTypes.array,
+  version: PropTypes.array,
 };
