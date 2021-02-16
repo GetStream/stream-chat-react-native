@@ -634,6 +634,11 @@ export const ChannelWithContext = <
     // The more complex sync logic is done in Chat.js
     // listen to client.connection.recovered and all channel events
     client.on('connection.recovered', handleEvent);
+    client.on('connection.changed', (event) => {
+      if (event.online) {
+        reloadChannel();
+      }
+    });
     channel?.on(handleEvent);
   };
 
