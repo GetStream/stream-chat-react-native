@@ -58,7 +58,7 @@ Stream Chat has a number of peer dependencies that are required to take advantag
 - [`react-native-share`](https://github.com/react-native-share/react-native-share)
 - [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
 
-`yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated react-native-safe-area-context react-native-share react-native-svg`
+`yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated@2.0.0-rc.0 react-native-safe-area-context react-native-share react-native-svg`
 
 For iOS on a Mac install the pods `npx pod-install ios`.
 
@@ -73,6 +73,8 @@ import { name as appName } from './app.json';
 
 AppRegistry.registerComponent(appName, () => App);
 ```
+
+`react-native-reanimated@2.0.0-rc.0` requires additional installation steps that should be followed to ensure it runs and builds properly. These steps can be found in the [`React Native Reanimated V2 documentation`](https://docs.swmansion.com/react-native-reanimated/docs/installation).
 
 ### Installing dependencies for Expo
 
