@@ -104,7 +104,7 @@ export type MessagesContextValue<
   Card: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for DateHeader
-   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageList/DateHeader.tsx)
+   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
   /** Should keyboard be dismissed when messaged is touched */

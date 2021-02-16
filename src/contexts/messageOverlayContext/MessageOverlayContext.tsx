@@ -72,25 +72,25 @@ export type MessageOverlayContextValue<
   Us extends UnknownType = DefaultUserType
 > = {
   /**
-   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/2.png) in overlay.
+   * Custom UI component for rendering [message actions](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay.
    *
-   * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageOverlay/MessageActions.tsx)
+   * **Default** [MessageActions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/MessageActions.tsx)
    */
   MessageActions: React.ComponentType<
     MessageActionsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
-   * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/2.png) in overlay (which shows up on long press on message).
+   * Custom UI component for rendering [reaction selector](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png) in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageOverlay/OverlayReactionList.tsx)
+   * **Default** [OverlayReactionList](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactionList.tsx)
    */
   OverlayReactionList: React.ComponentType<
     OverlayReactionListProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
-   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/2.png), in overlay (which shows up on long press on message).
+   * Custom UI component for rendering [reactions list](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/2.png), in overlay (which shows up on long press on message).
    *
-   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageOverlay/OverlayReactions.tsx)
+   * **Default** [OverlayReactions](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageOverlay/OverlayReactions.tsx)
    */
   OverlayReactions: React.ComponentType<OverlayReactionsProps>;
   reset: () => void;

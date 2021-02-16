@@ -17,22 +17,22 @@ export type AttachmentPickerIconProps = {
 
 export type AttachmentPickerContextValue = {
   /**
-   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   * Custom UI component for [camera selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
+   * **Default: ** [CameraSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/CameraSelectorIcon.tsx)
    */
   CameraSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   closePicker: () => void;
   /**
-   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   * Custom UI component for [file selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
+   * **Default: ** [FileSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/FileSelectorIcon.tsx)
    */
   FileSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
-   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
+   * Custom UI component for [image selector icon](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/1.png)
    *
-   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
+   * **Default: ** [ImageSelectorIcon](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/AttachmentPicker/components/ImageSelectorIcon.tsx)
    */
   ImageSelectorIcon: React.ComponentType<AttachmentPickerIconProps>;
   /**
@@ -52,7 +52,7 @@ export type AttachmentPickerContextValue = {
    * `bottomInset` determine the height of the `AttachmentPicker` and the underlying shift to the `MessageList` when it is opened.
    * This can also be set via the `setBottomInset` function provided by the `useAttachmentPickerContext` hook.
    *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider) section in Cookbook
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#overlayprovider) section in Cookbook
    * for more details.
    */
   bottomInset?: number;
@@ -63,7 +63,7 @@ export type AttachmentPickerContextValue = {
    * `useAttachmentPickerContext` hook. The bottom sheet will not render without this height set, but it can be
    * set to 0 to cover the entire screen, or the safe area top inset if desired.
    *
-   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider) section in Cookbook
+   * Please check [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#overlayprovider) section in Cookbook
    * for more details.
    */
   topInset?: number;

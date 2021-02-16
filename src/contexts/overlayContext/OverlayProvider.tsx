@@ -71,12 +71,10 @@ import type {
  *    </NavigationContainer>
  *    ```
  *
- * - Don't forget to check our cookbook section of [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/COOKBOOK.md#overlayprovider)
+ * - Don't forget to check our cookbook section of [OverlayProvider](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#overlayprovider)
  *
- * - You can customize plenty of UI components around attachment picker or image viewer, from OverlayProvider. If you feel lost about what components we are talking about, please check following component pointers:
- *    - [Attachment picker components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/1.png)
- *    - [Message overlay components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/2.png)
- *    - [Image viewer and gallery components](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/3.png)
+ * - Also check the [visual component guide](https://github.com/GetStream/stream-chat-react-native/blob/master/VisualGuide.md), to learn about component customizations.
+ *
  * @example ./OverlayProvider.md
  */
 export const OverlayProvider = <

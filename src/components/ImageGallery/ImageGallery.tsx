@@ -90,7 +90,7 @@ export type ImageGalleryCustomComponents<
   Us extends UnknownType = DefaultUserType
 > = {
   /**
-   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/screenshots/docs/3.png).
+   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/3.png).
    *
    * - [ImageGalleryFooter](#ImageGalleryFooter)
    *

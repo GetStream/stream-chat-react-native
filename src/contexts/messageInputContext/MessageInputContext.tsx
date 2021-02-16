@@ -292,7 +292,7 @@ export type InputMessageInputContextValue<
   /**
    * Custom UI component to render upload progress indicator on attachment preview.
    *
-   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/components/MessageInput/UploadProgressIndicator.tsx)
+   * **Default** [UploadProgressIndicator](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageInput/UploadProgressIndicator.tsx)
    */
   UploadProgressIndicator: React.ComponentType<UploadProgressIndicatorProps>;
   /**
