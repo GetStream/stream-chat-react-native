@@ -231,8 +231,6 @@ type MessageListPropsWithContext<
  * [MessagesContext](https://getstream.github.io/stream-chat-react-native/#messagescontext)
  * [ThreadContext](https://getstream.github.io/stream-chat-react-native/#threadcontext)
  * [TranslationContext](https://getstream.github.io/stream-chat-react-native/#translationcontext)
- *
- * @example ./MessageList.md
  */
 const MessageListWithContext = <
   At extends UnknownType = DefaultAttachmentType,

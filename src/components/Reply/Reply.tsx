@@ -302,8 +302,6 @@ export type ReplyProps<
 
 /**
  * UI Component for reply
- *
- * @example ./Reply.md
  */
 export const Reply = <
   At extends DefaultAttachmentType = DefaultAttachmentType,

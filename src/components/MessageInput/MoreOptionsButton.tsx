@@ -112,8 +112,6 @@ export type MoreOptionsButtonProps<
 
 /**
  * UI Component for more options button in MessageInput component.
- *
- * @example ./MoreOptionsButton.md
  */
 export const MoreOptionsButton = <
   At extends UnknownType = DefaultAttachmentType,

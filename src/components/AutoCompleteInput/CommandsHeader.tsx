@@ -17,9 +17,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * @example ./CommandsHeader.md
- */
 export const CommandsHeader: React.FC = () => {
   const {
     theme: {

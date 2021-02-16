@@ -258,11 +258,10 @@ export type FileUploadPreviewProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Partial<FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
- *
- * @example ./FileUploadPreview.md
  */
 export const FileUploadPreview = <
   At extends UnknownType = DefaultAttachmentType,

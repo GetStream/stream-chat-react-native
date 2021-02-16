@@ -200,8 +200,6 @@ export type ChannelPreviewMessengerProps<
 /**
  * This UI component displays an individual preview item for each channel in a list. It also receives all props
  * from the ChannelPreview component.
- *
- * @example ./ChannelPreviewMessenger.md
  */
 export const ChannelPreviewMessenger = <
   At extends UnknownType = DefaultAttachmentType,

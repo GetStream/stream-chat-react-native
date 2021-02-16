@@ -41,8 +41,6 @@ export type GroupAvatarProps = {
 
 /**
  * GroupAvatar - A round group of avatar images with fallbacks to users' initials
- *
- * @example ./GroupAvatar.md
  */
 export const GroupAvatar: React.FC<GroupAvatarProps> = (props) => {
   const { containerStyle, images, names, size, testID } = props;

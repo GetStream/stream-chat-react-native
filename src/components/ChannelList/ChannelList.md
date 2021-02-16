@@ -1,4 +1,4 @@
-```tsx static
+```jsx static
 import { View }  from 'react-native';
 import { Chat, ChannelList } from 'stream-chat-react-native';
 

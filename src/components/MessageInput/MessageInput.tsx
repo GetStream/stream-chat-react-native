@@ -752,8 +752,6 @@ export type MessageInputProps<
  * [MessageInput Context](https://getstream.github.io/stream-chat-react-native/#messageinputcontext),
  * [Suggestions Context](https://getstream.github.io/stream-chat-react-native/#suggestionscontext), and
  * [Translation Context](https://getstream.github.io/stream-chat-react-native/#translationcontext)
- *
- * @example ./MessageInput.md
  */
 export const MessageInput = <
   At extends DefaultAttachmentType = DefaultAttachmentType,

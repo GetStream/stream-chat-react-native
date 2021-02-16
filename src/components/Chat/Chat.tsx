@@ -210,8 +210,6 @@ const ChatWithContext = <
  * - Me (MessageType) - custom Message object extension
  * - Re (ReactionType) - custom Reaction object extension
  * - Us (UserType) - custom User object extension
- *
- * @example ./Chat.md
  */
 export const Chat = <
   At extends UnknownType = DefaultAttachmentType,

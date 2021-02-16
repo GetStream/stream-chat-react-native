@@ -268,8 +268,6 @@ export type ThreadProps<
  * Underlying MessageList, MessageInput and Message components can be customized using props:
  * - additionalMessageListProps
  * - additionalMessageInputProps
- *
- * @example ./Thread.md
  */
 export const Thread = <
   At extends UnknownType = DefaultAttachmentType,

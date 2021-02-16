@@ -2,7 +2,7 @@
 
 The example below shows how to write a component that consumes a context and uses hooks.
 
-```tsx static
+```jsx static
 import React from 'react';
 import { Text, View } from 'react-native';
 

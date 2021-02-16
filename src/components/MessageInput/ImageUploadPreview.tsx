@@ -191,8 +191,6 @@ const MemoizedImageUploadPreviewWithContext = React.memo(
 
 /**
  * UI Component to preview the images set for upload
- *
- * @example ./ImageUploadPreview.md
  */
 export const ImageUploadPreview = <
   At extends UnknownType = DefaultAttachmentType,

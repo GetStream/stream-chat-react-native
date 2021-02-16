@@ -166,9 +166,6 @@ export type CommandsItemProps<Co extends string = DefaultCommandType> = {
   item: SuggestionCommand<Co>;
 };
 
-/**
- * @example ./CommandsItem.md
- */
 export const CommandsItem = <Co extends string = DefaultCommandType>({
   item: { args, name },
 }: CommandsItemProps<Co>) => {

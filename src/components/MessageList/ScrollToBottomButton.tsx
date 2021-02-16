@@ -61,9 +61,6 @@ export type ScrollToBottomButtonProps = {
   unreadCount?: number;
 };
 
-/**
- * @example ./ScrollToBottomButton.md
- */
 export const ScrollToBottomButton: React.FC<ScrollToBottomButtonProps> = (
   props,
 ) => {

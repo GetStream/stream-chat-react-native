@@ -47,8 +47,6 @@ export type LoadingProps = {
 
 /**
  * UI Component for LoadingIndicator
- *
- * @example ./LoadingIndicator.md
  */
 export const LoadingIndicator: React.FC<LoadingProps> = (props) => {
   const { listType, loadingText } = props;
