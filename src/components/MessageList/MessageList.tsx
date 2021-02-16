@@ -351,7 +351,10 @@ const MessageListWithContext = <
    */
   const setInitialScrollIfNeeded = () => {
     // If the feature is disabled or initial scroll position is already set.
-    if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) return;
+    if (!initialScrollToFirstUnreadMessage || initialScrollSet.current) {
+      initialScrollSet.current = true;
+      return;
+    }
 
     if (isUnreadMessage(topMessage.current, channelLastRead.current)) {
       if (flatListRef.current) {
