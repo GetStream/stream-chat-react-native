@@ -57,30 +57,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const getFileSizeDisplayText = (size?: number | string) => {
-  if (!size) return;
-  if (typeof size === 'string') {
-    size = parseFloat(size);
-  }
-
-  if (size < 1000 * 1000) {
-    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
-  }
-
-  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
-};
-
-export const goToURL = (url?: string) => {
-  if (!url) return;
-  Linking.canOpenURL(url).then((supported) => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URI: ${url}`);
-    }
-  });
-};
-
 export type FileAttachmentPropsWithContext<
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -243,6 +219,30 @@ export const FileAttachment = <
       {...props}
     />
   );
+};
+
+export const getFileSizeDisplayText = (size?: number | string) => {
+  if (!size) return;
+  if (typeof size === 'string') {
+    size = parseFloat(size);
+  }
+
+  if (size < 1000 * 1000) {
+    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
+  }
+
+  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
+};
+
+export const goToURL = (url?: string) => {
+  if (!url) return;
+  Linking.canOpenURL(url).then((supported) => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      console.log(`Don't know how to open URI: ${url}`);
+    }
+  });
 };
 
 FileAttachment.displayName = 'FileAttachment{messageSimple{file}}';

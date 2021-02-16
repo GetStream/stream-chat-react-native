@@ -26,7 +26,6 @@ import { Skeleton as SkeletonDefault } from './Skeleton';
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
 import { EmptyStateIndicator as EmptyStateIndicatorDefault } from '../Indicators/EmptyStateIndicator';
 import { LoadingErrorIndicator as LoadingErrorIndicatorDefault } from '../Indicators/LoadingErrorIndicator';
-import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
 
 import {
   ChannelsContextValue,
@@ -248,7 +247,7 @@ export const ChannelList = <
     List = ChannelListMessenger,
     ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-    LoadingIndicator = LoadingIndicatorDefault,
+    LoadingIndicator,
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold = 2,
     lockChannelOrder = false,

@@ -123,6 +123,7 @@ const ChannelListMessengerWithContext = <
     ListHeaderComponent,
     loadingChannels,
     LoadingErrorIndicator,
+    LoadingIndicator,
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
@@ -177,11 +178,15 @@ const ChannelListMessengerWithContext = <
         keyExtractor={(item) => item.cid}
         ListEmptyComponent={
           loading ? (
-            <View style={{ backgroundColor: white_snow, flex: 1 }}>
-              {Array.from(Array(numberOfSkeletons)).map((_, index) => (
-                <Skeleton key={`skeleton_${index}`} />
-              ))}
-            </View>
+            LoadingIndicator ? (
+              <LoadingIndicator />
+            ) : (
+              <View style={{ backgroundColor: white_snow, flex: 1 }}>
+                {Array.from(Array(numberOfSkeletons)).map((_, index) => (
+                  <Skeleton key={`skeleton_${index}`} />
+                ))}
+              </View>
+            )
           ) : (
             <EmptyStateIndicator listType='channel' />
           )

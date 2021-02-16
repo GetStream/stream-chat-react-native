@@ -43,6 +43,7 @@ import {
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
+import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -181,6 +182,7 @@ export type ChannelPropsWithContext<
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
     | 'LoadingIndicator'
+    | 'NetworkDownIndicator'
     | 'StickyHeader'
   >
 > &
@@ -448,6 +450,7 @@ const ChannelWithContext = <
     MessageList = MessageListDefault,
     muteUser,
     myMessageTheme,
+    NetworkDownIndicator = NetworkDownIndicatorDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -1377,6 +1380,7 @@ const ChannelWithContext = <
     LoadingIndicator,
     markRead,
     members,
+    NetworkDownIndicator,
     read,
     reloadChannel,
     scrollToFirstUnreadThreshold,

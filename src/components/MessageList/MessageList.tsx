@@ -6,7 +6,6 @@ import {
   Platform,
   ScrollViewProps,
   StyleSheet,
-  Text,
   View,
   ViewToken,
 } from 'react-native';
@@ -75,18 +74,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
   },
-  errorNotification: {
-    alignItems: 'center',
-    left: 0,
-    paddingVertical: 4,
-    position: 'absolute',
-    right: 0,
-    top: 0,
-  },
-  errorNotificationText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-  },
   flex: { flex: 1 },
   listContainer: {
     flex: 1,
@@ -140,6 +127,7 @@ type MessageListPropsWithContext<
     | 'loading'
     | 'LoadingIndicator'
     | 'markRead'
+    | 'NetworkDownIndicator'
     | 'reloadChannel'
     | 'scrollToFirstUnreadThreshold'
     | 'setTargetedMessage'
@@ -284,6 +272,7 @@ const MessageListWithContext = <
     Message,
     MessageSystem,
     myMessageTheme,
+    NetworkDownIndicator,
     noGroupByUser,
     onListScroll,
     onThreadSelect,
@@ -296,7 +285,6 @@ const MessageListWithContext = <
     setSelectedPicker,
     setTargetedMessage,
     StickyHeader,
-    t,
     targetedMessage,
     tDateTimeParser,
     thread,
@@ -308,13 +296,8 @@ const MessageListWithContext = <
 
   const {
     theme: {
-      colors: { accent_blue, grey, white_snow },
-      messageList: {
-        container,
-        errorNotification,
-        errorNotificationText,
-        listContainer,
-      },
+      colors: { accent_blue, white_snow },
+      messageList: { container, listContainer },
     },
   } = useTheme();
 
@@ -775,20 +758,7 @@ const MessageListWithContext = <
           />
         </>
       )}
-      {!isOnline && (
-        <View
-          style={[
-            styles.errorNotification,
-            { backgroundColor: `${grey}E6` },
-            errorNotification,
-          ]}
-          testID='error-notification'
-        >
-          <Text style={[styles.errorNotificationText, errorNotificationText]}>
-            {t('Reconnecting...')}
-          </Text>
-        </View>
-      )}
+      {!isOnline && <NetworkDownIndicator />}
     </View>
   );
 };
@@ -827,6 +797,7 @@ export const MessageList = <
     loading,
     LoadingIndicator,
     markRead,
+    NetworkDownIndicator,
     reloadChannel,
     scrollToFirstUnreadThreshold,
     setTargetedMessage,
@@ -888,6 +859,7 @@ export const MessageList = <
         Message,
         MessageSystem,
         myMessageTheme,
+        NetworkDownIndicator,
         reloadChannel,
         ScrollToBottomButton,
         scrollToFirstUnreadThreshold,

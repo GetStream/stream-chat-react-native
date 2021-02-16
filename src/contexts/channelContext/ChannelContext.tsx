@@ -100,6 +100,10 @@ export type ChannelContextValue<
    * ```
    */
   members: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['members'];
+  /**
+   * Custom network down indicator to override the Stream default
+   */
+  NetworkDownIndicator: React.ComponentType;
   read: ChannelState<At, Ch, Co, Ev, Me, Re, Us>['read'];
   reloadChannel: () => Promise<void>;
   /**
