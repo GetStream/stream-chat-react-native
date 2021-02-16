@@ -13,6 +13,7 @@ import type {
 } from '../../types/types';
 import { Check, CheckAll } from '../..//icons';
 import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+import type { ChannelPreviewProps } from './ChannelPreview';
 
 const styles = StyleSheet.create({
   date: {
@@ -36,11 +37,21 @@ export type ChannelPreviewStatusProps<
 > = Pick<
   ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
   'latestMessagePreview' | 'formatLatestMessageDate'
->;
-export const ChannelPreviewStatus: React.FC<ChannelPreviewStatusProps> = ({
-  formatLatestMessageDate,
-  latestMessagePreview,
-}) => {
+> &
+  Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'>;
+
+export const ChannelPreviewStatus = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { formatLatestMessageDate, latestMessagePreview } = props;
   const {
     theme: {
       channelPreview: { checkAllIcon, checkIcon, date },

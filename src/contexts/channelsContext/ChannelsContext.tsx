@@ -220,13 +220,17 @@ export type ChannelsContextValue<
    *
    * **Deafult** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
    */
-  PreviewTitle?: React.ComponentType<ChannelPreviewTitleProps>;
+  PreviewTitle?: React.ComponentType<
+    ChannelPreviewTitleProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
   /**
    * Custom UI component to render preview avatar.
    *
    * **Deafult** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
    */
-  PreviewUnreadCount?: React.ComponentType<ChannelPreviewUnreadCountProps>;
+  PreviewUnreadCount?: React.ComponentType<
+    ChannelPreviewUnreadCountProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);

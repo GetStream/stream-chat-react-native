@@ -158,12 +158,17 @@ const ChannelPreviewMessengerWithContext = <
       <PreviewAvatar channel={channel} />
       <View style={[styles.contentContainer, contentContainer]}>
         <View style={[styles.row, row]}>
-          <PreviewTitle displayName={displayName} />
-          <PreviewUnreadCount maxUnreadCount={maxUnreadCount} unread={unread} />
+          <PreviewTitle channel={channel} displayName={displayName} />
+          <PreviewUnreadCount
+            channel={channel}
+            maxUnreadCount={maxUnreadCount}
+            unread={unread}
+          />
         </View>
         <View style={[styles.row, row]}>
           <PreviewMessage latestMessagePreview={latestMessagePreview} />
           <PreviewStatus
+            channel={channel}
             formatLatestMessageDate={formatLatestMessageDate}
             latestMessagePreview={latestMessagePreview}
           />

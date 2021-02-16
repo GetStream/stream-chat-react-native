@@ -11,7 +11,7 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 const styles = StyleSheet.create({
   bold: { fontWeight: 'bold' },
@@ -29,10 +29,7 @@ export type ChannelPreviewMessageProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = {
-  latestMessagePreview: Pick<
-    ChannelPreviewMessengerPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
-    'latestMessagePreview'
-  >;
+  latestMessagePreview: LatestMessagePreview<At, Ch, Co, Ev, Me, Re, Us>;
 };
 export const ChannelPreviewMessage: React.FC<ChannelPreviewMessageProps> = ({
   latestMessagePreview,

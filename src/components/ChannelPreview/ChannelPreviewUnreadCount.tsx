@@ -1,6 +1,17 @@
 import React from 'react';
 import { useTheme } from '../../contexts';
 import { StyleSheet, Text, View } from 'react-native';
+import type { ChannelPreviewProps } from './ChannelPreview';
+import type {
+  DefaultAttachmentType,
+  DefaultChannelType,
+  DefaultCommandType,
+  DefaultEventType,
+  DefaultMessageType,
+  DefaultReactionType,
+  DefaultUserType,
+  UnknownType,
+} from '../../types/types';
 
 const styles = StyleSheet.create({
   unreadContainer: {
@@ -18,14 +29,31 @@ const styles = StyleSheet.create({
   },
 });
 
-export type ChannelPreviewUnreadCountProps = {
+export type ChannelPreviewUnreadCountProps<
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+> = Pick<ChannelPreviewProps<At, Ch, Co, Ev, Me, Re, Us>, 'channel'> & {
   maxUnreadCount: number;
   unread?: number;
 };
-export const ChannelPreviewUnreadCount: React.FC<ChannelPreviewUnreadCountProps> = ({
-  maxUnreadCount,
-  unread,
-}) => {
+
+export const ChannelPreviewUnreadCount = <
+  At extends UnknownType = DefaultAttachmentType,
+  Ch extends UnknownType = DefaultChannelType,
+  Co extends string = DefaultCommandType,
+  Ev extends UnknownType = DefaultEventType,
+  Me extends UnknownType = DefaultMessageType,
+  Re extends UnknownType = DefaultReactionType,
+  Us extends UnknownType = DefaultUserType
+>(
+  props: ChannelPreviewUnreadCountProps<At, Ch, Co, Ev, Me, Re, Us>,
+) => {
+  const { maxUnreadCount, unread } = props;
   const {
     theme: {
       channelPreview: { unreadContainer, unreadText },
