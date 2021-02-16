@@ -33,7 +33,7 @@ import { ChannelList, useChannelsContext } from 'stream-chat-react-native';
 }}>
 ```
 
-We provide following hooks to access context values. Please check the list of all available contexts here: https://getstream.github.io/stream-chat-react-native/#section-contexts
+Please check the list of all available contexts here: https://getstream.github.io/stream-chat-react-native/#section-contexts
 
 ## Channel list components
 

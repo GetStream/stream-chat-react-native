@@ -4,36 +4,38 @@ What follows are the most important aspects of Stream Chat React Native. It shou
 
 ## Appendix
 
-- [Installation](##Installation)
-  - [Installing dependencies for Expo](###Installing-dependencies-for-Expo)
-- [Components](##Components)
-  - [theme](###theme)
-  - [`OverlayProvider`](###OverlayProvider)
-  - [`Chat`](###Chat)
-  - [`Channel`](###Channel)
-  - [`MessageList`](###MessageList)
-  - [`MessageInput`](###MessageInput)
-- [Putting it all together](##Putting-it-all-together)
-- [FAQ](##FAQ)
-  - [How to customize message component](###How-to-customize-message-component)
-  - [Message bubble with custom text styles & fonts](###Message-bubble-with-custom-text-styles-&-fonts)
-  - [Message with custom reactions](###Message-with-custom-reactions)
-  - [Instagram style double-tap reaction](###Instagram-style-double-tap-reaction)
-  - [Slack style messages all on the left side](###Slack-style-messages-all-on-the-left-side)
-  - [Message bubble with name of sender](###Message-bubble-with-name-of-sender)
-  - [Swipe message left to delete and right to reply](###Swipe-message-left-to-delete-and-right-to-reply)
-  - [Keyboard](###Keyboard)
-  - [How to modify the underlying `FlatList` of `MessageList` or `ChannelList`](###How-to-modify-the-underlying-FlatList-of-MessageList-or-ChannelList)
-  - [Image compression](###Image-compression)
-  - [Override or intercept message actions (edit, delete, reaction, reply, etc.)](###Override-or-intercept-message-actions-(edit,-delete,-reaction,-reply,-etc.))
-  - [How to change the layout of `MessageInput` component](###How-to-change-the-layout-of-MessageInput-component)
-  - [Disable autocomplete feature on input (mentions and commands)](###Disable-autocomplete-feature-on-input-(mentions-and-commands))
-  - [Push Notifications](###Push-Notifications)
-    - [Setup](####Setup)
-      - [iOS](#####iOS)
-      - [Android](#####Android)
-    - [Requirements](####Requirements)
-    - [Caveats](####Caveats)
+- [Installation](#installation)
+  - [Installing dependencies for Expo](#installing-dependencies-for-expo)
+- [Components](#components)
+  - [`OverlayProvider`](#OverlayProvider)
+  - [`Chat`](#Chat)
+  - [`Channel`](#Channel)
+  - [`MessageList`](#MessageList)
+  - [`MessageInput`](#MessageInput)
+- [Customization](#customization)
+  - [Theme](#theme)
+  - [Custom components](#custom-components)
+- [Putting it all together](#Putting-it-all-together)
+- [FAQ](#FAQ)
+  - [How to customize message component](#How-to-customize-message-component)
+  - [Message bubble with custom text styles & fonts](#Message-bubble-with-custom-text-styles-&-fonts)
+  - [Message with custom reactions](#Message-with-custom-reactions)
+  - [Instagram style double-tap reaction](#Instagram-style-double-tap-reaction)
+  - [Slack style messages all on the left side](#Slack-style-messages-all-on-the-left-side)
+  - [Message bubble with name of sender](#Message-bubble-with-name-of-sender)
+  - [Swipe message left to delete and right to reply](#Swipe-message-left-to-delete-and-right-to-reply)
+  - [Keyboard](#Keyboard)
+  - [How to modify the underlying `FlatList` of `MessageList` or `ChannelList`](#How-to-modify-the-underlying-FlatList-of-MessageList-or-ChannelList)
+  - [Image compression](#Image-compression)
+  - [Override or intercept message actions (edit, delete, reaction, reply, etc.)](#Override-or-intercept-message-actions-(edit,-delete,-reaction,-reply,-etc.))
+  - [How to change the layout of `MessageInput` component](#How-to-change-the-layout-of-MessageInput-component)
+  - [Disable autocomplete feature on input (mentions and commands)](#Disable-autocomplete-feature-on-input-(mentions-and-commands))
+  - [Push Notifications](#Push-Notifications)
+    - [Setup](#Setup)
+      - [iOS](#iOS)
+      - [Android](#Android)
+    - [Requirements](#Requirements)
+    - [Caveats](#Caveats)
 
 ## Installation
 
@@ -83,61 +85,6 @@ Stream Chat React Native is set up for parity on Expo, expo requires a different
 ## Components
 
 Stream Chat components make extensive use of React Context to maintain state and provide an optimal user experience. To access these contexts your screens, components, or entire app must be wrapped in the Stream Chat Context components.
-
-### theme
-
-The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. You can add a theme object on `Chat` component as shown in following code snippet: To accurately create a theme we suggest utilizing our exported types to create your own theme. You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/contexts/themeContext/utils/theme.ts) (check for the line `export type Theme`). We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. 
-
-Where possible we have also used `displayName` to expose the the path to the style for components. For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys, that can modify the styling.
-
-```typescript
-file: {
-  container: ViewStyle;
-  details: ViewStyle;
-  fileSize: TextStyle;
-  icon: IconProps;
-  title: TextStyle;
-};
-```
-
-Modifying the theme for this component is done by adding custom styles at the desired keys.
-
-```tsx
-import type { DeepPartial, Theme } from 'stream-chat-react-native';
-
-const theme: DeepPartial<Theme> = {
-  messageSimple: {
-    file: {
-      container: {
-        backgroundColor: 'red',
-      },
-      icon: {
-        height: 16,
-        width: 16,
-      },
-    },
-  },
-};
-
-<Chat style={theme}>
-</Chat>
-```
-
-<table>
-  <tr>
-    <td align='center' width="33%"><img src='./screenshots/cookbook/DisplayNameTheme.png'/></td>
-    <td align='center' width="33%"><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png'/></td>
-    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png'/></td>
-  </tr>
-  <tr></tr>
-  <tr>
-    <td align='center'>Display Name in Inspector</td>
-    <td align='center'>Non-Themed Component</td>
-    <td align='center'>Themed Component</td>
-  </tr>
-</table>
-
-**NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
 
 ### OverlayProvider
 
@@ -408,6 +355,76 @@ It takes very few components to put together a fully functioning Chat screen in 
 ```
 
 Once you have Chat up and running there are tons of customization possibilities and the TypeScript intellisense is a great asset in customizing the UI and functionality to your needs. Check out the [examples](./examples) for implementations of these components in apps you can build locally.
+
+## Customization
+
+This SDK provides quite rich UI components in terms of design and functionality. But sometimes you may want to replace the default components with something that better fits your application requirements. For this purpose, we have made it quite easy to either replace the existing components with custom components or add your own styling on existing components
+
+### theme
+
+The majority of components used in `stream-chat-react-native` can have custom styles applied to them via the theming system. You can add a theme object on `Chat` component as shown in following code snippet: To accurately create a theme we suggest utilizing our exported types to create your own theme. You can find the default theme object in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/v2-designs/src/contexts/themeContext/utils/theme.ts) (check for the line `export type Theme`). We perform a deep merge on the styles so only styles designated in the custom theme overwrite the default styles. 
+
+Where possible we have also used `displayName` to expose the the path to the style for components. 
+e.g., lets say if you want to customize styles on file attachment
+
+- Open the [in-app developer menu](https://reactnative.dev/docs/debugging#accessing-the-in-app-developer-menu)
+- Turn on inspector by pressing "Show Inspector" button
+- Select the attachment file on UI. You will the displayName of the component in inspector (as showin in screenshot below)
+
+For displayName `FileAttachment{messageSimple{file}}` we are saying the component name is `FileAttachment` and the style keys are `messageSimple -> file`. There are often multiple keys on a designated display name corresponding to different sub-components styles. In this case `file` has five sub-component keys, that can modify the styling.
+
+```typescript
+file: {
+  container: ViewStyle;
+  details: ViewStyle;
+  fileSize: TextStyle;
+  icon: IconProps;
+  title: TextStyle;
+};
+```
+
+Modifying the theme for this component is done by adding custom styles at the desired keys.
+
+```tsx
+import type { DeepPartial, Theme } from 'stream-chat-react-native';
+
+const theme: DeepPartial<Theme> = {
+  messageSimple: {
+    file: {
+      container: {
+        backgroundColor: 'red',
+      },
+      icon: {
+        height: 16,
+        width: 16,
+      },
+    },
+  },
+};
+
+<Chat style={theme}>
+</Chat>
+```
+
+<table>
+  <tr>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/DisplayNameTheme.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/UnmodifiedDisplayNameTheme.png'/></td>
+    <td align='center' width="33%"><img src='./screenshots/cookbook/ModifiedDisplayNameTheme.png'/></td>
+  </tr>
+  <tr></tr>
+  <tr>
+    <td align='center'>Display Name in Inspector</td>
+    <td align='center'>Non-Themed Component</td>
+    <td align='center'>Themed Component</td>
+  </tr>
+</table>
+
+**NOTE:** Most of the styles are standard React Native styles, but some styles applying to SVGs, Markdown, or custom components are numbers, strings, or other specified types. The TypeScript documentation of `Theme` should help you in this regard. Message text is an instance of an exception as it is rendered using [`react-native-markdown-package`](https://github.com/andangrd/react-native-markdown-package) and the [`MarkdownStyle`](https://github.com/andangrd/react-native-markdown-package/blob/master/styles.js) is added to the theme at key `messageSimple -> content -> markdown`. Standard React Native styles is a departure from the `2.x` version of `stream-chat-react-native` in which [`styled-components`](https://styled-components.com/) was utilized for theming.
+
+### Custom components
+
+Please check the [visual guide](https://github.com/GetStream/stream-chat-react-native/blob/vishal/v2-designs-docs/VisualGuide.md) which makes it easy to know which components can be customized.
 
 ## FAQ
 
