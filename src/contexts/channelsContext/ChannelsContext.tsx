@@ -108,12 +108,6 @@ export type ChannelsContextValue<
    * */
   LoadingErrorIndicator: React.ComponentType<LoadingErrorProps>;
   /**
-   * Custom loading indicator to use
-   *
-   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
-   * */
-  LoadingIndicator: React.ComponentType<LoadingProps>;
-  /**
    * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
    */
   loadingNextPage: boolean;
@@ -185,6 +179,12 @@ export type ChannelsContextValue<
    */
   Skeleton: React.ComponentType;
   ListHeaderComponent?: React.ComponentType;
+  /**
+   * Custom loading indicator to use
+   *
+   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
+   * */
+  LoadingIndicator?: React.ComponentType<LoadingProps>;
   /**
    * Function to set the currently active channel, acts as a bridge between ChannelList and Channel components
    *

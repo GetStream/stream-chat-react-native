@@ -80,6 +80,7 @@ export type ChannelListProps<
     | 'PreviewTitle'
     | 'PreviewUnreadCount'
     | 'loadMoreThreshold'
+    | 'Skeleton'
     | 'maxUnreadCount'
     | 'numberOfSkeletons'
   >
