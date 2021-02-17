@@ -51,14 +51,14 @@ To use this library you need to ensure you match up with the correct version of 
 
 | `stream-chat-react-native` version | Required React Native Version |
 | ----------------------------------------- | --------- |
-| `3.x.x` (alpha)                           | `>= 0.60` |
+| `3.x.x` (beta)                           | `>= 0.60` |
 | `2.x.x`                                   | `>= 0.60` |
 | `1.x.x`                                   | `>= 0.59` |
 | `0.x.x`                                   | `*` |
 
 ## 📖 React Native Chat Tutorial
 
-The best place to start is the [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/). It teaches you how to use this SDK and also shows how to make frequently required changes.
+The best place to start is the [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0). It teaches you how to use this SDK and also shows how to make frequently required changes.
 
 ## 🔮 Example Apps
 
