@@ -1,6 +1,8 @@
 import React from 'react';
-import { useTheme } from '../../contexts';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
 import type { ChannelPreviewProps } from './ChannelPreview';
 import type {
   DefaultAttachmentType,

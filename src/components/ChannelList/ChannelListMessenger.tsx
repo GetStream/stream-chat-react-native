@@ -44,12 +44,14 @@ export type ChannelListMessengerPropsWithContext<
   | 'HeaderErrorIndicator'
   | 'HeaderNetworkDownIndicator'
   | 'maxUnreadCount'
+  | 'numberOfSkeletons'
   | 'onSelect'
   | 'Preview'
   | 'PreviewTitle'
   | 'PreviewStatus'
   | 'PreviewAvatar'
   | 'previewMessage'
+  | 'Skeleton'
 >;
 
 const StatusIndicator = <
@@ -127,12 +129,10 @@ const ChannelListMessengerWithContext = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    numberOfSkeletons,
     refreshing,
     refreshList,
     reloadList,
     setFlatListRef,
-    Skeleton,
   } = props;
 
   const {
@@ -178,15 +178,7 @@ const ChannelListMessengerWithContext = <
         keyExtractor={(item) => item.cid}
         ListEmptyComponent={
           loading ? (
-            LoadingIndicator ? (
-              <LoadingIndicator />
-            ) : (
-              <View style={{ backgroundColor: white_snow, flex: 1 }}>
-                {Array.from(Array(numberOfSkeletons)).map((_, index) => (
-                  <Skeleton key={`skeleton_${index}`} />
-                ))}
-              </View>
-            )
+            <LoadingIndicator listType='channel' />
           ) : (
             <EmptyStateIndicator listType='channel' />
           )
@@ -260,12 +252,10 @@ export const ChannelListMessenger = <
     loadingNextPage,
     loadMoreThreshold,
     loadNextPage,
-    numberOfSkeletons,
     refreshing,
     refreshList,
     reloadList,
     setFlatListRef,
-    Skeleton,
   } = useChannelsContext<At, Ch, Co, Ev, Me, Re, Us>();
 
   return (
@@ -284,12 +274,10 @@ export const ChannelListMessenger = <
         loadingNextPage,
         loadMoreThreshold,
         loadNextPage,
-        numberOfSkeletons,
         refreshing,
         refreshList,
         reloadList,
         setFlatListRef,
-        Skeleton,
       }}
       {...props}
     />

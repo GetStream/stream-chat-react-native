@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
+
 import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { useTranslationContext } from '../../contexts/translationContext/TranslationContext';
 
 const styles = StyleSheet.create({
   errorNotification: {

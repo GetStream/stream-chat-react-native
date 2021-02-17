@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 
+import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
+import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
+import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
+import { ChannelListLoadingIndicator } from './ChannelListLoadingIndicator';
 import {
   ChannelListMessenger,
   ChannelListMessengerProps,
 } from './ChannelListMessenger';
-
 import { useAddedToChannelNotification } from './hooks/listeners/useAddedToChannelNotification';
 import { useChannelDeleted } from './hooks/listeners/useChannelDeleted';
 import { useChannelHidden } from './hooks/listeners/useChannelHidden';
@@ -17,10 +20,6 @@ import { useCreateChannelsContext } from './hooks/useCreateChannelsContext';
 import { usePaginatedChannels } from './hooks/usePaginatedChannels';
 import { useRemovedFromChannelNotification } from './hooks/listeners/useRemovedFromChannelNotification';
 import { useUserPresence } from './hooks/listeners/useUserPresence';
-
-import { ChannelListFooterLoadingIndicator } from './ChannelListFooterLoadingIndicator';
-import { ChannelListHeaderErrorIndicator } from './ChannelListHeaderErrorIndicator';
-import { ChannelListHeaderNetworkDownIndicator } from './ChannelListHeaderNetworkDownIndicator';
 import { Skeleton as SkeletonDefault } from './Skeleton';
 
 import { ChannelPreviewMessenger } from '../ChannelPreview/ChannelPreviewMessenger';
@@ -248,7 +247,7 @@ export const ChannelList = <
     List = ChannelListMessenger,
     ListHeaderComponent,
     LoadingErrorIndicator = LoadingErrorIndicatorDefault,
-    LoadingIndicator,
+    LoadingIndicator = ChannelListLoadingIndicator,
     // https://github.com/facebook/react-native/blob/a7a7970e543959e9db5281914d5f132beb01db8d/Libraries/Lists/VirtualizedList.js#L466
     loadMoreThreshold = 2,
     lockChannelOrder = false,

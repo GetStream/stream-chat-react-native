@@ -1,6 +1,10 @@
 import React from 'react';
-import { useTheme } from '../../contexts';
 import { StyleSheet, Text } from 'react-native';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
+import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,7 +15,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { LatestMessagePreview } from './hooks/useLatestMessagePreview';
 
 const styles = StyleSheet.create({
   bold: { fontWeight: 'bold' },
@@ -20,6 +23,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
+
 export type ChannelPreviewMessageProps<
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -40,6 +44,7 @@ export const ChannelPreviewMessage: React.FC<ChannelPreviewMessageProps> = ({
       colors: { grey },
     },
   } = useTheme();
+
   return (
     <Text numberOfLines={1} style={[styles.message, { color: grey }, message]}>
       {latestMessagePreview.previews.map((preview, index) =>

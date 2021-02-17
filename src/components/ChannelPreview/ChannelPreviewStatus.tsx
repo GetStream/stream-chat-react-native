@@ -1,6 +1,12 @@
 import React from 'react';
-import { useTheme } from '../../contexts';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+import { Check, CheckAll } from '../../icons';
+
+import type { ChannelPreviewProps } from './ChannelPreview';
+import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,9 +17,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import { Check, CheckAll } from '../..//icons';
-import type { ChannelPreviewMessengerPropsWithContext } from './ChannelPreviewMessenger';
-import type { ChannelPreviewProps } from './ChannelPreview';
 
 const styles = StyleSheet.create({
   date: {

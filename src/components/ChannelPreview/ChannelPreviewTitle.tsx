@@ -1,6 +1,10 @@
 import React from 'react';
-import { useTheme } from '../../contexts';
 import { StyleSheet, Text } from 'react-native';
+
+import { useTheme } from '../../contexts/themeContext/ThemeContext';
+
+import type { ChannelPreviewProps } from './ChannelPreview';
+
 import type {
   DefaultAttachmentType,
   DefaultChannelType,
@@ -11,7 +15,6 @@ import type {
   DefaultUserType,
   UnknownType,
 } from '../../types/types';
-import type { ChannelPreviewProps } from './ChannelPreview';
 
 const styles = StyleSheet.create({
   title: { fontSize: 14, fontWeight: '700' },
@@ -47,6 +50,7 @@ export const ChannelPreviewTitle = <
       colors: { black },
     },
   } = useTheme();
+
   return (
     <Text numberOfLines={1} style={[styles.title, { color: black }, title]}>
       {displayName}
