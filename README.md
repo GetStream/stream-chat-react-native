@@ -65,16 +65,17 @@ The best place to start is the [React Native Chat Tutorial](https://github.com/G
 
 This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
-<div style="display: inline">
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeChannel.png" alt="Channels" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeMessages.png" alt="Messages" width="250" border="1" style="margin-right: 30px" />
-  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeOverlay.png" alt="Overlay" width="250" border="1" />
-</div>
 
 - [Expo example](./examples/ExpoMessaging)
 - [Native example](./examples/NativeMessaging)
 - [Typescript example](./examples/TypescriptMessaging)
 - [Fully featured messaging application](./examples/SampleApp)
+
+<div style="display: inline">
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeChannel.png" alt="Channels" width="250" border="1" style="margin-right: 30px" />
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeMessages.png" alt="Messages" width="250" border="1" style="margin-right: 30px" />
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeOverlay.png" alt="Overlay" width="250" border="1" />
+</div>
 
 ### Slack clone
 
