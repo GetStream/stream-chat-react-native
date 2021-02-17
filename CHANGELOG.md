@@ -1,6 +1,6 @@
 # Changelog
 
-## [3.0.0] - beta (unreleased)
+## [3.0.0-beta.2]
 
 Version 3.x is a major revamp of the SDK and comes with **many breaking changes**. The new implementation takes advantage of React Context along with many popular community libraries such as Reanimated V2 to deliver a superior chat experience. **Upgrading will require re-implementing** your integration but will yield performance and functional benefits. It is highly recommended you read the Cookbook and examine the SampleApp / TypeScriptMessaging apps before upgrading to understand what is required.
 
@@ -36,7 +36,7 @@ Version 3.x is a major revamp of the SDK and comes with **many breaking changes*
   - Removed css string notation for styles on theme
   - Added displayName to components with bracket notation denoting the theme path e.g. `MessageStatus.displayName = 'MessageStatus{message{status}}';` indicates the theme path would be modified via `const customTheme: DeepPartial<Theme> = { message: { status: { ...customizations } } }`.
 
-Please find detailed docs about this release in our [wiki](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta-unpublished)
+Please find detailed docs about this release in our [wiki](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta)
 
 ## [2.2.2] 2021-02-07
 
