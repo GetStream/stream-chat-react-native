@@ -1,7 +1,7 @@
 # Official React Native SDK for [Stream Chat](https://getstream.io/chat/)
 
 <p align="center">
-  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://i.imgur.com/SRkDlFX.png" alt="react native chat" width="60%" /></a>
+  <a href="https://getstream.io/chat/react-native-chat/tutorial/"><img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/cover.png" alt="react native chat" width="100%" /></a>
 </p>
 
 > The official React Native and Expo components for Stream Chat, a service for
@@ -17,31 +17,25 @@
 
 - [Stream Chat API](https://getstream.io/chat/) product overview
 - [Register](https://getstream.io/chat/trial/) to get an API key for Stream Chat
-- [React Native Chat Tutorial](https://getstream.io/chat/react-native-chat/tutorial/)
+- [React Native Chat Tutorial](https://github.com/GetStream/stream-chat-react-native/wiki/Tutorial-v3.0)
 - [Chat UI Kit](https://getstream.io/chat/ui-kit/)
 - [Release Notes](https://github.com/GetStream/stream-chat-react-native/releases)
 - [Internationalization (i18n)](https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n))
-- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki/Cookbook-(2.x.x)) 🚀
+- [Cookbook](https://github.com/GetStream/stream-chat-react-native/wiki#v30-beta) 🚀
 
 ## Contents
 
-- [React Native Compatibility](#🔐-react-native-compatibility)
-- [React Native Chat Tutorial](#📖-react-native-chat-tutorial)
-- [Example Apps](#🔮-example-apps)
-  - [Expo example](#expo-example)
-  - [Native example](#native-example)
-  - [Slack clone](#slack-clone)
-- [Docs](#📋-docs)
-- [Keep in mind](#💬-keep-in-mind)
-- [Setup](#🛠-Setup-(Setting-up-a-chat-app))
-  - [Expo package](#expo-package)
-  - [Native package](#native-package)
-  - Native Web package _(currently under development. Please follow progress at [#206](https://github.com/GetStream/stream-chat-react-native/issues/206))_
-  - [TypeScript Support](#💪-TypeScript-Support)
-  - [Internationalization](#✈️-Internationalization)
-  - [Upgrade](#🚀-Upgrading)
-  - [Common issues](#⚠️-common-issues)
-  - [Contributing](#👏-contributing)
+- [React Native Compatibility](#-react-native-compatibility)
+- [React Native Chat Tutorial](#-react-native-chat-tutorial)
+- [Example Apps](#-example-apps)
+- [Docs](#-docs)
+- [Keep in mind](#-keep-in-mind)
+- [Setup](#-Setup-(Setting-up-a-chat-app))
+- [TypeScript Support](#-TypeScript-Support)
+- [Internationalization](#-Internationalization)
+- [Upgrade](#-Upgrading)
+- [Common issues](#-common-issues)
+- [Contributing](#-contributing)
 
 ## 🔐 React Native Compatibility
 
@@ -63,58 +57,15 @@ The best place to start is the [React Native Chat Tutorial](https://getstream.io
 This repo includes 4 example apps. One made with Expo, one Native JavaScript code, and two in TypeScript. One TypeScript app is a simple implementation for reference, the other is a more full featured app example.
 
 <div style="display: inline">
-  <img src="./screenshots/readme/readmeChannel.png" alt="Channels" width="250" border="1" style="margin-right: 30px" />
-  <img src="./screenshots/readme/readmeMessages.png" alt="Messages" width="250" border="1" style="margin-right: 30px" />
-  <img src="./screenshots/readme/readmeOverlay.png" alt="Overlay" width="250" border="1" />
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeChannel.png" alt="Channels" width="250" border="1" style="margin-right: 30px" />
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeMessages.png" alt="Messages" width="250" border="1" style="margin-right: 30px" />
+  <img src="https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/readme/readmeOverlay.png" alt="Overlay" width="250" border="1" />
 </div>
 
-### Expo example
-
-1. Make sure node version is >= v10.13.0
-2. ```bash
-   yarn global add expo-cli
-   git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native/examples/ExpoMessaging
-   yarn && yarn start
-   ```
-
-### Native example
-
-1. Please make sure you have installed necessary dependencies depending on your development OS and target OS. Follow the guidelines given on official React Native documentation for installing dependencies: <https://facebook.github.io/react-native/docs/getting-started>#
-2. Make sure node version is >= v10.13.0
-3. Start the simulator
-
-4. ```bash
-   git clone https://github.com/GetStream/stream-chat-react-native.git
-   cd stream-chat-react-native
-   yarn
-   cd stream-chat-react-native/native-package
-   yarn
-   cd stream-chat-react-native/examples/TypeScriptMessaging
-   yarn
-   ```
-
-5. - For iOS
-
-     ```bash
-     cd ios && pod install && cd ..
-     yarn ios
-     ```
-
-   - For android
-
-     ```bash
-     yarn android
-     ```
-
-   If you run into following error on android:
-
-   ```bash
-   Execution failed for task ':app:validateSigningDebug'.
-   > Keystore file '/path_to_project/stream-chat-react-native/examples/NativeMessaging/android/app/debug.keystore' not found for signing config 'debug'.
-   ```
-
-   You can generate the debug Keystore by running this command in the `android/app/` directory: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000` - [Reference](https://github.com/facebook/react-native/issues/25629#issuecomment-511209583)
+- [Expo example](./examples/ExpoMessaging)
+- [Native example](./examples/NativeMessaging)
+- [Typescript example](./examples/TypescriptMessaging)
+- [Fully featured messaging application](./examples/SampleApp)
 
 ### Slack clone
 
@@ -147,153 +98,7 @@ You can see detailed documentation about the components at <https://getstream.gi
 
 ## 🛠 Setup (Setting up a chat app)
 
-### Expo package
-
-```bash
-yarn global add expo-cli
-# expo-cli supports following Node.js versions:
-# * >=8.9.0 <9.0.0 (Maintenance LTS)
-# * >=10.13.0 <11.0.0 (Active LTS)
-# * >=12.0.0 (Current Release)
-expo init StreamChatExpoExample
-cd StreamChatExpoExample
-
-# Add chat expo package
-yarn add stream-chat-expo
-
-# If you are using stream-chat-expo <= 0.4.0 and expo <= 34, then you don't need to add @react-native-community/netinfo as dependency, since previously we used NetInfo from react-native package.
-expo install @react-native-community/netinfo expo-blur expo-document-picker expo-file-system expo-haptics expo-image-manipulator expo-image-picker expo-media-library expo-permissions expo-sharing react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
-```
-
-Please check the [example](./examples/ExpoMessaging/App.js) to see usage of the components.
-
-OR you can swap [this file](./examples/ExpoMessaging/App.js) for your `App.js` in the root folder and follow these additional steps:
-
-```bash
-yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-screens
-```
-
-and finally
-
-```bash
-yarn start
-```
-
-### Native package
-
-#### For react native >= 0.60
-
-```bash
-react-native init StreamChatReactNativeExample
-cd StreamChatReactNativeExample
-yarn add stream-chat-react-native
-yarn add @react-native-community/blur @react-native-community/cameraroll @react-native-community/netinfo @stream-io/flat-list-mvcp react-native-document-picker react-native-fs react-native-gesture-handler react-native-haptic-feedback react-native-haptic-feedback react-native-image-crop-picker react-native-image-resizer react-native-reanimated@2.0.0-rc.0 react-native-safe-area-context react-native-share react-native-svg
-cd ios && pod install && cd ..
-```
-
-Stream Chat has a number of peer dependencies that are required to take advantage of all of the out of the box features. It is suggested you follow the install instructions for each package to ensure it is properly setup. Most if not all of the required packages now support auto-linking so setup should be minimal.
-
-- [`@react-native-community/blur`](https://github.com/Kureev/react-native-blur)
-- [`@react-native-community/cameraroll`](https://github.com/react-native-cameraroll/react-native-cameraroll)
-- [`@react-native-community/netinfo`](https://github.com/react-native-netinfo/react-native-netinfo)
-- [`@stream-io/flat-list-mvcp`](https://github.com/GetStream/flat-list-mvcp)
-- [`react-native-document-picker`](https://github.com/rnmods/react-native-document-picker)
-- [`react-native-fs`](https://github.com/itinance/react-native-fs)
-- [`react-native-gesture-handler`](https://github.com/software-mansion/react-native-gesture-handler)
-- [`react-native-haptic-feedback`](https://github.com/junina-de/react-native-haptic-feedback)
-- [`react-native-image-crop-picker`](https://github.com/ivpusic/react-native-image-crop-picker)
-- [`react-native-image-resizer`](https://github.com/bamlab/react-native-image-resizer)
-- [`react-native-reanimated`](https://github.com/software-mansion/react-native-reanimated)
-- [`react-native-safe-area-context`](https://github.com/th3rdwave/react-native-safe-area-context)
-- [`react-native-share`](https://github.com/react-native-share/react-native-share)
-- [`react-native-svg`](https://github.com/react-native-svg/react-native-svg)
-
-`react-native-gesture-handler` requires the package to be imported at the **top of the entry file** before anything else, this is usually your `App.js` or `index.js` file.
-
-```tsx
-import 'react-native-gesture-handler';
-import { AppRegistry } from 'react-native';
-
-import App from './App';
-import { name as appName } from './app.json';
-
-AppRegistry.registerComponent(appName, () => App);
-```
-
-`react-native-reanimated@2.0.0-rc.0` requires additional installation steps that should be followed to ensure it runs and builds properly. These steps can be found in the [`React Native Reanimated V2 documentation`](https://docs.swmansion.com/react-native-reanimated/docs/installation).
-
-If you are planning to use file/document picker, you need to enable iCloud capability in your app - <https://github.com/Elyx0/react-native-document-picker#reminder>
-
-
-Please check the [example](./examples/TypeScriptMessaging/App.tsx) to see the usage of components.
-
-OR you can swap this file for your `App.tsx` in the root folder by following these additional steps:
-
-```bash
-yarn add @react-native-community/masked-view @react-navigation/native @react-navigation/stack react-native-screens
-cd ios && pod install && cd ..
-```
-
-and finally
-
-**iOS**:
-
-```bash
-yarn ios
-```
-
-#### For react native < 0.60
-
-```bash
-react-native init StreamChatReactNativeExample
-cd StreamChatReactNativeExample
-yarn add stream-chat-react-native
-
-# https://github.com/react-native-community/react-native-netinfo#react-native-compatibility
-# For React native 0.59.x - use @react-native-community/netinfo@3.2.1
-# For React native <= 0.58.x - use @react-native-community/netinfo@2.0.7
-yarn add @react-native-community/netinfo@3.2.1
-
-# https://github.com/ivpusic/react-native-image-crop-picker#important-note
-yarn add react-native-image-crop-picker@0.25.0
-yarn add react-native-document-picker
-
-react-native link @react-native-community/netinfo
-
-# if you are planning to use image picker or file picker or both
-react-native link react-native-image-crop-picker
-react-native link react-native-document-picker
-
-```
-
-Please check the [example](https://github.com/GetStream/stream-chat-react-native/blob/master/examples/NativeMessaging/App.js) to see the usage of these components.
-
-OR you can swap this file for your `App.js` in the root folder and follow this guide for your installed version <https://reactnavigation.org/docs/getting-started#installing-dependencies-into-a-bare-react-native-project>
-
-If you are planning to use the image crop picker, there are some additional steps to be done. You can find them here - <https://github.com/ivpusic/react-native-image-crop-picker/blob/v0.25.0/README.md#install>
-
-If you are planning to use file/document picker, you need to enable iCloud capability in your app - <https://github.com/Elyx0/react-native-document-picker#reminder>
-
-and finally
-
-```bash
-react-native run-ios
-```
-
-**Note for Android**:
-
-If you are using AndroidX app:
-
-> AndroidX is a major step forward in the Android ecosystem, and the old support library artifacts are being deprecated. For 0.60, React Native has been migrated over to AndroidX. This is a breaking change, and your native code and dependencies will need to be migrated as well.
-
-(Reference: <https://facebook.github.io/react-native/blog/2019/07/03/version-60#androidx-support>)
-
-In current context, dependencies such as `react-native-document-picker`, `react-native-gesture-handler`, and `react-native-reanimated` don't have AndroidX support. But an awesome tool named [jetifier](https://github.com/mikehardy/jetifier) is quite useful to patch these dependencies with AndroidX support.
-
-**NOTE** If you are planning to use file picker functionality, make sure you enable iCloud capability in your app
-
-![Enable iCloud capability](https://camo.githubusercontent.com/ac300ca7e3bbab573a76c151469a89efd8b31e72/68747470733a2f2f33313365353938373731386233343661616638332d66356538323532373066323961383466373838313432333431303338343334322e73736c2e6366312e7261636b63646e2e636f6d2f313431313932303637342d656e61626c652d69636c6f75642d64726976652e706e67)
-
+Please follow this doc for setup - [Setup Docs](https://github.com/GetStream/stream-chat-react-native/wiki/Installation-and-usage---v3.0#installation)
 ## 💪 TypeScript Support
 
 As of version `2.0.0` `stream-chat-react-native` has been converted to TypeScript. Please read [Typescript guide](https://github.com/GetStream/stream-chat-react-native/wiki/Typescript-support) for details.
