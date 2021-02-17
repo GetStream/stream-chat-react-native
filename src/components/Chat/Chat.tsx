@@ -5,7 +5,10 @@ import Dayjs from 'dayjs';
 import { useCreateChatContext } from './hooks/useCreateChatContext';
 import { useIsOnline } from './hooks/useIsOnline';
 
-import { ChatProvider } from '../../contexts/chatContext/ChatContext';
+import {
+  ChatContextValue,
+  ChatProvider,
+} from '../../contexts/chatContext/ChatContext';
 import { useOverlayContext } from '../../contexts/overlayContext/OverlayContext';
 import {
   DeepPartial,
@@ -19,7 +22,7 @@ import { useStreami18n } from '../../utils/useStreami18n';
 
 import { version } from '../../../package.json';
 
-import type { Channel, StreamChat } from 'stream-chat';
+import type { Channel } from 'stream-chat';
 
 import type { Theme } from '../../contexts/themeContext/utils/theme';
 import type { Streami18n } from '../../utils/Streami18n';
@@ -42,9 +45,7 @@ export type ChatProps<
   Me extends UnknownType = DefaultMessageType,
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
-> = {
-  /** The StreamChat client object */
-  client: StreamChat<At, Ch, Co, Ev, Me, Re, Us>;
+> = Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> & {
   /**
    * Instance of Streami18n class should be provided to Chat component to enable internationalization.
    *
@@ -97,7 +98,34 @@ export type ChatProps<
    * ```
    */
   i18nInstance?: Streami18n;
-  logger?: (message?: string) => void;
+  /**
+   * You can pass the theme object to customize the styles of Chat components. You can check the default theme in [theme.ts](https://github.com/GetStream/stream-chat-react-native/blob/master/src/contexts/themeContext/utils/theme.ts)
+   *
+   * Please check section about [themes in cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#theme) for details.
+   *
+   * ```
+   * import type { DeepPartial, Theme } from 'stream-chat-react-native';
+   *
+   * const theme: DeepPartial<Theme> = {
+   *   messageSimple: {
+   *     file: {
+   *       container: {
+   *         backgroundColor: 'red',
+   *       },
+   *       icon: {
+   *         height: 16,
+   *         width: 16,
+   *       },
+   *     },
+   *   },
+   * };
+   *
+   * <Chat style={theme}>
+   * </Chat>
+   * ```
+   *
+   * @overrideType object
+   */
   style?: DeepPartial<Theme>;
 };
 
@@ -112,7 +140,7 @@ const ChatWithContext = <
 >(
   props: PropsWithChildren<ChatProps<At, Ch, Co, Ev, Me, Re, Us>>,
 ) => {
-  const { children, client, i18nInstance, logger = () => null, style } = props;
+  const { children, client, i18nInstance, style } = props;
 
   const [channel, setChannel] = useState<Channel<At, Ch, Co, Ev, Me, Re, Us>>();
   const [translators, setTranslators] = useState<TranslationContextValue>({
@@ -148,7 +176,6 @@ const ChatWithContext = <
     client,
     connectionRecovering,
     isOnline,
-    logger,
     setActiveChannel,
   });
 
@@ -173,7 +200,6 @@ const ChatWithContext = <
  * - client - client connection
  * - connectionRecovering - whether or not websocket is reconnecting
  * - isOnline - whether or not set user is active
- * - logger - custom logging function
  * - setActiveChannel - function to set the currently active channel
  *
  * The Chat Component takes the following generics in order:
@@ -184,8 +210,6 @@ const ChatWithContext = <
  * - Me (MessageType) - custom Message object extension
  * - Re (ReactionType) - custom Reaction object extension
  * - Us (UserType) - custom User object extension
- *
- * @example ./Chat.md
  */
 export const Chat = <
   At extends UnknownType = DefaultAttachmentType,

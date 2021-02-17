@@ -55,7 +55,9 @@ import type {
 } from '../../types/types';
 import type { ReactionData } from '../../utils/utils';
 
-const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const AnimatedCircle = Animated.createAnimatedComponent
+  ? Animated.createAnimatedComponent(Circle)
+  : Circle;
 
 const styles = StyleSheet.create({
   notLastReaction: {

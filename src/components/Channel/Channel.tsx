@@ -43,6 +43,7 @@ import {
   LoadingErrorProps,
 } from '../Indicators/LoadingErrorIndicator';
 import { LoadingIndicator as LoadingIndicatorDefault } from '../Indicators/LoadingIndicator';
+import { NetworkDownIndicator as NetworkDownIndicatorDefault } from '../MessageList/NetworkDownIndicator';
 import { KeyboardCompatibleView as KeyboardCompatibleViewDefault } from '../KeyboardCompatibleView/KeyboardCompatibleView';
 import { Message as MessageDefault } from '../Message/Message';
 import { MessageAvatar as MessageAvatarDefault } from '../Message/MessageSimple/MessageAvatar';
@@ -181,11 +182,21 @@ export type ChannelPropsWithContext<
     | 'enforceUniqueReaction'
     | 'giphyEnabled'
     | 'LoadingIndicator'
+    | 'NetworkDownIndicator'
     | 'StickyHeader'
   >
 > &
   Pick<ChatContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'client'> &
-  Partial<InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>> &
+  Partial<
+    Omit<
+      InputMessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
+      | 'quotedMessage'
+      | 'editing'
+      | 'clearEditingState'
+      | 'clearQuotedMessageState'
+      | 'sendMessage'
+    >
+  > &
   Partial<SuggestionsContextValue<Co, Us>> &
   Pick<TranslationContextValue, 't'> &
   Partial<
@@ -194,7 +205,7 @@ export type ChannelPropsWithContext<
       | 'additionalTouchableProps'
       | 'Attachment'
       | 'AttachmentActions'
-      | 'AttachmentFileIcon'
+      | 'FileAttachmentIcon'
       | 'blockUser'
       | 'Card'
       | 'CardCover'
@@ -210,7 +221,7 @@ export type ChannelPropsWithContext<
       | 'FileAttachmentGroup'
       | 'flagMessage'
       | 'FlatList'
-      | 'forceAlign'
+      | 'forceAlignMessages'
       | 'formatDate'
       | 'Gallery'
       | 'Giphy'
@@ -346,7 +357,7 @@ export type ChannelPropsWithContext<
     messageId?: string;
   };
 
-export const ChannelWithContext = <
+const ChannelWithContext = <
   At extends UnknownType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
   Co extends string = DefaultCommandType,
@@ -365,7 +376,7 @@ export const ChannelWithContext = <
     AttachButton = AttachButtonDefault,
     Attachment = AttachmentDefault,
     AttachmentActions = AttachmentActionsDefault,
-    AttachmentFileIcon = FileIconDefault,
+    FileAttachmentIcon = FileIconDefault,
     autoCompleteTriggerSettings,
     blockUser,
     Card = CardDefault,
@@ -398,7 +409,7 @@ export const ChannelWithContext = <
     FileUploadPreview = FileUploadPreviewDefault,
     flagMessage,
     FlatList = FlatListDefault,
-    forceAlign,
+    forceAlignMessages,
     formatDate,
     Gallery = GalleryDefault,
     Giphy = GiphyDefault,
@@ -439,6 +450,7 @@ export const ChannelWithContext = <
     MessageList = MessageListDefault,
     muteUser,
     myMessageTheme,
+    NetworkDownIndicator = NetworkDownIndicatorDefault,
     ScrollToBottomButton = ScrollToBottomButtonDefault,
     MessageReplies = MessageRepliesDefault,
     MessageRepliesAvatars = MessageRepliesAvatarsDefault,
@@ -1373,6 +1385,7 @@ export const ChannelWithContext = <
     LoadingIndicator,
     markRead,
     members,
+    NetworkDownIndicator,
     read,
     reloadChannel,
     scrollToFirstUnreadThreshold,
@@ -1423,7 +1436,6 @@ export const ChannelWithContext = <
     additionalTouchableProps,
     Attachment,
     AttachmentActions,
-    AttachmentFileIcon,
     blockUser,
     Card,
     CardCover,
@@ -1437,9 +1449,10 @@ export const ChannelWithContext = <
     editMessage: editMessageProp,
     FileAttachment,
     FileAttachmentGroup,
+    FileAttachmentIcon,
     flagMessage,
     FlatList,
-    forceAlign,
+    forceAlignMessages,
     formatDate,
     Gallery,
     Giphy,
@@ -1605,5 +1618,3 @@ export const Channel = <
     />
   );
 };
-
-Channel.displayName = 'Channel{channel}';

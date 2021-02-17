@@ -121,8 +121,6 @@ export type SendButtonProps<
 
 /**
  * UI Component for send button in MessageInput component.
- *
- * @example ./SendButton.md
  */
 export const SendButton = <
   At extends UnknownType = DefaultAttachmentType,

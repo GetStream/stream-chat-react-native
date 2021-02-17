@@ -375,8 +375,6 @@ export type GiphyProps<
 
 /**
  * UI component for card in attachments.
- *
- * @example ./Giphy.md
  */
 export const Giphy = <
   At extends UnknownType = DefaultAttachmentType,

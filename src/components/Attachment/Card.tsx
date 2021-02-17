@@ -312,8 +312,6 @@ export type CardProps<
 
 /**
  * UI component for card in attachments.
- *
- * @example ./Card.md
  */
 export const Card = <
   At extends UnknownType = DefaultAttachmentType,

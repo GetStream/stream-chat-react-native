@@ -84,18 +84,13 @@ export type MessagesContextValue<
     AttachmentActionsProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
   /**
-   * UI component for attachment icon for type 'file' attachment.
-   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
-   */
-  AttachmentFileIcon: React.ComponentType<FileIconProps>;
-  /**
    * UI component to display generic media type e.g. giphy, url preview etc
    * Defaults to: [Card](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/Card.tsx)
    */
   Card: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
   /**
    * UI component for DateHeader
-   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Message/MessageSimple/DateHeader.tsx)
+   * Defaults to: [DateHeader](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/MessageList/DateHeader.tsx)
    **/
   DateHeader: React.ComponentType<DateHeaderProps>;
   /** Should keyboard be dismissed when messaged is touched */
@@ -114,6 +109,11 @@ export type MessagesContextValue<
   FileAttachmentGroup: React.ComponentType<
     FileAttachmentGroupProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
+  /**
+   * UI component for attachment icon for type 'file' attachment.
+   * Defaults to: https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/Attachment/FileIcon.tsx
+   */
+  FileAttachmentIcon: React.ComponentType<FileIconProps>;
   FlatList: typeof FlatList;
   /**
    * UI component to display image attachments
@@ -126,6 +126,9 @@ export type MessagesContextValue<
    */
   Giphy: React.ComponentType<GiphyProps<At, Ch, Co, Ev, Me, Re, Us>>;
   hasMore: boolean;
+  /**
+   * When true, messageList will be scrolled at first unread message, when opened.
+   */
   initialScrollToFirstUnreadMessage: boolean;
   /**
    * UI component for InlineUnreadIndicator
@@ -217,6 +220,9 @@ export type MessagesContextValue<
    * Defaults to: [Reply](https://getstream.github.io/stream-chat-react-native/#reply)
    */
   Reply: React.ComponentType<ReplyProps<At, Ch, Co, Ev, Me, Re, Us>>;
+  /**
+   * Override the api request for retry message functionality.
+   */
   retrySendMessage: (
     message: MessageResponse<At, Ch, Co, Me, Re, Us>,
   ) => Promise<void>;
@@ -264,9 +270,15 @@ export type MessagesContextValue<
   /**
    * Provide any additional props for `TouchableOpacity` which wraps inner MessageContent component here.
    * Please check docs for TouchableOpacity for supported props - https://reactnative.dev/docs/touchableopacity#props
+   *
+   * @overrideType Object
    */
   additionalTouchableProps?: Omit<TouchableOpacityProps, 'style'>;
-  /** Full override of the block user button in the Message Actions */
+  /**
+   * Full override of the block user button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   blockUser?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
@@ -285,24 +297,45 @@ export type MessagesContextValue<
    * Accepts the same props as Card component.
    */
   CardHeader?: React.ComponentType<CardProps<At, Ch, Co, Ev, Me, Re, Us>>;
-  /** Full override of the copy message button in the Message Actions */
+  /**
+   * Full override of the copy message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   copyMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
-  /** Full override of the delete message button in the Message Actions */
+  /**
+   * Full override of the delete message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   deleteMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
   disableTypingIndicator?: boolean;
-  /** Full override of the edit message button in the Message Actions */
+  /**
+   * Full override of the edit message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   editMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
-  /** Full override of the flag message button in the Message Actions */
+  /**
+   * Full override of the flag message button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   flagMessage?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
-  forceAlign?: Alignment | boolean;
+  /**
+   * Whether messages should be aligned to right or left part of screen.
+   * By default, messages will be received messages will be aligned to left and
+   * sent messages will be aligned to right.
+   */
+  forceAlignMessages?: Alignment | boolean;
   /**
    * Optional function to custom format the message date
    */
@@ -357,7 +390,11 @@ export type MessagesContextValue<
   MessageText?: React.ComponentType<
     MessageTextProps<At, Ch, Co, Ev, Me, Re, Us>
   >;
-  /** Full override of the mute user button in the Message Actions */
+  /**
+   * Full override of the mute user button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * */
   muteUser?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;
@@ -384,15 +421,31 @@ export type MessagesContextValue<
     event: GestureResponderEvent,
     defaultOnPress?: () => void,
   ) => void;
-  /** Full override of the reply button in the Message Actions */
+  /**
+   * Full override of the reply button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   */
   reply?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
-  /** Full override of the resend button in the Message Actions */
+  /**
+   * Full override of the resend button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * */
   retry?: (message: MessageType<At, Ch, Co, Ev, Me, Re, Us>) => MessageAction;
-  /** Full override of the reaction function on Message and Message Overlay */
+  /**
+   * Full override of the reaction function on Message and Message Overlay
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * */
   selectReaction?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => (reactionType: string) => Promise<void>;
-  /** Full override of the thread reply button in the Message Actions */
+  /**
+   * Full override of the thread reply button in the Message Actions
+   *
+   * Please check [cookbook](https://github.com/GetStream/stream-chat-react-native/blob/master/COOKBOOK.md#override-or-intercept-message-actions-edit-delete-reaction-reply-etc) for details.
+   * */
   threadReply?: (
     message: MessageType<At, Ch, Co, Ev, Me, Re, Us>,
   ) => MessageAction;

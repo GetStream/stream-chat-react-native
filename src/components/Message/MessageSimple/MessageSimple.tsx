@@ -204,8 +204,6 @@ export type MessageSimpleProps<
 /**
  *
  * Message UI component
- *
- * @example ./MessageSimple.md
  */
 export const MessageSimple = <
   At extends UnknownType = DefaultAttachmentType,

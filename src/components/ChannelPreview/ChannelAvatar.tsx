@@ -31,8 +31,6 @@ export type ChannelAvatarProps<
 
 /**
  * This UI component displays an avatar for a particular channel.
- *
- * @example ./ChannelAvatar.md
  */
 export const ChannelAvatar = <
   At extends UnknownType = DefaultAttachmentType,

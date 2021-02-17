@@ -67,6 +67,7 @@ export type OverlayProviderProps<
     >
   > & {
     closePicker?: (ref: React.RefObject<BottomSheetMethods>) => void;
+    /** https://github.com/GetStream/stream-chat-react-native/wiki/Internationalization-(i18n) */
     i18nInstance?: Streami18n;
     imageGalleryGridHandleHeight?: number;
     imageGalleryGridSnapPoints?: [string | number, string | number];

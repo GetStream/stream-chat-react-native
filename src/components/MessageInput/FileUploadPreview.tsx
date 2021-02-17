@@ -84,7 +84,7 @@ type FileUploadPreviewPropsWithContext<
   MessageInputContextValue<At, Ch, Co, Ev, Me, Re, Us>,
   'fileUploads' | 'removeFile' | 'uploadFile'
 > &
-  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'AttachmentFileIcon'>;
+  Pick<MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'FileAttachmentIcon'>;
 
 const FileUploadPreviewWithContext = <
   At extends UnknownType = DefaultAttachmentType,
@@ -97,7 +97,7 @@ const FileUploadPreviewWithContext = <
 >(
   props: FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>,
 ) => {
-  const { AttachmentFileIcon, fileUploads, removeFile, uploadFile } = props;
+  const { FileAttachmentIcon, fileUploads, removeFile, uploadFile } = props;
 
   const flatListRef = useRef<FlatList<FileUpload> | null>(null);
   const [flatListWidth, setFlatListWidth] = useState(0);
@@ -151,7 +151,7 @@ const FileUploadPreviewWithContext = <
         ]}
       >
         <View style={[styles.fileContentContainer, fileContentContainer]}>
-          <AttachmentFileIcon mimeType={item.file.type} />
+          <FileAttachmentIcon mimeType={item.file.type} />
           <View style={[styles.fileTextContainer, fileTextContainer]}>
             <Text
               numberOfLines={1}
@@ -258,11 +258,10 @@ export type FileUploadPreviewProps<
   Re extends UnknownType = DefaultReactionType,
   Us extends UnknownType = DefaultUserType
 > = Partial<FileUploadPreviewPropsWithContext<At, Ch, Co, Ev, Me, Re, Us>>;
+
 /**
  * FileUploadPreview
  * UI Component to preview the files set for upload
- *
- * @example ./FileUploadPreview.md
  */
 export const FileUploadPreview = <
   At extends UnknownType = DefaultAttachmentType,
@@ -284,7 +283,7 @@ export const FileUploadPreview = <
     Re,
     Us
   >();
-  const { AttachmentFileIcon } = useMessagesContext<
+  const { FileAttachmentIcon } = useMessagesContext<
     At,
     Ch,
     Co,
@@ -296,7 +295,7 @@ export const FileUploadPreview = <
 
   return (
     <MemoizedFileUploadPreview
-      {...{ AttachmentFileIcon, fileUploads, removeFile, uploadFile }}
+      {...{ FileAttachmentIcon, fileUploads, removeFile, uploadFile }}
       {...props}
     />
   );

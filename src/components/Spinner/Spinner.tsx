@@ -20,9 +20,6 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * @example ./Spinner.md
- */
 export const Spinner: React.FC = () => {
   const rotation = useSharedValue(0);
 

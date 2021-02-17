@@ -86,37 +86,40 @@ export enum IsSwiping {
   FALSE,
 }
 
-/**
- * Clamping worklet to clamp the scaling
- */
-export const clamp = (
-  value: number,
-  lowerBound: number,
-  upperBound: number,
-) => {
-  'worklet';
-  return Math.min(Math.max(lowerBound, value), upperBound);
-};
-
-const styles = StyleSheet.create({
-  animatedContainer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-});
-
-export type Photo<Us extends UnknownType = DefaultUserType> = {
-  id: string;
-  uri: string;
-  created_at?: string | Date;
-  messageId?: string;
-  user?: UserResponse<Us> | null;
-  user_id?: string;
-};
-
 export type ImageGalleryCustomComponents<
   Us extends UnknownType = DefaultUserType
 > = {
+  /**
+   * Override props for following UI components, which are part of [image gallery](https://github.com/GetStream/stream-chat-react-native/blob/master/screenshots/docs/3.png).
+   *
+   * - [ImageGalleryFooter](#ImageGalleryFooter)
+   *
+   * - [ImageGrid](#ImageGrid)
+   *
+   * - [ImageGridHandle](#ImageGridHandle)
+   *
+   * - [ImageGalleryHeader](#ImageGalleryHeader)
+   *
+   * e.g.,
+   *
+   * ```js
+   * {
+   *  footer: {
+   *    ShareIcon: CustomShareIconComponent
+   *  },
+   *  grid: {
+   *    avatarComponent: CustomAvatarComponent
+   *  },
+   *  gridHandle: {
+   *    centerComponent: CustomCenterComponent
+   *  },
+   *  header: {
+   *    CloseIcon: CustomCloseButtonComponent
+   *  },
+   * }
+   * ```
+   * @overrideType object
+   */
   imageGalleryCustomComponents?: {
     footer?: ImageGalleryFooterCustomComponentProps<Us>;
     grid?: ImageGalleryGridImageComponents<Us>;
@@ -1221,6 +1224,34 @@ export const ImageGallery = <
       </BottomSheet>
     </Animated.View>
   );
+};
+
+/**
+ * Clamping worklet to clamp the scaling
+ */
+export const clamp = (
+  value: number,
+  lowerBound: number,
+  upperBound: number,
+) => {
+  'worklet';
+  return Math.min(Math.max(lowerBound, value), upperBound);
+};
+
+const styles = StyleSheet.create({
+  animatedContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+
+export type Photo<Us extends UnknownType = DefaultUserType> = {
+  id: string;
+  uri: string;
+  created_at?: string | Date;
+  messageId?: string;
+  user?: UserResponse<Us> | null;
+  user_id?: string;
 };
 
 ImageGallery.displayName = 'ImageGallery{imageGallery}';

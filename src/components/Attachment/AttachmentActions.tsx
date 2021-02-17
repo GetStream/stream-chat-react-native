@@ -183,8 +183,6 @@ export type AttachmentActionsProps<
 /**
  * AttachmentActions - The actions you can take on an attachment.
  * Actions in combination with attachments can be used to build [commands](https://getstream.io/chat/docs/#channel_commands).
- *
- * @example ./AttachmentActions.md
  */
 export const AttachmentActions = <
   At extends UnknownType = DefaultAttachmentType,

@@ -25,9 +25,6 @@ export type EmojisItemProps = {
   item: Emoji;
 };
 
-/**
- * @example ./EmojisItem.md
- */
 export const EmojisItem: React.FC<EmojisItemProps> = ({
   item: { name, unicode },
 }) => {

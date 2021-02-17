@@ -1,12 +1,37 @@
-The chat context exposes the following properties:
+Please check the `ChatContextValue` in [ChatContext](), for consumable values.
+Provider for this context exists in `Chat` component. And so, any child component of Chat
+can get access to context as following:
 
-- **channel** {object} The currently active channel, only defined if set using `setActiveChannel` from ChatContext
-- **client** {object} The client connection and StreamChat instance
-- **connectionRecovering** {boolean} Whether or not the websocket connection is recovering
-- **isOnline** {boolean} Whether or not the user is active and online
-- **logger** {function} Custom logging function
-- **setActiveChannel** {function} Sets the currently active channel, used in the [ChannelList](#channellist) component to navigate between channels
+- Functional component
 
-  **Params:**
+```tsx static
+import { useChatContext } from 'stream-chat-react-native';
 
-  - **channel:** The channel to be set as active
+const SomeChildComponent = () => {
+  const { client, isOnline } = useChatContext();
+
+  return (
+    <View />
+  )
+}
+```
+
+- Class component
+
+```tsx static
+import React from 'react';
+import { withChatContext } from 'stream-chat-react-native';
+
+class SomeChildComponent extends React.Component {
+  constructor(props) {
+    super(props);
+
+    console.log(props.client);
+    console.log(props.isOnline);
+  }
+
+  // UI Logic
+}
+
+export withChatContext(SomeChildComponent);
+```

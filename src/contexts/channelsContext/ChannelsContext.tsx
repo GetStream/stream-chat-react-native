@@ -7,7 +7,12 @@ import type { FlatList } from 'react-native-gesture-handler';
 import type { Channel } from 'stream-chat';
 
 import type { HeaderErrorProps } from '../../components/ChannelList/ChannelListHeaderErrorIndicator';
+import type { ChannelAvatarProps } from '../../components/ChannelPreview/ChannelAvatar';
+import type { ChannelPreviewMessageProps } from '../../components/ChannelPreview/ChannelPreviewMessage';
 import type { ChannelPreviewMessengerProps } from '../../components/ChannelPreview/ChannelPreviewMessenger';
+import type { ChannelPreviewStatusProps } from '../../components/ChannelPreview/ChannelPreviewStatus';
+import type { ChannelPreviewTitleProps } from '../../components/ChannelPreview/ChannelPreviewTitle';
+import type { ChannelPreviewUnreadCountProps } from '../../components/ChannelPreview/ChannelPreviewUnreadCount';
 import type { EmptyStateProps } from '../../components/Indicators/EmptyStateIndicator';
 import type { LoadingErrorProps } from '../../components/Indicators/LoadingErrorIndicator';
 import type { LoadingProps } from '../../components/Indicators/LoadingIndicator';
@@ -102,11 +107,10 @@ export type ChannelsContextValue<
    * */
   LoadingErrorIndicator: React.ComponentType<LoadingErrorProps>;
   /**
-   * Custom loading indicator to use
+   * Custom loading indicator to use on Channel List
    *
-   * Default: [LoadingIndicator](https://getstream.github.io/stream-chat-react-native/#loadingindicator)
    * */
-  LoadingIndicator: React.ComponentType<LoadingProps>;
+  LoadingIndicator: React.ComponentType<Pick<LoadingProps, 'listType'>>;
   /**
    * Whether or not additional channels are being loaded, triggers the FooterLoadingIndicator
    */
@@ -185,6 +189,46 @@ export type ChannelsContextValue<
    * @param channel A channel object
    */
   onSelect?: (channel: Channel<At, Ch, Co, Ev, Me, Re, Us>) => void;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Default** [ChannelAvatar](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelAvatar.tsx)
+   */
+  PreviewAvatar?: React.ComponentType<
+    ChannelAvatarProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview of latest message on channel.
+   *
+   * **Default** [ChannelPreviewMessage](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewMessage.tsx)
+   */
+  PreviewMessage?: React.ComponentType<
+    ChannelPreviewMessageProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Default** [ChannelPreviewStatus](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewStatus.tsx)
+   */
+  PreviewStatus?: React.ComponentType<
+    ChannelPreviewStatusProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Default** [ChannelPreviewTitle](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewTitle.tsx)
+   */
+  PreviewTitle?: React.ComponentType<
+    ChannelPreviewTitleProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
+  /**
+   * Custom UI component to render preview avatar.
+   *
+   * **Default** [ChannelPreviewUnreadCount](https://github.com/GetStream/stream-chat-react-native/blob/master/src/components/ChannelPreview/ChannelPreviewUnreadCount.tsx)
+   */
+  PreviewUnreadCount?: React.ComponentType<
+    ChannelPreviewUnreadCountProps<At, Ch, Co, Ev, Me, Re, Us>
+  >;
 };
 
 export const ChannelsContext = React.createContext({} as ChannelsContextValue);

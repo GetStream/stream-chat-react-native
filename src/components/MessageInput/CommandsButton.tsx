@@ -120,8 +120,6 @@ export type CommandsButtonProps<
 
 /**
  * UI Component for attach button in MessageInput component.
- *
- * @example ./CommandsButton.md
  */
 export const CommandsButton = <
   At extends UnknownType = DefaultAttachmentType,

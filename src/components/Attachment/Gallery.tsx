@@ -390,8 +390,6 @@ export type GalleryProps<
 
 /**
  * UI component for card in attachments.
- *
- * @example ./Gallery.md
  */
 export const Gallery = <
   At extends UnknownType = DefaultAttachmentType,

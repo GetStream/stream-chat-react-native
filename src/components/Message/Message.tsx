@@ -162,7 +162,7 @@ export type MessagePropsWithContext<
     | 'dismissKeyboardOnMessageTouch'
     | 'editMessage'
     | 'flagMessage'
-    | 'forceAlign'
+    | 'forceAlignMessages'
     | 'handleBlock'
     | 'handleCopy'
     | 'handleDelete'
@@ -278,7 +278,7 @@ const MessageWithContext = <
     enableLongPress = true,
     enforceUniqueReaction,
     flagMessage: flagMessageProp,
-    forceAlign = false,
+    forceAlignMessages = false,
     goToMessage,
     groupStyles = ['bottom'],
     handleBlock,
@@ -422,8 +422,9 @@ const MessageWithContext = <
   };
 
   const alignment =
-    forceAlign && (forceAlign === 'left' || forceAlign === 'right')
-      ? forceAlign
+    forceAlignMessages &&
+    (forceAlignMessages === 'left' || forceAlignMessages === 'right')
+      ? forceAlignMessages
       : isMyMessage
       ? 'right'
       : 'left';

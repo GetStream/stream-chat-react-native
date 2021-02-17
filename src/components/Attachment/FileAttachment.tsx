@@ -57,30 +57,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export const getFileSizeDisplayText = (size?: number | string) => {
-  if (!size) return;
-  if (typeof size === 'string') {
-    size = parseFloat(size);
-  }
-
-  if (size < 1000 * 1000) {
-    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
-  }
-
-  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
-};
-
-export const goToURL = (url?: string) => {
-  if (!url) return;
-  Linking.canOpenURL(url).then((supported) => {
-    if (supported) {
-      Linking.openURL(url);
-    } else {
-      console.log(`Don't know how to open URI: ${url}`);
-    }
-  });
-};
-
 export type FileAttachmentPropsWithContext<
   At extends DefaultAttachmentType = DefaultAttachmentType,
   Ch extends UnknownType = DefaultChannelType,
@@ -92,7 +68,7 @@ export type FileAttachmentPropsWithContext<
 > = Pick<MessageContextValue<At, Ch, Co, Ev, Me, Re, Us>, 'onLongPress'> &
   Pick<
     MessagesContextValue<At, Ch, Co, Ev, Me, Re, Us>,
-    'additionalTouchableProps' | 'AttachmentActions' | 'AttachmentFileIcon'
+    'additionalTouchableProps' | 'AttachmentActions' | 'FileAttachmentIcon'
   > & {
     /** The attachment to render */
     attachment: Attachment<At>;
@@ -125,7 +101,7 @@ const FileAttachmentWithContext = <
     attachment,
     attachmentSize,
     AttachmentActions,
-    AttachmentFileIcon,
+    FileAttachmentIcon,
     onLongPress,
     onPressIn,
     styles: stylesProp = {},
@@ -166,7 +142,7 @@ const FileAttachmentWithContext = <
           stylesProp.container,
         ]}
       >
-        <AttachmentFileIcon
+        <FileAttachmentIcon
           mimeType={attachment.mime_type}
           size={attachmentSize}
         />
@@ -227,7 +203,7 @@ export const FileAttachment = <
   const {
     additionalTouchableProps,
     AttachmentActions = AttachmentActionsDefault,
-    AttachmentFileIcon = FileIconDefault,
+    FileAttachmentIcon = FileIconDefault,
     onPressInMessage: onPressIn,
   } = useMessagesContext<At, Ch, Co, Ev, Me, Re, Us>();
 
@@ -236,13 +212,37 @@ export const FileAttachment = <
       {...{
         additionalTouchableProps,
         AttachmentActions,
-        AttachmentFileIcon,
+        FileAttachmentIcon,
         onLongPress,
         onPressIn,
       }}
       {...props}
     />
   );
+};
+
+export const getFileSizeDisplayText = (size?: number | string) => {
+  if (!size) return;
+  if (typeof size === 'string') {
+    size = parseFloat(size);
+  }
+
+  if (size < 1000 * 1000) {
+    return `${Math.floor(Math.floor(size / 10) / 100)} KB`;
+  }
+
+  return `${Math.floor(Math.floor(size / 10000) / 100)} MB`;
+};
+
+export const goToURL = (url?: string) => {
+  if (!url) return;
+  Linking.canOpenURL(url).then((supported) => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      console.log(`Don't know how to open URI: ${url}`);
+    }
+  });
 };
 
 FileAttachment.displayName = 'FileAttachment{messageSimple{file}}';

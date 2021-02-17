@@ -43,9 +43,6 @@ export type MentionsItemProps<Us extends DefaultUserType = DefaultUserType> = {
   item: SuggestionUser<Us>;
 };
 
-/**
- * @example ./MentionsItem.md
- */
 export const MentionsItem = <Us extends DefaultUserType = DefaultUserType>({
   item: { id, image, name, online },
 }: MentionsItemProps<Us>) => {

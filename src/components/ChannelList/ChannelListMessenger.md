@@ -1,21 +1,19 @@
-Unread channel preview:
-
-```js
+```jsx static
 import { View }  from 'react-native';
+import { Chat, ChannelList, ChannelListMessenger } from 'stream-chat-react-native';
 
-import { ChannelList } from './ChannelList';
-import { ChannelListMessenger } from './ChannelListMessenger';
-
-import { Chat } from '../Chat/Chat';
-import { channels, client } from '../docs/data';
-
-<View
-  style={{
-    height: '500px',
-  }}
->
-  <Chat client={client}>
-    <ChannelList channels={channels} List={ChannelListMessenger} />
-  </Chat>
-</View>;
+<OverlayProvider>
+    <View>
+        <Chat client={client}>
+            <ChannelList
+                List={ChannelListMessenger}
+                filters={{
+                    members: {
+                        $in: ['vishal', 'neil']
+                    }
+                }}
+            />
+        </Chat>
+    </View>
+</OverlayProvider>
 ```

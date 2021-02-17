@@ -119,8 +119,6 @@ export type AttachButtonProps<
 
 /**
  * UI Component for attach button in MessageInput component.
- *
- * @example ./AttachButton.md
  */
 export const AttachButton = <
   At extends UnknownType = DefaultAttachmentType,

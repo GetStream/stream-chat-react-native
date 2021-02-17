@@ -199,8 +199,6 @@ export type AttachmentProps<
 
 /**
  * Attachment - The message attachment
- *
- * @example ./Attachment.md
  */
 export const Attachment = <
   At extends UnknownType = DefaultAttachmentType,

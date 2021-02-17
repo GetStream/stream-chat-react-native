@@ -19,9 +19,6 @@ const styles = StyleSheet.create({
 
 export type EmojisHeaderProps = { title: string };
 
-/**
- * @example ./EmojisHeader.md
- */
 export const EmojisHeader: React.FC<EmojisHeaderProps> = ({ title = '' }) => {
   const {
     theme: {
